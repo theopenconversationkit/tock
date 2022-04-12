@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import {DialogFlowStateData, DialogFlowStateTransitionData, DialogFlowStateTransitionType} from "./flow";
-import {AnswerConfigurationType} from "../../bot/model/story";
+import {
+  DialogFlowStateData,
+  DialogFlowStateTransitionData,
+  DialogFlowStateTransitionType
+} from './flow';
+import { AnswerConfigurationType } from '../../bot/model/story';
 
 export class StoryNode {
-
   public dynamic: boolean;
 
   constructor(
@@ -30,7 +33,7 @@ export class StoryNode {
     public intent?: string,
     public step?: string,
     public storyType?: AnswerConfigurationType,
-    public storyName?: string,
+    public storyName?: string
   ) {
     this.dynamic = storyDefinitionId.match(/^[0-9a-fA-F]{24}$/) != null;
   }
@@ -44,27 +47,29 @@ export class StoryNode {
     if (count < 1000) {
       return count.toString();
     } else if (count < 100000) {
-      return Math.floor(count / 1000) + "k";
-    } if (count < 1000000) {
-      return "."+ Math.floor(count / 100000) + "m";
+      return Math.floor(count / 1000) + 'k';
+    }
+    if (count < 1000000) {
+      return '.' + Math.floor(count / 100000) + 'm';
     } else {
-      return Math.floor(count / 1000000) + "m"
+      return Math.floor(count / 1000000) + 'm';
     }
   }
 
   displayName(): string {
     const sId = this.storyName;
     const i = this.states[0].intent ? this.states[0].intent : this.intent;
-    return sId === 'tock_unknown_story' ? 'unknown' :
-      (sId && i && sId);
+    return sId === 'tock_unknown_story' ? 'unknown' : sId && i && sId;
   }
 
   nodeName(): string {
     const nodeName = this.displayName();
     const i = this.intent;
-    return nodeName
-      + (!i || i === nodeName || this.storyDefinitionId === 'tock_unknown_story' ? "" : "/" + i)
-      + (this.step ? "*" + this.step : "")
+    return (
+      nodeName +
+      (!i || i === nodeName || this.storyDefinitionId === 'tock_unknown_story' ? '' : '/' + i) +
+      (this.step ? '*' + this.step : '')
+    );
   }
 
   isConfiguredAnswer(): boolean {
@@ -89,37 +94,36 @@ export class StoryNode {
 }
 
 export class NodeTransition {
-
   constructor(
     public transitions: DialogFlowStateTransitionData[],
     public previousId: number,
     public nextId: number,
     public type: DialogFlowStateTransitionType
-  ) { }
+  ) {}
 
   get count(): number {
     return this.transitions ? this.transitions.reduce((sum, s) => sum + s.count, 0) : 0;
   }
-
 }
 
 export class NodeTypeFilter {
-
   constructor(
     public name: string,
     public description: string,
     public alwaysDisplay: boolean,
-    public filter: ((node: StoryNode) => boolean)
-  ) { }
+    public filter: (node: StoryNode) => boolean
+  ) {}
 }
 
 export const NodeTypeFilters = [
-  new NodeTypeFilter('All', 'All Types', true, node => true),
-  new NodeTypeFilter('Configured', 'All Configured Types', true, node => node.isConfiguredAnswer()),
-  new NodeTypeFilter('Simple', 'Only Simple Type', true, node => node.isSimpleAnswer()),
+  new NodeTypeFilter('All', 'All Types', true, (node) => true),
+  new NodeTypeFilter('Configured', 'All Configured Types', true, (node) =>
+    node.isConfiguredAnswer()
+  ),
+  new NodeTypeFilter('Simple', 'Only Simple Type', true, (node) => node.isSimpleAnswer()),
   //TODO uncomment this when message type available
   //new NodeTypeFilter('Message', 'Only Message Type', true, node => node.isMessageAnswer()),
-  new NodeTypeFilter('Script', 'Only Script Type', true, node => node.isScriptAnswer()),
-  new NodeTypeFilter('Built-in', 'Only Built-in', true, node => node.isBuiltIn()),
-  new NodeTypeFilter('Unknown', 'Unknown Type', false, node => node.storyType == undefined)
-]
+  new NodeTypeFilter('Script', 'Only Script Type', true, (node) => node.isScriptAnswer()),
+  new NodeTypeFilter('Built-in', 'Only Built-in', true, (node) => node.isBuiltIn()),
+  new NodeTypeFilter('Unknown', 'Unknown Type', false, (node) => node.storyType == undefined)
+];

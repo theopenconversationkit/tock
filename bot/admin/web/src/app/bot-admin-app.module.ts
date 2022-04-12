@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {BrowserModule} from "@angular/platform-browser";
-import {NgModule} from "@angular/core";
-import {CoreModule} from "./core-nlp/core.module";
-import {SharedModule} from "./shared-nlp/shared.module";
-import {RouterModule, Routes} from "@angular/router";
-import {BotAdminAppComponent} from "./bot-admin-app.component";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {BotCoreModule} from "./core/bot-core.module";
-import {HttpClientModule} from "@angular/common/http";
-import {ThemeModule} from "./theme/theme.module";
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { CoreModule } from './core-nlp/core.module';
+import { SharedModule } from './shared-nlp/shared.module';
+import { RouterModule, Routes } from '@angular/router';
+import { BotAdminAppComponent } from './bot-admin-app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BotCoreModule } from './core/bot-core.module';
+import { HttpClientModule } from '@angular/common/http';
+import { ThemeModule } from './theme/theme.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {
   NbDatepickerModule,
   NbDialogModule,
@@ -34,44 +34,44 @@ import {
   NbWindowModule,
   NbThemeModule
 } from '@nebular/theme';
-import {APP_BASE_HREF, PlatformLocation} from "@angular/common";
-import { BotService } from "./bot/bot-service";
+import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
+import { BotService } from './bot/bot-service';
 
 const routes: Routes = [
-  {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
+  { path: '', redirectTo: '/nlp/inbox', pathMatch: 'full' },
   {
     path: 'nlp',
-    loadChildren: () => import('./nlp/nlp.module').then(m => m.BotNlpModule)
+    loadChildren: () => import('./nlp/nlp.module').then((m) => m.BotNlpModule)
   },
   {
     path: 'quality',
-    loadChildren: () => import('./quality/quality.module').then(m => m.BotQualityModule)
+    loadChildren: () => import('./quality/quality.module').then((m) => m.BotQualityModule)
   },
   {
     path: 'configuration',
-    loadChildren: () => import('./configuration/configuration.module').then(m => m.BotConfigurationModule)
+    loadChildren: () =>
+      import('./configuration/configuration.module').then((m) => m.BotConfigurationModule)
   },
   {
     path: 'build',
-    loadChildren: () => import('./bot/bot.module').then(m => m.BotModule)
+    loadChildren: () => import('./bot/bot.module').then((m) => m.BotModule)
   },
   {
     path: 'test',
-    loadChildren: () => import('./test/test.module').then(m => m.BotTestModule)
+    loadChildren: () => import('./test/test.module').then((m) => m.BotTestModule)
   },
   {
     path: 'analytics',
-    loadChildren: () => import('./analytics/analytics.module').then(m => m.BotAnalyticsModule)
+    loadChildren: () => import('./analytics/analytics.module').then((m) => m.BotAnalyticsModule)
   },
-  {path: '**', redirectTo: '/nlp/inbox'}
+  { path: '**', redirectTo: '/nlp/inbox' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
-export class BotAdminAppRoutingModule {
-}
+export class BotAdminAppRoutingModule {}
 
 @NgModule({
   declarations: [BotAdminAppComponent],
@@ -92,7 +92,7 @@ export class BotAdminAppRoutingModule {
     NbDialogModule.forRoot(),
     NbWindowModule.forRoot(),
     NbToastrModule.forRoot(),
-    NbThemeModule.forRoot({name: 'default'}),
+    NbThemeModule.forRoot({ name: 'default' }),
     NgbModule
   ],
   providers: [
@@ -105,5 +105,4 @@ export class BotAdminAppRoutingModule {
   ],
   bootstrap: [BotAdminAppComponent]
 })
-export class BotAdminAppModule {
-}
+export class BotAdminAppModule {}

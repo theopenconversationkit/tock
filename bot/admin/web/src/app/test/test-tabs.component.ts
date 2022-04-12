@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 class TabLink {
-  constructor(
-    public route: string,
-    public title: string,
-    public icon?: string
-  ) { }
+  constructor(public route: string, public title: string, public icon?: string) {}
 }
 
 const tabs = [
-  new TabLink("test", "Test the bot", 'smiling-face-outline'),
-  new TabLink("plan", "Test Plans", 'map-outline')
+  new TabLink('test', 'Test the bot', 'smiling-face-outline'),
+  new TabLink('plan', 'Test Plans', 'map-outline')
 ];
 
 @Component({
@@ -35,16 +31,13 @@ const tabs = [
   styleUrls: ['./test-tabs.component.css']
 })
 export class TestTabsComponent implements OnInit {
-
   testTabLinks = tabs;
 
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/test")) {
-      this.router.navigateByUrl("/test/test");
+    if (this.router.routerState.snapshot.url.endsWith('/test')) {
+      this.router.navigateByUrl('/test/test');
     }
   }
-
 }

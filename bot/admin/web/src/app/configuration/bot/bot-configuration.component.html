@@ -14,55 +14,115 @@
   ~ limitations under the License.
   -->
 
-<nb-card *ngIf="configuration" [ngClass]="{'conf': configuration._id, 'newConf': !configuration._id}">
+<nb-card
+  *ngIf="configuration"
+  [ngClass]="{ conf: configuration._id, newConf: !configuration._id }"
+>
   <nb-card-body>
-
     <div class="nb-form-field inline">
       <label>Configuration name</label>
-      <input nbInput type="text" status="primary" placeholder="Configuration name" [(ngModel)]="configuration.name">
+      <input
+        nbInput
+        type="text"
+        status="primary"
+        placeholder="Configuration name"
+        [(ngModel)]="configuration.name"
+      />
     </div>
 
-    <span class="nb-form-field inline" *ngIf="configuration._id">
+    <span
+      class="nb-form-field inline"
+      *ngIf="configuration._id"
+    >
       <label>Connector type</label>
-      <img *ngIf="configuration._id"
-           src="{{configuration.connectorType.iconUrl()}}"
-           class="connector-icon"
-           [nbTooltip]="configuration.connectorType.label()"/>
-      <input nbInput type="text" status="primary"
-             placeholder="Connector type"
-             [ngModel]="configuration.connectorType.label()"
-             [disabled]="true"
-             class="connector">
+      <img
+        *ngIf="configuration._id"
+        src="{{ configuration.connectorType.iconUrl() }}"
+        class="connector-icon"
+        [nbTooltip]="configuration.connectorType.label()"
+      />
+      <input
+        nbInput
+        type="text"
+        status="primary"
+        placeholder="Connector type"
+        [ngModel]="configuration.connectorType.label()"
+        [disabled]="true"
+        class="connector"
+      />
     </span>
 
     <span>
       <span *ngIf="!configuration._id">
         <span class="nb-form-field inline">
           <label>Connector type</label>
-          <nb-select class="nb-select" status="primary" placeholder="Connector type"
-                     [(ngModel)]="configuration.connectorType" (selectedChange)="changeConnectorType()">
-            <nb-option class="connector" *ngFor="let c of connectorTypesAndRestType" [value]="c">
-              <img src="{{c.iconUrl()}}" class="connector-icon" [nbTooltip]="c.label()"/> {{ c.label() }}
+          <nb-select
+            class="nb-select"
+            status="primary"
+            placeholder="Connector type"
+            [(ngModel)]="configuration.connectorType"
+            (selectedChange)="changeConnectorType()"
+          >
+            <nb-option
+              class="connector"
+              *ngFor="let c of connectorTypesAndRestType"
+              [value]="c"
+            >
+              <img
+                src="{{ c.iconUrl() }}"
+                class="connector-icon"
+                [nbTooltip]="c.label()"
+              />
+              {{ c.label() }}
             </nb-option>
-            <nb-select-label *ngIf="configuration.connectorType" class="connector">
-                <img src="{{configuration.connectorType.iconUrl()}}" class="connector-icon"
-                     [nbTooltip]="configuration.connectorType.label()"/> {{ configuration.connectorType.label() }}
-              </nb-select-label>
+            <nb-select-label
+              *ngIf="configuration.connectorType"
+              class="connector"
+            >
+              <img
+                src="{{ configuration.connectorType.iconUrl() }}"
+                class="connector-icon"
+                [nbTooltip]="configuration.connectorType.label()"
+              />
+              {{ configuration.connectorType.label() }}
+            </nb-select-label>
           </nb-select>
         </span>
-        <span class="nb-form-field inline" *ngIf="configuration.connectorType.isRest()">
+        <span
+          class="nb-form-field inline"
+          *ngIf="configuration.connectorType.isRest()"
+        >
           <label>Target connector type</label>
-          <nb-select class="nb-select" status="primary" placeholder="Target connector type"
-                     [(ngModel)]="configuration.ownerConnectorType" (selectedChange)="changeConnectorType()">
-            <nb-option class="connector"
-                       *ngFor="let c of connectorTypes"
-                       [value]="c">
-              <img src="{{c.iconUrl()}}" class="connector-icon" [nbTooltip]="c.label()"/> {{ c.label() }}
+          <nb-select
+            class="nb-select"
+            status="primary"
+            placeholder="Target connector type"
+            [(ngModel)]="configuration.ownerConnectorType"
+            (selectedChange)="changeConnectorType()"
+          >
+            <nb-option
+              class="connector"
+              *ngFor="let c of connectorTypes"
+              [value]="c"
+            >
+              <img
+                src="{{ c.iconUrl() }}"
+                class="connector-icon"
+                [nbTooltip]="c.label()"
+              />
+              {{ c.label() }}
             </nb-option>
-            <nb-select-label *ngIf="configuration.ownerConnectorType" class="connector">
-                <img src="{{configuration.ownerConnectorType.iconUrl()}}" class="connector-icon"
-                     [nbTooltip]="configuration.ownerConnectorType.label()"/> {{ configuration.ownerConnectorType.label() }}
-              </nb-select-label>
+            <nb-select-label
+              *ngIf="configuration.ownerConnectorType"
+              class="connector"
+            >
+              <img
+                src="{{ configuration.ownerConnectorType.iconUrl() }}"
+                class="connector-icon"
+                [nbTooltip]="configuration.ownerConnectorType.label()"
+              />
+              {{ configuration.ownerConnectorType.label() }}
+            </nb-select-label>
           </nb-select>
         </span>
       </span>
@@ -70,11 +130,21 @@
       <span *ngIf="configuration._id">
         <span *ngIf="configuration.connectorType.isRest() && configuration.ownerConnectorType">
           <span *ngIf="configuration.ownerConnectorType">
-            <img class="connector-icon" [nbTooltip]="configuration.ownerConnectorType.label()"
-                 src="{{configuration.ownerConnectorType.iconUrl()}}" />
+            <img
+              class="connector-icon"
+              [nbTooltip]="configuration.ownerConnectorType.label()"
+              src="{{ configuration.ownerConnectorType.iconUrl() }}"
+            />
             <span class="nb-form-field inline">
-              <input nbInput type="text" status="primary" class="connector" placeholder="Target connector type"
-                     [ngModel]="configuration.ownerConnectorType?.label()" [disabled]="true">
+              <input
+                nbInput
+                type="text"
+                status="primary"
+                class="connector"
+                placeholder="Target connector type"
+                [ngModel]="configuration.ownerConnectorType?.label()"
+                [disabled]="true"
+              />
             </span>
           </span>
         </span>
@@ -83,46 +153,98 @@
 
     <span class="nb-form-field inline">
       <label>Connector identifier</label>
-      <input nbInput type="text" placeholder="Connector identifier" [(ngModel)]="configuration.applicationId">
+      <input
+        nbInput
+        type="text"
+        placeholder="Connector identifier"
+        [(ngModel)]="configuration.applicationId"
+      />
     </span>
 
     <span class="nb-form-field inline">
       <label>Relative REST path</label>
-      <input nbInput type="text" placeholder="Relative REST path" nbTooltip="e.g. /messenger"
-             [(ngModel)]="configuration.path" (change)="changePath()">
+      <input
+        nbInput
+        type="text"
+        placeholder="Relative REST path"
+        nbTooltip="e.g. /messenger"
+        [(ngModel)]="configuration.path"
+        (change)="changePath()"
+      />
     </span>
 
-    <span *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport" class="targetUrl">
-      Connector url: {{botSharedService.configuration.botApiBaseUrl}}{{configuration.path}}
+    <span
+      *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport"
+      class="targetUrl"
+    >
+      Connector url: {{ botSharedService.configuration.botApiBaseUrl }}{{ configuration.path }}
     </span>
 
-    <nb-accordion *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType) &&
-          botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
-      <nb-accordion-item [expanded]="!configuration._id" class="block">
+    <nb-accordion
+      *ngIf="
+        botSharedService.findConnectorConfiguration(configuration.connectorType) &&
+        botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0
+      "
+    >
+      <nb-accordion-item
+        [expanded]="!configuration._id"
+        class="block"
+      >
         <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
         <nb-accordion-item-body>
-          <span class="nb-form-field block" *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport">
+          <span
+            class="nb-form-field block"
+            *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport"
+          >
             <label>Application base url</label>
-            <input nbInput type="text" placeholder="Application base url" nbTooltip="optional"
-                   [(ngModel)]="configuration.baseUrl">
+            <input
+              nbInput
+              type="text"
+              placeholder="Application base url"
+              nbTooltip="optional"
+              [(ngModel)]="configuration.baseUrl"
+            />
           </span>
-          <span class="nb-form-field block"
-                *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
-            <label>{{f.label}}</label>
-            <input nbInput type="text" class="long-text" [placeholder]="f.label"
-                   [(ngModel)]="configuration.parameters[f.key]" [required]="f.mandatory">
+          <span
+            class="nb-form-field block"
+            *ngFor="
+              let f of botSharedService.findConnectorConfiguration(configuration.connectorType)
+                .fields
+            "
+          >
+            <label>{{ f.label }}</label>
+            <input
+              nbInput
+              type="text"
+              class="long-text"
+              [placeholder]="f.label"
+              [(ngModel)]="configuration.parameters[f.key]"
+              [required]="f.mandatory"
+            />
           </span>
         </nb-accordion-item-body>
       </nb-accordion-item>
     </nb-accordion>
   </nb-card-body>
 
-  <nb-card-footer style="text-align: right;">
-    <button nbButton outline status="danger" size="small" (click)="remove()">
-      {{configuration._id ? 'Delete' : 'Cancel'}}
+  <nb-card-footer style="text-align: right">
+    <button
+      nbButton
+      outline
+      status="danger"
+      size="small"
+      (click)="remove()"
+    >
+      {{ configuration._id ? 'Delete' : 'Cancel' }}
     </button>
-    <button nbButton status="primary" (click)="update()" size="small"
-            style="margin-left: 20px;"
-    >{{configuration._id ? 'Update' : 'Create'}}</button>
+    <button
+      nbButton
+      status="primary"
+      (click)="update()"
+      size="small"
+      style="margin-left: 20px"
+    >
+      {{ configuration._id ? 'Update' : 'Create' }}
+    </button>
   </nb-card-footer>
 </nb-card>

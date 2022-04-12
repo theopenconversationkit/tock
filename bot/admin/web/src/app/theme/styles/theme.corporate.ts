@@ -23,10 +23,10 @@ export const CORPORATE_THEME = {
   base: 'corporate',
   variables: {
     temperature: {
-      arcFill: [ '#ffa36b', '#ffa36b', '#ff9e7a', '#ff9888', '#ff8ea0' ],
+      arcFill: ['#ffa36b', '#ffa36b', '#ff9e7a', '#ff9888', '#ff8ea0'],
       arcEmpty: baseThemeVariables.bg2,
       thumbBg: baseThemeVariables.bg2,
-      thumbBorder: '#ffa36b',
+      thumbBorder: '#ffa36b'
     },
 
     solar: {
@@ -34,7 +34,7 @@ export const CORPORATE_THEME = {
       gradientRight: baseThemeVariables.primary,
       shadowColor: 'rgba(0, 0, 0, 0)',
       secondSeriesFill: baseThemeVariables.bg2,
-      radius: ['80%', '90%'],
+      radius: ['80%', '90%']
     },
 
     traffic: {
@@ -54,7 +54,7 @@ export const CORPORATE_THEME = {
       shadowLineDarkBg: 'rgba(0, 0, 0, 0)',
       shadowLineShadow: 'rgba(0, 0, 0, 0)',
       gradFrom: baseThemeVariables.bg,
-      gradTo: baseThemeVariables.bg,
+      gradTo: baseThemeVariables.bg
     },
 
     electricity: {
@@ -79,14 +79,14 @@ export const CORPORATE_THEME = {
 
       areaGradFrom: 'rgba(0, 0, 0, 0)',
       areaGradTo: 'rgba(0, 0, 0, 0)',
-      shadowLineDarkBg: 'rgba(0, 0, 0, 0)',
+      shadowLineDarkBg: 'rgba(0, 0, 0, 0)'
     },
 
     bubbleMap: {
       titleColor: baseThemeVariables.fgText,
       areaColor: baseThemeVariables.bg4,
       areaHoverColor: baseThemeVariables.fgHighlight,
-      areaBorderColor: baseThemeVariables.border5,
+      areaBorderColor: baseThemeVariables.border5
     },
 
     profitBarAnimationEchart: {
@@ -105,7 +105,7 @@ export const CORPORATE_THEME = {
       tooltipBg: baseThemeVariables.bg,
       tooltipBorderColor: baseThemeVariables.border2,
       tooltipBorderWidth: '1',
-      tooltipExtraCss: 'border-radius: 10px; padding: 4px 16px;',
+      tooltipExtraCss: 'border-radius: 10px; padding: 4px 16px;'
     },
 
     trafficBarEchart: {
@@ -121,7 +121,7 @@ export const CORPORATE_THEME = {
       tooltipBorderColor: baseThemeVariables.border2,
       tooltipExtraCss: 'border-radius: 10px; padding: 8px 24px;',
       tooltipTextColor: baseThemeVariables.fgText,
-      tooltipFontWeight: 'normal',
+      tooltipFontWeight: 'normal'
     },
 
     countryOrders: {
@@ -142,7 +142,7 @@ export const CORPORATE_THEME = {
 
       chartLineBottomShadowColor: baseThemeVariables.primary,
 
-      chartInnerLineColor: baseThemeVariables.bg2,
+      chartInnerLineColor: baseThemeVariables.bg2
     },
 
     echarts: {
@@ -152,12 +152,12 @@ export const CORPORATE_THEME = {
       splitLineColor: baseThemeVariables.separator,
       itemHoverShadowColor: 'rgba(0, 0, 0, 0.5)',
       tooltipBackgroundColor: baseThemeVariables.primary,
-      areaOpacity: '0.7',
+      areaOpacity: '0.7'
     },
 
     chartjs: {
       axisLineColor: baseThemeVariables.separator,
-      textColor: baseThemeVariables.fgText,
+      textColor: baseThemeVariables.fgText
     },
 
     orders: {
@@ -198,7 +198,7 @@ export const CORPORATE_THEME = {
 
       thirdAreaGradFrom: 'rgba(0, 0, 0, 0)',
       thirdAreaGradTo: 'rgba(0, 0, 0, 0)',
-      thirdShadowLineDarkBg: 'rgba(0, 0, 0, 0)',
+      thirdShadowLineDarkBg: 'rgba(0, 0, 0, 0)'
     },
 
     profit: {
@@ -224,13 +224,13 @@ export const CORPORATE_THEME = {
       // third bar
       thirdLineGradFrom: baseThemeVariables.success,
       thirdLineGradTo: baseThemeVariables.success,
-      thirdLineShadow: 'rgba(0, 0, 0, 0)',
+      thirdLineShadow: 'rgba(0, 0, 0, 0)'
     },
 
     orderProfitLegend: {
       firstItem: baseThemeVariables.success,
       secondItem: baseThemeVariables.primary,
-      thirdItem: baseThemeVariables.bg3,
+      thirdItem: baseThemeVariables.bg3
     },
 
     visitors: {
@@ -262,12 +262,12 @@ export const CORPORATE_THEME = {
       innerLineWidth: '1',
 
       innerAreaGradFrom: baseThemeVariables.success,
-      innerAreaGradTo: baseThemeVariables.success,
+      innerAreaGradTo: baseThemeVariables.success
     },
 
     visitorsLegend: {
       firstIcon: baseThemeVariables.success,
-      secondIcon: baseThemeVariables.primary,
+      secondIcon: baseThemeVariables.primary
     },
 
     visitorsPie: {
@@ -281,12 +281,12 @@ export const CORPORATE_THEME = {
       secondPieShadowColor: 'rgba(0, 0, 0, 0)',
       secondPieRadius: ['63%', '92%'],
       shadowOffsetX: '-4',
-      shadowOffsetY: '-4',
+      shadowOffsetY: '-4'
     },
 
     visitorsPieLegend: {
       firstSection: baseThemeVariables.warning,
-      secondSection: baseThemeVariables.success,
+      secondSection: baseThemeVariables.success
     },
 
     earningPie: {
@@ -305,7 +305,7 @@ export const CORPORATE_THEME = {
 
       thirdPieGradientLeft: baseThemeVariables.warning,
       thirdPieGradientRight: baseThemeVariables.warning,
-      thirdPieShadowColor: 'rgba(0, 0, 0, 0)',
+      thirdPieShadowColor: 'rgba(0, 0, 0, 0)'
     },
 
     earningLine: {
@@ -318,7 +318,7 @@ export const CORPORATE_THEME = {
       tooltipBg: baseThemeVariables.bg,
       tooltipBorderColor: baseThemeVariables.border2,
       tooltipBorderWidth: '1',
-      tooltipExtraCss: 'border-radius: 10px; padding: 4px 16px;',
-    },
-  },
+      tooltipExtraCss: 'border-radius: 10px; padding: 4px 16px;'
+    }
+  }
 } as NbJSThemeOptions;

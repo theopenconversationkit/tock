@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
-import {StateService} from "../core-nlp/state.service";
-import {UserRole} from "../model/auth";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { StateService } from '../core-nlp/state.service';
+import { UserRole } from '../model/auth';
 
 @Component({
   selector: 'tock-configuration-tabs',
@@ -52,14 +52,13 @@ export class ConfigurationTabsComponent implements OnInit {
 
   constructor(private router: Router, private state: StateService) {
     if (!state.hasRole(UserRole.technicalAdmin)) {
-      this.tabs = this.tabs.filter(t => t.route !== 'users/logs')
+      this.tabs = this.tabs.filter((t) => t.route !== 'users/logs');
     }
   }
 
   ngOnInit() {
-    if (this.router.routerState.snapshot.url.endsWith("/configuration")) {
-      this.router.navigateByUrl("/configuration/nlp");
+    if (this.router.routerState.snapshot.url.endsWith('/configuration')) {
+      this.router.navigateByUrl('/configuration/nlp');
     }
   }
-
 }

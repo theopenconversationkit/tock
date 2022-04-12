@@ -14,24 +14,40 @@
   ~ limitations under the License.
   -->
 
-<nb-card [nbSpinner]="loadingApplicationsFeatures" nbSpinnerStatus="primary">
-  <nb-card-header style="display: flex; position: relative;">
+<nb-card
+  [nbSpinner]="loadingApplicationsFeatures"
+  nbSpinnerStatus="primary"
+>
+  <nb-card-header style="display: flex; position: relative">
     <span nbTooltip="Enabling/Disabling features">Features</span>
     <tock-info-button message="Rules used to enable/disable features."></tock-info-button>
-    <nb-actions size="small" style="cursor: pointer;">
-      <nb-action class="control-item" nbTooltip="Refresh" (click)="refresh()">
+    <nb-actions
+      size="small"
+      style="cursor: pointer"
+    >
+      <nb-action
+        class="control-item"
+        nbTooltip="Refresh"
+        (click)="refresh()"
+      >
         <i class="material-icons tock-toolbar-menu">refresh</i>
       </nb-action>
     </nb-actions>
   </nb-card-header>
   <nb-card-body>
-    <tock-application-features-table [features]="tockFeatures" title="Tock Features" tockCategory="true"
-                                     (onRefresh)="refresh()"
-                                     [botApplicationConfigurationId]="botApplicationConfigurationId"></tock-application-features-table>
+    <tock-application-features-table
+      [features]="tockFeatures"
+      title="Tock Features"
+      tockCategory="true"
+      (onRefresh)="refresh()"
+      [botApplicationConfigurationId]="botApplicationConfigurationId"
+    ></tock-application-features-table>
 
-    <tock-application-features-table [features]="botFeatures" title="Application Features"
-                                     (onRefresh)="refresh()"
-                                     [botApplicationConfigurationId]="botApplicationConfigurationId"></tock-application-features-table>
-
+    <tock-application-features-table
+      [features]="botFeatures"
+      title="Application Features"
+      (onRefresh)="refresh()"
+      [botApplicationConfigurationId]="botApplicationConfigurationId"
+    ></tock-application-features-table>
   </nb-card-body>
 </nb-card>

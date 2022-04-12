@@ -13,7 +13,10 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<nb-card *ngIf="dialog" class="dialog">
+<nb-card
+  *ngIf="dialog"
+  class="dialog"
+>
   <nb-card-body>
     <div *ngIf="dialog.actions.length === 0">No dialog</div>
     <div *ngIf="dialog.actions.length !== 0">
@@ -22,9 +25,15 @@
         <nb-card-body>
           <nb-actions size="small">
             <nb-action>
-              {{dialog.actions[0].date | amDateFormat: 'YYYY-MM-DD HH:mm:ss'}}
+              {{ dialog.actions[0].date | amDateFormat: 'YYYY-MM-DD HH:mm:ss' }}
             </nb-action>
-            <nb-action class="control-item" nbTooltip="Deobfuscate the dialog" *ngIf="canReveal()" (click)="reveal()" style="cursor: pointer;">
+            <nb-action
+              class="control-item"
+              nbTooltip="Deobfuscate the dialog"
+              *ngIf="canReveal()"
+              (click)="reveal()"
+              style="cursor: pointer"
+            >
               <i class="material-icons">visibility</i>
             </nb-action>
           </nb-actions>
@@ -32,24 +41,37 @@
       </nb-card>
       <table>
         <tr *ngFor="let action of dialog.actions">
-          <td style="min-width:200px;text-align: left">
-            <span class="userAction" *ngIf="!action.isBot()"
-                  [nbTooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
-            <img *ngIf="action.connectorType"
-                 src="{{userPicture? userPicture : action.connectorType.iconUrl()}}"
-                 class="connector"/>
-            <img *ngIf="action.test"
-                 src="{{baseHref}}assets/images/test_action.svg"
-                 class="testAction"
-                 nbTooltip="Test action"/>
-            <tock-bot-message [message]="action.message" [user]="true"></tock-bot-message>
-          </span>
+          <td style="min-width: 200px; text-align: left">
+            <span
+              class="userAction"
+              *ngIf="!action.isBot()"
+              [nbTooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'"
+            >
+              <img
+                *ngIf="action.connectorType"
+                src="{{ userPicture ? userPicture : action.connectorType.iconUrl() }}"
+                class="connector"
+              />
+              <img
+                *ngIf="action.test"
+                src="{{ baseHref }}assets/images/test_action.svg"
+                class="testAction"
+                nbTooltip="Test action"
+              />
+              <tock-bot-message
+                [message]="action.message"
+                [user]="true"
+              ></tock-bot-message>
+            </span>
           </td>
           <td style="text-align: right">
-            <span class="botAction" *ngIf="action.isBot()"
-                  [nbTooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
-            <tock-bot-message [message]="action.message"></tock-bot-message>
-          </span>
+            <span
+              class="botAction"
+              *ngIf="action.isBot()"
+              [nbTooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'"
+            >
+              <tock-bot-message [message]="action.message"></tock-bot-message>
+            </span>
           </td>
         </tr>
       </table>

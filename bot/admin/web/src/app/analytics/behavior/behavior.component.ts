@@ -33,7 +33,6 @@ import { UserFilter } from '../users/users.component';
   styleUrls: ['./behavior.component.css']
 })
 export class BehaviorComponent implements AfterViewInit {
-
   startDate: Date;
   endDate: Date;
   selectedConnectorId: string;
@@ -64,13 +63,14 @@ export class BehaviorComponent implements AfterViewInit {
   configurations: BotApplicationConfiguration[];
   userPreferences: UserAnalyticsPreferences;
 
-  constructor(private state: StateService,
-              private analytics: AnalyticsService,
-              private botConfiguration: BotConfigurationService) {
-    this.botConfiguration.configurations.subscribe(configs => {
-        this.configurations = configs;
-      }
-    )
+  constructor(
+    private state: StateService,
+    private analytics: AnalyticsService,
+    private botConfiguration: BotConfigurationService
+  ) {
+    this.botConfiguration.configurations.subscribe((configs) => {
+      this.configurations = configs;
+    });
     this.userPreferences = this.analytics.getUserPreferences();
   }
 
@@ -92,48 +92,48 @@ export class BehaviorComponent implements AfterViewInit {
   getConnectorColor(connector: string): string {
     let color;
     switch (connector) {
-      case "messenger": {
-        color = "#0084ff";
+      case 'messenger': {
+        color = '#0084ff';
         break;
       }
-      case "ga": {
-        color = "#fabc05";
+      case 'ga': {
+        color = '#fabc05';
         break;
       }
-      case "alexa": {
-        color = "#3dc3ef";
+      case 'alexa': {
+        color = '#3dc3ef';
         break;
       }
-      case "slack": {
-        color = "#e01f5c";
+      case 'slack': {
+        color = '#e01f5c';
         break;
       }
-      case "rocket": {
-        color = "#dc2727";
+      case 'rocket': {
+        color = '#dc2727';
         break;
       }
-      case "twitter": {
-        color = "#1ca3f3";
+      case 'twitter': {
+        color = '#1ca3f3';
         break;
       }
-      case "whatsapp": {
-        color = "#41c352";
+      case 'whatsapp': {
+        color = '#41c352';
         break;
       }
-      case "teams": {
-        color = "#5d67cf";
+      case 'teams': {
+        color = '#5d67cf';
         break;
       }
-      case "businesschat": {
-        color = "#58e951";
+      case 'businesschat': {
+        color = '#58e951';
         break;
       }
-      case "web": {
-        color = "#878f9c";
+      case 'web': {
+        color = '#878f9c';
         break;
       }
       default: {
-        color = "#f3745d";
+        color = '#f3745d';
         break;
       }
     }
@@ -141,31 +141,30 @@ export class BehaviorComponent implements AfterViewInit {
   }
 
   getFileName(): string {
-    let fileName = "Export-" + this.startDate.toLocaleDateString();
+    let fileName = 'Export-' + this.startDate.toLocaleDateString();
     if (this.endDate != null) {
-      fileName += "-" + this.endDate.toLocaleDateString();
+      fileName += '-' + this.endDate.toLocaleDateString();
     }
-    fileName += ".pdf";
+    fileName += '.pdf';
     return fileName;
   }
 
   onPdfAction() {
     const options = {
       filename: this.getFileName(),
-      image: {type: 'jpeg ', quality: 0.95},
+      image: { type: 'jpeg ', quality: 0.95 },
       html2canvas: {},
-      jsPDF: {orientation: 'landscape'}
+      jsPDF: { orientation: 'landscape' }
     };
     const content: Element = document.getElementById('element-id');
-    html2pdf()
-      .from(content)
-      .set(options)
-      .save()
+    html2pdf().from(content).set(options).save();
   }
 
   getConnector(connectorId: string): ConnectorType {
-    let connectors = this.configurations.filter(config => config.connectorType.id === connectorId).map(config => config.connectorType)
-    return connectors && connectors.length > 0 ? connectors[0] : null
+    let connectors = this.configurations
+      .filter((config) => config.connectorType.id === connectorId)
+      .map((config) => config.connectorType);
+    return connectors && connectors.length > 0 ? connectors[0] : null;
   }
 
   private reload(force?: boolean) {
@@ -177,91 +176,87 @@ export class BehaviorComponent implements AfterViewInit {
   }
 
   private buildMessagesByStoryCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByStory) return;
+    if (!this.userPreferences.graphs.behavior.messagesByStory) return;
     this.messagesByStoryLoading = true;
-    this.analytics.messagesAnalyticsByStory(this.buildMessagesSearchQuery()).subscribe(
-      result => {
-        this.messagesByStoryData = result;
-        this.messagesByStoryLoading = false;
-      }
-    )
+    this.analytics.messagesAnalyticsByStory(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByStoryData = result;
+      this.messagesByStoryLoading = false;
+    });
   }
 
   private buildMessagesByStoryTypeCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByStoryType) return;
+    if (!this.userPreferences.graphs.behavior.messagesByStoryType) return;
     this.messagesByStoryTypeLoading = true;
-    this.analytics.messagesAnalyticsByStoryType(this.buildMessagesSearchQuery()).subscribe(
-      result => {
+    this.analytics
+      .messagesAnalyticsByStoryType(this.buildMessagesSearchQuery())
+      .subscribe((result) => {
         this.messagesByStoryTypeData = result;
         this.messagesByStoryTypeLoading = false;
-      }
-    )
+      });
   }
 
   private buildMessagesByStoryCategoryCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByStoryCategory) return;
+    if (!this.userPreferences.graphs.behavior.messagesByStoryCategory) return;
     this.messagesByStoryCategoryLoading = true;
-    this.analytics.messagesAnalyticsByStoryCategory(this.buildMessagesSearchQuery()).subscribe(
-      result => {
+    this.analytics
+      .messagesAnalyticsByStoryCategory(this.buildMessagesSearchQuery())
+      .subscribe((result) => {
         this.messagesByStoryCategoryData = result;
         this.messagesByStoryCategoryLoading = false;
-      }
-    )
+      });
   }
 
   private buildMessagesByStoryLocaleCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByLocale) return;
+    if (!this.userPreferences.graphs.behavior.messagesByLocale) return;
     this.messagesByStoryLocaleLoading = true;
-    this.analytics.messagesAnalyticsByStoryLocale(this.buildMessagesSearchQuery()).subscribe(
-      result => {
+    this.analytics
+      .messagesAnalyticsByStoryLocale(this.buildMessagesSearchQuery())
+      .subscribe((result) => {
         this.messagesByStoryLocaleData = result;
         this.messagesByStoryLocaleLoading = false;
-      }
-    )
+      });
   }
 
   private buildMessagesByIntentCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByIntent) return;
+    if (!this.userPreferences.graphs.behavior.messagesByIntent) return;
     this.messagesByIntentLoading = true;
-    this.analytics.messagesAnalyticsByIntent(this.buildMessagesSearchQuery()).subscribe(
-      result => {
+    this.analytics
+      .messagesAnalyticsByIntent(this.buildMessagesSearchQuery())
+      .subscribe((result) => {
         this.messagesByIntentData = result;
         this.messagesByIntentLoading = false;
-      }
-    )
+      });
   }
 
   private buildMessagesByDayOfWeekCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByDayOfWeek) return;
+    if (!this.userPreferences.graphs.behavior.messagesByDayOfWeek) return;
     this.messagesByDayOfWeekLoading = true;
-    this.analytics.messagesAnalyticsByDayOfWeek(this.buildMessagesSearchQuery()).subscribe(
-      result => {
+    this.analytics
+      .messagesAnalyticsByDayOfWeek(this.buildMessagesSearchQuery())
+      .subscribe((result) => {
         this.messagesByDayOfWeekData = result;
         this.messagesByDayOfWeekLoading = false;
-      }
-    )
+      });
   }
 
   private buildMessagesByHourCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByHourOfDay) return;
+    if (!this.userPreferences.graphs.behavior.messagesByHourOfDay) return;
     this.messagesByHourLoading = true;
-    this.analytics.messagesAnalyticsByHour(this.buildMessagesSearchQuery()).subscribe(
-      result => {
-        this.messagesByHourData = result;
-        this.messagesByHourLoading = false;
-      }
-    )
+    this.analytics.messagesAnalyticsByHour(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByHourData = result;
+      this.messagesByHourLoading = false;
+    });
   }
 
   private buildMessagesByActionTypeCharts() {
-    if(!this.userPreferences.graphs.behavior.messagesByActionType) return;
+    if (!this.userPreferences.graphs.behavior.messagesByActionType) return;
     this.messagesByActionTypeLoading = true;
-    this.analytics.messagesAnalyticsByActionType(this.buildMessagesSearchQuery()).subscribe(
-      result => {
+    this.analytics
+      .messagesAnalyticsByActionType(this.buildMessagesSearchQuery())
+      .subscribe((result) => {
         this.messagesByActionTypeData = result;
         this.messagesByActionTypeLoading = false;
-      }
-    )
+      });
   }
 
   private buildMessagesSearchQuery(): DialogFlowRequest {
@@ -282,7 +277,11 @@ export class BehaviorComponent implements AfterViewInit {
   datesChanged(dates: [Date, Date]) {
     this.startDate = dates[0];
     this.endDate = dates[1];
-    this.state.dateRange = {start: dates[0], end: dates[1], rangeInDays: this.state.dateRange.rangeInDays}
+    this.state.dateRange = {
+      start: dates[0],
+      end: dates[1],
+      rangeInDays: this.state.dateRange.rangeInDays
+    };
     this.reload(true);
   }
 
@@ -293,10 +292,10 @@ export class BehaviorComponent implements AfterViewInit {
   }
 
   collapsedChange(event?: boolean) {
-    setTimeout(_ => this.reload(false));
+    setTimeout((_) => this.reload(false));
   }
 
   waitAndRefresh() {
-    setTimeout(_ => this.reload(true));
+    setTimeout((_) => this.reload(true));
   }
 }

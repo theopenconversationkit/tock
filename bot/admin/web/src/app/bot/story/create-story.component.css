@@ -15,14 +15,14 @@
  */
 
 .sentence {
-  width:80%;
+  width: 80%;
   margin-left: auto;
   margin-right: auto;
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 .sentence-input {
-  width:80%;
+  width: 80%;
   font-size: x-large;
   margin-right: 10px;
 }
@@ -37,15 +37,15 @@
 
 .sentence-intent {
   font-size: small;
-  width:60%;
+  width: 60%;
 }
 
 .text-area-container {
-  min-width:800px;
+  min-width: 800px;
 }
 
 .text-area {
-  padding:5px 5px 5px 5px;
+  padding: 5px 5px 5px 5px;
   border: inset;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .select-intent {
-  width:80%;
+  width: 80%;
 }
 
 .answer-type {

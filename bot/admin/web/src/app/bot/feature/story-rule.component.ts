@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {BotService} from '../bot-service';
-import {StateService} from '../../core-nlp/state.service';
-import {RuleType, ruleTypeValues, StoryDefinitionConfiguration, StoryFeature, StorySearchQuery} from '../model/story';
-import {flatMap} from '../../model/commons';
-import {BotConfigurationService} from '../../core/bot-configuration.service';
+import { Component, OnInit } from '@angular/core';
+import { BotService } from '../bot-service';
+import { StateService } from '../../core-nlp/state.service';
+import {
+  RuleType,
+  ruleTypeValues,
+  StoryDefinitionConfiguration,
+  StoryFeature,
+  StorySearchQuery
+} from '../model/story';
+import { flatMap } from '../../model/commons';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
 
 @Component({
   selector: 'tock-story-rule',
@@ -27,7 +33,6 @@ import {BotConfigurationService} from '../../core/bot-configuration.service';
   styleUrls: ['./story-rule.component.css']
 })
 export class StoryRuleComponent implements OnInit {
-
   private currentApplicationSubscription: any;
   create = false;
   loadingStoryRules = false;
@@ -41,26 +46,29 @@ export class StoryRuleComponent implements OnInit {
   ruleTypes: RuleType[] = ruleTypeValues();
   selectedRuleType: RuleType = RuleType.Activation;
   rulesPluralMapping = {
-    'rule': {
+    rule: {
       '=0': '0 rules',
       '=1': '1 rule',
-      'other': '# rules'
+      other: '# rules'
     }
   };
 
-  constructor(private state: StateService,
-              private botService: BotService,
-              private configurationService: BotConfigurationService) {
-  }
+  constructor(
+    private state: StateService,
+    private botService: BotService,
+    private configurationService: BotConfigurationService
+  ) {}
 
   ngOnInit(): void {
     this.initNewFeature();
-    this.currentApplicationSubscription = this.state.currentApplicationEmitter.subscribe(a => this.refresh());
+    this.currentApplicationSubscription = this.state.currentApplicationEmitter.subscribe((a) =>
+      this.refresh()
+    );
     this.refresh();
   }
 
   updateStoriesToDisplay() {
-    this.storiesToDisplay = this.isEndingRule() ? this.configuredStories : this.stories
+    this.storiesToDisplay = this.isEndingRule() ? this.configuredStories : this.stories;
   }
 
   prepareCreate() {
@@ -95,17 +103,23 @@ export class StoryRuleComponent implements OnInit {
     const newFeature = this.feature;
     const s = newFeature.story;
     s.features.push(newFeature);
-    this.botService.saveStory(s).subscribe(_ => {
-      newFeature.conf = newFeature.botApplicationConfigurationId ?
-        this.configurationService.findApplicationConfigurationById(newFeature.botApplicationConfigurationId)
+    this.botService.saveStory(s).subscribe((_) => {
+      newFeature.conf = newFeature.botApplicationConfigurationId
+        ? this.configurationService.findApplicationConfigurationById(
+            newFeature.botApplicationConfigurationId
+          )
         : null;
       switch (newFeature.getRuleType()) {
         case RuleType.Redirection:
-          newFeature.switchToStory = newFeature.switchToStoryId ? this.stories.find(st => st.storyId === newFeature.switchToStoryId) : null;
+          newFeature.switchToStory = newFeature.switchToStoryId
+            ? this.stories.find((st) => st.storyId === newFeature.switchToStoryId)
+            : null;
           this.redirectedFeatures.push(newFeature);
           break;
         case RuleType.Ending:
-          newFeature.endWithStory = newFeature.endWithStoryId ? this.stories.find(st => st.storyId === newFeature.endWithStoryId) : null;
+          newFeature.endWithStory = newFeature.endWithStoryId
+            ? this.stories.find((st) => st.storyId === newFeature.endWithStoryId)
+            : null;
           this.endingFeatures.push(newFeature);
           break;
         case RuleType.Activation:
@@ -119,36 +133,47 @@ export class StoryRuleComponent implements OnInit {
   refresh() {
     if (this.state.currentApplication) {
       this.loadingStoryRules = true;
-      this.botService.getStories(
-        new StorySearchQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          0,
-          10000
-        )).subscribe(result => {
-        this.stories = result;
-        this.configuredStories = result.filter(story => story.isConfiguredAnswer());
-        this.updateStoriesToDisplay()
-        if (result.length !== 0) {
-          this.feature.story = result[0];
-        }
-        const features = flatMap(result, story => {
-          story.features.forEach(f => {
-            f.story = story;
-            f.conf = f.botApplicationConfigurationId ?
-              this.configurationService.findApplicationConfigurationById(f.botApplicationConfigurationId)
-              : null;
-            f.switchToStory = f.switchToStoryId ? result.find(st => st.storyId === f.switchToStoryId) : null;
-            f.endWithStory = f.endWithStoryId ? result.find(st => st.storyId === f.endWithStoryId) : null;
+      this.botService
+        .getStories(
+          new StorySearchQuery(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            0,
+            10000
+          )
+        )
+        .subscribe((result) => {
+          this.stories = result;
+          this.configuredStories = result.filter((story) => story.isConfiguredAnswer());
+          this.updateStoriesToDisplay();
+          if (result.length !== 0) {
+            this.feature.story = result[0];
+          }
+          const features = flatMap(result, (story) => {
+            story.features.forEach((f) => {
+              f.story = story;
+              f.conf = f.botApplicationConfigurationId
+                ? this.configurationService.findApplicationConfigurationById(
+                    f.botApplicationConfigurationId
+                  )
+                : null;
+              f.switchToStory = f.switchToStoryId
+                ? result.find((st) => st.storyId === f.switchToStoryId)
+                : null;
+              f.endWithStory = f.endWithStoryId
+                ? result.find((st) => st.storyId === f.endWithStoryId)
+                : null;
+            });
+            return story.features;
           });
-          return story.features;
+          this.disabledFeatures = features.filter(
+            (feat) => !feat.switchToStoryId && !feat.endWithStoryId
+          );
+          this.redirectedFeatures = features.filter((feat) => feat.switchToStoryId);
+          this.endingFeatures = features.filter((feat) => feat.endWithStoryId);
+          this.loadingStoryRules = false;
         });
-        this.disabledFeatures = features.filter(feat => !feat.switchToStoryId && !feat.endWithStoryId);
-        this.redirectedFeatures = features.filter(feat => feat.switchToStoryId);
-        this.endingFeatures = features.filter(feat => feat.endWithStoryId);
-        this.loadingStoryRules = false;
-      });
     }
   }
 
@@ -180,7 +205,7 @@ export class StoryRuleComponent implements OnInit {
 
   changeTypeTo(type: RuleType) {
     switch (type) {
-      case RuleType.Ending : {
+      case RuleType.Ending: {
         this.feature.switchToStory = null;
         this.feature.switchToStoryId = null;
         this.feature.endWithStory = null;
@@ -190,7 +215,7 @@ export class StoryRuleComponent implements OnInit {
         }
         break;
       }
-      case RuleType.Redirection : {
+      case RuleType.Redirection: {
         this.feature.switchToStory = null;
         this.feature.switchToStoryId = null;
         break;
@@ -203,6 +228,6 @@ export class StoryRuleComponent implements OnInit {
       }
     }
 
-    this.updateStoriesToDisplay()
+    this.updateStoriesToDisplay();
   }
 }

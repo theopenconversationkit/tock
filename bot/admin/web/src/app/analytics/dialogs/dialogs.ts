@@ -13,48 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {PaginatedQuery} from "../../model/commons";
-import {DialogReport, PlayerId} from "../../shared/model/dialog-data";
-import {PaginatedResult} from "../../model/nlp";
-import {ConnectorType} from "../../core/model/configuration";
+import { PaginatedQuery } from '../../model/commons';
+import { DialogReport, PlayerId } from '../../shared/model/dialog-data';
+import { PaginatedResult } from '../../model/nlp';
+import { ConnectorType } from '../../core/model/configuration';
 
 export class DialogReportQuery extends PaginatedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public start: number,
-              public size: number,
-              public exactMatch:boolean,
-              public playerId?: PlayerId,
-              public dialogId?: string,
-              public text?: string,
-              public intentName?:string,
-              public connectorType?:ConnectorType,
-              public displayTests?:boolean) {
-    super(namespace, applicationName, language, start, size)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public start: number,
+    public size: number,
+    public exactMatch: boolean,
+    public playerId?: PlayerId,
+    public dialogId?: string,
+    public text?: string,
+    public intentName?: string,
+    public connectorType?: ConnectorType,
+    public displayTests?: boolean
+  ) {
+    super(namespace, applicationName, language, start, size);
   }
 }
 
 export class DialogReportQueryResult implements PaginatedResult<DialogReport> {
-
-  constructor(public total: number,
-              public start: number,
-              public end: number,
-              public rows: DialogReport[]) {
-  }
+  constructor(
+    public total: number,
+    public start: number,
+    public end: number,
+    public rows: DialogReport[]
+  ) {}
 
   static fromJSON(json?: any): DialogReportQueryResult {
     const value = Object.create(DialogReportQueryResult.prototype);
 
     const result = Object.assign(value, json, {
-      rows: DialogReport.fromJSONArray(json.dialogs),
+      rows: DialogReport.fromJSONArray(json.dialogs)
     });
 
     return result;
   }
 }
-
-
-
-

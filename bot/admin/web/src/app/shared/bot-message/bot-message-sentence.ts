@@ -14,36 +14,47 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, Output} from "@angular/core";
-import {BotMessage, Sentence} from "../model/dialog-data";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { BotMessage, Sentence } from '../model/dialog-data';
 
 @Component({
   selector: 'tock-bot-message-sentence',
-  template: `
-  <div *ngIf="sentence.text" class="text">
-    <img *ngIf="sentence.userInterface"
-         src="/assets/images/{{sentence.userInterface}}.svg"
-         class="userInterface"
-         nbTooltip="{{sentence.userInterface}}"/>
-     {{sentence.text}}
-  </div>
-  <div *ngIf="!sentence.text">
-    <div *ngIf="sentence.messages.length === 1">
-      <tock-sentence-element [element]="sentence.messages[0]" [user]="user" (sendMessage)="reply($event)"></tock-sentence-element>
+  template: ` <div
+      *ngIf="sentence.text"
+      class="text"
+    >
+      <img
+        *ngIf="sentence.userInterface"
+        src="/assets/images/{{ sentence.userInterface }}.svg"
+        class="userInterface"
+        nbTooltip="{{ sentence.userInterface }}"
+      />
+      {{ sentence.text }}
     </div>
-    <div *ngIf="sentence.messages.length > 1">
-      <ul>
-        <li *ngFor="let e of sentence.messages">
-          ({{e.connectorType.id}})
-          <tock-sentence-element [element]="e" [user]="user" (sendMessage)="reply($event)"></tock-sentence-element>
-        </li>
-      </ul>
-    </div>
-  </div>`,
+    <div *ngIf="!sentence.text">
+      <div *ngIf="sentence.messages.length === 1">
+        <tock-sentence-element
+          [element]="sentence.messages[0]"
+          [user]="user"
+          (sendMessage)="reply($event)"
+        ></tock-sentence-element>
+      </div>
+      <div *ngIf="sentence.messages.length > 1">
+        <ul>
+          <li *ngFor="let e of sentence.messages">
+            ({{ e.connectorType.id }})
+            <tock-sentence-element
+              [element]="e"
+              [user]="user"
+              (sendMessage)="reply($event)"
+            ></tock-sentence-element>
+          </li>
+        </ul>
+      </div>
+    </div>`,
   styleUrls: ['./bot-message-sentence.css']
 })
 export class BotMessageSentenceComponent {
-
   @Input()
   sentence: Sentence;
 

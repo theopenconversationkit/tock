@@ -19,12 +19,20 @@
     <tock-bot-message-attachment [attachment]="message"></tock-bot-message-attachment>
   </div>
   <div *ngIf="message.isChoice()">
-    <tock-bot-message-choice [choice]="message" [user]="user" (sendMessage)="sendReply($event)"></tock-bot-message-choice>
+    <tock-bot-message-choice
+      [choice]="message"
+      [user]="user"
+      (sendMessage)="sendReply($event)"
+    ></tock-bot-message-choice>
   </div>
   <div *ngIf="message.isLocation()">
     <tock-bot-message-location [location]="message"></tock-bot-message-location>
   </div>
   <div *ngIf="message.isSentence()">
-    <tock-bot-message-sentence [sentence]="message" [user]="user" (sendMessage)="sendReply($event)"></tock-bot-message-sentence>
+    <tock-bot-message-sentence
+      [sentence]="message"
+      [user]="user"
+      (sendMessage)="sendReply($event)"
+    ></tock-bot-message-sentence>
   </div>
 </div>

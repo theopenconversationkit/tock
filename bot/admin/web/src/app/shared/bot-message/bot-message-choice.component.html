@@ -14,11 +14,20 @@
   ~ limitations under the License.
   -->
 
-<span *ngIf="user" matTooltip="{{parameters()}}">[Choice] {{choice.intentName}}</span>
+<span
+  *ngIf="user"
+  matTooltip="{{ parameters() }}"
+  >[Choice] {{ choice.intentName }}</span
+>
 <span *ngIf="!user">
-        <button (click)="click()" mat-button color="{{url() ? 'warn' : 'primary'}}" class="choice"
-                [matTooltip]="title()? title() + ' - ' + parameters() : parameters()">
-          <span *ngIf="title()">{{title()}}</span>
-          <span *ngIf="!title()">{{choice.intentName}}</span>
-        </button>
+  <button
+    (click)="click()"
+    mat-button
+    color="{{ url() ? 'warn' : 'primary' }}"
+    class="choice"
+    [matTooltip]="title() ? title() + ' - ' + parameters() : parameters()"
+  >
+    <span *ngIf="title()">{{ title() }}</span>
+    <span *ngIf="!title()">{{ choice.intentName }}</span>
+  </button>
 </span>

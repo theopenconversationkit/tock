@@ -15,100 +15,246 @@
   -->
 
 <nb-card>
-  <nb-card-header>User preferences for analytics
-    <button nbButton size="large" shape="round" ghost (click)="save()" style="float: right">
-      <nb-icon icon="save" nbTooltip="Save"></nb-icon>
+  <nb-card-header
+    >User preferences for analytics
+    <button
+      nbButton
+      size="large"
+      shape="round"
+      ghost
+      (click)="save()"
+      style="float: right"
+    >
+      <nb-icon
+        icon="save"
+        nbTooltip="Save"
+      ></nb-icon>
     </button>
   </nb-card-header>
-  <nb-card-body style="padding: 0;">
+  <nb-card-body style="padding: 0">
     <div style="display: flex">
-      <nb-card status="info" style="margin-bottom: 0;width: 50%;">
+      <nb-card
+        status="info"
+        style="margin-bottom: 0; width: 50%"
+      >
         <nb-card-header>Activity graphs available</nb-card-header>
         <nb-card-body>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesAll" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.activity.messagesAll"
+            style="width: 100%"
+          >
             All messages
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.users" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.activity.users"
+            style="width: 100%"
+          >
             Users
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of users"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of users"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByDays" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.activity.messagesByDays"
+            style="width: 100%"
+          >
             Messages by days in calendar
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by days"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by days"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByStory" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.activity.messagesByStory"
+            style="width: 100%"
+          >
             Messages by story
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by story (does not include sub-intents of the story)"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by story (does not include sub-intents of the story)"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByIntent" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.activity.messagesByIntent"
+            style="width: 100%"
+          >
             Messages by intent
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by intent"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by intent"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByConfiguration" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.activity.messagesByConfiguration"
+            style="width: 100%"
+          >
             Messages by configuration
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by intent by configuration"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by intent by configuration"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.activity.messagesByConnector" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.activity.messagesByConnector"
+            style="width: 100%"
+          >
             Messages by connector type
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by the type of connectors"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by the type of connectors"
+            ></nb-icon>
           </nb-toggle>
         </nb-card-body>
       </nb-card>
-      <nb-card status="info" style="margin-bottom: 0;width: 50%;">
+      <nb-card
+        status="info"
+        style="margin-bottom: 0; width: 50%"
+      >
         <nb-card-header>Behavior graphs available</nb-card-header>
         <nb-card-body>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByStory" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByStory"
+            style="width: 100%"
+          >
             Messages by Story
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by story (does not include sub-intents of the story)"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by story (does not include sub-intents of the story)"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByIntent" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByIntent"
+            style="width: 100%"
+          >
             Messages by intent
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by intent"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by intent"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByDayOfWeek" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByDayOfWeek"
+            style="width: 100%"
+          >
             Messages by day of week
-            <nb-icon icon="info-outline" nbTooltip="Displays the messages by days of the week"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the messages by days of the week"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByHourOfDay" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByHourOfDay"
+            style="width: 100%"
+          >
             Messages by hour of day
-            <nb-icon icon="info-outline" nbTooltip="Displays the messages of the users by hour of the day"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the messages of the users by hour of the day"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByActionType" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByActionType"
+            style="width: 100%"
+          >
             Messages by action type
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by action type"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by action type"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByStoryCategory" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByStoryCategory"
+            style="width: 100%"
+          >
             Messages by story category
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by category"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by category"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByStoryType" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByStoryType"
+            style="width: 100%"
+          >
             Messages by story type
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by story type"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by story type"
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="basic" [(ngModel)]="preferences.graphs.behavior.messagesByLocale" style="width: 100%;">
+          <nb-toggle
+            status="basic"
+            [(ngModel)]="preferences.graphs.behavior.messagesByLocale"
+            style="width: 100%"
+          >
             Messages by locale
-            <nb-icon icon="info-outline" nbTooltip="Displays the number of messages of the users by locale"></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Displays the number of messages of the users by locale"
+            ></nb-icon>
           </nb-toggle>
         </nb-card-body>
       </nb-card>
     </div>
-    <nb-card status="info" style="margin-bottom: 0;">
+    <nb-card
+      status="info"
+      style="margin-bottom: 0"
+    >
       <nb-card-header>Chart options</nb-card-header>
       <nb-card-body>
         <div>
-          <label style="font-weight: bold;">Line Chart</label><br>
-          <nb-toggle status="success" [(ngModel)]="preferences.lineConfig.curvedLines" style="width: 50%;">
+          <label style="font-weight: bold">Line Chart</label><br />
+          <nb-toggle
+            status="success"
+            [(ngModel)]="preferences.lineConfig.curvedLines"
+            style="width: 50%"
+          >
             Curved Lines
-            <nb-icon icon="info-outline" nbTooltip="The angles of the line will be smoothed instead of straight lines without curve."></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="The angles of the line will be smoothed instead of straight lines without curve."
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="success" [(ngModel)]="preferences.lineConfig.stacked" style="width: 50%;">
+          <nb-toggle
+            status="success"
+            [(ngModel)]="preferences.lineConfig.stacked"
+            style="width: 50%"
+          >
             Stacked Area
-            <nb-icon icon="info-outline" nbTooltip="Stacks elements for all series at each domain value."></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Stacks elements for all series at each domain value."
+            ></nb-icon>
           </nb-toggle>
-          <nb-toggle status="success" [(ngModel)]="preferences.lineConfig.focusTarget" style="width: 50%;">
+          <nb-toggle
+            status="success"
+            [(ngModel)]="preferences.lineConfig.focusTarget"
+            style="width: 50%"
+          >
             Data point focus
-            <nb-icon icon="info-outline" nbTooltip="Focus on a single data point instead of grouping all data points along the major axis."></nb-icon>
+            <nb-icon
+              icon="info-outline"
+              nbTooltip="Focus on a single data point instead of grouping all data points along the major axis."
+            ></nb-icon>
           </nb-toggle>
         </div>
       </nb-card-body>

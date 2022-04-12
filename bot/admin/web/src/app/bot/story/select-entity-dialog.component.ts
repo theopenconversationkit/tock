@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {EntityType, IntentsCategory} from "../../model/nlp";
-import {StateService} from "../../core-nlp/state.service";
-import {IntentName} from "../model/story";
-import {NlpService} from "../../nlp-tabs/nlp.service";
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { EntityType, IntentsCategory } from '../../model/nlp';
+import { StateService } from '../../core-nlp/state.service';
+import { IntentName } from '../model/story';
+import { NlpService } from '../../nlp-tabs/nlp.service';
 
 @Component({
   selector: 'select-entity-dialog',
@@ -27,12 +27,11 @@ import {NlpService} from "../../nlp-tabs/nlp.service";
   styleUrls: ['./select-entity-dialog.component.css']
 })
 export class SelectEntityDialogComponent implements OnInit {
-
   generate: boolean;
   entities: EntityType[] = [];
   selectedEntity: EntityType;
   role: string;
-  intent: IntentName = new IntentName("");
+  intent: IntentName = new IntentName('');
   intentCategories: IntentsCategory[] = [];
   currentIntentCategories: IntentsCategory[] = [];
   currentEditedIntent: string;
@@ -54,31 +53,32 @@ export class SelectEntityDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.state.entityTypesSortedByName().subscribe(e => {
-      this.entities = this.generate ? e.filter(entity => entity.dictionary) : e;
+    this.state.entityTypesSortedByName().subscribe((e) => {
+      this.entities = this.generate ? e.filter((entity) => entity.dictionary) : e;
       if (this.alreadySelectedEntity) {
-        this.selectedEntity = e.find(en => en.name == this.alreadySelectedEntity);
+        this.selectedEntity = e.find((en) => en.name == this.alreadySelectedEntity);
       }
       this.calculateEntityValues(this.selectedEntity);
     });
-    this.state.currentIntentsCategories.subscribe(c => {
+    this.state.currentIntentsCategories.subscribe((c) => {
       this.intentCategories = c;
       this.currentIntentCategories = c;
     });
-
   }
 
   onIntentChange(name: string) {
     if (this.currentEditedIntent !== name) {
       this.currentEditedIntent = name;
       const intent = name.trim().toLowerCase();
-      let target = this.intentCategories.map(
-        c => new IntentsCategory(c.category,
-          c.intents.filter(i =>
-            i.intentLabel().toLowerCase().startsWith(intent)
-          ))
-      )
-        .filter(c => c.intents.length !== 0);
+      let target = this.intentCategories
+        .map(
+          (c) =>
+            new IntentsCategory(
+              c.category,
+              c.intents.filter((i) => i.intentLabel().toLowerCase().startsWith(intent))
+            )
+        )
+        .filter((c) => c.intents.length !== 0);
 
       this.currentIntentCategories = target;
     }
@@ -93,7 +93,7 @@ export class SelectEntityDialogComponent implements OnInit {
 
   selectEntityValue(value: string) {
     if (this.entityValue === value) {
-      this.entityValue = null
+      this.entityValue = null;
     } else {
       this.entityValue = value;
     }
@@ -101,8 +101,8 @@ export class SelectEntityDialogComponent implements OnInit {
 
   private calculateEntityValues(entityType: EntityType) {
     if (entityType && !this.generate) {
-      this.nlp.getDictionary(entityType).subscribe(dictionary => {
-        this.entityValues = dictionary.values.map(v => v.value);
+      this.nlp.getDictionary(entityType).subscribe((dictionary) => {
+        this.entityValues = dictionary.values.map((v) => v.value);
       });
     }
   }

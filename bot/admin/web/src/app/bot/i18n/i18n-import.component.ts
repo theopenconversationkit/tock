@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {NbButtonComponent, NbWindowRef} from '@nebular/theme';
-import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {DialogService} from '../../core-nlp/dialog.service';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { NbButtonComponent, NbWindowRef } from '@nebular/theme';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { DialogService } from '../../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-i18n-import-action',
@@ -25,35 +25,44 @@ import {DialogService} from '../../core-nlp/dialog.service';
   styleUrls: ['./i18n-import.component.css']
 })
 export class I18nImportComponent implements OnInit, AfterViewInit {
-
   @ViewChild('focusElement')
   focusElement: NbButtonComponent;
   loading: boolean;
   uploader: FileUploader;
   invalidSelectedFile = false;
 
-  constructor(private windowRef: NbWindowRef,
-              private dialog: DialogService) {
-  }
+  constructor(private windowRef: NbWindowRef, private dialog: DialogService) {}
 
   ngOnInit(): void {
     const refresh = this.windowRef.config.context['refresh'];
     this.uploader = new FileUploader({
       isHTML5: true
     });
-    this.uploader.onCompleteItem =
-      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        this.loading = false;
-        this.closeWindow();
-        if (status === 200) {
-          if (parseInt(response) > 0) {
-            this.dialog.notify(response + ' labels have been created or updated.', "Labels Imported", {duration: 5000, status: "success"});
-          } else {
-            this.dialog.notify('No label created or updated: file might be empty or no label is validated.', "No Label Imported", {duration: 5000, status: "warning"});
-          }
+    this.uploader.onCompleteItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      this.loading = false;
+      this.closeWindow();
+      if (status === 200) {
+        if (parseInt(response) > 0) {
+          this.dialog.notify(
+            response + ' labels have been created or updated.',
+            'Labels Imported',
+            { duration: 5000, status: 'success' }
+          );
+        } else {
+          this.dialog.notify(
+            'No label created or updated: file might be empty or no label is validated.',
+            'No Label Imported',
+            { duration: 5000, status: 'warning' }
+          );
         }
-        refresh();
-      };
+      }
+      refresh();
+    };
   }
 
   ngAfterViewInit(): void {
@@ -72,7 +81,9 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
   }
 
   private getFileType() {
-    return this.uploader.queue.every(fileItem => fileItem.file.type.toLowerCase() === 'text/csv') ? 'CSV' : 'JSON';
+    return this.uploader.queue.every((fileItem) => fileItem.file.type.toLowerCase() === 'text/csv')
+      ? 'CSV'
+      : 'JSON';
   }
 
   closeWindow(): void {
