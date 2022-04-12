@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import {saveAs} from "file-saver";
-import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from "@angular/core";
+import { saveAs } from 'file-saver';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import {
   PaginatedResult,
   SearchQuery,
@@ -23,18 +31,18 @@ import {
   SentenceStatus,
   SentencesTextQuery,
   UpdateSentencesQuery
-} from "../model/nlp";
-import {NlpService} from "../nlp-tabs/nlp.service";
-import {StateService} from "../core-nlp/state.service";
-import {ScrollComponent} from "../scroll/scroll.component";
-import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
-import {Observable} from "rxjs";
-import {MatPaginator} from "@angular/material/paginator";
-import {UserRole} from "../model/auth";
-import {SelectionModel} from "@angular/cdk/collections";
-import {DialogService} from "../core-nlp/dialog.service";
-import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
-import {NbSortDirection, NbSortRequest} from "@nebular/theme";
+} from '../model/nlp';
+import { NlpService } from '../nlp-tabs/nlp.service';
+import { StateService } from '../core-nlp/state.service';
+import { ScrollComponent } from '../scroll/scroll.component';
+import { Entry, PaginatedQuery, SearchMark } from '../model/commons';
+import { Observable } from 'rxjs';
+import { MatPaginator } from '@angular/material/paginator';
+import { UserRole } from '../model/auth';
+import { SelectionModel } from '@angular/cdk/collections';
+import { DialogService } from '../core-nlp/dialog.service';
+import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { NbSortDirection, NbSortRequest } from '@nebular/theme';
 
 interface TreeNode<T> {
   data: T;
@@ -49,7 +57,6 @@ interface TreeNode<T> {
   encapsulation: ViewEncapsulation.None
 })
 export class SentencesScrollComponent extends ScrollComponent<Sentence> implements AfterViewInit {
-
   UserRole = UserRole;
 
   @Input() filter: SentenceFilter;
@@ -71,17 +78,12 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   private sort: NbSortRequest[] = [];
 
-  constructor(state: StateService,
-              private nlp: NlpService,
-              private dialog: DialogService) {
+  constructor(state: StateService, private nlp: NlpService, private dialog: DialogService) {
     super(state);
   }
 
   protected searchMark(t: Sentence): SearchMark {
-    return new SearchMark(
-      t.text,
-      t.updateDate
-    );
+    return new SearchMark(t.text, t.updateDate);
   }
 
   private initColumns() {
@@ -90,7 +92,14 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       columns.push('status');
     }
     if (this.advancedView) {
-      columns.push('lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount');
+      columns.push(
+        'lastUpdate',
+        'intentProbability',
+        'entitiesProbability',
+        'lastUsage',
+        'usageCount',
+        'unknownCount'
+      );
     }
     this.displayedColumns = columns;
   }
@@ -102,18 +111,17 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   }
 
   toNodes(data: Sentence[]): TreeNode<Sentence>[] {
-    return Array.from(data, element => {
-        return {
-          expanded: false,
-          data: element,
-          children: []
-        };
-      }
-    );
+    return Array.from(data, (element) => {
+      return {
+        expanded: false,
+        data: element,
+        children: []
+      };
+    });
   }
 
   ngAfterViewInit(): void {
-    this.paginator.page.subscribe(e => {
+    this.paginator.page.subscribe((e) => {
       this.add = false;
       if (this.pageSize === e.pageSize) {
         this.cursor = Math.floor(e.pageIndex * e.pageSize);
@@ -143,13 +151,19 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.search,
       this.filter.intentId,
       this.filter.status,
-      !this.filter.entityType || this.filter.entityType.length === 0 ? null : this.filter.entityType,
-      !this.filter.entityRolesToInclude || this.filter.entityRolesToInclude.length === 0 ? [] : this.filter.entityRolesToInclude,
-      !this.filter.entityRolesToExclude || this.filter.entityRolesToExclude.length === 0 ? [] : this.filter.entityRolesToExclude,
+      !this.filter.entityType || this.filter.entityType.length === 0
+        ? null
+        : this.filter.entityType,
+      !this.filter.entityRolesToInclude || this.filter.entityRolesToInclude.length === 0
+        ? []
+        : this.filter.entityRolesToInclude,
+      !this.filter.entityRolesToExclude || this.filter.entityRolesToExclude.length === 0
+        ? []
+        : this.filter.entityRolesToExclude,
       this.filter.modifiedAfter,
       this.filter.modifiedBefore,
       this.tableView && this.sort.length !== 0
-        ? this.sort.map(s => new Entry<string, boolean>(s.column, s.direction === 'asc'))
+        ? this.sort.map((s) => new Entry<string, boolean>(s.column, s.direction === 'asc'))
         : null,
       this.filter.onlyToReview,
       this.filter.searchSubEntities,
@@ -157,7 +171,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.allButUser,
       this.filter.maxIntentProbability / 100,
       this.filter.minIntentProbability / 100
-    )
+    );
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
@@ -165,19 +179,21 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   }
 
   dataEquals(d1: Sentence, d2: Sentence): boolean {
-    return d1.text === d2.text
+    return d1.text === d2.text;
   }
 
   downloadSentencesDump() {
-    setTimeout(_ => {
-      this.nlp.getSentencesDump(
-        this.state.currentApplication,
-        this.toSearchQuery(this.paginatedQuery()),
-        this.state.hasRole(UserRole.technicalAdmin))
-        .subscribe(blob => {
-          saveAs(blob, this.state.currentApplication.name + "_sentences.json");
-          this.dialog.notify(`Dump provided`, "Dump");
-        })
+    setTimeout((_) => {
+      this.nlp
+        .getSentencesDump(
+          this.state.currentApplication,
+          this.toSearchQuery(this.paginatedQuery()),
+          this.state.hasRole(UserRole.technicalAdmin)
+        )
+        .subscribe((blob) => {
+          saveAs(blob, this.state.currentApplication.name + '_sentences.json');
+          this.dialog.notify(`Dump provided`, 'Dump');
+        });
     }, 1);
   }
 
@@ -198,7 +214,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     this.sort.splice(0, 0, s);
     for (let i = this.sort.length - 1; i >= 0; --i) {
       if (this.sort[i].direction === '' || (i > 0 && this.sort[i].column === s.column)) {
-        this.sort.splice(i, 1)
+        this.sort.splice(i, 1);
       }
     }
     this.data = [];
@@ -241,9 +257,9 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.nodes.forEach(row => this.selection.select(row.data));
+    this.isAllSelected()
+      ? this.selection.clear()
+      : this.nodes.forEach((row) => this.selection.select(row.data));
     this.fireSelectionChange();
   }
 
@@ -261,40 +277,41 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   onDelete() {
     let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
       context: {
-        title: "Delete Selected Sentences",
-        subtitle: "Are you sure?",
-        action: "Delete"
+        title: 'Delete Selected Sentences',
+        subtitle: 'Are you sure?',
+        action: 'Delete'
       }
     });
-    dialogRef.onClose.subscribe(result => {
-        if (result === "delete") {
-          this.update(SentenceStatus.deleted);
-        }
+    dialogRef.onClose.subscribe((result) => {
+      if (result === 'delete') {
+        this.update(SentenceStatus.deleted);
       }
-    );
+    });
   }
 
   onDownloadSelected() {
     if (this.selection.selected.length === 0) {
-      this.dialog.notify("Please select at least one sentence first");
+      this.dialog.notify('Please select at least one sentence first');
     } else {
-      setTimeout(_ => {
+      setTimeout((_) => {
         const theSelectedSentences = this.selection.selected;
         const theAppQuery = this.state.createApplicationScopedQuery();
         const theQuery = new SentencesTextQuery(
           theAppQuery.namespace,
           theAppQuery.applicationName,
           theAppQuery.language,
-          theSelectedSentences.map(s => s.text)
+          theSelectedSentences.map((s) => s.text)
         );
-        this.nlp.getSentencesQueryDump(
-          this.state.currentApplication,
-          theQuery,
-          this.state.hasRole(UserRole.technicalAdmin))
-          .subscribe(blob => {
-            saveAs(blob, this.state.currentApplication.name + "_selected_sentences.json");
-            this.dialog.notify(`Dump provided`, "Dump");
-          })
+        this.nlp
+          .getSentencesQueryDump(
+            this.state.currentApplication,
+            theQuery,
+            this.state.hasRole(UserRole.technicalAdmin)
+          )
+          .subscribe((blob) => {
+            saveAs(blob, this.state.currentApplication.name + '_selected_sentences.json');
+            this.dialog.notify(`Dump provided`, 'Dump');
+          });
       }, 1);
     }
   }
@@ -305,24 +322,26 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   private update(status: SentenceStatus) {
     if (this.selection.selected.length === 0) {
-      this.dialog.notify("Please select at least one sentence first");
+      this.dialog.notify('Please select at least one sentence first');
     } else {
       this.loading = true;
-      this.nlp.updateSentences(
-        new UpdateSentencesQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          this.selection.selected,
-          null,
-          null,
-          null,
-          null,
-          status
-        ))
+      this.nlp
+        .updateSentences(
+          new UpdateSentencesQuery(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            this.selection.selected,
+            null,
+            null,
+            null,
+            null,
+            status
+          )
+        )
         .subscribe(() => {
-          this.dialog.notify("Sentences updated", "Update");
-          this.refresh()
+          this.dialog.notify('Sentences updated', 'Update');
+          this.refresh();
         });
     }
   }
@@ -336,27 +355,39 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 }
 
 export class SentenceFilter {
-  constructor(public search?: string,
-              public intentId?: string,
-              public status?: SentenceStatus[],
-              public entityType?: string,
-              public entityRolesToInclude: string[] = [],
-              public entityRolesToExclude: string[] = [],
-              public modifiedAfter?: Date,
-              public modifiedBefore?: Date,
-              public onlyToReview: boolean = false,
-              public searchSubEntities: boolean = false,
-              public user?: string,
-              public allButUser?: string,
-              public maxIntentProbability: number = 100,
-              public minIntentProbability: number = 0) {
-  }
+  constructor(
+    public search?: string,
+    public intentId?: string,
+    public status?: SentenceStatus[],
+    public entityType?: string,
+    public entityRolesToInclude: string[] = [],
+    public entityRolesToExclude: string[] = [],
+    public modifiedAfter?: Date,
+    public modifiedBefore?: Date,
+    public onlyToReview: boolean = false,
+    public searchSubEntities: boolean = false,
+    public user?: string,
+    public allButUser?: string,
+    public maxIntentProbability: number = 100,
+    public minIntentProbability: number = 0
+  ) {}
 
   clone(): SentenceFilter {
     return new SentenceFilter(
-      this.search, this.intentId, this.status, this.entityType, this.entityRolesToInclude,
-      this.entityRolesToInclude, this.modifiedAfter, this.modifiedBefore, this.onlyToReview, this.searchSubEntities,
-      this.user, this.allButUser, this.maxIntentProbability, this.minIntentProbability
+      this.search,
+      this.intentId,
+      this.status,
+      this.entityType,
+      this.entityRolesToInclude,
+      this.entityRolesToInclude,
+      this.modifiedAfter,
+      this.modifiedBefore,
+      this.onlyToReview,
+      this.searchSubEntities,
+      this.user,
+      this.allButUser,
+      this.maxIntentProbability,
+      this.minIntentProbability
     );
   }
 }

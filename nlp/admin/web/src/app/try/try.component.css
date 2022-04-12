@@ -15,15 +15,14 @@
  */
 
 .try {
-  width:80%;
+  width: 80%;
   margin-left: auto;
   margin-right: auto;
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 .try-input {
-  width:80%;
+  width: 80%;
   font-size: x-large;
-  max-width: unset!important;
+  max-width: unset !important;
 }
-

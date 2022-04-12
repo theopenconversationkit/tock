@@ -18,59 +18,93 @@
 
 <nb-card *ngIf="total === 0">
   <nb-card-body>
-    <div style="text-align: left;">
+    <div style="text-align: left">
       <h4 class="title">No Sentence found</h4>
-      <button mat-button (click)="refresh()" class="button">
+      <button
+        mat-button
+        (click)="refresh()"
+        class="button"
+      >
         <mat-icon>refresh</mat-icon>
       </button>
-      <p>To add Sentences, start from <em>New Sentence</em> or <em>Test the Bot</em> in Tock Studio,
-        or talk to the bot on any connected channel.</p>
+      <p>
+        To add Sentences, start from <em>New Sentence</em> or <em>Test the Bot</em> in Tock Studio,
+        or talk to the bot on any connected channel.
+      </p>
     </div>
   </nb-card-body>
 </nb-card>
 
-<div class="paginator" [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="total !== 0">
-
+<div
+  class="paginator"
+  [nbSpinner]="loading"
+  nbSpinnerStatus="primary"
+  *ngIf="total !== 0"
+>
   <div class="header">
     <h4 class="title"></h4>
-    <nb-actions size="medium" fullWidth style="cursor: pointer;">
-
-      <nb-action (click)="refresh()" nbTooltip="Refresh">
+    <nb-actions
+      size="medium"
+      fullWidth
+      style="cursor: pointer"
+    >
+      <nb-action
+        (click)="refresh()"
+        nbTooltip="Refresh"
+      >
         <mat-icon>refresh</mat-icon>
       </nb-action>
 
-      <nb-action *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump()"
-                 nbTooltip="Download a sentences dump of the current selection">
+      <nb-action
+        *ngIf="state.hasRole(UserRole.admin)"
+        (click)="downloadSentencesDump()"
+        nbTooltip="Download a sentences dump of the current selection"
+      >
         <mat-icon>cloud_download</mat-icon>
       </nb-action>
 
-      <nb-action *ngIf="tableView" (click)="switchToScrollView()"
-                 nbTooltip="Switch to scroll view">
+      <nb-action
+        *ngIf="tableView"
+        (click)="switchToScrollView()"
+        nbTooltip="Switch to scroll view"
+      >
         <mat-icon>grid_off</mat-icon>
       </nb-action>
 
-      <nb-action *ngIf="tableView && !advancedView" (click)="switchAdvancedView(true)"
-                 nbTooltip="Display additional stats">
+      <nb-action
+        *ngIf="tableView && !advancedView"
+        (click)="switchAdvancedView(true)"
+        nbTooltip="Display additional stats"
+      >
         <mat-icon>expand_more</mat-icon>
       </nb-action>
 
-      <nb-action *ngIf="tableView && advancedView" (click)="switchAdvancedView(false)"
-                 nbTooltip="Hide additional stats">
+      <nb-action
+        *ngIf="tableView && advancedView"
+        (click)="switchAdvancedView(false)"
+        nbTooltip="Hide additional stats"
+      >
         <mat-icon>expand_less</mat-icon>
       </nb-action>
 
-      <nb-action *ngIf="!tableView" (click)="switchToTableView()" nbTooltip="Switch to table view">
+      <nb-action
+        *ngIf="!tableView"
+        (click)="switchToTableView()"
+        nbTooltip="Switch to table view"
+      >
         <mat-icon>grid_on</mat-icon>
       </nb-action>
-
     </nb-actions>
   </div>
 
-  <mat-paginator #paginator class="background"
-                 [length]="total"
-                 [pageIndex]="pageIndex"
-                 [pageSize]="pageSize"
-                 [pageSizeOptions]="[10, 25, 50, 100]">
+  <mat-paginator
+    #paginator
+    class="background"
+    [length]="total"
+    [pageIndex]="pageIndex"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[10, 25, 50, 100]"
+  >
   </mat-paginator>
 </div>
 <p></p>
@@ -81,130 +115,318 @@
     infinite-scroll
     [infiniteScrollDistance]="2"
     [infiniteScrollThrottle]="300"
-    (scrolled)="onScroll()">
+    (scrolled)="onScroll()"
+  >
     <div *ngFor="let d of data">
-      <tock-sentence-analysis [sentence]="d"
-                              (closed)="onClose($event)"
-                              [displayUnknownButton]="displayUnknownButton"
-                              [displayProbabilities]="displayProbabilities"
-                              [displayStatus]="displayStatus"></tock-sentence-analysis>
+      <tock-sentence-analysis
+        [sentence]="d"
+        (closed)="onClose($event)"
+        [displayUnknownButton]="displayUnknownButton"
+        [displayProbabilities]="displayProbabilities"
+        [displayStatus]="displayStatus"
+      ></tock-sentence-analysis>
     </div>
   </div>
 
-  <div *ngIf="tableView" class="table-container">
+  <div
+    *ngIf="tableView"
+    class="table-container"
+  >
+    <tock-sentence-analysis
+      *ngIf="sentenceToUpdate"
+      [sentence]="sentenceToUpdate"
+      (closed)="onEndUpdate($event)"
+      [displayClose]="true"
+      [minimalView]="false"
+      [displayUnknownButton]="displayUnknownButton"
+      [displayProbabilities]="displayProbabilities"
+      [displayStatus]="displayStatus"
+    ></tock-sentence-analysis>
 
-    <tock-sentence-analysis *ngIf="sentenceToUpdate"
-                            [sentence]="sentenceToUpdate"
-                            (closed)="onEndUpdate($event)"
-                            [displayClose]="true"
-                            [minimalView]="false"
-                            [displayUnknownButton]="displayUnknownButton"
-                            [displayProbabilities]="displayProbabilities"
-                            [displayStatus]="displayStatus"></tock-sentence-analysis>
-
-    <table [hidden]="sentenceToUpdate" *ngIf="tableView" [nbTreeGrid]="nodes" nbSort
-           (sort)="sortChange($event)">
-      <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="displayedColumns"></tr>
-      <tr nbTreeGridRow [clickToToggle]="false" *nbTreeGridRowDef="let row; columns: displayedColumns"></tr>
+    <table
+      [hidden]="sentenceToUpdate"
+      *ngIf="tableView"
+      [nbTreeGrid]="nodes"
+      nbSort
+      (sort)="sortChange($event)"
+    >
+      <tr
+        nbTreeGridHeaderRow
+        *nbTreeGridHeaderRowDef="displayedColumns"
+      ></tr>
+      <tr
+        nbTreeGridRow
+        [clickToToggle]="false"
+        *nbTreeGridRowDef="let row; columns: displayedColumns"
+      ></tr>
 
       <ng-container nbTreeGridColumnDef="select">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef>
-          <nb-checkbox (checkedChange)="masterToggle()"
-                       [checked]="selection.hasValue() && isAllSelected()"
-                       [indeterminate]="selection.hasValue() && !isAllSelected()">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+        >
+          <nb-checkbox
+            (checkedChange)="masterToggle()"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+          >
           </nb-checkbox>
         </th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row">
-          <nb-checkbox (checkedChange)="toggle(row.data)"
-                       [checked]="selection.isSelected(row.data)">
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <nb-checkbox
+            (checkedChange)="toggle(row.data)"
+            [checked]="selection.isSelected(row.data)"
+          >
           </nb-checkbox>
         </td>
       </ng-container>
 
       <ng-container nbTreeGridColumnDef="text">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="sort-header">
-          <button nbButton outline status="primary" size="small" shape="semi-round" class="btn"
-                  (click)="onDownloadSelected();$event.stopPropagation()" nbTooltip="Download Selected">Download
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="sort-header"
+        >
+          <button
+            nbButton
+            outline
+            status="primary"
+            size="small"
+            shape="semi-round"
+            class="btn"
+            (click)="onDownloadSelected(); $event.stopPropagation()"
+            nbTooltip="Download Selected"
+          >
+            Download
           </button>
-          <button nbButton status="danger" size="small" shape="semi-round" class="btn"
-                  (click)="onDelete();$event.stopPropagation()" nbTooltip="Delete Selected">Delete
+          <button
+            nbButton
+            status="danger"
+            size="small"
+            shape="semi-round"
+            class="btn"
+            (click)="onDelete(); $event.stopPropagation()"
+            nbTooltip="Delete Selected"
+          >
+            Delete
           </button>
-          <button nbButton status="primary" size="small" shape="semi-round" class="btn"
-                  (click)="onValidate();$event.stopPropagation()" nbTooltip="Validate Selected">Validate
+          <button
+            nbButton
+            status="primary"
+            size="small"
+            shape="semi-round"
+            class="btn"
+            (click)="onValidate(); $event.stopPropagation()"
+            nbTooltip="Validate Selected"
+          >
+            Validate
           </button>
         </th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row">
-          <tock-highlight [sentence]="row.data" [readOnly]="true" [displayActions]="false"></tock-highlight>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <tock-highlight
+            [sentence]="row.data"
+            [readOnly]="true"
+            [displayActions]="false"
+          ></tock-highlight>
         </td>
       </ng-container>
 
       <ng-container nbTreeGridColumnDef="currentIntent">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('currentIntent')" class="sort-header">Intent</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
-          class="green-text">{{row.data.getIntentLabel(state)}}</span></td>
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('currentIntent')"
+          class="sort-header"
+        >
+          Intent
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span class="green-text">{{ row.data.getIntentLabel(state) }}</span>
+        </td>
       </ng-container>
 
       <ng-container nbTreeGridColumnDef="update">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef></th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row">
-          <button nbButton class="update-button" status="primary" size="small" shape="semi-round"
-                  (click)="onUpdate(row.data)" nbTooltip="Open/Edit">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+        ></th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <button
+            nbButton
+            class="update-button"
+            status="primary"
+            size="small"
+            shape="semi-round"
+            (click)="onUpdate(row.data)"
+            nbTooltip="Open/Edit"
+          >
             <nb-icon icon="edit"></nb-icon>
           </button>
         </td>
       </ng-container>
 
-      <ng-container nbTreeGridColumnDef="status" *ngIf="displayStatus">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('status')" class="sort-header">
+      <ng-container
+        nbTreeGridColumnDef="status"
+        *ngIf="displayStatus"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('status')"
+          class="sort-header"
+        >
           Status
         </th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row">
-          <span class="status"
-                [style.background]="row.data.statusColor()">{{row.data.statusDisplayed()}}</span>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span
+            class="status"
+            [style.background]="row.data.statusColor()"
+            >{{ row.data.statusDisplayed() }}</span
+          >
         </td>
       </ng-container>
 
-      <ng-container nbTreeGridColumnDef="lastUpdate" *ngIf="advancedView">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('lastUpdate')" class="sort-header">Last update</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span class="green-text">{{row.data.updateDate | date:'yyyy-MM-dd HH:mm'}}</span>
+      <ng-container
+        nbTreeGridColumnDef="lastUpdate"
+        *ngIf="advancedView"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('lastUpdate')"
+          class="sort-header"
+        >
+          Last update
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span class="green-text">{{ row.data.updateDate | date: 'yyyy-MM-dd HH:mm' }}</span>
         </td>
       </ng-container>
 
-
-      <ng-container nbTreeGridColumnDef="intentProbability" *ngIf="advancedView">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('intentProbability')" class="sort-header">Intent probability</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
-          class="green-text">{{row.data.classification.intentProbability | percent:'1.0-2'}}</span></td>
+      <ng-container
+        nbTreeGridColumnDef="intentProbability"
+        *ngIf="advancedView"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('intentProbability')"
+          class="sort-header"
+        >
+          Intent probability
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span class="green-text">{{
+            row.data.classification.intentProbability | percent: '1.0-2'
+          }}</span>
+        </td>
       </ng-container>
 
-      <ng-container nbTreeGridColumnDef="entitiesProbability" *ngIf="advancedView">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('entitiesProbability')" class="sort-header" nbTooltip="Average entity probability">
+      <ng-container
+        nbTreeGridColumnDef="entitiesProbability"
+        *ngIf="advancedView"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('entitiesProbability')"
+          class="sort-header"
+          nbTooltip="Average entity probability"
+        >
           Entities probability
         </th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
-          class="green-text">{{row.data.classification.entitiesProbability| percent:'1.0-2'}}</span></td>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span class="green-text">{{
+            row.data.classification.entitiesProbability | percent: '1.0-2'
+          }}</span>
+        </td>
       </ng-container>
 
-      <ng-container nbTreeGridColumnDef="lastUsage" *ngIf="advancedView">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('lastUsage')" class="sort-header">Last use</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span
-          class="green-text">{{row.data.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></td>
+      <ng-container
+        nbTreeGridColumnDef="lastUsage"
+        *ngIf="advancedView"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('lastUsage')"
+          class="sort-header"
+        >
+          Last use
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span class="green-text">{{
+            row.data.classification.lastUsage | date: 'yyyy-MM-dd HH:mm'
+          }}</span>
+        </td>
       </ng-container>
 
-      <ng-container nbTreeGridColumnDef="usageCount" *ngIf="advancedView">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('usageCount')" class="sort-header">Uses</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span class="green-text">{{row.data.classification.usageCount}}</span></td>
+      <ng-container
+        nbTreeGridColumnDef="usageCount"
+        *ngIf="advancedView"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('usageCount')"
+          class="sort-header"
+        >
+          Uses
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span class="green-text">{{ row.data.classification.usageCount }}</span>
+        </td>
       </ng-container>
 
-      <ng-container nbTreeGridColumnDef="unknownCount" *ngIf="advancedView">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef [nbSortHeader]="getDirection('unknownCount')" class="sort-header">Unknown</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row"><span class="green-text">{{row.data.classification.unknownCount}}</span></td>
+      <ng-container
+        nbTreeGridColumnDef="unknownCount"
+        *ngIf="advancedView"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [nbSortHeader]="getDirection('unknownCount')"
+          class="sort-header"
+        >
+          Unknown
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span class="green-text">{{ row.data.classification.unknownCount }}</span>
+        </td>
       </ng-container>
-
-
     </table>
   </div>
-
 </div>
-
-

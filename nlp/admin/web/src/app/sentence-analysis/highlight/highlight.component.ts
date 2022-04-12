@@ -35,15 +35,15 @@ import {
   Intent,
   Sentence
 } from '../../model/nlp';
-import {NlpService} from '../../nlp-tabs/nlp.service';
-import {StateService} from '../../core-nlp/state.service';
-import {CreateEntityDialogComponent} from '../create-entity-dialog/create-entity-dialog.component';
-import {User, UserRole} from '../../model/auth';
-import {CoreConfig} from '../../core-nlp/core.config';
-import {Router} from '@angular/router';
-import {isNullOrUndefined} from '../../model/commons';
-import {DialogService} from '../../core-nlp/dialog.service';
-import {NbDialogService} from '@nebular/theme';
+import { NlpService } from '../../nlp-tabs/nlp.service';
+import { StateService } from '../../core-nlp/state.service';
+import { CreateEntityDialogComponent } from '../create-entity-dialog/create-entity-dialog.component';
+import { User, UserRole } from '../../model/auth';
+import { CoreConfig } from '../../core-nlp/core.config';
+import { Router } from '@angular/router';
+import { isNullOrUndefined } from '../../model/commons';
+import { DialogService } from '../../core-nlp/dialog.service';
+import { NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-highlight',
@@ -51,7 +51,6 @@ import {NbDialogService} from '@nebular/theme';
   styleUrls: ['highlight.component.css']
 })
 export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
-
   @Input() sentence: EntityContainer;
   @Input() readOnly: boolean = false;
   @Input() fontSize: string = 'inherit';
@@ -73,13 +72,15 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   // the tokens container
   @ViewChild('tokensContainer') tokensContainer: ElementRef;
 
-  constructor(private nlp: NlpService,
-              public state: StateService,
-              private nbDialogService: NbDialogService,
-              private dialog: DialogService,
-              private router: Router,
-              public coreConfig: CoreConfig,
-              private changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private nlp: NlpService,
+    public state: StateService,
+    private nbDialogService: NbDialogService,
+    private dialog: DialogService,
+    private router: Router,
+    public coreConfig: CoreConfig,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {
     this.editable = true;
     this.edited = false;
     this.selectedStart = -1;
@@ -113,9 +114,17 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnInit(): void {
     if (this.sentence instanceof Sentence) {
-      this.entityProvider = new IntentEntityProvider(this.nlp, this.state, this.sentence as Sentence);
+      this.entityProvider = new IntentEntityProvider(
+        this.nlp,
+        this.state,
+        this.sentence as Sentence
+      );
     } else {
-      this.entityProvider = new SubEntityProvider(this.nlp, this.state, this.sentence as EntityWithSubEntities);
+      this.entityProvider = new SubEntityProvider(
+        this.nlp,
+        this.state,
+        this.sentence as EntityWithSubEntities
+      );
     }
 
     this.rebuild();
@@ -125,18 +134,19 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     this.rebuild();
   }
 
-  ngAfterViewInit(): void {
-  }
+  ngAfterViewInit(): void {}
 
   private handleParentSelect() {
     if (this.sentence instanceof EntityWithSubEntities) {
       const e = this.sentence as EntityWithSubEntities;
       if (e.hasSelection()) {
-        setTimeout(_ => {
+        setTimeout((_) => {
           this.selectedStart = e.startSelection;
           this.selectedEnd = e.endSelection;
 
-          const tokenMatch = this.tokens.find(t => t.start <= e.startSelection && t.end >= e.endSelection);
+          const tokenMatch = this.tokens.find(
+            (t) => t.start <= e.startSelection && t.end >= e.endSelection
+          );
           if (!tokenMatch) {
             return;
           }
@@ -145,7 +155,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           const c: Node = this.tokensContainer.nativeElement;
 
           let token;
-          c.childNodes.forEach(s => {
+          c.childNodes.forEach((s) => {
             if ((s as Element).id === tokenId) token = s.firstChild;
           });
           if (token) {
@@ -171,7 +181,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     if (token && token.entity && event.altKey) {
       this.currentDblClick = true;
       this.sentence.removeEntity(token.entity);
-      setTimeout(_ => {
+      setTimeout((_) => {
         this.sentence.cleanupEditedSubEntities();
         this.rebuild();
         this.currentDblClick = false;
@@ -181,7 +191,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   select() {
-    setTimeout(_ => {
+    setTimeout((_) => {
       const windowsSelection = window.getSelection();
       if (windowsSelection.rangeCount > 0 && !this.currentDblClick) {
         const selection = windowsSelection.getRangeAt(0);
@@ -223,15 +233,12 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   addEntity() {
-    const dialogRef = this.nbDialogService.open(
-      CreateEntityDialogComponent,
-      {
-        context: {
-          entityProvider: this.entityProvider
-        }
+    const dialogRef = this.nbDialogService.open(CreateEntityDialogComponent, {
+      context: {
+        entityProvider: this.entityProvider
       }
-    );
-    dialogRef.onClose.subscribe(result => {
+    });
+    dialogRef.onClose.subscribe((result) => {
       if (result && result !== 'cancel') {
         const name = result.name;
         const role = result.role;
@@ -243,7 +250,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
             this.dialog.notify(result);
           }
         } else {
-          this.nlp.createEntityType(name).subscribe(e => {
+          this.nlp.createEntityType(name).subscribe((e) => {
             if (e) {
               const entity = new EntityDefinition(e.name, role);
               const entities = this.state.entityTypes.getValue().slice(0);
@@ -302,7 +309,13 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           }
         }
         if (this.selectedStart < this.selectedEnd) {
-          const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd, []);
+          const e = new ClassifiedEntity(
+            entity.entityTypeName,
+            entity.role,
+            this.selectedStart,
+            this.selectedEnd,
+            []
+          );
           this.sentence.addEntity(e);
         }
         this.initTokens();
@@ -335,14 +348,11 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   answerToSentence() {
-    this.router.navigate(
-      [this.coreConfig.answerToSentenceUrl],
-      {
-        queryParams: {
-          text: this.sentence.getText()
-        }
+    this.router.navigate([this.coreConfig.answerToSentenceUrl], {
+      queryParams: {
+        text: this.sentence.getText()
       }
-    );
+    });
   }
 
   copyToClipboard() {
@@ -358,16 +368,21 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
       //do nothing
     }
     t.style.display = 'none';
-    this.dialog.notify(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, 'Clipboard');
+    this.dialog.notify(
+      successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`,
+      'Clipboard'
+    );
   }
 
   canReveal(): boolean {
-    return this.sentence instanceof Sentence && this.sentence.key && this.state.hasRole(UserRole.admin);
+    return (
+      this.sentence instanceof Sentence && this.sentence.key && this.state.hasRole(UserRole.admin)
+    );
   }
 
   reveal() {
     const sentence = this.sentence as Sentence;
-    this.nlp.revealSentence(sentence).subscribe(s => {
+    this.nlp.revealSentence(sentence).subscribe((s) => {
       sentence.text = s.text;
       sentence.key = null;
       this.sentence = sentence.clone();
@@ -375,11 +390,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
       this.changeDetectorRef.detectChanges();
     });
   }
-
 }
 
 export class SelectedResult {
-
   alreadyCount: number;
 
   constructor(public selectedNode: any, public startOffset: Number, public endOffset) {
@@ -388,10 +401,14 @@ export class SelectedResult {
 }
 
 export class Token {
-
   public end: number;
 
-  constructor(public start: number, public text: string, public index: number, public entity?: ClassifiedEntity) {
+  constructor(
+    public start: number,
+    public text: string,
+    public index: number,
+    public entity?: ClassifiedEntity
+  ) {
     this.end = this.start + text.length;
   }
 
@@ -413,38 +430,36 @@ export class Token {
 }
 
 export interface EntityProvider {
+  reload();
 
-  reload()
+  getEntities(): EntityDefinition[];
 
-  getEntities(): EntityDefinition[]
+  isValid(): boolean;
 
-  isValid(): boolean
+  hasEntityRole(role: string): boolean;
 
-  hasEntityRole(role: string): boolean
-
-  addEntity(entity: EntityDefinition, highlight: HighlightComponent): string
-
+  addEntity(entity: EntityDefinition, highlight: HighlightComponent): string;
 }
 
 export class IntentEntityProvider implements EntityProvider {
-
-  constructor(private nlp: NlpService,
-              private state: StateService,
-              private sentence: Sentence,
-              private intent?: Intent) {
-  }
-
+  constructor(
+    private nlp: NlpService,
+    private state: StateService,
+    private sentence: Sentence,
+    private intent?: Intent
+  ) {}
 
   addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
     this.intent.addEntity(entity);
     const allEntities = this.state.entities.getValue();
-    if (!allEntities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
+    if (
+      !allEntities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)
+    ) {
       this.state.entities.next(this.state.currentApplication.allEntities());
     }
-    this.nlp.saveIntent(this.intent).subscribe(_ => {
-        highlight.notifyAddEntity(entity)
-      }
-    );
+    this.nlp.saveIntent(this.intent).subscribe((_) => {
+      highlight.notifyAddEntity(entity);
+    });
     return null;
   }
 
@@ -472,34 +487,51 @@ export class IntentEntityProvider implements EntityProvider {
 }
 
 export class SubEntityProvider implements EntityProvider {
-
-  constructor(private nlp: NlpService,
-              private state: StateService,
-              private entity: EntityWithSubEntities,
-              private entityType?: EntityType) {
-  }
+  constructor(
+    private nlp: NlpService,
+    private state: StateService,
+    private entity: EntityWithSubEntities,
+    private entityType?: EntityType
+  ) {}
 
   addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
-    if (this.entity.root.containsEntityType(entity.entityTypeName)
-      || this.containsEntityType(this.state.findEntityTypeByName(entity.entityTypeName), this.entity.root.type, new Set())) {
+    if (
+      this.entity.root.containsEntityType(entity.entityTypeName) ||
+      this.containsEntityType(
+        this.state.findEntityTypeByName(entity.entityTypeName),
+        this.entity.root.type,
+        new Set()
+      )
+    ) {
       return 'adding recursive sub entity is not allowed';
     }
     this.entityType.addEntity(entity);
-    this.nlp.updateEntityType(this.entityType).subscribe(_ => {
-        highlight.notifyAddEntity(entity)
-      }
-    );
+    this.nlp.updateEntityType(this.entityType).subscribe((_) => {
+      highlight.notifyAddEntity(entity);
+    });
     return null;
   }
 
-  private containsEntityType(entityType: EntityType, entityTypeName: string, entityTypes: Set<string>): boolean {
+  private containsEntityType(
+    entityType: EntityType,
+    entityTypeName: string,
+    entityTypes: Set<string>
+  ): boolean {
     if (entityTypeName === entityType.name) {
       return true;
     }
     entityTypes.add(entityType.name);
-    return entityType.subEntities
-      .filter(e => !entityTypes.has(e.entityTypeName))
-      .find(e => this.containsEntityType(this.state.findEntityTypeByName(e.entityTypeName), entityTypeName, entityTypes)) !== undefined;
+    return (
+      entityType.subEntities
+        .filter((e) => !entityTypes.has(e.entityTypeName))
+        .find((e) =>
+          this.containsEntityType(
+            this.state.findEntityTypeByName(e.entityTypeName),
+            entityTypeName,
+            entityTypes
+          )
+        ) !== undefined
+    );
   }
 
   hasEntityRole(role: string): boolean {
@@ -524,6 +556,3 @@ export class SubEntityProvider implements EntityProvider {
     }
   }
 }
-
-
-

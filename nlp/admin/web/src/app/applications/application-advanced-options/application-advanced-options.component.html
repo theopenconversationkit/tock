@@ -19,65 +19,143 @@
     <nb-accordion-item-header>Advanced options</nb-accordion-item-header>
     <nb-accordion-item-body>
       <div *ngIf="!exportAlexa && !tokenizerProperties && !uploadDump">
-        <button nbButton outline shape="rectangle" status="primary" (click)="uploadDump = true">Upload Dump</button>
+        <button
+          nbButton
+          outline
+          shape="rectangle"
+          status="primary"
+          (click)="uploadDump = true"
+        >
+          Upload Dump
+        </button>
         &nbsp;
-        <button nbButton outline shape="rectangle" status="primary" (click)="triggerBuild()">Trigger Build</button>
+        <button
+          nbButton
+          outline
+          shape="rectangle"
+          status="primary"
+          (click)="triggerBuild()"
+        >
+          Trigger Build
+        </button>
         &nbsp;
-        <button nbButton outline shape="rectangle" status="primary" (click)="displayConfiguration()">NLU Engine configuration</button>
+        <button
+          nbButton
+          outline
+          shape="rectangle"
+          status="primary"
+          (click)="displayConfiguration()"
+        >
+          NLU Engine configuration
+        </button>
         &nbsp;
-        <button nbButton outline shape="rectangle" status="primary" (click)="exportAlexa = true">Alexa Export</button>
+        <button
+          nbButton
+          outline
+          shape="rectangle"
+          status="primary"
+          (click)="exportAlexa = true"
+        >
+          Alexa Export
+        </button>
       </div>
 
       <nb-card *ngIf="exportAlexa">
         <nb-card-body>
           <mat-form-field class="configuration-input">
-            <mat-select placeholder="select Locale to export" [(ngModel)]="alexaLocale">
-              <mat-option *ngFor="let locale of application.supportedLocales" [value]="locale">
-                {{state.localeName(locale)}}
+            <mat-select
+              placeholder="select Locale to export"
+              [(ngModel)]="alexaLocale"
+            >
+              <mat-option
+                *ngFor="let locale of application.supportedLocales"
+                [value]="locale"
+              >
+                {{ state.localeName(locale) }}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <div>
-            <button nbButton outline status="primary" size="xsmall" (click)="exportAlexa = false">Cancel</button>
-            <button nbButton status="primary" size="xsmall" style="margin-left: 10px" (click)="downloadAlexaExport()">Export</button>
+            <button
+              nbButton
+              outline
+              status="primary"
+              size="xsmall"
+              (click)="exportAlexa = false"
+            >
+              Cancel
+            </button>
+            <button
+              nbButton
+              status="primary"
+              size="xsmall"
+              style="margin-left: 10px"
+              (click)="downloadAlexaExport()"
+            >
+              Export
+            </button>
           </div>
         </nb-card-body>
       </nb-card>
 
-      <tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false"
-                               [applicationName]="application.name"></tock-application-upload>
+      <tock-application-upload
+        *ngIf="uploadDump"
+        (closed)="uploadDump = false"
+        [applicationName]="application.name"
+      ></tock-application-upload>
 
       <nb-card *ngIf="tokenizerProperties">
         <nb-card-body>
           <mat-form-field class="conf-container">
-    <textarea matInput
+            <textarea
+              matInput
               class="conf"
               [(ngModel)]="tokenizerProperties"
-              placeholder="Tokenizer properties"></textarea>
+              placeholder="Tokenizer properties"
+            ></textarea>
           </mat-form-field>
           <mat-form-field class="conf-container">
-    <textarea matInput
+            <textarea
+              matInput
               class="conf"
               [(ngModel)]="intentClassifierProperties"
-              placeholder="Intent Classifier properties"></textarea>
+              placeholder="Intent Classifier properties"
+            ></textarea>
           </mat-form-field>
           <mat-form-field class="conf-container">
-    <textarea matInput
+            <textarea
+              matInput
               class="conf"
               [(ngModel)]="entityClassifierProperties"
-              placeholder="Entity Classifier properties"></textarea>
+              placeholder="Entity Classifier properties"
+            ></textarea>
           </mat-form-field>
         </nb-card-body>
         <nb-card-footer>
-          <button nbButton outline status="primary" size="small"
-                  (click)="tokenizerProperties = null;intentClassifierProperties = null;entityClassifierProperties=null">
+          <button
+            nbButton
+            outline
+            status="primary"
+            size="small"
+            (click)="
+              tokenizerProperties = null;
+              intentClassifierProperties = null;
+              entityClassifierProperties = null
+            "
+          >
             Cancel
           </button>
-          <button nbButton status="primary" size="small" (click)="updateConfiguration()"
-          style="margin-left: 10px">Update Configuration</button>
+          <button
+            nbButton
+            status="primary"
+            size="small"
+            (click)="updateConfiguration()"
+            style="margin-left: 10px"
+          >
+            Update Configuration
+          </button>
         </nb-card-footer>
       </nb-card>
     </nb-accordion-item-body>
   </nb-accordion-item>
 </nb-accordion>
-

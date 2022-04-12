@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
- .footer {
-    text-align: right;
+.footer {
+  text-align: right;
 }
 
 .intent {
-    width: 17rem;
+  width: 17rem;
 }
 
 .submit-button {
-    margin-left: 20px;
+  margin-left: 20px;
 }

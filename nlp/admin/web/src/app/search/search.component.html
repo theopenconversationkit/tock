@@ -15,62 +15,113 @@
   -->
 
 <div class="search">
-  <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true" [loadOnInit]="false"
-                         [displayProbabilities]="true" (selectedSentences)="selectedSentences = $event">
+  <tock-sentences-scroll
+    [filter]="filter"
+    title=""
+    [displayStatus]="true"
+    [loadOnInit]="false"
+    [displayProbabilities]="true"
+    (selectedSentences)="selectedSentences = $event"
+  >
     <nb-card>
       <nb-card-body>
         <span class="search-criterion">
-          <input nbInput placeholder="Search sentences" status="primary" [(ngModel)]="filter.search"
-                 (keyup.enter)="search()" style="width: 30rem;"
-                 nbTooltip="Search support regexp (PCRE format)">
+          <input
+            nbInput
+            placeholder="Search sentences"
+            status="primary"
+            [(ngModel)]="filter.search"
+            (keyup.enter)="search()"
+            style="width: 30rem"
+            nbTooltip="Search support regexp (PCRE format)"
+          />
         </span>
-        <button nbButton outline status="primary" size="small" (click)="search()">GO</button>
-        <br>
-        <br>
+        <button
+          nbButton
+          outline
+          status="primary"
+          size="small"
+          (click)="search()"
+        >
+          GO
+        </button>
+        <br />
+        <br />
         <div class="search-box">
           <div class="search-criterion">
-            <tock-search-filter [groups]="intentGroups()"
-                                [noFilter]="NO_INTENT_FILTER"
-                                [unknownFilter]="UNKNOWN_INTENT_FILTER"
-                                (filterChange)="changeIntentFilter($event)"
-                                name="Intent"></tock-search-filter>
+            <tock-search-filter
+              [groups]="intentGroups()"
+              [noFilter]="NO_INTENT_FILTER"
+              [unknownFilter]="UNKNOWN_INTENT_FILTER"
+              (filterChange)="changeIntentFilter($event)"
+              name="Intent"
+            ></tock-search-filter>
           </div>
           <div class="search-criterion">
-            <nb-select *ngIf="entityTypes" placeholder="Entity Type" status="primary"
-                       [(ngModel)]="filter.entityType"
-                       (selectedChange)="changeEntityType()"
-                       style="width: 12rem;">
+            <nb-select
+              *ngIf="entityTypes"
+              placeholder="Entity Type"
+              status="primary"
+              [(ngModel)]="filter.entityType"
+              (selectedChange)="changeEntityType()"
+              style="width: 12rem"
+            >
               <nb-option value="">All</nb-option>
-              <nb-option *ngFor="let e of entityTypes" [value]="e.name" [nbTooltip]="e.qualifiedName(state.user)">
-                {{e.qualifiedName(state.user)}}
+              <nb-option
+                *ngFor="let e of entityTypes"
+                [value]="e.name"
+                [nbTooltip]="e.qualifiedName(state.user)"
+              >
+                {{ e.qualifiedName(state.user) }}
               </nb-option>
             </nb-select>
           </div>
           <div class="search-criterion">
-            <nb-select *ngIf="entityRolesToInlude" multiple placeholder="Entity Roles to include" status="primary"
-                       [(ngModel)]="filter.entityRolesToInclude"
-                       (selectedChange)="search()"
-                       style="width: 12rem;">
+            <nb-select
+              *ngIf="entityRolesToInlude"
+              multiple
+              placeholder="Entity Roles to include"
+              status="primary"
+              [(ngModel)]="filter.entityRolesToInclude"
+              (selectedChange)="search()"
+              style="width: 12rem"
+            >
               <nb-option>Clear selection</nb-option>
-              <nb-option *ngFor="let r of entityRolesToInlude" [value]="r">
-                {{r}}
+              <nb-option
+                *ngFor="let r of entityRolesToInlude"
+                [value]="r"
+              >
+                {{ r }}
               </nb-option>
             </nb-select>
           </div>
           <div class="search-criterion">
-            <nb-select *ngIf="entityRolesToExclude" multiple placeholder="Entity Roles to exclude" status="primary"
-                       [(ngModel)]="filter.entityRolesToExclude"
-                       (selectedChange)="search()"
-                       style="width: 12rem;">
+            <nb-select
+              *ngIf="entityRolesToExclude"
+              multiple
+              placeholder="Entity Roles to exclude"
+              status="primary"
+              [(ngModel)]="filter.entityRolesToExclude"
+              (selectedChange)="search()"
+              style="width: 12rem"
+            >
               <nb-option>Clear selection</nb-option>
-              <nb-option *ngFor="let r of entityRolesToExclude" [value]="r">
-                {{r}}
+              <nb-option
+                *ngFor="let r of entityRolesToExclude"
+                [value]="r"
+              >
+                {{ r }}
               </nb-option>
             </nb-select>
           </div>
           <div class="search-criterion">
-            <nb-select placeholder="Status" status="primary" [(ngModel)]="status" (selectedChange)="search()"
-                       style="width: 12rem;">
+            <nb-select
+              placeholder="Status"
+              status="primary"
+              [(ngModel)]="status"
+              (selectedChange)="search()"
+              style="width: 12rem"
+            >
               <nb-option value="">All</nb-option>
               <nb-option value="inbox">Inbox</nb-option>
               <nb-option value="validated">Validated</nb-option>
@@ -79,105 +130,208 @@
             </nb-select>
           </div>
           <div class="search-criterion">
-            <input nbInput (keyup.enter)="search()" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter"
-                   [nbDatepicker]="after" (ngModelChange)="search()">
-            <nb-datepicker #after (dateChange)="search()"></nb-datepicker>
+            <input
+              nbInput
+              (keyup.enter)="search()"
+              placeholder="Modified after"
+              [(ngModel)]="filter.modifiedAfter"
+              [nbDatepicker]="after"
+              (ngModelChange)="search()"
+            />
+            <nb-datepicker
+              #after
+              (dateChange)="search()"
+            ></nb-datepicker>
           </div>
           <div class="search-criterion">
-            <input nbInput (keyup.enter)="search()" placeholder="Modified before" [(ngModel)]="filter.modifiedBefore"
-                   [nbDatepicker]="before" (ngModelChange)="search()">
-            <nb-datepicker #before (dateChange)="search()"></nb-datepicker>
+            <input
+              nbInput
+              (keyup.enter)="search()"
+              placeholder="Modified before"
+              [(ngModel)]="filter.modifiedBefore"
+              [nbDatepicker]="before"
+              (ngModelChange)="search()"
+            />
+            <nb-datepicker
+              #before
+              (dateChange)="search()"
+            ></nb-datepicker>
           </div>
-          <div class="search-criterion" *ngIf="users && users.length !== 0">
-            <nb-select placeholder="Validated by" status="primary"
-                       [(ngModel)]="filter.user"
-                       (selectedChange)="search()"
-                       style="width: 12rem;">
+          <div
+            class="search-criterion"
+            *ngIf="users && users.length !== 0"
+          >
+            <nb-select
+              placeholder="Validated by"
+              status="primary"
+              [(ngModel)]="filter.user"
+              (selectedChange)="search()"
+              style="width: 12rem"
+            >
               <nb-option value="">Validated by</nb-option>
-              <nb-option *ngFor="let u of users" [value]="u">
-                {{u}}
+              <nb-option
+                *ngFor="let u of users"
+                [value]="u"
+              >
+                {{ u }}
               </nb-option>
             </nb-select>
           </div>
-          <div class="search-criterion" *ngIf="users && users.length !== 0">
-            <nb-select placeholder="Not validated by" status="primary"
-                       [(ngModel)]="filter.allButUser"
-                       (selectedChange)="search()"
-                       style="width: 12rem;">
+          <div
+            class="search-criterion"
+            *ngIf="users && users.length !== 0"
+          >
+            <nb-select
+              placeholder="Not validated by"
+              status="primary"
+              [(ngModel)]="filter.allButUser"
+              (selectedChange)="search()"
+              style="width: 12rem"
+            >
               <nb-option value="">Not validated by</nb-option>
-              <nb-option *ngFor="let u of users" [value]="u">
-                {{u}}
+              <nb-option
+                *ngFor="let u of users"
+                [value]="u"
+              >
+                {{ u }}
               </nb-option>
             </nb-select>
           </div>
           <div class="search-criterion">
-            <input nbInput placeholder="Max Intent Probability (%)"
-                   type="number" min="0" max="100" step="1" maxlength="3" size="5"
-                   [(ngModel)]="filter.maxIntentProbability"
-                   (keyup.enter)="search()"
-                   nbTooltip="Intent Probability <= {{filter.maxIntentProbability}}%">
+            <input
+              nbInput
+              placeholder="Max Intent Probability (%)"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              maxlength="3"
+              size="5"
+              [(ngModel)]="filter.maxIntentProbability"
+              (keyup.enter)="search()"
+              nbTooltip="Intent Probability <= {{ filter.maxIntentProbability }}%"
+            />
           </div>
           <div class="search-criterion">
-            <input nbInput placeholder="Min Intent Probability (%)"
-                   type="number" min="0" max="100" step="1" maxlength="3" size="5"
-                   [(ngModel)]="filter.minIntentProbability"
-                   (keyup.enter)="search()"
-                   nbTooltip="Intent Probability >= {{filter.minIntentProbability}}%">
+            <input
+              nbInput
+              placeholder="Min Intent Probability (%)"
+              type="number"
+              min="0"
+              max="100"
+              step="1"
+              maxlength="3"
+              size="5"
+              [(ngModel)]="filter.minIntentProbability"
+              (keyup.enter)="search()"
+              nbTooltip="Intent Probability >= {{ filter.minIntentProbability }}%"
+            />
           </div>
         </div>
       </nb-card-body>
       <nb-card-footer *ngIf="state.hasRole(UserRole.admin)">
         <nb-accordion>
           <nb-accordion-item>
-            <nb-accordion-item-header>Advanced Options - Manage Intents and Entities</nb-accordion-item-header>
+            <nb-accordion-item-header
+              >Advanced Options - Manage Intents and Entities</nb-accordion-item-header
+            >
             <nb-accordion-item-body>
               <div>
                 Change intent for selected sentences:
                 <span class="search-criterion">
-                  <nb-select placeholder="Select Intent" [(ngModel)]="update.newIntentId" status="primary">
-                    <nb-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
-                      {{intent.intentLabel()}}
+                  <nb-select
+                    placeholder="Select Intent"
+                    [(ngModel)]="update.newIntentId"
+                    status="primary"
+                  >
+                    <nb-option
+                      *ngFor="let intent of state.currentIntents | async"
+                      [value]="intent._id"
+                    >
+                      {{ intent.intentLabel() }}
                     </nb-option>
                     <nb-option value="tock:unknown">Unknown</nb-option>
                   </nb-select>
                 </span>
 
-                <button nbButton outline status="primary" size="small" (click)="updateSentencesIntent()">Change Intent
+                <button
+                  nbButton
+                  outline
+                  status="primary"
+                  size="small"
+                  (click)="updateSentencesIntent()"
+                >
+                  Change Intent
                 </button>
               </div>
-              <br>
+              <br />
               <div>
                 Change entity for selected sentences:
                 <span class="search-criterion">
-                  <nb-select placeholder="Select Old Entity" [(ngModel)]="update.oldEntity" status="primary">
-                    <nb-option *ngFor="let e of state.entities | async" [value]="e">
-                      {{e.qualifiedRole}}
+                  <nb-select
+                    placeholder="Select Old Entity"
+                    [(ngModel)]="update.oldEntity"
+                    status="primary"
+                  >
+                    <nb-option
+                      *ngFor="let e of state.entities | async"
+                      [value]="e"
+                    >
+                      {{ e.qualifiedRole }}
                     </nb-option>
                   </nb-select>
                 </span>
 
                 <span class="search-criterion">
-                  <nb-select placeholder="Select New Entity" [(ngModel)]="update.newEntity" status="primary">
-                    <nb-option *ngFor="let e of state.entities | async" [value]="e">
-                      {{e.qualifiedRole}}
+                  <nb-select
+                    placeholder="Select New Entity"
+                    [(ngModel)]="update.newEntity"
+                    status="primary"
+                  >
+                    <nb-option
+                      *ngFor="let e of state.entities | async"
+                      [value]="e"
+                    >
+                      {{ e.qualifiedRole }}
                     </nb-option>
                   </nb-select>
                 </span>
 
-                <button nbButton outline status="primary" size="small" (click)="updateSentencesEntity()">Change Entity
+                <button
+                  nbButton
+                  outline
+                  status="primary"
+                  size="small"
+                  (click)="updateSentencesEntity()"
+                >
+                  Change Entity
                 </button>
               </div>
-              <br>
+              <br />
               <div *ngIf="state.currentApplication.supportedLocales.length !== 1">
                 Translate selected sentences:
                 <span class="search-criterion">
-                  <nb-select [(ngModel)]="targetLocale" placeholder="Target Language" status="primary">
-                    <nb-option *ngFor="let l of state.otherThanCurrentLocales()"
-                               [value]="l">{{ state.localeName(l) }}
+                  <nb-select
+                    [(ngModel)]="targetLocale"
+                    placeholder="Target Language"
+                    status="primary"
+                  >
+                    <nb-option
+                      *ngFor="let l of state.otherThanCurrentLocales()"
+                      [value]="l"
+                      >{{ state.localeName(l) }}
                     </nb-option>
                   </nb-select>
                 </span>
-                <button nbButton outline status="primary" size="small" (click)="translateSentences()">Translate</button>
+                <button
+                  nbButton
+                  outline
+                  status="primary"
+                  size="small"
+                  (click)="translateSentences()"
+                >
+                  Translate
+                </button>
               </div>
             </nb-accordion-item-body>
           </nb-accordion-item>
@@ -186,4 +340,3 @@
     </nb-card>
   </tock-sentences-scroll>
 </div>
-

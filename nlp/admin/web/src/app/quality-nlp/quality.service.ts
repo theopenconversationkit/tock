@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {RestService} from "../core-nlp/rest/rest.service";
-import {Injectable} from "@angular/core";
+import { RestService } from '../core-nlp/rest/rest.service';
+import { Injectable } from '@angular/core';
 import {
   EntityTestError,
   EntityTestErrorQueryResult,
@@ -26,17 +26,15 @@ import {
   LogStatsQuery,
   TestBuildStat,
   TestErrorQuery
-} from "../model/nlp";
-import {Observable} from "rxjs";
+} from '../model/nlp';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class QualityService {
-
-  constructor(private rest: RestService) {
-  }
+  constructor(private rest: RestService) {}
 
   logStats(query: LogStatsQuery): Observable<LogStat[]> {
-    return this.rest.post("/logs/stats", query, LogStat.fromJSONArray)
+    return this.rest.post('/logs/stats', query, LogStat.fromJSONArray);
   }
 
   intentQA(query: LogStatsQuery): Observable<IntentQA[]> {
@@ -44,31 +42,38 @@ export class QualityService {
   }
 
   searchIntentErrors(query: TestErrorQuery): Observable<IntentTestErrorQueryResult> {
-    return this.rest.post("/test/intent-errors", query, IntentTestErrorQueryResult.fromJSON)
+    return this.rest.post('/test/intent-errors', query, IntentTestErrorQueryResult.fromJSON);
   }
 
   searchIntentErrorsBlob(query: TestErrorQuery): Observable<Blob> {
-    return this.rest.post("/test/intent-errors", query, j => new Blob([JSON.stringify(j)], {type: 'application/json'}))
+    return this.rest.post(
+      '/test/intent-errors',
+      query,
+      (j) => new Blob([JSON.stringify(j)], { type: 'application/json' })
+    );
   }
 
   deleteIntentError(error: IntentTestError): Observable<boolean> {
-    return this.rest.post("/test/intent-error/delete", error)
+    return this.rest.post('/test/intent-error/delete', error);
   }
 
   searchEntityErrors(query: TestErrorQuery): Observable<EntityTestErrorQueryResult> {
-    return this.rest.post("/test/entity-errors", query, EntityTestErrorQueryResult.fromJSON)
+    return this.rest.post('/test/entity-errors', query, EntityTestErrorQueryResult.fromJSON);
   }
 
   searchEntityErrorsBlob(query: TestErrorQuery): Observable<Blob> {
-    return this.rest.post("/test/entity-errors", query, j => new Blob([JSON.stringify(j)], {type: 'application/json'}))
+    return this.rest.post(
+      '/test/entity-errors',
+      query,
+      (j) => new Blob([JSON.stringify(j)], { type: 'application/json' })
+    );
   }
 
   deleteEntityError(error: EntityTestError): Observable<boolean> {
-    return this.rest.post("/test/entity-error/delete", error)
+    return this.rest.post('/test/entity-error/delete', error);
   }
 
   buildStats(query: TestErrorQuery): Observable<TestBuildStat[]> {
-    return this.rest.post("/test/stats", query, TestBuildStat.fromJSONArray)
+    return this.rest.post('/test/stats', query, TestBuildStat.fromJSONArray);
   }
-
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent } from 'src/app/model/nlp';
@@ -25,7 +25,6 @@ import { Intent } from 'src/app/model/nlp';
   styleUrls: ['./add-shared-intent-dialog.component.css']
 })
 export class AddSharedIntentDialogComponent {
-
   name: string;
   @Input() title: string;
 
@@ -34,11 +33,9 @@ export class AddSharedIntentDialogComponent {
   constructor(
     public state: StateService,
     public dialogRef: NbDialogRef<AddSharedIntentDialogComponent>
-    ) {
-  }
+  ) {}
 
   save() {
-    this.dialogRef.close({intent: this.selectedIntent});
+    this.dialogRef.close({ intent: this.selectedIntent });
   }
-
 }

@@ -21,8 +21,8 @@
 .search {
   margin-left: auto;
   margin-right: auto;
-  margin-top:20px;
-  text-align:center;
+  margin-top: 20px;
+  text-align: center;
 }
 
 .search-input {
@@ -51,5 +51,3 @@
   height: 500px;
   width: 100%;
 }
-
-

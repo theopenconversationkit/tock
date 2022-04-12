@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import {EntityDefinition, Intent, NlpEngineType, Sentence} from "./nlp";
-import {flatMap, JsonUtils} from "./commons";
+import { EntityDefinition, Intent, NlpEngineType, Sentence } from './nlp';
+import { flatMap, JsonUtils } from './commons';
 
 export class Application {
-
-  constructor(public name: string,
-              public label: string,
-              public namespace: string,
-              public intents: Intent[],
-              public supportedLocales: string[],
-              public nlpEngineType: NlpEngineType,
-              public mergeEngineTypes: boolean,
-              public useEntityModels: boolean,
-              public supportSubEntities: boolean,
-              public unknownIntentThreshold: number,
-              public normalizeText: boolean,
-              public _id?: string) {
-  }
+  constructor(
+    public name: string,
+    public label: string,
+    public namespace: string,
+    public intents: Intent[],
+    public supportedLocales: string[],
+    public nlpEngineType: NlpEngineType,
+    public mergeEngineTypes: boolean,
+    public useEntityModels: boolean,
+    public supportSubEntities: boolean,
+    public unknownIntentThreshold: number,
+    public normalizeText: boolean,
+    public _id?: string
+  ) {}
 
   clone(): Application {
     return new Application(
@@ -46,7 +46,8 @@ export class Application {
       this.supportSubEntities,
       this.unknownIntentThreshold,
       this.normalizeText,
-      this._id)
+      this._id
+    );
   }
 
   removeIntentById(id: string) {
@@ -68,23 +69,23 @@ export class Application {
   }
 
   intentById(id: string): Intent {
-    return this.intents.find(i => i._id === id);
+    return this.intents.find((i) => i._id === id);
   }
 
   supportLocale(locale: string): boolean {
-    return this.supportedLocales.some(l => l === locale);
+    return this.supportedLocales.some((l) => l === locale);
   }
 
   allEntities(): EntityDefinition[] {
     const alreadySeen = new Set();
-    return flatMap(this.intents, (i => i.entities))
-      .filter(v => {
+    return flatMap(this.intents, (i) => i.entities)
+      .filter((v) => {
         const value = v.qualifiedRole;
         if (alreadySeen.has(value)) {
-          return false
+          return false;
         } else {
           alreadySeen.add(value);
-          return true
+          return true;
         }
       })
       .sort((a, b) => {
@@ -101,7 +102,7 @@ export class Application {
         } else {
           return c;
         }
-      })
+      });
   }
 
   static fromJSON(json: any): Application {
@@ -121,21 +122,19 @@ export class Application {
 }
 
 export class ApplicationImportConfiguration {
-
-  constructor(public newApplicationName?: string) {
-
-  }
+  constructor(public newApplicationName?: string) {}
 }
 
 export class ImportReport {
-  constructor(public applicationsImported: string[],
-              public entitiesImported: string[],
-              public intentsImported: string[],
-              public sentencesImported: number,
-              public success: boolean,
-              public modified: boolean,
-              public errorMessages: string[]) {
-  }
+  constructor(
+    public applicationsImported: string[],
+    public entitiesImported: string[],
+    public intentsImported: string[],
+    public sentencesImported: number,
+    public success: boolean,
+    public modified: boolean,
+    public errorMessages: string[]
+  ) {}
 
   static fromJSON(json: any): ImportReport {
     const value = Object.create(ImportReport.prototype);
@@ -145,18 +144,18 @@ export class ImportReport {
 }
 
 export class ModelBuild {
-
-  constructor(public applicationId: string,
-              public language: string,
-              public type: string,
-              public nbSentences: number,
-              public duration: Date,
-              public error: boolean,
-              public date: Date,
-              public errorMessage?: string,
-              public intentId?: string,
-              public entityTypeName?: string) {
-  }
+  constructor(
+    public applicationId: string,
+    public language: string,
+    public type: string,
+    public nbSentences: number,
+    public duration: Date,
+    public error: boolean,
+    public date: Date,
+    public errorMessage?: string,
+    public intentId?: string,
+    public entityTypeName?: string
+  ) {}
 
   static fromJSON(json: any): ModelBuild {
     const value = Object.create(ModelBuild.prototype);
@@ -167,14 +166,10 @@ export class ModelBuild {
   static fromJSONArray(json?: Array<any>): ModelBuild[] {
     return json ? json.map(ModelBuild.fromJSON) : [];
   }
-
 }
 
 export class ModelBuildQueryResult {
-
-  constructor(public total: number,
-              public data: ModelBuild[]) {
-  }
+  constructor(public total: number, public data: ModelBuild[]) {}
 
   static fromJSON(json: any): ModelBuildQueryResult {
     const value = Object.create(ModelBuildQueryResult.prototype);
@@ -183,16 +178,14 @@ export class ModelBuildQueryResult {
     });
     return result;
   }
-
 }
 
 export class NlpApplicationConfiguration {
-
-  constructor(public tokenizerConfiguration: NlpModelConfiguration,
-              public intentConfiguration: NlpModelConfiguration,
-              public entityConfiguration: NlpModelConfiguration) {
-
-  }
+  constructor(
+    public tokenizerConfiguration: NlpModelConfiguration,
+    public intentConfiguration: NlpModelConfiguration,
+    public entityConfiguration: NlpModelConfiguration
+  ) {}
 
   static fromJSON(json: any): NlpApplicationConfiguration {
     const value = Object.create(NlpApplicationConfiguration.prototype);
@@ -206,28 +199,29 @@ export class NlpApplicationConfiguration {
 }
 
 export class NlpModelConfiguration {
-
-  constructor(public properties: Map<string, string>) {
-  }
+  constructor(public properties: Map<string, string>) {}
 
   toProperties(): string {
-    let s = "#properties";
-    this.properties.forEach((value, key) => s = s + "\n" + key + "=" + value);
+    let s = '#properties';
+    this.properties.forEach((value, key) => (s = s + '\n' + key + '=' + value));
     return s;
   }
 
   toJSON() {
-    return {properties: JsonUtils.mapToObject(this.properties)}
+    return { properties: JsonUtils.mapToObject(this.properties) };
   }
 
   static parseProperties(properties: string): NlpModelConfiguration {
     const r = new Map();
-    properties.match(/[^\r\n]+/g).forEach(line => {
+    properties.match(/[^\r\n]+/g).forEach((line) => {
       let l = line.trim();
-      if (!l.startsWith("#") && l.length !== 0) {
-        let i = l.indexOf("=");
+      if (!l.startsWith('#') && l.length !== 0) {
+        let i = l.indexOf('=');
         if (i !== -1) {
-          r.set(l.substring(0, i).trim(), i === l.length - 1 ? "" : l.substring(i + 1, l.length).trim());
+          r.set(
+            l.substring(0, i).trim(),
+            i === l.length - 1 ? '' : l.substring(i + 1, l.length).trim()
+          );
         }
       }
     });
@@ -241,29 +235,28 @@ export class NlpModelConfiguration {
     });
     return result;
   }
-
 }
 
 export class UserLog {
-
-  constructor(public namespace: string,
-              public applicationId: string,
-              public login: string,
-              public actionType: string,
-              public newData: any,
-              public date: Date,
-              public error: boolean) {
-  }
+  constructor(
+    public namespace: string,
+    public applicationId: string,
+    public login: string,
+    public actionType: string,
+    public newData: any,
+    public date: Date,
+    public error: boolean
+  ) {}
 
   data(): string {
-    return this.newData ? JSON.stringify(this.newData, null, 2) : "";
+    return this.newData ? JSON.stringify(this.newData, null, 2) : '';
   }
 
   static fromJSON(json?: any): UserLog {
     const value = Object.create(UserLog.prototype);
 
     const result = Object.assign(value, json, {
-      sentence: json.sentence ? Sentence.fromJSON(json.sentence) : null,
+      sentence: json.sentence ? Sentence.fromJSON(json.sentence) : null
     });
 
     return result;
@@ -275,10 +268,7 @@ export class UserLog {
 }
 
 export class UserLogQueryResult {
-
-  constructor(public total: number,
-              public logs: UserLog[]) {
-  }
+  constructor(public total: number, public logs: UserLog[]) {}
 
   static fromJSON(json: any): UserLogQueryResult {
     const value = Object.create(UserLogQueryResult.prototype);
@@ -287,16 +277,15 @@ export class UserLogQueryResult {
     });
     return result;
   }
-
 }
 
 export class UserNamespace {
-
-  constructor(public namespace: string,
-              public login: string,
-              public owner: boolean,
-              public current: boolean) {
-  }
+  constructor(
+    public namespace: string,
+    public login: string,
+    public owner: boolean,
+    public current: boolean
+  ) {}
 
   static fromJSON(json?: any): UserNamespace {
     const value = Object.create(UserNamespace.prototype);

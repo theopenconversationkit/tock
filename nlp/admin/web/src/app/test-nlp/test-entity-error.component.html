@@ -17,18 +17,34 @@
   <nb-card-body>
     <span class="nb-form-field inline">
       <label>Intent</label>
-      <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search()"
-                  class="search-input">
+      <nb-select
+        placeholder="Intent"
+        [(ngModel)]="intent"
+        (selectedChange)="search()"
+        class="search-input"
+      >
         <nb-option value="">All</nb-option>
-        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
-          <nb-option *ngFor="let intent of category.intents" [value]="intent.qualifiedName()">
-            {{intent.intentLabel()}}
+        <nb-option-group
+          *ngFor="let category of state.currentIntentsCategories | async"
+          [title]="category.category"
+        >
+          <nb-option
+            *ngFor="let intent of category.intents"
+            [value]="intent.qualifiedName()"
+          >
+            {{ intent.intentLabel() }}
           </nb-option>
         </nb-option-group>
         <nb-option value="unknown">Unknown</nb-option>
       </nb-select>
     </span>
-    <button nbButton ghost size="small" (click)="download()" nbTooltip="Download the whole error list">
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="download()"
+      nbTooltip="Download the whole error list"
+    >
       <mat-icon>cloud_download</mat-icon>
     </button>
   </nb-card-body>
@@ -36,59 +52,124 @@
 <nb-card [nbSpinner]="loading">
   <nb-card-body>
     <div>
-      <div *ngIf="dataSource.length === 0 && !loading" style="text-align: center;">
+      <div
+        *ngIf="dataSource.length === 0 && !loading"
+        style="text-align: center"
+      >
         <h5>No records found</h5>
       </div>
-      <table *ngIf="dataSource.length !== 0" class="table table-sm table-fixed">
+      <table
+        *ngIf="dataSource.length !== 0"
+        class="table table-sm table-fixed"
+      >
         <thead>
-        <tr>
-          <th style="width: 20%;"><p>Original</p></th>
-          <th style="width: 15%;"><p>Intent</p></th>
-          <th style="width: 15%;"><p>Last Error</p></th>
-          <th style="width: 10%;"><p>Errors</p></th>
-          <th style="width: 10%;" nbTooltip="After first error"><p>Test Errors / Tests</p></th>
-          <th style="width: 10%;"><p>Average Intent Error Probability</p></th>
-          <th style="width: 10%;"><p>Detection Date</p></th>
-          <th style="width: 10%;"><p>Actions</p></th>
-        </tr>
+          <tr>
+            <th style="width: 20%"><p>Original</p></th>
+            <th style="width: 15%"><p>Intent</p></th>
+            <th style="width: 15%"><p>Last Error</p></th>
+            <th style="width: 10%"><p>Errors</p></th>
+            <th
+              style="width: 10%"
+              nbTooltip="After first error"
+            >
+              <p>Test Errors / Tests</p>
+            </th>
+            <th style="width: 10%"><p>Average Intent Error Probability</p></th>
+            <th style="width: 10%"><p>Detection Date</p></th>
+            <th style="width: 10%"><p>Actions</p></th>
+          </tr>
         </thead>
         <tbody>
           <tr *ngFor="let row of dataSource; index as i">
-            <td style="width: 20%;"><p>
-              <tock-highlight fontSize="smaller" [sentence]="row.originalSentence" [readOnly]="true"
-              [displayActions]="false"></tock-highlight></p>
+            <td style="width: 20%">
+              <p>
+                <tock-highlight
+                  fontSize="smaller"
+                  [sentence]="row.originalSentence"
+                  [readOnly]="true"
+                  [displayActions]="false"
+                ></tock-highlight>
+              </p>
             </td>
-            <td><p>{{intentName(row)}}</p></td>
-            <td><p><tock-highlight fontSize="smaller" [sentence]="row.sentence" [readOnly]="true"
-              [displayActions]="false"></tock-highlight></p>
+            <td>
+              <p>{{ intentName(row) }}</p>
             </td>
-            <td><p>{{row.count}}</p></td>
-            <td><p>{{(row.count / row.total)| percent:'1.0-2'}}</p></td>
-            <td><p>{{row.averageErrorProbability | percent:'1.0-2'}}</p></td>
-            <td><p>{{row.firstDetectionDate | amCalendar}}</p></td>
-            <td><p>
-              <button nbButton ghost size="tiny" status="success" (click)="validate(row)">
-                <mat-icon nbTooltip="Validate entities">check_circle</mat-icon>
-              </button>
-              <button nbButton ghost size="tiny" status="danger" (click)="change(row)">
-                <mat-icon nbTooltip="Change entities">update</mat-icon>
-              </button>
-              <button nbButton ghost size="tiny" *ngIf="canReveal(row)" (click)="reveal(row)">
-                <mat-icon nbTooltip="Reveal the sentence">visibility</mat-icon>
-              </button>
-                </p>
+            <td>
+              <p>
+                <tock-highlight
+                  fontSize="smaller"
+                  [sentence]="row.sentence"
+                  [readOnly]="true"
+                  [displayActions]="false"
+                ></tock-highlight>
+              </p>
+            </td>
+            <td>
+              <p>{{ row.count }}</p>
+            </td>
+            <td>
+              <p>{{ row.count / row.total | percent: '1.0-2' }}</p>
+            </td>
+            <td>
+              <p>{{ row.averageErrorProbability | percent: '1.0-2' }}</p>
+            </td>
+            <td>
+              <p>{{ row.firstDetectionDate | amCalendar }}</p>
+            </td>
+            <td>
+              <p>
+                <button
+                  nbButton
+                  ghost
+                  size="tiny"
+                  status="success"
+                  (click)="validate(row)"
+                >
+                  <mat-icon nbTooltip="Validate entities">check_circle</mat-icon>
+                </button>
+                <button
+                  nbButton
+                  ghost
+                  size="tiny"
+                  status="danger"
+                  (click)="change(row)"
+                >
+                  <mat-icon nbTooltip="Change entities">update</mat-icon>
+                </button>
+                <button
+                  nbButton
+                  ghost
+                  size="tiny"
+                  *ngIf="canReveal(row)"
+                  (click)="reveal(row)"
+                >
+                  <mat-icon nbTooltip="Reveal the sentence">visibility</mat-icon>
+                </button>
+              </p>
             </td>
           </tr>
         </tbody>
       </table>
-      <div *ngIf="dataSource.length !== 0" class="d-flex justify-content-center">
-        <nb-select [(ngModel)]="pageSize" (ngModelChange)="search()" nbTooltip="Items per page:">
-          <nb-option [value]="10">10</nb-option >
-          <nb-option [value]="20">20</nb-option >
-          <nb-option [value]="50">50</nb-option >
+      <div
+        *ngIf="dataSource.length !== 0"
+        class="d-flex justify-content-center"
+      >
+        <nb-select
+          [(ngModel)]="pageSize"
+          (ngModelChange)="search()"
+          nbTooltip="Items per page:"
+        >
+          <nb-option [value]="10">10</nb-option>
+          <nb-option [value]="20">20</nb-option>
+          <nb-option [value]="50">50</nb-option>
         </nb-select>
-        <ngb-pagination [collectionSize]="totalSize" [(page)]="pageIndex" [maxSize]="10"
-                        [pageSize]="pageSize" (pageChange)="search()">
+        <ngb-pagination
+          [collectionSize]="totalSize"
+          [(page)]="pageIndex"
+          [maxSize]="10"
+          [pageSize]="pageSize"
+          (pageChange)="search()"
+        >
         </ngb-pagination>
       </div>
     </div>
