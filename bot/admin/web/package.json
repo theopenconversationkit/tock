@@ -84,6 +84,7 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "prettier": "2.6.2",
     "protractor": "~7.0.0",
     "resize-observer-polyfill": "^1.5.1",
     "stylelint": "^13.3.3",
