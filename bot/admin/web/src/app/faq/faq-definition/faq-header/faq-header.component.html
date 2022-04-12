@@ -14,73 +14,78 @@
   ~ limitations under the License.
   -->
 
-<nb-card [ngClass]="'px-2 py-1'">
-  <nb-card-body [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_BODY : CSS_WIDER_CARD_BODY">
-    <div [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_PART : CSS_WIDER_CARD_PART">
-      <nb-select
-        multiple
-        placeholder="Tags"
-        [optionsListClass]="'option-list--break-word'"
-        [disabled]="availableTags.length <= 0"
-        [size]="'small'"
-        [(ngModel)]="filter.tags"
-        (ngModelChange)="selectedTagsChanged($event)"
-      >
-        <nb-option *ngFor="let tag of availableTags" value="{{tag}}">
-          {{tag}}
-        </nb-option>
-      </nb-select>
-      <nb-checkbox [checked]="activationStatus" [indeterminate]="activationStatus === null" [ngModel]="activationStatus" (ngModelChange)="toggleFaqActivationSearch($event)" ngClass="ml-2 d-flex">Active
-      </nb-checkbox>
+  <nb-card [ngClass]="'px-2 py-1'">
+    <nb-card-body class="row align-items-center">
+      <div class="col-md-4 mt-1 mb-1">
+        <nb-form-field [ngClass]="['w-100', 'd-flex']">
+          <div class="tock-search-icon nb-form-field-addon nb-form-field-prefix-medium nb-form-field-addon-basic">
+            <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
+          </div>
+          <div class="nb-form-control-container nb-form-field-control-with-prefix tock-search-bar">
+            <input
+              nbInput
+              fullWidth
+              fieldSize="medium"
+              placeholder="Search"
+              type="text"
+              [(ngModel)]="filter.search"
+              [ngModelChangeDebounceTime]="1000"
+              (keyup.enter)="search()"
+              (ngModelChangeDebounced)="searchChange($event)"
+            />
+          </div>
+        </nb-form-field>
+      </div>
 
-      <div class="tock-divider"></div>
-    </div>
+      <div class="col-md-4 mt-1 mb-1">
+          <nb-select
+            multiple
+            placeholder="Tags"
+            [fullWidth]="true"
+            [optionsListClass]="'option-list--break-word'"
+            [disabled]="availableTags.length <= 0"
+            [(ngModel)]="filter.tags"
+            (ngModelChange)="selectedTagsChanged($event)"
+          >
+            <nb-option *ngFor="let tag of availableTags" value="{{tag}}">
+              {{tag}}
+            </nb-option>
+          </nb-select>
+      </div>
 
-    <div [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_PART + ' my-2' : CSS_WIDER_CARD_PART">
-      <nb-form-field [ngClass]="['w-100', 'd-flex']">
-        <div class="tock-search-icon nb-form-field-addon nb-form-field-prefix-medium nb-form-field-addon-basic">
-          <nb-icon nbPrefix pack="material-icons" icon="search"></nb-icon>
+      <div class="col-md-2 mt-1 mb-1">
+        <nb-checkbox [checked]="activationStatus" [indeterminate]="activationStatus === null" [ngModel]="activationStatus" (ngModelChange)="toggleFaqActivationSearch($event)">Active
+        </nb-checkbox>
+      </div>
+
+      <div class="col-md-2 mt-1 mb-1">
+        <div *ngIf="!isDockedOrSmall()">
+          <!-- NOT YET IMPLEMENTED-->
+          <!--      <button class="mr-2" nbButton status="basic">Export FAQ</button>-->
+          <!--      <button (click)="importFaq()" class="mr-2" nbButton status="basic">Import FAQ</button>-->
+          <button (click)="newFaqDefinition()" nbButton status="primary">New FAQ</button>
         </div>
-        <div class="nb-form-control-container nb-form-field-control-with-prefix tock-search-bar">
-          <input nbInput type="text"
-                 placeholder="Search"
-                 [(ngModel)]="filter.search"
-                 (keyup.enter)="search()"
-                 [ngModelChangeDebounceTime]="1000"
-                 (ngModelChangeDebounced)="searchChange($event)"
-                 fullWidth fieldSize="medium"/>
-        </div>
-      </nb-form-field>
-      <div class="tock-divider ml-2"></div>
-    </div>
 
-    <div *ngIf="!isDockedOrSmall()"
-         [ngClass]="isDockedOrSmall() ? CSS_SMALL_CARD_BUTTON_PART : CSS_WIDER_CARD_BUTTON_PART ">
-      <!-- NOT YET IMPLEMENTED-->
-      <!--      <button class="mr-2" nbButton status="basic">Export FAQ</button>-->
-      <!--      <button (click)="importFaq()" class="mr-2" nbButton status="basic">Import FAQ</button>-->
-      <button (click)="newFaqDefinition()" nbButton status="primary">New FAQ</button>
-    </div>
-
-    <nb-icon *ngIf="isDockedOrSmall()"
-             [ngClass]="'tock-burger-icon'"
-             [nbPopover]="menu"
-             nbPopoverPlacement="bottom"
-             nbPrefix
-             pack="material-icons"
-             icon="view_headline">
-    </nb-icon>
-
-  </nb-card-body>
-</nb-card>
-
-<ng-template #menu>
-  <nb-card [style]="{'margin-bottom': 0}">
-    <button class="d-block" fullWidth nbButton ghost size="small" (click)="newFaqDefinition()" status="primary">New
-      FAQ
-    </button>
-    <!-- NOT YET IMPLEMENTED-->
-    <!--      <button class="d-block" fullWidth nbButton ghost size="small" status="basic">Export FAQ</button>-->
-    <!--      <button class="d-block" fullWidth nbButton ghost size="small" (click)="importFaq()" status="basic">Import FAQ</button>-->
+        <nb-icon
+          *ngIf="isDockedOrSmall()"
+          [ngClass]="'tock-burger-icon'"
+          [nbPopover]="menu"
+          nbPopoverPlacement="bottom"
+          nbPrefix
+          pack="material-icons"
+          icon="view_headline">
+        </nb-icon>
+      </div>
+    </nb-card-body>
   </nb-card>
-</ng-template>
+
+  <ng-template #menu>
+    <nb-card [style]="{'margin-bottom': 0}">
+      <button class="d-block" fullWidth nbButton ghost size="small" (click)="newFaqDefinition()" status="primary">New
+        FAQ
+      </button>
+      <!-- NOT YET IMPLEMENTED-->
+      <!--      <button class="d-block" fullWidth nbButton ghost size="small" status="basic">Export FAQ</button>-->
+      <!--      <button class="d-block" fullWidth nbButton ghost size="small" (click)="importFaq()" status="basic">Import FAQ</button>-->
+    </nb-card>
+  </ng-template>

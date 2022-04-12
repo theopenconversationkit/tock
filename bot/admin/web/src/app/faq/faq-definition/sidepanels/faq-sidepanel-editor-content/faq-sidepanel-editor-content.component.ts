@@ -400,7 +400,8 @@ export class FaqSidepanelEditorContentComponent implements OnInit, OnDestroy, On
         context:
           {
             value: '' + origValue,
-            title: 'Edit training question'
+            title: 'Edit training question',
+            mode : "edit"
           }
       }
     );
@@ -437,14 +438,17 @@ export class FaqSidepanelEditorContentComponent implements OnInit, OnDestroy, On
           {
             value: '',
             title: 'New training question',
-            lookup: this.utteranceLookupFor(allUtterances)
+            lookup: this.utteranceLookupFor(allUtterances),
+            mode : "add",
+            saveAction : (utterance) => {
+              this.appendToUtterances('' + (utterance || ''));
+            }
           }
       }
     );
     dialogRef.onClose
       .pipe(take(1), takeUntil(this.destroy$), filter(notCancelled))
       .subscribe((result: ValidUtteranceResult) => {
-
         this.appendToUtterances('' + (result?.value || ''));
       });
   }
