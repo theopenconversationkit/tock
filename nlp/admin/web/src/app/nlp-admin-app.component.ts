@@ -19,11 +19,12 @@ import {AuthService} from "./core-nlp/auth/auth.service";
 import {StateService} from "./core-nlp/state.service";
 import {RestService} from "./core-nlp/rest/rest.service";
 import { MatIconRegistry } from "@angular/material/icon";
-import {UserRole} from "./model/auth";
+import {User, UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
 import {NbMenuItem} from "@nebular/theme";
 import {DialogService} from "./core-nlp/dialog.service";
 import { NbToastrService } from '@nebular/theme';
+import { AuthListener } from "./core-nlp/auth/auth.listener";
 
 
 @Component({
@@ -31,12 +32,12 @@ import { NbToastrService } from '@nebular/theme';
   templateUrl: './nlp-admin-app.component.html',
   styleUrls: ['./nlp-admin-app.component.css']
 })
-export class NlpAdminAppComponent implements OnInit, OnDestroy {
+export class NlpAdminAppComponent implements AuthListener, OnInit, OnDestroy {
 
   UserRole = UserRole;
 
   private errorUnsuscriber: any;
-  public menu: NbMenuItem[];
+  public menu: NbMenuItem[] = [];
 
   constructor(public auth: AuthService,
               public state: StateService,
@@ -48,38 +49,43 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
               sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon(
       'logo',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg')
+    );
+    this.auth.addListener(this);
   }
 
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.toastrService.show(e, "Error", {duration: 5000})
     );
+  }
+
+  login(user: User): void {
     this.menu = [
       {
         title: 'Language Understanding',
         icon: 'message-circle-outline',
         link: '/nlp',
-        hidden: this.state.hasRole(UserRole.nlpUser)
+        hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
         title: 'Model Quality',
         icon: 'clipboard-outline',
         link: '/quality',
-        hidden: this.state.hasRole(UserRole.nlpUser)
+        hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
         title: 'Settings',
         icon: 'settings-outline',
         link: '/applications/nlu',
-        hidden: this.state.hasRole(UserRole.admin)
+        hidden: !this.state.hasRole(UserRole.admin)
       }
-
     ];
   }
+
+  logout(): void {}
 
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
   }
-
 }
