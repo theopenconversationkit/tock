@@ -10,7 +10,7 @@ Cette page donne des indications sur la structure et les conventions du code de 
 
 ## TL;DR
 
-Voir [`CONTRIBUTING.md`](https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING) 
+Voir [`CONTRIBUTING.md`](https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING.md) 
 (anglais uniquement).
 
 ## Principales technologies

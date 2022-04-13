@@ -10,7 +10,7 @@ This page details the source structure and coding conventions for the platform.
 
 ## TL;DR
 
-See [`CONTRIBUTING.md`](https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING).
+See [`CONTRIBUTING.md`](https://github.com/theopenconversationkit/tock/blob/master/CONTRIBUTING.md).
 
 ## Main technologies
 
