@@ -33,6 +33,8 @@ export class BotCoreConfig implements CoreConfig {
   roleMap: Map<UserRole, string> = new Map(
     [
       [UserRole.nlpUser, "/nlp"],
+      [UserRole.faqNlpUser, "/faq/train"],
+      [UserRole.faqBotUser, "/faq/qa"],
       [UserRole.botUser, "/build"],
       [UserRole.admin, "/configuration"],
       [UserRole.technicalAdmin, "/configuration"],

@@ -75,13 +75,13 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         title: 'Test',
         icon: 'play-circle-outline',
         link: '/test',
-        hidden: !this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqNlpUser)
       },
       {
         title: 'Analytics',
         icon: 'trending-up-outline',
         link: '/analytics',
-        hidden: !this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqBotUser)
       },
       {
         title: 'Model Quality',
@@ -103,7 +103,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         },
         link: '/faq/train'
         ,
-        hidden: !this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.faqNlpUser)
       },
       {
         title: 'FAQ Management',
@@ -113,7 +113,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         },
         link: '/faq/qa'
         ,
-        hidden: !this.state.hasRole(UserRole.botUser)
+        hidden: !this.state.hasRole(UserRole.faqBotUser)
       }
     ];
   }
