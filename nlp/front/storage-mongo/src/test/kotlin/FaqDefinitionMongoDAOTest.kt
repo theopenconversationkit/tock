@@ -17,34 +17,29 @@
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
-import ai.tock.nlp.front.shared.config.*
+import ai.tock.nlp.front.shared.config.FaqDefinition
+import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import ai.tock.shared.security.UserLogin
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
 import kotlin.test.assertEquals
 
 class FaqDefinitionMongoDAOTest : AbstractTest() {
 
     private val faqDefinitionDao: FaqDefinitionDAO get() = injector.provide()
 
-    private val applicationId = newId<ApplicationDefinition>()
     private val intentId = "idIntent".toId<IntentDefinition>()
     private val faqId = "faqDefId".toId<FaqDefinition>()
     private val faqId2 = "faqDefId2".toId<FaqDefinition>()
     private val i18nId = "idI18n".toId<I18nLabel>()
     private val now = Instant.now().truncatedTo(ChronoUnit.MILLIS)
     private val tagList = listOf("TAG1", "TAG2")
-    private val namespace = "test"
 
     private val faqDefinition = FaqDefinition(faqId, intentId, i18nId, tagList, true, now, now)
 
@@ -124,8 +119,6 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         val otherFaqDefinition =
             FaqDefinition(faqId2, intentId2, i18nId2, tagList2, true, now.plusSeconds(1), now.plusSeconds(1))
-        val secondUtterance = createTestUtterance("otherRandomText", intentId2)
-        classifiedSentencesDao.save(secondUtterance)
         faqDefinitionDao.save(otherFaqDefinition)
 
         assertEquals(
