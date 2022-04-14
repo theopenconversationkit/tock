@@ -14,7 +14,19 @@
   ~ limitations under the License.
   -->
 
-  <h5 class="h5 mb-4">FAQ Content Management</h5>
+  <div class="title-faq">
+    <nb-card [ngClass]="'px-2 py-1'">
+      <nb-card-body class="row align-items-center">
+        <h5 class="h5 mr-4">FAQ Content Management</h5>
+        <div *ngIf="!isDockedOrSmall()">
+          <!-- NOT YET IMPLEMENTED-->
+          <!--      <button class="mr-2" nbButton status="basic">Export FAQ</button>-->
+          <!--      <button (click)="importFaq()" class="mr-2" nbButton status="basic">Import FAQ</button>-->
+          <button (click)="openNewSidepanel()" nbButton status="primary">New FAQ</button>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
 
   <nb-alert
     *ngIf="configurations?.length === 0"

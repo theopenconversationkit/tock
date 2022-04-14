@@ -20,6 +20,7 @@ import {ReplaySubject, Subscription} from 'rxjs';
 import {takeUntil} from "rxjs/operators";
 
 import {StateService} from 'src/app/core-nlp/state.service';
+import {isDockedOrSmall} from '../common/model/view-mode';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFaqDefinition, FaqDefinition} from '../common/model/faq-definition';
 import {FaqQaFilter, FaqGridComponent} from './faq-grid/faq-grid.component';
@@ -183,6 +184,10 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
       truncate(fq.title || ''), {duration: 2000, status: "basic"});
 
     this.grid.refresh();
+  }
+
+  isDockedOrSmall(): boolean {
+    return isDockedOrSmall(this.viewMode);
   }
 
 }

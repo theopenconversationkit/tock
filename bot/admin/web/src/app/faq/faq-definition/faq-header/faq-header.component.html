@@ -59,13 +59,6 @@
       </div>
 
       <div class="col-md-2 mt-1 mb-1">
-        <div *ngIf="!isDockedOrSmall()">
-          <!-- NOT YET IMPLEMENTED-->
-          <!--      <button class="mr-2" nbButton status="basic">Export FAQ</button>-->
-          <!--      <button (click)="importFaq()" class="mr-2" nbButton status="basic">Import FAQ</button>-->
-          <button (click)="newFaqDefinition()" nbButton status="primary">New FAQ</button>
-        </div>
-
         <nb-icon
           *ngIf="isDockedOrSmall()"
           [ngClass]="'tock-burger-icon'"
