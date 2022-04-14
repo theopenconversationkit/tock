@@ -16,6 +16,8 @@
 
 import {Component, OnInit} from "@angular/core";
 import {Router} from "@angular/router";
+import { StateService } from "../core-nlp/state.service";
+import { UserRole } from "../model/auth";
 class TabLink {
   constructor(
     public route: string,
@@ -38,7 +40,10 @@ export class TestTabsComponent implements OnInit {
 
   testTabLinks = tabs;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private state: StateService) {
+    if (!state.hasRole(UserRole.botUser)) {
+      this.testTabLinks = this.testTabLinks.filter(t => t.route !== 'plan')
+    }
   }
 
   ngOnInit() {
