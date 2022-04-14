@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
+import ai.tock.bot.connector.iadvize.model.request.UnsupportRequest
 import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
@@ -77,8 +78,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
             if (!answered) {
                 answered = true
 
-                val iadvizeResponse: IadvizeResponse? = buildResponse()
-                context.response().endWithJson(iadvizeResponse)
+                context.response().endWithJson(buildResponse())
             }
         } catch (t: Throwable) {
             logger.error(t)
@@ -86,7 +86,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
         }
     }
 
-    fun buildResponse(): IadvizeResponse? {
+    fun buildResponse(): IadvizeResponse {
         val texts: List<Payload> =
             actions
                 .filter { it.action is SendSentence && it.action.text != null }
@@ -96,25 +96,28 @@ class IadvizeConnectorCallback(override val  applicationId: String,
                     TextPayload(text.toString())
                 }
 
+        val response = MessageResponse(
+            request.idConversation,
+            request.idOperator,
+            LocalDateTime.now(),
+            LocalDateTime.now())
+
        return when(request) {
-            is ConversationsRequest ->
-               MessageResponse(
-                    request.idConversation,
-                    request.idOperator,
-                    LocalDateTime.now(),
-                    LocalDateTime.now())
+           is ConversationsRequest -> response
 
            is MessageRequest -> {
-               val replies = MessageResponse(
-                   request.idConversation,
-                   request.idOperator,
-                   LocalDateTime.now(),
-                   LocalDateTime.now())
-               replies.replies.addAll(texts.stream().map { IadvizeMessage(it) }.collect(Collectors.toList()))
-               return replies
+               response.replies.addAll(texts.stream().map { IadvizeMessage(it) }.collect(Collectors.toList()))
+               return response
            }
 
-           else -> null
+           is UnsupportRequest -> {
+               logger.error("Request type ${request.type} is not supported by connector")
+               //TODO: à replacer par un transfère vers un humain lorsque ce type de message sera pris en charge
+               response.replies.add(IadvizeMessage(TextPayload("Désolé, je ne sais pas répondre à cette demande")))
+               return response
+           }
+
+           else -> response
        }
     }
 
@@ -128,13 +131,17 @@ class IadvizeConnectorCallback(override val  applicationId: String,
         context.fail(throwable)
     }
 
-    fun <T> HttpServerResponse.endWithJson(response: T) {
-        logger.debug { "iAdvize response : $response" }
+    fun <T> HttpServerResponse.endWithJson(response: T?) {
+        if(response != null) {
+            logger.debug { "iAdvize response : $response" }
 
-        val writeValueAsString = mapper.writeValueAsString(response)
+            val writeValueAsString = mapper.writeValueAsString(response)
 
-        logger.debug { "iAdvize json response: $writeValueAsString" }
+            logger.debug { "iAdvize json response: $writeValueAsString" }
 
-        return putHeader("Content-Type", "application/json").end(writeValueAsString)
+            return putHeader("Content-Type", "application/json").end(writeValueAsString)
+        } else {
+            return end()
+        }
     }
 }

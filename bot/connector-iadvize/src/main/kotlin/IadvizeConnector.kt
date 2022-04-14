@@ -21,6 +21,7 @@ import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.iadvize.model.request.*
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
+import ai.tock.bot.connector.iadvize.model.request.UnsupportRequest.UnsupportRequestJson
 import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies
 import ai.tock.bot.connector.iadvize.model.response.Bot
 import ai.tock.bot.connector.iadvize.model.response.BotUpdated
@@ -165,14 +166,18 @@ class IadvizeConnector internal constructor(
     private fun mapRequest(idConversation: String, context: RoutingContext): IadvizeRequest {
         val typeMessage: TypeMessage = mapper.readValue(context.getBodyAsString(), TypeMessage::class.java)
         return when(typeMessage.type) {
-            // json dont contains idConversation, to prevent null pointer, used inner class MessageRequestJson
+            // json don't contains idConversation, to prevent null pointer, used inner class MessageRequestJson
             "text" -> {
                 val messageRequestJson: MessageRequestJson =
                     mapper.readValue(context.getBodyAsString(), MessageRequestJson::class.java)
                 MessageRequest(messageRequestJson, idConversation)
             }
-            else -> null
-        }!!
+            else -> {
+                val unsupportRequestJson: UnsupportRequestJson =
+                    mapper.readValue(context.getBodyAsString(), UnsupportRequestJson::class.java)
+                UnsupportRequest(unsupportRequestJson, idConversation, typeMessage.type)
+            }
+        }
 
     }
 
@@ -212,12 +217,15 @@ class IadvizeConnector internal constructor(
         iadvizeRequest: IadvizeRequest
     ) {
         val callback = IadvizeConnectorCallback(applicationId, controller, context, iadvizeRequest)
-        val event = when(iadvizeRequest) {
-            is MessageRequest ->
-                WebhookActionConverter.toEvent(iadvizeRequest, applicationId)
+        when(iadvizeRequest) {
+            is MessageRequest -> {
+                val event = WebhookActionConverter.toEvent(iadvizeRequest, applicationId)
+                controller.handle(event, ConnectorData(callback))
+            }
 
-            else -> null
+            //Only MessageRequest are supported, other message are UnsupportedMessage
+            // and UnsupportedResponse can be send immediatly
+            else -> callback.sendResponse()
         }
-        controller.handle(event!!, ConnectorData(callback))
     }
 }

@@ -205,6 +205,21 @@ class IadvizeConnectorTest {
         verify { response.end() }
     }
 
+    @Test
+    fun handlerConversationUnsupport_shouldDontCrash_TockBot() {
+        val request: String = Resources.toString(resource("/request_message_unsupport.json"), Charsets.UTF_8)
+        val expectedResponse: String = Resources.toString(resource("/response_message_unsupport.json"), Charsets.UTF_8)
+        every { context.getBodyAsString() } returns request
+        every { context.getBodyAsString() } returns request
+
+        connector.handlerConversation(context, controller)
+
+        val messageResponse = slot<String>()
+        verify { response.end(capture(messageResponse)) }
+        assertEquals(expectedResponse, messageResponse.captured)
+
+    }
+
     private fun getIadvizeRequestMessage(json: String, idConversation: String): IadvizeRequest {
         val messageRequestJson : MessageRequestJson = mapper.readValue(
             Resources.toString(resource(json), Charsets.UTF_8),

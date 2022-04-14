@@ -31,9 +31,6 @@ internal object WebhookActionConverter {
         request: MessageRequest,
         applicationId: String
     ): Event {
-        //val eventState = message.getEventState()
-        //val userInterface = eventState.userInterface
-
         val userId = request.idConversation
 
         val playerId = PlayerId(userId, PlayerType.user)

@@ -16,4 +16,4 @@
 
 package ai.tock.bot.connector.iadvize.model.request
 
-data class ConversationsRequest(val idOperator: String, val idConversation: String) : IadvizeRequest
+data class ConversationsRequest(override val idOperator: String, override val idConversation: String) : IadvizeRequest

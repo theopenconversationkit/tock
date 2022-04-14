@@ -16,7 +16,9 @@
 
 package ai.tock.bot.connector.iadvize.model.request
 
-interface IadvizeRequest {
-    val idConversation: String
-    val idOperator: String
+class UnsupportRequest(override val idOperator: String, override val idConversation: String, val type: String) : IadvizeRequest {
+    data class UnsupportRequestJson(val idOperator: String)
+
+    constructor(unsupportRequestJson: UnsupportRequestJson, idConversation: String, type: String) :
+            this(unsupportRequestJson.idOperator, idConversation, type)
 }
