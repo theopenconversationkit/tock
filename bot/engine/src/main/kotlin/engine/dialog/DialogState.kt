@@ -20,6 +20,7 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.entity.Value
+import ai.tock.shared.intProperty
 
 /**
  * The [Dialog] state.
@@ -50,6 +51,8 @@ data class DialogState(
 
     companion object {
         private const val SWITCH_STORY_BUS_KEY = "_tock_switch"
+        private const val ASK_AGAIN_STORY_BUS_KEY = "_tock_ask_again"
+        private const val ASK_AGAIN_STORY_ROUND_BUS_KEY = "_tock_ask_again_round"
 
         /**
          * Init a new state from the specified state.
@@ -69,6 +72,32 @@ data class DialogState(
         get() = context[SWITCH_STORY_BUS_KEY] == true
         set(v) {
             context[SWITCH_STORY_BUS_KEY] = v
+        }
+
+    internal var hasCurrentAskAgainProcess: Boolean
+        get() = context[ASK_AGAIN_STORY_BUS_KEY] == true
+        set(v) {
+            context[ASK_AGAIN_STORY_BUS_KEY] = v
+        }
+
+    private val askAgainRoundDefault = intProperty("tock_ask_again_round", 1)
+
+    //askAgain round with default value
+    internal var askAgainRound: Int = askAgainRoundDefault
+        get() {
+            //retrieve default value
+            val value = context[ASK_AGAIN_STORY_ROUND_BUS_KEY] as? Int
+            return if (value == null) {
+                context[ASK_AGAIN_STORY_ROUND_BUS_KEY] = field
+                field
+                //or retrieve current value
+            } else {
+                value
+            }
+        }
+        set(v) {
+            context[ASK_AGAIN_STORY_ROUND_BUS_KEY] = v
+            field = v
         }
 
     /**

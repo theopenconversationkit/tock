@@ -166,6 +166,7 @@ data class Story(
         if (supportIntent(intent)) {
             return true
         }
+
         val checkSteps = if (definition.hasTag(CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT)) {
             currentStep?.supportIntent(intent) == true ||
                     (currentStep?.children ?: definition.steps)

@@ -20,6 +20,8 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
@@ -33,8 +35,8 @@ import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
 import java.util.Locale
+import mu.KotlinLogging
 
 /**
  *
@@ -163,16 +165,34 @@ internal class Bot(
 
         val story =
             if (previousStory == null ||
-                (newIntent != null && !previousStory.supportAction(userTimeline, dialog, action, newIntent))
+                (newIntent != null &&
+                        (!previousStory.supportAction(
+                            userTimeline,
+                            dialog,
+                            action,
+                            newIntent
+                        )))
             ) {
-                val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
+                val storyDefinition: StoryDefinition =
+                    botDefinition.findStoryDefinition(newIntent?.name, action.applicationId)
                 val newStory = Story(
                     storyDefinition,
                     if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) newIntent
                     else storyDefinition.mainIntent()
                 )
-                dialog.stories.add(newStory)
-                newStory
+
+                if (previousStory?.definition?.hasTag(StoryTag.ASK_AGAIN) == true
+                    && dialog.state.askAgainRound > 0
+                    && !previousStory.supportIntent(newStory.definition.wrappedIntent())
+                ) {
+                    dialog.state.askAgainRound--
+                    dialog.state.hasCurrentAskAgainProcess = true
+                    dialog.stories.add(previousStory)
+                    previousStory
+                } else {
+                    dialog.stories.add(newStory)
+                    newStory
+                }
             } else {
                 previousStory
             }
@@ -251,11 +271,11 @@ internal class Bot(
                             if (currentStory == null ||
                                 !currentStory.supportIntent(intent) ||
                                 !currentStory.supportIntent(
-                                        botDefinition.findIntent(
-                                                previousIntentName,
-                                                choice.applicationId
-                                            )
+                                    botDefinition.findIntent(
+                                        previousIntentName,
+                                        choice.applicationId
                                     )
+                                )
                             ) {
                                 dialog.stories.add(
                                     Story(

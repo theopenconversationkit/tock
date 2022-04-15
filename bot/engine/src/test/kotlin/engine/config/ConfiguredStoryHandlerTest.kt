@@ -30,6 +30,7 @@ import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotDefinitionTest
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.PlayerId
@@ -86,6 +87,7 @@ class ConfiguredStoryHandlerTest {
             every { currentAnswerIndex } returns 1
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns mockk()
+            every { dialog.stories } returns mutableListOf<Story>()
             every { translate(I18nLabelValue(originalLabel)) } returns RawString("translated label")
             every { translate(RawString("Step 1 not translated")) } returns RawString("Step 1 translated")
             every { underlyingConnector } returns mockk() {
@@ -182,6 +184,7 @@ class ConfiguredStoryHandlerTest {
             every { currentAnswerIndex } returns 1
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns mockk()
+            every { dialog.stories } returns mutableListOf<Story>()
             every { translate(any<I18nLabelValue>()) } returns RawString("translated label")
             every { translate(any<CharSequence>()) } answers { RawString(it.invocation.args[0].toString()) }
             every { underlyingConnector } returns connector
@@ -295,6 +298,7 @@ class ConfiguredStoryHandlerTest {
             every { currentAnswerIndex } returns 1
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns mockk()
+            every { dialog.stories } returns mutableListOf<Story>()
             every { translate(any<I18nLabelValue>()) } answers { RawString(it.invocation.args[0].toString()) }
             every { translate(any<CharSequence>()) } answers { RawString(it.invocation.args[0].toString()) }
             every { underlyingConnector } returns connector
