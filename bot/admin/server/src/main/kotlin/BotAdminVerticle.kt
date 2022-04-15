@@ -24,19 +24,7 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.dialog.DialogReportQuery
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
@@ -54,8 +42,7 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
@@ -761,7 +748,6 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blocking(GET, "/file/:id.:suffix", botUser) { context ->
-
             val id = context.path("id")
             if (!id.startsWith(context.organization)) {
                 unauthorized()
