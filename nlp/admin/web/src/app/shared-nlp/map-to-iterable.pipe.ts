@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'mapToIterable'
 })
-export class MapToIterablePipe implements PipeTransform  {
-  transform(map: Map<any,any>, args: any[] = null): any {
-    if (!map)
-      return null;
+export class MapToIterablePipe implements PipeTransform {
+  transform(map: Map<any, any>, args: any[] = null): any {
+    if (!map) return null;
     const r = [];
-    map.forEach((v, k) => r.push({'key': k, 'value': v}));
+    map.forEach((v, k) => r.push({ key: k, value: v }));
     return r;
   }
 }

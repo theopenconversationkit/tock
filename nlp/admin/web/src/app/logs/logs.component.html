@@ -15,61 +15,136 @@
   -->
 
 <div class="search">
-
   <nb-card [nbSpinner]="loading">
-    <nb-card-body style="display: flex;">
+    <nb-card-body style="display: flex">
       <div class="search-input">
-        <input nbInput placeholder="Search Logs" [(ngModel)]="text" (keyup.enter)="refresh()" style="width: -webkit-fill-available;">
+        <input
+          nbInput
+          placeholder="Search Logs"
+          [(ngModel)]="text"
+          (keyup.enter)="refresh()"
+          style="width: -webkit-fill-available"
+        />
       </div>
-      <nb-toggle status="primary" class="choice" [(ngModel)]="onlyCurrentLocale" (change)="refresh()">Only current locale</nb-toggle>
-      <nb-toggle status="primary" [(ngModel)]="test" (change)="refresh()">Display tests</nb-toggle>
-      <button nbButton outline status="primary" size="small" (click)="refresh()" class="go-btn">GO</button>
+      <nb-toggle
+        status="primary"
+        class="choice"
+        [(ngModel)]="onlyCurrentLocale"
+        (change)="refresh()"
+        >Only current locale</nb-toggle
+      >
+      <nb-toggle
+        status="primary"
+        [(ngModel)]="test"
+        (change)="refresh()"
+        >Display tests</nb-toggle
+      >
+      <button
+        nbButton
+        outline
+        status="primary"
+        size="small"
+        (click)="refresh()"
+        class="go-btn"
+      >
+        GO
+      </button>
     </nb-card-body>
   </nb-card>
 
-<div *ngIf="total !== -1">
-  <h1 *ngIf="total === 0">{{title}} is empty!
-    <button mat-button (click)="refresh()" nbTooltip="Refresh">
-      <mat-icon>refresh</mat-icon>
-    </button>
-  </h1>
-  <h1 *ngIf="total !== 0">
-    <span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}
-    <button mat-icon-button class="button" (click)="downloadDump()" nbTooltip="Download a minimal csv dump of the logs">
-      <mat-icon>cloud_download</mat-icon>
-    </button>
-    <button mat-icon-button class="button" (click)="refresh()" nbTooltip="Refresh">
-      <mat-icon>refresh</mat-icon>
-    </button>
-  </h1>
+  <div *ngIf="total !== -1">
+    <h1 *ngIf="total === 0">
+      {{ title }} is empty!
+      <button
+        mat-button
+        (click)="refresh()"
+        nbTooltip="Refresh"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </h1>
+    <h1 *ngIf="total !== 0">
+      <span *ngIf="total > 10">Estimated</span> {{ title }} size : {{ total }}
+      <button
+        mat-icon-button
+        class="button"
+        (click)="downloadDump()"
+        nbTooltip="Download a minimal csv dump of the logs"
+      >
+        <mat-icon>cloud_download</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        class="button"
+        (click)="refresh()"
+        nbTooltip="Refresh"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </h1>
 
-  <p></p>
-  <div
-    infinite-scroll
-    [infiniteScrollDistance]="2"
-    [infiniteScrollThrottle]="300"
-    (scrolled)="onScroll()">
-    <nb-card *ngFor="let d of data" class="log">
-      <nb-card-header>
-        <h4 *ngIf="d.error">{{d.textRequest()}} <mat-icon color="warn" nbTooltip="error">error</mat-icon></h4>
-        <tock-highlight *ngIf="!d.error" [sentence]="d.sentence" [readOnly]="true"></tock-highlight>
-      </nb-card-header>
-      <nb-card-body>
-        {{state.intentLabelByName(d.intent)}}
-          <span *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()" nbTooltip="intent probability">
-            <span class="intentProbability">({{d.sentence.classification.intentProbability | percent:'1.0-2'}})</span>
-        </span> {{state.intentLabelByName(d.intent) ? '-' : ''}}
-        {{d.date | amTimeAgo}} <span *ngIf="d.durationInMS !== 0">in {{d.durationInMS}} ms</span>
-        <a
-          [routerLink]="[config.displayDialogUrl]"
-          [queryParams]="{
-            dialogId: d.dialogId,
-            text: d.textRequest()
-          }"
-          *ngIf="d.error && config.displayDialogUrl" mat-icon-button matTooltip="Display Conversation" color="primary"><mat-icon>speaker_notes</mat-icon></a>
-        <button mat-icon-button (click)="displayFullLog(d)" nbTooltip="View Full Log"><mat-icon>visibility</mat-icon></button>
-      </nb-card-body>
-    </nb-card>
+    <p></p>
+    <div
+      infinite-scroll
+      [infiniteScrollDistance]="2"
+      [infiniteScrollThrottle]="300"
+      (scrolled)="onScroll()"
+    >
+      <nb-card
+        *ngFor="let d of data"
+        class="log"
+      >
+        <nb-card-header>
+          <h4 *ngIf="d.error">
+            {{ d.textRequest() }}
+            <mat-icon
+              color="warn"
+              nbTooltip="error"
+              >error</mat-icon
+            >
+          </h4>
+          <tock-highlight
+            *ngIf="!d.error"
+            [sentence]="d.sentence"
+            [readOnly]="true"
+          ></tock-highlight>
+        </nb-card-header>
+        <nb-card-body>
+          {{ state.intentLabelByName(d.intent) }}
+          <span
+            *ngIf="
+              d.sentence?.classification?.intentId &&
+              d.sentence.classification.hasIntentProbability()
+            "
+            nbTooltip="intent probability"
+          >
+            <span class="intentProbability"
+              >({{ d.sentence.classification.intentProbability | percent: '1.0-2' }})</span
+            >
+          </span>
+          {{ state.intentLabelByName(d.intent) ? '-' : '' }} {{ d.date | amTimeAgo }}
+          <span *ngIf="d.durationInMS !== 0">in {{ d.durationInMS }} ms</span>
+          <a
+            [routerLink]="[config.displayDialogUrl]"
+            [queryParams]="{
+              dialogId: d.dialogId,
+              text: d.textRequest()
+            }"
+            *ngIf="d.error && config.displayDialogUrl"
+            mat-icon-button
+            matTooltip="Display Conversation"
+            color="primary"
+            ><mat-icon>speaker_notes</mat-icon></a
+          >
+          <button
+            mat-icon-button
+            (click)="displayFullLog(d)"
+            nbTooltip="View Full Log"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </nb-card-body>
+      </nb-card>
+    </div>
   </div>
-</div>
 </div>

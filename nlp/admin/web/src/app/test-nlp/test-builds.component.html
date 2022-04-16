@@ -18,11 +18,24 @@
   <nb-card-body>
     <span class="intent nb-form-field inline">
       <label>Intent</label>
-      <nb-select [nbSpinner]="loading" nbSpinnerStatus="primary" placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search(null)" class="search-input">
+      <nb-select
+        [nbSpinner]="loading"
+        nbSpinnerStatus="primary"
+        placeholder="Intent"
+        [(ngModel)]="intent"
+        (selectedChange)="search(null)"
+        class="search-input"
+      >
         <nb-option value="">All</nb-option>
-        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
-          <nb-option *ngFor="let intent of category.intents" [value]="intent.qualifiedName()">
-            {{intent.intentLabel()}}
+        <nb-option-group
+          *ngFor="let category of state.currentIntentsCategories | async"
+          [title]="category.category"
+        >
+          <nb-option
+            *ngFor="let intent of category.intents"
+            [value]="intent.qualifiedName()"
+          >
+            {{ intent.intentLabel() }}
           </nb-option>
         </nb-option-group>
         <nb-option value="unknown">Unknown</nb-option>
@@ -30,35 +43,57 @@
     </span>
     <span class="intent nb-form-field inline">
       <label>Data after</label>
-      <input nbInput placeholder="Data after" [nbDatepicker]="dateTimePicker" [(ngModel)]="modifiedAfter">
-      <nb-datepicker #dateTimePicker (dateChange)="search($event)"></nb-datepicker>
+      <input
+        nbInput
+        placeholder="Data after"
+        [nbDatepicker]="dateTimePicker"
+        [(ngModel)]="modifiedAfter"
+      />
+      <nb-datepicker
+        #dateTimePicker
+        (dateChange)="search($event)"
+      ></nb-datepicker>
     </span>
-
   </nb-card-body>
 </nb-card>
-<h2 *ngIf="nodata" class="search">
+<h2
+  *ngIf="nodata"
+  class="search"
+>
   No Data
 </h2>
 <div *ngIf="!nodata">
   <nb-card *ngIf="errorChartOptions">
     <nb-card-body>
-      <div echarts [options]="errorChartOptions" class="chart"></div>
+      <div
+        echarts
+        [options]="errorChartOptions"
+        class="chart"
+      ></div>
     </nb-card-body>
   </nb-card>
 </div>
-<br>
+<br />
 <div *ngIf="!nodata">
   <nb-card *ngIf="durationChartOptions">
     <nb-card-body>
-      <div echarts [options]="durationChartOptions" class="chart"></div>
+      <div
+        echarts
+        [options]="durationChartOptions"
+        class="chart"
+      ></div>
     </nb-card-body>
   </nb-card>
 </div>
-<br>
+<br />
 <div *ngIf="!nodata">
   <nb-card *ngIf="sizeChartOptions">
     <nb-card-body>
-      <div echarts [options]="sizeChartOptions" class="chart"></div>
+      <div
+        echarts
+        [options]="sizeChartOptions"
+        class="chart"
+      ></div>
     </nb-card-body>
   </nb-card>
 </div>

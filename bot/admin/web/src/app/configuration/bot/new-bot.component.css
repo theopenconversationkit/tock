@@ -34,13 +34,13 @@
 }
 
 .container {
-  margin-top:20px;
+  margin-top: 20px;
   height: 100%;
 }
 
 .fill-remaining-space {
   flex-grow: 1;
-  height:800px;
+  height: 800px;
   background-color: white;
 }
 

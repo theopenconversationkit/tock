@@ -18,46 +18,98 @@
   <nb-card>
     <nb-card-body>
       <span class="search-input">
-        <input nbInput placeholder="Search user text" status="primary" [(ngModel)]="filter.text" (keyup.enter)="refresh()">
+        <input
+          nbInput
+          placeholder="Search user text"
+          status="primary"
+          [(ngModel)]="filter.text"
+          (keyup.enter)="refresh()"
+        />
       </span>
-      <nb-checkbox class="exact" [(ngModel)]="filter.exactMatch">Exact text match</nb-checkbox>
+      <nb-checkbox
+        class="exact"
+        [(ngModel)]="filter.exactMatch"
+        >Exact text match</nb-checkbox
+      >
       <span>
-        <nb-select class="select-plan" status="primary"
+        <nb-select
+          class="select-plan"
+          status="primary"
           placeholder="Connector type"
-          [(ngModel)]="filter.connectorType" (selectedChange)="refresh()">
-          <nb-option *ngFor="let c of connectorTypes"
-                      [value]="c">{{ c.id }}</nb-option>
+          [(ngModel)]="filter.connectorType"
+          (selectedChange)="refresh()"
+        >
+          <nb-option
+            *ngFor="let c of connectorTypes"
+            [value]="c"
+            >{{ c.id }}</nb-option
+          >
         </nb-select>
       </span>
       &nbsp;
       <span>
-        <nb-select class="select-plan" status="primary"
-        placeholder="Intent" [(ngModel)]="filter.intentName" (selectedChange)="refresh()">
+        <nb-select
+          class="select-plan"
+          status="primary"
+          placeholder="Intent"
+          [(ngModel)]="filter.intentName"
+          (selectedChange)="refresh()"
+        >
           <nb-option value="">All</nb-option>
-          <nb-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
-            {{intent.name}}
+          <nb-option
+            *ngFor="let intent of state.currentApplication.intents"
+            [value]="intent.name"
+          >
+            {{ intent.name }}
           </nb-option>
           <nb-option value="unknown">Unknown</nb-option>
         </nb-select>
       </span>
       &nbsp;
-      <mat-slide-toggle class="test" [(ngModel)]="filter.displayTests" (change)="waitAndRefresh()">Display tests</mat-slide-toggle>
-      <button nbButton (click)="refresh()" size="small" style="margin-left: 10px;">GO</button>
+      <mat-slide-toggle
+        class="test"
+        [(ngModel)]="filter.displayTests"
+        (change)="waitAndRefresh()"
+        >Display tests</mat-slide-toggle
+      >
+      <button
+        nbButton
+        (click)="refresh()"
+        size="small"
+        style="margin-left: 10px"
+      >
+        GO
+      </button>
     </nb-card-body>
   </nb-card>
   <div *ngIf="total !== -1">
-    <h1 *ngIf="total === 0">No dialogs found!
-      <button mat-button (click)="refresh()">
+    <h1 *ngIf="total === 0">
+      No dialogs found!
+      <button
+        mat-button
+        (click)="refresh()"
+      >
         <mat-icon>refresh</mat-icon>
       </button>
     </h1>
-    <h1 *ngIf="total !== 0" style="margin: 20px;">
-      <span *ngIf="total > 10">Estimated</span> Dialogs : {{total}}
-      <button mat-button (click)="refresh()" style="vertical-align: top;">
+    <h1
+      *ngIf="total !== 0"
+      style="margin: 20px"
+    >
+      <span *ngIf="total > 10">Estimated</span> Dialogs : {{ total }}
+      <button
+        mat-button
+        (click)="refresh()"
+        style="vertical-align: top"
+      >
         <mat-icon>refresh</mat-icon>
       </button>
-      <button *ngIf="filter.dialogId" mat-button (click)="viewAllWithThisText()"
-              matTooltip="View all dialogs using this text">
+      <button
+        *ngIf="filter.dialogId"
+        mat-button
+        (click)="viewAllWithThisText()"
+        matTooltip="View all dialogs using this text"
+      >
         <mat-icon>speaker_notes</mat-icon>
       </button>
     </h1>
@@ -66,17 +118,21 @@
       infinite-scroll
       [infiniteScrollDistance]="2"
       [infiniteScrollThrottle]="300"
-      (scrolled)="onScroll()">
+      (scrolled)="onScroll()"
+    >
       <div *ngFor="let dialog of data">
-        <tock-display-dialog
-          [dialog]="dialog">
+        <tock-display-dialog [dialog]="dialog">
           <div *ngIf="dialog.actions.length === 0">No dialog</div>
         </tock-display-dialog>
         <p></p>
       </div>
     </div>
   </div>
-  <nb-card [nbSpinner]="loading" nbSpinnerStatus="primary" *ngIf="loading">
+  <nb-card
+    [nbSpinner]="loading"
+    nbSpinnerStatus="primary"
+    *ngIf="loading"
+  >
     <nb-card-body></nb-card-body>
   </nb-card>
 </div>

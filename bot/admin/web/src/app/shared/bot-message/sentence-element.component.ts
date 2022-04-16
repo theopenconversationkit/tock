@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, Output} from "@angular/core";
-import {BotMessage, SentenceElement} from "../model/dialog-data";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { BotMessage, SentenceElement } from '../model/dialog-data';
 @Component({
   selector: 'tock-sentence-element',
   templateUrl: './sentence-element.component.html',
   styleUrls: ['./sentence-element.component.css']
 })
 export class SentenceElementComponent {
-
   @Input()
   element: SentenceElement;
 
@@ -32,7 +31,7 @@ export class SentenceElementComponent {
   @Output()
   sendMessage: EventEmitter<BotMessage> = new EventEmitter();
 
-  reply(message:BotMessage) {
+  reply(message: BotMessage) {
     this.sendMessage.emit(message);
   }
 }

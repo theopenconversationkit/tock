@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import moment from 'moment';
-import {Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 
-import {StateService} from '../core-nlp/state.service';
-import {TestErrorQuery} from '../model/nlp';
-import {QualityService} from '../quality-nlp/quality.service';
-import {formatStatDateTime} from "../model/commons";
+import { StateService } from '../core-nlp/state.service';
+import { TestErrorQuery } from '../model/nlp';
+import { QualityService } from '../quality-nlp/quality.service';
+import { formatStatDateTime } from '../model/commons';
 
-
-let maxDurationUnit: string = "ms";
+let maxDurationUnit: string = 'ms';
 
 function parseDuration(d): number {
   const r = moment.duration(d);
   if (r.asMinutes() > 60) {
-    maxDurationUnit = "h";
-  } else if (maxDurationUnit !== "h" && r.asSeconds() > 60) {
-    maxDurationUnit = "min";
-  } else if (maxDurationUnit !== "h" && maxDurationUnit !== "min" && r.asMilliseconds() > 1000) {
-    maxDurationUnit = "s";
+    maxDurationUnit = 'h';
+  } else if (maxDurationUnit !== 'h' && r.asSeconds() > 60) {
+    maxDurationUnit = 'min';
+  } else if (maxDurationUnit !== 'h' && maxDurationUnit !== 'min' && r.asMilliseconds() > 1000) {
+    maxDurationUnit = 's';
   }
 
   return Math.round(r.asMilliseconds());
@@ -41,14 +40,14 @@ function parseDuration(d): number {
 function displayDuration(d): string {
   const m = moment(d);
   switch (maxDurationUnit) {
-    case "h" :
-      return m.format("h[h]mm");
-    case "min" :
-      return m.format("m[min] s[s]");
-    case "s" :
-      return m.format("s[s] SSS[ms]");
-    default :
-      return m.format("s[s] SSS[ms]");
+    case 'h':
+      return m.format('h[h]mm');
+    case 'min':
+      return m.format('m[min] s[s]');
+    case 's':
+      return m.format('s[s] SSS[ms]');
+    default:
+      return m.format('s[s] SSS[ms]');
   }
 }
 
@@ -58,7 +57,6 @@ function displayDuration(d): string {
   styleUrls: ['./test-builds.component.css']
 })
 export class TestBuildsComponent implements OnInit, OnDestroy {
-
   public errors: Array<any>;
   public durations: Array<any>;
   public sizes: Array<any>;
@@ -68,7 +66,7 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   public nodata: boolean = false;
   public loading: boolean = false;
 
-  public intent: string = "";
+  public intent: string = '';
   public modifiedAfter?: Date;
 
   private subscription: Subscription;
@@ -80,7 +78,9 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.search(this.modifiedAfter);
-    this.subscription = this.state.configurationChange.subscribe(_ => this.search(this.modifiedAfter));
+    this.subscription = this.state.configurationChange.subscribe((_) =>
+      this.search(this.modifiedAfter)
+    );
   }
 
   ngOnDestroy(): void {
@@ -90,202 +90,200 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
   search(date): void {
     if (date) this.modifiedAfter = date;
     this.loading = true;
-    this.quality.buildStats(
-      TestErrorQuery.createWithoutSize(this.state, this.intent === "" ? undefined : this.intent, this.modifiedAfter)
-    )
-      .subscribe(result => {
-          this.loading = false;
-          if (result.length === 0) {
-            this.nodata = true;
-            return;
-          }
-          this.nodata = false;
-          maxDurationUnit = "ms";
-          const errorData = result.map(p => [
-            p.date,
-            p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.errors / p.nbSentencesTested)) / 100,
-          ]);
-          const intentData = result.map(p => [p.date,
-            p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.intentErrors / p.nbSentencesTested)) / 100,
-          ]);
-          const entityData = result.map(p => [p.date,
-            p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.entityErrors / p.nbSentencesTested)) / 100,
-          ]);
+    this.quality
+      .buildStats(
+        TestErrorQuery.createWithoutSize(
+          this.state,
+          this.intent === '' ? undefined : this.intent,
+          this.modifiedAfter
+        )
+      )
+      .subscribe((result) => {
+        this.loading = false;
+        if (result.length === 0) {
+          this.nodata = true;
+          return;
+        }
+        this.nodata = false;
+        maxDurationUnit = 'ms';
+        const errorData = result.map((p) => [
+          p.date,
+          p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.errors / p.nbSentencesTested)) / 100
+        ]);
+        const intentData = result.map((p) => [
+          p.date,
+          p.nbSentencesTested === 0
+            ? 0
+            : Math.round(10000 * (p.intentErrors / p.nbSentencesTested)) / 100
+        ]);
+        const entityData = result.map((p) => [
+          p.date,
+          p.nbSentencesTested === 0
+            ? 0
+            : Math.round(10000 * (p.entityErrors / p.nbSentencesTested)) / 100
+        ]);
 
-          this.errorChartOptions = {
-            tooltip: {
-              trigger: 'axis',
-              axisPointer: {
-                type: 'cross',
-                label: {
-                  backgroundColor: '#6a7985'
-                }
+        this.errorChartOptions = {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              label: {
+                backgroundColor: '#6a7985'
               }
-            },
-            legend: {
-              data: ['Errors', 'Intent Errors', 'Entity Errors'],
-              textStyle: {
-                color: '#8f9bb3',
-              }
-            },
-            color: ['#ff3d71', '#0095ff', '#028A0F'],
-            yAxis: {
-              axisLabel: {
-                formatter: (value) => value + '%'
-              }
-            },
-            xAxis: {
-              type: 'category',
-              boundaryGap: false,
-              axisLabel: {
-                formatter: formatStatDateTime
-              }
-            },
-            series: [
-              {
-                name: 'Errors',
-                type: 'line',
-                areaStyle: {},
-                smooth: true,
-                data: errorData,
-                formatter: (value) => value + '%'
-              },
-              {
-                name: 'Intent Errors',
-                type: 'line',
-                areaStyle: {},
-                smooth: true,
-                data: intentData,
-                formatter: (value) => value + '%'
-              },
-              {
-                name: 'Entity Errors',
-                type: 'line',
-                areaStyle: {},
-                smooth: true,
-                data: entityData,
-                formatter: (value) => value + '%'
-              }
-            ]
-          }
-
-          const modelData = result.map(p => [
-            p.date,
-            p.nbSentencesInModel,
-          ]);
-          const testData = result.map(p => [
-            p.date,
-            p.nbSentencesTested,
-          ]);
-          this.sizes = [
-            {
-              data: modelData,
-              label: "Model size"
-            },
-            {
-              data: testData,
-              label: "Test set size"
             }
-          ];
-          this.sizeChartOptions = {
-            tooltip: {
-              trigger: 'axis',
-              axisPointer: {
-                type: 'cross',
-                label: {
-                  backgroundColor: '#6a7985'
-                }
-              }
+          },
+          legend: {
+            data: ['Errors', 'Intent Errors', 'Entity Errors'],
+            textStyle: {
+              color: '#8f9bb3'
+            }
+          },
+          color: ['#ff3d71', '#0095ff', '#028A0F'],
+          yAxis: {
+            axisLabel: {
+              formatter: (value) => value + '%'
+            }
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            axisLabel: {
+              formatter: formatStatDateTime
+            }
+          },
+          series: [
+            {
+              name: 'Errors',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: errorData,
+              formatter: (value) => value + '%'
             },
-            legend: {
-              data: ['Model size', 'Test set size'],
-              textStyle: {
-                color: '#8f9bb3',
-              }
+            {
+              name: 'Intent Errors',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: intentData,
+              formatter: (value) => value + '%'
             },
-            color: ['#0095ff', '#028A0F'],
-            yAxis: {},
-            xAxis: {
-              type: 'category',
-              boundaryGap: false,
-              axisLabel: {
-                formatter: formatStatDateTime
-              }
-            },
-            series: [
-              {
-                name: 'Model size',
-                type: 'line',
-                areaStyle: {},
-                smooth: true,
-                data: modelData
-              },
-              {
-                name: 'Test set size',
-                type: 'line',
-                areaStyle: {},
-                smooth: true,
-                data: testData
-              }
-            ]
-          }
+            {
+              name: 'Entity Errors',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: entityData,
+              formatter: (value) => value + '%'
+            }
+          ]
+        };
 
-          const modelDurationData = result.map(p => [
-              p.date,
-              parseDuration(p.buildModelDuration),
-            ]
-          );
-          const testDurationData = result.map(p => [
-            p.date,
-            parseDuration(p.testModelDuration),
-          ]);
-          this.durationChartOptions = {
-            tooltip: {
-              trigger: 'axis',
-              axisPointer: {
-                type: 'cross',
-                label: {
-                  backgroundColor: '#6a7985'
-                }
+        const modelData = result.map((p) => [p.date, p.nbSentencesInModel]);
+        const testData = result.map((p) => [p.date, p.nbSentencesTested]);
+        this.sizes = [
+          {
+            data: modelData,
+            label: 'Model size'
+          },
+          {
+            data: testData,
+            label: 'Test set size'
+          }
+        ];
+        this.sizeChartOptions = {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              label: {
+                backgroundColor: '#6a7985'
               }
+            }
+          },
+          legend: {
+            data: ['Model size', 'Test set size'],
+            textStyle: {
+              color: '#8f9bb3'
+            }
+          },
+          color: ['#0095ff', '#028A0F'],
+          yAxis: {},
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            axisLabel: {
+              formatter: formatStatDateTime
+            }
+          },
+          series: [
+            {
+              name: 'Model size',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: modelData
             },
-            legend: {
-              data: ['Build Model duration', 'Test Model duration'],
-              textStyle: {
-                color: '#8f9bb3',
+            {
+              name: 'Test set size',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: testData
+            }
+          ]
+        };
+
+        const modelDurationData = result.map((p) => [p.date, parseDuration(p.buildModelDuration)]);
+        const testDurationData = result.map((p) => [p.date, parseDuration(p.testModelDuration)]);
+        this.durationChartOptions = {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              label: {
+                backgroundColor: '#6a7985'
               }
+            }
+          },
+          legend: {
+            data: ['Build Model duration', 'Test Model duration'],
+            textStyle: {
+              color: '#8f9bb3'
+            }
+          },
+          color: ['#0095ff', '#028A0F'],
+          yAxis: {
+            axisLabel: {
+              formatter: displayDuration
+            }
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            axisLabel: {
+              formatter: formatStatDateTime
+            }
+          },
+          series: [
+            {
+              name: 'Build Model duration',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: modelDurationData
             },
-            color: ['#0095ff', '#028A0F'],
-            yAxis: {
-              axisLabel: {
-                formatter: displayDuration
-              }
-            },
-            xAxis: {
-              type: 'category',
-              boundaryGap: false,
-              axisLabel: {
-                formatter: formatStatDateTime
-              }
-            },
-            series: [
-              {
-                name: 'Build Model duration',
-                type: 'line',
-                areaStyle: {},
-                smooth: true,
-                data: modelDurationData
-              },
-              {
-                name: 'Test Model duration',
-                type: 'line',
-                areaStyle: {},
-                smooth: true,
-                data: testDurationData
-              }
-            ]
-          };
-          /*
+            {
+              name: 'Test Model duration',
+              type: 'line',
+              areaStyle: {},
+              smooth: true,
+              data: testDurationData
+            }
+          ]
+        };
+        /*
            = {
           tooltips: {
             callbacks: {
@@ -314,8 +312,6 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
           }
         };
            */
-        }
-      )
+      });
   }
-
 }

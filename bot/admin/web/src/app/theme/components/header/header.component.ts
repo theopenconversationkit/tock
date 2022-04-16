@@ -14,38 +14,37 @@
  * limitations under the License.
  */
 
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 
-import {NbMenuService, NbSidebarService, NbThemeService} from '@nebular/theme';
-import {StateService} from "../../../core-nlp/state.service";
-import {AuthService} from "../../../core-nlp/auth/auth.service";
-import {SettingsService} from "../../../core-nlp/settings.service";
-import {map, takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
-import {AnalyticsService} from "../../../analytics/analytics.service";
-import {APP_BASE_HREF} from "@angular/common";
+import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
+import { StateService } from '../../../core-nlp/state.service';
+import { AuthService } from '../../../core-nlp/auth/auth.service';
+import { SettingsService } from '../../../core-nlp/settings.service';
+import { map, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { AnalyticsService } from '../../../analytics/analytics.service';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Component({
   selector: 'ngx-header',
   styleUrls: ['./header.component.scss'],
-  templateUrl: './header.component.html',
+  templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
-
   @Input() position = 'normal';
 
   currentTheme = 'default';
   private destroy$: Subject<void> = new Subject<void>();
 
-  constructor(private sidebarService: NbSidebarService,
-              private menuService: NbMenuService,
-              public state: StateService,
-              public auth: AuthService,
-              public settings: SettingsService,
-              private themeService: NbThemeService,
-              @Inject(APP_BASE_HREF) public baseHref: string) {
-
-  }
+  constructor(
+    private sidebarService: NbSidebarService,
+    private menuService: NbMenuService,
+    public state: StateService,
+    public auth: AuthService,
+    public settings: SettingsService,
+    private themeService: NbThemeService,
+    @Inject(APP_BASE_HREF) public baseHref: string
+  ) {}
 
   ngOnInit() {
     this.currentTheme = this.settings.currentTheme ? this.settings.currentTheme : 'default';
@@ -55,9 +54,9 @@ export class HeaderComponent implements OnInit {
     //     takeUntil(this.destroy$),
     //   )
     //   .subscribe(themeName => this.currentTheme = themeName);
-      if (this.currentTheme !== this.themeService.currentTheme) {
-        this.themeService.changeTheme(this.currentTheme);
-      }
+    if (this.currentTheme !== this.themeService.currentTheme) {
+      this.themeService.changeTheme(this.currentTheme);
+    }
     if (this.settings.currentLocale != null) {
       this.state.currentLocale = this.settings.currentLocale;
     }
@@ -92,14 +91,13 @@ export class HeaderComponent implements OnInit {
   }
 
   changeApplication(app) {
-    setTimeout(_ => {
+    setTimeout((_) => {
       this.state.changeApplicationWithName(app);
       this.settings.onApplicationChange(app);
     });
   }
 
   changeLocale(locale) {
-    setTimeout(_ => this.state.changeLocale(locale));
+    setTimeout((_) => this.state.changeLocale(locale));
   }
-
 }

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {I18LabelQuery, I18nLabel, I18nLabelStateQuery} from '../model/i18n';
-import {BotService} from '../bot-service';
-import {StateService} from '../../core-nlp/state.service';
-import {PageEvent} from '@angular/material/paginator';
-import {saveAs} from 'file-saver';
-import {FileUploader} from 'ng2-file-upload';
-import {I18nController} from './i18n-label.component';
-import {Subject} from 'rxjs';
-import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
-import {NbToastrService, NbWindowRef, NbWindowService} from '@nebular/theme';
-import {I18nExportComponent} from './i18n-export.component';
-import {I18nImportComponent} from './i18n-import.component';
+import { Component, OnInit } from '@angular/core';
+import { I18LabelQuery, I18nLabel, I18nLabelStateQuery } from '../model/i18n';
+import { BotService } from '../bot-service';
+import { StateService } from '../../core-nlp/state.service';
+import { PageEvent } from '@angular/material/paginator';
+import { saveAs } from 'file-saver';
+import { FileUploader } from 'ng2-file-upload';
+import { I18nController } from './i18n-label.component';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { NbToastrService, NbWindowRef, NbWindowService } from '@nebular/theme';
+import { I18nExportComponent } from './i18n-export.component';
+import { I18nImportComponent } from './i18n-import.component';
 
 @Component({
   selector: 'tock-i18n',
@@ -34,7 +34,6 @@ import {I18nImportComponent} from './i18n-import.component';
   styleUrls: ['./i18n.component.css']
 })
 export class I18nComponent extends I18nController implements OnInit {
-
   originalI18n: I18nLabel[];
   i18n: I18nLabel[];
   filteredI18n: I18nLabel[] = [];
@@ -58,17 +57,23 @@ export class I18nComponent extends I18nController implements OnInit {
 
   private searchUpdated: Subject<string> = new Subject<string>();
 
-  constructor(public state: StateService,
-              private botService: BotService,
-              private toastrService: NbToastrService,
-              private windowService: NbWindowService) {
+  constructor(
+    public state: StateService,
+    private botService: BotService,
+    private toastrService: NbToastrService,
+    private windowService: NbWindowService
+  ) {
     super(state, [], null);
   }
 
   ngOnInit() {
     this.load();
-    this.state.currentApplicationEmitter.subscribe(_ => this.load());
-    this.searchUpdated.asObservable().pipe(debounceTime(200)).pipe(distinctUntilChanged()).subscribe(v => this.filterImpl(v));
+    this.state.currentApplicationEmitter.subscribe((_) => this.load());
+    this.searchUpdated
+      .asObservable()
+      .pipe(debounceTime(200))
+      .pipe(distinctUntilChanged())
+      .subscribe((v) => this.filterImpl(v));
   }
 
   controller(): I18nController {
@@ -90,7 +95,7 @@ export class I18nComponent extends I18nController implements OnInit {
 
   private load() {
     this.loading = true;
-    this.botService.i18nLabels().subscribe(r => {
+    this.botService.i18nLabels().subscribe((r) => {
       this.loading = false;
       this.localeBase = r.localeBase;
       this.originalI18n = r.labels;
@@ -98,9 +103,8 @@ export class I18nComponent extends I18nController implements OnInit {
       this.initCategories(this.i18n);
 
       this.i18n.sort((a, b) => {
-          return a.category.localeCompare(b.category);
-        }
-      );
+        return a.category.localeCompare(b.category);
+      });
       this.filterImpl(this.filterString);
       this.fillLabels(this.locales);
       this.filterByLocales();
@@ -108,16 +112,15 @@ export class I18nComponent extends I18nController implements OnInit {
   }
 
   private filterByLocales() {
-    this.i18n = this.i18n.map(l => {
-        l.i18n = l.i18n.filter(i => this.locales.has(i.locale));
-        return l;
-      }
-    );
+    this.i18n = this.i18n.map((l) => {
+      l.i18n = l.i18n.filter((i) => this.locales.has(i.locale));
+      return l;
+    });
   }
 
   private setCategoryOnFirstItem(i18n: I18nLabel[]) {
     let category: string;
-    i18n.forEach(i => {
+    i18n.forEach((i) => {
       if (category !== i.category) {
         category = i.category;
         i.firstCategory = true;
@@ -129,7 +132,7 @@ export class I18nComponent extends I18nController implements OnInit {
 
   private initCategories(i18n: I18nLabel[]) {
     this.allCategories = [this.doNotFilterByCategory];
-    i18n.forEach(i => {
+    i18n.forEach((i) => {
       if (this.allCategories.indexOf(i.category) === -1) {
         this.allCategories.push(i.category);
       }
@@ -155,8 +158,11 @@ export class I18nComponent extends I18nController implements OnInit {
     const noLocaleFilter = this.filterLocale === '';
     const currentLocale = this.filterLocale === 'current';
     const supportedLocales = this.filterLocale === 'supported';
-    return noLocaleFilter || supportedLocales
-      || (currentLocale && this.state.currentApplication.supportedLocales.length == 1);
+    return (
+      noLocaleFilter ||
+      supportedLocales ||
+      (currentLocale && this.state.currentApplication.supportedLocales.length == 1)
+    );
   }
 
   private filterImpl(value: string) {
@@ -168,19 +174,19 @@ export class I18nComponent extends I18nController implements OnInit {
     if (currentLocale) {
       filteredLocales.add(this.state.currentLocale);
     } else if (supportedLocales) {
-      this.state.currentApplication.supportedLocales.forEach(locale => {
+      this.state.currentApplication.supportedLocales.forEach((locale) => {
         filteredLocales.add(locale);
       });
     } else if (notSupportedLocales) {
-      this.i18n.forEach(label => {
-        label.i18n.forEach(i18nLabel => {
+      this.i18n.forEach((label) => {
+        label.i18n.forEach((i18nLabel) => {
           if (!this.state.currentApplication.supportedLocales.includes(i18nLabel.locale)) {
             filteredLocales.add(i18nLabel.locale);
           }
         });
       });
     } else {
-      this.i18n.forEach(l => l.i18n.forEach(i => filteredLocales.add(i.locale)));
+      this.i18n.forEach((l) => l.i18n.forEach((i) => filteredLocales.add(i.locale)));
     }
 
     // Filter labels
@@ -188,16 +194,26 @@ export class I18nComponent extends I18nController implements OnInit {
     const hideValidated = this.filterOption === 'not_validated';
     const filterText = value ? value.trim().toLowerCase() : '';
     const notUsedFromDate = Date.now() - 1000 * 60 * 60 * 24 * this.notUsedFrom;
-    this.filteredI18n = this.i18n.filter(label => {
-      return (filteredLocales.size < 1 || label.i18n.some(i18nLabel => filteredLocales.has(i18nLabel.locale)))
-        && (!hideValidated || label.i18n.some(i18nLabel => !i18nLabel.validated && i18nLabel.label.length !== 0))
-        && (!hideNotValidated || label.i18n.some(i18nLabel => i18nLabel.validated))
-        && (filterText.length === 0
-          || (label.defaultLabel && label.defaultLabel.toLowerCase().indexOf(filterText) !== -1)
-          || label.i18n.some(i18nLabel => i18nLabel.label.length !== 0 && i18nLabel.label.toLowerCase().indexOf(filterText) !== -1)
-        )
-        && (this.selectedCategory === this.doNotFilterByCategory || label.category === this.selectedCategory)
-        && (this.notUsedFrom === -1 || !label.lastUpdate || label.lastUpdate.getTime() < notUsedFromDate);
+    this.filteredI18n = this.i18n.filter((label) => {
+      return (
+        (filteredLocales.size < 1 ||
+          label.i18n.some((i18nLabel) => filteredLocales.has(i18nLabel.locale))) &&
+        (!hideValidated ||
+          label.i18n.some((i18nLabel) => !i18nLabel.validated && i18nLabel.label.length !== 0)) &&
+        (!hideNotValidated || label.i18n.some((i18nLabel) => i18nLabel.validated)) &&
+        (filterText.length === 0 ||
+          (label.defaultLabel && label.defaultLabel.toLowerCase().indexOf(filterText) !== -1) ||
+          label.i18n.some(
+            (i18nLabel) =>
+              i18nLabel.label.length !== 0 &&
+              i18nLabel.label.toLowerCase().indexOf(filterText) !== -1
+          )) &&
+        (this.selectedCategory === this.doNotFilterByCategory ||
+          label.category === this.selectedCategory) &&
+        (this.notUsedFrom === -1 ||
+          !label.lastUpdate ||
+          label.lastUpdate.getTime() < notUsedFromDate)
+      );
     });
     this.setCategoryOnFirstItem(this.filteredI18n);
 
@@ -211,23 +227,23 @@ export class I18nComponent extends I18nController implements OnInit {
 
   complete() {
     this.loading = true;
-    this.botService.completeI18nLabels(this.i18n).subscribe(r => {
+    this.botService.completeI18nLabels(this.i18n).subscribe((r) => {
       this.load();
       this.loading = false;
       const n = r.nbTranslations;
       if (n === 0) {
-        this.toastrService.show(`No label translated`, 'UPDATE', {duration: 2000});
+        this.toastrService.show(`No label translated`, 'UPDATE', { duration: 2000 });
       } else if (n === 1) {
-        this.toastrService.show(`1 label translated`, 'UPDATE', {duration: 2000});
+        this.toastrService.show(`1 label translated`, 'UPDATE', { duration: 2000 });
       } else {
-        this.toastrService.show(`${n} labels translated`, 'UPDATE', {duration: 2000});
+        this.toastrService.show(`${n} labels translated`, 'UPDATE', { duration: 2000 });
       }
     });
   }
 
   validateAll() {
-    this.i18n.forEach(i => {
-      i.i18n.forEach(l => {
+    this.i18n.forEach((i) => {
+      i.i18n.forEach((l) => {
         if (l.label && l.label.trim().length !== 0) {
           l.validated = true;
         }
@@ -235,38 +251,34 @@ export class I18nComponent extends I18nController implements OnInit {
     });
     this.botService
       .saveI18nLabels(this.i18n)
-      .subscribe(_ => this.toastrService.show(`All labels validated`, 'Validate', {duration: 3000}));
+      .subscribe((_) =>
+        this.toastrService.show(`All labels validated`, 'Validate', { duration: 3000 })
+      );
   }
 
   openExportWindow() {
     if (this.exportWindow) {
       this.exportWindow.close();
     }
-    this.exportWindow = this.windowService.open(
-      I18nExportComponent,
-      {
-        title: 'Export As',
-        context: {
-          exportAs: (type: string, all: boolean) => this.download(type, all),
-        }
+    this.exportWindow = this.windowService.open(I18nExportComponent, {
+      title: 'Export As',
+      context: {
+        exportAs: (type: string, all: boolean) => this.download(type, all)
       }
-    );
+    });
   }
 
   openImportWindow() {
     if (this.importWindow) {
       this.importWindow.close();
     }
-    this.importWindow = this.windowService.open(
-      I18nImportComponent,
-      {
-        title: 'Import Labels from File',
-        context: {
-          importFrom: (type: string, uploader: FileUploader) => this.upload(type, uploader),
-          refresh: () => this.refresh()
-        }
+    this.importWindow = this.windowService.open(I18nImportComponent, {
+      title: 'Import Labels from File',
+      context: {
+        importFrom: (type: string, uploader: FileUploader) => this.upload(type, uploader),
+        refresh: () => this.refresh()
       }
-    );
+    });
   }
 
   upload(type: string, uploader: FileUploader) {
@@ -294,39 +306,41 @@ export class I18nComponent extends I18nController implements OnInit {
 
   downloadCsv(all: boolean) {
     if (all) {
-      this.botService.downloadAllI18nLabelsCsv()
-        .subscribe(blob => {
-          saveAs(blob, 'labels.csv');
-          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
-        });
+      this.botService.downloadAllI18nLabelsCsv().subscribe((blob) => {
+        saveAs(blob, 'labels.csv');
+        this.toastrService.show(`Export provided`, 'Export', { duration: 2000 });
+      });
     } else {
       const query = new I18LabelQuery(
-        this.computeLabelFilter(), this.computeCategoryFilterValue(),
-        this.computeStatusFilterValue(), this.computeNotUsedSinceDaysFilterValue());
-      this.botService.downloadI18nLabelsCsv(query)
-        .subscribe(blob => {
-          saveAs(blob, 'labels' + query.toString() + '.csv');
-          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
-        });
+        this.computeLabelFilter(),
+        this.computeCategoryFilterValue(),
+        this.computeStatusFilterValue(),
+        this.computeNotUsedSinceDaysFilterValue()
+      );
+      this.botService.downloadI18nLabelsCsv(query).subscribe((blob) => {
+        saveAs(blob, 'labels' + query.toString() + '.csv');
+        this.toastrService.show(`Export provided`, 'Export', { duration: 2000 });
+      });
     }
   }
 
   downloadJson(all: boolean) {
     if (all) {
-      this.botService.downloadAllI18nLabelsJson()
-        .subscribe(blob => {
-          saveAs(blob, 'labels.json');
-          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
-        });
+      this.botService.downloadAllI18nLabelsJson().subscribe((blob) => {
+        saveAs(blob, 'labels.json');
+        this.toastrService.show(`Export provided`, 'Export', { duration: 2000 });
+      });
     } else {
       const query = new I18LabelQuery(
-        this.computeLabelFilter(), this.computeCategoryFilterValue(),
-        this.computeStatusFilterValue(), this.computeNotUsedSinceDaysFilterValue());
-      this.botService.downloadI18nLabelsJson(query)
-        .subscribe(blob => {
-          saveAs(blob, 'labels' + query.toString() + '.json');
-          this.toastrService.show(`Export provided`, 'Export', {duration: 2000});
-        });
+        this.computeLabelFilter(),
+        this.computeCategoryFilterValue(),
+        this.computeStatusFilterValue(),
+        this.computeNotUsedSinceDaysFilterValue()
+      );
+      this.botService.downloadI18nLabelsJson(query).subscribe((blob) => {
+        saveAs(blob, 'labels' + query.toString() + '.json');
+        this.toastrService.show(`Export provided`, 'Export', { duration: 2000 });
+      });
     }
   }
 

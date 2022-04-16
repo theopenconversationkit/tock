@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component} from '@angular/core';
-import {NbDialogRef} from '@nebular/theme';
+import { Component } from '@angular/core';
+import { NbDialogRef } from '@nebular/theme';
 
 @Component({
   selector: 'tock-confirmation-dialog',
@@ -23,12 +23,10 @@ import {NbDialogRef} from '@nebular/theme';
   styleUrls: ['./confirmation-dialog.component.css']
 })
 export class ConfirmationDialogComponent {
-
   title: string;
   confirmationQuestion: string;
 
-  constructor(private dialogRef: NbDialogRef<ConfirmationDialogComponent>) {
-  }
+  constructor(private dialogRef: NbDialogRef<ConfirmationDialogComponent>) {}
 
   cancel() {
     this.dialogRef.close();

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import {ApplicationScopedQuery} from "../../model/commons";
-import {AnswerConfigurationType} from "../../bot/model/story";
+import { ApplicationScopedQuery } from '../../model/commons';
+import { AnswerConfigurationType } from '../../bot/model/story';
 
 export class DialogFlowRequest extends ApplicationScopedQuery {
-
   constructor(
     public namespace: string,
     public applicationName: string,
@@ -29,32 +28,33 @@ export class DialogFlowRequest extends ApplicationScopedQuery {
     public from?: Date,
     public to?: Date,
     public includeTestConfigurations?: boolean,
-    public intent?: string) {
-    super(namespace, applicationName, language)
+    public intent?: string
+  ) {
+    super(namespace, applicationName, language);
   }
 
   equals(r: DialogFlowRequest): boolean {
-    return r
-      && this.namespace === r.namespace
-      && this.applicationName === r.applicationName
-      && this.language === r.language
-      && this.botId === r.botId
-      && this.botConfigurationName === r.botConfigurationName
-      && this.botConfigurationId === r.botConfigurationId
-      && this.from === r.from
-      && this.to === r.to
-      && this.includeTestConfigurations === r.includeTestConfigurations
-      && this.intent === r.intent
+    return (
+      r &&
+      this.namespace === r.namespace &&
+      this.applicationName === r.applicationName &&
+      this.language === r.language &&
+      this.botId === r.botId &&
+      this.botConfigurationName === r.botConfigurationName &&
+      this.botConfigurationId === r.botConfigurationId &&
+      this.from === r.from &&
+      this.to === r.to &&
+      this.includeTestConfigurations === r.includeTestConfigurations &&
+      this.intent === r.intent
+    );
   }
 }
 
 export class ApplicationDialogFlow {
-
   constructor(
     public states: DialogFlowStateData[],
     public transitions: DialogFlowStateTransitionData[]
-  ) {
-  }
+  ) {}
 
   static fromJSON(json: any): ApplicationDialogFlow {
     const value = Object.create(ApplicationDialogFlow.prototype);
@@ -64,11 +64,9 @@ export class ApplicationDialogFlow {
     });
     return result;
   }
-
 }
 
 export class DialogFlowStateData {
-
   constructor(
     public storyDefinitionId: string,
     public intent: string,
@@ -77,9 +75,8 @@ export class DialogFlowStateData {
     public storyType?: AnswerConfigurationType,
     public storyName?: string,
     public count?: number,
-    public _id ?: string
-  ) {
-  }
+    public _id?: string
+  ) {}
 
   static fromJSON(json: any): DialogFlowStateData {
     const value = Object.create(DialogFlowStateData.prototype);
@@ -95,7 +92,6 @@ export class DialogFlowStateData {
 }
 
 export class DialogFlowStateTransitionData {
-
   constructor(
     public nextStateId: string,
     public newEntities: string[],
@@ -103,8 +99,7 @@ export class DialogFlowStateTransitionData {
     public previousStateId?: string,
     public step?: string,
     public count?: number
-  ) {
-  }
+  ) {}
 
   static fromJSON(json: any): DialogFlowStateTransitionData {
     const value = Object.create(DialogFlowStateTransitionData.prototype);

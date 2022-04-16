@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {SentenceFilter, SentencesScrollComponent} from '../sentences-scroll/sentences-scroll.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  SentenceFilter,
+  SentencesScrollComponent
+} from '../sentences-scroll/sentences-scroll.component';
 import {
   EntityDefinition,
   EntityType,
@@ -26,12 +29,12 @@ import {
   TranslateSentencesQuery,
   UpdateSentencesQuery
 } from '../model/nlp';
-import {StateService} from '../core-nlp/state.service';
-import {ActivatedRoute} from '@angular/router';
-import {NlpService} from '../nlp-tabs/nlp.service';
-import {UserRole} from '../model/auth';
-import {NbToastrService} from '@nebular/theme';
-import {FilterOption, Group} from './filter/search-filter.component';
+import { StateService } from '../core-nlp/state.service';
+import { ActivatedRoute } from '@angular/router';
+import { NlpService } from '../nlp-tabs/nlp.service';
+import { UserRole } from '../model/auth';
+import { NbToastrService } from '@nebular/theme';
+import { FilterOption, Group } from './filter/search-filter.component';
 
 @Component({
   selector: 'tock-search',
@@ -39,7 +42,6 @@ import {FilterOption, Group} from './filter/search-filter.component';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit {
-
   UserRole = UserRole;
   filter: SentenceFilter = new SentenceFilter();
   status: string;
@@ -57,23 +59,24 @@ export class SearchComponent implements OnInit {
   NO_INTENT_FILTER = new FilterOption('-1', 'All');
   UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
 
-  constructor(public state: StateService,
-              private nlp: NlpService,
-              private toastrService: NbToastrService,
-              private route: ActivatedRoute) {
-  }
+  constructor(
+    public state: StateService,
+    private nlp: NlpService,
+    private toastrService: NbToastrService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.status = null;
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['text']) {
         this.filter.search = params['text'];
       }
       if (params['status']) {
         this.status = SentenceStatus[SentenceStatus[params['status']]];
       }
-      this.state.currentIntents.subscribe(i => {
-        this.nlp.findUsers(this.state.currentApplication).subscribe(u => this.users = u);
+      this.state.currentIntents.subscribe((i) => {
+        this.nlp.findUsers(this.state.currentApplication).subscribe((u) => (this.users = u));
         const search = this.filter.search;
         this.filter = new SentenceFilter();
         this.filter.search = search;
@@ -90,56 +93,73 @@ export class SearchComponent implements OnInit {
 
   intentGroups(): Group[] {
     const currentIntentsCategories = this.state.currentIntentsCategories.getValue();
-    return currentIntentsCategories.map(entry =>
-      new Group(
-        entry.category,
-        entry.intents.map(intent =>
-          new FilterOption(intent._id, intent.intentLabel()))
-      )
+    return currentIntentsCategories.map(
+      (entry) =>
+        new Group(
+          entry.category,
+          entry.intents.map((intent) => new FilterOption(intent._id, intent.intentLabel()))
+        )
     );
   }
 
   private findEntitiesAndSubEntities(entities: EntityType[], intent: Intent): EntityType[] {
-    return entities.filter(
-      e => intent.entities.some(
-        intentEntity => intentEntity.entityTypeName === e.name || e.containsSuperEntity(intentEntity, entities))
+    return entities.filter((e) =>
+      intent.entities.some(
+        (intentEntity) =>
+          intentEntity.entityTypeName === e.name || e.containsSuperEntity(intentEntity, entities)
+      )
     );
   }
 
   private fillEntitiesFilter() {
-    this.state.entityTypesSortedByName()
-      .subscribe(entities => {
-          if (!this.filter.intentId || this.filter.intentId === this.NO_INTENT_FILTER.value) {
-            this.entityTypes = entities;
-            this.entityRolesToInlude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
-            this.entityRolesToExclude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
-          } else {
-            const intent = this.state.findIntentById(this.filter.intentId);
-            if (intent) {
-              this.entityTypes = this.findEntitiesAndSubEntities(entities, intent);
-              this.entityRolesToInlude = getRoles([intent], entities, this.filter.entityType);
-              this.entityRolesToExclude = getRoles([intent], entities, this.filter.entityType);
-
-            } else {
-              this.entityTypes = [];
-              this.entityRolesToInlude = [];
-              this.entityRolesToExclude = [];
-            }
-          }
-          if (this.filter.entityType) {
-            const e = entities.find(e => e.name === this.filter.entityType);
-            this.filter.searchSubEntities = e && e.allSuperEntities(entities, new Set()).size !== 0;
-          } else {
-            this.filter.searchSubEntities = false;
-          }
-          if (!this.filter.searchSubEntities && this.filter.entityRolesToInclude.length > 0) {
-            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => this.filter.entityRolesToInclude.includes(s.role)) != undefined) != undefined;
-          }
-          if (!this.filter.searchSubEntities && this.filter.entityRolesToExclude.length > 0) {
-            this.filter.searchSubEntities = entities.find(e => e.subEntities.find(s => this.filter.entityRolesToExclude.includes(s.role)) != undefined) != undefined;
-          }
+    this.state.entityTypesSortedByName().subscribe((entities) => {
+      if (!this.filter.intentId || this.filter.intentId === this.NO_INTENT_FILTER.value) {
+        this.entityTypes = entities;
+        this.entityRolesToInlude = getRoles(
+          this.state.currentIntents.value,
+          entities,
+          this.filter.entityType
+        );
+        this.entityRolesToExclude = getRoles(
+          this.state.currentIntents.value,
+          entities,
+          this.filter.entityType
+        );
+      } else {
+        const intent = this.state.findIntentById(this.filter.intentId);
+        if (intent) {
+          this.entityTypes = this.findEntitiesAndSubEntities(entities, intent);
+          this.entityRolesToInlude = getRoles([intent], entities, this.filter.entityType);
+          this.entityRolesToExclude = getRoles([intent], entities, this.filter.entityType);
+        } else {
+          this.entityTypes = [];
+          this.entityRolesToInlude = [];
+          this.entityRolesToExclude = [];
         }
-      );
+      }
+      if (this.filter.entityType) {
+        const e = entities.find((e) => e.name === this.filter.entityType);
+        this.filter.searchSubEntities = e && e.allSuperEntities(entities, new Set()).size !== 0;
+      } else {
+        this.filter.searchSubEntities = false;
+      }
+      if (!this.filter.searchSubEntities && this.filter.entityRolesToInclude.length > 0) {
+        this.filter.searchSubEntities =
+          entities.find(
+            (e) =>
+              e.subEntities.find((s) => this.filter.entityRolesToInclude.includes(s.role)) !=
+              undefined
+          ) != undefined;
+      }
+      if (!this.filter.searchSubEntities && this.filter.entityRolesToExclude.length > 0) {
+        this.filter.searchSubEntities =
+          entities.find(
+            (e) =>
+              e.subEntities.find((s) => this.filter.entityRolesToExclude.includes(s.role)) !=
+              undefined
+          ) != undefined;
+      }
+    });
   }
 
   changeIntentFilter = (intentId: string) => {
@@ -147,7 +167,7 @@ export class SearchComponent implements OnInit {
       this.filter.intentId = intentId;
       this.changeIntent();
     }
-  }
+  };
 
   changeIntent() {
     this.filter.entityType = '';
@@ -161,7 +181,7 @@ export class SearchComponent implements OnInit {
   }
 
   search() {
-    setTimeout(_ => {
+    setTimeout((_) => {
       this.filter.onlyToReview = false;
       if (this.status) {
         if (this.status == 'review') {
@@ -182,8 +202,12 @@ export class SearchComponent implements OnInit {
         this.filter.search = this.filter.search.trim();
       }
 
-      const theActualMin = Math.round(Math.min(this.filter.maxIntentProbability, this.filter.minIntentProbability));
-      const theActualMax = Math.round(Math.max(this.filter.maxIntentProbability, this.filter.minIntentProbability));
+      const theActualMin = Math.round(
+        Math.min(this.filter.maxIntentProbability, this.filter.minIntentProbability)
+      );
+      const theActualMax = Math.round(
+        Math.max(this.filter.maxIntentProbability, this.filter.minIntentProbability)
+      );
       this.filter.maxIntentProbability = Math.min(100, theActualMax);
       this.filter.minIntentProbability = Math.max(0, theActualMin);
 
@@ -204,71 +228,80 @@ export class SearchComponent implements OnInit {
 
   updateSentences() {
     if (this.selectedSentences && this.selectedSentences.length === 0) {
-      this.toastrService.show(`Please select at least one sentence first`, 'UPDATE', {duration: 2000});
-    } else {
-      this.nlp.updateSentences(
-        new UpdateSentencesQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          this.selectedSentences ? this.selectedSentences : [],
-          this.selectedSentences
-            ? null
-            : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000)),
-          this.update.newIntentId,
-          this.update.oldEntity,
-          this.update.newEntity
-        )
-      ).subscribe(r => {
-        const n = r.nbUpdates;
-        if (n === 0) {
-          this.toastrService.show(`No sentence updated`, 'UPDATE', {duration: 2000});
-        } else if (n === 1) {
-          this.toastrService.show(`1 sentence updated`, 'UPDATE', {duration: 2000});
-        } else {
-          this.toastrService.show(`${n} sentences updated`, 'UPDATE', {duration: 2000});
-        }
-        this.scroll.refresh();
+      this.toastrService.show(`Please select at least one sentence first`, 'UPDATE', {
+        duration: 2000
       });
+    } else {
+      this.nlp
+        .updateSentences(
+          new UpdateSentencesQuery(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            this.selectedSentences ? this.selectedSentences : [],
+            this.selectedSentences
+              ? null
+              : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000)),
+            this.update.newIntentId,
+            this.update.oldEntity,
+            this.update.newEntity
+          )
+        )
+        .subscribe((r) => {
+          const n = r.nbUpdates;
+          if (n === 0) {
+            this.toastrService.show(`No sentence updated`, 'UPDATE', { duration: 2000 });
+          } else if (n === 1) {
+            this.toastrService.show(`1 sentence updated`, 'UPDATE', { duration: 2000 });
+          } else {
+            this.toastrService.show(`${n} sentences updated`, 'UPDATE', { duration: 2000 });
+          }
+          this.scroll.refresh();
+        });
     }
   }
 
   translateSentences() {
     if (!this.targetLocale || this.targetLocale.length === 0) {
-      this.toastrService.show(`Please select a target language first`, 'UPDATE', {duration: 2000});
-    } else if (this.selectedSentences && this.selectedSentences.length === 0) {
-      this.toastrService.show(`Please select at least one sentence first`, 'UPDATE', {duration: 2000});
-    } else {
-      this.nlp.translateSentences(
-        new TranslateSentencesQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          this.targetLocale,
-          this.selectedSentences ? this.selectedSentences : [],
-          this.selectedSentences
-            ? null
-            : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000))
-        )
-      ).subscribe(r => {
-        const n = r.nbTranslations;
-        if (n === 0) {
-          this.toastrService.show(`No sentence translated`, 'UPDATE', {duration: 2000});
-        } else if (n === 1) {
-          this.toastrService.show(`1 sentence translated`, 'UPDATE', {duration: 2000});
-        } else {
-          this.toastrService.show(`${n} sentences translated`, 'UPDATE', {duration: 2000});
-        }
+      this.toastrService.show(`Please select a target language first`, 'UPDATE', {
+        duration: 2000
       });
+    } else if (this.selectedSentences && this.selectedSentences.length === 0) {
+      this.toastrService.show(`Please select at least one sentence first`, 'UPDATE', {
+        duration: 2000
+      });
+    } else {
+      this.nlp
+        .translateSentences(
+          new TranslateSentencesQuery(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            this.targetLocale,
+            this.selectedSentences ? this.selectedSentences : [],
+            this.selectedSentences
+              ? null
+              : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000))
+          )
+        )
+        .subscribe((r) => {
+          const n = r.nbTranslations;
+          if (n === 0) {
+            this.toastrService.show(`No sentence translated`, 'UPDATE', { duration: 2000 });
+          } else if (n === 1) {
+            this.toastrService.show(`1 sentence translated`, 'UPDATE', { duration: 2000 });
+          } else {
+            this.toastrService.show(`${n} sentences translated`, 'UPDATE', { duration: 2000 });
+          }
+        });
     }
   }
 }
 
 export class SentencesUpdate {
-
-  constructor(public newIntentId?: string,
-              public oldEntity?: EntityDefinition,
-              public newEntity?: EntityDefinition) {
-  }
-
+  constructor(
+    public newIntentId?: string,
+    public oldEntity?: EntityDefinition,
+    public newEntity?: EntityDefinition
+  ) {}
 }

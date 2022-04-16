@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {saveAs} from "file-saver";
-import {Component, OnInit} from "@angular/core";
-import {IntentTestError, TestErrorQuery} from "../model/nlp";
-import {StateService} from "../core-nlp/state.service";
-import {Router} from "@angular/router";
-import {QualityService} from "../quality-nlp/quality.service";
-import {escapeRegex} from "../model/commons";
-import {DialogService} from "../core-nlp/dialog.service";
-import {NbToastrService} from '@nebular/theme';
-import {UserRole} from "../model/auth";
-import {NlpService} from "../nlp-tabs/nlp.service";
+import { saveAs } from 'file-saver';
+import { Component, OnInit } from '@angular/core';
+import { IntentTestError, TestErrorQuery } from '../model/nlp';
+import { StateService } from '../core-nlp/state.service';
+import { Router } from '@angular/router';
+import { QualityService } from '../quality-nlp/quality.service';
+import { escapeRegex } from '../model/commons';
+import { DialogService } from '../core-nlp/dialog.service';
+import { NbToastrService } from '@nebular/theme';
+import { UserRole } from '../model/auth';
+import { NlpService } from '../nlp-tabs/nlp.service';
 
 @Component({
   selector: 'tock-test-intent-error',
@@ -32,85 +32,77 @@ import {NlpService} from "../nlp-tabs/nlp.service";
   styleUrls: ['./test-intent-error.component.css']
 })
 export class TestIntentErrorComponent implements OnInit {
-
   dataSource: IntentTestError[] = [];
-  intent: string = "";
+  intent: string = '';
   totalSize: number;
   pageSize: number = 10;
   pageIndex: number = 1;
   loading: boolean = false;
 
-  constructor(public state: StateService,
-              private qualityService: QualityService,
-              private toastrService: NbToastrService,
-              private router: Router,
-              private dialog: DialogService,
-              private nlp: NlpService) {
-  }
+  constructor(
+    public state: StateService,
+    private qualityService: QualityService,
+    private toastrService: NbToastrService,
+    private router: Router,
+    private dialog: DialogService,
+    private nlp: NlpService
+  ) {}
 
   ngOnInit(): void {
     this.search();
   }
 
-  getIndex(){
-    if(this.pageIndex > 0) return this.pageIndex - 1;
-    else return this.pageIndex
+  getIndex() {
+    if (this.pageIndex > 0) return this.pageIndex - 1;
+    else return this.pageIndex;
   }
   search() {
     this.loading = true;
     const startIndex = this.getIndex() * this.pageSize;
-    this.qualityService.searchIntentErrors(
-      TestErrorQuery.create(
-        this.state,
-        startIndex,
-        this.pageSize,
-        this.intent === "" ? undefined : this.intent
+    this.qualityService
+      .searchIntentErrors(
+        TestErrorQuery.create(
+          this.state,
+          startIndex,
+          this.pageSize,
+          this.intent === '' ? undefined : this.intent
+        )
       )
-    ).subscribe(r => {
-      this.loading = false;
-      this.totalSize = r.total;
-      this.dataSource = r.data;
-    });
+      .subscribe((r) => {
+        this.loading = false;
+        this.totalSize = r.total;
+        this.dataSource = r.data;
+      });
   }
 
   validate(error: IntentTestError) {
-    this.qualityService.deleteIntentError(error).subscribe(
-      e => {
-        this.toastrService.show(`Sentence validated`, "Validate Intent", {duration: 2000});
-        this.search();
-      }
-    )
+    this.qualityService.deleteIntentError(error).subscribe((e) => {
+      this.toastrService.show(`Sentence validated`, 'Validate Intent', { duration: 2000 });
+      this.search();
+    });
   }
 
   change(error: IntentTestError) {
-    this.qualityService.deleteIntentError(error).subscribe(
-      e => {
-        this.router.navigate(
-          ['/nlp/search'],
-          {
-            queryParams: {
-              text: "^" + escapeRegex(error.sentence.text) + "$",
-              status: "model"
-            }
-          }
-        );
-      }
-    )
+    this.qualityService.deleteIntentError(error).subscribe((e) => {
+      this.router.navigate(['/nlp/search'], {
+        queryParams: {
+          text: '^' + escapeRegex(error.sentence.text) + '$',
+          status: 'model'
+        }
+      });
+    });
   }
 
   download() {
-    setTimeout(_ => {
-      this.qualityService.searchIntentErrorsBlob(
-        TestErrorQuery.create(
-          this.state,
-          0,
-          100000,
-          this.intent === "" ? undefined : this.intent
+    setTimeout((_) => {
+      this.qualityService
+        .searchIntentErrorsBlob(
+          TestErrorQuery.create(this.state, 0, 100000, this.intent === '' ? undefined : this.intent)
         )
-      ).subscribe(blob => {
-        saveAs(blob, this.state.currentApplication.name + "_intent_errors.json");
-        this.dialog.notify(`Dump provided`, "Dump");
-      })
+        .subscribe((blob) => {
+          saveAs(blob, this.state.currentApplication.name + '_intent_errors.json');
+          this.dialog.notify(`Dump provided`, 'Dump');
+        });
     }, 1);
   }
 
@@ -120,7 +112,7 @@ export class TestIntentErrorComponent implements OnInit {
 
   reveal(error: IntentTestError) {
     const sentence = error.sentence;
-    this.nlp.revealSentence(sentence).subscribe(s => {
+    this.nlp.revealSentence(sentence).subscribe((s) => {
       sentence.text = s.text;
       sentence.key = null;
       error.sentence = sentence.clone();

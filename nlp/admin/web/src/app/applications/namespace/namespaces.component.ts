@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import {StateService} from "../../core-nlp/state.service";
-import {ApplicationService} from "../../core-nlp/applications.service";
-import {UserNamespace} from "../../model/application";
-import {AuthService} from "../../core-nlp/auth/auth.service";
-import {NbToastrService} from '@nebular/theme';
-import {UserRole} from "../../model/auth";
-import {ApplicationConfig} from "../application.config";
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { StateService } from '../../core-nlp/state.service';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { UserNamespace } from '../../model/application';
+import { AuthService } from '../../core-nlp/auth/auth.service';
+import { NbToastrService } from '@nebular/theme';
+import { UserRole } from '../../model/auth';
+import { ApplicationConfig } from '../application.config';
 
 @Component({
   selector: 'tock-namespaces',
@@ -29,7 +29,6 @@ import {ApplicationConfig} from "../application.config";
   styleUrls: ['namespaces.component.css']
 })
 export class NamespacesComponent implements OnInit {
-
   namespaces: UserNamespace[];
 
   managedNamespace: string;
@@ -39,25 +38,28 @@ export class NamespacesComponent implements OnInit {
   newOwner: boolean;
 
   create: boolean;
-  newNamespace: string = "";
+  newNamespace: string = '';
   //in order to focus
   @ViewChild('createNamespace') createNamespaceElement: ElementRef;
 
-  constructor(private toastrService: NbToastrService,
-              public state: StateService,
-              private applicationService: ApplicationService,
-              private authService: AuthService,
-              private applicationConfig: ApplicationConfig) {
-  }
+  constructor(
+    private toastrService: NbToastrService,
+    public state: StateService,
+    private applicationService: ApplicationService,
+    private authService: AuthService,
+    private applicationConfig: ApplicationConfig
+  ) {}
 
   ngOnInit() {
-    this.applicationService.getNamespaces().subscribe(n => this.namespaces = n);
+    this.applicationService.getNamespaces().subscribe((n) => (this.namespaces = n));
   }
 
   selectNamespace(namespace: string) {
-    this.applicationService.selectNamespace(namespace).subscribe(_ =>
-      this.authService.loadUser().subscribe(_ => this.applicationService.resetConfiguration)
-    );
+    this.applicationService
+      .selectNamespace(namespace)
+      .subscribe((_) =>
+        this.authService.loadUser().subscribe((_) => this.applicationService.resetConfiguration)
+      );
   }
 
   canCreateNamespace(): boolean {
@@ -66,19 +68,19 @@ export class NamespacesComponent implements OnInit {
 
   displayCreate() {
     this.create = true;
-    setTimeout(_ => this.createNamespaceElement.nativeElement.focus());
+    setTimeout((_) => this.createNamespaceElement.nativeElement.focus());
   }
 
   createNew() {
     const n = this.newNamespace.trim();
     if (n.length === 0) {
-      this.toastrService.danger("Namespace may not be empty!")
+      this.toastrService.danger('Namespace may not be empty!');
     } else {
-      this.applicationService.createNamespace(n).subscribe(b => {
+      this.applicationService.createNamespace(n).subscribe((b) => {
         this.create = false;
-        this.newNamespace = "";
+        this.newNamespace = '';
         this.ngOnInit();
-      })
+      });
     }
   }
 
@@ -88,25 +90,27 @@ export class NamespacesComponent implements OnInit {
   }
 
   manageUsers(namespace: string) {
-    this.applicationService.getUsersForNamespace(namespace).subscribe(users => {
+    this.applicationService.getUsersForNamespace(namespace).subscribe((users) => {
       this.managedUsers = users;
       this.managedNamespace = namespace;
     });
   }
 
   deleteUserNamespace(userNamespace: UserNamespace) {
-    this.applicationService.deleteNamespace(userNamespace).subscribe(_ =>
-      this.manageUsers(userNamespace.namespace)
-    )
+    this.applicationService
+      .deleteNamespace(userNamespace)
+      .subscribe((_) => this.manageUsers(userNamespace.namespace));
   }
 
   addUserNamespace() {
     if (!this.newLogin || this.newLogin.trim().length === 0) {
-      this.toastrService.show("Please enter a non empty login")
+      this.toastrService.show('Please enter a non empty login');
     } else {
-      this.applicationService.saveNamespace(new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false)).subscribe(_ =>
-        this.manageUsers(this.managedNamespace)
-      );
+      this.applicationService
+        .saveNamespace(
+          new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false)
+        )
+        .subscribe((_) => this.manageUsers(this.managedNamespace));
     }
   }
 }

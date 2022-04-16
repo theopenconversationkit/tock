@@ -15,29 +15,28 @@
  */
 
 .userAction {
-  color:lightseagreen;
-
+  color: lightseagreen;
 }
 
 .connector {
-  float:left;
-  width:32px;
-  height:32px;
+  float: left;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
 }
 
 .testAction {
-  float:left;
+  float: left;
   padding-right: 5px;
-  width:24px;
-  height:24px;
+  width: 24px;
+  height: 24px;
 }
 
 .botAction {
-  color:brown;
+  color: brown;
 }
 
 .dialog {
-  padding-top:0;
+  padding-top: 0;
   margin-bottom: 0;
 }

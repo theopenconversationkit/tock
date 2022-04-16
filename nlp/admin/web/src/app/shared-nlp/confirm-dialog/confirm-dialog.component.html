@@ -14,12 +14,27 @@
   ~ limitations under the License.
   -->
 <nb-card status="danger">
-  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body class="message">
-    <label>{{subtitle}}</label>
+    <label>{{ subtitle }}</label>
   </nb-card-body>
   <nb-card-footer class="footer">
-    <button nbButton size="small" status="primary" (click)="dialogRef.close('cancel')">Cancel</button>
-    <button nbButton size="small" status="danger" class="submit-button" (click)="dialogRef.close(action.toLowerCase())">{{action}}</button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      (click)="dialogRef.close('cancel')"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="danger"
+      class="submit-button"
+      (click)="dialogRef.close(action.toLowerCase())"
+    >
+      {{ action }}
+    </button>
   </nb-card-footer>
 </nb-card>

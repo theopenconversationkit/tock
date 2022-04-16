@@ -15,45 +15,99 @@
   -->
 <nb-card class="dialog">
   <nb-card-header>
-    Test the application <i>{{state.currentApplication.label}}</i>
+    Test the application <i>{{ state.currentApplication.label }}</i>
   </nb-card-header>
-  <nb-card-body *ngIf="testContext" id="test-saving-accordions">
+  <nb-card-body
+    *ngIf="testContext"
+    id="test-saving-accordions"
+  >
     <nb-accordion>
       <nb-accordion-item>
-        <nb-accordion-item-header (click)="removeXrayTestName()">Save dialog in Xray</nb-accordion-item-header>
+        <nb-accordion-item-header (click)="removeXrayTestName()"
+          >Save dialog in Xray</nb-accordion-item-header
+        >
         <nb-accordion-item-body>
-          <input *ngIf="testContext" nbInput [status]="isXrayTestNameFilled ? 'basic' : 'danger'"
-                 placeholder="Xray test name" id="test-name"
-                 [(ngModel)]="xrayTestName" (ngModelChange)="updateSaveButtonStatus($event)">
+          <input
+            *ngIf="testContext"
+            nbInput
+            [status]="isXrayTestNameFilled ? 'basic' : 'danger'"
+            placeholder="Xray test name"
+            id="test-name"
+            [(ngModel)]="xrayTestName"
+            (ngModelChange)="updateSaveButtonStatus($event)"
+          />
 
-          <input *ngIf="testContext" nbInput status="default" placeholder="US identifier in Jira" id="jira-name"
-                 [(ngModel)]="jiraIdentifier">
+          <input
+            *ngIf="testContext"
+            nbInput
+            status="default"
+            placeholder="US identifier in Jira"
+            id="jira-name"
+            [(ngModel)]="jiraIdentifier"
+          />
 
-          <nb-select *ngIf="testContext" multiple placeholder="Xray test plans" class="test-plans-select"
-                     name="testplans" [(selected)]="selectTestPlans" (selectedChange)="printSelectedTestPlans($event)">
-            <nb-option *ngFor="let e of xrayTestPlans" [value]="e.key" [nbTooltip]="e.fields.summary">
-              {{e.key}}
+          <nb-select
+            *ngIf="testContext"
+            multiple
+            placeholder="Xray test plans"
+            class="test-plans-select"
+            name="testplans"
+            [(selected)]="selectTestPlans"
+            (selectedChange)="printSelectedTestPlans($event)"
+          >
+            <nb-option
+              *ngFor="let e of xrayTestPlans"
+              [value]="e.key"
+              [nbTooltip]="e.fields.summary"
+            >
+              {{ e.key }}
             </nb-option>
           </nb-select>
 
-          <button *ngIf="testContext" nbTooltip="Send dialog to Xray" nbTooltipStatus="info"
-                  [disabled]="!isXrayTestNameFilled"
-                  id="save-button" nbButton outline status="primary" size="small" (click)="saveDialogToXray()">
+          <button
+            *ngIf="testContext"
+            nbTooltip="Send dialog to Xray"
+            nbTooltipStatus="info"
+            [disabled]="!isXrayTestNameFilled"
+            id="save-button"
+            nbButton
+            outline
+            status="primary"
+            size="small"
+            (click)="saveDialogToXray()"
+          >
             <nb-icon icon="save-outline"></nb-icon>
           </button>
         </nb-accordion-item-body>
       </nb-accordion-item>
 
       <nb-accordion-item>
-        <nb-accordion-item-header (click)="removeXrayTestIdentifier()">Update dialog in Xray</nb-accordion-item-header>
+        <nb-accordion-item-header (click)="removeXrayTestIdentifier()"
+          >Update dialog in Xray</nb-accordion-item-header
+        >
         <nb-accordion-item-body>
-          <input *ngIf="testContext" nbInput [status]="isXrayTestIdentifierFilled?'basic':'danger'"
-                 placeholder="Xray test identifier" id="test-identifier"
-                 [(ngModel)]="xrayTestIdentifier" (ngModelChange)="updateUpdateButtonStatus($event)">
+          <input
+            *ngIf="testContext"
+            nbInput
+            [status]="isXrayTestIdentifierFilled ? 'basic' : 'danger'"
+            placeholder="Xray test identifier"
+            id="test-identifier"
+            [(ngModel)]="xrayTestIdentifier"
+            (ngModelChange)="updateUpdateButtonStatus($event)"
+          />
 
-          <button *ngIf="testContext" nbTooltip="Update Xray test" nbTooltipStatus="info"
-                  [disabled]="!isXrayTestIdentifierFilled"
-                  id="update-button" nbButton outline status="primary" size="small" (click)="updateDialogXray()">
+          <button
+            *ngIf="testContext"
+            nbTooltip="Update Xray test"
+            nbTooltipStatus="info"
+            [disabled]="!isXrayTestIdentifierFilled"
+            id="update-button"
+            nbButton
+            outline
+            status="primary"
+            size="small"
+            (click)="updateDialogXray()"
+          >
             <nb-icon icon="save-outline"></nb-icon>
           </button>
         </nb-accordion-item-body>
@@ -61,65 +115,112 @@
 
       <nb-accordion-item disabled>
         <nb-accordion-item-header>Save dialog in Tock</nb-accordion-item-header>
-        <nb-accordion-item-body>
-          coming soon...
-        </nb-accordion-item-body>
+        <nb-accordion-item-body> coming soon... </nb-accordion-item-body>
       </nb-accordion-item>
     </nb-accordion>
   </nb-card-body>
 
   <nb-card-body>
-    <br>
+    <br />
     <div>
-      <tock-select-bot [(configurationId)]="currentConfigurationId" [returnsRestConfiguration]="true"
-                       (selectionChange)="changeConfiguration($event)">
-        <button *ngIf="messages.length !== 0"
-                nbTooltip="Clear conversation" nbTooltipStatus="info"
-                nbButton outline status="danger" size="small" (click)="clear()">
+      <tock-select-bot
+        [(configurationId)]="currentConfigurationId"
+        [returnsRestConfiguration]="true"
+        (selectionChange)="changeConfiguration($event)"
+      >
+        <button
+          *ngIf="messages.length !== 0"
+          nbTooltip="Clear conversation"
+          nbTooltipStatus="info"
+          nbButton
+          outline
+          status="danger"
+          size="small"
+          (click)="clear()"
+        >
           <nb-icon icon="trash-2-outline"></nb-icon>
         </button>
-        <button *ngIf="xrayAvailable"
-                class="dialog-manager-button"
-                [nbTooltip]="testContext ? 'Disable test context' : 'Enable test context'"
-                nbTooltipStatus="info"
-                nbButton outline status="warning"
-                size="small"
-                (click)="enableTestContext()">
+        <button
+          *ngIf="xrayAvailable"
+          class="dialog-manager-button"
+          [nbTooltip]="testContext ? 'Disable test context' : 'Enable test context'"
+          nbTooltipStatus="info"
+          nbButton
+          outline
+          status="warning"
+          size="small"
+          (click)="enableTestContext()"
+        >
           <nb-icon icon="cube-outline"></nb-icon>
         </button>
 
-        <br><br><br>
-        <table *ngIf="messages.length !== 0" class="messages">
+        <br /><br /><br />
+        <table
+          *ngIf="messages.length !== 0"
+          class="messages"
+        >
           <tr *ngFor="let m of messages">
-            <td *ngIf="m.bot">
-              &nbsp;
-            </td>
-            <td *ngIf="!m.bot" style="min-width: 200px">
-              <span *ngIf="m.locale" class="stats">
-                [{{m.locale}}]
-                <button *ngIf="m.hasNlpStats" mat-icon-button (click)="displayNlpStats(m)" matTooltip="View Nlp Stats"
-                        color="primary"><mat-icon>poll</mat-icon></button>
+            <td *ngIf="m.bot">&nbsp;</td>
+            <td
+              *ngIf="!m.bot"
+              style="min-width: 200px"
+            >
+              <span
+                *ngIf="m.locale"
+                class="stats"
+              >
+                [{{ m.locale }}]
+                <button
+                  *ngIf="m.hasNlpStats"
+                  mat-icon-button
+                  (click)="displayNlpStats(m)"
+                  matTooltip="View Nlp Stats"
+                  color="primary"
+                >
+                  <mat-icon>poll</mat-icon>
+                </button>
               </span>
-              <tock-bot-message [message]="m.message" (user)="true"></tock-bot-message>
+              <tock-bot-message
+                [message]="m.message"
+                (user)="(true)"
+              ></tock-bot-message>
             </td>
-            <td style="width:30px"></td>
+            <td style="width: 30px"></td>
             <td *ngIf="m.bot">
-              <tock-bot-message [message]="m.message" (reply)="onNewMessage($event)"></tock-bot-message>
+              <tock-bot-message
+                [message]="m.message"
+                (reply)="onNewMessage($event)"
+              ></tock-bot-message>
             </td>
           </tr>
           <tr *ngIf="loading">
             <td colspan="3">
-              <img src="{{baseHref}}assets/images/loading.gif" width="40px" height="40px"/>
+              <img
+                src="{{ baseHref }}assets/images/loading.gif"
+                width="40px"
+                height="40px"
+              />
             </td>
           </tr>
         </table>
         <span class="input-text">
-          <input nbInput status="primary"
-                 placeholder="Type some text"
-                 [(ngModel)]="userMessage"
-                 (keyup.enter)="submit()">
+          <input
+            nbInput
+            status="primary"
+            placeholder="Type some text"
+            [(ngModel)]="userMessage"
+            (keyup.enter)="submit()"
+          />
         </span>
-        <button nbButton outline status="primary" size="medium" (click)="submit()">GO</button>
+        <button
+          nbButton
+          outline
+          status="primary"
+          size="medium"
+          (click)="submit()"
+        >
+          GO
+        </button>
       </tock-select-bot>
     </div>
   </nb-card-body>

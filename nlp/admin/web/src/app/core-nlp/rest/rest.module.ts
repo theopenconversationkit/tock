@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import {NgModule} from "@angular/core";
-import {SharedModule} from "../../shared-nlp/shared.module";
-import {CommonModule} from "@angular/common";
-import {RestService} from "./rest.service";
+import { NgModule } from '@angular/core';
+import { SharedModule } from '../../shared-nlp/shared.module';
+import { CommonModule } from '@angular/common';
+import { RestService } from './rest.service';
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedModule,
-  ],
-  declarations: [
-  ],
-  providers: [
-    RestService
-  ]
+  imports: [CommonModule, SharedModule],
+  declarations: [],
+  providers: [RestService]
 })
-export class RestModule {
-}
+export class RestModule {}

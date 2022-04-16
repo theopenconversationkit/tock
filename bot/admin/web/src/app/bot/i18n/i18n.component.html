@@ -17,34 +17,80 @@
   <nb-card-body>
     <div class="background">
       <nb-form-field class="i18n-select">
-        <nb-icon nbPrefix icon="search" pack="eva"></nb-icon>
-        <input nbInput shape="round" type="text" status="primary" placeholder="Search" [(ngModel)]="filterString"
-              (keyup)="filter($event.target.value)">
+        <nb-icon
+          nbPrefix
+          icon="search"
+          pack="eva"
+        ></nb-icon>
+        <input
+          nbInput
+          shape="round"
+          type="text"
+          status="primary"
+          placeholder="Search"
+          [(ngModel)]="filterString"
+          (keyup)="filter($event.target.value)"
+        />
       </nb-form-field>
       <span class="i18n-select nb-form-field-infix">
-        <nb-select placeholder="Filter by locale" [(ngModel)]="filterLocale" class="nb-select" status="primary"
-                   (selectedChange)="filterChanged()">
-          <nb-option value="" title="All locales, including not supported by application">All</nb-option>
-          <nb-option value="current" title="Only current locale">Current locale</nb-option>
-          <nb-option value="supported" title="Only locales, currently supported by application">Supported locales</nb-option>
-          <nb-option value="not_supported" title="Only locales, not supported by application">Not supported locales</nb-option>
+        <nb-select
+          placeholder="Filter by locale"
+          [(ngModel)]="filterLocale"
+          class="nb-select"
+          status="primary"
+          (selectedChange)="filterChanged()"
+        >
+          <nb-option
+            value=""
+            title="All locales, including not supported by application"
+            >All</nb-option
+          >
+          <nb-option
+            value="current"
+            title="Only current locale"
+            >Current locale</nb-option
+          >
+          <nb-option
+            value="supported"
+            title="Only locales, currently supported by application"
+            >Supported locales</nb-option
+          >
+          <nb-option
+            value="not_supported"
+            title="Only locales, not supported by application"
+            >Not supported locales</nb-option
+          >
         </nb-select>
         <span class="nb-form-field-label-wrapper">
           <label class="label-title">Filter by locale</label>
         </span>
       </span>
       <span class="i18n-select nb-form-field-infix">
-        <nb-select placeholder="Filter by category" [(ngModel)]="selectedCategory" class="nb-select" status="primary"
-                   (selectedChange)="filterChanged()">
-          <nb-option *ngFor="let c of allCategories" [value]="c">{{c}}</nb-option>
+        <nb-select
+          placeholder="Filter by category"
+          [(ngModel)]="selectedCategory"
+          class="nb-select"
+          status="primary"
+          (selectedChange)="filterChanged()"
+        >
+          <nb-option
+            *ngFor="let c of allCategories"
+            [value]="c"
+            >{{ c }}</nb-option
+          >
         </nb-select>
         <span class="nb-form-field-label-wrapper">
           <label class="label-title">Filter by category</label>
         </span>
       </span>
       <span class="i18n-select nb-form-field-infix">
-        <nb-select placeholder="Filter by state" [(ngModel)]="filterOption" class="nb-select" status="primary"
-                   (selectedChange)="filterChanged()">
+        <nb-select
+          placeholder="Filter by state"
+          [(ngModel)]="filterOption"
+          class="nb-select"
+          status="primary"
+          (selectedChange)="filterChanged()"
+        >
           <nb-option value="">All</nb-option>
           <nb-option value="not_validated">Only not validated</nb-option>
           <nb-option value="validated">Only validated</nb-option>
@@ -54,13 +100,21 @@
         </span>
       </span>
       <span class="i18n-select nb-form-field-infix">
-        <nb-select placeholder="Not used since" [(ngModel)]="notUsedFrom" class="nb-select" status="primary"
-                   (selectedChange)="filterChanged()">
+        <nb-select
+          placeholder="Not used since"
+          [(ngModel)]="notUsedFrom"
+          class="nb-select"
+          status="primary"
+          (selectedChange)="filterChanged()"
+        >
           <nb-select-label>
             {{ notUsedFromLabel(notUsedFrom) }}
           </nb-select-label>
-          <nb-option *ngFor="let notUsedFromValue of notUsedFromPossibleValues"
-                     [value]="notUsedFromValue">{{notUsedFromLabel(notUsedFromValue)}}</nb-option>
+          <nb-option
+            *ngFor="let notUsedFromValue of notUsedFromPossibleValues"
+            [value]="notUsedFromValue"
+            >{{ notUsedFromLabel(notUsedFromValue) }}</nb-option
+          >
         </nb-select>
         <span class="nb-form-field-label-wrapper">
           <label class="label-title">Filter by usage</label>
@@ -69,25 +123,49 @@
     </div>
   </nb-card-body>
   <nb-card-footer>
-    <nb-actions size="small" style="cursor: pointer;" fullWidth>
-      <nb-action class="control-item" nbTooltip="Reload all" (click)="refresh()">
+    <nb-actions
+      size="small"
+      style="cursor: pointer"
+      fullWidth
+    >
+      <nb-action
+        class="control-item"
+        nbTooltip="Reload all"
+        (click)="refresh()"
+      >
         <nb-icon icon="refresh-outline"></nb-icon>
         <span class="i18-action-label">Reload</span>
       </nb-action>
-      <nb-action class="control-item" nbTooltip="Validate all existing labels" (click)="validateAll()">
+      <nb-action
+        class="control-item"
+        nbTooltip="Validate all existing labels"
+        (click)="validateAll()"
+      >
         <nb-icon icon="checkmark-outline"></nb-icon>
         <span class="i18-action-label">Validate All</span>
       </nb-action>
-      <nb-action *ngIf="state.currentApplication.supportedLocales.length !== 1"
-                 class="control-item" nbTooltip="Translate all missing labels" (click)="complete()">
+      <nb-action
+        *ngIf="state.currentApplication.supportedLocales.length !== 1"
+        class="control-item"
+        nbTooltip="Translate all missing labels"
+        (click)="complete()"
+      >
         <nb-icon icon="globe-outline"></nb-icon>
         <span class="i18-action-label">Translate All</span>
       </nb-action>
-      <nb-action class="control-item" nbTooltip="Import" (click)="openImportWindow()">
+      <nb-action
+        class="control-item"
+        nbTooltip="Import"
+        (click)="openImportWindow()"
+      >
         <nb-icon icon="upload-outline"></nb-icon>
         <span class="i18-action-label">Import</span>
       </nb-action>
-      <nb-action class="control-item" nbTooltip="Export" (click)="openExportWindow()">
+      <nb-action
+        class="control-item"
+        nbTooltip="Export"
+        (click)="openExportWindow()"
+      >
         <nb-icon icon="download-outline"></nb-icon>
         <span class="i18-action-label">Export</span>
       </nb-action>
@@ -95,22 +173,36 @@
   </nb-card-footer>
 </nb-card>
 
-<nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+<nb-card
+  [nbSpinner]="loading"
+  nbSpinnerStatus="primary"
+>
   <nb-card-body>
-    <mat-list dense *ngIf="!loading">
+    <mat-list
+      dense
+      *ngIf="!loading"
+    >
       <div *ngFor="let i of pagedItems()">
-        <tock-i18n-label [i]="i" [i18nController]="controller()" [intent]="i.category"
-                         [localeBase]="localeBase" [locales]="locales"
-                         [deleteLabelAllowed]="isDeleteLabelAllowed()">
+        <tock-i18n-label
+          [i]="i"
+          [i18nController]="controller()"
+          [intent]="i.category"
+          [localeBase]="localeBase"
+          [locales]="locales"
+          [deleteLabelAllowed]="isDeleteLabelAllowed()"
+        >
         </tock-i18n-label>
       </div>
     </mat-list>
 
-    <mat-paginator *ngIf="!loading" class="background"
-                   [length]="filteredI18n.length"
-                   [pageSize]="pageSize"
-                   [pageSizeOptions]="pageSizeOptions"
-                   (page)="pageEvent = $event">
+    <mat-paginator
+      *ngIf="!loading"
+      class="background"
+      [length]="filteredI18n.length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="pageEvent = $event"
+    >
     </mat-paginator>
   </nb-card-body>
 </nb-card>

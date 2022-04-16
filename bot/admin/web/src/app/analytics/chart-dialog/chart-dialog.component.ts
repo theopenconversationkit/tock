@@ -18,14 +18,12 @@ import { NbDialogRef } from '@nebular/theme';
 import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
 import { UserAnalyticsQueryResult } from '../users/users';
 
-
 @Component({
   selector: 'tock-chart-dialog',
   templateUrl: './chart-dialog.component.html',
   styleUrls: ['./chart-dialog.component.css']
 })
 export class ChartDialogComponent {
-
   @Input() title: string;
   @Input() data: UserAnalyticsQueryResult;
   @Input() userPreferences: UserAnalyticsPreferences;
@@ -33,6 +31,5 @@ export class ChartDialogComponent {
   @Input() isMultiChart: boolean;
   @Input() seriesSelectionList: number[] = [];
 
-  constructor(public dialogRef: NbDialogRef<ChartDialogComponent>) {
-  }
+  constructor(public dialogRef: NbDialogRef<ChartDialogComponent>) {}
 }

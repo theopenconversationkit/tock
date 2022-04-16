@@ -18,84 +18,170 @@
   <nb-card-header>
     <nb-actions size="medium">
       <nb-action>Namespaces</nb-action>
-      <nb-action *ngIf="!create && canCreateNamespace()" icon="plus-outline" nbTooltip="Create a new Namespace" nbTooltipStatus="primary" status="primary" (click)="displayCreate()"></nb-action>
+      <nb-action
+        *ngIf="!create && canCreateNamespace()"
+        icon="plus-outline"
+        nbTooltip="Create a new Namespace"
+        nbTooltipStatus="primary"
+        status="primary"
+        (click)="displayCreate()"
+      ></nb-action>
     </nb-actions>
-    <div *ngIf="create" class="create">
-      <input #createNamespace type="text" nbInput placeholder="New Namespace" class="create-item" (keyup.enter)="createNew()" [(ngModel)]="newNamespace">
-      <button nbButton class="create-item" status="primary" (click)="createNew()" nbTooltip="Create a new Namespace" nbTooltipStatus="primary" [disabled]="newNamespace.trim().length === 0"><nb-icon icon="plus-outline"></nb-icon> Create</button>
-      <button nbButton ghost class="create-item" (click)="create = false; newNamespace = ''" nbTooltip="Cancel"><nb-icon icon="close-outline"></nb-icon></button>
+    <div
+      *ngIf="create"
+      class="create"
+    >
+      <input
+        #createNamespace
+        type="text"
+        nbInput
+        placeholder="New Namespace"
+        class="create-item"
+        (keyup.enter)="createNew()"
+        [(ngModel)]="newNamespace"
+      />
+      <button
+        nbButton
+        class="create-item"
+        status="primary"
+        (click)="createNew()"
+        nbTooltip="Create a new Namespace"
+        nbTooltipStatus="primary"
+        [disabled]="newNamespace.trim().length === 0"
+      >
+        <nb-icon icon="plus-outline"></nb-icon> Create
+      </button>
+      <button
+        nbButton
+        ghost
+        class="create-item"
+        (click)="create = false; newNamespace = ''"
+        nbTooltip="Cancel"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
     </div>
   </nb-card-header>
 
   <nb-card-body>
-    <div class="applications-applications__item" *ngFor="let n of namespaces">
-      <button *ngIf="state.currentApplication && n.namespace === state.currentApplication.namespace" matTooltip="Current" mat-button
-              class="applications-applications__select-action">
+    <div
+      class="applications-applications__item"
+      *ngFor="let n of namespaces"
+    >
+      <button
+        *ngIf="state.currentApplication && n.namespace === state.currentApplication.namespace"
+        matTooltip="Current"
+        mat-button
+        class="applications-applications__select-action"
+      >
         <mat-icon>done</mat-icon>
       </button>
 
-      <button *ngIf="!state.currentApplication || n.namespace !== state.currentApplication.namespace"
-              class="applications-applications__select-action"
-              mat-button matTooltip="Select"
-              (click)="selectNamespace(n.namespace)">
+      <button
+        *ngIf="!state.currentApplication || n.namespace !== state.currentApplication.namespace"
+        class="applications-applications__select-action"
+        mat-button
+        matTooltip="Select"
+        (click)="selectNamespace(n.namespace)"
+      >
         <mat-icon></mat-icon>
       </button>
 
-      <span class="applications-applications__app-name">{{n.namespace}}</span>
+      <span class="applications-applications__app-name">{{ n.namespace }}</span>
 
       <div class="applications-applications__datas">
-        <mat-icon *ngIf="n.owner" matTooltip="Owner">verified_user</mat-icon>
+        <mat-icon
+          *ngIf="n.owner"
+          matTooltip="Owner"
+          >verified_user</mat-icon
+        >
       </div>
 
-      <nb-actions size="medium" style="cursor: pointer;">
-
-        <nb-action *ngIf="n.owner"
-                   class="control-item"
-                   (click)="manageUsers(n.namespace)"
-                   nbTooltip="Manage Users">
-          <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">edit</i>
+      <nb-actions
+        size="medium"
+        style="cursor: pointer"
+      >
+        <nb-action
+          *ngIf="n.owner"
+          class="control-item"
+          (click)="manageUsers(n.namespace)"
+          nbTooltip="Manage Users"
+        >
+          <i
+            class="material-icons tock-toolbar-menu"
+            style="font-size: 30px"
+            >edit</i
+          >
         </nb-action>
-
-
       </nb-actions>
     </div>
   </nb-card-body>
 
-  <nb-card class="applications-applications" *ngIf="managedNamespace">
+  <nb-card
+    class="applications-applications"
+    *ngIf="managedNamespace"
+  >
     <nb-card-header>
-      <div style="display: flex;">
-        <span *ngIf="state.applications.length !== 0">Users for Namespace <b>{{managedNamespace}}</b></span>
+      <div style="display: flex">
+        <span *ngIf="state.applications.length !== 0"
+          >Users for Namespace <b>{{ managedNamespace }}</b></span
+        >
       </div>
     </nb-card-header>
 
     <nb-card-body>
-      <div class="applications-applications__item" *ngFor="let u of managedUsers">
-
-        <span class="applications-applications__app-name">{{u.login}}</span>
+      <div
+        class="applications-applications__item"
+        *ngFor="let u of managedUsers"
+      >
+        <span class="applications-applications__app-name">{{ u.login }}</span>
 
         <div class="applications-applications__datas">
-          <mat-icon *ngIf="u.owner" matTooltip="Owner">verified_user</mat-icon>
+          <mat-icon
+            *ngIf="u.owner"
+            matTooltip="Owner"
+            >verified_user</mat-icon
+          >
         </div>
 
-        <nb-actions size="medium" style="cursor: pointer;">
-
-          <nb-action class="control-item"
-                     (click)="deleteUserNamespace(u)"
-                     nbTooltip="Delete User">
-            <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">delete</i>
+        <nb-actions
+          size="medium"
+          style="cursor: pointer"
+        >
+          <nb-action
+            class="control-item"
+            (click)="deleteUserNamespace(u)"
+            nbTooltip="Delete User"
+          >
+            <i
+              class="material-icons tock-toolbar-menu"
+              style="font-size: 30px"
+              >delete</i
+            >
           </nb-action>
-
-
         </nb-actions>
       </div>
     </nb-card-body>
 
     <nb-card-footer>
       <div>
-        <input nbInput [(ngModel)]="newLogin" placeholder="New User"/>
-        <nb-checkbox [(checked)]="newOwner" class="checkbox">Owner</nb-checkbox>
-        <button nbButton (click)="addUserNamespace()">Add</button>
+        <input
+          nbInput
+          [(ngModel)]="newLogin"
+          placeholder="New User"
+        />
+        <nb-checkbox
+          [(checked)]="newOwner"
+          class="checkbox"
+          >Owner</nb-checkbox
+        >
+        <button
+          nbButton
+          (click)="addUserNamespace()"
+        >
+          Add
+        </button>
       </div>
     </nb-card-footer>
-
   </nb-card>
+</nb-card>

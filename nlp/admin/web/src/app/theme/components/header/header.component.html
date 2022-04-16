@@ -15,42 +15,87 @@
   -->
 
 <div class="header-container">
-  <div class="logo-containter" style="    display: contents;">
-    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
+  <div
+    class="logo-containter"
+    style="display: contents"
+  >
+    <a
+      (click)="toggleSidebar()"
+      href="#"
+      class="sidebar-toggle"
+    >
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
-    <img src="/assets/images/logo-black.svg" class="logo-img"/>
-    <div class="logo" (click)="goToHome()">Tock Studio</div>
+    <img
+      src="/assets/images/logo-black.svg"
+      class="logo-img"
+    />
+    <div
+      class="logo"
+      (click)="goToHome()"
+    >
+      Tock Studio
+    </div>
   </div>
 </div>
 
 <div class="header-container">
-  <nb-icon icon="sun-outline" nbTooltip="Light Mode"></nb-icon>
-  <nb-toggle [ngModel]="isDarkTheme()" (change)="switchTheme()" class="darkmode-toggle" nbTooltip="Switch Mode"></nb-toggle>
-  <nb-icon icon="moon-outline" nbTooltip="Dark Mode"></nb-icon>
-  <nb-select status="primary"
-             *ngIf="state.currentApplication"
-             (selectedChange)="changeApplication($event)"
-             [ngModel]="state.currentApplication.name"
-             class="app">
-    <nb-option *ngFor="let app of state.applications"
-               [value]="app.name">{{ app.label }}
+  <nb-icon
+    icon="sun-outline"
+    nbTooltip="Light Mode"
+  ></nb-icon>
+  <nb-toggle
+    [ngModel]="isDarkTheme()"
+    (change)="switchTheme()"
+    class="darkmode-toggle"
+    nbTooltip="Switch Mode"
+  ></nb-toggle>
+  <nb-icon
+    icon="moon-outline"
+    nbTooltip="Dark Mode"
+  ></nb-icon>
+  <nb-select
+    status="primary"
+    *ngIf="state.currentApplication"
+    (selectedChange)="changeApplication($event)"
+    [ngModel]="state.currentApplication.name"
+    class="app"
+  >
+    <nb-option
+      *ngFor="let app of state.applications"
+      [value]="app.name"
+      >{{ app.label }}
     </nb-option>
   </nb-select>
 
-  <nb-select status="primary"
-             *ngIf="state.currentApplication"
-             (selectedChange)="changeLocale($event)"
-             [ngModel]="state.currentLocale"
-             class="locale">
-    <nb-option *ngFor="let l of state.currentApplication.supportedLocales"
-               [value]="l">{{ state.localeName(l) }}</nb-option>
+  <nb-select
+    status="primary"
+    *ngIf="state.currentApplication"
+    (selectedChange)="changeLocale($event)"
+    [ngModel]="state.currentLocale"
+    class="locale"
+  >
+    <nb-option
+      *ngFor="let l of state.currentApplication.supportedLocales"
+      [value]="l"
+      >{{ state.localeName(l) }}</nb-option
+    >
   </nb-select>
-  <nb-actions size="medium" style="cursor: pointer;">
-    <nb-action class="control-item"
-               *ngIf="auth.isLoggedIn() && !auth.isSSO()" (click)="auth.logout()"
-               nbTooltip="Logout">
-      <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">exit_to_app</i>
+  <nb-actions
+    size="medium"
+    style="cursor: pointer"
+  >
+    <nb-action
+      class="control-item"
+      *ngIf="auth.isLoggedIn() && !auth.isSSO()"
+      (click)="auth.logout()"
+      nbTooltip="Logout"
+    >
+      <i
+        class="material-icons tock-toolbar-menu"
+        style="font-size: 30px"
+        >exit_to_app</i
+      >
     </nb-action>
   </nb-actions>
 </div>

@@ -24,14 +24,14 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from '../model/nlp';
-import {StateService} from '../core-nlp/state.service';
-import {NlpService} from '../nlp-tabs/nlp.service';
-import {IntentDialogComponent} from './intent-dialog/intent-dialog.component';
-import {CoreConfig} from '../core-nlp/core.config';
-import {ConfirmDialogComponent} from '../shared-nlp/confirm-dialog/confirm-dialog.component';
-import {ReviewRequestDialogComponent} from './review-request-dialog/review-request-dialog.component';
-import {DialogService} from '../core-nlp/dialog.service';
+import { Intent, nameFromQualifiedName, Sentence, SentenceStatus } from '../model/nlp';
+import { StateService } from '../core-nlp/state.service';
+import { NlpService } from '../nlp-tabs/nlp.service';
+import { IntentDialogComponent } from './intent-dialog/intent-dialog.component';
+import { CoreConfig } from '../core-nlp/core.config';
+import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { ReviewRequestDialogComponent } from './review-request-dialog/review-request-dialog.component';
+import { DialogService } from '../core-nlp/dialog.service';
 import { FilterOption, Group } from '../search/filter/search-filter.component';
 
 @Component({
@@ -40,7 +40,6 @@ import { FilterOption, Group } from '../search/filter/search-filter.component';
   styleUrls: ['./sentence-analysis.component.css']
 })
 export class SentenceAnalysisComponent implements OnInit {
-
   @Input() @Output() sentence: Sentence;
   @Input() displayUnknownButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
@@ -54,29 +53,29 @@ export class SentenceAnalysisComponent implements OnInit {
   intentId: string;
   selectedValueLabel: string;
 
-  constructor(public state: StateService,
-              private nlp: NlpService,
-              private dialog: DialogService,
-              public config: CoreConfig,
-              private applicationRef: ApplicationRef,
-              private changeDetectorRef: ChangeDetectorRef,
-              private elementRef: ElementRef) {
-  }
+  constructor(
+    public state: StateService,
+    private nlp: NlpService,
+    private dialog: DialogService,
+    public config: CoreConfig,
+    private applicationRef: ApplicationRef,
+    private changeDetectorRef: ChangeDetectorRef,
+    private elementRef: ElementRef
+  ) {}
 
   ngOnInit() {
     this.intentBeforeClassification = this.sentence.classification.intentId;
-    if(this.intentBeforeClassification === this.UNKNOWN_INTENT_FILTER.value){
+    if (this.intentBeforeClassification === this.UNKNOWN_INTENT_FILTER.value) {
       this.selectedValueLabel = this.UNKNOWN_INTENT_FILTER.label;
     } else {
       this.selectedValueLabel = this.state.findIntentById(this.intentBeforeClassification).name;
     }
     if (this.minimalView) {
-      setTimeout(_ => {
-        this.changeDetectorRef.detach()
+      setTimeout((_) => {
+        this.changeDetectorRef.detach();
       });
     }
   }
-
 
   changeIntentFilter = (intentId: string) => {
     if (intentId && this.sentence.classification.intentId !== intentId) {
@@ -84,7 +83,7 @@ export class SentenceAnalysisComponent implements OnInit {
       this.selectedValueLabel = this.state.findIntentById(intentId).name;
       this.onIntentChange();
     }
-  }
+  };
 
   onIntentChange() {
     const value = this.sentence.classification.intentId;
@@ -94,30 +93,28 @@ export class SentenceAnalysisComponent implements OnInit {
     const classification = newSentence.classification;
     classification.intentId = value;
     const intent = this.state.findIntentById(value);
-    classification.entities =
-      oldSentence
-        .classification
-        .entities
-        .filter(e => intent && intent.containsEntity(e.type, e.role));
+    classification.entities = oldSentence.classification.entities.filter(
+      (e) => intent && intent.containsEntity(e.type, e.role)
+    );
     this.sentence = newSentence;
   }
 
   intentGroups(): Group[] {
     const currentIntentsCategories = this.state.currentIntentsCategories.getValue();
-    return currentIntentsCategories.map(entry =>
-      new Group(
-        entry.category,
-        entry.intents.map(intent =>
-          new FilterOption(intent._id, intent.intentLabel()))
-      )
+    return currentIntentsCategories.map(
+      (entry) =>
+        new Group(
+          entry.category,
+          entry.intents.map((intent) => new FilterOption(intent._id, intent.intentLabel()))
+        )
     );
   }
 
   newIntent() {
     // cleanup entities
     this.sentence.classification.entities = [];
-    const dialogRef = this.dialog.openDialog(IntentDialogComponent, {context: {create: true}});
-    dialogRef.onClose.subscribe(result => {
+    const dialogRef = this.dialog.openDialog(IntentDialogComponent, { context: { create: true } });
+    dialogRef.onClose.subscribe((result) => {
       if (result && result.name) {
         if (this.createIntent(result.name, result.label, result.description, result.category)) {
           return;
@@ -140,7 +137,7 @@ export class SentenceAnalysisComponent implements OnInit {
 
   focusOnIntentSelect() {
     this.displayAllView();
-    setTimeout(_ => {
+    setTimeout((_) => {
       const e = this.elementRef.nativeElement.querySelector('input');
       e.click();
       e.focus();
@@ -173,20 +170,18 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   onReviewRequest() {
-    setTimeout(_ => {
-      const dialogRef = this.dialog.openDialog(
-        ReviewRequestDialogComponent,
-        {
-          context: {
-            beforeClassification: this.intentBeforeClassification,
-            reviewComment: this.sentence.reviewComment
-          }
-        });
-      dialogRef.onClose.subscribe(result => {
+    setTimeout((_) => {
+      const dialogRef = this.dialog.openDialog(ReviewRequestDialogComponent, {
+        context: {
+          beforeClassification: this.intentBeforeClassification,
+          reviewComment: this.sentence.reviewComment
+        }
+      });
+      dialogRef.onClose.subscribe((result) => {
         if (result && result.status === 'confirm') {
           this.sentence.forReview = true;
           this.sentence.reviewComment = result.description;
-          this.validate()
+          this.validate();
         }
       });
     });
@@ -204,24 +199,33 @@ export class SentenceAnalysisComponent implements OnInit {
 
   private update(status: SentenceStatus) {
     this.sentence.status = status;
-    this.nlp.updateSentence(this.sentence)
-      .subscribe((_) => {
-        this.closed.emit(this.sentence);
-      });
+    this.nlp.updateSentence(this.sentence).subscribe((_) => {
+      this.closed.emit(this.sentence);
+    });
     // delete old language
     if (this.sentence.language !== this.state.currentLocale) {
       const s = this.sentence.clone();
       s.language = this.state.currentLocale;
       s.status = SentenceStatus.deleted;
-      this.nlp.updateSentence(s)
-        .subscribe((_) => {
-          this.dialog.notify(`Language change to ${this.state.localeName(this.sentence.language)}`, 'Language change');
-        });
+      this.nlp.updateSentence(s).subscribe((_) => {
+        this.dialog.notify(
+          `Language change to ${this.state.localeName(this.sentence.language)}`,
+          'Language change'
+        );
+      });
     }
   }
 
-  private createIntent(name: string, label: string, description: string, category: string): boolean {
-    if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === nameFromQualifiedName(Intent.unknown)) {
+  private createIntent(
+    name: string,
+    label: string,
+    description: string,
+    category: string
+  ): boolean {
+    if (
+      StateService.intentExistsInApp(this.state.currentApplication, name) ||
+      name === nameFromQualifiedName(Intent.unknown)
+    ) {
       this.dialog.notify(`Intent ${name} already exists`);
       return false;
     } else {
@@ -229,11 +233,12 @@ export class SentenceAnalysisComponent implements OnInit {
         const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
           context: {
             title: 'This intent is already used in an other application',
-            subtitle: 'If you confirm the name, the intent will be shared between the two applications.',
+            subtitle:
+              'If you confirm the name, the intent will be shared between the two applications.',
             action: 'Confirm'
           }
         });
-        dialogRef.onClose.subscribe(result => {
+        dialogRef.onClose.subscribe((result) => {
           if (result === 'confirm') {
             this.saveIntent(name, label, description, category);
           }
@@ -258,18 +263,20 @@ export class SentenceAnalysisComponent implements OnInit {
           [],
           label,
           description,
-          category)
+          category
+        )
       )
-      .subscribe(intent => {
+      .subscribe(
+        (intent) => {
           this.selectedValueLabel = intent.intentLabel();
           this.state.addIntent(intent);
           this.sentence.classification.intentId = intent._id;
           this.onIntentChange();
         },
-        _ => {
+        (_) => {
           this.sentence.classification.intentId = Intent.unknown;
           this.onIntentChange();
-        });
+        }
+      );
   }
-
 }

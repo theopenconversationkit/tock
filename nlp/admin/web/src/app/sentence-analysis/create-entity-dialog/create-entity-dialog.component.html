@@ -16,33 +16,66 @@
 <nb-card status="info">
   <nb-card-header>Add Entity</nb-card-header>
   <nb-card-body class="content">
-    <p *ngIf="error" class="error">
-      {{error}}
+    <p
+      *ngIf="error"
+      class="error"
+    >
+      {{ error }}
     </p>
 
     <p>
-      <label>Select existing Entity:</label><br>
+      <label>Select existing Entity:</label><br />
 
       <mat-chip-list *ngIf="entityTypes">
-        <mat-chip *ngFor="let e of entityTypes" matTooltip="Select {{e.qualifiedName(state.user)}}" selected="{{e === entityType}}" (click)="onSelect(e)" [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)" color="primary">
-          {{e.qualifiedName(state.user)}}
+        <mat-chip
+          *ngFor="let e of entityTypes"
+          matTooltip="Select {{ e.qualifiedName(state.user) }}"
+          selected="{{ e === entityType }}"
+          (click)="onSelect(e)"
+          [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)"
+          color="primary"
+        >
+          {{ e.qualifiedName(state.user) }}
         </mat-chip>
       </mat-chip-list>
     </p>
 
-
-
-      <div class="form-group">
-        <span>Or create: </span>
-        <input cdkFocusInitial nbInput placeholder="Entity Type" [(ngModel)]="type" (keyup)="onTypeKeyUp($event)"/>
-      </div>
-      <div class="form-group">
-        <label> With role: </label>
-        <input nbInput placeholder="Role" [(ngModel)]="role" (keyup)="onRoleKeyUp($event)"/>
-      </div>
+    <div class="form-group">
+      <span>Or create: </span>
+      <input
+        cdkFocusInitial
+        nbInput
+        placeholder="Entity Type"
+        [(ngModel)]="type"
+        (keyup)="onTypeKeyUp($event)"
+      />
+    </div>
+    <div class="form-group">
+      <label> With role: </label>
+      <input
+        nbInput
+        placeholder="Role"
+        [(ngModel)]="role"
+        (keyup)="onRoleKeyUp($event)"
+      />
+    </div>
   </nb-card-body>
   <nb-card-footer class="footer">
-    <button nbButton size="small" (click)="dialogRef.close('cancel')">Cancel</button>
-    <button nbButton size="small" class="submit-button" status="success" (click)="save()">Add</button>
+    <button
+      nbButton
+      size="small"
+      (click)="dialogRef.close('cancel')"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      class="submit-button"
+      status="success"
+      (click)="save()"
+    >
+      Add
+    </button>
   </nb-card-footer>
 </nb-card>

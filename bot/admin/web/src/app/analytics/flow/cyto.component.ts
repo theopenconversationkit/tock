@@ -14,23 +14,35 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, Renderer2 } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  Renderer2
+} from '@angular/core';
 
 declare var cytoscape: any;
 
 @Component({
   selector: 'tock-cytoscape',
   template: '<div id="cy"></div>',
-  styles: [`#cy {
-    height: 75%;
-    width: 100%;
-    position: relative;
-    left: 0;
-    top: 0;
-  }`]
+  styles: [
+    `
+      #cy {
+        height: 75%;
+        width: 100%;
+        position: relative;
+        left: 0;
+        top: 0;
+      }
+    `
+  ]
 })
 export class CytoComponent implements OnChanges, OnDestroy {
-
   @Input() public elements: any;
   @Input() public style: any;
   @Input() public layout: any;
@@ -48,59 +60,61 @@ export class CytoComponent implements OnChanges, OnDestroy {
       padding: 0
     };
 
-
     this.zoom = this.zoom || {
       min: 0.1,
       max: 10
     };
 
-    this.style = this.style || cytoscape.stylesheet()
+    this.style =
+      this.style ||
+      cytoscape
+        .stylesheet()
 
-      .selector('node')
-      .css({
-        'shape': 'data(shapeType)',
-        'width': 'mapData(weight, 0, 100, 18, 60)',
-        'height': 'mapData(weight, 0, 100, 18, 60)',
-        'content': 'data(name)',
-        'text-valign': 'center',
-        'text-outline-width': 1,
-        'text-outline-color': 'data(colorCode)',
-        'background-color': 'data(colorCode)',
-        'color': '#fff',
-        'font-size': 10
-      })
-      .selector(':selected')
-      .css({
-        'border-width': 1,
-        'border-color': 'black'
-      })
-      .selector('edge')
-      .css({
-        'curve-style': 'bezier',
-        'opacity': 0.666,
-        'width': 'mapData(strength, 70, 100, 2, 6)',
-        'target-arrow-shape': 'triangle',
-        'line-color': 'data(colorCode)',
-        'source-arrow-color': 'data(colorCode)',
-        'target-arrow-color': 'data(colorCode)',
-        'edge-text-rotation': 'autorotate'
-      })
-      .selector('edge.questionable')
-      .css({
-        'line-style': 'dotted',
-        'target-arrow-shape': 'diamond'
-      })
-      .selector('edge[label]')
-      .css({
-        'label': 'data(label)',
-        'width': 1,
-        'font-size': 5
-      })
-      .selector('.faded')
-      .css({
-        'opacity': 0.25,
-        'text-opacity': 0
-      });
+        .selector('node')
+        .css({
+          shape: 'data(shapeType)',
+          width: 'mapData(weight, 0, 100, 18, 60)',
+          height: 'mapData(weight, 0, 100, 18, 60)',
+          content: 'data(name)',
+          'text-valign': 'center',
+          'text-outline-width': 1,
+          'text-outline-color': 'data(colorCode)',
+          'background-color': 'data(colorCode)',
+          color: '#fff',
+          'font-size': 10
+        })
+        .selector(':selected')
+        .css({
+          'border-width': 1,
+          'border-color': 'black'
+        })
+        .selector('edge')
+        .css({
+          'curve-style': 'bezier',
+          opacity: 0.666,
+          width: 'mapData(strength, 70, 100, 2, 6)',
+          'target-arrow-shape': 'triangle',
+          'line-color': 'data(colorCode)',
+          'source-arrow-color': 'data(colorCode)',
+          'target-arrow-color': 'data(colorCode)',
+          'edge-text-rotation': 'autorotate'
+        })
+        .selector('edge.questionable')
+        .css({
+          'line-style': 'dotted',
+          'target-arrow-shape': 'diamond'
+        })
+        .selector('edge[label]')
+        .css({
+          label: 'data(label)',
+          width: 1,
+          'font-size': 5
+        })
+        .selector('.faded')
+        .css({
+          opacity: 0.25,
+          'text-opacity': 0
+        });
   }
 
   ngOnDestroy(): void {
@@ -114,8 +128,8 @@ export class CytoComponent implements OnChanges, OnDestroy {
   }
 
   public render() {
-    setTimeout(_ => {
-      let cy_container = this.renderer.selectRootElement("#cy");
+    setTimeout((_) => {
+      let cy_container = this.renderer.selectRootElement('#cy');
       let nodeSelector = this.selectedNode;
       let edgeSelector = this.selectedEdge;
       let cy = cytoscape({
@@ -124,9 +138,8 @@ export class CytoComponent implements OnChanges, OnDestroy {
         minZoom: this.zoom.min,
         maxZoom: this.zoom.max,
         style: this.style,
-        elements: this.elements,
+        elements: this.elements
       });
-
 
       cy.on('tap', 'node', function (e) {
         let node = e.target;
@@ -155,7 +168,6 @@ export class CytoComponent implements OnChanges, OnDestroy {
         this.cy.destroy();
       }
       this.cy = cy;
-    })
+    });
   }
-
 }

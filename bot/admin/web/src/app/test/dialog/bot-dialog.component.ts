@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
-import {TestService} from "../test.service";
-import {StateService} from "../../core-nlp/state.service";
-import {RestService} from "../../core-nlp/rest/rest.service";
-import {BotDialogRequest, TestMessage, XRayTestPlan} from "../model/test";
-import {BotMessage, Sentence} from "../../shared/model/dialog-data";
-import {BotSharedService} from "../../shared/bot-shared.service";
-import {SelectBotEvent} from "../../shared/select-bot/select-bot.component";
-import {randomString} from "../../model/commons";
-import {Subscription} from "rxjs";
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
-import {SentenceFilter} from "../../sentences-scroll/sentences-scroll.component";
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { TestService } from '../test.service';
+import { StateService } from '../../core-nlp/state.service';
+import { RestService } from '../../core-nlp/rest/rest.service';
+import { BotDialogRequest, TestMessage, XRayTestPlan } from '../model/test';
+import { BotMessage, Sentence } from '../../shared/model/dialog-data';
+import { BotSharedService } from '../../shared/bot-shared.service';
+import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
+import { randomString } from '../../model/commons';
+import { Subscription } from 'rxjs';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { SentenceFilter } from '../../sentences-scroll/sentences-scroll.component';
 import { NbToastrService } from '@nebular/theme';
-import {AnalyticsService} from "../../analytics/analytics.service";
-import {APP_BASE_HREF} from "@angular/common";
+import { AnalyticsService } from '../../analytics/analytics.service';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -38,18 +38,18 @@ import {APP_BASE_HREF} from "@angular/common";
 export class BotDialogComponent implements OnInit, OnDestroy {
   currentConfigurationId: string;
 
-  userMessage: string = "";
+  userMessage: string = '';
   messages: TestMessage[] = [];
 
   xrayAvailable: boolean = false;
-  xrayTestName: string = "";
+  xrayTestName: string = '';
   isXrayTestNameFilled: boolean = false;
-  jiraIdentifier: string = "";
+  jiraIdentifier: string = '';
   xrayTestPlans: XRayTestPlan[];
   selectTestPlans: string[];
   filter: SentenceFilter = new SentenceFilter();
 
-  xrayTestIdentifier: string = "";
+  xrayTestIdentifier: string = '';
   isXrayTestIdentifierFilled: boolean = false;
 
   loading: boolean;
@@ -59,38 +59,35 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   testContext = false;
 
-  constructor(public state: StateService,
-              private test: TestService,
-              private rest: RestService,
-              private shared: BotSharedService,
-              private toastrService: NbToastrService,
-              private dialog: MatDialog,
-              @Inject(APP_BASE_HREF) public baseHref: string) {
-  }
+  constructor(
+    public state: StateService,
+    private test: TestService,
+    private rest: RestService,
+    private shared: BotSharedService,
+    private toastrService: NbToastrService,
+    private dialog: MatDialog,
+    @Inject(APP_BASE_HREF) public baseHref: string
+  ) {}
 
   ngOnInit() {
-    this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
-      this.loading = false
-    );
-    this.subscription = this.state.configurationChange.subscribe(_ => this.clear());
-    this.fillTestPlanFilter()
+    this.errorUnsuscriber = this.rest.errorEmitter.subscribe((e) => (this.loading = false));
+    this.subscription = this.state.configurationChange.subscribe((_) => this.clear());
+    this.fillTestPlanFilter();
   }
 
   private fillTestPlanFilter() {
-    this.shared.getConfiguration().subscribe(r => {
-        this.xrayAvailable = r.xrayAvailable;
-        if (r.xrayAvailable) {
-          this.test.getXrayTestPlans().subscribe(testPlans => {
-              this.xrayTestPlans = testPlans
-            }
-          );
-        }
+    this.shared.getConfiguration().subscribe((r) => {
+      this.xrayAvailable = r.xrayAvailable;
+      if (r.xrayAvailable) {
+        this.test.getXrayTestPlans().subscribe((testPlans) => {
+          this.xrayTestPlans = testPlans;
+        });
       }
-    );
+    });
   }
 
   changeConfiguration(selectBotEvent: SelectBotEvent) {
-    this.userMessage = "";
+    this.userMessage = '';
     this.messages = [];
     this.loading = false;
     this.currentConfigurationId = selectBotEvent ? selectBotEvent.configurationId : null;
@@ -102,7 +99,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   submit() {
     if (!this.currentConfigurationId) {
-      this.toastrService.show(`Please select a Bot first`, "Error", {duration: 3000});
+      this.toastrService.show(`Please select a Bot first`, 'Error', { duration: 3000 });
       return;
     }
     let m = this.userMessage;
@@ -116,7 +113,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   private talk(message: BotMessage) {
     const userAction = new TestMessage(false, message);
     this.messages.push(userAction);
-    this.userMessage = "";
+    this.userMessage = '';
     this.loading = true;
     this.test
       .talk(
@@ -126,28 +123,29 @@ export class BotDialogComponent implements OnInit, OnDestroy {
           this.state.currentApplication.namespace,
           this.state.currentApplication.name,
           this.state.currentLocale,
-          this.userModifierId))
-      .subscribe(r => {
+          this.userModifierId
+        )
+      )
+      .subscribe((r) => {
         this.loading = false;
         userAction.locale = r.userLocale;
         userAction.hasNlpStats = r.hasNlpStats;
         userAction.actionId = r.userActionId;
-        r.messages.forEach(m => {
+        r.messages.forEach((m) => {
           this.messages.push(new TestMessage(true, m));
         });
       });
   }
 
   displayNlpStats(m: TestMessage) {
-    this.shared.getNlpDialogStats(m.actionId).subscribe(r => {
+    this.shared.getNlpDialogStats(m.actionId).subscribe((r) => {
       this.dialog.open(DisplayNlpStatsComponent, {
         data: {
           request: r.nlpQueryAsJson(),
           response: r.nlpResultAsJson()
         }
-      })
+      });
     });
-
   }
 
   clear() {
@@ -158,8 +156,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   clearTestControl() {
     this.testContext = false;
-    this.xrayTestName = "";
-    this.jiraIdentifier = "";
+    this.xrayTestName = '';
+    this.jiraIdentifier = '';
   }
 
   ngOnDestroy() {
@@ -168,43 +166,40 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   enableTestContext() {
     if (this.testContext == false) {
-      this.talk(new Sentence(0, [], "_test_"));
+      this.talk(new Sentence(0, [], '_test_'));
       this.testContext = true;
-
     } else {
-      this.clearTestControl()
-      this.talk(new Sentence(0, [], "_end_test_"));
+      this.clearTestControl();
+      this.talk(new Sentence(0, [], '_end_test_'));
     }
   }
 
   updateSaveButtonStatus($event: any) {
-    this.isXrayTestNameFilled = $event != ""
+    this.isXrayTestNameFilled = $event != '';
   }
 
   updateUpdateButtonStatus($event: any) {
-    this.isXrayTestIdentifierFilled = $event != "";
+    this.isXrayTestIdentifierFilled = $event != '';
   }
 
   saveDialogToXray() {
-    let jiraPart: string = this.jiraIdentifier != "" ? ", " + this.jiraIdentifier : "";
-    this.talk(new Sentence(0, [], "_xray_ " + this.xrayTestName + jiraPart));
+    let jiraPart: string = this.jiraIdentifier != '' ? ', ' + this.jiraIdentifier : '';
+    this.talk(new Sentence(0, [], '_xray_ ' + this.xrayTestName + jiraPart));
   }
 
   updateDialogXray() {
-    this.talk(new Sentence(0, [], "_xray_update_ " + this.xrayTestIdentifier));
+    this.talk(new Sentence(0, [], '_xray_update_ ' + this.xrayTestIdentifier));
   }
 
-  printSelectedTestPlans($event: string[] | string) {
-
-  }
+  printSelectedTestPlans($event: string[] | string) {}
 
   removeXrayTestIdentifier() {
-    this.xrayTestIdentifier = "";
+    this.xrayTestIdentifier = '';
     this.isXrayTestIdentifierFilled = false;
   }
 
   removeXrayTestName() {
-    this.xrayTestName = "";
+    this.xrayTestName = '';
     this.isXrayTestNameFilled = false;
   }
 }
@@ -212,22 +207,25 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 @Component({
   selector: 'tock-display-nlp-stats',
   template: `<h1 mat-dialog-title>Nlp Stats</h1>
-  <div mat-dialog-content>
-    Request:
-    <pre>{{data.request}}</pre>
-    Response:
-    <pre>{{data.response}}</pre>
-  </div>
-  <div mat-dialog-actions>
-    <button mat-raised-button mat-dialog-close color="primary">Close</button>
-  </div>`
+    <div mat-dialog-content>
+      Request:
+      <pre>{{ data.request }}</pre>
+      Response:
+      <pre>{{ data.response }}</pre>
+    </div>
+    <div mat-dialog-actions>
+      <button
+        mat-raised-button
+        mat-dialog-close
+        color="primary"
+      >
+        Close
+      </button>
+    </div>`
 })
 export class DisplayNlpStatsComponent {
-
-  constructor(public dialogRef: MatDialogRef<DisplayNlpStatsComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
-
-  }
-
-
+  constructor(
+    public dialogRef: MatDialogRef<DisplayNlpStatsComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 }

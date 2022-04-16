@@ -15,15 +15,12 @@
  */
 
 export class User {
-  constructor(public email: string,
-              public organization: string,
-              public roles: UserRole[]) {
-  }
+  constructor(public email: string, public organization: string, public roles: UserRole[]) {}
 
   static fromJSON(json: any): User {
     const value = Object.create(User.prototype);
     const result = Object.assign(value, json, {
-      roles: json.roles.map(r => UserRole[r]),
+      roles: json.roles.map((r) => UserRole[r]),
       //fallback to namespace
       organization: json.organization ? json.organization : json.namespace
     });
@@ -33,21 +30,21 @@ export class User {
 }
 
 export class AuthenticateRequest {
-  constructor(public email: string, public password: string) {
-  }
+  constructor(public email: string, public password: string) {}
 }
 
 export class AuthenticateResponse {
-  constructor(public authenticated: boolean,
-              public email?: string,
-              public organization?: string,
-              public roles?: UserRole[]) {
-  }
+  constructor(
+    public authenticated: boolean,
+    public email?: string,
+    public organization?: string,
+    public roles?: UserRole[]
+  ) {}
 
   static fromJSON(json: any): AuthenticateResponse {
     const value = Object.create(AuthenticateResponse.prototype);
     const result = Object.assign(value, json, {
-      roles: json.roles.map(r => UserRole[r])
+      roles: json.roles.map((r) => UserRole[r])
     });
 
     return result;
@@ -76,4 +73,3 @@ export enum UserRole {
    */
   technicalAdmin
 }
-

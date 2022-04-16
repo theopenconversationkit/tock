@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {SentenceFilter} from "../sentences-scroll/sentences-scroll.component";
-import {Intent} from "../model/nlp";
-import {SentenceStatus} from "../model/nlp";
+import { Component, OnInit } from '@angular/core';
+import { SentenceFilter } from '../sentences-scroll/sentences-scroll.component';
+import { Intent } from '../model/nlp';
+import { SentenceStatus } from '../model/nlp';
 
 @Component({
   selector: 'tock-archive',
@@ -25,13 +25,12 @@ import {SentenceStatus} from "../model/nlp";
   styleUrls: ['./archive.component.css']
 })
 export class ArchiveComponent implements OnInit {
+  filter: SentenceFilter = new SentenceFilter(null, Intent.unknown, [
+    SentenceStatus.validated,
+    SentenceStatus.model
+  ]);
 
-  filter: SentenceFilter = new SentenceFilter(null, Intent.unknown, [SentenceStatus.validated, SentenceStatus.model]);
+  constructor() {}
 
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

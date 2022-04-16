@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {BotConfigurationService} from '../../core/bot-configuration.service';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
 import {
   BotApplicationConfiguration,
   BotConfiguration,
   ConnectorType,
   UserInterfaceType
 } from '../../core/model/configuration';
-import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import {StateService} from '../../core-nlp/state.service';
-import {NbToastrService, NbDialogService} from '@nebular/theme';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { StateService } from '../../core-nlp/state.service';
+import { NbToastrService, NbDialogService } from '@nebular/theme';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 
 @Component({
@@ -33,7 +33,6 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
   styleUrls: ['./bot-configurations.component.css']
 })
 export class BotConfigurationsComponent implements OnInit {
-
   newApplicationConfiguration: BotApplicationConfiguration;
   configurations: BotConfiguration[];
   displayTestConfigurations = false;
@@ -41,20 +40,21 @@ export class BotConfigurationsComponent implements OnInit {
   // used to copy to clipboard
   @ViewChild('copy') tmpTextArea: ElementRef;
 
-  constructor(private state: StateService,
-              private botConfiguration: BotConfigurationService,
-              private dialogService: DialogService,
-              private toastrService: NbToastrService) {
-  }
+  constructor(
+    private state: StateService,
+    private botConfiguration: BotConfigurationService,
+    private dialogService: DialogService,
+    private toastrService: NbToastrService
+  ) {}
 
   ngOnInit() {
     this.load();
   }
 
   private load() {
-    this.botConfiguration.configurations.subscribe(confs => {
+    this.botConfiguration.configurations.subscribe((confs) => {
       const botConfigurationsByName = new Map<string, BotApplicationConfiguration[]>();
-      confs.forEach(c => {
+      confs.forEach((c) => {
         const configs = botConfigurationsByName.get(c.name);
         if (!configs) {
           botConfigurationsByName.set(c.name, [c]);
@@ -63,23 +63,25 @@ export class BotConfigurationsComponent implements OnInit {
         }
       });
       const bots = this.botConfiguration.bots.getValue();
-      this.configurations = Array.from(botConfigurationsByName.values())
-        .map(
-          botConfigurations => {
-            const existingConf = bots.find(botConfig => botConfig.name === botConfigurations[0].name);
-            if (existingConf) {
-              existingConf.configurations = botConfigurations;
-              return existingConf;
-            }
-            const firstBotConfiguration = botConfigurations[0];
-            return new BotConfiguration(
-              firstBotConfiguration.botId,
-              firstBotConfiguration.name,
-              firstBotConfiguration.namespace,
-              firstBotConfiguration.nlpModel,
-              botConfigurations);
+      this.configurations = Array.from(botConfigurationsByName.values()).map(
+        (botConfigurations) => {
+          const existingConf = bots.find(
+            (botConfig) => botConfig.name === botConfigurations[0].name
+          );
+          if (existingConf) {
+            existingConf.configurations = botConfigurations;
+            return existingConf;
           }
-        );
+          const firstBotConfiguration = botConfigurations[0];
+          return new BotConfiguration(
+            firstBotConfiguration.botId,
+            firstBotConfiguration.name,
+            firstBotConfiguration.namespace,
+            firstBotConfiguration.nlpModel,
+            botConfigurations
+          );
+        }
+      );
     });
   }
 
@@ -95,7 +97,8 @@ export class BotConfigurationsComponent implements OnInit {
       this.state.currentApplication.name,
       new ConnectorType('messenger', UserInterfaceType.textChat),
       this.state.currentApplication.name,
-      new Map<string, string>());
+      new Map<string, string>()
+    );
   }
 
   cancelCreate() {
@@ -104,32 +107,40 @@ export class BotConfigurationsComponent implements OnInit {
 
   refresh() {
     this.botConfiguration.updateConfigurations();
-    this.toastrService.show(`Configurations reloaded`, 'Refresh', {duration: 2000});
+    this.toastrService.show(`Configurations reloaded`, 'Refresh', { duration: 2000 });
   }
 
   create() {
     // black magic? welcome to the js world! :)
     const param = this.newApplicationConfiguration.parameters;
-    Object.keys(param).forEach(k => {
+    Object.keys(param).forEach((k) => {
       param.set(k, param[k]);
     });
 
-    this.botConfiguration.saveConfiguration(this.newApplicationConfiguration)
-      .subscribe(_ => {
-        this.botConfiguration.updateConfigurations();
-        this.toastrService.show(`Configuration created`, 'Creation', {duration: 5000, status: "success"});
-        this.newApplicationConfiguration = null;
+    this.botConfiguration.saveConfiguration(this.newApplicationConfiguration).subscribe((_) => {
+      this.botConfiguration.updateConfigurations();
+      this.toastrService.show(`Configuration created`, 'Creation', {
+        duration: 5000,
+        status: 'success'
       });
+      this.newApplicationConfiguration = null;
+    });
   }
 
   update(conf: BotApplicationConfiguration) {
-    this.botConfiguration.saveConfiguration(conf)
-      .subscribe(_ => {
+    this.botConfiguration.saveConfiguration(conf).subscribe(
+      (_) => {
         this.botConfiguration.updateConfigurations();
-        this.toastrService.show(`Configuration updated`, 'Update', {duration: 5000, status: "success"});
-      }, (error) => {
+        this.toastrService.show(`Configuration updated`, 'Update', {
+          duration: 5000,
+          status: 'success'
+        });
+      },
+      (error) => {
         this.botConfiguration.updateConfigurations();
-      });  }
+      }
+    );
+  }
 
   remove(conf: BotApplicationConfiguration) {
     const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
@@ -139,23 +150,24 @@ export class BotConfigurationsComponent implements OnInit {
         action: 'Remove'
       }
     });
-    dialogRef.onClose.subscribe(result => {
+    dialogRef.onClose.subscribe((result) => {
       if (result === 'remove') {
-        this.botConfiguration.deleteConfiguration(conf)
-          .subscribe(_ => {
-            this.botConfiguration.updateConfigurations();
-            this.toastrService.show(`Configuration deleted`, 'Delete', {duration: 5000, status: "success"});
+        this.botConfiguration.deleteConfiguration(conf).subscribe((_) => {
+          this.botConfiguration.updateConfigurations();
+          this.toastrService.show(`Configuration deleted`, 'Delete', {
+            duration: 5000,
+            status: 'success'
           });
+        });
       }
     });
   }
 
   saveBot(bot: BotConfiguration) {
-    this.botConfiguration.saveBot(bot).subscribe(_ => {
-        this.toastrService.show(`Webhook saved`, 'Save', {duration: 5000, status: "success"});
-        this.botConfiguration.updateConfigurations();
-      }
-    );
+    this.botConfiguration.saveBot(bot).subscribe((_) => {
+      this.toastrService.show(`Webhook saved`, 'Save', { duration: 5000, status: 'success' });
+      this.botConfiguration.updateConfigurations();
+    });
   }
 
   copyToClipboard(bot: BotConfiguration) {
@@ -171,7 +183,10 @@ export class BotConfigurationsComponent implements OnInit {
       // do nothing
     }
     t.style.display = 'none';
-    this.toastrService.show(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, 'Clipboard', {duration: 2000});
+    this.toastrService.show(
+      successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`,
+      'Clipboard',
+      { duration: 2000 }
+    );
   }
-
 }

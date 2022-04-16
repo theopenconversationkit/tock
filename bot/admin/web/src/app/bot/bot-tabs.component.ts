@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 class TabLink {
-  constructor(
-    public route: string,
-    public title: string,
-    public icon?: string
-  ) { }
+  constructor(public route: string, public title: string, public icon?: string) {}
 }
 
 const tabs = [
-  new TabLink("story-create", "New Story", 'plus-circle-outline'),
-  new TabLink("story-search", "Stories", 'layers-outline'),
-  new TabLink("story-rules", "Rules", 'toggle-right-outline'),
-  new TabLink("i18n", "Answers", 'color-palette-outline')
+  new TabLink('story-create', 'New Story', 'plus-circle-outline'),
+  new TabLink('story-search', 'Stories', 'layers-outline'),
+  new TabLink('story-rules', 'Rules', 'toggle-right-outline'),
+  new TabLink('i18n', 'Answers', 'color-palette-outline')
 ];
 
 @Component({
@@ -37,16 +33,13 @@ const tabs = [
   styleUrls: ['./bot-tabs.component.css']
 })
 export class BotTabsComponent implements OnInit {
-
   botTabLinks = tabs;
 
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/build")) {
-      this.router.navigateByUrl("/build/story-create");
+    if (this.router.routerState.snapshot.url.endsWith('/build')) {
+      this.router.navigateByUrl('/build/story-create');
     }
   }
-
 }

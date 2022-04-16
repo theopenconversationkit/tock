@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import {Injectable} from '@angular/core';
-import {RestService} from '../core-nlp/rest/rest.service';
+import { Injectable } from '@angular/core';
+import { RestService } from '../core-nlp/rest/rest.service';
 import {
   CreateStoryRequest,
   StoryDefinitionConfiguration,
   StoryDefinitionConfigurationSummary,
   StorySearchQuery
 } from './model/story';
-import {Intent, TranslateReport} from '../model/nlp';
-import {Observable} from 'rxjs';
-import {CreateI18nLabelRequest, I18LabelQuery, I18nLabel, I18nLabels} from './model/i18n';
-import {FileUploader} from 'ng2-file-upload';
-import {Feature} from './model/feature';
+import { Intent, TranslateReport } from '../model/nlp';
+import { Observable } from 'rxjs';
+import { CreateI18nLabelRequest, I18LabelQuery, I18nLabel, I18nLabels } from './model/i18n';
+import { FileUploader } from 'ng2-file-upload';
+import { Feature } from './model/feature';
 
 @Injectable()
 export class BotService {
-
-  constructor(private rest: RestService) {
-  }
+  constructor(private rest: RestService) {}
 
   newStory(request: CreateStoryRequest): Observable<Intent> {
     return this.rest.post('/bot/story/new', request, Intent.fromJSON);
@@ -43,15 +41,25 @@ export class BotService {
   }
 
   searchStories(request: StorySearchQuery): Observable<StoryDefinitionConfigurationSummary[]> {
-    return this.rest.post('/bot/story/search', request, StoryDefinitionConfigurationSummary.fromJSONArray);
+    return this.rest.post(
+      '/bot/story/search',
+      request,
+      StoryDefinitionConfigurationSummary.fromJSONArray
+    );
   }
 
   exportStories(applicationName: string): Observable<Blob> {
-    return this.rest.get(`/bot/story/${applicationName}/export`, j => new Blob([JSON.stringify(j)], {type: 'application/json'}));
+    return this.rest.get(
+      `/bot/story/${applicationName}/export`,
+      (j) => new Blob([JSON.stringify(j)], { type: 'application/json' })
+    );
   }
 
   exportStory(applicationName: string, storyDefinitionId: string): Observable<Blob> {
-    return this.rest.get(`/bot/story/${applicationName}/export/${storyDefinitionId}`, j => new Blob([JSON.stringify(j)], {type: 'application/json'}));
+    return this.rest.get(
+      `/bot/story/${applicationName}/export/${storyDefinitionId}`,
+      (j) => new Blob([JSON.stringify(j)], { type: 'application/json' })
+    );
   }
 
   prepareStoryDumpUploader(uploader: FileUploader, applicationName: string, locale: string) {
@@ -59,7 +67,11 @@ export class BotService {
   }
 
   saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
-    return this.rest.post('/bot/story', story.prepareBeforeSend(), StoryDefinitionConfiguration.fromJSON);
+    return this.rest.post(
+      '/bot/story',
+      story.prepareBeforeSend(),
+      StoryDefinitionConfiguration.fromJSON
+    );
   }
 
   findStory(storyDefinitionId: string): Observable<StoryDefinitionConfiguration> {
@@ -67,10 +79,16 @@ export class BotService {
   }
 
   findRuntimeStorySettings(botId: string): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.get(`/bot/story/${botId}/settings`, StoryDefinitionConfiguration.fromJSONArray);
+    return this.rest.get(
+      `/bot/story/${botId}/settings`,
+      StoryDefinitionConfiguration.fromJSONArray
+    );
   }
 
-  findStoryByBotIdAndIntent(botId: string, intent: string): Observable<StoryDefinitionConfiguration> {
+  findStoryByBotIdAndIntent(
+    botId: string,
+    intent: string
+  ): Observable<StoryDefinitionConfiguration> {
     return this.rest.get(`/bot/story/${botId}/${intent}`, StoryDefinitionConfiguration.fromJSON);
   }
 
@@ -104,7 +122,7 @@ export class BotService {
         new CreateI18nLabelRequest(
           clonedLabel.category,
           clonedLabel.defaultLocalizedLabel().label,
-          clonedLabel.defaultLocale,
+          clonedLabel.defaultLocale
         )
       ).subscribe(callback);
     }
@@ -115,19 +133,30 @@ export class BotService {
   }
 
   downloadAllI18nLabelsCsv(): Observable<Blob> {
-    return this.rest.get('/i18n/export/csv', (r => new Blob([r], {type: 'text/csv;charset=utf-8'})));
+    return this.rest.get(
+      '/i18n/export/csv',
+      (r) => new Blob([r], { type: 'text/csv;charset=utf-8' })
+    );
   }
 
   downloadI18nLabelsCsv(query: I18LabelQuery): Observable<Blob> {
-    return this.rest.post('/i18n/export/csv', query, (r => new Blob([r], {type: 'text/csv;charset=utf-8'})));
+    return this.rest.post(
+      '/i18n/export/csv',
+      query,
+      (r) => new Blob([r], { type: 'text/csv;charset=utf-8' })
+    );
   }
 
   downloadAllI18nLabelsJson(): Observable<Blob> {
-    return this.rest.get('/i18n/export/json', (r => new Blob([r], {type: 'application/json'})));
+    return this.rest.get('/i18n/export/json', (r) => new Blob([r], { type: 'application/json' }));
   }
 
   downloadI18nLabelsJson(query: I18LabelQuery): Observable<Blob> {
-    return this.rest.post('/i18n/export/json', query, (r => new Blob([r], {type: 'application/json'})));
+    return this.rest.post(
+      '/i18n/export/json',
+      query,
+      (r) => new Blob([r], { type: 'application/json' })
+    );
   }
 
   prepareI18nCsvDumpUploader(uploader: FileUploader) {
@@ -158,8 +187,16 @@ export class BotService {
     return this.rest.post(`/feature/${encodeURIComponent(botId)}/add`, feature);
   }
 
-  deleteFeature(botId: string, category: string, name: string, applicationId: string): Observable<boolean> {
-    return this.rest.delete(`/feature/${encodeURIComponent(botId)}/${encodeURIComponent(category)}/${encodeURIComponent(name)}/${applicationId ? encodeURIComponent(applicationId) : ''}`);
+  deleteFeature(
+    botId: string,
+    category: string,
+    name: string,
+    applicationId: string
+  ): Observable<boolean> {
+    return this.rest.delete(
+      `/feature/${encodeURIComponent(botId)}/${encodeURIComponent(category)}/${encodeURIComponent(
+        name
+      )}/${applicationId ? encodeURIComponent(applicationId) : ''}`
+    );
   }
-
 }

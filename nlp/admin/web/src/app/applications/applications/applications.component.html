@@ -16,19 +16,27 @@
 
 <nb-card class="applications-applications">
   <nb-card-header>
-    <div style="display: flex;">
+    <div style="display: flex">
       <span *ngIf="state.applications.length === 0">
         Welcome! Please create your first Application
       </span>
       <span *ngIf="state.applications.length !== 0">Applications</span>
-      <nb-actions size="small" *ngIf="!uploadDump">
-        <nb-action class="control-item create" routerLink="create"
-                   nbTooltip="Create new application">
+      <nb-actions
+        size="small"
+        *ngIf="!uploadDump"
+      >
+        <nb-action
+          class="control-item create"
+          routerLink="create"
+          nbTooltip="Create new application"
+        >
           <i class="material-icons tock-toolbar-menu">add_box</i>
         </nb-action>
-        <nb-action class="control-item"
-                   (click)="showUploadDumpPanel()"
-                   nbTooltip="Upload dump">
+        <nb-action
+          class="control-item"
+          (click)="showUploadDumpPanel()"
+          nbTooltip="Upload dump"
+        >
           <i class="material-icons tock-toolbar-menu">cloud_upload</i>
         </nb-action>
       </nb-actions>
@@ -36,49 +44,81 @@
   </nb-card-header>
 
   <nb-card-body>
-    <div class="applications-applications__item" *ngFor="let app of state.applications">
-      <button *ngIf="app._id === state.currentApplication._id" matTooltip="Current" mat-button
-              class="applications-applications__select-action">
+    <div
+      class="applications-applications__item"
+      *ngFor="let app of state.applications"
+    >
+      <button
+        *ngIf="app._id === state.currentApplication._id"
+        matTooltip="Current"
+        mat-button
+        class="applications-applications__select-action"
+      >
         <mat-icon>done</mat-icon>
       </button>
 
-      <button *ngIf="app._id !== state.currentApplication._id" class="applications-applications__select-action"
-              mat-button matTooltip="Select"
-              (click)="selectApplication(app)">
+      <button
+        *ngIf="app._id !== state.currentApplication._id"
+        class="applications-applications__select-action"
+        mat-button
+        matTooltip="Select"
+        (click)="selectApplication(app)"
+      >
         <mat-icon></mat-icon>
       </button>
 
-      <span class="applications-applications__app-name">{{app.label}}</span>
+      <span class="applications-applications__app-name">{{ app.label }}</span>
 
       <div class="applications-applications__datas">
         <span *ngFor="let locale of app.supportedLocales">
-            {{state.localeName(locale)}}
+          {{ state.localeName(locale) }}
         </span>
       </div>
 
-      <nb-actions size="medium" style="cursor: pointer;">
-        <nb-action class="control-item"
-                   (click)="downloadDump(app)"
-                   nbTooltip="Download an application dump">
-          <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">get_app</i>
+      <nb-actions
+        size="medium"
+        style="cursor: pointer"
+      >
+        <nb-action
+          class="control-item"
+          (click)="downloadDump(app)"
+          nbTooltip="Download an application dump"
+        >
+          <i
+            class="material-icons tock-toolbar-menu"
+            style="font-size: 30px"
+            >get_app</i
+          >
         </nb-action>
-        <nb-action class="control-item"
-                   (click)="downloadSentencesDump(app)"
-                   nbTooltip="Download a sentences dump">
-          <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">cloud_download</i>
+        <nb-action
+          class="control-item"
+          (click)="downloadSentencesDump(app)"
+          nbTooltip="Download a sentences dump"
+        >
+          <i
+            class="material-icons tock-toolbar-menu"
+            style="font-size: 30px"
+            >cloud_download</i
+          >
         </nb-action>
 
-        <nb-action class="control-item"
-                   routerLink="edit/{{app._id}}"
-                   nbTooltip="Edit">
-          <i class="material-icons tock-toolbar-menu" style="font-size: 30px;">edit</i>
+        <nb-action
+          class="control-item"
+          routerLink="edit/{{ app._id }}"
+          nbTooltip="Edit"
+        >
+          <i
+            class="material-icons tock-toolbar-menu"
+            style="font-size: 30px"
+            >edit</i
+          >
         </nb-action>
-
-
       </nb-actions>
     </div>
   </nb-card-body>
-
 </nb-card>
 
-<tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false"></tock-application-upload>
+<tock-application-upload
+  *ngIf="uploadDump"
+  (closed)="uploadDump = false"
+></tock-application-upload>

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-import {StateService} from '../../core-nlp/state.service';
-import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from '../../model/nlp';
-import {EntityProvider} from '../highlight/highlight.component';
+import { StateService } from '../../core-nlp/state.service';
+import { entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole } from '../../model/nlp';
+import { EntityProvider } from '../highlight/highlight.component';
 
 @Component({
   selector: 'tock-create-entity-dialog',
@@ -26,7 +26,6 @@ import {EntityProvider} from '../highlight/highlight.component';
   styleUrls: ['create-entity-dialog.component.css']
 })
 export class CreateEntityDialogComponent implements OnInit {
-
   @Input() entityProvider: EntityProvider;
   entityType: EntityType;
   type: string;
@@ -37,13 +36,14 @@ export class CreateEntityDialogComponent implements OnInit {
   error: string;
   entityTypes: EntityType[];
 
-  constructor(public dialogRef: NbDialogRef<CreateEntityDialogComponent>,
-              private state: StateService) {
-    this.state.entityTypesSortedByName().subscribe(entities => this.entityTypes = entities);
+  constructor(
+    public dialogRef: NbDialogRef<CreateEntityDialogComponent>,
+    private state: StateService
+  ) {
+    this.state.entityTypesSortedByName().subscribe((entities) => (this.entityTypes = entities));
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onSelect(entityType: EntityType) {
     this.entityType = entityType;
@@ -54,7 +54,10 @@ export class CreateEntityDialogComponent implements OnInit {
 
   onTypeKeyUp(event) {
     if (this.type) {
-      this.type = this.type.replace(/[^A-Za-z:_-]*/g, '').toLowerCase().trim();
+      this.type = this.type
+        .replace(/[^A-Za-z:_-]*/g, '')
+        .toLowerCase()
+        .trim();
       if (!this.roleInitialized) {
         this.role = this.type;
       }
@@ -64,7 +67,10 @@ export class CreateEntityDialogComponent implements OnInit {
   onRoleKeyUp(event) {
     this.roleInitialized = true;
     if (this.role) {
-      this.role = this.role.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
+      this.role = this.role
+        .replace(/[^A-Za-z_-]*/g, '')
+        .toLowerCase()
+        .trim();
     }
   }
 
@@ -90,8 +96,7 @@ export class CreateEntityDialogComponent implements OnInit {
     if (this.entityProvider && this.entityProvider.hasEntityRole(role)) {
       this.error = 'Entity role already exists';
     } else {
-      this.dialogRef.close({name: name, role: role});
+      this.dialogRef.close({ name: name, role: role });
     }
   }
-
 }

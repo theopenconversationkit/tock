@@ -15,18 +15,43 @@
   -->
 
 <nb-card status="info">
-    <nb-card-header>{{title}}</nb-card-header>
-    <nb-card-body>
-      <nb-select class="intent" placeholder="Add shared intent" [(selected)]="selectedIntent">
-        <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
-          <nb-option *ngFor="let intent of category.intents" [value]="intent._id">
-            {{intent.intentLabel()}}
-          </nb-option>
-        </nb-option-group>
-      </nb-select>
-    </nb-card-body>
-    <nb-card-footer class="footer">
-      <button nbButton size="small" (click)="dialogRef.close('cancel')">Cancel</button>
-      <button nbButton size="small" status="success" class="submit-button" (click)="save()" [disabled]="!selectedIntent">Add</button>
-    </nb-card-footer>
-  </nb-card>
+  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-body>
+    <nb-select
+      class="intent"
+      placeholder="Add shared intent"
+      [(selected)]="selectedIntent"
+    >
+      <nb-option-group
+        *ngFor="let category of state.currentIntentsCategories | async"
+        [title]="category.category"
+      >
+        <nb-option
+          *ngFor="let intent of category.intents"
+          [value]="intent._id"
+        >
+          {{ intent.intentLabel() }}
+        </nb-option>
+      </nb-option-group>
+    </nb-select>
+  </nb-card-body>
+  <nb-card-footer class="footer">
+    <button
+      nbButton
+      size="small"
+      (click)="dialogRef.close('cancel')"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="success"
+      class="submit-button"
+      (click)="save()"
+      [disabled]="!selectedIntent"
+    >
+      Add
+    </button>
+  </nb-card-footer>
+</nb-card>
