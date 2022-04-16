@@ -102,7 +102,9 @@ data class Story(
             if (s.selectFromAction(userTimeline, dialog, action, intent)) {
                 // check children
                 findStepInTree(s.children, userTimeline, dialog, action, intent)?.also {
-                    return it
+                    if (s.selectFromActionAndEntityStepSelection(action, intent) == true) {
+                        return it
+                    }
                 }
                 return s
             }
