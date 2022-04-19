@@ -120,20 +120,6 @@ data class ClassifiedSentence(
         )
 
     /**
-     * Check if the sentence has the same content (status, creation & update dates excluded)
-     */
-    fun hasSameContent(sentence: ClassifiedSentence?): Boolean {
-        return this == sentence?.copy(
-            status = status,
-            creationDate = creationDate,
-            updateDate = updateDate,
-            lastIntentProbability = lastIntentProbability,
-            lastEntityProbability = lastEntityProbability,
-            otherIntentsProbabilities = otherIntentsProbabilities
-        )
-    }
-
-    /**
      * Build an expression from this sentence.
      *
      * @param intentProvider intent id -> intent provider

@@ -29,6 +29,7 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {
   NbAccordionModule,
+  NbAlertModule,
   NbButtonModule,
   NbCalendarModule,
   NbCalendarRangeModule,
@@ -136,7 +137,8 @@ export class FaqRoutingModule {
     NbSidebarModule.forRoot(),
     BotAnalyticsModule,
     ReactiveFormsModule,
-    NbTagModule
+    NbTagModule,
+    NbAlertModule
   ],
   declarations: [
     TrainComponent,

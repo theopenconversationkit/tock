@@ -133,7 +133,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                     and(
                         listOfNotNull(
                             FaqQueryResult::faq / IntentDefinition::applications `in` applicationId,
-                            if (tags.isEmpty()) null else FaqQueryResult::tags eq tags,
+                            if (tags.isEmpty()) null else FaqQueryResult::tags `in` tags,
                             if (query.enabled == null) null else FaqQueryResult::enabled eq query.enabled
                         )
                     )

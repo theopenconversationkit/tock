@@ -23,8 +23,8 @@ import ai.tock.bot.engine.message.GenericElement
 import ai.tock.bot.engine.message.GenericMessage
 import ai.tock.bot.engine.message.GenericMessage.Companion.TITLE_PARAM
 import ai.tock.shared.mapNotNullValues
-import com.microsoft.bot.schema.models.CardAction
-import com.microsoft.bot.schema.models.CardImage
+import com.microsoft.bot.schema.CardAction
+import com.microsoft.bot.schema.CardImage
 
 class TeamsCarousel(val listMessage: List<TeamsBotMessage>) : TeamsBotMessage(null) {
     override fun toGenericMessage(): GenericMessage? {
@@ -75,10 +75,10 @@ class TeamsHeroCard(
         images?.forEach { self ->
             if (other.images == null) return false
             if (!other.images.any {
-                ((it.tap() != null && self.tap() != null && it.tap()?.equalsTo(self.tap()) == true) || (it.tap() == null && self.tap() == null)) &&
-                    it.alt() == self.alt() &&
-                    it.url() == self.url()
-            }
+                    ((it.tap != null && self.tap != null && it.tap?.equalsTo(self.tap) == true) || (it.tap == null && self.tap == null)) &&
+                            it.alt == self.alt &&
+                            it.url == self.url
+                }
             ) return false
         }
         if ((buttons?.size ?: -1) != (other.buttons?.size ?: -1)) return false
@@ -91,15 +91,15 @@ class TeamsHeroCard(
     }
 
     override fun toString(): String {
-        val images = images?.map { it.url() } ?: ""
-        val buttons = buttons?.map { it.value() } ?: ""
+        val images = images?.map { it.url } ?: ""
+        val buttons = buttons?.map { it.value } ?: ""
         return "TeamsHeroCard(" +
-            "title=$title, " +
-            "subtitle=$subtitle, " +
-            "attachmentContent=$attachmentContent, " +
-            "images=$images, " +
-            "buttons=$buttons, " +
-            "tap=${tap?.value()})"
+                "title=$title, " +
+                "subtitle=$subtitle, " +
+                "attachmentContent=$attachmentContent, " +
+                "images=$images, " +
+                "buttons=$buttons, " +
+                "tap=${tap?.value})"
     }
 
     override fun toGenericMessage(): GenericMessage {
@@ -112,19 +112,19 @@ class TeamsHeroCard(
             ),
             choices = buttons?.map {
                 Choice(
-                    intentName = it.text()?.toString() ?: it.title(),
+                    intentName = it.text?.toString() ?: it.title,
                     parameters = mapNotNullValues(
-                        "title" to it.title()?.toString(),
-                        "value" to it.value()?.toString(),
-                        "displayText" to it.displayText(),
-                        "text" to it.text(),
-                        "type" to it.type().toString()
+                        "title" to it.title?.toString(),
+                        "value" to it.value?.toString(),
+                        "displayText" to it.displayText,
+                        "text" to it.text,
+                        "type" to it.type.toString()
                     )
                 )
             } ?: emptyList(),
             attachments = images?.map {
                 Attachment(
-                    url = it.url(),
+                    url = it.url,
                     type = SendAttachment.AttachmentType.image
                 )
             } ?: emptyList()
@@ -143,13 +143,13 @@ class TeamsCardAction(
             texts = mapNotNullValues(TITLE_PARAM to actionTitle),
             choices = buttons.map {
                 Choice(
-                    intentName = it.text()?.toString() ?: it.title(),
+                    intentName = it.text?.toString() ?: it.title,
                     parameters = mapNotNullValues(
-                        "title" to it.title()?.toString(),
-                        "value" to it.value()?.toString(),
-                        "displayText" to it.displayText(),
-                        "text" to it.text(),
-                        "type" to it.type().toString()
+                        "title" to it.title?.toString(),
+                        "value" to it.value?.toString(),
+                        "displayText" to it.displayText,
+                        "text" to it.text,
+                        "type" to it.type.toString()
                     )
                 )
             }
@@ -177,16 +177,16 @@ class TeamsCardAction(
     }
 
     override fun toString(): String {
-        val allValues = buttons.groupBy { it.title() }.mapValues { it.value[0].value() }
+        val allValues = buttons.groupBy { it.title }.mapValues { it.value[0].value }
         return "TeamsCardAction(actionTitle='$actionTitle', buttons=$allValues)"
     }
 }
 
 fun CardAction.equalsTo(other: CardAction?): Boolean {
-    return image() == other?.image() &&
-        text() == other?.text() &&
-        title() == other?.title() &&
-        displayText() == other?.displayText() &&
-        type()?.name == other?.type()?.name &&
-        value() == other?.value()
+    return image == other?.image &&
+            text == other?.text &&
+            title == other?.title &&
+            displayText == other?.displayText &&
+            type?.name == other?.type?.name &&
+            value == other?.value
 }

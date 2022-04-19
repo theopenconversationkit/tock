@@ -32,7 +32,7 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
-import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
@@ -134,7 +134,7 @@ class TestCoreService : TestService {
             }
         }
 
-        blockingJsonPost("/test/talk", botUser) { context, query: BotDialogRequest ->
+        blockingJsonPost("/test/talk", setOf(botUser,faqNlpUser,faqBotUser)) { context, query: BotDialogRequest ->
             if (context.organization == query.namespace) {
                 talk(query)
             } else {

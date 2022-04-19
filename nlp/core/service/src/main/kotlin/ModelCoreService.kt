@@ -39,12 +39,11 @@ import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.NlpClassifier
 import ai.tock.shared.error
 import ai.tock.shared.injector
-import ai.tock.shared.removeTrailingPunctuation
+import ai.tock.shared.normalize
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
-import java.util.Locale
+import mu.KotlinLogging
 
 /**
  *
@@ -207,24 +206,17 @@ internal object ModelCoreService : ModelCore {
         configuration: NlpApplicationConfiguration
     ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
 
-    private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
-        if (expressionNeedsFormatting(application))
-            expressions.map { e -> e.copy(text = e.text.formatTockText(application, language)) }
+    private fun BuildContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
+        return if (application.normalizeText)
+            expressions.map { e -> e.copy(text = e.text.normalize(language)) }
         else expressions
+    }
 
-    private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> =
-        if (expressionNeedsFormatting(callContext.application))
-            expressions.map { e -> e.copy(text = e.text.formatTockText(callContext.application, callContext.language)) }
-        else expressions
 
-    private fun expressionNeedsFormatting(application: Application) =
-        application.caseInsensitive || application.ignoreTrailingPunctuation
-
-    fun String.formatTockText(application: Application, locale: Locale): String {
-        var result = this
-        if (application.caseInsensitive) result = this.lowercase(locale)
-        if (application.ignoreTrailingPunctuation) result = result.removeTrailingPunctuation()
-        return result
+    private fun TestContext.formatExpressions(expressions: List<SampleExpression>): List<SampleExpression> {
+        return if (callContext.application.normalizeText) {
+            expressions.map { e -> e.copy(text = e.text.normalize(callContext.language)) }
+        } else expressions
     }
 
 }

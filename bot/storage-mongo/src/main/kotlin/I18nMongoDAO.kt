@@ -103,7 +103,6 @@ object I18nMongoDAO : I18nDAO {
     private val statCol = database.getCollection<I18nLabelStat>().apply {
         I18nLabelStat_.apply {
             ensureUniqueIndex(LabelId, Locale, InterfaceType, ConnectorId)
-            ensureIndex(Namespace)
             ensureIndex(Namespace, LastUpdate)
         }
     }

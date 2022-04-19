@@ -54,14 +54,15 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.namespace
+import ai.tock.shared.normalize
 import ai.tock.shared.provide
 import ai.tock.shared.withNamespace
 import ai.tock.shared.withoutNamespace
-import mu.KotlinLogging
-import org.litote.kmongo.toId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import mu.KotlinLogging
+import org.litote.kmongo.toId
 
 /**
  *
@@ -198,8 +199,7 @@ object ParserService : Parser {
                         search = q,
                         status = setOf(validated, model),
                         onlyExactMatch = true,
-                        caseInsensitiveExactMatch = application.caseInsensitive,
-                        ignoreTrailingPunctuationExactMatch = application.ignoreTrailingPunctuation,
+                        normalizeText = application.normalizeText,
                     )
                 )
                 .sentences
@@ -295,13 +295,13 @@ object ParserService : Parser {
 
             if (context.registerQuery) {
                 executor.executeBlocking {
-                    saveSentence(toClassifiedSentence(), validatedSentence)
+                    saveSentence(application, toClassifiedSentence(), validatedSentence)
                 }
             }
 
             // check cache for test
             if (validateSentenceTest && context.test && validatedSentence != null) {
-                if (!validatedSentence.hasSameContent(toClassifiedSentence())) {
+                if (!validatedSentence.hasSameContent(application, toClassifiedSentence())) {
                     error("[TEST MODE] nlp model does not produce same output than validated sentence for query $q")
                 }
             }
@@ -310,11 +310,15 @@ object ParserService : Parser {
         }
     }
 
-    internal fun saveSentence(newSentence: ClassifiedSentence, validatedSentence: ClassifiedSentence?) {
+    internal fun saveSentence(
+        application: ApplicationDefinition,
+        newSentence: ClassifiedSentence,
+        validatedSentence: ClassifiedSentence?
+    ) {
         with(newSentence) {
             if (validatedSentence?.status != validated &&
                 validatedSentence?.status != model &&
-                !hasSameContent(validatedSentence)
+                !hasSameContent(application, validatedSentence)
             ) {
                 // do not persist analysis if intent probability is < 0.1
                 val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
@@ -323,6 +327,22 @@ object ParserService : Parser {
                 config.save(sentence)
             }
         }
+    }
+
+    /**
+     * Check if the sentence has the same content (status, creation & update dates excluded)
+     */
+    private fun ClassifiedSentence.hasSameContent(app: ApplicationDefinition, sentence: ClassifiedSentence?): Boolean {
+        return copy(text = if (app.normalizeText) text.normalize(language) else text) ==
+                sentence?.copy(
+                    text = if (app.normalizeText) sentence.text.normalize(language) else sentence.text,
+                    status = status,
+                    creationDate = creationDate,
+                    updateDate = updateDate,
+                    lastIntentProbability = lastIntentProbability,
+                    lastEntityProbability = lastEntityProbability,
+                    otherIntentsProbabilities = otherIntentsProbabilities
+                )
     }
 
     override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult {

@@ -62,11 +62,8 @@ object ApplicationConfigurationService :
     private val config: ApplicationConfiguration get() = injector.provide()
 
     override fun save(application: ApplicationDefinition): ApplicationDefinition {
-        if(application.caseInsensitive) {
-            sentenceDAO.updateCaseInsensitiveSentences(application._id)
-        }
-        if(application.ignoreTrailingPunctuation) {
-            sentenceDAO.updateIgnoreTrailingPunctuationSentences(application._id)
+        if (application.normalizeText) {
+            sentenceDAO.updateFormattedSentences(application._id)
         }
         return applicationDAO.save(application)
     }
@@ -288,7 +285,7 @@ object ApplicationConfigurationService :
         }
     }
 
-    override fun initializeConfiguration() : Boolean = ConfigurationRepository.initRepository()
+    override fun initializeConfiguration(): Boolean = ConfigurationRepository.initRepository()
 
     override fun getCurrentModelConfiguration(
         applicationName: String,

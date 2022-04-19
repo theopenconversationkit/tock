@@ -36,6 +36,7 @@ import ai.tock.nlp.admin.model.UpdateSentencesReport
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.ClassifiedEntity
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
@@ -110,21 +111,51 @@ object AdminService {
         if (!engine.supportAdminTranslation) {
             badRequest("Translation is not activated for this account")
         }
-        sentences.forEach {
-            val translation = engine.translate(it.text, it.language, query.targetLanguage)
-            val translatedSentence = it.copy(
-                text = translation,
-                language = query.targetLanguage,
-                // for now entities are not kept during translation
-                classification = it.classification.copy(entities = emptyList()),
-                status = if (it.status == model) validated else it.status,
-                usageCount = 0,
-                unknownCount = 0,
-                creationDate = now(),
-                updateDate = now()
-            )
-            // TODO not not override existing sentences
-            front.save(translatedSentence, it.qualifier ?: UNKNOWN_USER_LOGIN)
+        sentences.forEach { s ->
+            val translation = engine.translate(s.text, s.language, query.targetLanguage)
+            if (front.search(
+                    SentencesQuery(
+                        application._id,
+                        query.targetLanguage,
+                        search = translation,
+                        status = setOf(validated, model),
+                        onlyExactMatch = true,
+                        normalizeText = application.normalizeText,
+                    )
+                ).sentences.isEmpty()
+            ) {
+                val toLowerCaseTranslation = translation.lowercase(s.language)
+                val newEntities = mutableListOf<ClassifiedEntity>()
+                val entities = s.classification.entities.mapNotNull { e ->
+                    val originalEntityText = e.textValue(s.text)
+                    val entityTranslation = engine.translate(originalEntityText, s.language, query.targetLanguage)
+                    val index = toLowerCaseTranslation.indexOf(entityTranslation.lowercase(query.targetLanguage))
+                    val start = if(index != -1) index else toLowerCaseTranslation.indexOf(originalEntityText.lowercase())
+                    val end = start + if(index != -1) entityTranslation.length else originalEntityText.length
+                    if (start == -1 || newEntities.any { it.overlap(start, end) }) {
+                        null
+                    } else {
+                        e.copy(
+                            start = start,
+                            end = end,
+                            //sub entities not yet supported
+                            subEntities = emptyList()
+                        )
+                            .apply { newEntities.add(this) }
+                    }
+                }.sorted()
+                val translatedSentence = s.copy(
+                    text = translation,
+                    language = query.targetLanguage,
+                    classification = s.classification.copy(entities = entities),
+                    status = if (s.status == model) validated else s.status,
+                    usageCount = 0,
+                    unknownCount = 0,
+                    creationDate = now(),
+                    updateDate = now()
+                )
+                front.save(translatedSentence, s.qualifier ?: UNKNOWN_USER_LOGIN)
+            }
         }
         return TranslateReport(sentences.size)
     }
@@ -163,30 +194,30 @@ object AdminService {
         return if (namespace == intent.namespace) {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
             (
-                if (intentId == null) {
-                    intent
-                } else {
-                    front.getIntentById(intentId)!!.run {
-                        copy(
-                            label = intent.label,
-                            description = intent.description,
-                            category = intent.category,
-                            applications = applications + intent.applications,
-                            entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
-                            entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
-                            mandatoryStates = intent.mandatoryStates + mandatoryStates,
-                            sharedIntents = intent.sharedIntents + sharedIntents
-                        )
+                    if (intentId == null) {
+                        intent
+                    } else {
+                        front.getIntentById(intentId)!!.run {
+                            copy(
+                                label = intent.label,
+                                description = intent.description,
+                                category = intent.category,
+                                applications = applications + intent.applications,
+                                entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
+                                entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
+                                mandatoryStates = intent.mandatoryStates + mandatoryStates,
+                                sharedIntents = intent.sharedIntents + sharedIntents
+                            )
+                        }
+                    }
+                    ).apply {
+                    front.save(this)
+                    applications.forEach { appId ->
+                        front.getApplicationById(appId)?.also {
+                            front.save(it.copy(intents = it.intents + _id))
+                        }
                     }
                 }
-                ).apply {
-                front.save(this)
-                applications.forEach { appId ->
-                    front.getApplicationById(appId)?.also {
-                        front.save(it.copy(intents = it.intents + _id))
-                    }
-                }
-            }
         } else {
             null
         }

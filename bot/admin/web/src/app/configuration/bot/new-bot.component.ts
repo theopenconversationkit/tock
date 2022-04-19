@@ -68,7 +68,7 @@ export class NewBotComponent implements OnInit {
     const newApp = new Application("new_assistant", "new_assistant", this.state.user.organization,
       [], [locale], StateService.DEFAULT_ENGINE,
       true, true, false,
-      0.0, false, false);
+      0.0, false);
     this.applicationService.saveApplication(newApp)
       .subscribe(app => {
         this.applicationService.refreshCurrentApplication(app);

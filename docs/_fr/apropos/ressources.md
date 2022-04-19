@@ -10,6 +10,18 @@ en complément des [guides](../../guide/studio)
 
 ## Conférences / Video
 
+* _[20 minutes from zero to live chatbot with Tock](https://www.youtube.com/watch?v=UsKkpYL7Hto)_  
+  @ _Open Source Experience_ **2021** (démonstration, en Anglais)
+  [ℹ️ info](https://www.opensource-experience.com/event/20-minutes-from-zero-to-live-chatbot-with-tock/) /
+  [📽️ 20 min](https://www.youtube.com/watch?v=UsKkpYL7Hto)
+
+<a href="https://www.youtube.com/watch?v=UsKkpYL7Hto"
+target="tock_osxp">
+<img alt="Tock @ OSXP 2021"
+src="https://doc.tock.ai/fr/images/tock_osxp_2021.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
+
 * _AlloCovid_ @ _Voice Tech Paris_
   **2020** (REX INSERM, Allo-Media & SNCF)
   [ℹ️ info](https://www.voicetechparis.com/conferences-2/)
@@ -17,7 +29,7 @@ en complément des [guides](../../guide/studio)
 <a href="https://www.voicetechparis.com/conferences-2/"
 target="tock_voicetech">
 <img alt="AlloCovid @ Voice Tech Paris 2020"
-src="https://www.voicetechparis.com/wp-content/uploads/2020/10/img-digitale-orange.png"
+src="https://doc.tock.ai/fr/images/voicetechparis2020.jpeg"
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
@@ -52,7 +64,7 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 <a href="https://www.youtube.com/watch?v=K4q8ZHw9TuI"
 target="tock_devoxx">
 <img alt="Tock @ Devoxx 2018" 
-src="https://i.ytimg.com/vi/K4q8ZHw9TuI/hqdefault.jpg?sqp=-oaymwEjCPYBEIoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLAza0P1Ehr_4OXftVIEoypyaZsatw" 
+src="https://i.ytimg.com/vi/K4q8ZHw9TuI/hq720.jpg?sqp=-oaymwEcCOgCEMoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLD97LkaqwfskeOy5mz18axLrQPmCw" 
 style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
 </a>
 
@@ -99,18 +111,18 @@ style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rg
 
 Comme le reste des sources Tock, les logos sont disponibles sous [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 
-**Logo Tock - couleurs par défaut / transparent** (<a href="../../assets/images/logo.svg" download="">télécharger</a>) :
+**Logo Tock - couleurs par défaut / transparent** (<a href="../../../assets/images/logo.svg" download="">télécharger</a>) :
 
-<img alt="Logo Tock" src="../../assets/images/logo.svg" style="width: 150px;">
+<img alt="Logo Tock" src="../../../assets/images/logo.svg" style="width: 150px;">
 
-**Logo Tock - bleu / transparent** (<a href="../../assets/images/Logo_Tock_Blue.svg" download="">télécharger</a>) :
+**Logo Tock - bleu / transparent** (<a href="../../../assets/images/Logo_Tock_Blue.svg" download="">télécharger</a>) :
 
-<img alt="Logo Tock bleu" src="../../assets/images/Logo_Tock_Blue.svg" style="width: 110px; margin-left: 20px;">
+<img alt="Logo Tock bleu" src="../../../assets/images/Logo_Tock_Blue.svg" style="width: 110px; margin-left: 20px;">
 
-**Logo Tock - noir / transparent** (<a href="../../assets/images/logo-black.svg" download="">télécharger</a>) :
+**Logo Tock - noir / transparent** (<a href="../../../assets/images/logo-black.svg" download="">télécharger</a>) :
 
-<img alt="Logo Tock noir" src="../../assets/images/logo-black.svg" style="width: 150px;">
+<img alt="Logo Tock noir" src="../../../assets/images/logo-black.svg" style="width: 150px;">
 
-**Logo Tock - blanc / transparent** (<a href="../../assets/images/Logo_Tock_White.svg" download="">télécharger</a>) :
+**Logo Tock - blanc / transparent** (<a href="../../../assets/images/Logo_Tock_White.svg" download="">télécharger</a>) :
 
-<img alt="Logo Tock blanc" src="../../assets/images/Logo_Tock_White.svg" style="width: 150px; background-color: black;">
+<img alt="Logo Tock blanc" src="../../../assets/images/Logo_Tock_White.svg" style="width: 150px; background-color: black;">

@@ -20,7 +20,6 @@ import {Router} from "@angular/router";
 import {AuthenticateRequest, AuthenticateResponse, User} from "../../model/auth";
 import {Observable} from "rxjs";
 import {RestService} from "../rest/rest.service";
-import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class AuthService {
@@ -46,6 +45,10 @@ export class AuthService {
 
   isSSO(): boolean {
     return this.rest.isSSO();
+  }
+
+  isCas(): boolean {
+    return this.rest.isCas();
   }
 
   addListener(listener: AuthListener) {

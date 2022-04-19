@@ -28,7 +28,7 @@ import io.vertx.ext.web.handler.SessionHandler
 /**
  *
  */
-internal abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
+abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
 
     object AddSSOCookieHandler : Handler<RoutingContext> {
 
