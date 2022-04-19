@@ -229,7 +229,7 @@ export class StepComponent implements OnInit {
       }
     );
     dialogRef.afterClosed().subscribe(result => {
-      if (result.entity) {
+      if (result?.entity) {
         if (!result.role) {
           this.step.entity = null;
         } else {

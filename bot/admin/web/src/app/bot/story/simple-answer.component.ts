@@ -156,13 +156,15 @@ export class SimpleAnswerComponent implements OnInit {
       }
     );
     dialogRef.onClose.subscribe(result => {
-      const removeMedia = result.removeMedia;
-      const media = result.media;
-      if (removeMedia || media) {
-        if (removeMedia) {
-          if (answer) answer.mediaMessage = null; else this.newMedia = null;
-        } else {
-          if (answer) answer.mediaMessage = media; else this.newMedia = media;
+      if(result) {
+        const removeMedia = result.removeMedia;
+        const media = result.media;
+        if (removeMedia || media) {
+          if (removeMedia) {
+            if (answer) answer.mediaMessage = null; else this.newMedia = null;
+          } else {
+            if (answer) answer.mediaMessage = media; else this.newMedia = media;
+          }
         }
       }
     });

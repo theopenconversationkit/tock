@@ -97,7 +97,7 @@ export class IntentsComponent implements OnInit {
       }
     );
     dialogRef.onClose.subscribe(result => {
-      if (result.name) {
+      if (result?.name) {
         this.nlp
           .saveIntent(
             new Intent(
@@ -164,7 +164,7 @@ export class IntentsComponent implements OnInit {
         }
       });
     dialogRef.onClose.subscribe(result => {
-      if (result !== 'cancel') {
+      if (result && result !== 'cancel') {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
           response => {
@@ -228,7 +228,7 @@ export class IntentsComponent implements OnInit {
       });
 
       dialogRef.onClose.subscribe(result => {
-        if (result !== 'cancel') {
+        if (result && result !== 'cancel') {
           this.addSharedIntent(this.selectedIntent, result.intent);
         } else {
           this.selectedIntent = null;
