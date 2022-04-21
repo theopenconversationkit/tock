@@ -64,6 +64,10 @@ const routes: Routes = [
     path: 'analytics',
     loadChildren: () => import('./analytics/analytics.module').then((m) => m.BotAnalyticsModule)
   },
+  {
+    path: 'scenarios',
+    loadChildren: () => import('./scenarios/scenarios.module').then((m) => m.ScenariosModule)
+  },
   { path: '**', redirectTo: '/nlp/inbox' }
 ];
 
