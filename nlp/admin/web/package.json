@@ -52,7 +52,6 @@
     "ngx-echarts": "^6.0.1",
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-moment": "^5.0.0",
-    "node-sass": "^4.14.1",
     "normalize.css": "6.0.0",
     "pace-js": "1.0.2",
     "prettier": "2.6.2",
