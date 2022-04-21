@@ -45,14 +45,14 @@ Using [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-websocket</artifactId>
-            <version>21.9.6</version>
+            <version>22.3.0</version>
         </dependency>
 ```
 
 Or [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-websocket:21.9.6'
+      compile 'ai.tock:tock-bot-api-websocket:22.3.0'
 ```
 
 ### Enable WebHook mode
@@ -66,14 +66,14 @@ Using [Maven](https://maven.apache.org/) :
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-api-webhook</artifactId>
-            <version>21.9.6</version>
+            <version>22.3.0</version>
         </dependency>
 ```
 
 Or [Gradle](https://gradle.org/) :
 
 ```groovy
-      compile 'ai.tock:tock-bot-api-webhook:21.9.6'
+      compile 'ai.tock:tock-bot-api-webhook:22.3.0'
 ```
 
 In this case, unlike the _WebSocket_ mode, the bot application must be reachable by the

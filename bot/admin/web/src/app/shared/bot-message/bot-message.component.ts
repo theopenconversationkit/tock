@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, Output} from "@angular/core";
-import {BotMessage} from "../model/dialog-data";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { BotMessage } from '../model/dialog-data';
 @Component({
   selector: 'tock-bot-message',
   templateUrl: './bot-message.component.html',
   styleUrls: ['./bot-message.component.css']
 })
 export class BotMessageComponent {
-
   @Input()
   message: BotMessage;
 

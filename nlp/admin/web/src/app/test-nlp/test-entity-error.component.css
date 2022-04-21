@@ -16,7 +16,7 @@
 
 .search {
   margin: 20px auto;
-  text-align:center;
+  text-align: center;
 }
 
 .search-input {
@@ -41,6 +41,6 @@
   text-align: left;
 }
 
-.table thead tr th p{
+.table thead tr th p {
   font-weight: bold;
 }

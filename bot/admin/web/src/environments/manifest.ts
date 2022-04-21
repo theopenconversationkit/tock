@@ -16,10 +16,10 @@
 
 export const tock_info = {
   // Platform properties
-  platform_type: "Bot",
+  platform_type: 'Bot',
   // Maven build properties
-  build_version: "${project.version}",
-  build_date: "${session.startTime}",
+  build_version: '${project.version}',
+  build_date: '${session.startTime}',
   // Git source properties
-  source_commit_id: "${git.commit.id}"
+  source_commit_id: '${git.commit.id}'
 };

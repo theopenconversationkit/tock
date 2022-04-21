@@ -16,14 +16,14 @@
 
 .input-text {
   width: 500px;
-  margin-right: 10px
+  margin-right: 10px;
 }
 
 .stats {
   font-size: xx-small;
   float: left;
   margin-right: 20px;
-  margin-top:-12px;
+  margin-top: -12px;
 }
 
 .dialog {

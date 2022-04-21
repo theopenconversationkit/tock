@@ -14,39 +14,39 @@
  * limitations under the License.
  */
 
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-import {TryComponent} from '../try/try.component';
-import {SharedModule} from '../shared-nlp/shared.module';
-import {NlpTabsComponent} from './nlp-tabs.component';
-import {InboxComponent} from '../inbox/inbox.component';
-import {ArchiveComponent} from '../archive/archive.component';
-import {IntentsComponent} from '../intents/intents.component';
-import {SearchComponent} from '../search/search.component';
-import {SearchFilterComponent} from '../search/filter/search-filter.component';
-import {DisplayFullLogComponent, LogsComponent} from '../logs/logs.component';
-import {CommonModule} from '@angular/common';
-import {AuthGuard} from '../core-nlp/auth/auth.guard';
-import {ApplicationsModule} from '../applications/applications.module';
-import {HighlightComponent} from '../sentence-analysis/highlight/highlight.component';
-import {SentenceAnalysisComponent} from '../sentence-analysis/sentence-analysis.component';
-import {NlpService} from './nlp.service';
-import {CreateEntityDialogComponent} from '../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
-import {InfiniteScrollModule} from 'ngx-infinite-scroll';
-import {IntentDialogComponent} from '../sentence-analysis/intent-dialog/intent-dialog.component';
-import {ApplicationResolver} from '../core-nlp/application.resolver';
-import {SentencesScrollComponent} from '../sentences-scroll/sentences-scroll.component';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { TryComponent } from '../try/try.component';
+import { SharedModule } from '../shared-nlp/shared.module';
+import { NlpTabsComponent } from './nlp-tabs.component';
+import { InboxComponent } from '../inbox/inbox.component';
+import { ArchiveComponent } from '../archive/archive.component';
+import { IntentsComponent } from '../intents/intents.component';
+import { SearchComponent } from '../search/search.component';
+import { SearchFilterComponent } from '../search/filter/search-filter.component';
+import { DisplayFullLogComponent, LogsComponent } from '../logs/logs.component';
+import { CommonModule } from '@angular/common';
+import { AuthGuard } from '../core-nlp/auth/auth.guard';
+import { ApplicationsModule } from '../applications/applications.module';
+import { HighlightComponent } from '../sentence-analysis/highlight/highlight.component';
+import { SentenceAnalysisComponent } from '../sentence-analysis/sentence-analysis.component';
+import { NlpService } from './nlp.service';
+import { CreateEntityDialogComponent } from '../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { IntentDialogComponent } from '../sentence-analysis/intent-dialog/intent-dialog.component';
+import { ApplicationResolver } from '../core-nlp/application.resolver';
+import { SentencesScrollComponent } from '../sentences-scroll/sentences-scroll.component';
 
-import {MomentModule} from 'ngx-moment';
-import {AddStateDialogComponent} from '../intents/add-state/add-state-dialog.component';
-import {AddSharedIntentDialogComponent} from '../intents/add-shared-intent/add-shared-intent-dialog.component';
-import {EntitiesComponent} from '../entities/entities.component';
-import {EditEntitiesComponent} from '../sentence-analysis/entities/edit-entities.component';
-import {EntityDetailsComponent} from '../entities/entity-details.component';
-import {MatNativeDateModule} from '@angular/material/core';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {FileUploadModule} from 'ng2-file-upload';
-import {ReviewRequestDialogComponent} from '../sentence-analysis/review-request-dialog/review-request-dialog.component';
+import { MomentModule } from 'ngx-moment';
+import { AddStateDialogComponent } from '../intents/add-state/add-state-dialog.component';
+import { AddSharedIntentDialogComponent } from '../intents/add-shared-intent/add-shared-intent-dialog.component';
+import { EntitiesComponent } from '../entities/entities.component';
+import { EditEntitiesComponent } from '../sentence-analysis/entities/edit-entities.component';
+import { EntityDetailsComponent } from '../entities/entity-details.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { FileUploadModule } from 'ng2-file-upload';
+import { ReviewRequestDialogComponent } from '../sentence-analysis/review-request-dialog/review-request-dialog.component';
 import {
   NbAccordionModule,
   NbActionsModule,
@@ -63,9 +63,9 @@ import {
   NbTooltipModule,
   NbTreeGridModule
 } from '@nebular/theme';
-import {ThemeModule} from '../theme/theme.module';
-import {NgJsonEditorModule} from 'ang-jsoneditor';
-import {ReactiveFormsModule} from '@angular/forms';
+import { ThemeModule } from '../theme/theme.module';
+import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {
@@ -77,8 +77,8 @@ const routes: Routes = [
     },
     children: [
       {
-        path: '', 
-        redirectTo: 'inbox', 
+        path: '',
+        redirectTo: 'inbox',
         pathMatch: 'full'
       },
       {
@@ -117,8 +117,7 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class NlpRoutingModule {
-}
+export class NlpRoutingModule {}
 
 @NgModule({
   imports: [
@@ -172,13 +171,8 @@ export class NlpRoutingModule {
     EntityDetailsComponent,
     ReviewRequestDialogComponent
   ],
-  exports: [
-    SentenceAnalysisComponent,
-    HighlightComponent
-  ],
-  providers: [
-    NlpService
-  ],
+  exports: [SentenceAnalysisComponent, HighlightComponent],
+  providers: [NlpService],
   entryComponents: [
     CreateEntityDialogComponent,
     IntentDialogComponent,
@@ -188,5 +182,4 @@ export class NlpRoutingModule {
     AddSharedIntentDialogComponent
   ]
 })
-export class NlpModule {
-}
+export class NlpModule {}

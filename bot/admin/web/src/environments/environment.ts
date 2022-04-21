@@ -22,8 +22,8 @@
 export const environment = {
   production: false,
   autologin: true,
-  ssologin:false,
-  default_user:"admin@app.com",
-  default_password:"password",
+  ssologin: false,
+  default_user: 'admin@app.com',
+  default_password: 'password',
   serverUrl: 'http://localhost:7999/rest'
 };

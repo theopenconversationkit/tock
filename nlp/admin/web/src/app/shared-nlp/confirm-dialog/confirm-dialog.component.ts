@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Inject, Input} from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
@@ -26,9 +26,5 @@ export class ConfirmDialogComponent {
   @Input() title: string;
   @Input() subtitle: string;
   @Input() action: string;
-  constructor(public dialogRef: NbDialogRef<ConfirmDialogComponent>) {
-
-  }
-
-
+  constructor(public dialogRef: NbDialogRef<ConfirmDialogComponent>) {}
 }

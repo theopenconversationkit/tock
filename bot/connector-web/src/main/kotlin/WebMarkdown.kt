@@ -70,6 +70,12 @@ object WebMarkdown {
             if (render.contains("~~")) {
                 render = extractAllDataWithRegex(regex, render)
             }
+            if (render.contains("<a href=")) {
+                render = render.replace(
+                    "<a href=",
+                    "<a target=\"_blank\" rel=\"noopener noreferrer\" href="
+                )
+            }
             return render.replace("<p>", "").replace("</p>", "")
         } else {
             null

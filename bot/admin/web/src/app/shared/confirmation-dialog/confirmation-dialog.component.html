@@ -18,12 +18,31 @@
   <nb-card-header><span [innerHTML]="title"></span></nb-card-header>
   <nb-card-body>
     <div class="question-container">
-      <nb-icon icon="question-mark-circle" status="primary" class="dialog-icon"></nb-icon>
-      <span [innerHTML]="confirmationQuestion" class="dialog-text"></span>
+      <nb-icon
+        icon="question-mark-circle"
+        status="primary"
+        class="dialog-icon"
+      ></nb-icon>
+      <span
+        [innerHTML]="confirmationQuestion"
+        class="dialog-text"
+      ></span>
     </div>
   </nb-card-body>
   <nb-card-footer class="button-footer">
-    <button nbButton (click)="cancel()">Cancel</button>
-    <button nbButton status="primary" (click)="submit()" (submit)="submit()">OK</button>
+    <button
+      nbButton
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      status="primary"
+      (click)="submit()"
+      (submit)="submit()"
+    >
+      OK
+    </button>
   </nb-card-footer>
 </nb-card>

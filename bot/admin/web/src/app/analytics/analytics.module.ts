@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import {RouterModule, Routes} from "@angular/router";
-import {NgModule, NO_ERRORS_SCHEMA} from "@angular/core";
-import {CommonModule} from "@angular/common";
-import {InfiniteScrollModule} from "ngx-infinite-scroll";
-import {SharedModule} from "../shared-nlp/shared.module";
-import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {AnalyticsTabsComponent} from "./analytics-tabs.component";
-import {ApplicationResolver} from "../core-nlp/application.resolver";
-import {UsersComponent} from "./users/users.component";
-import {AnalyticsService} from "./analytics.service";
-import {BotSharedModule} from "../shared/bot-shared.module";
-import {BotModule} from "../bot/bot.module";
-import {NlpModule} from '../nlp-tabs/nlp.module';
-import {MomentModule} from "ngx-moment";
-import {DialogsComponent} from "./dialogs/dialogs.component";
-import {MatNativeDateModule} from "@angular/material/core";
-import {MatDatepickerModule} from "@angular/material/datepicker";
+import { RouterModule, Routes } from '@angular/router';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { SharedModule } from '../shared-nlp/shared.module';
+import { AuthGuard } from '../core-nlp/auth/auth.guard';
+import { AnalyticsTabsComponent } from './analytics-tabs.component';
+import { ApplicationResolver } from '../core-nlp/application.resolver';
+import { UsersComponent } from './users/users.component';
+import { AnalyticsService } from './analytics.service';
+import { BotSharedModule } from '../shared/bot-shared.module';
+import { BotModule } from '../bot/bot.module';
+import { NlpModule } from '../nlp-tabs/nlp.module';
+import { MomentModule } from 'ngx-moment';
+import { DialogsComponent } from './dialogs/dialogs.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   NbAccordionModule,
   NbButtonModule,
@@ -50,19 +50,19 @@ import {
   NbCalendarRangeModule,
   NbDialogModule,
   NbRadioModule
-} from "@nebular/theme";
-import {ChartComponent} from './chart/chart.component';
-import {ChartDialogComponent} from './chart-dialog/chart-dialog.component'
-import {ActivityComponent} from './activity/activity.component';
-import {BehaviorComponent} from './behavior/behavior.component';
-import {GoogleChartsModule} from 'angular-google-charts';
-import {FlowComponent} from './flow/flow.component';
-import {CytoComponent} from './flow/cyto.component';
-import { PreferencesComponent } from "./preferences/preferences.component";
+} from '@nebular/theme';
+import { ChartComponent } from './chart/chart.component';
+import { ChartDialogComponent } from './chart-dialog/chart-dialog.component';
+import { ActivityComponent } from './activity/activity.component';
+import { BehaviorComponent } from './behavior/behavior.component';
+import { GoogleChartsModule } from 'angular-google-charts';
+import { FlowComponent } from './flow/flow.component';
+import { CytoComponent } from './flow/cyto.component';
+import { PreferencesComponent } from './preferences/preferences.component';
 import { NgxEchartsModule } from 'ngx-echarts';
 
 export function importEcharts() {
-  return import('echarts')
+  return import('echarts');
 }
 
 const routes: Routes = [
@@ -110,8 +110,7 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AnalyticsRoutingModule {
-}
+export class AnalyticsRoutingModule {}
 
 @NgModule({
   schemas: [NO_ERRORS_SCHEMA],
@@ -147,7 +146,7 @@ export class AnalyticsRoutingModule {
     NbRadioModule,
     NgxEchartsModule.forRoot({
       echarts: importEcharts
-    }),
+    })
   ],
   declarations: [
     AnalyticsTabsComponent,
@@ -162,10 +161,7 @@ export class AnalyticsRoutingModule {
     ChartDialogComponent
   ],
   exports: [],
-  providers: [
-    AnalyticsService
-  ],
+  providers: [AnalyticsService],
   entryComponents: []
 })
-export class BotAnalyticsModule {
-}
+export class BotAnalyticsModule {}

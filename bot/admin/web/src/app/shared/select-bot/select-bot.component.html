@@ -18,24 +18,56 @@
   No bot configuration detected &nbsp;
 </div>
 <div *ngIf="configurations && configurations.length !== 0">
-  <span class="select-configuration"
-        *ngIf="botNames && (allowNoSelection || botNames.length > 1)">
-    <nb-select (selectedChange)="changeBotName()" status="primary" size="small"
-               placeholder="Select a configuration"
-               [(ngModel)]="currentBotName" class="select-width">
-      <nb-option *ngIf="allowNoSelection" value="None">{{noConfigurationLabel}}</nb-option>
-      <nb-option *ngFor="let n of botNames" [value]="n">{{ n }}</nb-option>
+  <span
+    class="select-configuration"
+    *ngIf="botNames && (allowNoSelection || botNames.length > 1)"
+  >
+    <nb-select
+      (selectedChange)="changeBotName()"
+      status="primary"
+      size="small"
+      placeholder="Select a configuration"
+      [(ngModel)]="currentBotName"
+      class="select-width"
+    >
+      <nb-option
+        *ngIf="allowNoSelection"
+        value="None"
+        >{{ noConfigurationLabel }}</nb-option
+      >
+      <nb-option
+        *ngFor="let n of botNames"
+        [value]="n"
+        >{{ n }}</nb-option
+      >
     </nb-select>
   </span>
-  <span *ngIf="displayConnectorChoice && currentBotName !== 'None'"
-        class="select-configuration">
-    <nb-select (selectedChange)="changeConnectorType()" status="primary"
-               placeholder="Select a connector"
-               [(ngModel)]="currentConfiguration" class="select-width">
-      <nb-option *ngIf="allowNoConfigurationSelection" value="">{{noConnectorLabel}}</nb-option>
-      <nb-option *ngFor="let c of currentConfigurations" [value]="c">
-        <img src="{{c.connectorType.iconUrl()}}" class="connector-icon"/>
-        {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option>
+  <span
+    *ngIf="displayConnectorChoice && currentBotName !== 'None'"
+    class="select-configuration"
+  >
+    <nb-select
+      (selectedChange)="changeConnectorType()"
+      status="primary"
+      placeholder="Select a connector"
+      [(ngModel)]="currentConfiguration"
+      class="select-width"
+    >
+      <nb-option
+        *ngIf="allowNoConfigurationSelection"
+        value=""
+        >{{ noConnectorLabel }}</nb-option
+      >
+      <nb-option
+        *ngFor="let c of currentConfigurations"
+        [value]="c"
+      >
+        <img
+          src="{{ c.connectorType.iconUrl() }}"
+          class="connector-icon"
+        />
+        {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option
+      >
     </nb-select>
   </span>
   <ng-content></ng-content>

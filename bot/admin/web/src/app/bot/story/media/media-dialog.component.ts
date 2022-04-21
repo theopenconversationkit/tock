@@ -14,28 +14,27 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
-import {MediaAction, MediaCard, MediaFile} from "../../model/story";
-import {CreateI18nLabelRequest} from "../../model/i18n";
-import {BotService} from "../../bot-service";
-import {StateService} from "../../../core-nlp/state.service";
-import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {NbDialogRef, NbToastrService} from '@nebular/theme';
-import {RestService} from "src/app/core-nlp/rest/rest.service";
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { MediaAction, MediaCard, MediaFile } from '../../model/story';
+import { CreateI18nLabelRequest } from '../../model/i18n';
+import { BotService } from '../../bot-service';
+import { StateService } from '../../../core-nlp/state.service';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { NbDialogRef, NbToastrService } from '@nebular/theme';
+import { RestService } from 'src/app/core-nlp/rest/rest.service';
 
 @Component({
   selector: 'tock-media-dialog',
   templateUrl: './media-dialog.component.html',
   styleUrls: ['./media-dialog.component.css']
 })
-export class MediaDialogComponent implements OnInit{
-
+export class MediaDialogComponent implements OnInit {
   @Input()
   media: MediaCard;
   @Input()
   category: string;
   create: boolean;
-  fileUpload: string = "upload";
+  fileUpload: string = 'upload';
   fileExternalUrl: string;
 
   uploader: FileUploader;
@@ -47,28 +46,36 @@ export class MediaDialogComponent implements OnInit{
     public rest: RestService,
     private state: StateService,
     private toastrService: NbToastrService,
-    private bot: BotService,
-    ) {
-
-  }
+    private bot: BotService
+  ) {}
   ngOnInit(): void {
-    this.category = this.category ? this.category : "build";
+    this.category = this.category ? this.category : 'build';
     this.create = this.media === null;
     this.media = this.media ? this.media : new MediaCard([], null, null, null, true);
     if (this.media.title) {
-      this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
+      this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(
+        this.state.currentLocale
+      ).label;
     }
     if (this.media.subTitle) {
-      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
+      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabelForLocale(
+        this.state.currentLocale
+      ).label;
     }
 
-    this.media.actions.forEach(a => a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label);
+    this.media.actions.forEach(
+      (a) => (a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label)
+    );
 
-    this.uploader = new FileUploader({removeAfterUpload: true, autoUpload: true});
-    this.uploader.onCompleteItem =
-      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        this.media.file = MediaFile.fromJSON(JSON.parse(response));
-      };
+    this.uploader = new FileUploader({ removeAfterUpload: true, autoUpload: true });
+    this.uploader.onCompleteItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      this.media.file = MediaFile.fromJSON(JSON.parse(response));
+    };
     this.bot.prepareFileDumpUploader(this.uploader);
 
     setTimeout(() => this.titleElement.nativeElement.focus(), 500);
@@ -107,68 +114,86 @@ export class MediaDialogComponent implements OnInit{
 
   save() {
     if (!this.isTitle() && !this.isSubtitle() && !this.isFile()) {
-      this.toastrService.show(`Please add a Title, Subtitle or File.`, "Media Message is not complete", {
-        duration: 3000,
-        status: "warning"
-      });
-
+      this.toastrService.show(
+        `Please add a Title, Subtitle or File.`,
+        'Media Message is not complete',
+        {
+          duration: 3000,
+          status: 'warning'
+        }
+      );
     } else {
       if (this.isTitle()) {
         if (this.media.title) {
-          this.bot.saveI18nLabel(
-            this.media.title.changeDefaultLabelForLocale(this.state.currentLocale, this.media.titleLabel.trim())
-          ).subscribe(_ => {
-          });
-        } else {
-          this.bot.createI18nLabel(
-            new CreateI18nLabelRequest(
-              this.category,
-              this.media.titleLabel.trim(),
-              this.state.currentLocale,
+          this.bot
+            .saveI18nLabel(
+              this.media.title.changeDefaultLabelForLocale(
+                this.state.currentLocale,
+                this.media.titleLabel.trim()
+              )
             )
-          ).subscribe(i18n => this.media.title = i18n);
+            .subscribe((_) => {});
+        } else {
+          this.bot
+            .createI18nLabel(
+              new CreateI18nLabelRequest(
+                this.category,
+                this.media.titleLabel.trim(),
+                this.state.currentLocale
+              )
+            )
+            .subscribe((i18n) => (this.media.title = i18n));
         }
       } else {
-        this.media.title = null
+        this.media.title = null;
       }
 
       if (this.isSubtitle()) {
         if (this.media.subTitle) {
-          this.bot.saveI18nLabel(
-            this.media.subTitle.changeDefaultLabelForLocale(this.state.currentLocale, this.media.subTitleLabel.trim())
-          ).subscribe(_ => {
-          });
-        } else {
-          this.bot.createI18nLabel(
-            new CreateI18nLabelRequest(
-              this.category,
-              this.media.subTitleLabel.trim(),
-              this.state.currentLocale,
+          this.bot
+            .saveI18nLabel(
+              this.media.subTitle.changeDefaultLabelForLocale(
+                this.state.currentLocale,
+                this.media.subTitleLabel.trim()
+              )
             )
-          ).subscribe(i18n => this.media.subTitle = i18n);
+            .subscribe((_) => {});
+        } else {
+          this.bot
+            .createI18nLabel(
+              new CreateI18nLabelRequest(
+                this.category,
+                this.media.subTitleLabel.trim(),
+                this.state.currentLocale
+              )
+            )
+            .subscribe((i18n) => (this.media.subTitle = i18n));
         }
       } else {
-        this.media.subTitle = null
+        this.media.subTitle = null;
       }
 
       this.media.actions = this.media.actions
-        .filter(a => a.titleLabel && a.titleLabel.trim().length !== 0)
-        .map(a => {
+        .filter((a) => a.titleLabel && a.titleLabel.trim().length !== 0)
+        .map((a) => {
           if (a.title) {
-            this.bot.saveI18nLabel(
-              a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())
-            ).subscribe(_ => {
-            });
-          } else {
-            this.bot.createI18nLabel(
-              new CreateI18nLabelRequest(
-                this.category,
-                a.titleLabel.trim(),
-                this.state.currentLocale,
+            this.bot
+              .saveI18nLabel(
+                a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())
               )
-            ).subscribe(i18n => a.title = i18n);
+              .subscribe((_) => {});
+          } else {
+            this.bot
+              .createI18nLabel(
+                new CreateI18nLabelRequest(
+                  this.category,
+                  a.titleLabel.trim(),
+                  this.state.currentLocale
+                )
+              )
+              .subscribe((i18n) => (a.title = i18n));
           }
-          return a
+          return a;
         });
 
       this.dialogRef.close({
@@ -178,7 +203,7 @@ export class MediaDialogComponent implements OnInit{
   }
 
   remove() {
-    this.dialogRef.close({removeMedia: true});
+    this.dialogRef.close({ removeMedia: true });
   }
 
   cancel() {

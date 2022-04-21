@@ -14,86 +14,182 @@
   ~ limitations under the License.
   -->
 <nb-card class="runtime-settings">
-  <nb-card-header style="position: relative; display: flex;">
+  <nb-card-header style="position: relative; display: flex">
     <span>Tagged Stories</span>
     <tock-info-button
       message="Stories configured by tags."
-      url="http://doc.tock.ai/tock"></tock-info-button>
+      url="http://doc.tock.ai/tock"
+    ></tock-info-button>
   </nb-card-header>
   <nb-card-body>
-
     <nb-card>
-      <nb-card-header style="position: relative;">
+      <nb-card-header style="position: relative">
         <nb-badge
           [text]="taggedStoriesCount | i18nPlural: storyPluralMapping['story']"
           [status]="taggedStoriesCount < 1 ? 'success' : 'info'"
-          position="top left"></nb-badge>
+          position="top left"
+        ></nb-badge>
         <span>Tagged Stories</span>
       </nb-card-header>
       <nb-card-body>
-        <div style="display:flex">
-          <tock-info-button message="Stories used to disable the bot." position="inline"></tock-info-button>
-          <div *ngIf="!disableStories || disableStories.length < 1">
+        <div style="display: flex">
+          <tock-info-button
+            message="Stories used to disable the bot."
+            position="inline"
+          ></tock-info-button>
+          <div *ngIf="!disableStories || disableStories.length < 1">
             <p>No story tagged to disable the bot.</p>
           </div>
-          <div *ngIf="disableStories && disableStories.length > 0">
-            <div *ngFor="let story of disableStories" class="deactivation-story">
+          <div *ngIf="disableStories && disableStories.length > 0">
+            <div
+              *ngFor="let story of disableStories"
+              class="deactivation-story"
+            >
               <div [nbTooltip]="'Story: ' + story.name">
-                <nb-icon *ngIf="story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                <nb-icon *ngIf="story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-                <nb-icon *ngIf="story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                {{story.name}}
+                <nb-icon
+                  *ngIf="story.isBuiltIn()"
+                  class="story-type"
+                  icon="cube"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isSimpleAnswer()"
+                  class="story-type"
+                  icon="message-square-outline"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isScriptAnswer()"
+                  class="story-type"
+                  icon="code"
+                ></nb-icon>
+                {{ story.name }}
               </div>
             </div>
           </div>
         </div>
-        <div style="display:flex">
-          <tock-info-button message="Stories used to enable the bot." position="inline"></tock-info-button>
-          <div *ngIf="!enableStories || enableStories.length < 1">
+        <div style="display: flex">
+          <tock-info-button
+            message="Stories used to enable the bot."
+            position="inline"
+          ></tock-info-button>
+          <div *ngIf="!enableStories || enableStories.length < 1">
             <p>No story tagged to enable the bot.</p>
           </div>
-          <div *ngIf="enableStories && enableStories.length > 0">
-            <div *ngFor="let story of enableStories" class="deactivation-story">
+          <div *ngIf="enableStories && enableStories.length > 0">
+            <div
+              *ngFor="let story of enableStories"
+              class="deactivation-story"
+            >
               <div [nbTooltip]="'Story: ' + story.name">
-                <nb-icon *ngIf="story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                <nb-icon *ngIf="story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-                <nb-icon *ngIf="story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                {{story.name}}
-
+                <nb-icon
+                  *ngIf="story.isBuiltIn()"
+                  class="story-type"
+                  icon="cube"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isSimpleAnswer()"
+                  class="story-type"
+                  icon="message-square-outline"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isScriptAnswer()"
+                  class="story-type"
+                  icon="code"
+                ></nb-icon>
+                {{ story.name }}
               </div>
             </div>
           </div>
         </div>
-        <div style="display:flex">
+        <div style="display: flex">
           <tock-info-button
-            message="Only sub steps entities are checked to decide if the user stays in the same story." position="inline"></tock-info-button>
-          <div *ngIf="!checkOnlySubEntitiesForStorySelection || checkOnlySubEntitiesForStorySelection.length < 1">
-            <p>No story tagged in order that only sub actions entities are checked for action selection (and not the whole tree).</p>
+            message="Only sub steps entities are checked to decide if the user stays in the same story."
+            position="inline"
+          ></tock-info-button>
+          <div
+            *ngIf="
+              !checkOnlySubEntitiesForStorySelection ||
+              checkOnlySubEntitiesForStorySelection.length < 1
+            "
+          >
+            <p>
+              No story tagged in order that only sub actions entities are checked for action
+              selection (and not the whole tree).
+            </p>
           </div>
-          <div *ngIf="checkOnlySubEntitiesForStorySelection && checkOnlySubEntitiesForStorySelection.length > 0">
-            <div *ngFor="let story of checkOnlySubEntitiesForStorySelection" class="deactivation-story">
+          <div
+            *ngIf="
+              checkOnlySubEntitiesForStorySelection &&
+              checkOnlySubEntitiesForStorySelection.length > 0
+            "
+          >
+            <div
+              *ngFor="let story of checkOnlySubEntitiesForStorySelection"
+              class="deactivation-story"
+            >
               <div [nbTooltip]="'Story: ' + story.name">
-                <nb-icon *ngIf="story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                <nb-icon *ngIf="story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-                <nb-icon *ngIf="story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                {{story.name}}
+                <nb-icon
+                  *ngIf="story.isBuiltIn()"
+                  class="story-type"
+                  icon="cube"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isSimpleAnswer()"
+                  class="story-type"
+                  icon="message-square-outline"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isScriptAnswer()"
+                  class="story-type"
+                  icon="code"
+                ></nb-icon>
+                {{ story.name }}
               </div>
             </div>
           </div>
         </div>
-        <div style="display:flex">
+        <div style="display: flex">
           <tock-info-button
-            message="Only intents supported by the story are checked for entity action selection." position="inline"></tock-info-button>
-          <div *ngIf="!checkSubEntitiesOnlyWithStoryIntents || checkSubEntitiesOnlyWithStoryIntents.length < 1">
-            <p>No story tagged in order that only intents supported by the story are checked for entity action selection.</p>
+            message="Only intents supported by the story are checked for entity action selection."
+            position="inline"
+          ></tock-info-button>
+          <div
+            *ngIf="
+              !checkSubEntitiesOnlyWithStoryIntents ||
+              checkSubEntitiesOnlyWithStoryIntents.length < 1
+            "
+          >
+            <p>
+              No story tagged in order that only intents supported by the story are checked for
+              entity action selection.
+            </p>
           </div>
-          <div *ngIf="checkSubEntitiesOnlyWithStoryIntents && checkSubEntitiesOnlyWithStoryIntents.length > 0">
-            <div *ngFor="let story of checkSubEntitiesOnlyWithStoryIntents" class="deactivation-story">
+          <div
+            *ngIf="
+              checkSubEntitiesOnlyWithStoryIntents &&
+              checkSubEntitiesOnlyWithStoryIntents.length > 0
+            "
+          >
+            <div
+              *ngFor="let story of checkSubEntitiesOnlyWithStoryIntents"
+              class="deactivation-story"
+            >
               <div [nbTooltip]="'Story: ' + story.name">
-                <nb-icon *ngIf="story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                <nb-icon *ngIf="story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-                <nb-icon *ngIf="story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                {{story.name}}
+                <nb-icon
+                  *ngIf="story.isBuiltIn()"
+                  class="story-type"
+                  icon="cube"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isSimpleAnswer()"
+                  class="story-type"
+                  icon="message-square-outline"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="story.isScriptAnswer()"
+                  class="story-type"
+                  icon="code"
+                ></nb-icon>
+                {{ story.name }}
               </div>
             </div>
           </div>

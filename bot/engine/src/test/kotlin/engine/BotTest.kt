@@ -23,17 +23,18 @@ import ai.tock.bot.engine.TestStoryDefinition.unknown
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.Choice
 import ai.tock.bot.engine.message.Sentence
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.spyk
 import io.mockk.verify
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  *
@@ -227,5 +228,86 @@ class BotTest : BotEngineTest() {
         // Then
         verify { connectorControllerSpy.startTypingInAnswerTo(sentence, connectorData) }
         assertTrue(userTimeline.userState.botDisabled)
+    }
+
+    @Test
+    fun `GIVEN When ASK_AGAIN TAG is present on previous story THEN return no more rounds and hasCurrentAskAgainProcess true`() {
+        dialog.stories.clear()
+
+
+        val sentence = action(Sentence("unknown"))
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            capturedDialog.captured.stories.addAll(
+                listOf<Story>(
+                    Story(
+                        TestStoryDefinition.withAskAgainTag,
+                        TestStoryDefinition.withAskAgainTag.wrappedIntent()
+                    )
+                )
+            )
+            capturedDialog.captured.state.currentIntent = unknown.wrappedIntent()
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(0, dialog.state.askAgainRound)
+        assertEquals(true, dialog.state.hasCurrentAskAgainProcess)
+    }
+
+    @Test
+    fun `GIVEN When ASK_AGAIN TAG is not present on previous story THEN default rounds and hasCurrentAskAgainProcess false`() {
+        dialog.stories.clear()
+
+
+        val sentence = action(Sentence("unknown"))
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            capturedDialog.captured.stories.addAll(
+                listOf<Story>(
+                    Story(
+                        TestStoryDefinition.withoutStep,
+                        TestStoryDefinition.withoutStep.wrappedIntent()
+                    )
+                )
+            )
+            capturedDialog.captured.state.currentIntent = unknown.wrappedIntent()
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(1, dialog.state.askAgainRound)
+        assertEquals(false, dialog.state.hasCurrentAskAgainProcess)
+    }
+
+    @Test
+    fun `GIVEN When ASK_AGAIN TAG is present and after no more ask again rounds on previous story THEN default rounds and no currentAskAgainProcess`() {
+        dialog.stories.clear()
+
+        val sentence = action(Sentence("unknown"))
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            capturedDialog.captured.stories.addAll(
+                listOf(
+                    Story(TestStoryDefinition.withAskAgainTag, TestStoryDefinition.withAskAgainTag.wrappedIntent()),
+                    Story(
+                        unknown,
+                        Intent.unknown
+                    )
+                )
+            )
+            capturedDialog.captured.state.currentIntent = unknown.wrappedIntent()
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(1, dialog.state.askAgainRound)
+        assertEquals(false, dialog.state.hasCurrentAskAgainProcess)
     }
 }

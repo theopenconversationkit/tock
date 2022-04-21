@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import {QualityModule} from "../quality-nlp/quality.module";
-import {NgModule} from "@angular/core";
-import {SharedModule} from "../shared-nlp/shared.module";
+import { QualityModule } from '../quality-nlp/quality.module';
+import { NgModule } from '@angular/core';
+import { SharedModule } from '../shared-nlp/shared.module';
 
 @NgModule({
   declarations: [],
-  imports: [
-    SharedModule,
-    QualityModule
-  ],
+  imports: [SharedModule, QualityModule],
   providers: [],
   bootstrap: []
 })
-export class BotQualityModule {
-}
+export class BotQualityModule {}

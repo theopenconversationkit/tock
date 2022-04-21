@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {StateService} from "../../core-nlp/state.service";
-import {IntentsCategory} from "../../model/nlp";
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { StateService } from '../../core-nlp/state.service';
+import { IntentsCategory } from '../../model/nlp';
 
 @Component({
   selector: 'tock-story-dialog',
@@ -25,28 +25,28 @@ import {IntentsCategory} from "../../model/nlp";
   styleUrls: ['./story-dialog.component.css']
 })
 export class StoryDialogComponent implements OnInit {
-
   create: boolean;
   name: string;
   intent: string;
   label: string;
   tag: string;
-  category: string = "default";
+  category: string = 'default';
   description: string;
   categories: string[] = [];
   originalCategories: IntentsCategory[] = [];
   dialogType: string;
   private nameInitialized = false;
   intentCategories: IntentsCategory[] = [];
-  freezeIntent:boolean = false;
-  userSentence:string = "";
+  freezeIntent: boolean = false;
+  userSentence: string = '';
 
   @ViewChild('labelElement') labelElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<StoryDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public state: StateService) {
+    public state: StateService
+  ) {
     this.create = this.data.create;
     this.intent = this.data.intent;
     this.name = this.data.name;
@@ -54,39 +54,43 @@ export class StoryDialogComponent implements OnInit {
     this.tag = this.data.tag;
     this.description = this.data.description;
     this.category = this.data.category;
-    this.dialogType = "Story";
+    this.dialogType = 'Story';
     this.freezeIntent = this.data.freezeIntent;
-    this.userSentence = this.data.userSentence ? this.data.userSentence : "";
+    this.userSentence = this.data.userSentence ? this.data.userSentence : '';
     setTimeout(() => this.labelElement.nativeElement.focus(), 500);
   }
 
   ngOnInit() {
-    this.state.currentIntentsCategories.subscribe(c => {
+    this.state.currentIntentsCategories.subscribe((c) => {
       this.originalCategories = c;
       this.intentCategories = c;
-      this.categories = c.map(cat => cat.category);
+      this.categories = c.map((cat) => cat.category);
     });
   }
 
-  private oldIntent:string;
+  private oldIntent: string;
 
   intentCategoryChange() {
-    if(this.oldIntent !== this.intent) {
+    if (this.oldIntent !== this.intent) {
       this.oldIntent = this.intent;
       let intent = this.intent.trim().toLowerCase();
-      this.intentCategories = this.originalCategories.map(
-        c => new IntentsCategory(c.category, c.intents.filter(i => i.intentLabel().toLowerCase().startsWith(intent)))
-      )
-        .filter(c => c.intents.length !== 0)
+      this.intentCategories = this.originalCategories
+        .map(
+          (c) =>
+            new IntentsCategory(
+              c.category,
+              c.intents.filter((i) => i.intentLabel().toLowerCase().startsWith(intent))
+            )
+        )
+        .filter((c) => c.intents.length !== 0);
     }
   }
 
   categoryChange() {
     let cat = this.category.toLowerCase().trim();
-    let allCats = this.originalCategories.map(cat => cat.category);
-    this.categories = cat.length === 0
-      ? allCats
-      : allCats.filter(c => c.toLowerCase().startsWith(cat))
+    let allCats = this.originalCategories.map((cat) => cat.category);
+    this.categories =
+      cat.length === 0 ? allCats : allCats.filter((c) => c.toLowerCase().startsWith(cat));
   }
 
   copyToName() {
@@ -102,23 +106,32 @@ export class StoryDialogComponent implements OnInit {
 
   private formatName(name: string) {
     if (name) {
-      this.name = name.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
+      this.name = name
+        .replace(/[^A-Za-z_-]*/g, '')
+        .toLowerCase()
+        .trim();
     }
   }
 
   save() {
-    if (this.name && this.name.trim().length !== 0 && this.intent && this.intent.trim().length !== 0) {
+    if (
+      this.name &&
+      this.name.trim().length !== 0 &&
+      this.intent &&
+      this.intent.trim().length !== 0
+    ) {
       this.format();
       this.dialogRef.close({
         name: this.name.trim(),
         label: !this.label || this.label.trim().length === 0 ? this.name.trim() : this.label.trim(),
         tag: this.tag ? this.tag.trim() : null,
         intent: this.intent.trim(),
-        description: !this.description || this.description.trim().length === 0 ? "" : this.description.trim(),
-        category: !this.category || this.category.trim().length === 0 ? "default" : this.category.trim(),
+        description:
+          !this.description || this.description.trim().length === 0 ? '' : this.description.trim(),
+        category:
+          !this.category || this.category.trim().length === 0 ? 'default' : this.category.trim(),
         userSentence: this.userSentence
       });
     }
   }
-
 }

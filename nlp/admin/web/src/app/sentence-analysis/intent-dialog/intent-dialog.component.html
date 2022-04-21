@@ -14,38 +14,98 @@
   ~ limitations under the License.
   -->
 
-<nb-card status="info" class="container">
+<nb-card
+  status="info"
+  class="container"
+>
   <nb-card-header>
-    <span *ngIf="create">Create New {{dialogType}}</span>
-    <span *ngIf="!create">Update {{dialogType}} {{name ? name : label}}</span>
+    <span *ngIf="create">Create New {{ dialogType }}</span>
+    <span *ngIf="!create">Update {{ dialogType }} {{ name ? name : label }}</span>
   </nb-card-header>
   <nb-card-body>
-    <form #intentForm="ngForm" id="intentForm">
+    <form
+      #intentForm="ngForm"
+      id="intentForm"
+    >
       <div class="form-group">
-        <input nbInput fullWidth  name="label" placeholder="Label" [(ngModel)]="label" (keyup)="copyToName()" (keyup.enter)="save()"
-        nbTooltip="Displayed label" #labelElement autocomplete="off">
+        <input
+          nbInput
+          fullWidth
+          name="label"
+          placeholder="Label"
+          [(ngModel)]="label"
+          (keyup)="copyToName()"
+          (keyup.enter)="save()"
+          nbTooltip="Displayed label"
+          #labelElement
+          autocomplete="off"
+        />
       </div>
       <div class="form-group">
-        <input nbInput fullWidth  [disabled]="!create" name="name" placeholder="Name*" [(ngModel)]="name" (keyup)="format()" (keyup.enter)="save()"
-        nbTooltip="Technical id" required>
+        <input
+          nbInput
+          fullWidth
+          [disabled]="!create"
+          name="name"
+          placeholder="Name*"
+          [(ngModel)]="name"
+          (keyup)="format()"
+          (keyup.enter)="save()"
+          nbTooltip="Technical id"
+          required
+        />
       </div>
       <div class="form-group">
-        <input nbInput fullWidth  name="category" placeholder="Category" [(ngModel)]="category"
-        nbTooltip="Category" (keyup)="categoryChange()" (focus)="categoryChange()"
-        [matAutocomplete]="catAuto">
+        <input
+          nbInput
+          fullWidth
+          name="category"
+          placeholder="Category"
+          [(ngModel)]="category"
+          nbTooltip="Category"
+          (keyup)="categoryChange()"
+          (focus)="categoryChange()"
+          [matAutocomplete]="catAuto"
+        />
       </div>
-      <mat-autocomplete #catAuto="matAutocomplete" autoActiveFirstOption>
-        <mat-option *ngFor="let c of categories" [value]="c">{{c}}</mat-option>
-        </mat-autocomplete>
+      <mat-autocomplete
+        #catAuto="matAutocomplete"
+        autoActiveFirstOption
+      >
+        <mat-option
+          *ngFor="let c of categories"
+          [value]="c"
+          >{{ c }}</mat-option
+        >
+      </mat-autocomplete>
       <div class="form-group">
-        <textarea nbInput fullWidth rows="5" name="description" placeholder="Description" [(ngModel)]="description"></textarea>
+        <textarea
+          nbInput
+          fullWidth
+          rows="5"
+          name="description"
+          placeholder="Description"
+          [(ngModel)]="description"
+        ></textarea>
       </div>
     </form>
   </nb-card-body>
   <nb-card-footer class="footer">
-    <button nbButton (click)="cancel()">Cancel</button>
-    <button type="submit" nbButton status="success" (click)="save()" [disabled]="!intentForm.form.valid"
-    class="submit-button">{{create ? "Create" : "Update"}}</button>
+    <button
+      nbButton
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      nbButton
+      status="success"
+      (click)="save()"
+      [disabled]="!intentForm.form.valid"
+      class="submit-button"
+    >
+      {{ create ? 'Create' : 'Update' }}
+    </button>
   </nb-card-footer>
 </nb-card>
-

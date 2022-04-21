@@ -16,45 +16,90 @@
 
 <nb-card class="sentence">
   <nb-card-body>
-    <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false">
-
-      <nb-card [nbSpinner]="loading" nbSpinnerStatus="primary">
+    <tock-select-bot
+      [(configurationId)]="botConfigurationId"
+      [displayConnectorChoice]="false"
+    >
+      <nb-card
+        [nbSpinner]="loading"
+        nbSpinnerStatus="primary"
+      >
         <nb-card-body>
-          <span class="sentence-input" *ngIf="story">
-            <input nbInput status="primary" class="phrase"
-                   [(ngModel)]="story.userSentence"
-                   [disabled]="loading"
-                   placeholder="Enter a User Phrase"
-                   #newSentence
-                   (keyup.enter)="onSentence(newSentence.value)">
+          <span
+            class="sentence-input"
+            *ngIf="story"
+          >
+            <input
+              nbInput
+              status="primary"
+              class="phrase"
+              [(ngModel)]="story.userSentence"
+              [disabled]="loading"
+              placeholder="Enter a User Phrase"
+              #newSentence
+              (keyup.enter)="onSentence(newSentence.value)"
+            />
           </span>
-          <button nbButton outline status="primary" [disabled]="!(story && story.userSentence.length !== 0) || loading"
-                  (click)="onSentence()">
+          <button
+            nbButton
+            outline
+            status="primary"
+            [disabled]="!(story && story.userSentence.length !== 0) || loading"
+            (click)="onSentence()"
+          >
             Add
           </button>
         </nb-card-body>
       </nb-card>
       <div *ngIf="displayStory">
-        <tock-story class="story" [story]="story" [fullDisplay]="true" [displaySteps]="true"
-                    [submit]="submit"></tock-story>
+        <tock-story
+          class="story"
+          [story]="story"
+          [fullDisplay]="true"
+          [displaySteps]="true"
+          [submit]="submit"
+        ></tock-story>
       </div>
     </tock-select-bot>
   </nb-card-body>
-  <nb-card-footer *ngIf="displayStory" class="actions">
-    <button (click)="resetState()" nbButton outline size="small" status="danger" style="margin-right: 10px">Cancel
+  <nb-card-footer
+    *ngIf="displayStory"
+    class="actions"
+  >
+    <button
+      (click)="resetState()"
+      nbButton
+      outline
+      size="small"
+      status="danger"
+      style="margin-right: 10px"
+    >
+      Cancel
     </button>
-    <button (click)="onReply()" nbButton size="small" status="primary">Create Story</button>
+    <button
+      (click)="onReply()"
+      nbButton
+      size="small"
+      status="primary"
+    >
+      Create Story
+    </button>
   </nb-card-footer>
-
 </nb-card>
-<br>
-<span *ngIf="displayStory" class="current-analysis">
-  <br><br>
+<br />
+<span
+  *ngIf="displayStory"
+  class="current-analysis"
+>
+  <br /><br />
   <mat-divider></mat-divider>
   (or qualify)
-  <br><br></span>
-<tock-sentence-analysis *ngIf="sentence"
-                        [sentence]="sentence"
-                        (closed)="resetState()"
-                        [displayProbabilities]="true">
+  <br /><br
+/></span>
+<tock-sentence-analysis
+  *ngIf="sentence"
+  [sentence]="sentence"
+  (closed)="resetState()"
+  [displayProbabilities]="true"
+>
 </tock-sentence-analysis>

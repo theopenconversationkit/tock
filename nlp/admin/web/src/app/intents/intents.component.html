@@ -21,69 +21,169 @@
   <nb-card-body>
     <div *ngIf="!nodes || nodes.length == 0">
       <h4 class="title">No Intent found</h4>
-      <p>To create Intents, start from <em>New Sentence</em> or <em>New Story</em> in Tock Studio,
-        or the <em>API</em>.</p>
+      <p>
+        To create Intents, start from <em>New Sentence</em> or <em>New Story</em> in Tock Studio, or
+        the <em>API</em>.
+      </p>
     </div>
-    <table *ngIf="nodes && nodes.length != 0" [nbTreeGrid]="nodes">
-
-      <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
-      <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns"></tr>
+    <table
+      *ngIf="nodes && nodes.length != 0"
+      [nbTreeGrid]="nodes"
+    >
+      <tr
+        nbTreeGridHeaderRow
+        *nbTreeGridHeaderRowDef="allColumns"
+      ></tr>
+      <tr
+        nbTreeGridRow
+        *nbTreeGridRowDef="let row; columns: allColumns"
+      ></tr>
 
       <ng-container [nbTreeGridColumnDef]="intentColumn">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="intent">{{intentColumn}}</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row">
-
-          <nb-tree-grid-row-toggle *ngIf="row.data.expandable" [expanded]="row.expanded"></nb-tree-grid-row-toggle>
-          <span *ngIf="row.data.expandable" class="category" nbTooltip="{{row.data.category}}">{{row.data.category}}</span>
-          <span *ngIf="!row.data.expandable" class="intent_name" nbTooltip="{{row.data.name}}">{{row.data.intentLabel()}}</span>
-          <div *ngIf="state.intentExistsInOtherApplication(row.data.name)"
-                nbTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent.">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="intent"
+        >
+          {{ intentColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <nb-tree-grid-row-toggle
+            *ngIf="row.data.expandable"
+            [expanded]="row.expanded"
+          ></nb-tree-grid-row-toggle>
+          <span
+            *ngIf="row.data.expandable"
+            class="category"
+            nbTooltip="{{ row.data.category }}"
+            >{{ row.data.category }}</span
+          >
+          <span
+            *ngIf="!row.data.expandable"
+            class="intent_name"
+            nbTooltip="{{ row.data.name }}"
+            >{{ row.data.intentLabel() }}</span
+          >
+          <div
+            *ngIf="state.intentExistsInOtherApplication(row.data.name)"
+            nbTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
+          >
             <span class="shared_application_label">Multi-application intent</span>
             <mat-icon>share</mat-icon>
           </div>
         </td>
       </ng-container>
       <ng-container [nbTreeGridColumnDef]="descriptionColumn">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="description">{{descriptionColumn}}</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row" >
-          <span>{{row.data.description}}</span>
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="description"
+        >
+          {{ descriptionColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <span>{{ row.data.description }}</span>
         </td>
       </ng-container>
       <ng-container [nbTreeGridColumnDef]="entitiesColumn">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="entities">{{entitiesColumn}}</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row" >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="entities"
+        >
+          {{ entitiesColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
           <span *ngFor="let e of row.data.entities">
             <span class="entity">
-            <mat-icon [style.color]="e.entityColor" class="entity_icon">extension</mat-icon>
-            <span class="status" [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
-            <button *ngIf="!state.intentExistsInOtherApplication(row.data.name)" nbButton size="tiny" ghost status="danger" (click)="removeEntity(row.data, e)"
-                    class="removeEntity" nbTooltip="Delete entity">
-              <mat-icon>remove_circle_outline</mat-icon>
-            </button>
+              <mat-icon
+                [style.color]="e.entityColor"
+                class="entity_icon"
+                >extension</mat-icon
+              >
+              <span
+                class="status"
+                [style.background-color]="e.entityColor"
+                >{{ e.qualifiedName(state.user) }}</span
+              >
+              <button
+                *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+                nbButton
+                size="tiny"
+                ghost
+                status="danger"
+                (click)="removeEntity(row.data, e)"
+                class="removeEntity"
+                nbTooltip="Delete entity"
+              >
+                <mat-icon>remove_circle_outline</mat-icon>
+              </button>
             </span>
             &nbsp;
           </span>
         </td>
       </ng-container>
       <ng-container [nbTreeGridColumnDef]="sharedIntentsColumn">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="shared">{{sharedIntentsColumn}}</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row" class="shared">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="shared"
+        >
+          {{ sharedIntentsColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+          class="shared"
+        >
           <div *ngIf="!row.data.expandable">
-            <button [disabled]="selectedIntent == row.data" nbButton size="small" ghost nbTooltip="Add shared intent" status="primary"
-                    (click)="displayAddSharedIntentDialog(row.data)">
+            <button
+              [disabled]="selectedIntent == row.data"
+              nbButton
+              size="small"
+              ghost
+              nbTooltip="Add shared intent"
+              status="primary"
+              (click)="displayAddSharedIntentDialog(row.data)"
+            >
               <mat-icon>add_box</mat-icon>
             </button>
-            <div *ngIf="row.data.sharedIntents.length !== 0" class="shared_list">
-              <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
-                              nbTooltip="Shared intent - click to remove">
-                <mat-chip *ngFor="let intentId of row.data.sharedIntents" color="accent" selected="true"
-                          (click)="removeSharedIntent(row.data, intentId)">
-                  {{state.findIntentById(intentId)?.name}}
+            <div
+              *ngIf="row.data.sharedIntents.length !== 0"
+              class="shared_list"
+            >
+              <mat-chip-list
+                *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+                nbTooltip="Shared intent - click to remove"
+              >
+                <mat-chip
+                  *ngFor="let intentId of row.data.sharedIntents"
+                  color="accent"
+                  selected="true"
+                  (click)="removeSharedIntent(row.data, intentId)"
+                >
+                  {{ state.findIntentById(intentId)?.name }}
                 </mat-chip>
               </mat-chip-list>
-              <mat-chip-list *ngIf="state.intentExistsInOtherApplication(row.data.name)" nbTooltip="Shared intent">
-                <mat-chip *ngFor="let intentId of row.data.sharedIntents" color="accent" selected="true">
-                  {{state.findIntentById(intentId)?.name}}
+              <mat-chip-list
+                *ngIf="state.intentExistsInOtherApplication(row.data.name)"
+                nbTooltip="Shared intent"
+              >
+                <mat-chip
+                  *ngFor="let intentId of row.data.sharedIntents"
+                  color="accent"
+                  selected="true"
+                >
+                  {{ state.findIntentById(intentId)?.name }}
                 </mat-chip>
               </mat-chip-list>
             </div>
@@ -91,26 +191,59 @@
         </td>
       </ng-container>
       <ng-container [nbTreeGridColumnDef]="mandatoryStatesColumn">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="states">{{mandatoryStatesColumn}}</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row" class="states">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="states"
+        >
+          {{ mandatoryStatesColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+          class="states"
+        >
           <div *ngIf="!row.data.expandable">
-            <button *ngIf="!state.intentExistsInOtherApplication(row.data.name)" nbButton size="small" ghost nbTooltip="Add state" status="primary"
-                    (click)="addState(row.data)">
+            <button
+              *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+              nbButton
+              size="small"
+              ghost
+              nbTooltip="Add state"
+              status="primary"
+              (click)="addState(row.data)"
+            >
               <mat-icon>add_box</mat-icon>
             </button>
-            <div *ngIf="row.data.mandatoryStates.length !== 0" class="shared_list">
-              <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
-              nbTooltip="Mandatory states - click to delete">
-                <br>
-                <mat-chip *ngFor="let s of row.data.mandatoryStates" color="accent" selected="true"
-                          (click)="removeState(row.data, s)">
-                  {{s}}
+            <div
+              *ngIf="row.data.mandatoryStates.length !== 0"
+              class="shared_list"
+            >
+              <mat-chip-list
+                *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+                nbTooltip="Mandatory states - click to delete"
+              >
+                <br />
+                <mat-chip
+                  *ngFor="let s of row.data.mandatoryStates"
+                  color="accent"
+                  selected="true"
+                  (click)="removeState(row.data, s)"
+                >
+                  {{ s }}
                 </mat-chip>
               </mat-chip-list>
-              <mat-chip-list *ngIf="state.intentExistsInOtherApplication(row.data.name)" matTooltip="Mandatory states">
-                <br>
-                <mat-chip *ngFor="let s of row.data.mandatoryStates" color="accent" selected="true">
-                  {{s}}
+              <mat-chip-list
+                *ngIf="state.intentExistsInOtherApplication(row.data.name)"
+                matTooltip="Mandatory states"
+              >
+                <br />
+                <mat-chip
+                  *ngFor="let s of row.data.mandatoryStates"
+                  color="accent"
+                  selected="true"
+                >
+                  {{ s }}
                 </mat-chip>
               </mat-chip-list>
             </div>
@@ -118,23 +251,56 @@
         </td>
       </ng-container>
       <ng-container [nbTreeGridColumnDef]="actionsColumn">
-        <th nbTreeGridHeaderCell *nbTreeGridHeaderCellDef class="actions">{{ actionsColumn }}</th>
-        <td nbTreeGridCell *nbTreeGridCellDef="let row" class="actions">
-            <div *ngIf="!row.data.expandable">
-              <button nbButton outline status="primary" size="small" nbTooltip="Edit the intent" (click)="updateIntent(row.data)" class="action">
-                <nb-icon icon="edit-outline"></nb-icon>
-              </button>
-              <button *ngIf="state.hasRole(UserRole.admin)"
-                      nbButton outline status="basic" size="small" nbTooltip="Download a sentences dump" (click)="downloadSentencesDump(row.data)" class="action">
-                <nb-icon icon="download-outline"></nb-icon>
-              </button>
-              <button nbButton outline status="danger" size="small" nbTooltip="Delete the intent {{row.data.name}}" (click)="deleteIntent(row.data)" class="action">
-                <nb-icon icon="trash-2-outline"></nb-icon>
-              </button>
-            </div>
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="actions"
+        >
+          {{ actionsColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+          class="actions"
+        >
+          <div *ngIf="!row.data.expandable">
+            <button
+              nbButton
+              outline
+              status="primary"
+              size="small"
+              nbTooltip="Edit the intent"
+              (click)="updateIntent(row.data)"
+              class="action"
+            >
+              <nb-icon icon="edit-outline"></nb-icon>
+            </button>
+            <button
+              *ngIf="state.hasRole(UserRole.admin)"
+              nbButton
+              outline
+              status="basic"
+              size="small"
+              nbTooltip="Download a sentences dump"
+              (click)="downloadSentencesDump(row.data)"
+              class="action"
+            >
+              <nb-icon icon="download-outline"></nb-icon>
+            </button>
+            <button
+              nbButton
+              outline
+              status="danger"
+              size="small"
+              nbTooltip="Delete the intent {{ row.data.name }}"
+              (click)="deleteIntent(row.data)"
+              class="action"
+            >
+              <nb-icon icon="trash-2-outline"></nb-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
     </table>
   </nb-card-body>
 </nb-card>
-

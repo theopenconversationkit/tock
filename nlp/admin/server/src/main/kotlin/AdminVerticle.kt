@@ -65,9 +65,7 @@ import ai.tock.shared.namespace
 import ai.tock.shared.pingMongoDatabase
 import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.nlpUser
-import ai.tock.shared.security.TockUserRole.technicalAdmin
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.decrypt
@@ -213,7 +211,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/sentences/dump/:dumpType/:applicationId",
-            admin
+            setOf(admin,technicalAdmin)
         ) { context, query: SearchQuery ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
@@ -270,18 +268,6 @@ open class AdminVerticle : WebVerticle() {
                     DumpType.parseDumpType(it.path("dumpType")),
                     it.path("intent"),
                     it.pathToLocale("locale")
-                )
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/sentences/dump/:dumpType/:applicationId", technicalAdmin) { context, query: SearchQuery ->
-            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
-            if (context.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(
-                    query.toSentencesQuery(id),
-                    DumpType.parseDumpType(context.path("dumpType"))
                 )
             } else {
                 unauthorized()
@@ -1115,7 +1101,9 @@ open class AdminVerticle : WebVerticle() {
 
             val indexContentHandler = Handler<RoutingContext> { context ->
                 if (indexContent != null) {
-                    context.response().end(indexContent)
+                    context.response()
+                        .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
+                        .end(indexContent)
                 } else {
                     context.vertx().fileSystem().readFile("$webRoot/index.html") {
                         if (it.succeeded()) {
@@ -1127,7 +1115,9 @@ open class AdminVerticle : WebVerticle() {
                             if (!devEnvironment) {
                                 indexContent = result
                             }
-                            context.response().end(result)
+                            context.response()
+                                .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
+                                .end(result)
                         } else {
                             logger.warn { "Can't find $webRoot/index.html" }
                             context.response().statusCode = 404

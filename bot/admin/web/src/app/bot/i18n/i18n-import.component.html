@@ -13,24 +13,46 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<div *ngIf="invalidSelectedFile" class="invalid-warning">
-  <nb-icon icon="alert-triangle" status="danger"></nb-icon>&nbsp; Only .csv or .json files are allowed.
+<div
+  *ngIf="invalidSelectedFile"
+  class="invalid-warning"
+>
+  <nb-icon
+    icon="alert-triangle"
+    status="danger"
+  ></nb-icon
+  >&nbsp; Only .csv or .json files are allowed.
 </div>
 <div class="import-content">
   <p>Select a JSON or CSV (with headers) file to import labels.</p>
   <p>Only validated labels will be imported to current namespace.</p>
   <span class="import-label">File:&nbsp;</span>
-  <input id="file" type="file" ng2FileSelect
-         [uploader]="uploader"
-         (change)="onChange($event)"
-         class="file-input"
-         [ngClass]="!invalidSelectedFile?'valid-import':'invalid-import'"/>
+  <input
+    id="file"
+    type="file"
+    ng2FileSelect
+    [uploader]="uploader"
+    (change)="onChange($event)"
+    class="file-input"
+    [ngClass]="!invalidSelectedFile ? 'valid-import' : 'invalid-import'"
+  />
 </div>
 
 <div class="modal-footer">
-  <button nbButton (click)="closeWindow()" #focusElement>Cancel</button>
-  <button nbButton status="primary" type="submit" (click)="import()"
-          [disabled]="loading || invalidSelectedFile">
+  <button
+    nbButton
+    (click)="closeWindow()"
+    #focusElement
+  >
+    Cancel
+  </button>
+  <button
+    nbButton
+    status="primary"
+    type="submit"
+    (click)="import()"
+    [disabled]="loading || invalidSelectedFile"
+  >
     <nb-icon icon="upload-outline"></nb-icon>&nbsp;Import
   </button>
 </div>

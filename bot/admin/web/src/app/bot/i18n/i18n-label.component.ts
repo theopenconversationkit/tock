@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {StateService} from '../../core-nlp/state.service';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {I18nLabel, I18nLocalizedLabel, userInterfaces} from '../model/i18n';
-import {BotService} from '../bot-service';
-import {ConnectorTypeConfiguration} from '../../core/model/configuration';
-import {BotSharedService} from '../../shared/bot-shared.service';
+import { StateService } from '../../core-nlp/state.service';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { I18nLabel, I18nLocalizedLabel, userInterfaces } from '../model/i18n';
+import { BotService } from '../bot-service';
+import { ConnectorTypeConfiguration } from '../../core/model/configuration';
+import { BotSharedService } from '../../shared/bot-shared.service';
 import { NbToastrService } from '@nebular/theme';
 
 @Component({
@@ -27,7 +27,6 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['./i18n-label.component.css']
 })
 export class I18nLabelComponent implements OnInit {
-
   @Input()
   localeBase: string = null;
 
@@ -54,21 +53,17 @@ export class I18nLabelComponent implements OnInit {
   @Output()
   delete = new EventEmitter();
 
-  constructor(public state: StateService,
-              private botService: BotService,
-              private toastrService: NbToastrService,
-              public botSharedService: BotSharedService) {
-  }
+  constructor(
+    public state: StateService,
+    private botService: BotService,
+    private toastrService: NbToastrService,
+    public botSharedService: BotSharedService
+  ) {}
 
   ngOnInit(): void {
-    this
-      .botSharedService
-      .getConnectorTypes()
-      .subscribe(
-        c => {
-          this.connectorTypes = c.filter(conn => !conn.connectorType.isRest());
-        }
-      );
+    this.botSharedService.getConnectorTypes().subscribe((c) => {
+      this.connectorTypes = c.filter((conn) => !conn.connectorType.isRest());
+    });
 
     if (!this.i18nController) {
       this.i18nController = new I18nController(this.state, [this.i], this.localeBase);
@@ -98,13 +93,15 @@ export class I18nLabelComponent implements OnInit {
     this.delete.emit(label);
     this.botService
       .deleteI18nLabel(label)
-      .subscribe(_ => this.toastrService.show(`Label ${l} deleted`, 'Delete', {duration: 3000}));
+      .subscribe((_) =>
+        this.toastrService.show(`Label ${l} deleted`, 'Delete', { duration: 3000 })
+      );
   }
 
   save(i18n: I18nLabel) {
     this.botService
       .saveI18nLabel(i18n)
-      .subscribe(_ => this.toastrService.show(`Label updated`, 'Update', {duration: 3000}));
+      .subscribe((_) => this.toastrService.show(`Label updated`, 'Update', { duration: 3000 }));
   }
 
   removeLocalizedLabel(i18n: I18nLabel, label: I18nLocalizedLabel) {
@@ -117,7 +114,9 @@ export class I18nLabelComponent implements OnInit {
   }
 
   addLocalizedLabelForConnector(i18n: I18nLabel, label: I18nLocalizedLabel, connectorId: string) {
-    i18n.i18n.push(new I18nLocalizedLabel(label.locale, label.interfaceType, '', false, connectorId, []));
+    i18n.i18n.push(
+      new I18nLocalizedLabel(label.locale, label.interfaceType, '', false, connectorId, [])
+    );
     this.save(i18n);
     this.i18nController.fillLabels(this.locales);
   }
@@ -138,39 +137,43 @@ export class I18nLabelComponent implements OnInit {
 }
 
 export class I18nController {
-
-  constructor(
-    public state: StateService,
-    public i18n: I18nLabel[],
-    public localeBase: string) {
-  }
+  constructor(public state: StateService, public i18n: I18nLabel[], public localeBase: string) {}
 
   deleteLabel(label: I18nLabel) {
     //do nothing
   }
 
   fillLabels(locales: Set<string>) {
-    this.i18n.forEach(i => {
-        //add non present i18n
-        locales.forEach(locale => {
-          userInterfaces.forEach(userInterface => {
-            if (!i.label(locale, userInterface)) {
-              i.i18n.push(new I18nLocalizedLabel(locale, userInterface, '', false, null, []));
-            }
-          })
-        });
-        i.i18n.sort((a, b) => {
-            if (a.locale === b.locale) {
-              const interfaceDiff = a.interfaceType - b.interfaceType;
-              if (interfaceDiff === 0) {
-                return (a.connectorId === b.connectorId) ? 0 : (a.connectorId === null || (b.connectorId !== null && b.connectorId < a.connectorId)) ? 1 : -1;
-              } else {
-                return a.interfaceType - b.interfaceType;
-              }
-            } else return a.locale === this.localeBase ? -1 : (b.locale === this.localeBase ? 1 : (b.locale < a.locale ? 1 : -1));
+    this.i18n.forEach((i) => {
+      //add non present i18n
+      locales.forEach((locale) => {
+        userInterfaces.forEach((userInterface) => {
+          if (!i.label(locale, userInterface)) {
+            i.i18n.push(new I18nLocalizedLabel(locale, userInterface, '', false, null, []));
           }
-        );
-      }
-    );
+        });
+      });
+      i.i18n.sort((a, b) => {
+        if (a.locale === b.locale) {
+          const interfaceDiff = a.interfaceType - b.interfaceType;
+          if (interfaceDiff === 0) {
+            return a.connectorId === b.connectorId
+              ? 0
+              : a.connectorId === null || (b.connectorId !== null && b.connectorId < a.connectorId)
+              ? 1
+              : -1;
+          } else {
+            return a.interfaceType - b.interfaceType;
+          }
+        } else
+          return a.locale === this.localeBase
+            ? -1
+            : b.locale === this.localeBase
+            ? 1
+            : b.locale < a.locale
+            ? 1
+            : -1;
+      });
+    });
   }
 }

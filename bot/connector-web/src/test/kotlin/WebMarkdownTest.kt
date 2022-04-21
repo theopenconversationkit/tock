@@ -23,8 +23,6 @@ class WebMarkdownTest {
 
     @Test
     fun `test simple markdown`() {
-        Assertions.assertThat(WebMarkdown.markdown("[TOCK STUDIO](https://doc.tock.ai/)"))
-            .isEqualTo("<a href=\"https://doc.tock.ai/\">TOCK STUDIO</a>")
         Assertions.assertThat(WebMarkdown.markdown("* item 1")).isEqualTo(
             "<ul>\n" +
                     "<li>item 1</li>\n" +
@@ -74,6 +72,8 @@ class WebMarkdownTest {
         )
         Assertions.assertThat(WebMarkdown.markdown("`code`"))
             .isEqualTo("<code style=\"padding: 2px 4px; font-size: 90%; background-color: #f5f5f5; border-radius: 4px;\">code</code>")
+        Assertions.assertThat(WebMarkdown.markdown("[TOCK STUDIO](https://doc.tock.ai/)"))
+            .isEqualTo("<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://doc.tock.ai/\">TOCK STUDIO</a>")
     }
 
     @Test
@@ -108,11 +108,11 @@ class WebMarkdownTest {
                 "<strong style=\"font-weight: bold\">Tock</strong>  (<em style=\"font-style: italic\">The Open Conversation Kit</em>) is a complete and open platform to build conversational agents - also known as  <em style=\"font-style: italic\">bots</em>.\n" +
                         "Tock does not depend on 3rd-party APIs, although it is possible to integrate with them. Users choose which components to embed and decide to keep (or share) ownership of conversational data and models.\n" +
                         "<blockquote style=\"font-style: normal; font-size: 15px; margin-left: 0px; font-family: Arial; border-left: 4px solid rgb(0 0 0 / 28%); padding-left: 8px; background-color: #f5f5f5;\">\n" +
-                        "Tock has been used in production since 2016 by  <a href=\"https://www.oui.sncf/services/assistant\">OUI.sncf</a>  (Web/mobile, messaging platforms, smart speakers) and  <a href=\"https://doc.tock.ai/tock/en/about/showcase\">more and more organisations</a>  (energy, banking, healthcare…).\n" +
+                        "Tock has been used in production since 2016 by  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.oui.sncf/services/assistant\">OUI.sncf</a>  (Web/mobile, messaging platforms, smart speakers) and  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://doc.tock.ai/tock/en/about/showcase\">more and more organisations</a>  (energy, banking, healthcare…).\n" +
                         "</blockquote>\n" +
-                        "The platform source code is available on  <a href=\"https://github.com/theopenconversationkit/tock\">GitHub</a>  under the  <a href=\"https://github.com/theopenconversationkit/tock/blob/master/LICENSE\">Apache License, version 2.0</a>.\n" +
+                        "The platform source code is available on  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://github.com/theopenconversationkit/tock\">GitHub</a>  under the  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://github.com/theopenconversationkit/tock/blob/master/LICENSE\">Apache License, version 2.0</a>.\n" +
                         "<h2 style=\"display: block; font-size: 1.5em; margin-top: 0.83em; margin-bottom: 0.83em; margin-left: 0; margin-right: 0; font-weight: bold;\">Overview</h2>\n" +
-                        "The  <a href=\"https://doc.tock.ai/\">Tock.ai</a>  site is a good starting point to learn about the solution and its growing community.  <a href=\"https://doc.tock.ai/tock/en/guide/studio\">Tutorials</a>,  <a href=\"https://doc.tock.ai/tock/en/about/resources\">presentations</a>  and a  <a href=\"https://www.youtube.com/watch?v=UsKkpYL7Hto\">live demo</a>  (20 minutes, in English,  <a href=\"https://www.opensource-experience.com/en/event/20-minutes-from-zero-to-live-chatbot-with-tock/\">ℹ️ abstract</a>) are also available."
+                        "The  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://doc.tock.ai/\">Tock.ai</a>  site is a good starting point to learn about the solution and its growing community.  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://doc.tock.ai/tock/en/guide/studio\">Tutorials</a>,  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://doc.tock.ai/tock/en/about/resources\">presentations</a>  and a  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.youtube.com/watch?v=UsKkpYL7Hto\">live demo</a>  (20 minutes, in English,  <a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.opensource-experience.com/en/event/20-minutes-from-zero-to-live-chatbot-with-tock/\">ℹ️ abstract</a>) are also available."
             )
     }
 }

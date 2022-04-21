@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import {Component, Input} from "@angular/core";
-import {Location} from "../model/dialog-data";
+import { Component, Input } from '@angular/core';
+import { Location } from '../model/dialog-data';
 @Component({
   selector: 'tock-bot-message-location',
-  template: `({{location.location.lat}} - {{location.location.lng}}`
+  template: `({{ location.location.lat }} - {{ location.location.lng }}`
 })
 export class BotMessageLocationComponent {
-
   @Input()
   location: Location;
 }

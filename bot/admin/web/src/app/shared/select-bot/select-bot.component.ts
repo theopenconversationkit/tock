@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {BotApplicationConfiguration} from "../../core/model/configuration";
-import {DialogService} from "../../core-nlp/dialog.service";
-import {StateService} from "../../core-nlp/state.service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { BotApplicationConfiguration } from '../../core/model/configuration';
+import { DialogService } from '../../core-nlp/dialog.service';
+import { StateService } from '../../core-nlp/state.service';
 
 @Component({
   selector: 'tock-select-bot',
@@ -26,7 +26,6 @@ import {StateService} from "../../core-nlp/state.service";
   styleUrls: ['./select-bot.component.css']
 })
 export class SelectBotComponent implements OnInit {
-
   @Input()
   configurationId: string;
 
@@ -49,10 +48,10 @@ export class SelectBotComponent implements OnInit {
   returnsRestConfiguration: boolean = false;
 
   @Input()
-  noConfigurationLabel: string = "No Configuration";
+  noConfigurationLabel: string = 'No Configuration';
 
   @Input()
-  noConnectorLabel: string = "No Connector";
+  noConnectorLabel: string = 'No Connector';
 
   configurations: BotApplicationConfiguration[];
 
@@ -65,38 +64,42 @@ export class SelectBotComponent implements OnInit {
   constructor(
     private botConfiguration: BotConfigurationService,
     private dialog: DialogService,
-    private state: StateService) {
-  }
+    private state: StateService
+  ) {}
 
   private getName(conf: BotApplicationConfiguration): string {
     return this.displayConnectorChoice ? conf.name : conf.botId;
   }
 
   ngOnInit() {
-    this.botConfiguration.configurations
-      .subscribe(conf => {
-        this.allConfigurations = conf;
-        this.updateConfigurations(conf, false);
-      });
-    this.state.resetConfigurationEmitter.subscribe(_ => {
+    this.botConfiguration.configurations.subscribe((conf) => {
+      this.allConfigurations = conf;
+      this.updateConfigurations(conf, false);
+    });
+    this.state.resetConfigurationEmitter.subscribe((_) => {
       this.updateConfigurations(this.allConfigurations, true);
     });
   }
 
   private updateConfigurations(conf: BotApplicationConfiguration[], forceUpdate: boolean) {
-    setTimeout(_ => {
+    setTimeout((_) => {
       if (conf.length !== 0 && conf !== this.configurations) {
         const retainedConfs = conf
-          .filter(c => c.targetConfigurationId == null)
+          .filter((c) => c.targetConfigurationId == null)
           .sort((c1, c2) => c1.applicationId.localeCompare(c2.applicationId));
-        this.botNames = Array.from(new Set(retainedConfs.map(c => this.getName(c)))).sort();
-        const containsCurrentSelection = this.configurationId && retainedConfs.some(c => c._id === this.configurationId);
+        this.botNames = Array.from(new Set(retainedConfs.map((c) => this.getName(c)))).sort();
+        const containsCurrentSelection =
+          this.configurationId && retainedConfs.some((c) => c._id === this.configurationId);
         if (!this.allowNoSelection && !containsCurrentSelection && retainedConfs.length !== 0) {
           this.configurationId = retainedConfs[0]._id;
         }
         if (this.configurationId) {
           if (!containsCurrentSelection || forceUpdate) {
-            this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs, this.allowNoConfigurationSelection);
+            this.changeConf(
+              conf.find((c) => c._id === this.configurationId),
+              retainedConfs,
+              this.allowNoConfigurationSelection
+            );
           }
         } else {
           this.currentBotName = 'None';
@@ -109,7 +112,7 @@ export class SelectBotComponent implements OnInit {
       } else {
         if (conf.length === 0) {
           this.currentBotName = 'None';
-          this.configurations = conf.filter(c => c.targetConfigurationId == null);
+          this.configurations = conf.filter((c) => c.targetConfigurationId == null);
           this.selectionChange.emit(null);
           this.configurationIdChange.emit(null);
         }
@@ -117,20 +120,34 @@ export class SelectBotComponent implements OnInit {
     });
   }
 
-  private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[], noConnectorSelection: boolean) {
+  private changeConf(
+    conf: BotApplicationConfiguration,
+    configurations: BotApplicationConfiguration[],
+    noConnectorSelection: boolean
+  ) {
     this.configurations = configurations;
     if (conf) {
       this.currentBotName = this.getName(conf);
       this.currentConfiguration = conf;
-      this.currentConfigurations = configurations
-        .filter(c => c.name === conf.name);
+      this.currentConfigurations = configurations.filter((c) => c.name === conf.name);
       this.configurationId = conf._id;
-      const confResult = this.returnsRestConfiguration ? BotApplicationConfiguration.getRestConfiguration(this.allConfigurations, conf) : conf;
+      const confResult = this.returnsRestConfiguration
+        ? BotApplicationConfiguration.getRestConfiguration(this.allConfigurations, conf)
+        : conf;
       if (confResult) {
-        this.selectionChange.emit(new SelectBotEvent(confResult.name, noConnectorSelection, noConnectorSelection ? null : confResult._id));
+        this.selectionChange.emit(
+          new SelectBotEvent(
+            confResult.name,
+            noConnectorSelection,
+            noConnectorSelection ? null : confResult._id
+          )
+        );
         this.configurationIdChange.emit(confResult._id);
       } else {
-        this.dialog.notify("Test Configuration not found", null, {duration: 3000, status: "danger"});
+        this.dialog.notify('Test Configuration not found', null, {
+          duration: 3000,
+          status: 'danger'
+        });
       }
     } else {
       this.currentBotName = 'None';
@@ -140,7 +157,11 @@ export class SelectBotComponent implements OnInit {
   }
 
   changeBotName() {
-    this.changeConf(this.configurations.find(c => this.getName(c) === this.currentBotName), this.configurations, this.allowNoConfigurationSelection)
+    this.changeConf(
+      this.configurations.find((c) => this.getName(c) === this.currentBotName),
+      this.configurations,
+      this.allowNoConfigurationSelection
+    );
   }
 
   changeConnectorType() {
@@ -155,19 +176,18 @@ export class SelectBotComponent implements OnInit {
 }
 
 export class SelectBotEvent {
-
   constructor(
     public configurationName: string,
     public all: boolean,
     public configurationId?: string
-  ) {
-
-  }
+  ) {}
 
   equals(e: SelectBotEvent): boolean {
-    return e
-      && this.configurationId === e.configurationId
-      && this.all === e.all
-      && this.configurationName === e.configurationName
+    return (
+      e &&
+      this.configurationId === e.configurationId &&
+      this.all === e.all &&
+      this.configurationName === e.configurationName
+    );
   }
 }

@@ -15,7 +15,6 @@
  */
 
 export class AnswerController {
-
   public answerSubmitListener: any;
   public submitListener: any;
 
@@ -32,5 +31,4 @@ export class AnswerController {
       this.submitListener();
     }
   }
-
 }

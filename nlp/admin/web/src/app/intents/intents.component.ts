@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {saveAs} from 'file-saver';
-import {Component, ElementRef, OnInit} from '@angular/core';
-import {StateService} from '../core-nlp/state.service';
-import {EntityDefinition, Intent, IntentsCategory} from '../model/nlp';
-import {ConfirmDialogComponent} from '../shared-nlp/confirm-dialog/confirm-dialog.component';
-import {NlpService} from '../nlp-tabs/nlp.service';
-import {ApplicationService} from '../core-nlp/applications.service';
-import {AddStateDialogComponent} from './add-state/add-state-dialog.component';
-import {UserRole} from '../model/auth';
-import {IntentDialogComponent} from '../sentence-analysis/intent-dialog/intent-dialog.component';
-import {BehaviorSubject} from 'rxjs';
-import {DialogService} from '../core-nlp/dialog.service';
+import { saveAs } from 'file-saver';
+import { Component, ElementRef, OnInit } from '@angular/core';
+import { StateService } from '../core-nlp/state.service';
+import { EntityDefinition, Intent, IntentsCategory } from '../model/nlp';
+import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { NlpService } from '../nlp-tabs/nlp.service';
+import { ApplicationService } from '../core-nlp/applications.service';
+import { AddStateDialogComponent } from './add-state/add-state-dialog.component';
+import { UserRole } from '../model/auth';
+import { IntentDialogComponent } from '../sentence-analysis/intent-dialog/intent-dialog.component';
+import { BehaviorSubject } from 'rxjs';
+import { DialogService } from '../core-nlp/dialog.service';
 import { AddSharedIntentDialogComponent } from './add-shared-intent/add-shared-intent-dialog.component';
 
 interface TreeNode<T> {
@@ -40,7 +40,6 @@ interface TreeNode<T> {
   styleUrls: ['./intents.component.css']
 })
 export class IntentsComponent implements OnInit {
-
   UserRole = UserRole;
   intentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
   expandedCategories: Set<string> = new Set(['default']);
@@ -52,51 +51,53 @@ export class IntentsComponent implements OnInit {
   sharedIntentsColumn = 'Shared Intents';
   mandatoryStatesColumn = 'Mandatory States';
   actionsColumn = 'Actions';
-  allColumns = [this.intentColumn, this.descriptionColumn, this.entitiesColumn,
-                this.sharedIntentsColumn, this.mandatoryStatesColumn, this.actionsColumn];
+  allColumns = [
+    this.intentColumn,
+    this.descriptionColumn,
+    this.entitiesColumn,
+    this.sharedIntentsColumn,
+    this.mandatoryStatesColumn,
+    this.actionsColumn
+  ];
   nodes: TreeNode<any>[];
 
-  constructor(public state: StateService,
-              private nlp: NlpService,
-              private dialog: DialogService,
-              private applicationService: ApplicationService) {
-  }
+  constructor(
+    public state: StateService,
+    private nlp: NlpService,
+    private dialog: DialogService,
+    private applicationService: ApplicationService
+  ) {}
 
   ngOnInit() {
-    this.state.currentIntentsCategories.subscribe(it => {
-      this.nodes = Array.from(it, element => {
-          return {
-            expanded: element.category === 'default',
-            data: {
-              category: element.category,
-              expandable: true
-            },
-            children: element.intents.map(s => {
-              return {
-                data: s
-              };
-            })
-          };
-        }
-      );
+    this.state.currentIntentsCategories.subscribe((it) => {
+      this.nodes = Array.from(it, (element) => {
+        return {
+          expanded: element.category === 'default',
+          data: {
+            category: element.category,
+            expandable: true
+          },
+          children: element.intents.map((s) => {
+            return {
+              data: s
+            };
+          })
+        };
+      });
       this.intentsCategories.next(it);
     });
   }
 
   updateIntent(intent: Intent) {
-    const dialogRef = this.dialog.openDialog(
-      IntentDialogComponent,
-      {
-        context:
-          {
-            name: intent.name,
-            label: intent.label,
-            description: intent.description,
-            category: intent.category
-          }
+    const dialogRef = this.dialog.openDialog(IntentDialogComponent, {
+      context: {
+        name: intent.name,
+        label: intent.label,
+        description: intent.description,
+        category: intent.category
       }
-    );
-    dialogRef.onClose.subscribe(result => {
+    });
+    dialogRef.onClose.subscribe((result) => {
       if (result.name) {
         this.nlp
           .saveIntent(
@@ -110,34 +111,32 @@ export class IntentsComponent implements OnInit {
               result.label,
               result.description,
               result.category,
-              intent._id)
+              intent._id
+            )
           )
-          .subscribe(_intent => {
-              this.state.updateIntent(_intent);
-            }
-          );
+          .subscribe((_intent) => {
+            this.state.updateIntent(_intent);
+          });
       }
     });
   }
 
   deleteIntent(intent: Intent) {
-    const dialogRef = this.dialog.openDialog(
-      ConfirmDialogComponent,
-      {
-        context: {
-          title: `Remove the Intent ${intent.name}`,
-          subtitle: 'Are you sure?',
-          action: 'Remove'
-        }
-      });
-    dialogRef.onClose.subscribe(result => {
+    const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: `Remove the Intent ${intent.name}`,
+        subtitle: 'Are you sure?',
+        action: 'Remove'
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
       if (result === 'remove') {
         this.nlp.removeIntent(this.state.currentApplication, intent).subscribe(
-          _ => {
+          (_) => {
             this.state.removeIntent(intent);
             this.dialog.notify(`Intent ${intent.name} removed`, 'Remove Intent');
           },
-          _ => this.dialog.notify(`Delete Intent ${intent.name} failed`)
+          (_) => this.dialog.notify(`Delete Intent ${intent.name} failed`)
         );
       }
     });
@@ -145,32 +144,33 @@ export class IntentsComponent implements OnInit {
 
   removeState(intent: Intent, state: string) {
     this.nlp.removeState(this.state.currentApplication, intent, state).subscribe(
-      _ => {
+      (_) => {
         intent.mandatoryStates.splice(intent.mandatoryStates.indexOf(state), 1);
         this.dialog.notify(`State ${state} removed from Intent ${intent.name}`, 'Remove State');
       },
-      _ => {
+      (_) => {
         this.dialog.notify(`Remove State failed`);
       }
     );
   }
 
   addState(intent: Intent) {
-    const dialogRef = this.dialog.openDialog(
-      AddStateDialogComponent,
-      {
-        context: {
-          title: `Add a state for intent \"${intent.name}\"`
-        }
-      });
-    dialogRef.onClose.subscribe(result => {
+    const dialogRef = this.dialog.openDialog(AddStateDialogComponent, {
+      context: {
+        title: `Add a state for intent \"${intent.name}\"`
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
       if (result !== 'cancel') {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
-          response => {
-            this.dialog.notify(`State ${response.name} added for Intent ${intent.name}`, 'Add State');
+          (response) => {
+            this.dialog.notify(
+              `State ${response.name} added for Intent ${intent.name}`,
+              'Add State'
+            );
           },
-          _ => {
+          (_) => {
             intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
             this.dialog.notify(`Add State failed`);
           }
@@ -181,19 +181,18 @@ export class IntentsComponent implements OnInit {
 
   removeEntity(intent: Intent, entity: EntityDefinition) {
     const entityName = entity.qualifiedName(this.state.user);
-    const dialogRef = this.dialog.openDialog(
-      ConfirmDialogComponent,
-      {
-        context: {
-          title: `Remove the Entity ${entityName}`,
-          subtitle: 'Are you sure?',
-          action: 'Remove'
-        }
-      });
-    dialogRef.onClose.subscribe(result => {
+    const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: `Remove the Entity ${entityName}`,
+        subtitle: 'Are you sure?',
+        action: 'Remove'
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
       if (result === 'remove') {
-        this.nlp.removeEntity(this.state.currentApplication, intent, entity).subscribe(
-          deleted => {
+        this.nlp
+          .removeEntity(this.state.currentApplication, intent, entity)
+          .subscribe((deleted) => {
             this.state.currentApplication.intentById(intent._id).removeEntity(entity);
             if (deleted) {
               this.state.removeEntityTypeByName(entity.entityTypeName);
@@ -207,11 +206,11 @@ export class IntentsComponent implements OnInit {
   removeSharedIntent(intent: Intent, intentId: string) {
     this.selectedIntent = null;
     this.nlp.removeSharedIntent(this.state.currentApplication, intent, intentId).subscribe(
-      _ => {
+      (_) => {
         intent.sharedIntents.splice(intent.sharedIntents.indexOf(intentId), 1);
         this.dialog.notify(`Shared Intent removed from Intent ${intent.name}`, 'Remove Intent');
       },
-      _ => {
+      (_) => {
         this.dialog.notify(`Remove Shared Intent failed`);
       }
     );
@@ -219,21 +218,19 @@ export class IntentsComponent implements OnInit {
 
   displayAddSharedIntentDialog(intent: Intent) {
     this.selectedIntent = intent;
-    const dialogRef = this.dialog.openDialog(
-      AddSharedIntentDialogComponent,
-      {
-        context: {
-          title: `Add a shared intent to the intent \"${intent.name}\"`
-        }
-      });
+    const dialogRef = this.dialog.openDialog(AddSharedIntentDialogComponent, {
+      context: {
+        title: `Add a shared intent to the intent \"${intent.name}\"`
+      }
+    });
 
-      dialogRef.onClose.subscribe(result => {
-        if (result !== 'cancel') {
-          this.addSharedIntent(this.selectedIntent, result.intent);
-        } else {
-          this.selectedIntent = null;
-        }
-      });
+    dialogRef.onClose.subscribe((result) => {
+      if (result !== 'cancel') {
+        this.addSharedIntent(this.selectedIntent, result.intent);
+      } else {
+        this.selectedIntent = null;
+      }
+    });
   }
 
   addSharedIntent(intent: Intent, intentId: string) {
@@ -241,10 +238,10 @@ export class IntentsComponent implements OnInit {
       this.selectedIntent = null;
       intent.sharedIntents.push(intentId);
       this.nlp.saveIntent(intent).subscribe(
-        _ => {
+        (_) => {
           this.dialog.notify(`Shared intent added for Intent ${intent.name}`, 'Add Shared Intent');
         },
-        _ => {
+        (_) => {
           intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
           this.dialog.notify(`Add Shared Intent failed`);
         }
@@ -253,15 +250,16 @@ export class IntentsComponent implements OnInit {
   }
 
   downloadSentencesDump(intent: Intent) {
-    this.applicationService.getSentencesDumpForIntent(
-      this.state.currentApplication,
-      intent,
-      this.state.currentLocale,
-      this.state.hasRole(UserRole.technicalAdmin))
-      .subscribe(blob => {
+    this.applicationService
+      .getSentencesDumpForIntent(
+        this.state.currentApplication,
+        intent,
+        this.state.currentLocale,
+        this.state.hasRole(UserRole.technicalAdmin)
+      )
+      .subscribe((blob) => {
         saveAs(blob, intent.name + '_sentences.json');
         this.dialog.notify(`Dump provided`, 'Dump');
-      })
+      });
   }
-
 }

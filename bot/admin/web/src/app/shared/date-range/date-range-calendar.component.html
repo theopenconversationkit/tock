@@ -14,29 +14,96 @@
   ~ limitations under the License.
   -->
 
-<button outline nbButton [status]="disabledOrModified() ? 'disabled' : 'primary'" size="small"
-        [disabled]="disabledOrModified()" title="From {{ range.start }} to {{ range.end }}"
-        [nbPopover]="templateRef" nbPopoverPlacement="bottom" nbPopoverTrigger="click">
+<button
+  outline
+  nbButton
+  [status]="disabledOrModified() ? 'disabled' : 'primary'"
+  size="small"
+  [disabled]="disabledOrModified()"
+  title="From {{ range.start }} to {{ range.end }}"
+  [nbPopover]="templateRef"
+  nbPopoverPlacement="bottom"
+  nbPopoverTrigger="click"
+>
   {{ range.start | date }} - {{ range.end | date }}
 </button>
 
 <ng-template #templateRef>
-  <nb-card accent="info" *ngIf="!disabled" class="calendar-panel">
+  <nb-card
+    accent="info"
+    *ngIf="!disabled"
+    class="calendar-panel"
+  >
     <nb-card-body class="calendar-body">
       <div class="calendar-shortcuts">
-        <button nbButton size="small" [status]="getStatus(1)" (click)="setRangeInDays(1)">Yesterday</button>
-        <button nbButton size="small" [status]="getStatus(0)" (click)="setRangeInDays(0)">Today</button>
-        <button nbButton size="small" [status]="getStatus(7)" (click)="setRangeInDays(7)">Last 7 days</button>
-        <button nbButton size="small" [status]="getStatus(14)" (click)="setRangeInDays(14)">Last 14 days</button>
-        <button nbButton size="small" [status]="getStatus(30)" (click)="setRangeInDays(30)">Last 30 days</button>
-        <button nbButton size="small" [status]="getStatus(90)" (click)="setRangeInDays(90)">Last 90 days</button>
-        <button nbButton size="small" [status]="getStatus(180)" (click)="setRangeInDays(180)">Last 180 days</button>
+        <button
+          nbButton
+          size="small"
+          [status]="getStatus(1)"
+          (click)="setRangeInDays(1)"
+        >
+          Yesterday
+        </button>
+        <button
+          nbButton
+          size="small"
+          [status]="getStatus(0)"
+          (click)="setRangeInDays(0)"
+        >
+          Today
+        </button>
+        <button
+          nbButton
+          size="small"
+          [status]="getStatus(7)"
+          (click)="setRangeInDays(7)"
+        >
+          Last 7 days
+        </button>
+        <button
+          nbButton
+          size="small"
+          [status]="getStatus(14)"
+          (click)="setRangeInDays(14)"
+        >
+          Last 14 days
+        </button>
+        <button
+          nbButton
+          size="small"
+          [status]="getStatus(30)"
+          (click)="setRangeInDays(30)"
+        >
+          Last 30 days
+        </button>
+        <button
+          nbButton
+          size="small"
+          [status]="getStatus(90)"
+          (click)="setRangeInDays(90)"
+        >
+          Last 90 days
+        </button>
+        <button
+          nbButton
+          size="small"
+          [status]="getStatus(180)"
+          (click)="setRangeInDays(180)"
+        >
+          Last 180 days
+        </button>
       </div>
       <nb-calendar-range [(range)]="range"></nb-calendar-range>
     </nb-card-body>
     <nb-card-footer class="calendar-controls">
-      <button nbButton size="small" status="primary" (click)="update()">Update</button>
+      <button
+        nbButton
+        size="small"
+        status="primary"
+        (click)="update()"
+      >
+        Update
+      </button>
     </nb-card-footer>
   </nb-card>
 </ng-template>
-

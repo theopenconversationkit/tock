@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {SharedModule} from "../../shared-nlp/shared.module";
-import {NgModule} from "@angular/core";
-import {LoginComponent} from "./login/login.component";
-import {AuthService} from "./auth.service";
-import {AuthGuard} from "./auth.guard";
-import {RouterModule, Routes} from "@angular/router";
-import {CommonModule} from "@angular/common";
-import {RestModule} from "../rest/rest.module";
-import {NbCardModule, NbCheckboxModule} from "@nebular/theme";
+import { SharedModule } from '../../shared-nlp/shared.module';
+import { NgModule } from '@angular/core';
+import { LoginComponent } from './login/login.component';
+import { AuthService } from './auth.service';
+import { AuthGuard } from './auth.guard';
+import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RestModule } from '../rest/rest.module';
+import { NbCardModule, NbCheckboxModule } from '@nebular/theme';
 
 const authRoutes: Routes = [
   {
@@ -35,8 +35,7 @@ const authRoutes: Routes = [
   imports: [RouterModule.forChild(authRoutes)],
   exports: [RouterModule]
 })
-export class AuthRoutingModule {
-}
+export class AuthRoutingModule {}
 
 @NgModule({
   imports: [
@@ -47,12 +46,7 @@ export class AuthRoutingModule {
     NbCardModule,
     NbCheckboxModule
   ],
-  declarations: [
-    LoginComponent
-  ],
-  providers: [
-    AuthService, AuthGuard
-  ]
+  declarations: [LoginComponent],
+  providers: [AuthService, AuthGuard]
 })
-export class AuthModule {
-}
+export class AuthModule {}

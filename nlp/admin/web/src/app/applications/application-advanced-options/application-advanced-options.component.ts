@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import {ActivatedRoute} from "@angular/router";
-import {StateService} from "../../core-nlp/state.service";
-import {Application, NlpApplicationConfiguration, NlpModelConfiguration} from "../../model/application";
-import {ApplicationService} from "../../core-nlp/applications.service";
-import {saveAs} from "file-saver";
-import {ApplicationScopedQuery} from "../../model/commons";
-import {NlpEngineType} from "../../model/nlp";
-import {Subject} from "rxjs";
+import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute } from '@angular/router';
+import { StateService } from '../../core-nlp/state.service';
+import {
+  Application,
+  NlpApplicationConfiguration,
+  NlpModelConfiguration
+} from '../../model/application';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { saveAs } from 'file-saver';
+import { ApplicationScopedQuery } from '../../model/commons';
+import { NlpEngineType } from '../../model/nlp';
+import { Subject } from 'rxjs';
 import { NbToastrService } from '@nebular/theme';
 
 @Component({
@@ -32,7 +36,6 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['./application-advanced-options.component.css']
 })
 export class ApplicationAdvancedOptionsComponent implements OnInit {
-
   @Input()
   application: Application;
   @Input()
@@ -44,50 +47,53 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   intentClassifierProperties: string;
   entityClassifierProperties: string;
 
-  constructor(private route: ActivatedRoute,
-              private toastrService: NbToastrService,
-              private dialog: MatDialog,
-              public state: StateService,
-              private applicationService: ApplicationService) {
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private toastrService: NbToastrService,
+    private dialog: MatDialog,
+    public state: StateService,
+    private applicationService: ApplicationService
+  ) {}
 
   ngOnInit() {
     if (this.application && this.application.supportedLocales.length > 0) {
       this.alexaLocale = this.application.supportedLocales[0];
     }
-    this.nlpEngineTypeChange.subscribe(type => {
+    this.nlpEngineTypeChange.subscribe((type) => {
       this.application.nlpEngineType = type;
       if (this.tokenizerProperties) {
-        this.displayConfiguration()
+        this.displayConfiguration();
       }
     });
   }
 
   triggerBuild() {
-    this.applicationService.triggerBuild(this.application).subscribe(_ =>
-      this.toastrService.show(`Application build started`, "Build", {duration: 2000})
-    )
+    this.applicationService
+      .triggerBuild(this.application)
+      .subscribe((_) =>
+        this.toastrService.show(`Application build started`, 'Build', { duration: 2000 })
+      );
   }
 
   downloadAlexaExport() {
-    setTimeout(_ => {
+    setTimeout((_) => {
       const query = new ApplicationScopedQuery(
         this.application.namespace,
         this.application.name,
         this.alexaLocale
       );
-      this.applicationService.getAlexaExport(query)
-        .subscribe(blob => {
-          this.exportAlexa = false;
-          saveAs(blob, this.application.name + "_alexa.json");
-          this.toastrService.show(`Alexa export file provided`, "Alexa", {duration: 2000});
-        })
+      this.applicationService.getAlexaExport(query).subscribe((blob) => {
+        this.exportAlexa = false;
+        saveAs(blob, this.application.name + '_alexa.json');
+        this.toastrService.show(`Alexa export file provided`, 'Alexa', { duration: 2000 });
+      });
     });
   }
 
   displayConfiguration() {
-    this.applicationService.getNlpConfiguration(this.application._id, this.application.nlpEngineType)
-      .subscribe(m => {
+    this.applicationService
+      .getNlpConfiguration(this.application._id, this.application.nlpEngineType)
+      .subscribe((m) => {
         this.tokenizerProperties = m.tokenizerConfiguration.toProperties();
         this.intentClassifierProperties = m.intentConfiguration.toProperties();
         this.entityClassifierProperties = m.entityConfiguration.toProperties();
@@ -100,13 +106,12 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
       NlpModelConfiguration.parseProperties(this.intentClassifierProperties),
       NlpModelConfiguration.parseProperties(this.entityClassifierProperties)
     );
-    this.applicationService.updateModelConfiguration(this.application._id, this.application.nlpEngineType, m)
-      .subscribe(_ => {
+    this.applicationService
+      .updateModelConfiguration(this.application._id, this.application.nlpEngineType, m)
+      .subscribe((_) => {
         this.tokenizerProperties = null;
         this.intentClassifierProperties = null;
         this.entityClassifierProperties = null;
       });
   }
-
-
 }

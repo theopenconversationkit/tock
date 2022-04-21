@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from "@angular/core";
-import {NbCalendarRange, NbDateService, NbPopoverDirective} from '@nebular/theme';
-import {StateService} from "src/app/core-nlp/state.service";
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { NbCalendarRange, NbDateService, NbPopoverDirective } from '@nebular/theme';
+import { StateService } from 'src/app/core-nlp/state.service';
 
 @Component({
   selector: 'date-range-calendar',
@@ -24,7 +24,6 @@ import {StateService} from "src/app/core-nlp/state.service";
   styleUrls: ['./date-range-calendar.component.css']
 })
 export class DateRangeCalendarComponent implements OnInit {
-
   range: NbCalendarRange<Date>;
   previousRange: NbCalendarRange<Date>;
   displayCalendar = false;
@@ -40,12 +39,14 @@ export class DateRangeCalendarComponent implements OnInit {
 
   @ViewChild(NbPopoverDirective) popover: NbPopoverDirective;
 
-  constructor(protected dateService: NbDateService<Date>,
-              private state: StateService) {
-  }
+  constructor(protected dateService: NbDateService<Date>, private state: StateService) {}
 
   ngOnInit(): void {
-    if(this.state.dateRange.start != null && this.state.dateRange.end != null && this.state.dateRange.rangeInDays != null) {
+    if (
+      this.state.dateRange.start != null &&
+      this.state.dateRange.end != null &&
+      this.state.dateRange.rangeInDays != null
+    ) {
       this.range = {
         start: this.state.dateRange.start,
         end: this.state.dateRange.end
@@ -65,10 +66,10 @@ export class DateRangeCalendarComponent implements OnInit {
   }
 
   getStatus(nbDays): string {
-    if(this.rangeInDays == nbDays){
-      return "primary";
+    if (this.rangeInDays == nbDays) {
+      return 'primary';
     } else {
-      return "basic";
+      return 'basic';
     }
   }
 
@@ -86,15 +87,15 @@ export class DateRangeCalendarComponent implements OnInit {
         end: this.dateService.today()
       };
     } else if (days == 1) {
-      const yesterday = new Date()
-      yesterday.setDate(yesterday.getDate() - 1)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
       this.range = {
         start: yesterday,
         end: yesterday
       };
     } else {
-      const fromDate = new Date()
-      fromDate.setDate(fromDate.getDate() - days + 1)
+      const fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - days + 1);
       this.range = {
         start: fromDate,
         end: this.dateService.today()

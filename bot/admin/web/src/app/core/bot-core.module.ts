@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-import {CommonModule} from "@angular/common";
-import {Injectable, NgModule, Optional, SkipSelf} from "@angular/core";
-import {BotConfigurationService} from "./bot-configuration.service";
-import {CoreConfig} from "../core-nlp/core.config";
-import {UserRole} from "../model/auth";
+import { CommonModule } from '@angular/common';
+import { Injectable, NgModule, Optional, SkipSelf } from '@angular/core';
+import { BotConfigurationService } from './bot-configuration.service';
+import { CoreConfig } from '../core-nlp/core.config';
+import { UserRole } from '../model/auth';
 
 @Injectable()
 export class BotCoreConfig implements CoreConfig {
-
   /** url of the configuration menu */
-  configurationUrl: string = "/configuration/new";
+  configurationUrl: string = '/configuration/new';
   /** url of the display dialogs if it exists */
-  displayDialogUrl: string = "/analytics/dialogs";
+  displayDialogUrl: string = '/analytics/dialogs';
   /** url to answer to sentence if it exists */
-  answerToSentenceUrl: string = "/build/story-create";
+  answerToSentenceUrl: string = '/build/story-create';
   /** url map for each default rights */
-  roleMap: Map<UserRole, string> = new Map(
-    [
-      [UserRole.nlpUser, "/nlp"],
-      [UserRole.botUser, "/build"],
-      [UserRole.admin, "/configuration"],
-      [UserRole.technicalAdmin, "/configuration"],
-    ]);
-
+  roleMap: Map<UserRole, string> = new Map([
+    [UserRole.nlpUser, '/nlp'],
+    [UserRole.botUser, '/build'],
+    [UserRole.admin, '/configuration'],
+    [UserRole.technicalAdmin, '/configuration']
+  ]);
 }
 
 @NgModule({
@@ -53,12 +50,9 @@ export class BotCoreConfig implements CoreConfig {
   ]
 })
 export class BotCoreModule {
-
   constructor(@Optional() @SkipSelf() parentModule: BotCoreModule) {
     if (parentModule) {
-      throw new Error(
-        'BotCoreModule is already loaded. Import it in the AppModule only');
+      throw new Error('BotCoreModule is already loaded. Import it in the AppModule only');
     }
   }
-
 }

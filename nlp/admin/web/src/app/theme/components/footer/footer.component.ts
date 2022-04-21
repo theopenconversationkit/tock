@@ -15,7 +15,7 @@
  */
 
 import { Component } from '@angular/core';
-import {tock_info} from "../../../../environments/manifest";
+import { tock_info } from '../../../../environments/manifest';
 
 @Component({
   selector: 'ngx-footer',
@@ -23,6 +23,5 @@ import {tock_info} from "../../../../environments/manifest";
   styleUrls: ['./footer.component.scss']
 })
 export class FooterComponent {
-
   tock_info = tock_info;
 }
