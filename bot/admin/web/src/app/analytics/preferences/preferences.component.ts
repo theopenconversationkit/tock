@@ -20,25 +20,28 @@ import { SettingsService } from 'src/app/core-nlp/settings.service';
 import { AnalyticsService } from '../analytics.service';
 import { UserAnalyticsPreferences } from './UserAnalyticsPreferences';
 
-
 @Component({
   selector: 'tock-preferences',
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.css']
 })
 export class PreferencesComponent {
-
   preferences: UserAnalyticsPreferences;
 
-  constructor(protected settings: SettingsService,
-              private toastrService: NbToastrService,
-              private analytics: AnalyticsService ) {
+  constructor(
+    protected settings: SettingsService,
+    private toastrService: NbToastrService,
+    private analytics: AnalyticsService
+  ) {
     this.preferences = this.analytics.getUserPreferences();
   }
 
   save() {
-    this.analytics.onUserAnalyticsSettingsChange(JSON.stringify(this.preferences))
-    this.toastrService.show("User preferences updated successfully", "Configuration update", {duration: 3000, status: "success"})
+    this.analytics.onUserAnalyticsSettingsChange(JSON.stringify(this.preferences));
+    this.toastrService.show('User preferences updated successfully', 'Configuration update', {
+      duration: 3000,
+      status: 'success'
+    });
   }
 
   cancel() {

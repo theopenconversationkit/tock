@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 .entities {
-  width:80%;
+  width: 80%;
   margin-left: auto;
   margin-right: auto;
-  margin-top:20px;
-  text-align:center;
+  margin-top: 20px;
+  text-align: center;
 }
 
 .add-value {
-  float:right;
+  float: right;
   margin-left: 20px;
   margin-right: 20px;
 }
 
 .no-model {
-  padding-top:14px;
+  padding-top: 14px;
 }
 
 .model {
-  float:left;
+  float: left;
   margin-left: 20px;
   margin-right: 20px;
 }
@@ -51,14 +51,14 @@
 }
 
 .values {
-  width:100%;
+  width: 100%;
   padding-bottom: 50px;
 }
 
 .export {
-  padding-top:6px;
+  padding-top: 6px;
 }
 
 .io {
-  float:right;
+  float: right;
 }

@@ -24,5 +24,6 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(BotAdminAppModule)
-  .catch(err => console.log(err));
+platformBrowserDynamic()
+  .bootstrapModule(BotAdminAppModule)
+  .catch((err) => console.log(err));

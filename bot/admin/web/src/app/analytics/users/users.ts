@@ -14,42 +14,43 @@
  * limitations under the License.
  */
 
-import {PaginatedQuery} from "../../model/commons";
-import {BotApplicationConfiguration} from "../../core/model/configuration";
-import {TestPlan} from "../../test/model/test";
-import {DialogReport, PlayerId} from "../../shared/model/dialog-data";
-import {PaginatedResult} from "../../model/nlp";
+import { PaginatedQuery } from '../../model/commons';
+import { BotApplicationConfiguration } from '../../core/model/configuration';
+import { TestPlan } from '../../test/model/test';
+import { DialogReport, PlayerId } from '../../shared/model/dialog-data';
+import { PaginatedResult } from '../../model/nlp';
 
 export class UserSearchQuery extends PaginatedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public start: number,
-              public size: number,
-              public name?: String,
-              public from?: Date,
-              public to?: Date,
-              public flags?: string[],
-              public displayTests?:boolean,
-              public intent?: string) {
-    super(namespace, applicationName, language, start, size)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public start: number,
+    public size: number,
+    public name?: String,
+    public from?: Date,
+    public to?: Date,
+    public flags?: string[],
+    public displayTests?: boolean,
+    public intent?: string
+  ) {
+    super(namespace, applicationName, language, start, size);
   }
 }
 
 export class UserReportQueryResult implements PaginatedResult<UserReport> {
-
-  constructor(public total: number,
-              public start: number,
-              public end: number,
-              public rows: UserReport[]) {
-  }
+  constructor(
+    public total: number,
+    public start: number,
+    public end: number,
+    public rows: UserReport[]
+  ) {}
 
   static fromJSON(json?: any): UserReportQueryResult {
     const value = Object.create(UserReportQueryResult.prototype);
 
     const result = Object.assign(value, json, {
-      rows: UserReport.fromJSONArray(json.users),
+      rows: UserReport.fromJSONArray(json.users)
     });
 
     return result;
@@ -57,11 +58,12 @@ export class UserReportQueryResult implements PaginatedResult<UserReport> {
 }
 
 export class UserAnalyticsQueryResult {
-  constructor(public usersData: any[][],
-              public dates: Date[],
-              public connectorsType: [],
-              public intents: []) {
-  }
+  constructor(
+    public usersData: any[][],
+    public dates: Date[],
+    public connectorsType: [],
+    public intents: []
+  ) {}
 
   static fromJSON(json?: any): UserAnalyticsQueryResult {
     const value = Object.create(UserAnalyticsQueryResult.prototype);
@@ -73,19 +75,19 @@ export class UserAnalyticsQueryResult {
 }
 
 export class UserReport {
-
   displayDialogs: boolean = false;
   userDialog: DialogReport;
   botConfiguration: BotApplicationConfiguration;
   testPlans: TestPlan[];
 
-  constructor(public playerId: PlayerId,
-              public userPreferences: UserPreferences,
-              public userState: UserState,
-              public lastUpdateDate: Date,
-              public applicationIds: string[],
-              public lastActionText?: string) {
-  }
+  constructor(
+    public playerId: PlayerId,
+    public userPreferences: UserPreferences,
+    public userState: UserState,
+    public lastUpdateDate: Date,
+    public applicationIds: string[],
+    public lastActionText?: string
+  ) {}
 
   static fromJSON(json?: any): UserReport {
     const value = Object.create(UserReport.prototype);
@@ -93,7 +95,7 @@ export class UserReport {
     const result = Object.assign(value, json, {
       playerId: PlayerId.fromJSON(json.playerId),
       userPreferences: UserPreferences.fromJSON(json.userPreferences),
-      userState: UserState.fromJSON(json.userState),
+      userState: UserState.fromJSON(json.userState)
     });
 
     return result;
@@ -102,17 +104,15 @@ export class UserReport {
   static fromJSONArray(json?: Array<any>): UserReport[] {
     return json ? json.map(UserReport.fromJSON) : [];
   }
-
 }
 
 export class UserPreferences {
-
-  constructor(public firstName?: string,
-              public lastName?: string,
-              public locale?: string,
-              public picture?: string) {
-
-  }
+  constructor(
+    public firstName?: string,
+    public lastName?: string,
+    public locale?: string,
+    public picture?: string
+  ) {}
 
   static fromJSON(json?: any): UserPreferences {
     const value = Object.create(UserPreferences.prototype);
@@ -121,14 +121,10 @@ export class UserPreferences {
 
     return result;
   }
-
 }
 
 export class UserState {
-
-  constructor(public creationDate: Date,
-              public flags: string[]) {
-  }
+  constructor(public creationDate: Date, public flags: string[]) {}
 
   static fromJSON(json?: any): UserState {
     const value = Object.create(UserState.prototype);
@@ -137,10 +133,4 @@ export class UserState {
 
     return result;
   }
-
 }
-
-
-
-
-

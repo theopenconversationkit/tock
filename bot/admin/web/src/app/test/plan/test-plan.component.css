@@ -17,7 +17,7 @@
 .plans {
   margin-top: 20px;
   padding-top: 10px;
-  padding-left:10px;
+  padding-left: 10px;
   min-height: 100px;
 }
 
@@ -32,23 +32,23 @@
 }
 
 .success {
-  color:green;
-  height:auto;
+  color: green;
+  height: auto;
   vertical-align: middle;
 }
 
 .error {
-  color:red;
-  height:auto;
+  color: red;
+  height: auto;
   vertical-align: middle;
 }
 
 .botAction {
-  color:brown;
+  color: brown;
 }
 
 .new-plan {
-  display:flex;
+  display: flex;
   padding-bottom: 10px;
 }
 

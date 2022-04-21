@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
-import {AuthListener} from "./auth.listener";
-import {Router} from "@angular/router";
-import {AuthenticateRequest, AuthenticateResponse, User} from "../../model/auth";
-import {Observable} from "rxjs";
-import {RestService} from "../rest/rest.service";
-import {environment} from "../../../environments/environment";
+import { Injectable } from '@angular/core';
+import { AuthListener } from './auth.listener';
+import { Router } from '@angular/router';
+import { AuthenticateRequest, AuthenticateResponse, User } from '../../model/auth';
+import { Observable } from 'rxjs';
+import { RestService } from '../rest/rest.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class AuthService {
-
   private logged: boolean;
   private redirectUrl: string;
   private authListeners: AuthListener[] = [];
 
-  constructor(private rest: RestService, private router: Router) {
-  }
+  constructor(private rest: RestService, private router: Router) {}
 
   setRedirectUrl(redirectUrl: string) {
     this.redirectUrl = redirectUrl;
   }
 
   getRedirectUrl() {
-    return this.redirectUrl ? this.redirectUrl : "/";
+    return this.redirectUrl ? this.redirectUrl : '/';
   }
 
   isLoggedIn(): boolean {
@@ -59,30 +57,30 @@ export class AuthService {
   private logUser(user: User): boolean {
     if (user.roles && user.roles.length !== 0) {
       this.logged = true;
-      this.authListeners.forEach(l => l.login(user));
-      return true
+      this.authListeners.forEach((l) => l.login(user));
+      return true;
     } else {
-      return false
+      return false;
     }
   }
 
   logout() {
-    this.rest.post("/logout", null, null, this.rest.notAuthenticatedUrl)
-      .subscribe(() => {
-        this.logged = false;
-        this.authListeners.forEach(l => l.logout());
-        this.router.navigateByUrl("/login");
-      });
+    this.rest.post('/logout', null, null, this.rest.notAuthenticatedUrl).subscribe(() => {
+      this.logged = false;
+      this.authListeners.forEach((l) => l.logout());
+      this.router.navigateByUrl('/login');
+    });
   }
 
   authenticate(email: string, password: string): Observable<boolean> {
     return this.rest.postNotAuthenticated(
       '/authenticate',
       new AuthenticateRequest(email, password),
-      (j => this.login(AuthenticateResponse.fromJSON(j))));
+      (j) => this.login(AuthenticateResponse.fromJSON(j))
+    );
   }
 
   loadUser(): Observable<boolean> {
-    return this.rest.getNotAuthenticated("/user", (j => this.logUser(User.fromJSON(j))))
+    return this.rest.getNotAuthenticated('/user', (j) => this.logUser(User.fromJSON(j)));
   }
 }

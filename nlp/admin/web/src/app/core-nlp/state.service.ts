@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-
-import {map} from 'rxjs/operators';
-import {EventEmitter, Injectable} from "@angular/core";
-import {Application} from "../model/application";
-import {AuthService} from "./auth/auth.service";
-import {AuthListener} from "./auth/auth.listener";
-import {User, UserRole} from "../model/auth";
-import {SettingsService} from "./settings.service";
-import {ApplicationScopedQuery, Entry, groupBy, PaginatedQuery, SearchMark} from "../model/commons";
+import { map } from 'rxjs/operators';
+import { EventEmitter, Injectable } from '@angular/core';
+import { Application } from '../model/application';
+import { AuthService } from './auth/auth.service';
+import { AuthListener } from './auth/auth.listener';
+import { User, UserRole } from '../model/auth';
+import { SettingsService } from './settings.service';
+import {
+  ApplicationScopedQuery,
+  Entry,
+  groupBy,
+  PaginatedQuery,
+  SearchMark
+} from '../model/commons';
 import {
   EntityDefinition,
   EntityType,
@@ -33,14 +38,13 @@ import {
   PredefinedLabelQuery,
   PredefinedValueQuery,
   UpdateEntityDefinitionQuery
-} from "../model/nlp";
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+} from '../model/nlp';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class StateService implements AuthListener {
-
-  static DEFAULT_LOCALE = "en";
-  static DEFAULT_ENGINE = new NlpEngineType("opennlp");
+  static DEFAULT_LOCALE = 'en';
+  static DEFAULT_ENGINE = new NlpEngineType('opennlp');
 
   locales: Entry<string, string>[];
   supportedNlpEngines: NlpEngineType[];
@@ -48,7 +52,7 @@ export class StateService implements AuthListener {
   user: User;
   applications: Application[];
 
-  dateRange = {start: null, end: null, rangeInDays: null}
+  dateRange = { start: null, end: null, rangeInDays: null };
 
   readonly entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
   readonly entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
@@ -90,7 +94,7 @@ export class StateService implements AuthListener {
         this.currentApplicationEmitter.emit(application);
         this.sortIntents();
         if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
-          this.changeLocale(application.supportedLocales[0])
+          this.changeLocale(application.supportedLocales[0]);
         } else {
           this.entities.next(application.allEntities());
           this.configurationChange.next(true);
@@ -101,7 +105,7 @@ export class StateService implements AuthListener {
   }
 
   changeApplicationWithName(applicationName: string) {
-    this.changeApplication(this.applications.find(a => a.name === applicationName));
+    this.changeApplication(this.applications.find((a) => a.name === applicationName));
   }
 
   changeLocale(locale: string) {
@@ -117,10 +121,11 @@ export class StateService implements AuthListener {
     this.currentApplication.intents.sort((a, b) => a.intentLabel().localeCompare(b.intentLabel()));
     this.currentIntents.next(this.currentApplication.intents);
     const categories = [];
-    groupBy(this.currentApplication.intents, i => i.category ? i.category : "default")
-      .forEach((intents, category) => {
+    groupBy(this.currentApplication.intents, (i) => (i.category ? i.category : 'default')).forEach(
+      (intents, category) => {
         categories.push(new IntentsCategory(category, intents));
-      });
+      }
+    );
     this.currentIntentsCategories.next(
       categories.sort((a, b) => a.category.localeCompare(b.category))
     );
@@ -143,29 +148,31 @@ export class StateService implements AuthListener {
   }
 
   findIntentById(id: string): Intent {
-    return this.currentApplication.intents.find(i => i._id === id);
+    return this.currentApplication.intents.find((i) => i._id === id);
   }
 
   findIntentByName(name: string): Intent {
-    return this.currentApplication.intents.find(i => i.name === name);
+    return this.currentApplication.intents.find((i) => i.name === name);
   }
 
   intentLabelByName(name: string): string {
-    const n = name.indexOf(":") == -1 ? name : nameFromQualifiedName(name);
+    const n = name.indexOf(':') == -1 ? name : nameFromQualifiedName(name);
     const i = this.findIntentByName(n);
     if (i == null) {
       return name;
     } else {
-      return i.intentLabel()
+      return i.intentLabel();
     }
   }
 
   findEntityTypeByName(name: string): EntityType {
-    return this.entityTypes.getValue().find(e => e.name === name);
+    return this.entityTypes.getValue().find((e) => e.name === name);
   }
 
   entityTypesSortedByName(): Observable<EntityType[]> {
-    return this.entityTypes.pipe(map(e => e.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName()))));
+    return this.entityTypes.pipe(
+      map((e) => e.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName())))
+    );
   }
 
   removeEntityTypeByName(name: string) {
@@ -176,15 +183,18 @@ export class StateService implements AuthListener {
   }
 
   removeSubEntityByRole(entityType: EntityType, role: string) {
-    entityType.subEntities.splice(entityType.subEntities.findIndex(e => e.role === role), 1);
+    entityType.subEntities.splice(
+      entityType.subEntities.findIndex((e) => e.role === role),
+      1
+    );
   }
 
   localeName(code: string): string {
-    return this.locales ? this.locales.find(l => l.first === code).second : code;
+    return this.locales ? this.locales.find((l) => l.first === code).second : code;
   }
 
   sortApplications() {
-    this.applications = this.applications.sort((a, b) => a.name.localeCompare(b.name))
+    this.applications = this.applications.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   intentExists(intentName: string): boolean {
@@ -212,7 +222,9 @@ export class StateService implements AuthListener {
   findCurrentApplication(): Application {
     if (!this.currentApplication && this.applications) {
       if (this.settings.currentApplicationName) {
-        this.changeApplication(this.applications.find(a => a.name === this.settings.currentApplicationName));
+        this.changeApplication(
+          this.applications.find((a) => a.name === this.settings.currentApplicationName)
+        );
       }
       if (!this.currentApplication && this.applications.length != 0) {
         this.changeApplication(this.applications[0]);
@@ -234,10 +246,10 @@ export class StateService implements AuthListener {
 
   createApplicationScopedQuery(): ApplicationScopedQuery {
     return new ApplicationScopedQuery(
-      this.currentApplication ? this.currentApplication.namespace : "",
-      this.currentApplication ? this.currentApplication.name : "",
+      this.currentApplication ? this.currentApplication.namespace : '',
+      this.currentApplication ? this.currentApplication.name : '',
       this.currentLocale
-    )
+    );
   }
 
   createUpdateEntityDefinitionQuery(entity: EntityDefinition): UpdateEntityDefinitionQuery {
@@ -246,7 +258,7 @@ export class StateService implements AuthListener {
       this.currentApplication.name,
       this.currentLocale,
       entity
-    )
+    );
   }
 
   createPaginatedQuery(start: number, size?: number, searchMark?: SearchMark): PaginatedQuery {
@@ -260,7 +272,11 @@ export class StateService implements AuthListener {
     );
   }
 
-  createPredefinedValueQuery(entityTypeName: string, predefinedValue: string, oldPredefinedValue?: string): PredefinedValueQuery {
+  createPredefinedValueQuery(
+    entityTypeName: string,
+    predefinedValue: string,
+    oldPredefinedValue?: string
+  ): PredefinedValueQuery {
     return new PredefinedValueQuery(
       entityTypeName,
       predefinedValue.trim(),
@@ -269,18 +285,16 @@ export class StateService implements AuthListener {
     );
   }
 
-  createPredefinedLabelQuery(entityTypeName: string, predefinedValue: string, locale: string, label: string): PredefinedLabelQuery {
-    return new PredefinedLabelQuery(
-      entityTypeName,
-      predefinedValue.trim(),
-      locale,
-      label.trim()
-    );
+  createPredefinedLabelQuery(
+    entityTypeName: string,
+    predefinedValue: string,
+    locale: string,
+    label: string
+  ): PredefinedLabelQuery {
+    return new PredefinedLabelQuery(entityTypeName, predefinedValue.trim(), locale, label.trim());
   }
 
   otherThanCurrentLocales(): string[] {
-    return this.currentApplication.supportedLocales.filter(l => l !== this.currentLocale);
+    return this.currentApplication.supportedLocales.filter((l) => l !== this.currentLocale);
   }
-
 }
-

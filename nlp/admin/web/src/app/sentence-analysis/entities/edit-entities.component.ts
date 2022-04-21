@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Component, EventEmitter, Input, Output} from "@angular/core";
-import {ClassifiedEntity, EntityContainer} from "../../model/nlp";
-import {StateService} from "../../core-nlp/state.service";
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ClassifiedEntity, EntityContainer } from '../../model/nlp';
+import { StateService } from '../../core-nlp/state.service';
 
 @Component({
   selector: 'tock-edit-entities',
@@ -23,7 +23,6 @@ import {StateService} from "../../core-nlp/state.service";
   styleUrls: ['edit-entities.component.css']
 })
 export class EditEntitiesComponent {
-
   @Input() container: EntityContainer;
   @Input() displayProbabilities: boolean = false;
   @Input() paddingLeft: number = 0;
@@ -31,8 +30,7 @@ export class EditEntitiesComponent {
 
   @Output() containerChange = new EventEmitter();
 
-  constructor(public state: StateService) {
-  }
+  constructor(public state: StateService) {}
 
   onDeleteEntity(entity: ClassifiedEntity) {
     this.container.removeEntity(entity);
@@ -43,5 +41,4 @@ export class EditEntitiesComponent {
     this.container = this.container.clone();
     this.containerChange.emit(true);
   }
-
 }

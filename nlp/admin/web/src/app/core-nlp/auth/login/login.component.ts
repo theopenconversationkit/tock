@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from "@angular/core";
-import {AuthService} from "../auth.service";
-import {Router} from "@angular/router";
-import {APP_BASE_HREF} from "@angular/common";
+import { Component, Inject, OnInit } from '@angular/core';
+import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Component({
   selector: 'login',
@@ -25,19 +25,21 @@ import {APP_BASE_HREF} from "@angular/common";
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-
-  displayLogin:boolean = false;
+  displayLogin: boolean = false;
   email: string;
   password: string;
   errorMessage: string;
   sendLogin: boolean;
 
-  constructor(public authService: AuthService, private router: Router, @Inject(APP_BASE_HREF) public baseHref: string) {
-  }
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    @Inject(APP_BASE_HREF) public baseHref: string
+  ) {}
 
   ngOnInit(): void {
     if (this.authService.isSSO()) {
-      this.router.navigateByUrl("/");
+      this.router.navigateByUrl('/');
     } else {
       this.displayLogin = true;
     }
@@ -45,25 +47,24 @@ export class LoginComponent implements OnInit {
 
   onSubmit() {
     if (!this.password || this.password.trim().length === 0) {
-      this.errorMessage = "Empty password";
+      this.errorMessage = 'Empty password';
     } else {
       this.errorMessage = null;
       this.sendLogin = true;
       this.authService.authenticate(this.email, this.password).subscribe(
-        response => {
+        (response) => {
           this.sendLogin = false;
           if (response) {
             this.router.navigateByUrl(this.authService.getRedirectUrl());
           } else {
-            this.errorMessage = "Invalid credentials";
+            this.errorMessage = 'Invalid credentials';
           }
         },
-        error => {
+        (error) => {
           this.sendLogin = false;
         }
       );
     }
     return false;
   }
-
 }

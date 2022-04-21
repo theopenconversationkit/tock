@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
+import { NEVER, Observable, throwError as observableThrowError } from 'rxjs';
 
-import {NEVER, Observable, throwError as observableThrowError} from 'rxjs';
-
-import {catchError, map} from 'rxjs/operators';
-import {EventEmitter, Inject, Injectable} from "@angular/core";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {environment} from "../../../environments/environment";
-import {Router} from "@angular/router";
-import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {JsonUtils} from "../../model/commons";
-import {APP_BASE_HREF} from "@angular/common";
-
+import { catchError, map } from 'rxjs/operators';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { JsonUtils } from '../../model/commons';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Injectable()
 export class RestService {
-
   private static defaultNotAuthenticatedUrl: string = environment.serverUrl;
 
   static connectorIconUrl(connectorId: string): string {
-    return RestService.defaultNotAuthenticatedUrl + "/connectorIcon/" + connectorId + "/icon.svg";
+    return RestService.defaultNotAuthenticatedUrl + '/connectorIcon/' + connectorId + '/icon.svg';
   }
 
   readonly url: string;
@@ -45,21 +42,27 @@ export class RestService {
   constructor(
     @Inject(APP_BASE_HREF) private baseHref: string,
     private http: HttpClient,
-    private router: Router) {
-    this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${environment.serverUrl}`;
+    private router: Router
+  ) {
+    this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${
+      environment.serverUrl
+    }`;
     this.url = `${this.notAuthenticatedUrl}/admin`;
     RestService.defaultNotAuthenticatedUrl = this.notAuthenticatedUrl;
   }
 
   isSSO(): boolean {
-    return this.ssologin || document.cookie.indexOf("tock-sso=") !== -1;
+    return this.ssologin || document.cookie.indexOf('tock-sso=') !== -1;
   }
 
   private headers(): HttpHeaders {
     const headers = this.notAuthenticatedHeaders();
     //hack for dev env
     if (environment.autologin) {
-      headers.append('Authorization', btoa(`${environment.default_user}:${environment.default_password}`));
+      headers.append(
+        'Authorization',
+        btoa(`${environment.default_user}:${environment.default_password}`)
+      );
     }
     return headers;
   }
@@ -71,71 +74,103 @@ export class RestService {
   }
 
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http.get(`${this.url}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
-      map((res: string) => parseFunction(res || {})),
-      catchError(e => this.handleError(this, e)),);
+    return this.http
+      .get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
+      .pipe(
+        map((res: string) => parseFunction(res || {})),
+        catchError((e) => this.handleError(this, e))
+      );
   }
 
   getArray<T>(path: string, parseFunction: (value: any) => T[]): Observable<T[]> {
-    return this.http.get(`${this.url}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
-      map((res: string) => parseFunction(res || [])),
-      catchError(e => this.handleError(this, e)),);
+    return this.http
+      .get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
+      .pipe(
+        map((res: string) => parseFunction(res || [])),
+        catchError((e) => this.handleError(this, e))
+      );
   }
 
   delete<I>(path: string): Observable<boolean> {
-    return this.http.delete(
-      `${this.url}${path}`,
-      {headers: this.headers(), withCredentials: true}).pipe(
-      map((res: string) => BooleanResponse.fromJSON(res || {}).success),
-      catchError(e => this.handleError(this, e)),);
+    return this.http
+      .delete(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
+      .pipe(
+        map((res: string) => BooleanResponse.fromJSON(res || {}).success),
+        catchError((e) => this.handleError(this, e))
+      );
   }
 
-  post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O, baseUrl?: string): Observable<O> {
-    return this.http.post(
-      `${baseUrl ? baseUrl : this.url}${path}`,
-      JsonUtils.stringify(value),
-      {headers: this.headers(), withCredentials: true}).pipe(
-      map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
-      catchError(e => this.handleError(this, e)),);
+  post<I, O>(
+    path: string,
+    value?: I,
+    parseFunction?: (value: any) => O,
+    baseUrl?: string
+  ): Observable<O> {
+    return this.http
+      .post(`${baseUrl ? baseUrl : this.url}${path}`, JsonUtils.stringify(value), {
+        headers: this.headers(),
+        withCredentials: true
+      })
+      .pipe(
+        map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
+        catchError((e) => this.handleError(this, e))
+      );
   }
 
   put<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
-    return this.http.put(
-      `${this.url}${path}`,
-      JsonUtils.stringify(value),
-      {headers: this.headers(), withCredentials: true}).pipe(
-      map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
-      catchError(e => this.handleError(this, e)),);
+    return this.http
+      .put(`${this.url}${path}`, JsonUtils.stringify(value), {
+        headers: this.headers(),
+        withCredentials: true
+      })
+      .pipe(
+        map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
+        catchError((e) => this.handleError(this, e))
+      );
   }
 
   getNotAuthenticated<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http.get(`${this.notAuthenticatedUrl}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
-      map((res: string) => parseFunction(res || {})),
-      catchError(e => this.handleError(this, e)),);
+    return this.http
+      .get(`${this.notAuthenticatedUrl}${path}`, { headers: this.headers(), withCredentials: true })
+      .pipe(
+        map((res: string) => parseFunction(res || {})),
+        catchError((e) => this.handleError(this, e))
+      );
   }
 
-  postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
-    return this.http.post(
-      `${this.notAuthenticatedUrl}${path}`,
-      JsonUtils.stringify(value),
-      {headers: this.notAuthenticatedHeaders(), withCredentials: true}).pipe(
-      map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
-      catchError(e => this.handleError(this, e)),);
+  postNotAuthenticated<I, O>(
+    path: string,
+    value?: I,
+    parseFunction?: (value: any) => O
+  ): Observable<O> {
+    return this.http
+      .post(`${this.notAuthenticatedUrl}${path}`, JsonUtils.stringify(value), {
+        headers: this.notAuthenticatedHeaders(),
+        withCredentials: true
+      })
+      .pipe(
+        map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
+        catchError((e) => this.handleError(this, e))
+      );
   }
 
   fileUploader(path: string): FileUploader {
-    const uploader = new FileUploader({removeAfterUpload: true});
+    const uploader = new FileUploader({ removeAfterUpload: true });
     this.setFileUploaderOptions(uploader, path);
     return uploader;
   }
 
   setFileUploaderOptions(uploader: FileUploader, path: string) {
-    uploader.setOptions({url: `${this.url}${path}`});
-    uploader.onErrorItem =
-      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        uploader.removeFromQueue(item);
-        this.handleError(this, response ? response : `Error ${status}`);
-      };
+    uploader.setOptions({ url: `${this.url}${path}` });
+    uploader.onErrorItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      uploader.removeFromQueue(item);
+      this.handleError(this, response ? response : `Error ${status}`);
+    };
 
     return uploader;
   }
@@ -145,33 +180,43 @@ export class RestService {
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
     if (e instanceof Response) {
-      console.log("error instance of Response");
+      console.log('error instance of Response');
       if (e.status === 403 || e.status === 401) {
-        rest.router.navigateByUrl("/login");
+        rest.router.navigateByUrl('/login');
         return NEVER;
       }
-      errMsg = e.status === 400
-        ? e.statusText || ''
-        : `Server error : ${e.status} - ${e.statusText || ''}`;
+      errMsg =
+        e.status === 400
+          ? e.statusText || ''
+          : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
       //strange things happen
       if (e && e.status === 0 && this.isSSO()) {
-        console.error("invalid token - refresh");
+        console.error('invalid token - refresh');
         location.reload();
         return NEVER;
       }
-      errMsg = e.error ? (e.error.message ? e.error.message : (e.error.error && e.error.error.message ? e.error.error.message : "Unknown error"))
-        : (e.message ? e.message : (e.statusText ? e.statusText : typeof e === 'string' ? e : "Unknown error"));
+      errMsg = e.error
+        ? e.error.message
+          ? e.error.message
+          : e.error.error && e.error.error.message
+          ? e.error.error.message
+          : 'Unknown error'
+        : e.message
+        ? e.message
+        : e.statusText
+        ? e.statusText
+        : typeof e === 'string'
+        ? e
+        : 'Unknown error';
     }
     rest.errorEmitter.emit(errMsg);
     return observableThrowError(errMsg);
   }
-
 }
 
 export class BooleanResponse {
-  constructor(public success: boolean) {
-  }
+  constructor(public success: boolean) {}
 
   static fromJSON(json: any): BooleanResponse {
     const value = Object.create(BooleanResponse.prototype);

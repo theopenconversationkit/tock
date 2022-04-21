@@ -14,21 +14,42 @@
   ~ limitations under the License.
   -->
 <nb-card status="info">
-  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
     <p>
       If at least one mandatory state is set for an intent,
-      <br>
+      <br />
       only query with at least one mandatory state of the intent
-      <br>
+      <br />
       is able to returns this intent.
     </p>
     <form #stateForm="ngForm">
-        <input nbInput required name="name" placeholder="New State*" [(ngModel)]="name">
+      <input
+        nbInput
+        required
+        name="name"
+        placeholder="New State*"
+        [(ngModel)]="name"
+      />
     </form>
   </nb-card-body>
   <nb-card-footer class="footer">
-    <button nbButton size="small" (click)="dialogRef.close('cancel')">Cancel</button>
-    <button nbButton size="small" status="success" class="submit-button" (click)="save()" [disabled]="!stateForm.form.valid">Add</button>
+    <button
+      nbButton
+      size="small"
+      (click)="dialogRef.close('cancel')"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="success"
+      class="submit-button"
+      (click)="save()"
+      [disabled]="!stateForm.form.valid"
+    >
+      Add
+    </button>
   </nb-card-footer>
 </nb-card>

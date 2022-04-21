@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.position-top-right{
+.position-top-right {
   position: absolute;
   top: 15px;
   right: 15px;
 }
 
-.position-inline{
+.position-inline {
   margin-left: 5px;
   margin-right: 5px;
 }

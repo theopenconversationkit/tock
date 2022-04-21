@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import {Feature} from "../model/feature";
-import {BotService} from "../bot-service";
-import {StateService} from "../../core-nlp/state.service";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Feature } from '../model/feature';
+import { BotService } from '../bot-service';
+import { StateService } from '../../core-nlp/state.service';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
 
 @Component({
   selector: 'tock-application-feature',
@@ -26,46 +26,46 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
   styleUrls: ['./application-feature.component.css']
 })
 export class ApplicationFeatureComponent implements OnInit {
-
   private currentApplicationUnsuscriber: any;
   botFeatures: Feature[] = [];
   tockFeatures: Feature[] = [];
   create: boolean = false;
-  feature: Feature = new Feature("", "", false);
+  feature: Feature = new Feature('', '', false);
   botApplicationConfigurationId: string;
   loadingApplicationsFeatures: boolean = false;
 
-  constructor(private state: StateService,
-              private botService: BotService,
-              private configurationService: BotConfigurationService) {
-  }
+  constructor(
+    private state: StateService,
+    private botService: BotService,
+    private configurationService: BotConfigurationService
+  ) {}
 
   ngOnInit(): void {
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(a => this.refresh());
+    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe((a) =>
+      this.refresh()
+    );
     this.refresh();
   }
 
   refresh() {
     if (this.state.currentApplication) {
       this.loadingApplicationsFeatures = true;
-      this.botService.getFeatures(this.state.currentApplication.name).subscribe(f => {
-        f.forEach(feature => {
+      this.botService.getFeatures(this.state.currentApplication.name).subscribe((f) => {
+        f.forEach((feature) => {
           if (feature.applicationId) {
-            this.configurationService.configurations.subscribe(_ => {
-              feature.configuration = this.configurationService.findApplicationConfigurationByApplicationId(feature.applicationId);
+            this.configurationService.configurations.subscribe((_) => {
+              feature.configuration =
+                this.configurationService.findApplicationConfigurationByApplicationId(
+                  feature.applicationId
+                );
             });
           }
         });
 
-        this.botFeatures = f.filter(story => story.category !== 'tock');
-        this.tockFeatures = f.filter(story => story.category === 'tock');
+        this.botFeatures = f.filter((story) => story.category !== 'tock');
+        this.tockFeatures = f.filter((story) => story.category === 'tock');
         this.loadingApplicationsFeatures = false;
       });
     }
   }
-
-
-
-
-
 }

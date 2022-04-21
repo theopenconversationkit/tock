@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-
-import {map} from 'rxjs/operators';
-import {Injectable} from "@angular/core";
-import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from "@angular/router";
-import {Application} from "../model/application";
-import {Observable} from "rxjs";
-import {StateService} from "../core-nlp/state.service";
-import {ApplicationService} from "../core-nlp/applications.service";
+import { map } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import { Application } from '../model/application';
+import { Observable } from 'rxjs';
+import { StateService } from '../core-nlp/state.service';
+import { ApplicationService } from '../core-nlp/applications.service';
 
 @Injectable()
 export class ApplicationsResolver implements Resolve<Application[]> {
-
-  constructor(private appService: ApplicationService, private state: StateService) {
-  }
+  constructor(private appService: ApplicationService, private state: StateService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application[]> {
-    return this.appService.retrieveCurrentApplication().pipe(map(_ => this.state.applications));
+    return this.appService.retrieveCurrentApplication().pipe(map((_) => this.state.applications));
   }
 }

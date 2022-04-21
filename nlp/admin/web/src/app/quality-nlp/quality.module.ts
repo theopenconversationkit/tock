@@ -14,31 +14,39 @@
  * limitations under the License.
  */
 
-import {NgModule} from "@angular/core";
-import {RouterModule, Routes} from "@angular/router";
-import {SharedModule} from "../shared-nlp/shared.module";
-import {CommonModule} from "@angular/common";
-import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {ApplicationsModule} from "../applications/applications.module";
-import {ApplicationResolver} from "../core-nlp/application.resolver";
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { SharedModule } from '../shared-nlp/shared.module';
+import { CommonModule } from '@angular/common';
+import { AuthGuard } from '../core-nlp/auth/auth.guard';
+import { ApplicationsModule } from '../applications/applications.module';
+import { ApplicationResolver } from '../core-nlp/application.resolver';
 
-import {MomentModule} from "ngx-moment";
-import {TestIntentErrorComponent} from "../test-nlp/test-intent-error.component";
-import {TestEntityErrorComponent} from "../test-nlp/test-entity-error.component";
-import {TestBuildsComponent} from "../test-nlp/test-builds.component";
-import {QualityTabsComponent} from "./quality-tabs.component";
-import {QualityService} from "./quality.service";
-import {NlpModule} from "../nlp-tabs/nlp.module";
-import {LogStatsComponent} from "../logs/log-stats.component";
-import {ModelBuildsComponent} from "../build/model-builds.component";
-import {IntentQAComponent} from "../intents/quality/intent-qa.component";
-import {NbThemeModule, NbRouteTabsetModule, NbCardModule, NbButtonModule, NbSelectModule, NbTooltipModule, NbSpinnerModule } from "@nebular/theme";
-import {ThemeModule} from "../theme/theme.module";
+import { MomentModule } from 'ngx-moment';
+import { TestIntentErrorComponent } from '../test-nlp/test-intent-error.component';
+import { TestEntityErrorComponent } from '../test-nlp/test-entity-error.component';
+import { TestBuildsComponent } from '../test-nlp/test-builds.component';
+import { QualityTabsComponent } from './quality-tabs.component';
+import { QualityService } from './quality.service';
+import { NlpModule } from '../nlp-tabs/nlp.module';
+import { LogStatsComponent } from '../logs/log-stats.component';
+import { ModelBuildsComponent } from '../build/model-builds.component';
+import { IntentQAComponent } from '../intents/quality/intent-qa.component';
+import {
+  NbThemeModule,
+  NbRouteTabsetModule,
+  NbCardModule,
+  NbButtonModule,
+  NbSelectModule,
+  NbTooltipModule,
+  NbSpinnerModule
+} from '@nebular/theme';
+import { ThemeModule } from '../theme/theme.module';
 import { NgxEchartsModule } from 'ngx-echarts';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export function importEcharts() {
-  return import('echarts')
+  return import('echarts');
 }
 
 const routes: Routes = [
@@ -51,8 +59,8 @@ const routes: Routes = [
     },
     children: [
       {
-        path: '', 
-        redirectTo: 'test-builds', 
+        path: '',
+        redirectTo: 'test-builds',
         pathMatch: 'full'
       },
       {
@@ -87,8 +95,7 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class QualityRoutingModule {
-}
+export class QualityRoutingModule {}
 
 @NgModule({
   imports: [
@@ -109,7 +116,7 @@ export class QualityRoutingModule {
     }),
     NbTooltipModule,
     NgbModule,
-    NbSpinnerModule,
+    NbSpinnerModule
   ],
   declarations: [
     QualityTabsComponent,
@@ -121,10 +128,7 @@ export class QualityRoutingModule {
     IntentQAComponent
   ],
   exports: [],
-  providers: [
-    QualityService
-  ],
+  providers: [QualityService],
   entryComponents: []
 })
-export class QualityModule {
-}
+export class QualityModule {}

@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import {NlpModule} from "../nlp-tabs/nlp.module";
-import {NgModule} from "@angular/core";
-import {SharedModule} from "../shared-nlp/shared.module";
+import { NlpModule } from '../nlp-tabs/nlp.module';
+import { NgModule } from '@angular/core';
+import { SharedModule } from '../shared-nlp/shared.module';
 
 @NgModule({
   declarations: [],
-  imports: [
-    SharedModule,
-    NlpModule
-  ],
+  imports: [SharedModule, NlpModule],
   providers: [],
   bootstrap: []
 })
-export class BotNlpModule {
-}
+export class BotNlpModule {}

@@ -13,15 +13,24 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<span [class]="this.position === 'inline' ? 'position-inline':'position-top-right'">
-  <a *ngIf="url && url.length > 0" [href]="url" target="_blank">
-    <nb-icon [nbTooltip]="message"
-             [icon]="icon"
-             (mouseenter)="icon='info-outline'"
-             (mouseleave)="icon='info'"
-             status="info"></nb-icon>
+<span [class]="this.position === 'inline' ? 'position-inline' : 'position-top-right'">
+  <a
+    *ngIf="url && url.length > 0"
+    [href]="url"
+    target="_blank"
+  >
+    <nb-icon
+      [nbTooltip]="message"
+      [icon]="icon"
+      (mouseenter)="icon = 'info-outline'"
+      (mouseleave)="icon = 'info'"
+      status="info"
+    ></nb-icon>
   </a>
-  <nb-icon *ngIf="!url || url.length < 1"
-           [nbTooltip]="message"
-           icon="info" status="info"></nb-icon>
+  <nb-icon
+    *ngIf="!url || url.length < 1"
+    [nbTooltip]="message"
+    icon="info"
+    status="info"
+  ></nb-icon>
 </span>

@@ -23,7 +23,7 @@
 }
 
 .intents {
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 .inline {
@@ -43,6 +43,6 @@
   text-align: left;
 }
 
-.table thead tr th p{
+.table thead tr th p {
   font-weight: bold;
 }

@@ -31,12 +31,18 @@
           </tr>
           <tr *ngFor="let entry of e.texts | mapToIterable">
             <td>
-              <span class="text">{{entry.value}}</span> <span class="text-category">({{entry.key}})</span>
+              <span class="text">{{ entry.value }}</span>
+              <span class="text-category">({{ entry.key }})</span>
             </td>
           </tr>
           <tr *ngIf="e.choices.length !== 0">
             <td>
-              <tock-bot-message-choice *ngFor="let c of e.choices" [choice]="c" [user]="user" (sendMessage)="reply($event)"></tock-bot-message-choice>
+              <tock-bot-message-choice
+                *ngFor="let c of e.choices"
+                [choice]="c"
+                [user]="user"
+                (sendMessage)="reply($event)"
+              ></tock-bot-message-choice>
             </td>
           </tr>
         </table>
@@ -57,12 +63,17 @@
     </tr>
     <tr *ngFor="let entry of element.texts | mapToIterable">
       <td>
-        {{entry.value}} <span class="text-category">({{entry.key}})</span>
+        {{ entry.value }} <span class="text-category">({{ entry.key }})</span>
       </td>
     </tr>
     <tr *ngIf="element.choices.length !== 0">
       <td>
-        <tock-bot-message-choice *ngFor="let c of element.choices" [choice]="c" [user]="user" (sendMessage)="reply($event)"></tock-bot-message-choice>
+        <tock-bot-message-choice
+          *ngFor="let c of element.choices"
+          [choice]="c"
+          [user]="user"
+          (sendMessage)="reply($event)"
+        ></tock-bot-message-choice>
       </td>
     </tr>
   </table>

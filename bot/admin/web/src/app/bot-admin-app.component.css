@@ -18,8 +18,8 @@
   padding: 10px;
   min-width: 100px;
   overflow-y: visible;
-  background-color:#fafafa;
-  position:fixed;
+  background-color: #fafafa;
+  position: fixed;
 }
 
 .tock-menu-button {
@@ -57,13 +57,13 @@
   text-decoration: none;
 }
 
-.select-application{
-  width:200px;
+.select-application {
+  width: 200px;
   font-size: smaller;
 }
 
-.select-locale{
-  width:100px;
+.select-locale {
+  width: 100px;
   font-size: smaller;
 }
 
@@ -72,7 +72,5 @@
 }
 
 .active-link {
-    background-color: silver;
+  background-color: silver;
 }
-
-

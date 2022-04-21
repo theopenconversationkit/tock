@@ -14,9 +14,19 @@
   ~ limitations under the License.
   -->
 
-<nb-form-field style="display: inline-flex;">
-  <nb-icon nbPrefix icon="search" pack="eva"></nb-icon>
-  <input #autoBlur nbInput shape="round" type="text" status="primary" size="small"
+<nb-form-field style="display: inline-flex">
+  <nb-icon
+    nbPrefix
+    icon="search"
+    pack="eva"
+  ></nb-icon>
+  <input
+    #autoBlur
+    nbInput
+    shape="round"
+    type="text"
+    status="primary"
+    size="small"
     [(ngModel)]="selectedValue"
     (ngModelChange)="onModelChange($event)"
     [placeholder]="name"
@@ -27,13 +37,32 @@
   />
 </nb-form-field>
 
-<nb-autocomplete #auto [handleDisplayFn]="displayOption" (selectedChange)="onSelectedChange($event)" size="small"
-                 [activeFirst]="activeFirst">
-  <nb-option *ngIf="noFilter" [value]="noFilter">{{noFilter.label}}</nb-option>
-  <nb-option-group *ngFor="let group of filteredGroups$ | async; trackBy: trackByFn" [title]="group.name">
-    <nb-option *ngFor="let option of group.children" [value]="option">
+<nb-autocomplete
+  #auto
+  [handleDisplayFn]="displayOption"
+  (selectedChange)="onSelectedChange($event)"
+  size="small"
+  [activeFirst]="activeFirst"
+>
+  <nb-option
+    *ngIf="noFilter"
+    [value]="noFilter"
+    >{{ noFilter.label }}</nb-option
+  >
+  <nb-option-group
+    *ngFor="let group of filteredGroups$ | async; trackBy: trackByFn"
+    [title]="group.name"
+  >
+    <nb-option
+      *ngFor="let option of group.children"
+      [value]="option"
+    >
       {{ option.label }}
     </nb-option>
   </nb-option-group>
-  <nb-option *ngIf="unknownFilter" [value]="unknownFilter">{{unknownFilter.label}}</nb-option>
+  <nb-option
+    *ngIf="unknownFilter"
+    [value]="unknownFilter"
+    >{{ unknownFilter.label }}</nb-option
+  >
 </nb-autocomplete>

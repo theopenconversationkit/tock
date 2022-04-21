@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
-import {AuthService} from "./core-nlp/auth/auth.service";
-import {StateService} from "./core-nlp/state.service";
-import {RestService} from "./core-nlp/rest/rest.service";
-import { MatIconRegistry } from "@angular/material/icon";
-import {UserRole} from "./model/auth";
-import {DomSanitizer} from "@angular/platform-browser";
-import {NbMenuItem} from "@nebular/theme";
-import {DialogService} from "./core-nlp/dialog.service";
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AuthService } from './core-nlp/auth/auth.service';
+import { StateService } from './core-nlp/state.service';
+import { RestService } from './core-nlp/rest/rest.service';
+import { MatIconRegistry } from '@angular/material/icon';
+import { UserRole } from './model/auth';
+import { DomSanitizer } from '@angular/platform-browser';
+import { NbMenuItem } from '@nebular/theme';
+import { DialogService } from './core-nlp/dialog.service';
 import { NbToastrService } from '@nebular/theme';
-
 
 @Component({
   selector: 'tock-nlp-admin-root',
@@ -32,28 +31,30 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['./nlp-admin-app.component.css']
 })
 export class NlpAdminAppComponent implements OnInit, OnDestroy {
-
   UserRole = UserRole;
 
   private errorUnsuscriber: any;
   public menu: NbMenuItem[];
 
-  constructor(public auth: AuthService,
-              public state: StateService,
-              private rest: RestService,
-              private toastrService: NbToastrService,
-              private changeDetectorRef: ChangeDetectorRef,
-              private dialog: DialogService,
-              iconRegistry: MatIconRegistry,
-              sanitizer: DomSanitizer) {
+  constructor(
+    public auth: AuthService,
+    public state: StateService,
+    private rest: RestService,
+    private toastrService: NbToastrService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private dialog: DialogService,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer
+  ) {
     iconRegistry.addSvgIcon(
       'logo',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg')
+    );
   }
 
   ngOnInit(): void {
-    this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
-      this.toastrService.show(e, "Error", {duration: 5000})
+    this.errorUnsuscriber = this.rest.errorEmitter.subscribe((e) =>
+      this.toastrService.show(e, 'Error', { duration: 5000 })
     );
     this.menu = [
       {
@@ -74,12 +75,10 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
         link: '/applications/nlu',
         hidden: this.state.hasRole(UserRole.admin)
       }
-
     ];
   }
 
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
   }
-
 }

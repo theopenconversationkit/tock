@@ -14,14 +14,39 @@
   ~ limitations under the License.
   -->
 
-<h1 mat-dialog-title *ngIf="create">And New {{answerLabel}}</h1>
-<h1 mat-dialog-title *ngIf="!create">Update {{answerLabel}}</h1>
+<h1
+  mat-dialog-title
+  *ngIf="create"
+>
+  And New {{ answerLabel }}
+</h1>
+<h1
+  mat-dialog-title
+  *ngIf="!create"
+>
+  Update {{ answerLabel }}
+</h1>
 <div class="container">
-  <tock-answer [answer]="answer" [fullDisplay]="true" [submit]="submit" [answerLabel]="answerLabel"></tock-answer>
+  <tock-answer
+    [answer]="answer"
+    [fullDisplay]="true"
+    [submit]="submit"
+    [answerLabel]="answerLabel"
+  ></tock-answer>
 </div>
 <mat-dialog-actions>
-  <button mat-stroked-button (click)="cancel()">Cancel</button>
-  <button mat-raised-button class="submit-button" color="primary" (click)="save()">
-    {{create ? "Create" : "Update"}}
+  <button
+    mat-stroked-button
+    (click)="cancel()"
+  >
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    class="submit-button"
+    color="primary"
+    (click)="save()"
+  >
+    {{ create ? 'Create' : 'Update' }}
   </button>
 </mat-dialog-actions>

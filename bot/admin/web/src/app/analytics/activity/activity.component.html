@@ -14,51 +14,97 @@
   ~ limitations under the License.
   -->
 
-<div class="content" id="element-id">
-  <nb-card style="margin-bottom: unset;">
+<div
+  class="content"
+  id="element-id"
+>
+  <nb-card style="margin-bottom: unset">
     <nb-card-body nbSpinnerStatus="primary">
-      <date-range-calendar [rangeInDays]="7" (datesChanged)="datesChanged($event)"></date-range-calendar>
-      <tock-select-bot [allowNoConfigurationSelection]="true" noConnectorLabel="All Connectors"
-                       [allowNoSelection]="true" noConfigurationLabel="All Configurations"
-                       (selectionChange)="selectedConfigurationChanged($event)" class="select-bot">
+      <date-range-calendar
+        [rangeInDays]="7"
+        (datesChanged)="datesChanged($event)"
+      ></date-range-calendar>
+      <tock-select-bot
+        [allowNoConfigurationSelection]="true"
+        noConnectorLabel="All Connectors"
+        [allowNoSelection]="true"
+        noConfigurationLabel="All Configurations"
+        (selectionChange)="selectedConfigurationChanged($event)"
+        class="select-bot"
+      >
       </tock-select-bot>
-      <button nbButton shape="round" ghost (click)="waitAndRefresh()" nbTooltip="Refresh" status="basic">
+      <button
+        nbButton
+        shape="round"
+        ghost
+        (click)="waitAndRefresh()"
+        nbTooltip="Refresh"
+        status="basic"
+      >
         <nb-icon icon="refresh-outline"></nb-icon>
       </button>
-      <span style="float: right; padding: 5px;">&nbsp;&nbsp;
-        <nb-toggle status="warning" [(ngModel)]="displayTests" (change)="waitAndRefresh()" size="small">
+      <span style="float: right; padding: 5px"
+        >&nbsp;&nbsp;
+        <nb-toggle
+          status="warning"
+          [(ngModel)]="displayTests"
+          (change)="waitAndRefresh()"
+          size="small"
+        >
           Tests (Tock Studio)
         </nb-toggle>
       </span>
     </nb-card-body>
   </nb-card>
   <div class="space graph-list">
-    <nb-card class="stats" [nbSpinner]="messagesPercentageLoading">
+    <nb-card
+      class="stats"
+      [nbSpinner]="messagesPercentageLoading"
+    >
       <div class="space space-component3">
         <span class="text text-hint caption">Messages</span>
-        <h5 class="heading1 text-basic">{{currentFilterNbMessages}}</h5>
+        <h5 class="heading1 text-basic">{{ currentFilterNbMessages }}</h5>
         <span class="text text-hint caption">
-          <nb-icon [icon]="getSmallIcon(beforeCurrentFilterNbMessages, currentFilterNbMessages)"
-          [status]="getIconStatus(beforeCurrentFilterNbMessages, currentFilterNbMessages)"></nb-icon>
-          {{variationMessagesPercentage}}% vs prev. {{getNumberOfDays()}} days</span>
+          <nb-icon
+            [icon]="getSmallIcon(beforeCurrentFilterNbMessages, currentFilterNbMessages)"
+            [status]="getIconStatus(beforeCurrentFilterNbMessages, currentFilterNbMessages)"
+          ></nb-icon>
+          {{ variationMessagesPercentage }}% vs prev. {{ getNumberOfDays() }} days</span
+        >
       </div>
-      <div class="space icon-space" >
-        <button nbButton [status]="getIconStatus(beforeCurrentFilterNbMessages, currentFilterNbMessages)" shape="round">
-          <nb-icon [icon]="getBigIcon(beforeCurrentFilterNbMessages, currentFilterNbMessages)"></nb-icon>
+      <div class="space icon-space">
+        <button
+          nbButton
+          [status]="getIconStatus(beforeCurrentFilterNbMessages, currentFilterNbMessages)"
+          shape="round"
+        >
+          <nb-icon
+            [icon]="getBigIcon(beforeCurrentFilterNbMessages, currentFilterNbMessages)"
+          ></nb-icon>
         </button>
       </div>
     </nb-card>
-    <nb-card class="stats" [nbSpinner]="usersPercentageLoading">
+    <nb-card
+      class="stats"
+      [nbSpinner]="usersPercentageLoading"
+    >
       <div class="space space-component3">
         <span class="text text-hint caption">Users (Dialogs)</span>
-        <h5 class="heading1 text-basic">{{currentFilterNbUsers}}</h5>
+        <h5 class="heading1 text-basic">{{ currentFilterNbUsers }}</h5>
         <span class="text text-hint caption">
-          <nb-icon  [icon]="getSmallIcon(beforeCurrentFilterNbUsers, currentFilterNbUsers)"
-                    [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)"></nb-icon>
-          {{variationUsersPercentage}}% vs prev. {{getNumberOfDays()}} days</span>
+          <nb-icon
+            [icon]="getSmallIcon(beforeCurrentFilterNbUsers, currentFilterNbUsers)"
+            [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)"
+          ></nb-icon>
+          {{ variationUsersPercentage }}% vs prev. {{ getNumberOfDays() }} days</span
+        >
       </div>
       <div class="space icon-space">
-        <button nbButton [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)" shape="round">
+        <button
+          nbButton
+          [status]="getIconStatus(beforeCurrentFilterNbUsers, currentFilterNbUsers)"
+          shape="round"
+        >
           <nb-icon [icon]="getBigIcon(beforeCurrentFilterNbUsers, currentFilterNbUsers)"></nb-icon>
         </button>
       </div>
@@ -80,51 +126,100 @@
   </div>
 
   <div class="space graph-list">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.activity.messagesAll"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByTypeData"
+          title="Messages"
+          [chartPreferences]="userPreferences"
+          [isLoading]="messagesByTypeLoading"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.activity.users"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="activeUsersData"
+          title="Users (Dialogs)"
+          [chartPreferences]="userPreferences"
+          [isLoading]="activeUsersLoading"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.activity.messagesByDays"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByDaysData"
+          title="Messages by days in calendar"
+          [chartPreferences]="userPreferences"
+          type="Calendar"
+          isMultiChart="false"
+          [isLoading]="messagesByDaysLoading"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.activity.messagesByStory"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByStoryData"
+          title="Messages by Story"
+          [chartPreferences]="userPreferences"
+          [isLoading]="messagesByStoryLoading"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.activity.messagesByIntent"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByIntentData"
+          title="Messages by Intent"
+          [chartPreferences]="userPreferences"
+          [isLoading]="messagesByIntentLoading"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
 
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.messagesAll">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.activity.messagesByConfiguration"
+    >
       <nb-card-body>
-        <tock-chart [data]="messagesByTypeData" title="Messages" [chartPreferences]="userPreferences"
-                    [isLoading]="messagesByTypeLoading"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.users">
-      <nb-card-body>
-        <tock-chart [data]="activeUsersData" title="Users (Dialogs)" [chartPreferences]="userPreferences"
-                    [isLoading]="activeUsersLoading"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.messagesByDays">
-      <nb-card-body>
-        <tock-chart [data]="messagesByDaysData" title="Messages by days in calendar" [chartPreferences]="userPreferences" type="Calendar" isMultiChart="false"
-                    [isLoading]="messagesByDaysLoading"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.messagesByStory">
-      <nb-card-body>
-        <tock-chart [data]="messagesByStoryData" title="Messages by Story" [chartPreferences]="userPreferences"
-                    [isLoading]="messagesByStoryLoading"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.messagesByIntent">
-      <nb-card-body>
-        <tock-chart [data]="messagesByIntentData" title="Messages by Intent" [chartPreferences]="userPreferences"
-                    [isLoading]="messagesByIntentLoading"></tock-chart>
+        <tock-chart
+          [data]="messagesByConfigurationData"
+          title="Messages by Configuration"
+          [chartPreferences]="userPreferences"
+          [isLoading]="messagesByConfigurationLoading"
+        ></tock-chart>
       </nb-card-body>
     </nb-card>
 
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.messagesByConfiguration">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.activity.messagesByConnector"
+    >
       <nb-card-body>
-        <tock-chart [data]="messagesByConfigurationData" title="Messages by Configuration" [chartPreferences]="userPreferences"
-                    [isLoading]="messagesByConfigurationLoading"></tock-chart>
+        <tock-chart
+          [data]="messagesByConnectorData"
+          title="Messages by Connector Type"
+          [chartPreferences]="userPreferences"
+          [isLoading]="messagesByConnectorLoading"
+        ></tock-chart>
       </nb-card-body>
     </nb-card>
-
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.activity.messagesByConnector">
-      <nb-card-body>
-        <tock-chart [data]="messagesByConnectorData" title="Messages by Connector Type" [chartPreferences]="userPreferences"
-                    [isLoading]="messagesByConnectorLoading"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-
   </div>
 </div>

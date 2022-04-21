@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   AnswerConfigurationType,
   AnswerContainer,
@@ -22,14 +22,14 @@ import {
   ScriptAnswerVersionedConfiguration,
   SimpleAnswerConfiguration
 } from '../model/story';
-import {BotService} from '../bot-service';
-import {MatDialog} from '@angular/material/dialog';
-import {MatRadioChange} from '@angular/material/radio';
-import {StateService} from '../../core-nlp/state.service';
-import {AnswerDialogComponent} from './answer-dialog.component';
-import {AnswerController} from './controller';
-import {BotSharedService} from '../../shared/bot-shared.service';
-import {DialogService} from '../../core-nlp/dialog.service';
+import { BotService } from '../bot-service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatRadioChange } from '@angular/material/radio';
+import { StateService } from '../../core-nlp/state.service';
+import { AnswerDialogComponent } from './answer-dialog.component';
+import { AnswerController } from './controller';
+import { BotSharedService } from '../../shared/bot-shared.service';
+import { DialogService } from '../../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-answer',
@@ -37,7 +37,6 @@ import {DialogService} from '../../core-nlp/dialog.service';
   styleUrls: ['./answer.component.css']
 })
 export class AnswerComponent implements OnInit {
-
   @Input()
   answer: AnswerContainer;
 
@@ -59,12 +58,13 @@ export class AnswerComponent implements OnInit {
   @Input()
   wide = false;
 
-  constructor(private state: StateService,
-              private bot: BotService,
-              private dialog: DialogService,
-              private matDialog: MatDialog,
-              public shared: BotSharedService) {
-  }
+  constructor(
+    private state: StateService,
+    private bot: BotService,
+    private dialog: DialogService,
+    private matDialog: MatDialog,
+    public shared: BotSharedService
+  ) {}
 
   ngOnInit(): void {
     if (!this.answer.currentAnswer()) {
@@ -73,18 +73,13 @@ export class AnswerComponent implements OnInit {
   }
 
   editAnswer() {
-    this.dialog.open(
-      this.matDialog,
-      AnswerDialogComponent,
-      {
-        data:
-          {
-            answer: this.answer,
-            create: this.create,
-            answerLabel: this.answerLabel
-          }
+    this.dialog.open(this.matDialog, AnswerDialogComponent, {
+      data: {
+        answer: this.answer,
+        create: this.create,
+        answerLabel: this.answerLabel
       }
-    );
+    });
   }
 
   changeType(event: MatRadioChange) {
@@ -101,9 +96,12 @@ export class AnswerComponent implements OnInit {
       }
     } else if (value === AnswerConfigurationType.script) {
       if (!this.answer.scriptAnswer()) {
-        const s = 'import ai.tock.bot.definition.story\n' +
+        const s =
+          'import ai.tock.bot.definition.story\n' +
           '\n' +
-          'val s = story("' + this.answer.containerId() + '") { \n' +
+          'val s = story("' +
+          this.answer.containerId() +
+          '") { \n' +
           '           end("Hello World! :)")\n' +
           '}';
         const script = new ScriptAnswerVersionedConfiguration(s);
@@ -111,6 +109,4 @@ export class AnswerComponent implements OnInit {
       }
     }
   }
-
 }
-

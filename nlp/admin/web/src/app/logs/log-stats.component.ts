@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
-import {QualityService} from "../quality-nlp/quality.service";
-import {StateService} from "../core-nlp/state.service";
-import {LogStatsQuery} from "../model/nlp";
-import {Subscription} from "rxjs";
-import {formatStatDate} from "../model/commons";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { QualityService } from '../quality-nlp/quality.service';
+import { StateService } from '../core-nlp/state.service';
+import { LogStatsQuery } from '../model/nlp';
+import { Subscription } from 'rxjs';
+import { formatStatDate } from '../model/commons';
 
 @Component({
   selector: 'tock-log-stats',
@@ -34,17 +34,16 @@ export class LogStatsComponent implements OnInit, OnDestroy {
   public statsChartOptions: any;
   public durationChartOptions: any;
   public lineChartType: string = 'line';
-  public intent: string = "";
+  public intent: string = '';
   public nodata: boolean = false;
   onlyCurrentLocale: boolean = false;
   private subscription: Subscription;
 
-  constructor(public state: StateService, private quality: QualityService) {
-  }
+  constructor(public state: StateService, private quality: QualityService) {}
 
   ngOnInit(): void {
     this.search();
-    this.subscription = this.state.configurationChange.subscribe(_ => this.search());
+    this.subscription = this.state.configurationChange.subscribe((_) => this.search());
   }
 
   ngOnDestroy(): void {
@@ -52,16 +51,19 @@ export class LogStatsComponent implements OnInit, OnDestroy {
   }
 
   search(): void {
-    let i = this.intent === "_all_" || this.intent === "" ? null : this.intent;
-    this.quality.logStats(
-      new LogStatsQuery(
-        this.state.currentApplication.namespace,
-        this.state.currentApplication.name,
-        this.state.currentLocale,
-        i,
-        null,
-        this.onlyCurrentLocale))
-      .subscribe(result => {
+    let i = this.intent === '_all_' || this.intent === '' ? null : this.intent;
+    this.quality
+      .logStats(
+        new LogStatsQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          i,
+          null,
+          this.onlyCurrentLocale
+        )
+      )
+      .subscribe((result) => {
         if (result.length === 0) {
           this.nodata = true;
         } else {
@@ -73,16 +75,16 @@ export class LogStatsComponent implements OnInit, OnDestroy {
 
           this.buildDurationChart(result);
         }
-      })
+      });
   }
 
   buildStatsChart(result) {
-    const countData = result.map(p => {
-      return [p.day, p.count]
+    const countData = result.map((p) => {
+      return [p.day, p.count];
     });
 
-    const errorData = result.map(p => {
-      return [p.day, p.error]
+    const errorData = result.map((p) => {
+      return [p.day, p.error];
     });
     this.statsChartOptions = {
       tooltip: {
@@ -97,7 +99,7 @@ export class LogStatsComponent implements OnInit, OnDestroy {
       legend: {
         data: ['Calls', 'Errors'],
         textStyle: {
-          color: '#8f9bb3',
+          color: '#8f9bb3'
         }
       },
       color: ['#0095ff', '#ff3d71'],
@@ -127,15 +129,15 @@ export class LogStatsComponent implements OnInit, OnDestroy {
           data: errorData
         }
       ]
-    }
+    };
   }
 
   buildProbabilityChart(result) {
-    const intentsData = result.map(p => {
+    const intentsData = result.map((p) => {
       return [p.day, Math.round(10000 * p.averageIntentProbability) / 100];
     });
 
-    const entitiesData = result.map(p => {
+    const entitiesData = result.map((p) => {
       return [p.day, Math.round(10000 * p.averageEntitiesProbability) / 100];
     });
     this.probabilityChartOptions = {
@@ -151,15 +153,15 @@ export class LogStatsComponent implements OnInit, OnDestroy {
       legend: {
         data: ['Intent average probability', 'Entity average probability'],
         textStyle: {
-          color: '#8f9bb3',
+          color: '#8f9bb3'
         }
       },
       color: ['#ff3d71', '#0095ff'],
       yAxis: {
         axisLabel: {
-          formatter: (function (value) {
+          formatter: function (value) {
             return value + '%';
-          })
+          }
         }
       },
       xAxis: {
@@ -185,11 +187,11 @@ export class LogStatsComponent implements OnInit, OnDestroy {
           data: entitiesData
         }
       ]
-    }
+    };
   }
 
   buildDurationChart(result) {
-    const durationData = result.map(p => {
+    const durationData = result.map((p) => {
       return [p.day, Math.round(10000 * p.averageDuration) / 100];
     });
     this.durationChartOptions = {
@@ -205,15 +207,15 @@ export class LogStatsComponent implements OnInit, OnDestroy {
       legend: {
         data: ['Average call duration'],
         textStyle: {
-          color: '#8f9bb3',
+          color: '#8f9bb3'
         }
       },
       color: ['#0095ff'],
       yAxis: {
         axisLabel: {
-          formatter: (function (value) {
+          formatter: function (value) {
             return value + 'ms';
-          })
+          }
         }
       },
       xAxis: {
@@ -232,6 +234,6 @@ export class LogStatsComponent implements OnInit, OnDestroy {
           data: durationData
         }
       ]
-    }
+    };
   }
 }

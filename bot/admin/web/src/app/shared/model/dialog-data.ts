@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-import {AttachmentType, ConnectorType, EventType, UserInterfaceType} from "../../core/model/configuration";
-import {JsonUtils} from "../../model/commons";
-import {ClassifiedEntity} from "../../model/nlp";
-import {IntentName} from "../../bot/model/story";
+import {
+  AttachmentType,
+  ConnectorType,
+  EventType,
+  UserInterfaceType
+} from '../../core/model/configuration';
+import { JsonUtils } from '../../model/commons';
+import { ClassifiedEntity } from '../../model/nlp';
+import { IntentName } from '../../bot/model/story';
 
 export class DialogReport {
-
   displayActions: boolean;
 
-  constructor(public actions: ActionReport[],
-              public id: string,
-              public obfuscated: boolean = false) {
-  }
+  constructor(
+    public actions: ActionReport[],
+    public id: string,
+    public obfuscated: boolean = false
+  ) {}
 
   static fromJSON(json?: any): DialogReport {
     const value = Object.create(DialogReport.prototype);
@@ -44,14 +49,14 @@ export class DialogReport {
 }
 
 export class ActionReport {
-
-  constructor(public playerId: PlayerId,
-              public date: Date,
-              public message: BotMessage,
-              public id: String,
-              public test: boolean,
-              public connectorType?: ConnectorType) {
-  }
+  constructor(
+    public playerId: PlayerId,
+    public date: Date,
+    public message: BotMessage,
+    public id: String,
+    public test: boolean,
+    public connectorType?: ConnectorType
+  ) {}
 
   isBot(): boolean {
     return this.playerId.type == PlayerType.bot;
@@ -75,11 +80,9 @@ export class ActionReport {
 }
 
 export abstract class BotMessage {
-
   eventType: string;
 
-  constructor(public eventTypeEnum: EventType,
-              public delay: number) {
+  constructor(public eventTypeEnum: EventType, public delay: number) {
     this.eventType = EventType[eventTypeEnum];
   }
 
@@ -106,16 +109,16 @@ export abstract class BotMessage {
 
     const eventType = EventType[json.eventType as string];
     switch (eventType) {
-      case EventType.sentence :
+      case EventType.sentence:
         return Sentence.fromJSON(json);
-      case EventType.choice :
+      case EventType.choice:
         return Choice.fromJSON(json);
-      case EventType.attachment :
+      case EventType.attachment:
         return Attachment.fromJSON(json);
-      case EventType.location :
+      case EventType.location:
         return Location.fromJSON(json);
       default:
-        throw "unknown type : " + json.type
+        throw 'unknown type : ' + json.type;
     }
   }
 
@@ -125,10 +128,8 @@ export abstract class BotMessage {
 }
 
 export class Attachment extends BotMessage {
-  constructor(public delay: number,
-              public url: String,
-              public type: AttachmentType) {
-    super(EventType.attachment, delay)
+  constructor(public delay: number, public url: String, public type: AttachmentType) {
+    super(EventType.attachment, delay);
   }
 
   isImage(): boolean {
@@ -152,10 +153,12 @@ export class Attachment extends BotMessage {
 }
 
 export class Choice extends BotMessage {
-  constructor(public delay: number,
-              public intentName: String,
-              public parameters: Map<String, String>) {
-    super(EventType.choice, delay)
+  constructor(
+    public delay: number,
+    public intentName: String,
+    public parameters: Map<String, String>
+  ) {
+    super(EventType.choice, delay);
   }
 
   static fromJSON(json?: any): Choice {
@@ -175,9 +178,8 @@ export class Choice extends BotMessage {
 }
 
 export class Location extends BotMessage {
-  constructor(public delay: number,
-              public location?: UserLocation) {
-    super(EventType.location, delay)
+  constructor(public delay: number, public location?: UserLocation) {
+    super(EventType.location, delay);
   }
 
   static fromJSON(json?: any): Location {
@@ -197,9 +199,7 @@ export class Location extends BotMessage {
 }
 
 export class UserLocation {
-  constructor(public lat: number,
-              public lng: number) {
-  }
+  constructor(public lat: number, public lng: number) {}
 
   static fromJSON(json?: any): UserLocation {
     const value = Object.create(UserLocation.prototype);
@@ -211,11 +211,13 @@ export class UserLocation {
 }
 
 export class Sentence extends BotMessage {
-  constructor(public delay: number,
-              public messages: SentenceElement[],
-              public text?: String,
-              public userInterface?: UserInterfaceType) {
-    super(EventType.sentence, delay)
+  constructor(
+    public delay: number,
+    public messages: SentenceElement[],
+    public text?: String,
+    public userInterface?: UserInterfaceType
+  ) {
+    super(EventType.sentence, delay);
   }
 
   static fromJSON(json?: any): Sentence {
@@ -235,20 +237,23 @@ export class Sentence extends BotMessage {
 }
 
 export class SentenceElement {
-  constructor(public connectorType: ConnectorType,
-              public attachments: Attachment[],
-              public choices: Choice[],
-              public texts: Map<String, String>,
-              public locations: Location[],
-              public metadata: Map<String, String>,
-              public subElements: SentenceSubElement[],) {
-  }
+  constructor(
+    public connectorType: ConnectorType,
+    public attachments: Attachment[],
+    public choices: Choice[],
+    public texts: Map<String, String>,
+    public locations: Location[],
+    public metadata: Map<String, String>,
+    public subElements: SentenceSubElement[]
+  ) {}
 
   isEmptyElement(): boolean {
-    return this.attachments.length === 0
-      && this.choices.length === 0
-      && this.locations.length === 0
-      && this.texts.size === 0
+    return (
+      this.attachments.length === 0 &&
+      this.choices.length === 0 &&
+      this.locations.length === 0 &&
+      this.texts.size === 0
+    );
   }
 
   static fromJSON(json?: any): SentenceElement {
@@ -261,7 +266,7 @@ export class SentenceElement {
       texts: JsonUtils.jsonToMap(json.texts),
       metadata: JsonUtils.jsonToMap(json.metadata),
       locations: Location.fromJSONArray(json.locations),
-      subElements: SentenceSubElement.fromJSONArray(json.subElements),
+      subElements: SentenceSubElement.fromJSONArray(json.subElements)
     });
 
     return result;
@@ -273,13 +278,13 @@ export class SentenceElement {
 }
 
 export class SentenceSubElement {
-  constructor(public attachments: Attachment[],
-              public choices: Choice[],
-              public texts: Map<String, String>,
-              public metadata: Map<String, String>,
-              public locations: Location[]) {
-
-  }
+  constructor(
+    public attachments: Attachment[],
+    public choices: Choice[],
+    public texts: Map<String, String>,
+    public metadata: Map<String, String>,
+    public locations: Location[]
+  ) {}
 
   static fromJSON(json?: any): SentenceSubElement {
     const value = Object.create(SentenceSubElement.prototype);
@@ -301,43 +306,40 @@ export class SentenceSubElement {
 }
 
 export class PlayerId {
-
-  constructor(public id: string,
-              public type: PlayerType = PlayerType.user) {
-  }
+  constructor(public id: string, public type: PlayerType = PlayerType.user) {}
 
   static fromJSON(json?: any): PlayerId {
     const value = Object.create(PlayerId.prototype);
 
     const result = Object.assign(value, json, {
-      type: PlayerType[json.type],
+      type: PlayerType[json.type]
     });
 
     return result;
   }
-
 }
 
 export enum PlayerType {
-  user, bot
+  user,
+  bot
 }
 
 export class NlpCallStats {
-
-  constructor(public locale: string,
-              public intentResult: IntentName,
-              public entityResult: ClassifiedEntity[],
-              public entityResultAfterMerge: ClassifiedEntity[],
-              public nlpQuery: any,
-              public nlpResult: any) {
-  }
+  constructor(
+    public locale: string,
+    public intentResult: IntentName,
+    public entityResult: ClassifiedEntity[],
+    public entityResultAfterMerge: ClassifiedEntity[],
+    public nlpQuery: any,
+    public nlpResult: any
+  ) {}
 
   nlpQueryAsJson(): string {
     return JSON.stringify(this.nlpQuery, null, 2);
   }
 
   nlpResultAsJson(): string {
-    return this.nlpResult ? JSON.stringify(this.nlpResult, null, 2) : "none";
+    return this.nlpResult ? JSON.stringify(this.nlpResult, null, 2) : 'none';
   }
 
   static fromJSON(json?: any): NlpCallStats {
@@ -351,5 +353,4 @@ export class NlpCallStats {
 
     return result;
   }
-
 }

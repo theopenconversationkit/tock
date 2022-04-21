@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {UserRole} from "../model/auth";
+import { UserRole } from '../model/auth';
 
 export abstract class CoreConfig {
   /** url of the configuration menu */

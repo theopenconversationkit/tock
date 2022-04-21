@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import {ApplicationScopedQuery, Entry, isNullOrUndefined, JsonUtils, PaginatedQuery, SearchMark} from "./commons";
-import {User} from "./auth";
-import {StateService} from "../core-nlp/state.service";
+import {
+  ApplicationScopedQuery,
+  Entry,
+  isNullOrUndefined,
+  JsonUtils,
+  PaginatedQuery,
+  SearchMark
+} from './commons';
+import { User } from './auth';
+import { StateService } from '../core-nlp/state.service';
 
 export class EntityDefinition {
-
   public static sortEntities(entities: EntityDefinition[]): EntityDefinition[] {
     return entities.sort((e1, e2) => e1.role.localeCompare(e2.role));
   }
@@ -27,9 +33,7 @@ export class EntityDefinition {
   qualifiedRole: string;
   entityColor: string;
 
-  constructor(public entityTypeName: string,
-              public role: string,
-              public atStartOfDay?: Boolean) {
+  constructor(public entityTypeName: string, public role: string, public atStartOfDay?: Boolean) {
     this.qualifiedRole = qualifiedRole(entityTypeName, role);
     this.entityColor = entityColor(this.qualifiedRole);
   }
@@ -43,11 +47,10 @@ export class EntityDefinition {
   }
 
   isDateType(): boolean {
-    return this.entityTypeName === "duckling:datetime";
+    return this.entityTypeName === 'duckling:datetime';
   }
 
   static fromJSON(json?: any): EntityDefinition {
-
     const value = Object.create(EntityDefinition.prototype);
 
     const qualified = qualifiedRole(json.entityTypeName, json.role);
@@ -69,43 +72,42 @@ export class EntityDefinition {
 }
 
 export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public entity: EntityDefinition) {
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public entity: EntityDefinition
+  ) {
     super(namespace, applicationName, language);
   }
 }
 
 export class PredefinedValueQuery {
-
-  constructor(public entityTypeName: string,
-              public predefinedValue: string,
-              public locale: string,
-              public oldPredefinedValue?: string) {
-  }
-
+  constructor(
+    public entityTypeName: string,
+    public predefinedValue: string,
+    public locale: string,
+    public oldPredefinedValue?: string
+  ) {}
 }
 
 export class PredefinedLabelQuery {
-
-  constructor(public entityTypeName: string,
-              public predefinedValue: string,
-              public locale: string,
-              public label: string) {
-  }
-
+  constructor(
+    public entityTypeName: string,
+    public predefinedValue: string,
+    public locale: string,
+    public label: string
+  ) {}
 }
 
 export class EntityType {
-
-  constructor(public name: string,
-              public description: string,
-              public subEntities: EntityDefinition[],
-              public dictionary: boolean,
-              public obfuscated: boolean) {
-  }
+  constructor(
+    public name: string,
+    public description: string,
+    public subEntities: EntityDefinition[],
+    public dictionary: boolean,
+    public obfuscated: boolean
+  ) {}
 
   nameWithoutNamespace(namespace: string): string {
     return nameWithoutNamespace(namespace, this.name);
@@ -132,20 +134,26 @@ export class EntityType {
   }
 
   containsEntityRole(role: string): boolean {
-    return this.subEntities.some(e => e.role === role)
+    return this.subEntities.some((e) => e.role === role);
   }
 
   addEntity(entity: EntityDefinition) {
-    if (!this.subEntities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
+    if (
+      !this.subEntities.some(
+        (e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role
+      )
+    ) {
       this.subEntities.push(entity);
       EntityDefinition.sortEntities(this.subEntities);
     }
   }
 
   allSuperEntities(entityTypes: EntityType[], set: Set<EntityType>): Set<EntityType> {
-    const r = entityTypes.filter(e => !set.has(e) && e.subEntities.find(sub => sub.entityTypeName === this.name));
-    r.forEach(e => set.add(e));
-    r.forEach(e => e.allSuperEntities(entityTypes, set));
+    const r = entityTypes.filter(
+      (e) => !set.has(e) && e.subEntities.find((sub) => sub.entityTypeName === this.name)
+    );
+    r.forEach((e) => set.add(e));
+    r.forEach((e) => e.allSuperEntities(entityTypes, set));
     return set;
   }
 
@@ -154,17 +162,19 @@ export class EntityType {
   }
 
   containsSuperEntity(superEntity: EntityDefinition, entityTypes: EntityType[]): boolean {
-    return this.allSuperEntities(entityTypes, new Set()).has(entityTypes.find(e => e.name === superEntity.entityTypeName));
+    return this.allSuperEntities(entityTypes, new Set()).has(
+      entityTypes.find((e) => e.name === superEntity.entityTypeName)
+    );
   }
 
   static fromJSON(json?: any): EntityType {
     if (!json) {
-      return
+      return;
     }
     const value = Object.create(EntityType.prototype);
 
     const result = Object.assign(value, json, {
-      subEntities: EntityDefinition.fromJSONArray(json.subEntities),
+      subEntities: EntityDefinition.fromJSONArray(json.subEntities)
     });
     return result;
   }
@@ -175,24 +185,25 @@ export class EntityType {
 }
 
 export class Dictionary {
-
-  constructor(public namespace: string,
-              public entityName: string,
-              public values: PredefinedValue[],
-              public onlyValues: boolean,
-              public minDistance: number,
-              public textSearch: boolean) {
-  }
+  constructor(
+    public namespace: string,
+    public entityName: string,
+    public values: PredefinedValue[],
+    public onlyValues: boolean,
+    public minDistance: number,
+    public textSearch: boolean
+  ) {}
 
   static fromJSON(json?: any): Dictionary {
     if (!json) {
-      return
+      return;
     }
     const value = Object.create(Dictionary.prototype);
 
     const result = Object.assign(value, json, {
-      values: PredefinedValue.fromJSONArray(json.values)
-        .sort((a, b) => a.value.localeCompare(b.value))
+      values: PredefinedValue.fromJSONArray(json.values).sort((a, b) =>
+        a.value.localeCompare(b.value)
+      )
     });
 
     return result;
@@ -200,7 +211,6 @@ export class Dictionary {
 }
 
 export abstract class EntityContainer {
-
   private editedSubEntities: EntityWithSubEntities[];
 
   cleanupEditedSubEntities() {
@@ -209,14 +219,16 @@ export abstract class EntityContainer {
 
   getEditedSubEntities(): EntityWithSubEntities[] {
     if (!this.editedSubEntities) {
-      this.editedSubEntities =
-        this.getEntities()
-          .filter(e => e.subEntities.length !== 0)
-          .map(e => new EntityWithSubEntities(
-            this.getText().substring(e.start, e.end),
-            e,
-            this.rootEntity() ? this.rootEntity() : e)
-          );
+      this.editedSubEntities = this.getEntities()
+        .filter((e) => e.subEntities.length !== 0)
+        .map(
+          (e) =>
+            new EntityWithSubEntities(
+              this.getText().substring(e.start, e.end),
+              e,
+              this.rootEntity() ? this.rootEntity() : e
+            )
+        );
     }
     return this.editedSubEntities;
   }
@@ -227,30 +239,36 @@ export abstract class EntityContainer {
       this.editedSubEntities.splice(this.editedSubEntities.indexOf(e), 1);
       e = e.clone();
     } else {
-      e = new EntityWithSubEntities(this.getText().substring(entity.start, entity.end), entity, this.rootEntity() ? this.rootEntity() : entity);
+      e = new EntityWithSubEntities(
+        this.getText().substring(entity.start, entity.end),
+        entity,
+        this.rootEntity() ? this.rootEntity() : entity
+      );
     }
     this.editedSubEntities.push(e);
-    this.editedSubEntities.sort((e1, e2) => e1.start < e2.start ? -1 : (e1.start > e2.start ? 1 : 0))
+    this.editedSubEntities.sort((e1, e2) =>
+      e1.start < e2.start ? -1 : e1.start > e2.start ? 1 : 0
+    );
     return e;
   }
 
   findEditedSubEntities(entity: ClassifiedEntity): EntityWithSubEntities {
-    return this.getEditedSubEntities().find(e => e.start === entity.start);
+    return this.getEditedSubEntities().find((e) => e.start === entity.start);
   }
 
   rootEntity(): ClassifiedEntity {
     return null;
   }
 
-  abstract clone(): EntityContainer
+  abstract clone(): EntityContainer;
 
-  abstract getText(): string
+  abstract getText(): string;
 
-  abstract getEntities(): ClassifiedEntity[]
+  abstract getEntities(): ClassifiedEntity[];
 
-  abstract addEntity(e: ClassifiedEntity)
+  abstract addEntity(e: ClassifiedEntity);
 
-  abstract removeEntity(e: ClassifiedEntity)
+  abstract removeEntity(e: ClassifiedEntity);
 
   overlappedEntity(start: number, end: number): ClassifiedEntity {
     for (const e of this.getEntities()) {
@@ -274,11 +292,11 @@ export abstract class EntityContainer {
   }
 
   private removeTypeForValue(v) {
-    if (v.constructor.name === "Object") {
+    if (v.constructor.name === 'Object') {
       for (let property in v) {
         if (v.hasOwnProperty(property))
-          if (property === "@type") {
-            v["@type"] = undefined;
+          if (property === '@type') {
+            v['@type'] = undefined;
           } else {
             this.removeTypeForValue(v[property]);
           }
@@ -289,23 +307,23 @@ export abstract class EntityContainer {
   entityText(entity: ClassifiedEntity): string {
     return this.getText().substring(entity.start, entity.end);
   }
-
 }
 
 export class Intent {
+  public static readonly unknown = 'tock:unknown';
 
-  public static readonly unknown = "tock:unknown";
-
-  constructor(public name: string,
-              public namespace: string,
-              public entities: EntityDefinition[],
-              public applications: string[],
-              public mandatoryStates: string[],
-              public sharedIntents: string[],
-              public label?: string,
-              public description?: string,
-              public category?: string,
-              public _id?: string) {
+  constructor(
+    public name: string,
+    public namespace: string,
+    public entities: EntityDefinition[],
+    public applications: string[],
+    public mandatoryStates: string[],
+    public sharedIntents: string[],
+    public label?: string,
+    public description?: string,
+    public category?: string,
+    public _id?: string
+  ) {
     EntityDefinition.sortEntities(entities);
   }
 
@@ -322,19 +340,25 @@ export class Intent {
   }
 
   containsEntity(name: string, role: string): boolean {
-    return this.entities.some(e => e.entityTypeName === name && e.role === role)
+    return this.entities.some((e) => e.entityTypeName === name && e.role === role);
   }
 
   containsEntityRole(role: string): boolean {
-    return this.entities.some(e => e.role === role)
+    return this.entities.some((e) => e.role === role);
   }
 
   removeEntity(entity: EntityDefinition) {
-    this.entities = this.entities.filter(e => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role)
+    this.entities = this.entities.filter(
+      (e) => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role
+    );
   }
 
   addEntity(entity: EntityDefinition) {
-    if (!this.entities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
+    if (
+      !this.entities.some(
+        (e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role
+      )
+    ) {
       this.entities.push(entity);
       EntityDefinition.sortEntities(this.entities);
     }
@@ -343,9 +367,8 @@ export class Intent {
   static fromJSON(json: any): Intent {
     const value = Object.create(Intent.prototype);
     const result = Object.assign(value, json, {
-      entities: EntityDefinition.sortEntities(EntityDefinition.fromJSONArray(json.entities)),
+      entities: EntityDefinition.sortEntities(EntityDefinition.fromJSONArray(json.entities))
     });
-
 
     return result;
   }
@@ -356,31 +379,30 @@ export class Intent {
 }
 
 export class IntentsCategory {
-  constructor(public category: string,
-              public intents: Intent[]) {
-  }
+  constructor(public category: string, public intents: Intent[]) {}
 }
 
 export class Sentence extends EntityContainer {
-
   private intentLabel: string;
 
-  constructor(public text: string,
-              public language: string,
-              public applicationId: string,
-              public status: SentenceStatus,
-              public classification: Classification,
-              public creationDate: Date,
-              public updateDate: Date,
-              public forReview: boolean,
-              public reviewComment: string,
-              public qualifier: string,
-              public key?: string) {
-    super()
+  constructor(
+    public text: string,
+    public language: string,
+    public applicationId: string,
+    public status: SentenceStatus,
+    public classification: Classification,
+    public creationDate: Date,
+    public updateDate: Date,
+    public forReview: boolean,
+    public reviewComment: string,
+    public qualifier: string,
+    public key?: string
+  ) {
+    super();
   }
 
   notRetainedEntitiesContainer(): NotRetainedEntities {
-    return new NotRetainedEntities(this.text, this.classification.notRetainedEntities)
+    return new NotRetainedEntities(this.text, this.classification.notRetainedEntities);
   }
 
   getIntentLabel(state: StateService): string {
@@ -410,30 +432,30 @@ export class Sentence extends EntityContainer {
 
   statusDisplayed(): string {
     switch (this.status) {
-      case SentenceStatus.deleted :
-        return "Deleted";
-      case SentenceStatus.inbox :
-        return "Inbox";
-      case SentenceStatus.model :
-        return "Included in model";
-      case SentenceStatus.validated :
-        return "Validated";
+      case SentenceStatus.deleted:
+        return 'Deleted';
+      case SentenceStatus.inbox:
+        return 'Inbox';
+      case SentenceStatus.model:
+        return 'Included in model';
+      case SentenceStatus.validated:
+        return 'Validated';
     }
-    return "unknown";
+    return 'unknown';
   }
 
   statusColor(): string {
     switch (this.status) {
-      case SentenceStatus.deleted :
-        return "red";
-      case SentenceStatus.inbox :
-        return "lightblue";
-      case SentenceStatus.model :
-        return "#00d68f";
-      case SentenceStatus.validated :
-        return "mediumspringgreen ";
+      case SentenceStatus.deleted:
+        return 'red';
+      case SentenceStatus.inbox:
+        return 'lightblue';
+      case SentenceStatus.model:
+        return '#00d68f';
+      case SentenceStatus.validated:
+        return 'mediumspringgreen ';
     }
-    return "orange";
+    return 'orange';
   }
 
   clone(): Sentence {
@@ -448,7 +470,8 @@ export class Sentence extends EntityContainer {
       this.forReview,
       this.reviewComment,
       this.qualifier,
-      this.key);
+      this.key
+    );
   }
 
   static fromJSON(json?: any): Sentence {
@@ -457,14 +480,14 @@ export class Sentence extends EntityContainer {
     let v;
     if (json.value) {
       switch (json.value.type) {
-        case "DateEntityValue" :
+        case 'DateEntityValue':
           v = DateEntityValue.fromJSON(json.value);
           break;
-        case "DateIntervalEntityValue" :
+        case 'DateIntervalEntityValue':
           v = DateIntervalEntityValue.fromJSON(json.value);
           break;
         default:
-          v = json.value
+          v = json.value;
       }
     }
 
@@ -483,7 +506,6 @@ export class Sentence extends EntityContainer {
 }
 
 export class EntityWithSubEntities extends EntityContainer {
-
   qualifiedRole: string;
   entityColor: string;
   type: string;
@@ -533,11 +555,7 @@ export class EntityWithSubEntities extends EntityContainer {
   }
 
   clone(): EntityWithSubEntities {
-    return new EntityWithSubEntities(
-      this.text,
-      this.entity,
-      this.root
-    );
+    return new EntityWithSubEntities(this.text, this.entity, this.root);
   }
 
   getText(): string {
@@ -556,17 +574,14 @@ export class EntityWithSubEntities extends EntityContainer {
   removeEntity(e: ClassifiedEntity) {
     this.entity.subEntities.splice(this.entity.subEntities.indexOf(e, 0), 1);
   }
-
 }
 
 export class NotRetainedEntities extends EntityContainer {
-
   private withSubEntities: EntityWithSubEntities[];
   private intentLabel: string;
 
-  constructor(public text: string,
-              public notRetainedEntities: ClassifiedEntity[]) {
-    super()
+  constructor(public text: string, public notRetainedEntities: ClassifiedEntity[]) {
+    super();
   }
 
   getText(): string {
@@ -586,16 +601,12 @@ export class NotRetainedEntities extends EntityContainer {
   }
 
   clone(): NotRetainedEntities {
-    return new NotRetainedEntities(
-      this.text,
-      this.notRetainedEntities);
+    return new NotRetainedEntities(this.text, this.notRetainedEntities);
   }
 }
 
 export class DateEntityValue {
-  constructor(public date: Date, public grain: string) {
-
-  }
+  constructor(public date: Date, public grain: string) {}
 
   static fromJSON(json?: any): DateEntityValue {
     const value = Object.create(DateEntityValue.prototype);
@@ -606,9 +617,7 @@ export class DateEntityValue {
 }
 
 export class DateIntervalEntityValue {
-  constructor(public date: DateEntityValue, public toDate: DateEntityValue) {
-
-  }
+  constructor(public date: DateEntityValue, public toDate: DateEntityValue) {}
 
   static fromJSON(json?: any): DateIntervalEntityValue {
     const value = Object.create(DateIntervalEntityValue.prototype);
@@ -622,28 +631,28 @@ export class DateIntervalEntityValue {
 }
 
 export class Classification {
-
   public displayOtherIntents: boolean;
 
-  constructor(public intentId: string,
-              public entities: ClassifiedEntity[],
-              public intentProbability: number,
-              public entitiesProbability: number,
-              public otherIntentsProbabilities: Map<string, number>,
-              public notRetainedEntities: ClassifiedEntity[],
-              /**
-               * The last usage date (for a real user) if any.
-               */
-              public lastUsage?: Date,
-              /**
-               * The total number of uses of this sentence.
-               */
-              public usageCount?: number,
-              /**
-               * The total number of unknown generated by this sentence.
-               */
-              public unknownCount?: number) {
-  }
+  constructor(
+    public intentId: string,
+    public entities: ClassifiedEntity[],
+    public intentProbability: number,
+    public entitiesProbability: number,
+    public otherIntentsProbabilities: Map<string, number>,
+    public notRetainedEntities: ClassifiedEntity[],
+    /**
+     * The last usage date (for a real user) if any.
+     */
+    public lastUsage?: Date,
+    /**
+     * The total number of uses of this sentence.
+     */
+    public usageCount?: number,
+    /**
+     * The total number of unknown generated by this sentence.
+     */
+    public unknownCount?: number
+  ) {}
 
   hasIntentProbability(): boolean {
     return this.intentProbability && !isNaN(this.intentProbability);
@@ -663,7 +672,8 @@ export class Classification {
       this.notRetainedEntities,
       this.lastUsage,
       this.usageCount,
-      this.unknownCount);
+      this.unknownCount
+    );
   }
 
   static fromJSON(json?: any): Classification {
@@ -676,23 +686,23 @@ export class Classification {
 
     return result;
   }
-
 }
 
 export class ClassifiedEntity {
-
   qualifiedRole: string;
   entityColor: string;
 
-  constructor(public type: string,
-              public role: string,
-              public start: number,
-              public end: number,
-              public subEntities: ClassifiedEntity[],
-              public value?: any,
-              public probability?: number) {
+  constructor(
+    public type: string,
+    public role: string,
+    public start: number,
+    public end: number,
+    public subEntities: ClassifiedEntity[],
+    public value?: any,
+    public probability?: number
+  ) {
     this.qualifiedRole = qualifiedRole(type, role);
-    this.entityColor = entityColor(this.qualifiedRole)
+    this.entityColor = entityColor(this.qualifiedRole);
   }
 
   hasProbability(): boolean {
@@ -707,12 +717,12 @@ export class ClassifiedEntity {
     if (entityTypeName === this.type) {
       return true;
     }
-    return this.subEntities.find(e => e.containsEntityType(entityTypeName)) !== undefined;
+    return this.subEntities.find((e) => e.containsEntityType(entityTypeName)) !== undefined;
   }
 
   static sort(entityA: ClassifiedEntity, entityB: ClassifiedEntity): number {
     if (entityA.start < entityB.start) {
-      return -1
+      return -1;
     } else if (entityA.start > entityB.start) {
       return 1;
     }
@@ -736,16 +746,17 @@ export class ClassifiedEntity {
   static fromJSONArray(json?: Array<any>): ClassifiedEntity[] {
     return json ? json.map(ClassifiedEntity.fromJSON) : [];
   }
-
 }
 
 export enum SentenceStatus {
-  inbox, validated, model, deleted
+  inbox,
+  validated,
+  model,
+  deleted
 }
 
 export class NlpEngineType {
-  constructor(public name: string) {
-  }
+  constructor(public name: string) {}
 
   static fromJSON(json: any): NlpEngineType {
     const value = Object.create(NlpEngineType.prototype);
@@ -759,58 +770,59 @@ export class NlpEngineType {
   }
 }
 
-
 export class ParseQuery extends ApplicationScopedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public query: string,
-              public checkExistingQuery: boolean,
-              public state?: string,) {
-    super(namespace, applicationName, language)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public query: string,
+    public checkExistingQuery: boolean,
+    public state?: string
+  ) {
+    super(namespace, applicationName, language);
   }
 }
 
 export class SearchQuery extends PaginatedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public start: number,
-              public size: number,
-              public searchMark?: SearchMark,
-              public search?: string,
-              public intentId?: string,
-              public status?: SentenceStatus[],
-              public entityType?: string,
-              public entityRolesToInclude: string[] = [],
-              public entityRolesToExclude: string[] = [],
-              public modifiedAfter?: Date,
-              public modifiedBefore?: Date,
-              public sort?: Entry<string, boolean>[],
-              public onlyToReview: boolean = false,
-              public searchSubEntities: boolean = false,
-              public user?:string,
-              public allButUser?:string,
-              public maxIntentProbability: number = 1,
-              public minIntentProbability: number = 0) {
-    super(namespace, applicationName, language, start, size, searchMark, sort)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public start: number,
+    public size: number,
+    public searchMark?: SearchMark,
+    public search?: string,
+    public intentId?: string,
+    public status?: SentenceStatus[],
+    public entityType?: string,
+    public entityRolesToInclude: string[] = [],
+    public entityRolesToExclude: string[] = [],
+    public modifiedAfter?: Date,
+    public modifiedBefore?: Date,
+    public sort?: Entry<string, boolean>[],
+    public onlyToReview: boolean = false,
+    public searchSubEntities: boolean = false,
+    public user?: string,
+    public allButUser?: string,
+    public maxIntentProbability: number = 1,
+    public minIntentProbability: number = 0
+  ) {
+    super(namespace, applicationName, language, start, size, searchMark, sort);
   }
 }
 
 export class SentencesTextQuery extends ApplicationScopedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public texts?: string[]) {
-    super(namespace, applicationName, language)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public texts?: string[]
+  ) {
+    super(namespace, applicationName, language);
   }
 }
 
 export interface PaginatedResult<T> {
-
   rows: T[];
   total: number;
   start: number;
@@ -818,18 +830,18 @@ export interface PaginatedResult<T> {
 }
 
 export class SentencesResult implements PaginatedResult<Sentence> {
-
-  constructor(public rows: Sentence[],
-              public total: number,
-              public start: number,
-              public end: number) {
-  }
+  constructor(
+    public rows: Sentence[],
+    public total: number,
+    public start: number,
+    public end: number
+  ) {}
 
   static fromJSON(json?: any): SentencesResult {
     const value = Object.create(SentencesResult.prototype);
 
     const result = Object.assign(value, json, {
-      rows: Sentence.fromJSONArray(json.sentences),
+      rows: Sentence.fromJSONArray(json.sentences)
     });
 
     return result;
@@ -837,32 +849,28 @@ export class SentencesResult implements PaginatedResult<Sentence> {
 }
 
 export class LogsQuery extends PaginatedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public start: number,
-              public size: number,
-              public searchMark?: SearchMark,
-              public search?: string,
-              public test?: boolean) {
-    super(namespace, applicationName, language, start, size, searchMark)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public start: number,
+    public size: number,
+    public searchMark?: SearchMark,
+    public search?: string,
+    public test?: boolean
+  ) {
+    super(namespace, applicationName, language, start, size, searchMark);
   }
 }
 
 export class LogsResult implements PaginatedResult<Log> {
-
-  constructor(public rows: Log[],
-              public total: number,
-              public start: number,
-              public end: number) {
-  }
+  constructor(public rows: Log[], public total: number, public start: number, public end: number) {}
 
   static fromJSON(json?: any): LogsResult {
     const value = Object.create(LogsResult.prototype);
 
     const result = Object.assign(value, json, {
-      rows: Log.fromJSONArray(json.logs),
+      rows: Log.fromJSONArray(json.logs)
     });
 
     return result;
@@ -870,16 +878,16 @@ export class LogsResult implements PaginatedResult<Log> {
 }
 
 export class Log {
-
-  constructor(public dialogId: string,
-              public intent: string,
-              public request: any,
-              public durationInMS: number,
-              public error: boolean,
-              public date: Date,
-              public sentence?: Sentence,
-              public response?: any) {
-  }
+  constructor(
+    public dialogId: string,
+    public intent: string,
+    public request: any,
+    public durationInMS: number,
+    public error: boolean,
+    public date: Date,
+    public sentence?: Sentence,
+    public response?: any
+  ) {}
 
   textRequest(): string {
     return this.request.queries[0];
@@ -890,14 +898,14 @@ export class Log {
   }
 
   responseDetails(): string {
-    return this.response ? JSON.stringify(this.response, null, 2) : "none";
+    return this.response ? JSON.stringify(this.response, null, 2) : 'none';
   }
 
   static fromJSON(json?: any): Log {
     const value = Object.create(Log.prototype);
 
     const result = Object.assign(value, json, {
-      sentence: json.sentence ? Sentence.fromJSON(json.sentence) : null,
+      sentence: json.sentence ? Sentence.fromJSON(json.sentence) : null
     });
 
     return result;
@@ -909,27 +917,27 @@ export class Log {
 }
 
 export class LogStatsQuery extends ApplicationScopedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public intent?: string,
-              public minOccurrences?: number,
-              public onlyCurrentLocale?: boolean) {
-    super(namespace, applicationName, language)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public intent?: string,
+    public minOccurrences?: number,
+    public onlyCurrentLocale?: boolean
+  ) {
+    super(namespace, applicationName, language);
   }
 }
 
 export class LogStat {
-
-  constructor(public day: Date,
-              public error: number,
-              public count: number,
-              public averageDuration: number,
-              public averageIntentProbability: number,
-              public averageEntitiesProbability: number) {
-
-  }
+  constructor(
+    public day: Date,
+    public error: number,
+    public count: number,
+    public averageDuration: number,
+    public averageIntentProbability: number,
+    public averageEntitiesProbability: number
+  ) {}
 
   static fromJSON(json?: any): LogStat {
     const value = Object.create(LogStat.prototype);
@@ -942,14 +950,10 @@ export class LogStat {
   static fromJSONArray(json?: Array<any>): LogStat[] {
     return json ? json.map(LogStat.fromJSON) : [];
   }
-
 }
 
 export class IntentTestErrorQueryResult {
-
-  constructor(public total: number,
-              public data: IntentTestError[]) {
-  }
+  constructor(public total: number, public data: IntentTestError[]) {}
 
   static fromJSON(json?: any): IntentTestErrorQueryResult {
     const value = Object.create(IntentTestErrorQueryResult.prototype);
@@ -963,15 +967,15 @@ export class IntentTestErrorQueryResult {
 }
 
 export class IntentTestError {
-
-  constructor(public sentence: Sentence,
-              public currentIntent: string,
-              public wrongIntent: string,
-              public count: number,
-              public averageErrorProbability: number,
-              public total: number,
-              public firstDetectionDate: Date) {
-  }
+  constructor(
+    public sentence: Sentence,
+    public currentIntent: string,
+    public wrongIntent: string,
+    public count: number,
+    public averageErrorProbability: number,
+    public total: number,
+    public firstDetectionDate: Date
+  ) {}
 
   static fromJSON(json?: any): IntentTestError {
     const value = Object.create(IntentTestError.prototype);
@@ -986,14 +990,10 @@ export class IntentTestError {
   static fromJSONArray(json?: Array<any>): IntentTestError[] {
     return json ? json.map(IntentTestError.fromJSON) : [];
   }
-
 }
 
 export class EntityTestErrorQueryResult {
-
-  constructor(public total: number,
-              public data: EntityTestError[]) {
-  }
+  constructor(public total: number, public data: EntityTestError[]) {}
 
   static fromJSON(json?: any): EntityTestErrorQueryResult {
     const value = Object.create(EntityTestErrorQueryResult.prototype);
@@ -1007,14 +1007,14 @@ export class EntityTestErrorQueryResult {
 }
 
 export class EntityTestError {
-
-  constructor(public originalSentence: Sentence,
-              public sentence: Sentence,
-              public count: number,
-              public averageErrorProbability: number,
-              public total: number,
-              public firstDetectionDate: Date) {
-  }
+  constructor(
+    public originalSentence: Sentence,
+    public sentence: Sentence,
+    public count: number,
+    public averageErrorProbability: number,
+    public total: number,
+    public firstDetectionDate: Date
+  ) {}
 
   static fromJSON(json?: any): EntityTestError {
     const value = Object.create(EntityTestError.prototype);
@@ -1030,16 +1030,24 @@ export class EntityTestError {
   static fromJSONArray(json?: Array<any>): EntityTestError[] {
     return json ? json.map(EntityTestError.fromJSON) : [];
   }
-
 }
 
 export class TestErrorQuery extends PaginatedQuery {
-
-  static createWithoutSize(stateService: StateService, intentName: string, after?: Date): TestErrorQuery {
-    return TestErrorQuery.create(stateService, 0, undefined, intentName, after)
+  static createWithoutSize(
+    stateService: StateService,
+    intentName: string,
+    after?: Date
+  ): TestErrorQuery {
+    return TestErrorQuery.create(stateService, 0, undefined, intentName, after);
   }
 
-  static create(stateService: StateService, start: number, size?: number, intentName?: string, after?: Date): TestErrorQuery {
+  static create(
+    stateService: StateService,
+    start: number,
+    size?: number,
+    intentName?: string,
+    after?: Date
+  ): TestErrorQuery {
     const p = stateService.createPaginatedQuery(start, size);
     return new TestErrorQuery(
       p.namespace,
@@ -1049,32 +1057,33 @@ export class TestErrorQuery extends PaginatedQuery {
       p.size,
       intentName,
       after
-    )
+    );
   }
 
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public start: number,
-              public size: number,
-              public intentName?: string,
-              public after?: Date) {
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public start: number,
+    public size: number,
+    public intentName?: string,
+    public after?: Date
+  ) {
     super(namespace, applicationName, language, start, size);
   }
-
 }
 
 export class TestBuildStat {
-
-  constructor(public errors: number,
-              public nbSentencesInModel: number,
-              public nbSentencesTested: number,
-              public buildModelDuration: any,
-              public testModelDuration: any,
-              public intentErrors: number,
-              public entityErrors: number,
-              public date: Date) {
-  }
+  constructor(
+    public errors: number,
+    public nbSentencesInModel: number,
+    public nbSentencesTested: number,
+    public buildModelDuration: any,
+    public testModelDuration: any,
+    public intentErrors: number,
+    public entityErrors: number,
+    public date: Date
+  ) {}
 
   static fromJSON(json?: any): TestBuildStat {
     const value = Object.create(TestBuildStat.prototype);
@@ -1087,16 +1096,15 @@ export class TestBuildStat {
   static fromJSONArray(json?: Array<any>): TestBuildStat[] {
     return json ? json.map(TestBuildStat.fromJSON) : [];
   }
-
 }
 
 export class IntentQA {
-
-  constructor(public intent1: string,
-              public intent2: string,
-              public occurrences: number,
-              public average: number) {
-  }
+  constructor(
+    public intent1: string,
+    public intent2: string,
+    public occurrences: number,
+    public average: number
+  ) {}
 
   static fromJSON(json?: any): IntentQA {
     const value = Object.create(IntentQA.prototype);
@@ -1110,23 +1118,23 @@ export class IntentQA {
 }
 
 export class UpdateSentencesQuery extends ApplicationScopedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public selectedSentences: Sentence[],
-              public searchQuery?: SearchQuery,
-              public newIntentId?: string,
-              public oldEntity?: EntityDefinition,
-              public newEntity?: EntityDefinition,
-              public newStatus?: SentenceStatus) {
-    super(namespace, applicationName, language)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public selectedSentences: Sentence[],
+    public searchQuery?: SearchQuery,
+    public newIntentId?: string,
+    public oldEntity?: EntityDefinition,
+    public newEntity?: EntityDefinition,
+    public newStatus?: SentenceStatus
+  ) {
+    super(namespace, applicationName, language);
   }
 }
 
 export class UpdateSentencesReport {
-  constructor(public nbUpdates: number) {
-  }
+  constructor(public nbUpdates: number) {}
 
   static fromJSON(json?: any): UpdateSentencesReport {
     const value = Object.create(UpdateSentencesReport.prototype);
@@ -1138,20 +1146,20 @@ export class UpdateSentencesReport {
 }
 
 export class TranslateSentencesQuery extends ApplicationScopedQuery {
-
-  constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public targetLanguage: string,
-              public selectedSentences: Sentence[],
-              public searchQuery?: SearchQuery) {
-    super(namespace, applicationName, language)
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public targetLanguage: string,
+    public selectedSentences: Sentence[],
+    public searchQuery?: SearchQuery
+  ) {
+    super(namespace, applicationName, language);
   }
 }
 
 export class TranslateReport {
-  constructor(public nbTranslations: number) {
-  }
+  constructor(public nbTranslations: number) {}
 
   static fromJSON(json?: any): TranslateReport {
     const value = Object.create(TranslateReport.prototype);
@@ -1163,10 +1171,7 @@ export class TranslateReport {
 }
 
 export class PredefinedValue {
-
-  constructor(public value: string,
-              public labels: Map<string, string[]>) {
-  }
+  constructor(public value: string, public labels: Map<string, string[]>) {}
 
   static fromJSON(json?: any): PredefinedValue {
     if (!json) {
@@ -1185,7 +1190,6 @@ export class PredefinedValue {
   static fromJSONArray(json?: Array<any>): PredefinedValue[] {
     return json ? json.map(PredefinedValue.fromJSON) : [];
   }
-
 }
 
 function hashCode(str: string): number {
@@ -1197,11 +1201,9 @@ function hashCode(str: string): number {
 }
 
 function intToRGB(i: number): string {
-  const c = (i & 0x00FFFFFF)
-    .toString(16)
-    .toUpperCase();
+  const c = (i & 0x00ffffff).toString(16).toUpperCase();
 
-  return "00000".substring(0, 6 - c.length) + c;
+  return '00000'.substring(0, 6 - c.length) + c;
 }
 
 function increaseBrightness(initialHex: string, percent: number): string {
@@ -1213,15 +1215,16 @@ function increaseBrightness(initialHex: string, percent: number): string {
     hex = hex.replace(/(.)/g, '$1$1');
   }
 
-  const
-    r = parseInt(hex.substr(0, 2), 16),
+  const r = parseInt(hex.substr(0, 2), 16),
     g = parseInt(hex.substr(2, 2), 16),
     b = parseInt(hex.substr(4, 2), 16);
 
-  return '#' +
-    ((0 | (1 << 8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
-    ((0 | (1 << 8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
-    ((0 | (1 << 8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
+  return (
+    '#' +
+    (0 | ((1 << 8) + r + ((256 - r) * percent) / 100)).toString(16).substr(1) +
+    (0 | ((1 << 8) + g + ((256 - g) * percent) / 100)).toString(16).substr(1) +
+    (0 | ((1 << 8) + b + ((256 - b) * percent) / 100)).toString(16).substr(1)
+  );
 }
 
 export function entityColor(str: string): string {
@@ -1229,7 +1232,7 @@ export function entityColor(str: string): string {
 }
 
 export function qualifiedRole(type: string, role: string): string {
-  const split = type.split(":");
+  const split = type.split(':');
   if (role === split[1]) {
     return role;
   } else if (role.length == 0) {
@@ -1240,7 +1243,7 @@ export function qualifiedRole(type: string, role: string): string {
 }
 
 export function qualifiedName(user: User, type: string, role: string): string {
-  const split = type.split(":");
+  const split = type.split(':');
   if (split[0] !== user.organization) {
     return `[${split[0]}]${qualifiedRole(type, role)}`;
   } else {
@@ -1252,8 +1255,8 @@ export function qualifiedNameWithoutRole(user: User, type: string): string {
   return nameWithoutNamespace(user.organization, type);
 }
 
-export function nameWithoutNamespace(namespace:string, type: string): string {
-  const split = type.split(":");
+export function nameWithoutNamespace(namespace: string, type: string): string {
+  const split = type.split(':');
   if (split[0] !== namespace) {
     return type;
   } else {
@@ -1262,38 +1265,36 @@ export function nameWithoutNamespace(namespace:string, type: string): string {
 }
 
 export function entityNameFromQualifiedName(qualifiedName: string): string {
-  return qualifiedName ? qualifiedName.split(":")[1] : "error";
+  return qualifiedName ? qualifiedName.split(':')[1] : 'error';
 }
 
 export function namespaceFromQualifiedName(qualifiedName: string): string {
-  return qualifiedName ? qualifiedName.split(":")[0] : "error";
+  return qualifiedName ? qualifiedName.split(':')[0] : 'error';
 }
 
 export function nameFromQualifiedName(qualifiedName: string): string {
-  return qualifiedName ? qualifiedName.split(":")[1] : "error";
+  return qualifiedName ? qualifiedName.split(':')[1] : 'error';
 }
 
-export function getRoles(intents: Intent[], entityTypes: EntityType[], entityType?: string): string[] {
+export function getRoles(
+  intents: Intent[],
+  entityTypes: EntityType[],
+  entityType?: string
+): string[] {
   const roles = new Set<string>();
-  intents.forEach(
-    intent => intent.entities.forEach(
-      entity => {
-        if (!entityType || entityType.length === 0 || entity.entityTypeName === entityType) {
-          roles.add(entity.role);
-        }
+  intents.forEach((intent) =>
+    intent.entities.forEach((entity) => {
+      if (!entityType || entityType.length === 0 || entity.entityTypeName === entityType) {
+        roles.add(entity.role);
       }
-    )
+    })
   );
-  entityTypes.forEach(e =>
-    e.subEntities.forEach(sub => {
-        if (!entityType || entityType.length === 0 || sub.entityTypeName === entityType) {
-          roles.add(sub.role);
-        }
+  entityTypes.forEach((e) =>
+    e.subEntities.forEach((sub) => {
+      if (!entityType || entityType.length === 0 || sub.entityTypeName === entityType) {
+        roles.add(sub.role);
       }
-    )
+    })
   );
   return Array.from(roles.values()).sort();
 }
-
-
-

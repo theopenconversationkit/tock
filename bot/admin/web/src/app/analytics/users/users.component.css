@@ -94,7 +94,6 @@ img {
   margin: 20px 0 0;
 }
 
-
 .recent_heading {
   float: left;
   width: 40%;
@@ -152,7 +151,7 @@ img {
 .chat_ib p {
   font-size: 14px;
   color: #989898;
-  margin: auto
+  margin: auto;
 }
 
 .chat_img {

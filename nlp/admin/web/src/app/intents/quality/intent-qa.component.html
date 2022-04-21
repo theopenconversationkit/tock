@@ -18,9 +18,20 @@
   <nb-card-body id="intent-qa-update-container">
     <span class="nb-form-field inline">
       <label>Filter Occurrences Less Than</label>
-      <input nbInput placeholder="Filter Occurrences Less Than" type="number" [(ngModel)]="minOccurrences"
-             (keyup.enter)="updateContent()"/>
-      <button nbButton ghost size="small" (click)="updateContent()" nbTooltip="Refresh">
+      <input
+        nbInput
+        placeholder="Filter Occurrences Less Than"
+        type="number"
+        [(ngModel)]="minOccurrences"
+        (keyup.enter)="updateContent()"
+      />
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="updateContent()"
+        nbTooltip="Refresh"
+      >
         <mat-icon>refresh</mat-icon>
       </button>
     </span>
@@ -30,20 +41,28 @@
   <nb-card-body>
     <table class="table table-sm">
       <thead>
-      <tr>
-        <th scope="col"><p>Intent 1</p></th>
-        <th scope="col"><p>Intent 2</p></th>
-        <th scope="col"><p>Occurrences</p></th>
-        <th scope="col"><p>Average Diff</p></th>
-      </tr>
+        <tr>
+          <th scope="col"><p>Intent 1</p></th>
+          <th scope="col"><p>Intent 2</p></th>
+          <th scope="col"><p>Occurrences</p></th>
+          <th scope="col"><p>Average Diff</p></th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let row of dataSource; index as i">
-        <td><p>{{row.intent1}}</p></td>
-        <td><p>{{row.intent2}}</p></td>
-        <td><p>{{row.occurrences}}</p></td>
-        <td><p>{{row.average | number : '1.0-3'}}</p></td>
-      </tr>
+        <tr *ngFor="let row of dataSource; index as i">
+          <td>
+            <p>{{ row.intent1 }}</p>
+          </td>
+          <td>
+            <p>{{ row.intent2 }}</p>
+          </td>
+          <td>
+            <p>{{ row.occurrences }}</p>
+          </td>
+          <td>
+            <p>{{ row.average | number: '1.0-3' }}</p>
+          </td>
+        </tr>
       </tbody>
     </table>
   </nb-card-body>

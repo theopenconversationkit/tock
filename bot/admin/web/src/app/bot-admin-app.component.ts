@@ -23,34 +23,34 @@ import { RestService } from './core-nlp/rest/rest.service';
 import { StateService } from './core-nlp/state.service';
 import { UserRole } from './model/auth';
 
-
-
 @Component({
   selector: 'tock-bot-admin-root',
   templateUrl: './bot-admin-app.component.html',
   styleUrls: ['./bot-admin-app.component.css']
 })
 export class BotAdminAppComponent implements OnInit, OnDestroy {
-
   UserRole = UserRole;
 
   private errorUnsuscriber: any;
   public menu: NbMenuItem[];
 
-  constructor(public auth: AuthService,
-              public state: StateService,
-              private rest: RestService,
-              private toastrService: NbToastrService,
-              iconRegistry: MatIconRegistry,
-              sanitizer: DomSanitizer) {
+  constructor(
+    public auth: AuthService,
+    public state: StateService,
+    private rest: RestService,
+    private toastrService: NbToastrService,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer
+  ) {
     iconRegistry.addSvgIcon(
       'logo',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg')
+    );
   }
 
   ngOnInit(): void {
-    this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
-      this.toastrService.show(e, "Error", {duration: 5000, status: 'danger'})
+    this.errorUnsuscriber = this.rest.errorEmitter.subscribe((e) =>
+      this.toastrService.show(e, 'Error', { duration: 5000, status: 'danger' })
     );
     this.menu = [
       {
@@ -74,8 +74,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
       {
         title: 'Analytics',
         icon: 'trending-up-outline',
-        link: '/analytics'
-        ,
+        link: '/analytics',
         hidden: this.state.hasRole(UserRole.botUser)
       },
       {
@@ -96,5 +95,4 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
   }
-
 }

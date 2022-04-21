@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-
-import {Component, Input} from "@angular/core";
-import {Attachment} from "../model/dialog-data";
+import { Component, Input } from '@angular/core';
+import { Attachment } from '../model/dialog-data';
 @Component({
   selector: 'tock-bot-message-attachment',
-  template: `<img *ngIf="attachment.isImage()" [src]="attachment.url" width="191" height="100"/>
-  <div *ngIf="!attachment.isImage()"><a [href]="attachment.url">(file)</a></div>`
+  template: `<img
+      *ngIf="attachment.isImage()"
+      [src]="attachment.url"
+      width="191"
+      height="100"
+    />
+    <div *ngIf="!attachment.isImage()"><a [href]="attachment.url">(file)</a></div>`
 })
 export class BotMessageAttachmentComponent {
-
   @Input()
   attachment: Attachment;
 }
-
-
-
-

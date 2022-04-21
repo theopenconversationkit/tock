@@ -15,19 +15,19 @@
  */
 
 .entity {
-  padding-top:10px;
+  padding-top: 10px;
   text-align: left;
 }
 
 .role-container {
   float: left;
-  padding-right:15px;
+  padding-right: 15px;
 }
 
 .probability {
   font-style: italic;
   font-size: smaller;
-  padding-left:10px;
+  padding-left: 10px;
 }
 
 .value {
@@ -36,5 +36,5 @@
 }
 
 .read-only {
-  line-height:36px;
+  line-height: 36px;
 }

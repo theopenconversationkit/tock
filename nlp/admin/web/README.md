@@ -10,8 +10,8 @@ npm install -g @angular/cli
 ng serve
 ```
 
-> Don't forget to start the 
-[_NLP Admin_ server](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml).
+> Don't forget to start the
+> [_NLP Admin_ server](https://github.com/theopenconversationkit/tock/blob/master/.idea/runConfigurations/Admin.xml).
 
 ## Package instructions
 
@@ -24,9 +24,8 @@ mvn install
 Maven runs NPM / Angular scripts automatically from merged sources folder.
 The following assemblies are built and attached:
 
-* the `web` assembly is the deployable _NLP Admin_ frontend application
-* the `sources` assembly export sourcefiles, so that _Bot Admin_ can merge and extend them
-
+- the `web` assembly is the deployable _NLP Admin_ frontend application
+- the `sources` assembly export sourcefiles, so that _Bot Admin_ can merge and extend them
 
 ## Troubleshooting
 
@@ -48,7 +47,7 @@ Please visit [the `windows-build-tools` project](https://github.com/felixriesebe
 
 ### Python 2.7 not in Path
 
-Build takes Python from `Path`, and requires [Python 2.7](https://www.python.org/downloads/release/python-272/). 
+Build takes Python from `Path`, and requires [Python 2.7](https://www.python.org/downloads/release/python-272/).
 If you have different/multiple Python versions, or Python is not in your `Path`, tell NPM like this:
 
 > The following examples mention `python.exe` for Windows users

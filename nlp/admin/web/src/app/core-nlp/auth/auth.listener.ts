@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {User} from "../../model/auth";
+import { User } from '../../model/auth';
 
 export interface AuthListener {
-  login(user: User)
-  logout()
+  login(user: User);
+  logout();
 }

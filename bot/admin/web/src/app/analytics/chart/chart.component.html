@@ -1,4 +1,3 @@
-
 <!--
   ~ Copyright (C) 2017/2021 e-voyageurs technologies
   ~
@@ -15,60 +14,123 @@
   ~ limitations under the License.
   -->
 
-<nb-flip-card [showToggleButton]="false" [flipped]="isFlipped" *ngIf="mainChart || altChart" style="min-height: 60vh">
-  <nb-card-front >
-    <nb-card >
-      <nb-card-header style="padding-right: 0;">
-        {{title}}
-        <button *ngIf="!isFullScreen" nbButton ghost status="info" shape="round" (click)="expand()" nbTooltip="Expand" style="float: right;" >
+<nb-flip-card
+  [showToggleButton]="false"
+  [flipped]="isFlipped"
+  *ngIf="mainChart || altChart"
+  style="min-height: 60vh"
+>
+  <nb-card-front>
+    <nb-card>
+      <nb-card-header style="padding-right: 0">
+        {{ title }}
+        <button
+          *ngIf="!isFullScreen"
+          nbButton
+          ghost
+          status="info"
+          shape="round"
+          (click)="expand()"
+          nbTooltip="Expand"
+          style="float: right"
+        >
           <nb-icon icon="expand-outline"></nb-icon>
         </button>
-        <button nbButton ghost status="info" shape="round" (click)="onCsvAction()" nbTooltip="Export data as CSV"  style="float: right;">
+        <button
+          nbButton
+          ghost
+          status="info"
+          shape="round"
+          (click)="onCsvAction()"
+          nbTooltip="Export data as CSV"
+          style="float: right"
+        >
           <nb-icon icon="download"></nb-icon>
         </button>
-        <button *ngIf="type!='PieChart' && isMultiChart==true" nbButton ghost status="info" shape="round" (click)="changeChartType('PieChart')"
-                nbTooltip="Pie chart"  style="float: right;">
+        <button
+          *ngIf="type != 'PieChart' && isMultiChart == true"
+          nbButton
+          ghost
+          status="info"
+          shape="round"
+          (click)="changeChartType('PieChart')"
+          nbTooltip="Pie chart"
+          style="float: right"
+        >
           <nb-icon icon="pie-chart-outline"></nb-icon>
         </button>
-        <button *ngIf="type=='PieChart' && isMultiChart==true" nbButton ghost status="info" shape="round" (click)="changeChartType('line')"
-                nbTooltip="Line chart"  style="float: right;">
+        <button
+          *ngIf="type == 'PieChart' && isMultiChart == true"
+          nbButton
+          ghost
+          status="info"
+          shape="round"
+          (click)="changeChartType('line')"
+          nbTooltip="Line chart"
+          style="float: right"
+        >
           <nb-icon icon="trending-up-outline"></nb-icon>
         </button>
       </nb-card-header>
-      <nb-card-body [nbSpinner]="isLoading" nbSpinnerStatus="primary" >
-        <div style="text-align: right;">
-          <nb-select multiple status="primary" *ngIf="displayMultipleSelectComponent()" style="min-width: 15rem;max-width: 20rem;" size="small"
-                     [(selected)]="seriesSelectionList" (selectedChange)="updateGraph()">
-            <nb-select-label>
-              Nb selected: {{ seriesSelectionList.length }}
-            </nb-select-label>
-            <nb-option *ngFor="let c of data.connectorsType; index as i" [value]="i">{{c}}</nb-option>
+      <nb-card-body
+        [nbSpinner]="isLoading"
+        nbSpinnerStatus="primary"
+      >
+        <div style="text-align: right">
+          <nb-select
+            multiple
+            status="primary"
+            *ngIf="displayMultipleSelectComponent()"
+            style="min-width: 15rem; max-width: 20rem"
+            size="small"
+            [(selected)]="seriesSelectionList"
+            (selectedChange)="updateGraph()"
+          >
+            <nb-select-label> Nb selected: {{ seriesSelectionList.length }} </nb-select-label>
+            <nb-option
+              *ngFor="let c of data.connectorsType; index as i"
+              [value]="i"
+              >{{ c }}</nb-option
+            >
           </nb-select>
-          <nb-select class="select-intent" status="primary" placeholder="Intent" *ngIf="intentsList.length > 0"
-                     (selectedChange)="refresh()" [(ngModel)]="filter.intent">
+          <nb-select
+            class="select-intent"
+            status="primary"
+            placeholder="Intent"
+            *ngIf="intentsList.length > 0"
+            (selectedChange)="refresh()"
+            [(ngModel)]="filter.intent"
+          >
             <nb-option value="">All intents</nb-option>
-            <nb-option *ngFor="let intent of intentsList" [value]="intent">{{ intent }}</nb-option>
+            <nb-option
+              *ngFor="let intent of intentsList"
+              [value]="intent"
+              >{{ intent }}</nb-option
+            >
           </nb-select>
         </div>
 
-        <div style="display: flex;">
-          <div echarts [options]="chartOptions" *ngIf="chartOptions" [style.width]="'100%'"></div>
+        <div style="display: flex">
+          <div
+            echarts
+            [options]="chartOptions"
+            *ngIf="chartOptions"
+            [style.width]="'100%'"
+          ></div>
         </div>
-
       </nb-card-body>
       <nb-card-body>
         <!-- <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Table"
                 status="success" style="float: right;">
           <nb-icon icon="layout-outline"></nb-icon>
         </button> -->
-
       </nb-card-body>
     </nb-card>
   </nb-card-front>
   <nb-card-back>
     <nb-card>
       <nb-card-body>
-          <!-- <google-chart
+        <!-- <google-chart
             type="Table"
             [data]="mainChart.data"
             [columns]="mainChart.columnNames"
@@ -80,12 +142,25 @@
           </google-chart> -->
       </nb-card-body>
       <nb-card-footer>
-        <button nbButton shape="round" (click)="onFlipAction()" nbTooltip="Show Chart"
-                status="success" style="float: right;">
+        <button
+          nbButton
+          shape="round"
+          (click)="onFlipAction()"
+          nbTooltip="Show Chart"
+          status="success"
+          style="float: right"
+        >
           <nb-icon [icon]="chartIcon()"></nb-icon>
         </button>
-        <button nbButton outline shape="round" (click)="onCsvAction()" nbTooltip="Export data as CSV"
-                status="primary" style="float: right; margin-right: 20px;">
+        <button
+          nbButton
+          outline
+          shape="round"
+          (click)="onCsvAction()"
+          nbTooltip="Export data as CSV"
+          status="primary"
+          style="float: right; margin-right: 20px"
+        >
           CSV <nb-icon icon="download"></nb-icon>
         </button>
       </nb-card-footer>

@@ -14,14 +14,28 @@
   ~ limitations under the License.
   -->
 
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
-
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-    <button *ngIf="!isExpandable(node)" mat-icon-button disabled></button>
-    <button *ngIf="isExpandable(node)" mat-icon-button matTreeNodeToggle
-            [attr.aria-label]="'toggle ' + node.filename">
+<mat-tree
+  [dataSource]="dataSource"
+  [treeControl]="treeControl"
+  class="tree"
+>
+  <mat-tree-node
+    *matTreeNodeDef="let node"
+    matTreeNodePadding
+  >
+    <button
+      *ngIf="!isExpandable(node)"
+      mat-icon-button
+      disabled
+    ></button>
+    <button
+      *ngIf="isExpandable(node)"
+      mat-icon-button
+      matTreeNodeToggle
+      [attr.aria-label]="'toggle ' + node.filename"
+    >
       <mat-icon class="mat-icon-rtl-mirror">
-        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
       </mat-icon>
     </button>
     <tock-step
@@ -36,19 +50,28 @@
       [canDownward]="canDownward(node)"
       (upward)="upward(node)"
       (downward)="downward(node)"
-      [readonly]="readonly"></tock-step>
+      [readonly]="readonly"
+    ></tock-step>
   </mat-tree-node>
 </mat-tree>
-<div *ngIf="!readonly" class="action">
-  <button mat-button (click)="addNewStep()" color="primary">
+<div
+  *ngIf="!readonly"
+  class="action"
+>
+  <button
+    mat-button
+    (click)="addNewStep()"
+    color="primary"
+  >
     <mat-icon>dns</mat-icon>
     Add Action
   </button>
-  <button mat-button matTooltip="Generate Actions from Entity" (click)="generate()">
+  <button
+    mat-button
+    matTooltip="Generate Actions from Entity"
+    (click)="generate()"
+  >
     <mat-icon>playlist_add</mat-icon>
     Generate from Entity
   </button>
 </div>
-
-
-

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {RouterModule, Routes} from "@angular/router";
-import {NgModule} from "@angular/core";
-import {SharedModule} from "../shared-nlp/shared.module";
-import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {TestTabsComponent} from "./test-tabs.component";
-import {ApplicationResolver} from "../core-nlp/application.resolver";
-import {BotDialogComponent, DisplayNlpStatsComponent} from "./dialog/bot-dialog.component";
-import {CommonModule} from "@angular/common";
-import {TestService} from "./test.service";
-import {BotSharedModule} from "../shared/bot-shared.module";
-import {TestPlanComponent} from "./plan/test-plan.component";
-import {MomentModule} from "ngx-moment";
+import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { SharedModule } from '../shared-nlp/shared.module';
+import { AuthGuard } from '../core-nlp/auth/auth.guard';
+import { TestTabsComponent } from './test-tabs.component';
+import { ApplicationResolver } from '../core-nlp/application.resolver';
+import { BotDialogComponent, DisplayNlpStatsComponent } from './dialog/bot-dialog.component';
+import { CommonModule } from '@angular/common';
+import { TestService } from './test.service';
+import { BotSharedModule } from '../shared/bot-shared.module';
+import { TestPlanComponent } from './plan/test-plan.component';
+import { MomentModule } from 'ngx-moment';
 import {
   NbAccordionModule,
   NbActionsModule,
@@ -35,8 +35,8 @@ import {
   NbSelectModule,
   NbTooltipModule,
   NbInputModule
-} from "@nebular/theme";
-import {ReactiveFormsModule} from "@angular/forms";
+} from '@nebular/theme';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {
@@ -49,7 +49,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'test', 
+        redirectTo: 'test',
         pathMatch: 'full'
       },
       {
@@ -67,8 +67,7 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class BotTestRoutingModule {
-}
+export class BotTestRoutingModule {}
 
 @NgModule({
   imports: [
@@ -94,10 +93,7 @@ export class BotTestRoutingModule {
     DisplayNlpStatsComponent
   ],
   exports: [],
-  providers: [
-    TestService
-  ],
+  providers: [TestService],
   entryComponents: [DisplayNlpStatsComponent]
 })
-export class BotTestModule {
-}
+export class BotTestModule {}

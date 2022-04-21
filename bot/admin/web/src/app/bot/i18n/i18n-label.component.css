@@ -19,7 +19,7 @@
   display: block;
   padding: 0 20px;
 
-  font-family: Roboto,"Helvetica Neue",sans-serif;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .i18n-label__title {
@@ -109,7 +109,7 @@
 .i18n-label__entry__input__textarea {
   width: 100%;
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-  max-width: unset!important;
+  max-width: unset !important;
 }
 
 .i18n-label__entry__connectors {
@@ -127,7 +127,6 @@
 }
 
 .i18n-label__entry__alternative-management {
-
 }
 
 .remove_alternative {
@@ -142,7 +141,6 @@
 }
 
 .i18n-label__entry__delete {
-
 }
 
 .i18n-label__entry__delete .mat-button {
