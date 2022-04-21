@@ -17,7 +17,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  width:50vh;
+  width: 50vh;
   padding: 0;
 }
 
@@ -40,4 +40,3 @@
 .footer {
   text-align: right;
 }
-

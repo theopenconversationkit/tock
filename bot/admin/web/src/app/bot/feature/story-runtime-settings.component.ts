@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {BotService} from '../bot-service';
-import {StoryDefinitionConfiguration} from '../model/story';
-import {StateService} from '../../core-nlp/state.service';
-
+import { Component, OnInit } from '@angular/core';
+import { BotService } from '../bot-service';
+import { StoryDefinitionConfiguration } from '../model/story';
+import { StateService } from '../../core-nlp/state.service';
 
 @Component({
   selector: 'tock-story-runtime-settings',
@@ -27,10 +26,10 @@ import {StateService} from '../../core-nlp/state.service';
 })
 export class StoryRuntimeSettingsComponent implements OnInit {
   storyPluralMapping = {
-    'story': {
+    story: {
       '=0': '0 stories',
       '=1': '1 story',
-      'other': '# stories'
+      other: '# stories'
     }
   };
   displayedColumns: string[] = ['storyTag', 'storyName'];
@@ -40,23 +39,31 @@ export class StoryRuntimeSettingsComponent implements OnInit {
   checkSubEntitiesOnlyWithStoryIntents: StoryDefinitionConfiguration[];
   taggedStoriesCount: number = 0;
 
-  constructor(
-    private state: StateService,
-    private botService: BotService) {
-  }
+  constructor(private state: StateService, private botService: BotService) {}
 
   ngOnInit(): void {
     if (this.state.currentApplication) {
-      this.botService.findRuntimeStorySettings(this.state.currentApplication.name).subscribe(
-        stories => {
-          this.disableStories = stories.filter(story => story.tags.some(tag => tag === 'DISABLE'));
-          this.enableStories = stories.filter(story => story.tags.some(tag => tag === 'ENABLE'));
-          this.checkOnlySubEntitiesForStorySelection = stories.filter(story => story.tags.some(tag => tag === 'CHECK_ONLY_SUB_STEPS'));
-          this.checkSubEntitiesOnlyWithStoryIntents = stories.filter(story => story.tags.some(tag => tag === 'CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT'));
-          this.taggedStoriesCount = this.disableStories.length + this.enableStories.length + this.checkOnlySubEntitiesForStorySelection.length
-            + this.checkSubEntitiesOnlyWithStoryIntents.length;
-        }
-      );
+      this.botService
+        .findRuntimeStorySettings(this.state.currentApplication.name)
+        .subscribe((stories) => {
+          this.disableStories = stories.filter((story) =>
+            story.tags.some((tag) => tag === 'DISABLE')
+          );
+          this.enableStories = stories.filter((story) =>
+            story.tags.some((tag) => tag === 'ENABLE')
+          );
+          this.checkOnlySubEntitiesForStorySelection = stories.filter((story) =>
+            story.tags.some((tag) => tag === 'CHECK_ONLY_SUB_STEPS')
+          );
+          this.checkSubEntitiesOnlyWithStoryIntents = stories.filter((story) =>
+            story.tags.some((tag) => tag === 'CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT')
+          );
+          this.taggedStoriesCount =
+            this.disableStories.length +
+            this.enableStories.length +
+            this.checkOnlySubEntitiesForStorySelection.length +
+            this.checkSubEntitiesOnlyWithStoryIntents.length;
+        });
     }
   }
 }

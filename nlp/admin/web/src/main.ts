@@ -24,5 +24,6 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(NlpAdminAppModule)
-  .catch(err => console.log(err));
+platformBrowserDynamic()
+  .bootstrapModule(NlpAdminAppModule)
+  .catch((err) => console.log(err));

@@ -14,19 +14,41 @@
   ~ limitations under the License.
   -->
 
-<div class="content" id="element-id">
-  <nb-card style="margin-bottom: unset;">
+<div
+  class="content"
+  id="element-id"
+>
+  <nb-card style="margin-bottom: unset">
     <nb-card-body nbSpinnerStatus="primary">
-      <date-range-calendar [rangeInDays]="7" (datesChanged)="datesChanged($event)"></date-range-calendar>
-      <tock-select-bot [allowNoConfigurationSelection]="true" noConnectorLabel="All Connectors"
-                       [allowNoSelection]="true" noConfigurationLabel="All Configurations"
-                       (selectionChange)="selectedConfigurationChanged($event)" class="select-bot">
+      <date-range-calendar
+        [rangeInDays]="7"
+        (datesChanged)="datesChanged($event)"
+      ></date-range-calendar>
+      <tock-select-bot
+        [allowNoConfigurationSelection]="true"
+        noConnectorLabel="All Connectors"
+        [allowNoSelection]="true"
+        noConfigurationLabel="All Configurations"
+        (selectionChange)="selectedConfigurationChanged($event)"
+        class="select-bot"
+      >
       </tock-select-bot>
-      <button nbButton ghost shape="round" (click)="waitAndRefresh()" nbTooltip="Refresh Data" status="basic">
+      <button
+        nbButton
+        ghost
+        shape="round"
+        (click)="waitAndRefresh()"
+        nbTooltip="Refresh Data"
+        status="basic"
+      >
         <nb-icon icon="refresh-outline"></nb-icon>
       </button>
-      <span style="float: right; padding: 5px;">
-        <nb-toggle status="warning" [(ngModel)]="displayTests" (change)="waitAndRefresh()">
+      <span style="float: right; padding: 5px">
+        <nb-toggle
+          status="warning"
+          [(ngModel)]="displayTests"
+          (change)="waitAndRefresh()"
+        >
           Tests (Tock Studio)
         </nb-toggle>
         <!--      <button nbButton outline shape="round" (click)="onPdfAction()" nbTooltip="Export page as PDF"-->
@@ -38,52 +60,130 @@
   </nb-card>
 
   <div class="space graph-list">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByStory"
+      [nbSpinner]="messagesByStoryLoading"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByStoryData"
+          title="Messages by Story"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          isMultiChart="false"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByIntent"
+      [nbSpinner]="messagesByIntentLoading"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByIntentData"
+          title="Messages by Intent"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          isMultiChart="false"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByDayOfWeek"
+      [nbSpinner]="messagesByDayOfWeekLoading"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByDayOfWeekData"
+          title="Messages by Day of Week"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          isMultiChart="false"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByHourOfDay"
+      [nbSpinner]="messagesByDayOfWeekLoading"
+    >
+      <nb-card-body>
+        <tock-chart
+          [data]="messagesByHourData"
+          title="Messages by Hour of Day"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          isMultiChart="false"
+        ></tock-chart>
+      </nb-card-body>
+    </nb-card>
 
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByStory" [nbSpinner]="messagesByStoryLoading">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByActionType"
+      [nbSpinner]="messagesByActionTypeLoading"
+    >
       <nb-card-body>
-        <tock-chart [data]="messagesByStoryData" title="Messages by Story" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByIntent" [nbSpinner]="messagesByIntentLoading">
-      <nb-card-body>
-        <tock-chart [data]="messagesByIntentData" title="Messages by Intent" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByDayOfWeek" [nbSpinner]="messagesByDayOfWeekLoading">
-      <nb-card-body>
-        <tock-chart [data]="messagesByDayOfWeekData" title="Messages by Day of Week" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByHourOfDay" [nbSpinner]="messagesByDayOfWeekLoading">
-      <nb-card-body>
-        <tock-chart [data]="messagesByHourData" title="Messages by Hour of Day" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+        <tock-chart
+          [data]="messagesByActionTypeData"
+          title="Messages by Action Type"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          [filter]="filter"
+          (intentChanged)="waitAndRefresh()"
+          isMultiChart="false"
+        ></tock-chart>
       </nb-card-body>
     </nb-card>
 
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByActionType" [nbSpinner]="messagesByActionTypeLoading">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByStoryCategory"
+      [nbSpinner]="messagesByStoryCategoryLoading"
+    >
       <nb-card-body>
-        <tock-chart [data]="messagesByActionTypeData" title="Messages by Action Type" type="PieChart"
-                    [chartPreferences]="userPreferences" [filter]="filter" (intentChanged)="waitAndRefresh()" isMultiChart="false"></tock-chart>
+        <tock-chart
+          [data]="messagesByStoryCategoryData"
+          title="Messages by Story Category"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          isMultiChart="false"
+        ></tock-chart>
       </nb-card-body>
     </nb-card>
 
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByStoryCategory" [nbSpinner]="messagesByStoryCategoryLoading">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByStoryType"
+      [nbSpinner]="messagesByStoryTypeLoading"
+    >
       <nb-card-body>
-        <tock-chart [data]="messagesByStoryCategoryData" title="Messages by Story Category" type="PieChart"
-                    [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+        <tock-chart
+          [data]="messagesByStoryTypeData"
+          title="Messages by Story Type"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          isMultiChart="false"
+        ></tock-chart>
       </nb-card-body>
     </nb-card>
-
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByStoryType" [nbSpinner]="messagesByStoryTypeLoading">
+    <nb-card
+      class="space graph"
+      *ngIf="userPreferences.graphs.behavior.messagesByLocale"
+      [nbSpinner]="messagesByStoryLocaleLoading"
+    >
       <nb-card-body>
-        <tock-chart [data]="messagesByStoryTypeData" title="Messages by Story Type" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
-      </nb-card-body>
-    </nb-card>
-    <nb-card class="space graph" *ngIf="userPreferences.graphs.behavior.messagesByLocale" [nbSpinner]="messagesByStoryLocaleLoading">
-      <nb-card-body>
-        <tock-chart [data]="messagesByStoryLocaleData" title="Messages by Locale" type="PieChart" [chartPreferences]="userPreferences" isMultiChart="false"></tock-chart>
+        <tock-chart
+          [data]="messagesByStoryLocaleData"
+          title="Messages by Locale"
+          type="PieChart"
+          [chartPreferences]="userPreferences"
+          isMultiChart="false"
+        ></tock-chart>
       </nb-card-body>
     </nb-card>
   </div>
-
 </div>

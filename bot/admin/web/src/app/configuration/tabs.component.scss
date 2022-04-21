@@ -20,7 +20,8 @@ nb-tabset {
   flex-direction: column;
 }
 
-:host ::ng-deep ngx-tab1, :host ::ng-deep ngx-tab2 {
+:host ::ng-deep ngx-tab1,
+:host ::ng-deep ngx-tab2 {
   display: block;
   padding: 1rem 2rem;
 }

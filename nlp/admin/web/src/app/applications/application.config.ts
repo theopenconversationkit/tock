@@ -15,7 +15,6 @@
  */
 
 export abstract class ApplicationConfig {
-
   /** is it allowed to create namespace? **/
   canCreateNamespace(): boolean {
     return true;

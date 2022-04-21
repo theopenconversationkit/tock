@@ -9,20 +9,29 @@ permalink: /en/
 
 **Tock** (*The Open Conversation Kit*) is a complete and open platform to build conversational agents - also known as _bots_. 
 
-The [Tock.ai](https://doc.tock.ai/) site is a good starting point to learn about the solution and its growing community.
-
 Tock does not depend on 3rd-party APIs, although it is possible to integrate with them.
 Users choose which components to embed and decide to keep (or share) ownership of conversational data and models.
 
-> Tock has been used in production for several years by [OUI.sncf](https://www.oui.sncf/services/assistant) to
-> propose various assistants over its own channels (Web, mobile), social networks, as well as smart speakers.
+> Tock has been used in production since 2016 by [OUI.sncf](https://www.oui.sncf/services/assistant)
+> (Web/mobile, messaging platforms, smart speakers) and [more and more organisations](about/showcase)
+> (energy, banking, healthcare...).
 
-> The platform source code is available on [GitHub](https://github.com/theopenconversationkit/tock) 
-> under the [Apache License, version 2.0](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
+The platform source code is available on [GitHub](https://github.com/theopenconversationkit/tock) 
+under the [Apache License, version 2.0](https://github.com/theopenconversationkit/tock/blob/master/LICENSE).
 
-|   |   |
-|---|---|
-| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | To find out more about [_AlloCovid_](https://www.allocovid.com/) (built with Tock) please visit [www.allocovid.com](https://www.allocovid.com/). Available by phone, on the Web and WhatsApp, the bot informs and guides French population about the Covid-19, thanks to experts, partners and volunteers. [This page](about/showcase#allocovid) gives technical details and links to the sources. |
+## Overview
+
+The [Tock.ai](https://doc.tock.ai/) site is a good starting point to learn about the solution and its growing community.
+[Tutorials](guide/studio), [presentations](about/resources) and a [live demo](https://www.youtube.com/watch?v=UsKkpYL7Hto) 
+(20 minutes, in English, [ℹ️ abstract](https://www.opensource-experience.com/en/event/20-minutes-from-zero-to-live-chatbot-with-tock/)) 
+are also available:
+
+<a href="https://www.youtube.com/watch?v=UsKkpYL7Hto"
+target="tock_osxp">
+<img alt="Tock @ OSXP 2021"
+src="https://doc.tock.ai/en/images/tock_osxp_2021.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
 
 ## Features
 

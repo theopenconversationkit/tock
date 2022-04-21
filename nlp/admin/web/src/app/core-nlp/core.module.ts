@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-import {Injectable, NgModule, Optional, SkipSelf} from "@angular/core";
-import {AuthModule} from "./auth/auth.module";
-import {SettingsService} from "./settings.service";
-import {CommonModule} from "@angular/common";
-import {RestModule} from "./rest/rest.module";
-import {StateService} from "./state.service";
-import {ApplicationService} from "./applications.service";
-import {CoreConfig} from "./core.config";
-import {ApplicationResolver} from "./application.resolver";
-import {DialogService} from "./dialog.service";
-import {UserRole} from "../model/auth";
+import { Injectable, NgModule, Optional, SkipSelf } from '@angular/core';
+import { AuthModule } from './auth/auth.module';
+import { SettingsService } from './settings.service';
+import { CommonModule } from '@angular/common';
+import { RestModule } from './rest/rest.module';
+import { StateService } from './state.service';
+import { ApplicationService } from './applications.service';
+import { CoreConfig } from './core.config';
+import { ApplicationResolver } from './application.resolver';
+import { DialogService } from './dialog.service';
+import { UserRole } from '../model/auth';
 
 @Injectable()
 export class NlpCoreConfig implements CoreConfig {
-
   /** url of the configuration menu */
-  configurationUrl: string = "/applications";
+  configurationUrl: string = '/applications';
   /** url of the display dialogs if it exists */
-  displayDialogUrl: string = "a";
+  displayDialogUrl: string = 'a';
   /** url to answer to sentence if it exists */
   answerToSentenceUrl: string;
   /** url map for each default rights */
-  roleMap: Map<UserRole, string> = new Map(
-    [
-      [UserRole.nlpUser, "/nlp"],
-      [UserRole.admin, "/configuration"],
-      [UserRole.technicalAdmin, "/configuration"],
-    ]);
-
+  roleMap: Map<UserRole, string> = new Map([
+    [UserRole.nlpUser, '/nlp'],
+    [UserRole.admin, '/configuration'],
+    [UserRole.technicalAdmin, '/configuration']
+  ]);
 }
 
 @NgModule({
@@ -62,14 +59,9 @@ export class NlpCoreConfig implements CoreConfig {
   exports: []
 })
 export class CoreModule {
-
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
     if (parentModule) {
-      throw new Error(
-        'CoreModule is already loaded. Import it in the AppModule only');
+      throw new Error('CoreModule is already loaded. Import it in the AppModule only');
     }
   }
-
 }
-
-

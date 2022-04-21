@@ -58,7 +58,6 @@
   white-space: pre-wrap;
 }
 
-
 .shared_application_label {
   font-size: smaller;
 }
@@ -85,7 +84,7 @@
 }
 
 .entity {
-  white-space:nowrap;
+  white-space: nowrap;
 }
 
 .status {
@@ -99,7 +98,7 @@
 }
 
 .intents {
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 button:focus {

@@ -55,6 +55,7 @@ import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
@@ -79,6 +80,8 @@ private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
+
+private val webConnectorExtraHeaders = listProperty("tock_web_connector_extra_headers", emptyList())
 
 class WebConnector internal constructor(
     val applicationId: String,
@@ -112,7 +115,11 @@ class WebConnector internal constructor(
                         }
                         .allowedHeader("Access-Control-Allow-Origin")
                         .allowedHeader("Content-Type")
-                        .allowedHeader("X-Requested-With")
+                        .allowedHeader("X-Requested-With").apply {
+                            webConnectorExtraHeaders.forEach {
+                                this.allowedHeader(it)
+                            }
+                        }
                 )
             if (sseEnabled) {
                 router.route("$path/sse")

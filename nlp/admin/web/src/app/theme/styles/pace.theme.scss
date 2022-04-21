@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
- @mixin ngx-pace-theme() {
-
+@mixin ngx-pace-theme() {
   .pace .pace-progress {
     background: nb-theme(color-primary-default);
   }

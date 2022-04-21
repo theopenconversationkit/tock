@@ -32,6 +32,7 @@ import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
+import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.SendSentence
@@ -111,9 +112,19 @@ internal class ConfiguredStoryHandler(
         val answerContainer =
             configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
                 ?: configuration
+        removeAskAgainProcess(bus)
         answerContainer.send(bus)
 
         switchStoryIfEnding(null, bus)
+    }
+
+    /**
+     * Remove the ask again process to the last story if no more ask again round available
+     */
+    private fun removeAskAgainProcess(bus: BotBus){
+        if (bus.dialog.stories.lastOrNull()?.definition?.hasTag(StoryTag.ASK_AGAIN) == true && bus.dialog.state.hasCurrentAskAgainProcess && bus.dialog.state.askAgainRound == 0) {
+            bus.dialog.state.hasCurrentAskAgainProcess = false
+        }
     }
 
     private fun isMissingMandatoryEntities(bus: BotBus): Boolean {
@@ -194,14 +205,14 @@ internal class ConfiguredStoryHandler(
                         send(
                             container, this,
                             isMissingMandatoryEntities ||
-                                // No steps and no ending story
-                                (!steps && !endingStoryRule) ||
-                                // Steps not started
-                                (steps && currentStep == null) ||
-                                // Steps started with children
-                                (currentStep?.hasNoChildren == false) ||
-                                // Steps started with no children, no target intent, no ending story
-                                (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule)
+                                    // No steps and no ending story
+                                    (!steps && !endingStoryRule) ||
+                                    // Steps not started
+                                    (steps && currentStep == null) ||
+                                    // Steps started with children
+                                    (currentStep?.hasNoChildren == false) ||
+                                    // Steps started with no children, no target intent, no ending story
+                                    (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule)
                         )
                     }
                 }
@@ -268,13 +279,13 @@ internal class ConfiguredStoryHandler(
                 ?.let { messages ->
                     if (end && suggestions.isNotEmpty() && messages.isNotEmpty()) {
                         messages.take(messages.size - 1) +
-                            (
-                                underlyingConnector.addSuggestions(
-                                    messages.last(),
-                                    suggestions
-                                ).invoke(this)
-                                    ?: messages.last()
-                                )
+                                (
+                                        underlyingConnector.addSuggestions(
+                                            messages.last(),
+                                            suggestions
+                                        ).invoke(this)
+                                            ?: messages.last()
+                                        )
                     } else {
                         messages
                     }

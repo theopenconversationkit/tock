@@ -15,40 +15,89 @@
   -->
 
 <nb-card class="features">
-  <nb-card-header style="display: flex; position: relative;">
-    <nb-badge [text]="features.length + ' rule(s)'"
-              [status]="features.length < 1 ? 'success' : 'info'"
-              position="top left"></nb-badge>
-    {{title}}
-    <nb-actions size="small" style="cursor: pointer;">
-      <nb-action class="control-item" nbTooltip="Add a new Feature" (click)="prepareCreate()" *ngIf="!create">
+  <nb-card-header style="display: flex; position: relative">
+    <nb-badge
+      [text]="features.length + ' rule(s)'"
+      [status]="features.length < 1 ? 'success' : 'info'"
+      position="top left"
+    ></nb-badge>
+    {{ title }}
+    <nb-actions
+      size="small"
+      style="cursor: pointer"
+    >
+      <nb-action
+        class="control-item"
+        nbTooltip="Add a new Feature"
+        (click)="prepareCreate()"
+        *ngIf="!create"
+      >
         <i class="material-icons tock-toolbar-menu">add_box</i>
       </nb-action>
     </nb-actions>
   </nb-card-header>
   <nb-card-body>
     <div *ngIf="create">
-      <tock-select-bot [(configurationId)]="botApplicationConfigurationId" [allowNoSelection]="true"
-                       noConfigurationLabel="All Configurations"><br>
-        <input #newCategory class="first_new feature-property new" nbInput placeholder="Category"
-               [(ngModel)]="feature.category" [disabled]="tockCategory" [autofocus]="true" [required]="true">
-        <input class="first_new feature-property new" nbInput placeholder="Name" [(ngModel)]="feature.name" [required]="true">
+      <tock-select-bot
+        [(configurationId)]="botApplicationConfigurationId"
+        [allowNoSelection]="true"
+        noConfigurationLabel="All Configurations"
+        ><br />
+        <input
+          #newCategory
+          class="first_new feature-property new"
+          nbInput
+          placeholder="Category"
+          [(ngModel)]="feature.category"
+          [disabled]="tockCategory"
+          [autofocus]="true"
+          [required]="true"
+        />
+        <input
+          class="first_new feature-property new"
+          nbInput
+          placeholder="Name"
+          [(ngModel)]="feature.name"
+          [required]="true"
+        />
         <div class="first_new feature-property cell">
-          <input nbInput (keyup.enter)="changeStartDateNew($event)" placeholder="start date"
-                 [(ngModel)]="feature.startDate"
-                 [nbDatepicker]="startDate" (ngModelChange)="changeStartDateNew($event)">
-          <nb-datepicker #startDate (dateChange)="changeStartDateNew($event)"
-                         [max]="feature.endDate"></nb-datepicker>
+          <input
+            nbInput
+            (keyup.enter)="changeStartDateNew($event)"
+            placeholder="start date"
+            [(ngModel)]="feature.startDate"
+            [nbDatepicker]="startDate"
+            (ngModelChange)="changeStartDateNew($event)"
+          />
+          <nb-datepicker
+            #startDate
+            (dateChange)="changeStartDateNew($event)"
+            [max]="feature.endDate"
+          ></nb-datepicker>
         </div>
         <div class="first_new feature-property cell">
-          <input nbInput (keyup.enter)="changeEndDateNew($event)" placeholder="end date"
-                 [(ngModel)]="feature.endDate"
-                 [nbDatepicker]="endDate" (ngModelChange)="changeEndDateNew($event)">
-          <nb-datepicker #endDate (dateChange)="changeEndDateNew($event)" [min]="feature.startDate">>
+          <input
+            nbInput
+            (keyup.enter)="changeEndDateNew($event)"
+            placeholder="end date"
+            [(ngModel)]="feature.endDate"
+            [nbDatepicker]="endDate"
+            (ngModelChange)="changeEndDateNew($event)"
+          />
+          <nb-datepicker
+            #endDate
+            (dateChange)="changeEndDateNew($event)"
+            [min]="feature.startDate"
+            >>
           </nb-datepicker>
         </div>
-        <nb-toggle class="first_new feature-action" status="primary" [checked]="feature.enabled"
-                   (checkedChange)="toggleNew($event)" nbTooltip="Status"></nb-toggle>
+        <nb-toggle
+          class="first_new feature-action"
+          status="primary"
+          [checked]="feature.enabled"
+          (checkedChange)="toggleNew($event)"
+          nbTooltip="Status"
+        ></nb-toggle>
       </tock-select-bot>
     </div>
     <div *ngIf="!create">
@@ -56,38 +105,92 @@
         <p>No rules set to enable/disable Features.</p>
       </div>
       <div class="features-table">
-        <div *ngFor="let f of features" class="feature">
-          <div class="feature-property cell" [nbTooltip]="'Category: ' + f.category">{{f.category}}</div>
-          <div class="feature-property cell" [nbTooltip]="'Feature: ' + f.name">{{f.name}}</div>
+        <div
+          *ngFor="let f of features"
+          class="feature"
+        >
+          <div
+            class="feature-property cell"
+            [nbTooltip]="'Category: ' + f.category"
+          >
+            {{ f.category }}
+          </div>
+          <div
+            class="feature-property cell"
+            [nbTooltip]="'Feature: ' + f.name"
+          >
+            {{ f.name }}
+          </div>
           <div class="feature-property cell">
-            <div *ngIf="f.configuration" [nbTooltip]="'Apply to Configuration: ' + f.configuration.applicationId">
-              <img src="{{f.configuration.connectorType.iconUrl()}}"
-                   class="connector"
-                   [nbTooltip]="f.configuration.connectorType.label()"/>
+            <div
+              *ngIf="f.configuration"
+              [nbTooltip]="'Apply to Configuration: ' + f.configuration.applicationId"
+            >
+              <img
+                src="{{ f.configuration.connectorType.iconUrl() }}"
+                class="connector"
+                [nbTooltip]="f.configuration.connectorType.label()"
+              />
               {{ f.configuration.connectorType.label() }} ( {{ f.configuration.applicationId }})
             </div>
-            <div *ngIf="!f.configuration" nbTooltip="Apply to All Configurations">All Configurations</div>
+            <div
+              *ngIf="!f.configuration"
+              nbTooltip="Apply to All Configurations"
+            >
+              All Configurations
+            </div>
           </div>
           <div class="feature-action cell">
-            <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
-                       [nbTooltip]="f.enabled ? 'Disable Feature & Reset Dates' : 'Enable Feature'"></nb-toggle>
+            <nb-toggle
+              status="primary"
+              [checked]="f.enabled"
+              (checkedChange)="toggle(f, $event)"
+              [nbTooltip]="f.enabled ? 'Disable Feature & Reset Dates' : 'Enable Feature'"
+            ></nb-toggle>
           </div>
           <div class="feature-property cell">
-            <input nbInput (keyup.enter)="changeStartDate(f, $event)" placeholder="start date"
-                   [(ngModel)]="f.startDate"
-                   [nbDatepicker]="startDate" (ngModelChange)="changeStartDate(f, $event)"
-                   size="12" [nbTooltip]="f.startDate ? 'From: ' + f.startDate : 'No start date set'">
-            <nb-datepicker #startDate (dateChange)="changeStartDate(f, $event)" [max]="f.endDate"></nb-datepicker>
+            <input
+              nbInput
+              (keyup.enter)="changeStartDate(f, $event)"
+              placeholder="start date"
+              [(ngModel)]="f.startDate"
+              [nbDatepicker]="startDate"
+              (ngModelChange)="changeStartDate(f, $event)"
+              size="12"
+              [nbTooltip]="f.startDate ? 'From: ' + f.startDate : 'No start date set'"
+            />
+            <nb-datepicker
+              #startDate
+              (dateChange)="changeStartDate(f, $event)"
+              [max]="f.endDate"
+            ></nb-datepicker>
           </div>
           <div class="feature-property cell">
-            <input nbInput (keyup.enter)="changeEndDate(f, $event)" placeholder="end date" [(ngModel)]="f.endDate"
-                   [nbDatepicker]="endDate" (ngModelChange)="changeEndDate(f, $event)"
-                   size="12" [nbTooltip]="f.endDate ? 'Until: ' + f.endDate : 'No end date set'">
-            <nb-datepicker #endDate (dateChange)="changeEndDate(f, $event)" [min]="f.startDate"></nb-datepicker>
+            <input
+              nbInput
+              (keyup.enter)="changeEndDate(f, $event)"
+              placeholder="end date"
+              [(ngModel)]="f.endDate"
+              [nbDatepicker]="endDate"
+              (ngModelChange)="changeEndDate(f, $event)"
+              size="12"
+              [nbTooltip]="f.endDate ? 'Until: ' + f.endDate : 'No end date set'"
+            />
+            <nb-datepicker
+              #endDate
+              (dateChange)="changeEndDate(f, $event)"
+              [min]="f.startDate"
+            ></nb-datepicker>
           </div>
           <div class="feature-action cell">
-            <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger"
-                    size="small">
+            <button
+              nbButton
+              (click)="deleteFeature(f)"
+              nbTooltip="Delete Rule"
+              outline
+              status="danger"
+              size="small"
+            >
               <nb-icon icon="trash-2-outline"></nb-icon>
             </button>
           </div>
@@ -96,7 +199,22 @@
     </div>
   </nb-card-body>
   <nb-card-footer *ngIf="create">
-    <button nbButton size="small" status="danger" (click)="cancelCreate()">Cancel</button>
-    <button nbButton size="small" status="primary" style="margin-left: 20px" (click)="addFeature()">Add</button>
+    <button
+      nbButton
+      size="small"
+      status="danger"
+      (click)="cancelCreate()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      style="margin-left: 20px"
+      (click)="addFeature()"
+    >
+      Add
+    </button>
   </nb-card-footer>
 </nb-card>

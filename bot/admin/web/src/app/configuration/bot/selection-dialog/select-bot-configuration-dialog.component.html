@@ -15,40 +15,69 @@
   -->
 
 <nb-card>
-  <nb-card-header>{{title}}</nb-card-header>
+  <nb-card-header>{{ title }}</nb-card-header>
   <nb-card-body>
     <div *ngIf="!valid">
-      <nb-icon icon="alert-triangle" status="danger"></nb-icon>
+      <nb-icon
+        icon="alert-triangle"
+        status="danger"
+      ></nb-icon>
       Please select a Bot Configuration value.
     </div>
-    <nb-select placeholder="Select a Bot Application Configuration..." [(selected)]="selectedConfig"
-               class="configuration-select" [status]="validationStatus()">
+    <nb-select
+      placeholder="Select a Bot Application Configuration..."
+      [(selected)]="selectedConfig"
+      class="configuration-select"
+      [status]="validationStatus()"
+    >
       <nb-select-label>
-        <span class="configuration-select-label" *ngIf="selectedConfig">
-            <span class="configuration-name">{{selectedConfig.name}}</span>
-            <span class="configuration-connectors">
-              <img *ngFor="let connectorConfig of selectedConfig.configurations"
-                   [src]="connectorConfig.connectorType.iconUrl()"
-                   [alt]="connectorConfig.connectorType.label()"
-                   class="connector-icon"/>
-            </span>
+        <span
+          class="configuration-select-label"
+          *ngIf="selectedConfig"
+        >
+          <span class="configuration-name">{{ selectedConfig.name }}</span>
+          <span class="configuration-connectors">
+            <img
+              *ngFor="let connectorConfig of selectedConfig.configurations"
+              [src]="connectorConfig.connectorType.iconUrl()"
+              [alt]="connectorConfig.connectorType.label()"
+              class="connector-icon"
+            />
+          </span>
         </span>
       </nb-select-label>
-      <nb-option *ngFor="let config of botApplicationConfigurations" [value]="config">
+      <nb-option
+        *ngFor="let config of botApplicationConfigurations"
+        [value]="config"
+      >
         <span class="configuration-select-label">
-          <span class="configuration-name">{{config.name}}</span>
+          <span class="configuration-name">{{ config.name }}</span>
           <span class="configuration-connectors">
-            <img *ngFor="let connectorConfig of config.configurations"
-                 [src]="connectorConfig.connectorType.iconUrl()"
-                 [alt]="connectorConfig.connectorType.label()"
-                 class="connector-icon"/>
+            <img
+              *ngFor="let connectorConfig of config.configurations"
+              [src]="connectorConfig.connectorType.iconUrl()"
+              [alt]="connectorConfig.connectorType.label()"
+              class="connector-icon"
+            />
           </span>
         </span>
       </nb-option>
     </nb-select>
   </nb-card-body>
   <nb-card-footer class="button-footer">
-    <button nbButton (click)="close()">Cancel</button>
-    <button nbButton status="primary" (click)="submit()" (submit)="submit()">OK</button>
+    <button
+      nbButton
+      (click)="close()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      status="primary"
+      (click)="submit()"
+      (submit)="submit()"
+    >
+      OK
+    </button>
   </nb-card-footer>
 </nb-card>

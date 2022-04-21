@@ -37,7 +37,7 @@ data class NlpResult(
     /**
      * The selected entities.
      */
-    val entities: List<NlpEntityValue>,
+    val entities: List<NlpEntityValue> = emptyList(),
     /**
      * The entities found but not retained.
      */
@@ -45,11 +45,11 @@ data class NlpResult(
     /**
      * The intent evaluated probability.
      */
-    val intentProbability: Double,
+    val intentProbability: Double = 1.0,
     /**
      * The average entity evaluation probability.
      */
-    val entitiesProbability: Double,
+    val entitiesProbability: Double = 1.0,
     /**
      * The analysed query.
      */

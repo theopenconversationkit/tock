@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
-import {ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot} from "@angular/router";
-import {AuthService} from "./auth.service";
-import {environment} from "../../../environments/environment";
-import {StateService} from "../state.service";
-import {UserRole} from "../../model/auth";
-import {CoreConfig} from "../core.config";
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  CanActivateChild,
+  Router,
+  RouterStateSnapshot
+} from '@angular/router';
+import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
+import { StateService } from '../state.service';
+import { UserRole } from '../../model/auth';
+import { CoreConfig } from '../core.config';
 
 @Injectable()
 export class AuthGuard implements CanActivate, CanActivateChild {
-
   private autologin = environment.autologin;
   private rolesMap: Map<UserRole, string>;
 
@@ -32,8 +37,9 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     private authService: AuthService,
     private router: Router,
     private userState: StateService,
-    private configuration: CoreConfig) {
-    this.rolesMap = configuration.roleMap
+    private configuration: CoreConfig
+  ) {
+    this.rolesMap = configuration.roleMap;
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
@@ -48,9 +54,13 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   private checkLogin(url: string): boolean {
     const login = this.authService.isLoggedIn();
     if (login) {
-      if ((!this.userState.hasRole(UserRole.nlpUser) && url.startsWith(this.rolesMap.get(UserRole.nlpUser)))
-        || (!this.userState.hasRole(UserRole.botUser) && url.startsWith(this.rolesMap.get(UserRole.botUser)))) {
-        setTimeout(_ => {
+      if (
+        (!this.userState.hasRole(UserRole.nlpUser) &&
+          url.startsWith(this.rolesMap.get(UserRole.nlpUser))) ||
+        (!this.userState.hasRole(UserRole.botUser) &&
+          url.startsWith(this.rolesMap.get(UserRole.botUser)))
+      ) {
+        setTimeout((_) => {
           if (this.userState.hasRole(UserRole.nlpUser)) {
             this.router.navigateByUrl(this.rolesMap.get(UserRole.nlpUser));
           } else if (this.userState.hasRole(UserRole.botUser)) {
@@ -66,13 +76,15 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       return true;
     } else {
       if (this.authService.isSSO()) {
-        this.authService.loadUser().subscribe(u => this.router.navigateByUrl(url === "/login" ? "/" : url));
+        this.authService
+          .loadUser()
+          .subscribe((u) => this.router.navigateByUrl(url === '/login' ? '/' : url));
         return false;
       } else if (this.autologin) {
         this.autologin = false;
-        this.authService.authenticate(environment.default_user, environment.default_password).subscribe(_ =>
-          this.router.navigateByUrl(url)
-        );
+        this.authService
+          .authenticate(environment.default_user, environment.default_password)
+          .subscribe((_) => this.router.navigateByUrl(url));
         return false;
       }
     }

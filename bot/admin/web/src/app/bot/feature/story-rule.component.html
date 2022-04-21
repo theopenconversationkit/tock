@@ -14,14 +14,32 @@
   ~ limitations under the License.
   -->
 
-<nb-card *ngIf="stories.length !== 0" class="features" [nbSpinner]="loadingStoryRules" nbSpinnerStatus="primary">
-  <nb-card-header style="display: flex;">
+<nb-card
+  *ngIf="stories.length !== 0"
+  class="features"
+  [nbSpinner]="loadingStoryRules"
+  nbSpinnerStatus="primary"
+>
+  <nb-card-header style="display: flex">
     <span>Story Rules</span>
-    <nb-actions size="small" style="cursor: pointer;">
-      <nb-action class="control-item" nbTooltip="Refresh" (click)="refresh()" *ngIf="!create">
+    <nb-actions
+      size="small"
+      style="cursor: pointer"
+    >
+      <nb-action
+        class="control-item"
+        nbTooltip="Refresh"
+        (click)="refresh()"
+        *ngIf="!create"
+      >
         <i class="material-icons tock-toolbar-menu">refresh</i>
       </nb-action>
-      <nb-action class="control-item" nbTooltip="Add a new Story Rule" (click)="prepareCreate()" *ngIf="!create">
+      <nb-action
+        class="control-item"
+        nbTooltip="Add a new Story Rule"
+        (click)="prepareCreate()"
+        *ngIf="!create"
+      >
         <i class="material-icons tock-toolbar-menu">add_box</i>
       </nb-action>
     </nb-actions>
@@ -29,65 +47,194 @@
   <nb-card-body>
     <!-- Create new rule -->
     <div *ngIf="create">
-      <tock-select-bot [(configurationId)]="feature.botApplicationConfigurationId" [allowNoSelection]="true"
-                       noConfigurationLabel="All Configurations">
+      <tock-select-bot
+        [(configurationId)]="feature.botApplicationConfigurationId"
+        [allowNoSelection]="true"
+        noConfigurationLabel="All Configurations"
+      >
         <span class="rule-type-radio">
           <span class="rule-type-radio-label">Rule type :</span>
-          <nb-radio-group class="rule-type-radio-group" [(ngModel)]="selectedRuleType" (valueChange)="changeTypeTo($event)">
-            <nb-radio *ngFor="let type of ruleTypes" [value]="type">{{type}}</nb-radio>
+          <nb-radio-group
+            class="rule-type-radio-group"
+            [(ngModel)]="selectedRuleType"
+            (valueChange)="changeTypeTo($event)"
+          >
+            <nb-radio
+              *ngFor="let type of ruleTypes"
+              [value]="type"
+              >{{ type }}</nb-radio
+            >
           </nb-radio-group>
         </span>
 
-        <nb-select outline status="primary" [(selected)]="feature.story" class="story new" nbTooltip="Story">
-          <nb-select-label *ngIf="feature" class="story-selector-label">
-            <nb-icon *ngIf="feature.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="feature.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="feature.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            <span class="story-label">{{feature.story.name}}</span>
+        <nb-select
+          outline
+          status="primary"
+          [(selected)]="feature.story"
+          class="story new"
+          nbTooltip="Story"
+        >
+          <nb-select-label
+            *ngIf="feature"
+            class="story-selector-label"
+          >
+            <nb-icon
+              *ngIf="feature.story.isBuiltIn()"
+              class="story-type"
+              icon="cube"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="feature.story.isSimpleAnswer()"
+              class="story-type"
+              icon="message-square-outline"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="feature.story.isScriptAnswer()"
+              class="story-type"
+              icon="code"
+            ></nb-icon>
+            <span class="story-label">{{ feature.story.name }}</span>
           </nb-select-label>
-          <nb-option *ngFor="let s of storiesToDisplay" [value]="s" class="story-label">
-            <nb-icon *ngIf="s.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="s.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="s.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            {{s.name}}
+          <nb-option
+            *ngFor="let s of storiesToDisplay"
+            [value]="s"
+            class="story-label"
+          >
+            <nb-icon
+              *ngIf="s.isBuiltIn()"
+              class="story-type"
+              icon="cube"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isSimpleAnswer()"
+              class="story-type"
+              icon="message-square-outline"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isScriptAnswer()"
+              class="story-type"
+              icon="code"
+            ></nb-icon>
+            {{ s.name }}
           </nb-option>
         </nb-select>
-        <nb-select outline status="primary" placeholder="Story Redirection" [(selected)]="feature.switchToStory"
-                   class="story new" nbTooltip="Story Redirection" (selectedChange)="onSwitchStoryChange($event)" *ngIf="isRedirectionRule()">
-          <nb-select-label *ngIf="feature && feature.switchToStory" class="story-selector-label">
-            <nb-icon *ngIf="feature.switchToStory.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="feature.switchToStory.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="feature.switchToStory.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            <span class="story-label">{{feature.switchToStory.name}}</span>
+        <nb-select
+          outline
+          status="primary"
+          placeholder="Story Redirection"
+          [(selected)]="feature.switchToStory"
+          class="story new"
+          nbTooltip="Story Redirection"
+          (selectedChange)="onSwitchStoryChange($event)"
+          *ngIf="isRedirectionRule()"
+        >
+          <nb-select-label
+            *ngIf="feature && feature.switchToStory"
+            class="story-selector-label"
+          >
+            <nb-icon
+              *ngIf="feature.switchToStory.isBuiltIn()"
+              class="story-type"
+              icon="cube"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="feature.switchToStory.isSimpleAnswer()"
+              class="story-type"
+              icon="message-square-outline"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="feature.switchToStory.isScriptAnswer()"
+              class="story-type"
+              icon="code"
+            ></nb-icon>
+            <span class="story-label">{{ feature.switchToStory.name }}</span>
           </nb-select-label>
           <nb-option class="story-label">No Redirection</nb-option>
-          <nb-option *ngFor="let s of stories" [value]="s" class="story-label">
-            <nb-icon *ngIf="s.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="s.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="s.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            <span class="story-label">{{s.name}}</span>
+          <nb-option
+            *ngFor="let s of stories"
+            [value]="s"
+            class="story-label"
+          >
+            <nb-icon
+              *ngIf="s.isBuiltIn()"
+              class="story-type"
+              icon="cube"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isSimpleAnswer()"
+              class="story-type"
+              icon="message-square-outline"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isScriptAnswer()"
+              class="story-type"
+              icon="code"
+            ></nb-icon>
+            <span class="story-label">{{ s.name }}</span>
           </nb-option>
         </nb-select>
-        <nb-select outline status="primary" placeholder="Story Ending" [(selected)]="feature.endWithStory"
-                   class="story new" nbTooltip="Story Ending" (selectedChange)="onSwitchStoryEnding($event)" *ngIf="isEndingRule()">
-          <nb-select-label *ngIf="feature && feature.endWithStory" class="story-selector-label">
-            <nb-icon *ngIf="feature.endWithStory.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="feature.endWithStory.isSimpleAnswer()" class="story-type"
-                     icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="feature.endWithStory.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            <span class="story-label">{{feature.endWithStory.name}}</span>
+        <nb-select
+          outline
+          status="primary"
+          placeholder="Story Ending"
+          [(selected)]="feature.endWithStory"
+          class="story new"
+          nbTooltip="Story Ending"
+          (selectedChange)="onSwitchStoryEnding($event)"
+          *ngIf="isEndingRule()"
+        >
+          <nb-select-label
+            *ngIf="feature && feature.endWithStory"
+            class="story-selector-label"
+          >
+            <nb-icon
+              *ngIf="feature.endWithStory.isBuiltIn()"
+              class="story-type"
+              icon="cube"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="feature.endWithStory.isSimpleAnswer()"
+              class="story-type"
+              icon="message-square-outline"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="feature.endWithStory.isScriptAnswer()"
+              class="story-type"
+              icon="code"
+            ></nb-icon>
+            <span class="story-label">{{ feature.endWithStory.name }}</span>
           </nb-select-label>
           <nb-option>No Ending</nb-option>
-          <nb-option *ngFor="let s of stories" [value]="s" class="story-label">
-            <nb-icon *ngIf="s.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-            <nb-icon *ngIf="s.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-            <nb-icon *ngIf="s.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-            <span class="story-label">{{s.name}}</span>
+          <nb-option
+            *ngFor="let s of stories"
+            [value]="s"
+            class="story-label"
+          >
+            <nb-icon
+              *ngIf="s.isBuiltIn()"
+              class="story-type"
+              icon="cube"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isSimpleAnswer()"
+              class="story-type"
+              icon="message-square-outline"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isScriptAnswer()"
+              class="story-type"
+              icon="code"
+            ></nb-icon>
+            <span class="story-label">{{ s.name }}</span>
           </nb-option>
         </nb-select>
-        <nb-toggle class="new-toggle" status="primary" [checked]="feature.enabled"
-                   (checkedChange)="toggleNew($event)"
-                   nbTooltip="Story Enabled"></nb-toggle>
+        <nb-toggle
+          class="new-toggle"
+          status="primary"
+          [checked]="feature.enabled"
+          (checkedChange)="toggleNew($event)"
+          nbTooltip="Story Enabled"
+        ></nb-toggle>
       </tock-select-bot>
     </div>
 
@@ -95,9 +242,15 @@
     <div *ngIf="!create">
       <!-- Activation rules -->
       <nb-card>
-        <nb-card-header style="position: relative;">
-          <nb-badge [text]="(!disabledFeatures ? 0 : !disabledFeatures.length ? 0 : disabledFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
-                    [status]="disabledFeatures.length < 1 ? 'success' : 'info'" position="top left"></nb-badge>
+        <nb-card-header style="position: relative">
+          <nb-badge
+            [text]="
+              (!disabledFeatures ? 0 : !disabledFeatures.length ? 0 : disabledFeatures.length)
+                | i18nPlural: rulesPluralMapping['rule']
+            "
+            [status]="disabledFeatures.length < 1 ? 'success' : 'info'"
+            position="top left"
+          ></nb-badge>
           <span nbTooltip="Enabling/Disabling Stories">Activation</span>
           <tock-info-button message="Rules used to enable/disable Stories."></tock-info-button>
         </nb-card-header>
@@ -106,32 +259,70 @@
             <p>No rules set to enable/disable Stories.</p>
           </div>
           <div class="features-table">
-            <div *ngFor="let f of disabledFeatures" class="feature">
-              <div class="feature-property cell" [nbTooltip]="'Story: ' + f.story.name">
-                <nb-icon *ngIf="f.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                <nb-icon *ngIf="f.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-                <nb-icon *ngIf="f.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                {{f.story.name}}
+            <div
+              *ngFor="let f of disabledFeatures"
+              class="feature"
+            >
+              <div
+                class="feature-property cell"
+                [nbTooltip]="'Story: ' + f.story.name"
+              >
+                <nb-icon
+                  *ngIf="f.story.isBuiltIn()"
+                  class="story-type"
+                  icon="cube"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isSimpleAnswer()"
+                  class="story-type"
+                  icon="message-square-outline"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isScriptAnswer()"
+                  class="story-type"
+                  icon="code"
+                ></nb-icon>
+                {{ f.story.name }}
               </div>
               <div class="feature-property conf cell">
-                <div *ngIf="f.conf" [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId">
-                  <img src="{{f.conf.connectorType.iconUrl()}}"
-                       class="connector"
-                       [nbTooltip]="f.conf.connectorType.label()"/>
+                <div
+                  *ngIf="f.conf"
+                  [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId"
+                >
+                  <img
+                    src="{{ f.conf.connectorType.iconUrl() }}"
+                    class="connector"
+                    [nbTooltip]="f.conf.connectorType.label()"
+                  />
                   {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
                 </div>
-                <div *ngIf="!f.conf" nbTooltip="Apply to All Configurations">All Configurations</div>
+                <div
+                  *ngIf="!f.conf"
+                  nbTooltip="Apply to All Configurations"
+                >
+                  All Configurations
+                </div>
               </div>
               <div class="feature-property cell">
                 <em>Story is {{ f.enabled ? 'Enabled' : 'Disabled' }}</em>
               </div>
               <div class="feature-action cell">
-                <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
-                           nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Story"></nb-toggle>
+                <nb-toggle
+                  status="primary"
+                  [checked]="f.enabled"
+                  (checkedChange)="toggle(f, $event)"
+                  nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Story"
+                ></nb-toggle>
               </div>
               <div class="feature-action cell">
-                <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger"
-                        size="small">
+                <button
+                  nbButton
+                  (click)="deleteFeature(f)"
+                  nbTooltip="Delete Rule"
+                  outline
+                  status="danger"
+                  size="small"
+                >
                   <nb-icon icon="trash-2-outline"></nb-icon>
                 </button>
               </div>
@@ -142,53 +333,117 @@
 
       <!-- Redirection rules -->
       <nb-card>
-        <nb-card-header style="position: relative;">
-          <nb-badge [text]="(!redirectedFeatures? 0 : !redirectedFeatures.length? 0: redirectedFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
-                    [status]="redirectedFeatures.length < 1 ? 'success' : 'info'" position="top left"></nb-badge>
+        <nb-card-header style="position: relative">
+          <nb-badge
+            [text]="
+              (!redirectedFeatures ? 0 : !redirectedFeatures.length ? 0 : redirectedFeatures.length)
+                | i18nPlural: rulesPluralMapping['rule']
+            "
+            [status]="redirectedFeatures.length < 1 ? 'success' : 'info'"
+            position="top left"
+          ></nb-badge>
           <span nbTooltip="Forwarding Stories (to Other Stories)">Redirection</span>
-          <tock-info-button message="Rules used to redirect a given story to other stories."></tock-info-button>
+          <tock-info-button
+            message="Rules used to redirect a given story to other stories."
+          ></tock-info-button>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="!redirectedFeatures || redirectedFeatures.length < 1">
             <p>No rules set to redirect Stories (to other Stories).</p>
           </div>
           <div class="features-table">
-            <div *ngFor="let f of redirectedFeatures" class="feature">
-              <div class="feature-property cell" [nbTooltip]="'Story: ' + f.story.name">
-                <nb-icon *ngIf="f.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                <nb-icon *ngIf="f.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-                <nb-icon *ngIf="f.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                {{f.story.name}}
+            <div
+              *ngFor="let f of redirectedFeatures"
+              class="feature"
+            >
+              <div
+                class="feature-property cell"
+                [nbTooltip]="'Story: ' + f.story.name"
+              >
+                <nb-icon
+                  *ngIf="f.story.isBuiltIn()"
+                  class="story-type"
+                  icon="cube"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isSimpleAnswer()"
+                  class="story-type"
+                  icon="message-square-outline"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isScriptAnswer()"
+                  class="story-type"
+                  icon="code"
+                ></nb-icon>
+                {{ f.story.name }}
               </div>
               <div class="feature-property conf cell">
-                <div *ngIf="f.conf" [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId">
-                  <img src="{{f.conf.connectorType.iconUrl()}}"
-                       class="connector"
-                       [nbTooltip]="f.conf.connectorType.label()"/>
+                <div
+                  *ngIf="f.conf"
+                  [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId"
+                >
+                  <img
+                    src="{{ f.conf.connectorType.iconUrl() }}"
+                    class="connector"
+                    [nbTooltip]="f.conf.connectorType.label()"
+                  />
                   {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
                 </div>
-                <div *ngIf="!f.conf" nbTooltip="Apply to All Configurations">All Configurations</div>
-              </div>
-              <div *ngIf="f.switchToStory" class="feature-property cell"
-                   [nbTooltip]="'Redirect to Story: ' + f.switchToStory.name">
-                <div>
-                  <nb-icon *ngIf="f.switchToStory.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                  <nb-icon *ngIf="f.switchToStory.isSimpleAnswer()" class="story-type"
-                           icon="message-square-outline"></nb-icon>
-                  <nb-icon *ngIf="f.switchToStory.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                  <span class="story-label">{{f.switchToStory.name}}</span>
+                <div
+                  *ngIf="!f.conf"
+                  nbTooltip="Apply to All Configurations"
+                >
+                  All Configurations
                 </div>
               </div>
-              <div *ngIf="!f.switchToStory" class="feature-property cell">
+              <div
+                *ngIf="f.switchToStory"
+                class="feature-property cell"
+                [nbTooltip]="'Redirect to Story: ' + f.switchToStory.name"
+              >
+                <div>
+                  <nb-icon
+                    *ngIf="f.switchToStory.isBuiltIn()"
+                    class="story-type"
+                    icon="cube"
+                  ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.switchToStory.isSimpleAnswer()"
+                    class="story-type"
+                    icon="message-square-outline"
+                  ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.switchToStory.isScriptAnswer()"
+                    class="story-type"
+                    icon="code"
+                  ></nb-icon>
+                  <span class="story-label">{{ f.switchToStory.name }}</span>
+                </div>
+              </div>
+              <div
+                *ngIf="!f.switchToStory"
+                class="feature-property cell"
+              >
                 <em>Unknown story</em>
               </div>
               <div class="feature-action cell">
-                <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
-                           nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Redirection"></nb-toggle>
+                <nb-toggle
+                  status="primary"
+                  [checked]="f.enabled"
+                  (checkedChange)="toggle(f, $event)"
+                  nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Redirection"
+                ></nb-toggle>
               </div>
               <div class="feature-action cell">
-                <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger" size="small"
-                        class="delete">
+                <button
+                  nbButton
+                  (click)="deleteFeature(f)"
+                  nbTooltip="Delete Rule"
+                  outline
+                  status="danger"
+                  size="small"
+                  class="delete"
+                >
                   <nb-icon icon="trash-2-outline"></nb-icon>
                 </button>
               </div>
@@ -199,53 +454,117 @@
 
       <!-- Ending rules -->
       <nb-card>
-        <nb-card-header style="position: relative;">
-          <nb-badge [text]="(!endingFeatures? 0 : !endingFeatures.length ? 0 : endingFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
-                    [status]="endingFeatures.length < 1 ? 'success' : 'info'" position="top left"></nb-badge>
+        <nb-card-header style="position: relative">
+          <nb-badge
+            [text]="
+              (!endingFeatures ? 0 : !endingFeatures.length ? 0 : endingFeatures.length)
+                | i18nPlural: rulesPluralMapping['rule']
+            "
+            [status]="endingFeatures.length < 1 ? 'success' : 'info'"
+            position="top left"
+          ></nb-badge>
           <span nbTooltip="Ending Stories (with Other Stories)">Ending</span>
-          <tock-info-button message="Rules used to end stories with other stories."></tock-info-button>
+          <tock-info-button
+            message="Rules used to end stories with other stories."
+          ></tock-info-button>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="!endingFeatures || endingFeatures.length < 1">
             <p>No rules set to end Stories (with other Stories).</p>
           </div>
           <div class="features-table">
-            <div *ngFor="let f of endingFeatures" class="feature">
-              <div class="feature-property cell" [nbTooltip]="'Story: ' + f.story.name">
-                <nb-icon *ngIf="f.story.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                <nb-icon *ngIf="f.story.isSimpleAnswer()" class="story-type" icon="message-square-outline"></nb-icon>
-                <nb-icon *ngIf="f.story.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                {{f.story.name}}
+            <div
+              *ngFor="let f of endingFeatures"
+              class="feature"
+            >
+              <div
+                class="feature-property cell"
+                [nbTooltip]="'Story: ' + f.story.name"
+              >
+                <nb-icon
+                  *ngIf="f.story.isBuiltIn()"
+                  class="story-type"
+                  icon="cube"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isSimpleAnswer()"
+                  class="story-type"
+                  icon="message-square-outline"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isScriptAnswer()"
+                  class="story-type"
+                  icon="code"
+                ></nb-icon>
+                {{ f.story.name }}
               </div>
               <div class="feature-property conf cell">
-                <div *ngIf="f.conf" [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId">
-                  <img src="{{f.conf.connectorType.iconUrl()}}"
-                       class="connector"
-                       [nbTooltip]="f.conf.connectorType.label()"/>
+                <div
+                  *ngIf="f.conf"
+                  [nbTooltip]="'Apply to Configuration: ' + f.conf.applicationId"
+                >
+                  <img
+                    src="{{ f.conf.connectorType.iconUrl() }}"
+                    class="connector"
+                    [nbTooltip]="f.conf.connectorType.label()"
+                  />
                   {{ f.conf.connectorType.label() }} ( {{ f.conf.applicationId }})
                 </div>
-                <div *ngIf="!f.conf" nbTooltip="Apply to All Configurations">All Configurations</div>
-              </div>
-              <div *ngIf="f.endWithStory" class="feature-property cell"
-                   [nbTooltip]="'Redirect to Story: ' + f.endWithStory.name">
-                <div>
-                  <nb-icon *ngIf="f.endWithStory.isBuiltIn()" class="story-type" icon="cube"></nb-icon>
-                  <nb-icon *ngIf="f.endWithStory.isSimpleAnswer()" class="story-type"
-                           icon="message-square-outline"></nb-icon>
-                  <nb-icon *ngIf="f.endWithStory.isScriptAnswer()" class="story-type" icon="code"></nb-icon>
-                  <span class="story-label">{{f.endWithStory.name}}</span>
+                <div
+                  *ngIf="!f.conf"
+                  nbTooltip="Apply to All Configurations"
+                >
+                  All Configurations
                 </div>
               </div>
-              <div *ngIf="!f.endWithStory" class="feature-property cell">
+              <div
+                *ngIf="f.endWithStory"
+                class="feature-property cell"
+                [nbTooltip]="'Redirect to Story: ' + f.endWithStory.name"
+              >
+                <div>
+                  <nb-icon
+                    *ngIf="f.endWithStory.isBuiltIn()"
+                    class="story-type"
+                    icon="cube"
+                  ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.endWithStory.isSimpleAnswer()"
+                    class="story-type"
+                    icon="message-square-outline"
+                  ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.endWithStory.isScriptAnswer()"
+                    class="story-type"
+                    icon="code"
+                  ></nb-icon>
+                  <span class="story-label">{{ f.endWithStory.name }}</span>
+                </div>
+              </div>
+              <div
+                *ngIf="!f.endWithStory"
+                class="feature-property cell"
+              >
                 <em>Unknown story</em>
               </div>
               <div class="feature-action cell">
-                <nb-toggle status="primary" [checked]="f.enabled" (checkedChange)="toggle(f, $event)"
-                           nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Redirection"></nb-toggle>
+                <nb-toggle
+                  status="primary"
+                  [checked]="f.enabled"
+                  (checkedChange)="toggle(f, $event)"
+                  nbTooltip="{{ f.enabled ? 'Disable' : 'Enable' }} Redirection"
+                ></nb-toggle>
               </div>
               <div class="feature-action cell">
-                <button nbButton (click)="deleteFeature(f)" nbTooltip="Delete Rule" outline status="danger" size="small"
-                        class="delete">
+                <button
+                  nbButton
+                  (click)="deleteFeature(f)"
+                  nbTooltip="Delete Rule"
+                  outline
+                  status="danger"
+                  size="small"
+                  class="delete"
+                >
                   <nb-icon icon="trash-2-outline"></nb-icon>
                 </button>
               </div>
@@ -256,8 +575,22 @@
     </div>
   </nb-card-body>
   <nb-card-footer *ngIf="create">
-    <button nbButton size="small" status="danger" (click)="cancelCreate()">Cancel</button>
-    <button nbButton size="small" status="primary" style="margin-left: 20px" (click)="addFeature()">Add Rule</button>
+    <button
+      nbButton
+      size="small"
+      status="danger"
+      (click)="cancelCreate()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      style="margin-left: 20px"
+      (click)="addFeature()"
+    >
+      Add Rule
+    </button>
   </nb-card-footer>
 </nb-card>
-

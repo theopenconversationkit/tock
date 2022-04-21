@@ -14,174 +14,294 @@
   ~ limitations under the License.
   -->
 
-<nb-card *ngIf="(botConfiguration.restConfigurations|async).length ===0" class="plans">
+<nb-card
+  *ngIf="(botConfiguration.restConfigurations | async).length === 0"
+  class="plans"
+>
   No bot configuration detected
 </nb-card>
 
-<nb-card *ngIf="xray" class="plans">
+<nb-card
+  *ngIf="xray"
+  class="plans"
+>
   <nb-card-header>Execute XRay plan</nb-card-header>
   <nb-card-body>
-    <tock-select-bot [configurationId]="xrayBotConfigurationId"
-                     [returnsRestConfiguration]="true"
-                     (selectionChange)="changeBotConfiguration($event)"
-                     [allowNoSelection]="true"></tock-select-bot>
+    <tock-select-bot
+      [configurationId]="xrayBotConfigurationId"
+      [returnsRestConfiguration]="true"
+      (selectionChange)="changeBotConfiguration($event)"
+      [allowNoSelection]="true"
+    ></tock-select-bot>
 
-    <input nbInput
-           status="primary"
-           class="input-text"
-           placeholder="JIRA Test Plan"
-           [(ngModel)]="xray.testPlanKey"
-           (keyup.enter)="executeXRay()">
+    <input
+      nbInput
+      status="primary"
+      class="input-text"
+      placeholder="JIRA Test Plan"
+      [(ngModel)]="xray.testPlanKey"
+      (keyup.enter)="executeXRay()"
+    />
 
-    <button mat-button (click)="executeXRay()" color="primary">Create</button>
-    <div *ngIf="executeXray"><br>
-      <img src="{{baseHref}}assets/images/loading.gif" width="40px" height="40px"/>
+    <button
+      mat-button
+      (click)="executeXRay()"
+      color="primary"
+    >
+      Create
+    </button>
+    <div *ngIf="executeXray">
+      <br />
+      <img
+        src="{{ baseHref }}assets/images/loading.gif"
+        width="40px"
+        height="40px"
+      />
     </div>
   </nb-card-body>
 </nb-card>
 
-<nb-card *ngIf="(botConfiguration.restConfigurations|async).length !==0" class="plans">
-  <nb-card-header style="display: flex;">Test Plans
-    <nb-actions size="small" style="cursor: pointer;">
-      <nb-action class="control-item" (click)="prepareCreateTestPlan()"
-                 *ngIf="!testPlanCreation"
-                 nbTooltip="Create a new Test Plan">
+<nb-card
+  *ngIf="(botConfiguration.restConfigurations | async).length !== 0"
+  class="plans"
+>
+  <nb-card-header style="display: flex"
+    >Test Plans
+    <nb-actions
+      size="small"
+      style="cursor: pointer"
+    >
+      <nb-action
+        class="control-item"
+        (click)="prepareCreateTestPlan()"
+        *ngIf="!testPlanCreation"
+        nbTooltip="Create a new Test Plan"
+      >
         <i class="material-icons tock-toolbar-menu">add_box</i>
       </nb-action>
     </nb-actions>
   </nb-card-header>
-  <nb-card-body style="background: #dadfe638;">
-    <div *ngIf="testPlanCreation" class="new-plan">
-      <input nbInput placeholder="Test Plan name" status="primary" class="input-new-plan"
-             [(ngModel)]="testPlanName"
-             (keyup.enter)="createTestPlan()">
-      <tock-select-bot [(configurationId)]="testBotConfigurationId" [returnsRestConfiguration]="true"></tock-select-bot>
+  <nb-card-body style="background: #dadfe638">
+    <div
+      *ngIf="testPlanCreation"
+      class="new-plan"
+    >
+      <input
+        nbInput
+        placeholder="Test Plan name"
+        status="primary"
+        class="input-new-plan"
+        [(ngModel)]="testPlanName"
+        (keyup.enter)="createTestPlan()"
+      />
+      <tock-select-bot
+        [(configurationId)]="testBotConfigurationId"
+        [returnsRestConfiguration]="true"
+      ></tock-select-bot>
 
-      <nb-actions size="tiny" style="cursor: pointer;">
-        <nb-action class="control-item" (click)="createTestPlan()"
-                   nbTooltip="Create" class="create">
+      <nb-actions
+        size="tiny"
+        style="cursor: pointer"
+      >
+        <nb-action
+          class="control-item"
+          (click)="createTestPlan()"
+          nbTooltip="Create"
+          class="create"
+        >
           <i class="material-icons tock-toolbar-menu">check_circle</i>
         </nb-action>
-        <nb-action class="control-item" (click)="resetCreateTestPlan()"
-                   nbTooltip="Cancel">
+        <nb-action
+          class="control-item"
+          (click)="resetCreateTestPlan()"
+          nbTooltip="Cancel"
+        >
           <i class="material-icons tock-toolbar-menu">cancel</i>
         </nb-action>
       </nb-actions>
     </div>
 
     <div *ngIf="testPlans">
-      <nb-card *ngFor="let p of testPlans" style="margin-bottom: 10px;">
+      <nb-card
+        *ngFor="let p of testPlans"
+        style="margin-bottom: 10px"
+      >
         <nb-card-header>
           <div>
-            Plan "{{p.name}}" - {{p.botName}}
-            <button *ngIf="p.dialogs.length !== 0" mat-button (click)="exec(p)"
-                    style="color:#73a1ff" matTooltip="Launch">
+            Plan "{{ p.name }}" - {{ p.botName }}
+            <button
+              *ngIf="p.dialogs.length !== 0"
+              mat-button
+              (click)="exec(p)"
+              style="color: #73a1ff"
+              matTooltip="Launch"
+            >
               <mat-icon>launch</mat-icon>
             </button>
-            <div *ngIf="executePlan && p == this.runningTestPlan"><br>
-              <img src="{{baseHref}}assets/images/loading.gif" width="40px" height="40px"/>
+            <div *ngIf="executePlan && p == this.runningTestPlan">
+              <br />
+              <img
+                src="{{ baseHref }}assets/images/loading.gif"
+                width="40px"
+                height="40px"
+              />
             </div>
-            <nb-actions size="small" style="cursor: pointer;float: right">
-              <nb-action class="control-item" (click)="deleteTestPlan(p)" nbTooltip="Delete" style="color: #ff708d;">
+            <nb-actions
+              size="small"
+              style="cursor: pointer; float: right"
+            >
+              <nb-action
+                class="control-item"
+                (click)="deleteTestPlan(p)"
+                nbTooltip="Delete"
+                style="color: #ff708d"
+              >
                 <i class="material-icons">delete_forever</i>
               </nb-action>
             </nb-actions>
           </div>
-          <div style="font-size: 14px;font-weight: 300; margin-top: 10px;">
-            {{p.dialogs.length}} Conversation{{p.dialogs.length < 2 ? '' : 's'}}
+          <div style="font-size: 14px; font-weight: 300; margin-top: 10px">
+            {{ p.dialogs.length }} Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
             <span *ngIf="p.dialogs.length !== 0">
-          - <button *ngIf="!p.displayDialog" mat-button (click)="showDialogs(p)">
-            <mat-icon>visibility</mat-icon>
-            Display Conversation{{p.dialogs.length < 2 ? '' : 's'}}
-          </button>
-            <button *ngIf="p.displayDialog" mat-button (click)="hideDialogs(p)">
-            <mat-icon>visibility_off</mat-icon>
-            Hide Conversation{{p.dialogs.length < 2 ? '' : 's'}}
-          </button>
+              -
+              <button
+                *ngIf="!p.displayDialog"
+                mat-button
+                (click)="showDialogs(p)"
+              >
+                <mat-icon>visibility</mat-icon>
+                Display Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
+              </button>
+              <button
+                *ngIf="p.displayDialog"
+                mat-button
+                (click)="hideDialogs(p)"
+              >
+                <mat-icon>visibility_off</mat-icon>
+                Hide Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
+              </button>
             </span>
             <span *ngIf="p.dialogs.length === 0">
-          - you can add dialogs via the Analytics menu.
+              - you can add dialogs via the Analytics menu.
             </span>
           </div>
         </nb-card-header>
         <nb-card-body>
-
           <ol *ngIf="p.displayDialog">
             <li *ngFor="let d of p.dialogs">
-               <span *ngIf="d.actions.length === 0">
-                 (no content)
-               </span>
+              <span *ngIf="d.actions.length === 0"> (no content) </span>
               <span *ngIf="d.actions.length !== 0">
-                 <tock-bot-message [message]="d.actions[0].messages[0]" [user]="true"></tock-bot-message>
-               </span>
+                <tock-bot-message
+                  [message]="d.actions[0].messages[0]"
+                  [user]="true"
+                ></tock-bot-message>
+              </span>
               ...
-              <button *ngIf="!d.displayActions" mat-button (click)="d.displayActions=true">
+              <button
+                *ngIf="!d.displayActions"
+                mat-button
+                (click)="d.displayActions = true"
+              >
                 <mat-icon>visibility</mat-icon>
                 Display all sentences
               </button>
-              <button *ngIf="d.displayActions" mat-button (click)="d.displayActions=false">
+              <button
+                *ngIf="d.displayActions"
+                mat-button
+                (click)="d.displayActions = false"
+              >
                 <mat-icon>visibility_off</mat-icon>
                 Hide all sentences
               </button>
-              <button mat-button (click)="removeDialog(p, d)" color="warn">
+              <button
+                mat-button
+                (click)="removeDialog(p, d)"
+                color="warn"
+              >
                 <mat-icon>delete</mat-icon>
                 Remove dialog
               </button>
-              <tock-display-dialog *ngIf="d.displayActions" [dialog]="d.toDialogReport()"></tock-display-dialog>
+              <tock-display-dialog
+                *ngIf="d.displayActions"
+                [dialog]="d.toDialogReport()"
+              ></tock-display-dialog>
             </li>
           </ol>
 
           <nb-accordion *ngIf="p.testPlanExecutions && p.testPlanExecutions.length > 0">
             <nb-accordion-item>
               <nb-accordion-item-header>
-                {{p.testPlanExecutions.length}} Executions
+                {{ p.testPlanExecutions.length }} Executions
                 <span class="last-execution-status">&nbsp;- last execution status :</span>
                 <span *ngIf="p.testPlanExecutions[0].nbErrors === 0">
-                <mat-icon style="height:auto" class="success">check_circle</mat-icon>
-              </span>
+                  <mat-icon
+                    style="height: auto"
+                    class="success"
+                    >check_circle</mat-icon
+                  >
+                </span>
                 <span *ngIf="p.testPlanExecutions[0].nbErrors !== 0">
-                <mat-icon class="error">error</mat-icon>
-              </span>
+                  <mat-icon class="error">error</mat-icon>
+                </span>
               </nb-accordion-item-header>
               <nb-accordion-item-body>
                 <ol>
                   <li *ngFor="let e of p.testPlanExecutions">
-                    {{e.date | amDateFormat: "HH:mm:ss YYYY-MM-DD"}}
-                    <button *ngIf="!e.displayExecution" mat-button (click)="e.displayExecution=true">
+                    {{ e.date | amDateFormat: 'HH:mm:ss YYYY-MM-DD' }}
+                    <button
+                      *ngIf="!e.displayExecution"
+                      mat-button
+                      (click)="e.displayExecution = true"
+                    >
                       <mat-icon>visibility</mat-icon>
                       Display details
                     </button>
-                    <button *ngIf="e.displayExecution" mat-button (click)="e.displayExecution=false">
+                    <button
+                      *ngIf="e.displayExecution"
+                      mat-button
+                      (click)="e.displayExecution = false"
+                    >
                       <mat-icon>visibility_off</mat-icon>
                       Hide details
                     </button>
                     <span *ngIf="e.nbErrors === 0">
-                <mat-icon style="height:auto" class="success">check_circle</mat-icon>
-                      {{e.dialogs.length}} conversation{{e.dialogs.length < 2 ? "" : "s"}}
-              </span>
+                      <mat-icon
+                        style="height: auto"
+                        class="success"
+                        >check_circle</mat-icon
+                      >
+                      {{ e.dialogs.length }} conversation{{ e.dialogs.length < 2 ? '' : 's' }}
+                    </span>
                     <span *ngIf="e.nbErrors !== 0">
-                <mat-icon class="error">error</mat-icon>
-                      {{e.nbErrors}} error{{e.nbErrors ? "" : "s"}} / {{e.dialogs.length}}
-                      conversation{{e.dialogs.length < 2 ? "" : "s"}}
-              </span>
+                      <mat-icon class="error">error</mat-icon>
+                      {{ e.nbErrors }} error{{ e.nbErrors ? '' : 's' }} /
+                      {{ e.dialogs.length }} conversation{{ e.dialogs.length < 2 ? '' : 's' }}
+                    </span>
                     <ol *ngIf="e.displayExecution">
                       <li *ngFor="let details of e.dialogs">
-                        <span *ngIf="!details.error"><mat-icon class="success">check_circle</mat-icon> Success</span>
+                        <span *ngIf="!details.error"
+                          ><mat-icon class="success">check_circle</mat-icon> Success</span
+                        >
                         <span *ngIf="details.error">
-                       <mat-icon class="error">error</mat-icon>
-                       Error
-                       <span *ngIf="details.dialogReport">
-                         <h4>Expected dialog:</h4>
-                            <tock-display-dialog [dialog]="details.dialogReport"></tock-display-dialog>
+                          <mat-icon class="error">error</mat-icon>
+                          Error
+                          <span *ngIf="details.dialogReport">
+                            <h4>Expected dialog:</h4>
+                            <tock-display-dialog
+                              [dialog]="details.dialogReport"
+                            ></tock-display-dialog>
                             <span *ngIf="details.returnedMessage">
                               <h4>But last answer was:</h4>
-                            <tock-bot-message class="botAction" [message]="details.returnedMessage"
-                                              [user]="false"></tock-bot-message>
+                              <tock-bot-message
+                                class="botAction"
+                                [message]="details.returnedMessage"
+                                [user]="false"
+                              ></tock-bot-message>
                             </span>
-                       </span>
-                       <span *ngIf="details.errorMessage">{{details.errorMessage}}</span>
-                    <br>
-                  </span>
+                          </span>
+                          <span *ngIf="details.errorMessage">{{ details.errorMessage }}</span>
+                          <br />
+                        </span>
                       </li>
                     </ol>
                   </li>
@@ -190,13 +310,9 @@
             </nb-accordion-item>
           </nb-accordion>
 
-          <span *ngIf="p.displayExecutions">
-
-            </span>
+          <span *ngIf="p.displayExecutions"> </span>
         </nb-card-body>
       </nb-card>
-
     </div>
   </nb-card-body>
 </nb-card>
-

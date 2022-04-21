@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {saveAs} from "file-saver";
-import {Component, OnInit} from "@angular/core";
-import {EntityTestError, TestErrorQuery} from "../model/nlp";
-import {StateService} from "../core-nlp/state.service";
-import {Router} from "@angular/router";
-import {QualityService} from "../quality-nlp/quality.service";
-import {escapeRegex} from "../model/commons";
-import {DialogService} from "../core-nlp/dialog.service";
-import {NbToastrService} from '@nebular/theme';
-import {UserRole} from "../model/auth";
-import {NlpService} from "../nlp-tabs/nlp.service";
+import { saveAs } from 'file-saver';
+import { Component, OnInit } from '@angular/core';
+import { EntityTestError, TestErrorQuery } from '../model/nlp';
+import { StateService } from '../core-nlp/state.service';
+import { Router } from '@angular/router';
+import { QualityService } from '../quality-nlp/quality.service';
+import { escapeRegex } from '../model/commons';
+import { DialogService } from '../core-nlp/dialog.service';
+import { NbToastrService } from '@nebular/theme';
+import { UserRole } from '../model/auth';
+import { NlpService } from '../nlp-tabs/nlp.service';
 
 @Component({
   selector: 'tock-test-entity-error',
@@ -32,91 +32,83 @@ import {NlpService} from "../nlp-tabs/nlp.service";
   styleUrls: ['./test-entity-error.component.css']
 })
 export class TestEntityErrorComponent implements OnInit {
-
   dataSource: EntityTestError[] = [];
-  intent = "";
+  intent = '';
   totalSize: number;
   pageSize: number = 10;
   pageIndex: number = 1;
   loading: boolean = false;
 
-  constructor(public state: StateService,
-              private qualityService: QualityService,
-              private toastrService: NbToastrService,
-              private router: Router,
-              private dialog: DialogService,
-              private nlp: NlpService) {
-  }
+  constructor(
+    public state: StateService,
+    private qualityService: QualityService,
+    private toastrService: NbToastrService,
+    private router: Router,
+    private dialog: DialogService,
+    private nlp: NlpService
+  ) {}
 
   ngOnInit(): void {
     this.search();
   }
 
-  getIndex(){
-    if(this.pageIndex > 0) return this.pageIndex - 1;
-    else return this.pageIndex
+  getIndex() {
+    if (this.pageIndex > 0) return this.pageIndex - 1;
+    else return this.pageIndex;
   }
 
   search() {
     this.loading = true;
     const startIndex = this.getIndex() * this.pageSize;
-    this.qualityService.searchEntityErrors(
-      TestErrorQuery.create(
-        this.state,
-        startIndex,
-        this.pageSize,
-        this.intent === "" ? undefined : this.intent
+    this.qualityService
+      .searchEntityErrors(
+        TestErrorQuery.create(
+          this.state,
+          startIndex,
+          this.pageSize,
+          this.intent === '' ? undefined : this.intent
+        )
       )
-    ).subscribe(r => {
-      this.loading = false;
-      this.totalSize = r.total;
-      this.dataSource = r.data;
-    });
+      .subscribe((r) => {
+        this.loading = false;
+        this.totalSize = r.total;
+        this.dataSource = r.data;
+      });
   }
 
   intentName(error: EntityTestError) {
     const i = this.state.findIntentById(error.originalSentence.classification.intentId);
-    return i ? i.intentLabel() : "unknown";
+    return i ? i.intentLabel() : 'unknown';
   }
 
   validate(error: EntityTestError) {
-    this.qualityService.deleteEntityError(error).subscribe(
-      e => {
-        this.toastrService.show(`Sentence validated`, "Validate Entities", {duration: 2000});
-        this.search()
-      }
-    )
+    this.qualityService.deleteEntityError(error).subscribe((e) => {
+      this.toastrService.show(`Sentence validated`, 'Validate Entities', { duration: 2000 });
+      this.search();
+    });
   }
 
   change(error: EntityTestError) {
-    this.qualityService.deleteEntityError(error).subscribe(
-      e => {
-        this.router.navigate(
-          ['/nlp/search'],
-          {
-            queryParams: {
-              text: "^" + escapeRegex(error.sentence.text) + "$",
-              status: "model"
-            }
-          }
-        );
-      }
-    )
+    this.qualityService.deleteEntityError(error).subscribe((e) => {
+      this.router.navigate(['/nlp/search'], {
+        queryParams: {
+          text: '^' + escapeRegex(error.sentence.text) + '$',
+          status: 'model'
+        }
+      });
+    });
   }
 
   download() {
-    setTimeout(_ => {
-      this.qualityService.searchEntityErrorsBlob(
-        TestErrorQuery.create(
-          this.state,
-          0,
-          100000,
-          this.intent === "" ? undefined : this.intent
+    setTimeout((_) => {
+      this.qualityService
+        .searchEntityErrorsBlob(
+          TestErrorQuery.create(this.state, 0, 100000, this.intent === '' ? undefined : this.intent)
         )
-      ).subscribe(blob => {
-        saveAs(blob, this.state.currentApplication.name + "_entity_errors.json");
-        this.dialog.notify(`Dump provided`, "Dump");
-      })
+        .subscribe((blob) => {
+          saveAs(blob, this.state.currentApplication.name + '_entity_errors.json');
+          this.dialog.notify(`Dump provided`, 'Dump');
+        });
     }, 1);
   }
 
@@ -126,11 +118,11 @@ export class TestEntityErrorComponent implements OnInit {
 
   reveal(error: EntityTestError) {
     const sentence = error.originalSentence;
-    this.nlp.revealSentence(sentence).subscribe(s => {
+    this.nlp.revealSentence(sentence).subscribe((s) => {
       sentence.text = s.text;
       sentence.key = null;
       error.sentence.text = s.text;
-      error.sentence.key = null
+      error.sentence.key = null;
       error.originalSentence = sentence.clone();
       error.sentence = error.sentence.clone();
     });

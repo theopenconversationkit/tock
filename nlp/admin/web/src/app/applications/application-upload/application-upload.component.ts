@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {ApplicationImportConfiguration, ImportReport} from "../../model/application";
-import {StateService} from "../../core-nlp/state.service";
-import {ApplicationService} from "../../core-nlp/applications.service";
-import {UserRole} from "../../model/auth";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { ApplicationImportConfiguration, ImportReport } from '../../model/application';
+import { StateService } from '../../core-nlp/state.service';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { UserRole } from '../../model/auth';
 
 @Component({
   selector: 'tock-application-upload',
@@ -27,32 +27,34 @@ import {UserRole} from "../../model/auth";
   styleUrls: ['application-upload.component.css']
 })
 export class ApplicationUploadComponent implements OnInit {
-
   UserRole = UserRole;
   public uploader: FileUploader;
   public configuration: ApplicationImportConfiguration;
   public report: ImportReport;
   public uploading: boolean = false;
 
-  public type: string = "application";
+  public type: string = 'application';
 
   @Input() applicationName: string = null;
   @Output() closed = new EventEmitter();
 
-  constructor(private applicationService: ApplicationService, public state: StateService) {
-  }
+  constructor(private applicationService: ApplicationService, public state: StateService) {}
 
   ngOnInit(): void {
     this.report = null;
-    this.uploader = new FileUploader({removeAfterUpload: true});
-    this.uploader.onCompleteItem =
-      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        this.uploading = false;
-        this.report = ImportReport.fromJSON(JSON.parse(response));
-        if (this.report.modified) {
-          this.state.resetConfiguration();
-        }
-      };
+    this.uploader = new FileUploader({ removeAfterUpload: true });
+    this.uploader.onCompleteItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
+      this.uploading = false;
+      this.report = ImportReport.fromJSON(JSON.parse(response));
+      if (this.report.modified) {
+        this.state.resetConfiguration();
+      }
+    };
     this.configuration = new ApplicationImportConfiguration();
     this.configuration.newApplicationName = this.applicationName;
   }
@@ -67,13 +69,14 @@ export class ApplicationUploadComponent implements OnInit {
   }
 
   upload() {
-    if (this.type === "application") {
+    if (this.type === 'application') {
       this.applicationService.prepareApplicationDumpUploader(this.uploader, this.configuration);
     } else {
       this.applicationService.prepareSentencesDumpUploader(
         this.uploader,
         this.state.hasRole(UserRole.technicalAdmin),
-        this.configuration.newApplicationName);
+        this.configuration.newApplicationName
+      );
     }
     this.uploading = true;
     this.uploader.uploadAll();

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {NgModule} from "@angular/core";
-import {NlpAdminAppComponent} from "./nlp-admin-app.component";
-import {SharedModule} from "./shared-nlp/shared.module";
-import {RouterModule, Routes} from "@angular/router";
-import {BrowserModule} from "@angular/platform-browser";
-import {CoreModule} from "./core-nlp/core.module";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {HttpClientModule} from "@angular/common/http";
-import {ThemeModule} from "./theme/theme.module";
+import { NgModule } from '@angular/core';
+import { NlpAdminAppComponent } from './nlp-admin-app.component';
+import { SharedModule } from './shared-nlp/shared.module';
+import { RouterModule, Routes } from '@angular/router';
+import { BrowserModule } from '@angular/platform-browser';
+import { CoreModule } from './core-nlp/core.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
+import { ThemeModule } from './theme/theme.module';
 import {
   NbDatepickerModule,
   NbDialogModule,
@@ -32,36 +32,34 @@ import {
   NbWindowModule,
   NbThemeModule
 } from '@nebular/theme';
-import {APP_BASE_HREF, PlatformLocation} from "@angular/common";
+import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 
 const routes: Routes = [
-  {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
+  { path: '', redirectTo: '/nlp/inbox', pathMatch: 'full' },
   {
     path: 'nlp',
-    loadChildren: () => import('./nlp-tabs/nlp.module').then(m => m.NlpModule)
+    loadChildren: () => import('./nlp-tabs/nlp.module').then((m) => m.NlpModule)
   },
   {
     path: 'applications',
-    loadChildren: () => import('./applications/applications.module').then(m => m.ApplicationsModule)
+    loadChildren: () =>
+      import('./applications/applications.module').then((m) => m.ApplicationsModule)
   },
   {
     path: 'quality',
-    loadChildren: () => import('./quality-nlp/quality.module').then(m => m.QualityModule)
+    loadChildren: () => import('./quality-nlp/quality.module').then((m) => m.QualityModule)
   },
-  {path: '**', redirectTo: '/nlp/inbox'}
+  { path: '**', redirectTo: '/nlp/inbox' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
   exports: [RouterModule]
 })
-export class NlpAdminAppRoutingModule {
-}
+export class NlpAdminAppRoutingModule {}
 
 @NgModule({
-  declarations: [
-    NlpAdminAppComponent
-  ],
+  declarations: [NlpAdminAppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -76,19 +74,17 @@ export class NlpAdminAppRoutingModule {
     NbDialogModule.forRoot(),
     NbWindowModule.forRoot(),
     NbToastrModule.forRoot(),
-    NbThemeModule.forRoot(
-      {
-        name: 'default',
-      })
+    NbThemeModule.forRoot({
+      name: 'default'
+    })
   ],
   providers: [
-  {
-    provide: APP_BASE_HREF,
-    useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
-    deps: [PlatformLocation]
-  }
-],
+    {
+      provide: APP_BASE_HREF,
+      useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
+      deps: [PlatformLocation]
+    }
+  ],
   bootstrap: [NlpAdminAppComponent]
 })
-export class NlpAdminAppModule {
-}
+export class NlpAdminAppModule {}

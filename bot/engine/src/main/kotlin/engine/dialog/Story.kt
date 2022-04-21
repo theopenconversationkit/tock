@@ -102,7 +102,9 @@ data class Story(
             if (s.selectFromAction(userTimeline, dialog, action, intent)) {
                 // check children
                 findStepInTree(s.children, userTimeline, dialog, action, intent)?.also {
-                    return it
+                    if (s.selectFromActionAndEntityStepSelection(action, intent) == true) {
+                        return it
+                    }
                 }
                 return s
             }
@@ -166,6 +168,7 @@ data class Story(
         if (supportIntent(intent)) {
             return true
         }
+
         val checkSteps = if (definition.hasTag(CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT)) {
             currentStep?.supportIntent(intent) == true ||
                     (currentStep?.children ?: definition.steps)

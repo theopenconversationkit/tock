@@ -11,21 +11,28 @@ permalink: /fr/
 
 **Tock** (*The Open Conversation Kit*) est une plateforme complète pour construire des agents conversationnels - souvent appelés _bots_. 
 
-Le site [Tock.ai](https://doc.tock.ai/) est un bon point d'entrée pour découvrir la solution, ses applications et sa communauté grandissante.
-
 Contrairement à la plupart des solutions conversationnelles, Tock ne dépend pas d'API tierces, bien qu'il soit possible d'en intégrer.
 L'utilisateur choisit les composants qu'il embarque et peut ainsi conserver la maîtrise de ses modèles et données conversationnelles.
 
-> Tock est utilisé en production depuis plusieurs années par [OUI.sncf](https://www.oui.sncf/services/assistant) pour
-> proposer des assistants sur des canaux propres (Web, mobile), réseaux sociaux et enceintes connectées.
+> Tock est utilisé en production depuis 2016 par [OUI.sncf](https://www.oui.sncf/services/assistant)
+> (Web/mobile, réseaux sociaux, enceintes connectées) et [de plus en plus d'organisations](apropos/vitrine) 
+> (ENEDIS, Linagora, AlloCovid...).
 
-> L'ensemble du code source est disponible sur 
-> [GitHub](https://github.com/theopenconversationkit/tock) 
-> sous une [licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE). 
+L'ensemble du code source est disponible sur [GitHub](https://github.com/theopenconversationkit/tock) sous 
+[licence Apache 2](https://github.com/theopenconversationkit/tock/blob/master/LICENSE). 
 
-|   |   |
-|---|---|
-| ![AlloCovid](https://doc.tock.ai/fr/images/allocovid.png) | Pour en savoir plus sur le service [_AlloCovid_](https://www.allocovid.com/) (conçu avec Tock) rendez-vous sur [www.allocovid.com](https://www.allocovid.com/) ou sur [cette page](apropos/vitrine#allocovid) pour les aspects techniques et davantage de liens notamment vers les sources. |
+## Aperçu
+
+Le site [Tock.ai](https://doc.tock.ai/) est un bon point d'entrée pour découvrir la solution, ses applications et sa communauté grandissante. 
+Des [guides](guide/studio), [supports](apropos/ressources) et une [video de démonstration](https://www.youtube.com/watch?v=UsKkpYL7Hto) 
+(20 minutes, en Anglais) sont également disponibles :
+
+<a href="https://www.youtube.com/watch?v=UsKkpYL7Hto"
+target="tock_osxp">
+<img alt="Tock @ OSXP 2021"
+src="https://doc.tock.ai/fr/images/tock_osxp_2021.png"
+style="width: 400px; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); text-align: center;">
+</a>
 
 ## Fonctionnalités
 

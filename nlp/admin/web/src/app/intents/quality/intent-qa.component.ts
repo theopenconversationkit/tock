@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
-import {DataSource} from "@angular/cdk/collections";
-import {QualityService} from "../../quality-nlp/quality.service";
-import {IntentQA, LogStatsQuery} from "../../model/nlp";
-import {StateService} from "../../core-nlp/state.service";
-import {Observable, of, Subscription} from "rxjs";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DataSource } from '@angular/cdk/collections';
+import { QualityService } from '../../quality-nlp/quality.service';
+import { IntentQA, LogStatsQuery } from '../../model/nlp';
+import { StateService } from '../../core-nlp/state.service';
+import { Observable, of, Subscription } from 'rxjs';
 
 @Component({
   selector: 'intent-qa',
@@ -27,20 +27,18 @@ import {Observable, of, Subscription} from "rxjs";
   styleUrls: ['./intent-qa.component.css']
 })
 export class IntentQAComponent implements OnInit, OnDestroy {
-
   displayedColumns = ['intent1', 'intent2', 'occurrences', 'average'];
 
-  public dataSource :IntentQA[];
+  public dataSource: IntentQA[];
   public minOccurrences: number = 30;
 
   private subscription: Subscription;
 
-  constructor(private state: StateService, private quality: QualityService) {
-  }
+  constructor(private state: StateService, private quality: QualityService) {}
 
   ngOnInit(): void {
     this.updateContent();
-    this.subscription = this.state.configurationChange.subscribe(_ => this.updateContent());
+    this.subscription = this.state.configurationChange.subscribe((_) => this.updateContent());
   }
 
   ngOnDestroy(): void {
@@ -48,15 +46,18 @@ export class IntentQAComponent implements OnInit, OnDestroy {
   }
 
   updateContent(): void {
-    this.quality.intentQA(
-      new LogStatsQuery(
-        this.state.currentApplication.namespace,
-        this.state.currentApplication.name,
-        this.state.currentLocale,
-        "",
-        this.minOccurrences))
-      .subscribe(result => {
-        const r = result.map(p => {
+    this.quality
+      .intentQA(
+        new LogStatsQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          '',
+          this.minOccurrences
+        )
+      )
+      .subscribe((result) => {
+        const r = result.map((p) => {
           return new IntentQA(
             this.state.intentLabelByName(p.intent1),
             this.state.intentLabelByName(p.intent2),

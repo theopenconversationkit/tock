@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {SentenceStatus} from "../model/nlp";
-import {SentenceFilter} from "../sentences-scroll/sentences-scroll.component";
+import { Component, OnInit } from '@angular/core';
+import { SentenceStatus } from '../model/nlp';
+import { SentenceFilter } from '../sentences-scroll/sentences-scroll.component';
 
 @Component({
   selector: 'tock-inbox',
@@ -24,12 +24,9 @@ import {SentenceFilter} from "../sentences-scroll/sentences-scroll.component";
   styleUrls: ['./inbox.component.css']
 })
 export class InboxComponent implements OnInit {
-
   filter: SentenceFilter = new SentenceFilter(null, null, [SentenceStatus.inbox]);
 
-  constructor() {
-  }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

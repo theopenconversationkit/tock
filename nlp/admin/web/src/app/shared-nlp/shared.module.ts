@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
-import {ConfirmDialogComponent} from './confirm-dialog/confirm-dialog.component';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,8 +48,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
-import {MapToIterablePipe} from './map-to-iterable.pipe';
-import {ScrollComponent} from '../scroll/scroll.component';
+import { MapToIterablePipe } from './map-to-iterable.pipe';
+import { ScrollComponent } from '../scroll/scroll.component';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import {
   NbButtonModule,
@@ -151,9 +151,6 @@ import {
     NbTreeGridModule
   ],
 
-  entryComponents: [
-    ConfirmDialogComponent
-  ]
+  entryComponents: [ConfirmDialogComponent]
 })
-export class SharedModule {
-}
+export class SharedModule {}

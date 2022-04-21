@@ -19,7 +19,9 @@ package ai.tock.translator.google
 import ai.tock.translator.TranslatorEngine
 import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.TranslateOptions
+
 import java.util.Locale
+import org.apache.commons.text.StringEscapeUtils
 
 internal object GoogleTranslatorEngine : TranslatorEngine {
 
@@ -31,7 +33,7 @@ internal object GoogleTranslatorEngine : TranslatorEngine {
             TranslateOption.sourceLanguage(source.language),
             TranslateOption.targetLanguage(target.language)
         )
-        return translation.translatedText
+        return StringEscapeUtils.unescapeHtml4(translation.translatedText)
     }
 
     override val supportAdminTranslation: Boolean = true

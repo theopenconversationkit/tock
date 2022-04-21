@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {StateService} from '../../core-nlp/state.service';
-import {AnswerConfiguration, AnswerConfigurationType, AnswerContainer} from '../model/story';
-import {BotService} from '../bot-service';
-import {AnswerController} from './controller';
+import { StateService } from '../../core-nlp/state.service';
+import { AnswerConfiguration, AnswerConfigurationType, AnswerContainer } from '../model/story';
+import { BotService } from '../bot-service';
+import { AnswerController } from './controller';
 import { NbToastrService } from '@nebular/theme';
 
 @Component({
@@ -28,7 +28,6 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['./answer-dialog.component.css']
 })
 export class AnswerDialogComponent implements OnInit {
-
   create: boolean;
   answer: AnswerContainer;
   answerLabel = 'Answer';
@@ -43,30 +42,34 @@ export class AnswerDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private state: StateService,
     private bot: BotService,
-    private toastrService: NbToastrService) {
+    private toastrService: NbToastrService
+  ) {
     this.create = this.data.create;
     this.answer = this.data.answer;
     this.answerLabel = this.data.answerLabel ? this.data.answerLabel : 'Answer';
     this.originalCurrentType = this.answer.currentType;
-    this.originalAnswers = this.answer.answers.slice(0).map(a => a.clone());
+    this.originalAnswers = this.answer.answers.slice(0).map((a) => a.clone());
   }
 
   ngOnInit() {
     const _this = this;
-    this.submit.submitListener = _ => _this.save();
+    this.submit.submitListener = (_) => _this.save();
   }
 
   save() {
-    this.submit.checkAnswer(_ => {
+    this.submit.checkAnswer((_) => {
       const invalidMessage = this.answer.currentAnswer().invalidMessage();
       if (invalidMessage) {
-        this.toastrService.show(`Error: ${invalidMessage}`, 'ERROR', {duration: 5000, status: 'danger'});
+        this.toastrService.show(`Error: ${invalidMessage}`, 'ERROR', {
+          duration: 5000,
+          status: 'danger'
+        });
       } else if (!this.create) {
-        this.answer.save(this.bot).subscribe(r => {
+        this.answer.save(this.bot).subscribe((r) => {
           this.dialogRef.close({
             answer: this.answer
           });
-          this.toastrService.show(`${this.answerLabel} Modified`, 'UPDATE', {duration: 1000});
+          this.toastrService.show(`${this.answerLabel} Modified`, 'UPDATE', { duration: 1000 });
         });
       } else {
         this.dialogRef.close({
@@ -79,8 +82,7 @@ export class AnswerDialogComponent implements OnInit {
   cancel() {
     this.answer.currentType = this.originalCurrentType;
     this.answer.answers = this.originalAnswers;
-    this.answer.answers.forEach(a => a.checkAfterReset(this.bot));
+    this.answer.answers.forEach((a) => a.checkAfterReset(this.bot));
     this.dialogRef.close({});
   }
-
 }

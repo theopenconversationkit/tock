@@ -49,9 +49,9 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.withNamespace
-import mu.KotlinLogging
 import java.io.InputStream
 import java.time.ZonedDateTime
+import mu.KotlinLogging
 
 /**
  * [NlpController] default implementation.
@@ -84,10 +84,11 @@ internal class Nlp : NlpController {
 
             toNlpQuery().let { query ->
                 try {
-                    val result = if (sentence.precomputedNlp == null) {
+                    val precomputedNlp = sentence.precomputedNlp
+                    val result = if (precomputedNlp == null) {
                         parse(query)
                     } else {
-                        evaluateEntitiesForPrecomputedNlp(query, sentence.precomputedNlp)
+                        evaluateEntitiesForPrecomputedNlp(query, precomputedNlp)
                     }
 
                     result?.let { nlpResult ->
@@ -108,10 +109,10 @@ internal class Nlp : NlpController {
                         }
 
                         val entityEvaluations = customEntityEvaluations +
-                            nlpResult.entities
-                                .asSequence()
-                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                .map { EntityValue(nlpResult, it) }
+                                nlpResult.entities
+                                    .asSequence()
+                                    .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                    .map { EntityValue(nlpResult, it) }
                         sentence.state.entityValues.addAll(entityEvaluations)
 
                         dialog.apply {
@@ -181,9 +182,9 @@ internal class Nlp : NlpController {
                     if (result != null) {
                         nlpResult.copy(
                             entities = result.values +
-                                nlpResult.entities.filter { e ->
-                                    result.values.none { it.start == e.start }
-                                }
+                                    nlpResult.entities.filter { e ->
+                                        result.values.none { it.start == e.start }
+                                    }
                         )
                     } else {
                         nlpResult
@@ -258,7 +259,13 @@ internal class Nlp : NlpController {
                     dialog.state.nextActionState?.states
                         ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
                 )
-            )
+            ).run {
+                var query = this
+                BotRepository.forEachNlpListener {
+                    query = it.updateQuery(sentence, userTimeline, dialog, botDefinition, query)
+                }
+                query
+            }
         }
 
         private fun mergeEntityValues(
@@ -390,6 +397,14 @@ internal class Nlp : NlpController {
         connector: ConnectorController,
         botDefinition: BotDefinition
     ) {
+
+        BotRepository.forEachNlpListener {
+            val result = it.precompute(sentence, userTimeline, dialog, botDefinition)
+            if (result != null) {
+                sentence.precomputedNlp = result
+            }
+        }
+
         SentenceParser(
             nlpClient,
             sentence,

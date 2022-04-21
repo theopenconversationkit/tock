@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import {CommonModule} from '@angular/common';
-import {NgModule} from '@angular/core';
-import {BotMessageComponent} from './bot-message/bot-message.component';
-import {SentenceElementComponent} from './bot-message/sentence-element.component';
-import {BotMessageSentenceComponent} from './bot-message/bot-message-sentence';
-import {BotMessageChoiceComponent} from './bot-message/bot-message-choice.component';
-import {BotMessageLocationComponent} from './bot-message/bot-message-location';
-import {BotMessageAttachmentComponent} from './bot-message/bot-message-attachment';
-import {DateRangeCalendarComponent} from './date-range/date-range-calendar.component';
-import {SharedModule} from '../shared-nlp/shared.module';
-import {BotSharedService} from './bot-shared.service';
-import {DisplayDialogComponent} from './bot-dialog/display-dialog.component';
-import {MomentModule} from 'ngx-moment';
-import {SelectBotComponent} from './select-bot/select-bot.component';
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { BotMessageComponent } from './bot-message/bot-message.component';
+import { SentenceElementComponent } from './bot-message/sentence-element.component';
+import { BotMessageSentenceComponent } from './bot-message/bot-message-sentence';
+import { BotMessageChoiceComponent } from './bot-message/bot-message-choice.component';
+import { BotMessageLocationComponent } from './bot-message/bot-message-location';
+import { BotMessageAttachmentComponent } from './bot-message/bot-message-attachment';
+import { DateRangeCalendarComponent } from './date-range/date-range-calendar.component';
+import { SharedModule } from '../shared-nlp/shared.module';
+import { BotSharedService } from './bot-shared.service';
+import { DisplayDialogComponent } from './bot-dialog/display-dialog.component';
+import { MomentModule } from 'ngx-moment';
+import { SelectBotComponent } from './select-bot/select-bot.component';
 import {
   NbCalendarRangeModule,
   NbCardModule,
@@ -38,8 +38,8 @@ import {
   NbButtonModule,
   NbIconLibraries
 } from '@nebular/theme';
-import {InfoButtonComponent} from './info-button/info-button.component';
-import {ConfirmationDialogComponent} from './confirmation-dialog/confirmation-dialog.component';
+import { InfoButtonComponent } from './info-button/info-button.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import {ErrorHelperComponent} from './error-helper/error-helper.component';
 
 @NgModule({
@@ -77,9 +77,7 @@ import {ErrorHelperComponent} from './error-helper/error-helper.component';
     InfoButtonComponent,
     ErrorHelperComponent
   ],
-  providers: [
-    BotSharedService
-  ],
+  providers: [BotSharedService],
   entryComponents: []
 })
 export class BotSharedModule {

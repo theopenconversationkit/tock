@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, Inject} from "@angular/core";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import {StateService} from "../../core-nlp/state.service";
-import {StoryStep} from "../model/story";
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { StateService } from '../../core-nlp/state.service';
+import { StoryStep } from '../model/story';
 
 @Component({
   selector: 'tock-step-dialog',
@@ -25,21 +25,22 @@ import {StoryStep} from "../model/story";
   styleUrls: ['./step-dialog.component.css']
 })
 export class StepDialogComponent {
-
   steps: StoryStep[];
   defaultCategory: string;
 
   constructor(
     public dialogRef: MatDialogRef<StepDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public state: StateService) {
-
+    public state: StateService
+  ) {
     this.defaultCategory = this.data.category;
-    this.steps = this.data.steps ? this.data.steps.slice(0).map(a => {
-      let newA = a.clone();
-      newA.intentDefinition = this.state.findIntentByName(a.intent.name);
-      return newA;
-    }) : [];
+    this.steps = this.data.steps
+      ? this.data.steps.slice(0).map((a) => {
+          let newA = a.clone();
+          newA.intentDefinition = this.state.findIntentByName(a.intent.name);
+          return newA;
+        })
+      : [];
   }
 
   cancel() {
@@ -51,5 +52,4 @@ export class StepDialogComponent {
       steps: StoryStep.filterNew(this.steps)
     });
   }
-
 }

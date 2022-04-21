@@ -16,20 +16,39 @@
 
 <nb-card class="search">
   <nb-card-body>
-    <nb-select placeholder="Intent" [(ngModel)]="intent" (selectedChange)="search()" class="search-input nb-select">
+    <nb-select
+      placeholder="Intent"
+      [(ngModel)]="intent"
+      (selectedChange)="search()"
+      class="search-input nb-select"
+    >
       <nb-option value="_all_">All</nb-option>
-      <nb-option-group *ngFor="let category of state.currentIntentsCategories | async" [title]="category.category">
-        <nb-option *ngFor="let intent of category.intents" [value]="intent.name">
-          {{intent.intentLabel()}}
+      <nb-option-group
+        *ngFor="let category of state.currentIntentsCategories | async"
+        [title]="category.category"
+      >
+        <nb-option
+          *ngFor="let intent of category.intents"
+          [value]="intent.name"
+        >
+          {{ intent.intentLabel() }}
         </nb-option>
       </nb-option-group>
       <nb-option value="tock:unknown">Unknown</nb-option>
     </nb-select>
-    <nb-toggle class="search-input toggle" [(checked)]="onlyCurrentLocale" (checkedChange)="search()">Only current locale</nb-toggle>
+    <nb-toggle
+      class="search-input toggle"
+      [(checked)]="onlyCurrentLocale"
+      (checkedChange)="search()"
+      >Only current locale</nb-toggle
+    >
   </nb-card-body>
 </nb-card>
 
-<h2 *ngIf="nodata" class="search">
+<h2
+  *ngIf="nodata"
+  class="search"
+>
   No Data
 </h2>
 
@@ -39,21 +58,33 @@
 <div *ngIf="!nodata">
   <nb-card>
     <nb-card-body>
-      <div echarts [options]="probabilityChartOptions" class="chart"></div>
+      <div
+        echarts
+        [options]="probabilityChartOptions"
+        class="chart"
+      ></div>
     </nb-card-body>
   </nb-card>
 </div>
 <div *ngIf="!nodata">
   <nb-card>
     <nb-card-body>
-      <div echarts [options]="statsChartOptions" class="chart"></div>
+      <div
+        echarts
+        [options]="statsChartOptions"
+        class="chart"
+      ></div>
     </nb-card-body>
   </nb-card>
 </div>
 <div *ngIf="!nodata">
   <nb-card>
     <nb-card-body>
-      <div echarts [options]="durationChartOptions" class="chart"></div>
+      <div
+        echarts
+        [options]="durationChartOptions"
+        class="chart"
+      ></div>
     </nb-card-body>
   </nb-card>
 </div>

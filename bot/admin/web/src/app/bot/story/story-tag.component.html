@@ -16,15 +16,24 @@
 
 <div class="story-tag">
   <label class="story-select-label">Tag:</label>
-  <nb-select [(ngModel)]="selectedTag"
-             (ngModelChange)="selectedTagChange.emit($event)"
-             name="storyTag" disableRipple class="story-select">
+  <nb-select
+    [(ngModel)]="selectedTag"
+    (ngModelChange)="selectedTagChange.emit($event)"
+    name="storyTag"
+    disableRipple
+    class="story-select"
+  >
     <nb-option value="">No action</nb-option>
-    <nb-option *ngFor="let tag of tags" [value]="tag.value">
-      {{tag.label}}
+    <nb-option
+      *ngFor="let tag of tags"
+      [value]="tag.value"
+    >
+      {{ tag.label }}
     </nb-option>
   </nb-select>
-  <tock-info-button message="Depending on its value, setting a tag on a story will trigger a bot behavior when the story is interpreted.
+  <tock-info-button
+    message="Depending on its value, setting a tag on a story will trigger a bot behavior when the story is interpreted.
                              For example a 'Bot deactivation' tag will deactivate the bot and a 'Bot activation' tag will reactivate it."
-                    position="inline"></tock-info-button>
+    position="inline"
+  ></tock-info-button>
 </div>

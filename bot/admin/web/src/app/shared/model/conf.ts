@@ -15,12 +15,12 @@
  */
 
 export class AdminConfiguration {
-
-  constructor(public botApiSupport: boolean,
-              public compilerAvailable: boolean,
-              public xrayAvailable: boolean,
-              public botApiBaseUrl:string) {
-  }
+  constructor(
+    public botApiSupport: boolean,
+    public compilerAvailable: boolean,
+    public xrayAvailable: boolean,
+    public botApiBaseUrl: string
+  ) {}
 
   static fromJSON(json?: any): AdminConfiguration {
     const value = Object.create(AdminConfiguration.prototype);
@@ -29,5 +29,4 @@ export class AdminConfiguration {
 
     return result;
   }
-
 }

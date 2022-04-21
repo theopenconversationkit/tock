@@ -41,16 +41,18 @@ class StoryTest {
     private val newIntent = Intent("new")
 
     @Test
-    fun `multi-entities action triggers the step tree`() {
+    fun `multi-entities triggers the step tree`() {
         val secondLevelStep: StoryStep<*> = mockk {
             every { name } returns "second level"
             every { children } returns emptySet()
             every { selectFromAction(any(), any(), any(), newIntent) } returns true
+            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns true
         }
         val firstLevelStep: StoryStep<*> = mockk {
             every { children } returns setOf(secondLevelStep)
             every { name } returns "first level"
             every { selectFromAction(any(), any(), any(), newIntent) } returns true
+            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns true
         }
 
         every { storyDefinition.steps } returns setOf(firstLevelStep)
@@ -58,5 +60,27 @@ class StoryTest {
         story.computeCurrentStep(userTimeline, dialog, action, newIntent)
 
         assertEquals(secondLevelStep.name, story.step)
+    }
+
+    @Test
+    fun `multi-intent triggers the step tree`() {
+        val secondLevelStep: StoryStep<*> = mockk {
+            every { name } returns "second level"
+            every { children } returns emptySet()
+            every { selectFromAction(any(), any(), any(), newIntent) } returns true
+            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns false
+        }
+        val firstLevelStep: StoryStep<*> = mockk {
+            every { children } returns setOf(secondLevelStep)
+            every { name } returns "first level"
+            every { selectFromAction(any(), any(), any(), newIntent) } returns true
+            every { selectFromActionAndEntityStepSelection(any(), newIntent) } returns false
+        }
+
+        every { storyDefinition.steps } returns setOf(firstLevelStep)
+
+        story.computeCurrentStep(userTimeline, dialog, action, newIntent)
+
+        assertEquals(firstLevelStep.name, story.step)
     }
 }

@@ -17,99 +17,181 @@
   <div class="inbox_msg">
     <div class="inbox_people">
       <nb-card style="margin-bottom">
-        <nb-card-header class="card-height" [nbSpinner]="loading" nbSpinnerStatus="primary">
+        <nb-card-header
+          class="card-height"
+          [nbSpinner]="loading"
+          nbSpinnerStatus="primary"
+        >
           <span *ngIf="total > 0">
-            <span *ngIf="total> 10 && !loading">Estimated</span> users : {{total}}
+            <span *ngIf="total > 10 && !loading">Estimated</span> users : {{ total }}
           </span>
-          <span *ngIf="total === 0">
-              No users
-          </span>
-          <button nbButton size="tiny" ghost="true" (click)="reload()" style="float: right;" nbTooltip="Refresh">
+          <span *ngIf="total === 0"> No users </span>
+          <button
+            nbButton
+            size="tiny"
+            ghost="true"
+            (click)="reload()"
+            style="float: right"
+            nbTooltip="Refresh"
+          >
             <mat-icon>refresh</mat-icon>
           </button>
         </nb-card-header>
         <nb-card-body style="padding: 0">
-            <nb-list nbInfiniteList [threshold]="500" (bottomThreshold)="load()" class="inbox_chat">
-              <nb-list-item *ngFor="let user of data" class="chat-item">
-                  <nb-card accent="{{user.playerId == selectedUser?.playerId?'info':''}}" class="chat-card">
-                    <nb-card-header (click)="loadDialog(user)">
-                      <img *ngIf="getConnector(user.applicationIds[0])"
-                           src="{{getConnector(user.applicationIds[0]).iconUrl()}}"
-                           class="connector"
-                           [nbTooltip]="getConnector(user.applicationIds[0]).label()"/>
-                      <nb-user size="large"
-                               name="{{user.userPreferences.firstName ? user.userPreferences.firstName: 'Anonymous'}} {{user.userPreferences.lastName}}"
-                               title="{{ user.lastUpdateDate | amDateFormat: 'DD MMM YYYY HH:mm'}}"
-                               picture="{{getUserPicture(user)}}">
-                      </nb-user>
-                    </nb-card-header>
-                    <nb-card-body style="padding: 0">
-                      <nb-accordion>
-                        <nb-accordion-item [collapsed]="isCollapsed" (click)="toggle()">
-                          <nb-accordion-item-header>
-                            <p style="text-align: left;">
-                            <span *ngIf="user.botConfiguration">[{{user.botConfiguration.name}}
-                          - {{user.botConfiguration.connectorType.id}}]</span>
-                              <span *ngIf="user.userPreferences.locale">({{user.userPreferences.locale}})</span>
-                              <span class="last-action-text" *ngIf="user.lastActionText"> {{user.lastActionText}}</span>
-                            </p>
-                          </nb-accordion-item-header>
-                          <nb-accordion-item-body>
-                            <mat-chip-list *ngIf="user.userState.flags.length !== 0">
-                              <mat-chip *ngFor="let f of user.userState.flags"
-                                        [selected]="containsFlag(f)"
-                                        color="accent"
-                                        (click)="toggleFlag(f)"
-                                        nbTooltip="Filter by flag {{f}}">{{f}}
-                              </mat-chip>
-                            </mat-chip-list>
-                          </nb-accordion-item-body>
-                        </nb-accordion-item>
-                      </nb-accordion>
-                    </nb-card-body>
-                  </nb-card>
-              </nb-list-item>
-            </nb-list>
+          <nb-list
+            nbInfiniteList
+            [threshold]="500"
+            (bottomThreshold)="load()"
+            class="inbox_chat"
+          >
+            <nb-list-item
+              *ngFor="let user of data"
+              class="chat-item"
+            >
+              <nb-card
+                accent="{{ user.playerId == selectedUser?.playerId ? 'info' : '' }}"
+                class="chat-card"
+              >
+                <nb-card-header (click)="loadDialog(user)">
+                  <img
+                    *ngIf="getConnector(user.applicationIds[0])"
+                    src="{{ getConnector(user.applicationIds[0]).iconUrl() }}"
+                    class="connector"
+                    [nbTooltip]="getConnector(user.applicationIds[0]).label()"
+                  />
+                  <nb-user
+                    size="large"
+                    name="{{
+                      user.userPreferences.firstName ? user.userPreferences.firstName : 'Anonymous'
+                    }} {{ user.userPreferences.lastName }}"
+                    title="{{ user.lastUpdateDate | amDateFormat: 'DD MMM YYYY HH:mm' }}"
+                    picture="{{ getUserPicture(user) }}"
+                  >
+                  </nb-user>
+                </nb-card-header>
+                <nb-card-body style="padding: 0">
+                  <nb-accordion>
+                    <nb-accordion-item
+                      [collapsed]="isCollapsed"
+                      (click)="toggle()"
+                    >
+                      <nb-accordion-item-header>
+                        <p style="text-align: left">
+                          <span *ngIf="user.botConfiguration"
+                            >[{{ user.botConfiguration.name }} -
+                            {{ user.botConfiguration.connectorType.id }}]</span
+                          >
+                          <span *ngIf="user.userPreferences.locale"
+                            >({{ user.userPreferences.locale }})</span
+                          >
+                          <span
+                            class="last-action-text"
+                            *ngIf="user.lastActionText"
+                          >
+                            {{ user.lastActionText }}</span
+                          >
+                        </p>
+                      </nb-accordion-item-header>
+                      <nb-accordion-item-body>
+                        <mat-chip-list *ngIf="user.userState.flags.length !== 0">
+                          <mat-chip
+                            *ngFor="let f of user.userState.flags"
+                            [selected]="containsFlag(f)"
+                            color="accent"
+                            (click)="toggleFlag(f)"
+                            nbTooltip="Filter by flag {{ f }}"
+                            >{{ f }}
+                          </mat-chip>
+                        </mat-chip-list>
+                      </nb-accordion-item-body>
+                    </nb-accordion-item>
+                  </nb-accordion>
+                </nb-card-body>
+              </nb-card>
+            </nb-list-item>
+          </nb-list>
         </nb-card-body>
       </nb-card>
     </div>
     <div class="mesgs">
       <div class="">
-        <nb-card [nbSpinner]="loadingDialog" nbSpinnerStatus="primary">
+        <nb-card
+          [nbSpinner]="loadingDialog"
+          nbSpinnerStatus="primary"
+        >
           <nb-card-header class="card-height items-row">
-            <input nbInput placeholder="Modified after" class="date-input" [nbDatepicker]="from_date" [(ngModel)]="filter.from">
-            <nb-datepicker (dateChange)="changeAfter()" #from_date></nb-datepicker>
+            <input
+              nbInput
+              placeholder="Modified after"
+              class="date-input"
+              [nbDatepicker]="from_date"
+              [(ngModel)]="filter.from"
+            />
+            <nb-datepicker
+              (dateChange)="changeAfter()"
+              #from_date
+            ></nb-datepicker>
 
-            <input nbInput placeholder="Modified before" class="date-input" [nbDatepicker]="to_date" [(ngModel)]="filter.to">
-            <nb-datepicker (dateChange)="changeBefore()" #to_date></nb-datepicker>
+            <input
+              nbInput
+              placeholder="Modified before"
+              class="date-input"
+              [nbDatepicker]="to_date"
+              [(ngModel)]="filter.to"
+            />
+            <nb-datepicker
+              (dateChange)="changeBefore()"
+              #to_date
+            ></nb-datepicker>
 
-            <nb-toggle status="info" nbTooltip="{{!filter.displayTests?'Display tests': 'Hide tests'}}" style="float: right"
-                       [(ngModel)]="filter.displayTests" (change)="waitAndRefresh()">
-
+            <nb-toggle
+              status="info"
+              nbTooltip="{{ !filter.displayTests ? 'Display tests' : 'Hide tests' }}"
+              style="float: right"
+              [(ngModel)]="filter.displayTests"
+              (change)="waitAndRefresh()"
+            >
             </nb-toggle>
           </nb-card-header>
           <nb-card-body style="padding: 0">
             <div class="inbox_chat">
-              <div *ngIf="!selectedUser" class="default-msg">
+              <div
+                *ngIf="!selectedUser"
+                class="default-msg"
+              >
                 Select a user to display dialogs
               </div>
               <tock-display-dialog
                 class="dialog"
                 *ngIf="selectedUser && selectedUser.displayDialogs && selectedUser.userDialog"
                 [dialog]="selectedUser.userDialog"
-                [userPicture]="getUserPicture(selectedUser)">
+                [userPicture]="getUserPicture(selectedUser)"
+              >
                 <div *ngIf="selectedUser.userDialog.actions.length === 0">No dialog</div>
                 <div *ngIf="selectedUser.userDialog.actions.length !== 0">
-                  <div *ngIf="selectedUser.testPlans && selectedUser.testPlans.length !== 0" class="test-plans">
-                    <nb-select [(ngModel)]="selectedPlan"
-                               placeholder="Select a Test Plan"
-                               class="select-plan">
-                      <nb-option *ngFor="let plan of selectedUser.testPlans"
-                                 [value]="plan._id">{{ plan.name }}
+                  <div
+                    *ngIf="selectedUser.testPlans && selectedUser.testPlans.length !== 0"
+                    class="test-plans"
+                  >
+                    <nb-select
+                      [(ngModel)]="selectedPlan"
+                      placeholder="Select a Test Plan"
+                      class="select-plan"
+                    >
+                      <nb-option
+                        *ngFor="let plan of selectedUser.testPlans"
+                        [value]="plan._id"
+                        >{{ plan.name }}
                       </nb-option>
                     </nb-select>
-                    <button nbButton (click)="addDialogToTestPlan(selectedPlan, selectedUser.userDialog)"
-                            size="small" ghost="true" status="primary" nbTooltip="Add dialog to Test Plan">
+                    <button
+                      nbButton
+                      (click)="addDialogToTestPlan(selectedPlan, selectedUser.userDialog)"
+                      size="small"
+                      ghost="true"
+                      status="primary"
+                      nbTooltip="Add dialog to Test Plan"
+                    >
                       <mat-icon>add_circle_outline</mat-icon>
                     </button>
                   </div>
@@ -118,7 +200,6 @@
             </div>
           </nb-card-body>
         </nb-card>
-
       </div>
     </div>
   </div>

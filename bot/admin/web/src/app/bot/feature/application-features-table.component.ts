@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {Feature} from "../model/feature";
-import {BotService} from "../bot-service";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {StateService} from "../../core-nlp/state.service";
-import {NbToastrService} from "@nebular/theme";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Feature } from '../model/feature';
+import { BotService } from '../bot-service';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { StateService } from '../../core-nlp/state.service';
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-application-features-table',
@@ -27,7 +27,6 @@ import {NbToastrService} from "@nebular/theme";
   styleUrls: ['./application-features-table.component.css']
 })
 export class ApplicationFeaturesTableComponent implements OnInit {
-
   @Input()
   title: string;
 
@@ -44,16 +43,17 @@ export class ApplicationFeaturesTableComponent implements OnInit {
   onRefresh = new EventEmitter<boolean>();
 
   create: boolean = false;
-  feature: Feature = new Feature("", "", false);
+  feature: Feature = new Feature('', '', false);
 
-  constructor(private state: StateService,
-              private botService: BotService,
-              private configurationService: BotConfigurationService,
-              private toastrService: NbToastrService) {
-  }
+  constructor(
+    private state: StateService,
+    private botService: BotService,
+    private configurationService: BotConfigurationService,
+    private toastrService: NbToastrService
+  ) {}
 
   ngOnInit(): void {
-    this.feature.category = this.tockCategory ? "tock" : "myCategory";
+    this.feature.category = this.tockCategory ? 'tock' : 'myCategory';
   }
 
   prepareCreate() {
@@ -96,32 +96,36 @@ export class ApplicationFeaturesTableComponent implements OnInit {
   }
 
   update(f: Feature) {
-    this.botService.updateDateAndEnableFeature(this.state.currentApplication.name, f).subscribe(
-      _ => this.onRefresh.emit(true));
+    this.botService
+      .updateDateAndEnableFeature(this.state.currentApplication.name, f)
+      .subscribe((_) => this.onRefresh.emit(true));
   }
 
   deleteFeature(f: Feature) {
-    this.botService.deleteFeature(this.state.currentApplication.name, f.category, f.name, f.applicationId)
-      .subscribe(_ => this.onRefresh.emit(true));
+    this.botService
+      .deleteFeature(this.state.currentApplication.name, f.category, f.name, f.applicationId)
+      .subscribe((_) => this.onRefresh.emit(true));
   }
 
   addFeature() {
     if (this.feature.name.trim().length === 0 || this.feature.category.trim().length === 0) {
-      this.toastrService.show(`name and category are mandatory`, "Error", {duration: 3000});
+      this.toastrService.show(`name and category are mandatory`, 'Error', { duration: 3000 });
     } else {
-      const conf = this.configurationService.findApplicationConfigurationById(this.botApplicationConfigurationId);
+      const conf = this.configurationService.findApplicationConfigurationById(
+        this.botApplicationConfigurationId
+      );
       if (conf) {
         this.feature.applicationId = conf.applicationId;
       }
 
-      this.botService.addFeature(this.state.currentApplication.name, this.feature).subscribe(
-        _ => {
+      this.botService
+        .addFeature(this.state.currentApplication.name, this.feature)
+        .subscribe((_) => {
           this.onRefresh.emit(true);
           this.create = false;
           this.botApplicationConfigurationId = undefined;
           this.feature.applicationId = undefined;
-        }
-      );
+        });
     }
   }
 }

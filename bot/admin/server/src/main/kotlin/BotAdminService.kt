@@ -86,7 +86,6 @@ import java.util.Locale
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
-
 /**
  *
  */
@@ -113,7 +112,7 @@ object BotAdminService {
 
         override fun keepFeature(feature: StoryDefinitionConfigurationFeatureDump): Boolean =
             feature.botApplicationConfigurationId == null ||
-                getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
+                    getBotConfigurationById(feature.botApplicationConfigurationId!!)?.namespace == targetNamespace
 
         override fun buildScript(
             script: ScriptAnswerVersionedConfigurationDump,
@@ -346,36 +345,36 @@ object BotAdminService {
         searchFunction: (String, String, Set<Id<BotApplicationConfiguration>>, ZonedDateTime?, ZonedDateTime?, String?) -> Pair<List<DialogFlowTransitionStatsData>, List<String>>,
         seriesLabel: (String?) -> String = { "$it" }
     ):
-        UserAnalyticsQueryResult {
-            val namespace = request.namespace
-            val botId = request.botId
-            val applicationIds = applications.map { it._id }.toSet()
-            val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
-            val toDate = atTimeOfDay(request.to, LocalTime.MAX)
-            logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
+            UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = applications.map { it._id }.toSet()
+        val fromDate = atTimeOfDay(request.from, LocalTime.MIDNIGHT)
+        val toDate = atTimeOfDay(request.to, LocalTime.MAX)
+        logger.debug { "Building 'Messages by Configuration' report for ${applications.size} configurations: $applicationIds..." }
 
-            val functionResult =
-                (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
-            val series = functionResult.first.groupingBy { it.text }.eachCount().toList().sortedByDescending { it.second }
-                .unzip().first
-            val messagesByDate = functionResult.first.groupBy { groupSelector(fromDate, toDate, it.date) }
+        val functionResult =
+            (searchFunction)(namespace, botId, applicationIds, request.from, request.to, request.intent)
+        val series = functionResult.first.groupingBy { it.text }.eachCount().toList().sortedByDescending { it.second }
+            .unzip().first
+        val messagesByDate = functionResult.first.groupBy { groupSelector(fromDate, toDate, it.date) }
 
-            val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, messagesByDate)
-            val result = arrayListOf<List<Int?>>()
-            transitionsByDate.forEach { transitions ->
-                run {
-                    val datesMessages = arrayListOf<Int?>()
-                    series.forEach { serie ->
-                        run {
-                            val count = transitions?.count { it.text == serie }
-                            datesMessages.add(count)
-                        }
+        val (dates, transitionsByDate) = sortMessagesByDate(fromDate, toDate, messagesByDate)
+        val result = arrayListOf<List<Int?>>()
+        transitionsByDate.forEach { transitions ->
+            run {
+                val datesMessages = arrayListOf<Int?>()
+                series.forEach { serie ->
+                    run {
+                        val count = transitions?.count { it.text == serie }
+                        datesMessages.add(count)
                     }
-                    result.add(datesMessages)
                 }
+                result.add(datesMessages)
             }
-            return UserAnalyticsQueryResult(dates, result, series.map(seriesLabel))
         }
+        return UserAnalyticsQueryResult(dates, result, series.map(seriesLabel))
+    }
 
     private fun <S> reportMessagesBySeries(
         request: DialogFlowRequest,
@@ -776,22 +775,23 @@ object BotAdminService {
         controller: BotStoryDefinitionConfigurationDumpController
     ) {
 
-        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+        val existingStory1 = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
             namespace,
             botConf.botId,
             story.intent.name
-        )?.also {
-            storyDefinitionDAO.delete(it)
-        }
-        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        )
+
+        val existingStory2 = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
             namespace,
             botConf.botId,
             story.storyId
         )?.also {
-            storyDefinitionDAO.delete(it)
+            if (existingStory1 != null) {
+                storyDefinitionDAO.delete(it)
+            }
         }
 
-        storyDefinitionDAO.save(story)
+        storyDefinitionDAO.save(story.copy(_id = existingStory1?._id ?: existingStory2?._id ?: story._id))
 
         val mainIntent = createOrGetIntent(
             namespace,
@@ -1219,14 +1219,14 @@ object BotAdminService {
         }
 
     private fun BotConfiguredAnswer.toConfiguredAnswer(botId: String, oldStory: StoryDefinitionConfiguration?):
-        DedicatedAnswerConfiguration {
-            val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
-            return DedicatedAnswerConfiguration(
-                botConfiguration,
-                currentType,
-                answers.mapNotNull { it.toConfiguration(botId, oldConf?.answers) }
-            )
-        }
+            DedicatedAnswerConfiguration {
+        val oldConf = oldStory?.configuredAnswers?.find { it.botConfiguration == botConfiguration }
+        return DedicatedAnswerConfiguration(
+            botConfiguration,
+            currentType,
+            answers.mapNotNull { it.toConfiguration(botId, oldConf?.answers) }
+        )
+    }
 
     fun saveSentence(
         text: String,

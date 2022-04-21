@@ -14,121 +14,216 @@
   ~ limitations under the License.
   -->
 
-<div *ngIf="step && !readonly" class="step">
+<div
+  *ngIf="step && !readonly"
+  class="step"
+>
   <!-- user sentence -->
   <mat-form-field class="input">
-    <input matInput
-           *ngIf="!step.new"
-           required
-           [(ngModel)]="step.userSentence.defaultLabel"
-           placeholder="Enter a User Phrase"
-           (blur)="userSentenceChange($event.target.value)">
-    <input matInput
-           *ngIf="step.new"
-           required
-           [(ngModel)]="step.newUserSentence"
-           placeholder="Enter a User Phrase"
-           (blur)="userSentenceChange($event.target.value)">
+    <input
+      matInput
+      *ngIf="!step.new"
+      required
+      [(ngModel)]="step.userSentence.defaultLabel"
+      placeholder="Enter a User Phrase"
+      (blur)="userSentenceChange($event.target.value)"
+    />
+    <input
+      matInput
+      *ngIf="step.new"
+      required
+      [(ngModel)]="step.newUserSentence"
+      placeholder="Enter a User Phrase"
+      (blur)="userSentenceChange($event.target.value)"
+    />
   </mat-form-field>
 
   <!-- intent -->
   <mat-form-field class="input input-intent">
-    <input matInput
-           name="intent"
-           placeholder="Intent"
-           [(ngModel)]="step.intent.name"
-           matTooltip="Intent starting the Action"
-           [matAutocomplete]="intentAuto"
-           (keyup)="onIntentChange(step, $event.target.value)"
-           (focus)="onIntentChange(step, $event.target.value)"
-           (blur)="validateIntent(step)">
+    <input
+      matInput
+      name="intent"
+      placeholder="Intent"
+      [(ngModel)]="step.intent.name"
+      matTooltip="Intent starting the Action"
+      [matAutocomplete]="intentAuto"
+      (keyup)="onIntentChange(step, $event.target.value)"
+      (focus)="onIntentChange(step, $event.target.value)"
+      (blur)="validateIntent(step)"
+    />
   </mat-form-field>
 
   <!-- entity -->
   <div class="entity-button">
-    {{step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : ''}}
-    <button *ngIf="!step.entity || step.entity.value"
-            mat-icon-button
-            [color]="step.entity ? 'primary' : 'secondary'"
-            matTooltip="Set Target Entity Value" (click)="setEntity()">
+    {{ step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : '' }}
+    <button
+      *ngIf="!step.entity || step.entity.value"
+      mat-icon-button
+      [color]="step.entity ? 'primary' : 'secondary'"
+      matTooltip="Set Target Entity Value"
+      (click)="setEntity()"
+    >
       <mat-icon>playlist_add_check</mat-icon>
     </button>
-    <button *ngIf="step.entity && !step.entity.value"
-            mat-icon-button
-            color="primary"
-            matTooltip="Set Target Entity" (click)="setEntity()">
+    <button
+      *ngIf="step.entity && !step.entity.value"
+      mat-icon-button
+      color="primary"
+      matTooltip="Set Target Entity"
+      (click)="setEntity()"
+    >
       <mat-icon>extension</mat-icon>
     </button>
-
   </div>
 
   <!-- answer -->
-  <tock-answer [answer]="step" class="entity-button"></tock-answer>&nbsp;
+  <tock-answer
+    [answer]="step"
+    class="entity-button"
+  ></tock-answer
+  >&nbsp;
 
   <!-- target intent -->
-  <mat-form-field [style.display]="displayTargetIntent ? 'inline-block' : 'none'" class="input input-intent">
-    <input #targetIntent matInput name="targetIntent" placeholder="Target Intent" [(ngModel)]="step.targetIntent.name"
-           matTooltip="Intent to switch when reaching the step (escape to hide)"
-           [matAutocomplete]="intentAuto"
-           (keyup)="onIntentChange(step, $event.target.value)"
-           (focus)="onIntentChange(step, $event.target.value)"
-           (blur)="validateIntent(step, true)"
-           (keydown.escape)="displayTargetIntent = false">
+  <mat-form-field
+    [style.display]="displayTargetIntent ? 'inline-block' : 'none'"
+    class="input input-intent"
+  >
+    <input
+      #targetIntent
+      matInput
+      name="targetIntent"
+      placeholder="Target Intent"
+      [(ngModel)]="step.targetIntent.name"
+      matTooltip="Intent to switch when reaching the step (escape to hide)"
+      [matAutocomplete]="intentAuto"
+      (keyup)="onIntentChange(step, $event.target.value)"
+      (focus)="onIntentChange(step, $event.target.value)"
+      (blur)="validateIntent(step, true)"
+      (keydown.escape)="displayTargetIntent = false"
+    />
   </mat-form-field>
-  <div *ngIf="!displayTargetIntent" class="entity-button">
-    <button mat-icon-button
-            matTooltip="Set Target Intent" (click)="focusTargetIntent(targetIntent)">
+  <div
+    *ngIf="!displayTargetIntent"
+    class="entity-button"
+  >
+    <button
+      mat-icon-button
+      matTooltip="Set Target Intent"
+      (click)="focusTargetIntent(targetIntent)"
+    >
       <mat-icon>subdirectory_arrow_right</mat-icon>
     </button>
   </div>
 
   <div class="entity-button">
-    <button mat-icon-button color="warn"
-            matTooltip="Remove Action" (click)="removeStep()">
+    <button
+      mat-icon-button
+      color="warn"
+      matTooltip="Remove Action"
+      (click)="removeStep()"
+    >
       <mat-icon>remove</mat-icon>
     </button>
   </div>
 
   <div class="entity-button">
-    <nb-icon *ngIf="step.new" icon="alert-triangle-outline" nbTooltip="Invalid Action" status="warning"></nb-icon>
-    <button *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()" mat-icon-button (click)="addChild()" matTooltip="Add Action">
+    <nb-icon
+      *ngIf="step.new"
+      icon="alert-triangle-outline"
+      nbTooltip="Invalid Action"
+      status="warning"
+    ></nb-icon>
+    <button
+      *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
+      mat-icon-button
+      (click)="addChild()"
+      matTooltip="Add Action"
+    >
       <mat-icon>add</mat-icon>
     </button>
   </div>
 
   <div class="entity-button">
-    <button mat-icon-button (click)="duplicateStep()" matTooltip="Duplicate">
+    <button
+      mat-icon-button
+      (click)="duplicateStep()"
+      matTooltip="Duplicate"
+    >
       <mat-icon>control_point_duplicate</mat-icon>
     </button>
   </div>
 
-  <div class="entity-button" *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()">
-    <button mat-icon-button (click)="generateChildren()" matTooltip="Generate from Entity">
+  <div
+    class="entity-button"
+    *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
+  >
+    <button
+      mat-icon-button
+      (click)="generateChildren()"
+      matTooltip="Generate from Entity"
+    >
       <mat-icon>playlist_add</mat-icon>
     </button>
   </div>
 
-  <div *ngIf="canDownward" class="entity-button">
-    <button mat-icon-button color="accent"
-            matTooltip="Downward" (click)="downwardStep()">
+  <div
+    *ngIf="canDownward"
+    class="entity-button"
+  >
+    <button
+      mat-icon-button
+      color="accent"
+      matTooltip="Downward"
+      (click)="downwardStep()"
+    >
       <mat-icon>arrow_downward</mat-icon>
     </button>
   </div>
-  <div *ngIf="canUpward" class="entity-button">
-    <button mat-icon-button color="accent"
-            matTooltip="Upward" (click)="upwardStep()">
+  <div
+    *ngIf="canUpward"
+    class="entity-button"
+  >
+    <button
+      mat-icon-button
+      color="accent"
+      matTooltip="Upward"
+      (click)="upwardStep()"
+    >
       <mat-icon>arrow_upward</mat-icon>
     </button>
   </div>
 
-  <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption panelWidth="auto">
-    <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
-      <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
-        {{intent.intentLabel()}}
+  <mat-autocomplete
+    #intentAuto="matAutocomplete"
+    autoActiveFirstOption
+    panelWidth="auto"
+  >
+    <mat-optgroup
+      *ngFor="let category of currentIntentCategories"
+      [label]="category.category"
+    >
+      <mat-option
+        *ngFor="let intent of category.intents"
+        [value]="intent.name"
+      >
+        {{ intent.intentLabel() }}
       </mat-option>
     </mat-optgroup>
   </mat-autocomplete>
 </div>
-<span *ngIf="step && readonly" class="read-only">{{step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label}}
-  <span *ngIf="step.intent && step.intent.name" class="intent" matTooltip="Action Intent">[{{step.intent.name}}]</span>: <tock-answer
-  class="answer" [answer]="step" [editable]="false"></tock-answer></span>
+<span
+  *ngIf="step && readonly"
+  class="read-only"
+  >{{ step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label }}
+  <span
+    *ngIf="step.intent && step.intent.name"
+    class="intent"
+    matTooltip="Action Intent"
+    >[{{ step.intent.name }}]</span
+  >:
+  <tock-answer
+    class="answer"
+    [answer]="step"
+    [editable]="false"
+  ></tock-answer
+></span>

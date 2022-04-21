@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-translator</artifactId>
-        <version>21.9.2-SNAPSHOT</version>
+        <version>22.3.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-translator-google</artifactId>
@@ -29,6 +29,10 @@
     <description>Google translator implementation</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+        </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-translator-core</artifactId>

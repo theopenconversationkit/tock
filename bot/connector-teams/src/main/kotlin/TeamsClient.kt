@@ -26,13 +26,13 @@ import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.create
 import ai.tock.shared.longProperty
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
-import com.microsoft.bot.schema.models.Activity
-import com.microsoft.bot.schema.models.ActivityTypes
-import com.microsoft.bot.schema.models.Attachment
-import com.microsoft.bot.schema.models.AttachmentLayoutTypes
-import com.microsoft.bot.schema.models.HeroCard
-import com.microsoft.bot.schema.models.TextFormatTypes
-import com.microsoft.bot.schema.models.ThumbnailCard
+import com.microsoft.bot.schema.Activity
+import com.microsoft.bot.schema.ActivityTypes
+import com.microsoft.bot.schema.Attachment
+import com.microsoft.bot.schema.AttachmentLayoutTypes
+import com.microsoft.bot.schema.HeroCard
+import com.microsoft.bot.schema.TextFormatTypes
+import com.microsoft.bot.schema.ThumbnailCard
 import mu.KotlinLogging
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -62,21 +62,22 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
 
     fun sendMessage(callbackActivity: Activity, event: TeamsBotMessage) {
         // construct request
-        val url = "${callbackActivity.serviceUrl()}/v3/conversations/${callbackActivity.conversation().id()}/activities/${callbackActivity.id()}"
+        val url =
+            "${callbackActivity.serviceUrl}/v3/conversations/${callbackActivity.conversation.id}/activities/${callbackActivity.id}"
 
         // construct callbackActivity
-        val activity = Activity()
-            .withType(ActivityTypes.MESSAGE)
-            .withText(activeLink(event.text))
-            .withTextFormat(TextFormatTypes.MARKDOWN)
-            .withRecipient(callbackActivity.from())
-            .withAttachments(getAttachment(event))
-            .withFrom(callbackActivity.recipient())
-            .withConversation(callbackActivity.conversation())
-            .withReplyToId(callbackActivity.id())
+        val activity = Activity(ActivityTypes.MESSAGE).apply {
+            text = activeLink(event.text)
+            textFormat = TextFormatTypes.MARKDOWN
+            recipient = callbackActivity.from
+            attachments = getAttachment(event)
+            from = callbackActivity.recipient
+            conversation = callbackActivity.conversation
+            replyToId = callbackActivity.id
+        }
 
         if (event is TeamsCarousel) {
-            activity.withAttachmentLayout(AttachmentLayoutTypes.CAROUSEL)
+            activity.attachmentLayout = AttachmentLayoutTypes.CAROUSEL
         }
         // send the message
         val messageResponse = connectorApi.postResponse(
@@ -90,16 +91,20 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
         }
     }
 
-    private fun getAttachment(event: TeamsBotMessage): MutableList<Attachment>? {
+    private fun getAttachment(event: TeamsBotMessage): MutableList<Attachment> {
         val attachments = mutableListOf<Attachment>()
 
         when (event) {
             is TeamsCardAction -> {
-                val card = ThumbnailCard().withTitle(event.actionTitle).withButtons(event.buttons)
+                val card = ThumbnailCard().apply {
+                    title = event.actionTitle
+                    buttons = event.buttons
+                }
                 attachments.add(
-                    Attachment()
-                        .withContentType("application/vnd.microsoft.card.thumbnail")
-                        .withContent(card)
+                    Attachment().apply {
+                        contentType = "application/vnd.microsoft.card.thumbnail"
+                        content = card
+                    }
                 )
             }
             is TeamsCarousel -> {
@@ -109,22 +114,24 @@ internal class TeamsClient(private val tokenHandler: TokenHandler) {
                     attachments.addAll(
                         getAttachment(
                             listElement.removeAt(0)
-                        ) as MutableList<Attachment>
+                        )
                     )
                 }
             }
             is TeamsHeroCard -> {
-                val card = HeroCard()
-                    .withTitle(event.title)
-                    .withSubtitle(event.subtitle)
-                    .withText(event.attachmentContent)
-                    .withImages(event.images)
-                    .withButtons(event.buttons)
-                    .withTap(event.tap)
+                val card = HeroCard().apply {
+                    title = event.title
+                    subtitle = event.subtitle
+                    text = event.attachmentContent
+                    images = event.images
+                    buttons = event.buttons
+                    tap = event.tap
+                }
                 attachments.add(
-                    Attachment()
-                        .withContentType("application/vnd.microsoft.card.hero")
-                        .withContent(card)
+                    Attachment().apply {
+                        contentType = "application/vnd.microsoft.card.hero"
+                        content = card
+                    }
                 )
             }
         }

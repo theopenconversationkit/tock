@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import {BotApplicationConfiguration} from "../../core/model/configuration";
+import { BotApplicationConfiguration } from '../../core/model/configuration';
 
 export class Feature {
-
   configuration: BotApplicationConfiguration;
 
-  constructor(public category: string,
-              public name: string,
-              public enabled: boolean,
-              public startDate: Date = null,
-              public endDate: Date = null,
-              public applicationId: string = null) {
-  }
+  constructor(
+    public category: string,
+    public name: string,
+    public enabled: boolean,
+    public startDate: Date = null,
+    public endDate: Date = null,
+    public applicationId: string = null
+  ) {}
 
   static fromJSON(json: any): Feature {
     const value = Object.create(Feature.prototype);
@@ -40,5 +40,4 @@ export class Feature {
   static fromJSONArray(json?: Array<any>): Feature[] {
     return json ? json.map(Feature.fromJSON) : [];
   }
-
 }

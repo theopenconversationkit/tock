@@ -14,79 +14,110 @@
   ~ limitations under the License.
   -->
 
-<div class="row container-login100" style="background-image: url('{{baseHref}}assets/images/back-blur.jpg');" *ngIf="!authService.isLoggedIn()">
-  <div class="col-md-3">
-  </div>
+<div
+  class="row container-login100"
+  style="background-image: url('{{ baseHref }}assets/images/back-blur.jpg');"
+  *ngIf="!authService.isLoggedIn()"
+>
+  <div class="col-md-3"></div>
   <div class="col-md-6">
     <nb-card>
       <nb-card-header></nb-card-header>
       <nb-card-body>
         <div style="text-align: center">
-          <img style="width: 250px; margin-bottom: 50px;" src="{{baseHref}}assets/images/Logo_Tock_bleu.svg"/>
+          <img
+            style="width: 250px; margin-bottom: 50px"
+            src="{{ baseHref }}assets/images/Logo_Tock_bleu.svg"
+          />
         </div>
         <div class="row">
-          <div class="col-md-2">
-          </div>
+          <div class="col-md-2"></div>
           <div class="col-md-8">
-            <form (ngSubmit)="onSubmit()" #form="ngForm" aria-labelledby="title">
+            <form
+              (ngSubmit)="onSubmit()"
+              #form="ngForm"
+              aria-labelledby="title"
+            >
               <div class="form-group">
                 <label class="label">Email address</label>
-                <input type="email" class="form-control"
-                       nbInput
-                       fullWidth
-                       [(ngModel)]="email"
-                       #userEmail="ngModel"
-                       name="email"
-                       id="input-email"
-                       pattern=".+@.+\..+"
-                       placeholder="Email address"
-                       autofocus
-                       [required]="true">
+                <input
+                  type="email"
+                  class="form-control"
+                  nbInput
+                  fullWidth
+                  [(ngModel)]="email"
+                  #userEmail="ngModel"
+                  name="email"
+                  id="input-email"
+                  pattern=".+@.+\..+"
+                  placeholder="Email address"
+                  autofocus
+                  [required]="true"
+                />
                 <ng-container *ngIf="userEmail.invalid && userEmail.touched">
-                  <p class="error-message" *ngIf="userEmail.errors?.required">
+                  <p
+                    class="error-message"
+                    *ngIf="userEmail.errors?.required"
+                  >
                     Email is required!
                   </p>
-                  <p class="error-message" *ngIf="userEmail.errors?.pattern">
+                  <p
+                    class="error-message"
+                    *ngIf="userEmail.errors?.pattern"
+                  >
                     Email should be the real one!
                   </p>
                 </ng-container>
               </div>
               <div class="form-group">
                 <label class="label">Password</label>
-                <input type="password" class="form-control" placeholder="Password"
-                       nbInput
-                       fullWidth
-                       [(ngModel)]="password"
-                       #userPassword="ngModel"
-                       name="password"
-                       type="password"
-                       id="input-password"
-                       placeholder="Password"
-                       [required]="true">
-                <ng-container *ngIf="errorMessage || (userPassword.invalid && userPassword.touched)">
-                  <p class="error-message" *ngIf="userPassword.errors?.required">
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Password"
+                  nbInput
+                  fullWidth
+                  [(ngModel)]="password"
+                  #userPassword="ngModel"
+                  name="password"
+                  type="password"
+                  id="input-password"
+                  placeholder="Password"
+                  [required]="true"
+                />
+                <ng-container
+                  *ngIf="errorMessage || (userPassword.invalid && userPassword.touched)"
+                >
+                  <p
+                    class="error-message"
+                    *ngIf="userPassword.errors?.required"
+                  >
                     Password is required!
                   </p>
-                  <p class="error-message" *ngIf="errorMessage">
-                    {{errorMessage}}
+                  <p
+                    class="error-message"
+                    *ngIf="errorMessage"
+                  >
+                    {{ errorMessage }}
                   </p>
                 </ng-container>
               </div>
               <div class="row">
-                <div style="text-align: center;margin: auto;">
-                  <button type="submit" class="btn btn-outline-primary">Login</button>
+                <div style="text-align: center; margin: auto">
+                  <button
+                    type="submit"
+                    class="btn btn-outline-primary"
+                  >
+                    Login
+                  </button>
                 </div>
               </div>
             </form>
           </div>
-          <div class="col-md-2">
-          </div>
+          <div class="col-md-2"></div>
         </div>
       </nb-card-body>
     </nb-card>
   </div>
-  <div class="col-md-3">
-  </div>
+  <div class="col-md-3"></div>
 </div>
-
-

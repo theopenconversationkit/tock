@@ -16,7 +16,7 @@
 package ai.tock.bot.connector.teams.auth
 
 import ai.tock.shared.devEnvironment
-import com.microsoft.bot.schema.models.Activity
+import com.microsoft.bot.schema.Activity
 import com.nimbusds.jose.JOSEException
 import com.nimbusds.jose.JWSVerifier
 import com.nimbusds.jose.crypto.ECDSAVerifier
@@ -140,7 +140,7 @@ internal class AuthenticateBotConnectorService(
             if ((
                 signedJWT.jwtClaimsSet.getClaim("serviceurl")
                     ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")
-                ) != activity.serviceUrl()
+                ) != activity.serviceUrl
             ) {
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
             }

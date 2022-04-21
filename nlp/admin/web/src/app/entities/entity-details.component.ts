@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-
-import {map} from 'rxjs/operators';
-import {Component, Input, OnInit} from "@angular/core";
-import {StateService} from "../core-nlp/state.service";
-import {NlpService} from "../nlp-tabs/nlp.service";
-import {ApplicationService} from "../core-nlp/applications.service";
-import {EntityDefinition, EntityType} from "../model/nlp";
-import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
-import {NbToastrService} from '@nebular/theme';
-import {DialogService} from "../core-nlp/dialog.service";
+import { map } from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { StateService } from '../core-nlp/state.service';
+import { NlpService } from '../nlp-tabs/nlp.service';
+import { ApplicationService } from '../core-nlp/applications.service';
+import { EntityDefinition, EntityType } from '../model/nlp';
+import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { NbToastrService } from '@nebular/theme';
+import { DialogService } from '../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-entity-details',
@@ -31,7 +30,6 @@ import {DialogService} from "../core-nlp/dialog.service";
   styleUrls: ['./entity-details.component.css']
 })
 export class EntityDetailsComponent implements OnInit {
-
   @Input()
   entity: EntityDefinition;
   @Input()
@@ -39,44 +37,55 @@ export class EntityDetailsComponent implements OnInit {
   @Input()
   entityType: EntityType;
 
-  constructor(public state: StateService,
-              private nlp: NlpService,
-              private toastrService: NbToastrService,
-              private dialog: DialogService,
-              private applicationService: ApplicationService) {
-  }
+  constructor(
+    public state: StateService,
+    private nlp: NlpService,
+    private toastrService: NbToastrService,
+    private dialog: DialogService,
+    private applicationService: ApplicationService
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   findEntityType(): EntityType {
     return this.state.findEntityTypeByName(this.entity.entityTypeName);
   }
 
   update() {
-    this.nlp.updateEntityDefinition(
-      this.state.createUpdateEntityDefinitionQuery(this.entity)
-    ).pipe(map(_ => this.applicationService.reloadCurrentApplication()))
-      .subscribe(_ => this.toastrService.show(`Entity updated`, "Update", {duration: 2000}));
+    this.nlp
+      .updateEntityDefinition(this.state.createUpdateEntityDefinitionQuery(this.entity))
+      .pipe(map((_) => this.applicationService.reloadCurrentApplication()))
+      .subscribe((_) => this.toastrService.show(`Entity updated`, 'Update', { duration: 2000 }));
   }
 
   remove() {
     let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
       context: {
         title: `Remove the subentity ${this.entity.entityTypeName}`,
-        subtitle: "Are you sure?",
-        action: "Remove"
+        subtitle: 'Are you sure?',
+        action: 'Remove'
       }
     });
-    dialogRef.onClose.subscribe(result => {
-      if (result === "remove") {
-        this.nlp.removeSubEntity(this.state.currentApplication, this.entityType, this.entity).subscribe(
-          _ => {
-            this.state.resetConfiguration();
-            this.toastrService.show(`Subentity ${this.entity.entityTypeName} removed`, "Remove Subentity", {duration: 2000});
-          },
-          _ => this.toastrService.show(`Remove Subentity ${this.entity.entityTypeName} failed`, "Error", {duration: 5000})
-        );
+    dialogRef.onClose.subscribe((result) => {
+      if (result === 'remove') {
+        this.nlp
+          .removeSubEntity(this.state.currentApplication, this.entityType, this.entity)
+          .subscribe(
+            (_) => {
+              this.state.resetConfiguration();
+              this.toastrService.show(
+                `Subentity ${this.entity.entityTypeName} removed`,
+                'Remove Subentity',
+                { duration: 2000 }
+              );
+            },
+            (_) =>
+              this.toastrService.show(
+                `Remove Subentity ${this.entity.entityTypeName} failed`,
+                'Error',
+                { duration: 5000 }
+              )
+          );
       }
     });
   }
@@ -87,8 +96,7 @@ export class EntityDetailsComponent implements OnInit {
       return [];
     } else {
       //filter sub entities already seen (avoid direct recursive problem)
-      return entityType.subEntities.filter(s => s.entityTypeName !== entityType.name);
+      return entityType.subEntities.filter((s) => s.entityTypeName !== entityType.name);
     }
   }
-
 }

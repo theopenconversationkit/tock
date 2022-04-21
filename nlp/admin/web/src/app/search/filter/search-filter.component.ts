@@ -13,8 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 export class FilterOption {
   value: any;
@@ -44,7 +53,6 @@ export class Group {
   styleUrls: ['./search-filter.component.css']
 })
 export class SearchFilterComponent implements OnInit, AfterViewInit {
-
   @Input()
   name: String;
   @Input()
@@ -78,40 +86,40 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
     //force blur
     setTimeout(() => {
       this.skipBlur = true;
-      this.autoBlurElement.nativeElement.blur()
+      this.autoBlurElement.nativeElement.blur();
     });
   }
 
   private filterChildren(children: FilterOption[], filterValue: string) {
-    return children.filter(optionValue => optionValue.label.toLowerCase().includes(filterValue));
+    return children.filter((optionValue) => optionValue.label.toLowerCase().includes(filterValue));
   }
 
   private findChildren(children: FilterOption[], value: string): FilterOption[] {
-    return children.filter(optionValue => optionValue.label.toLowerCase() === value);
+    return children.filter((optionValue) => optionValue.label.toLowerCase() === value);
   }
 
   filter(value: string): Group[] {
     const filterValue = value.toLowerCase();
     return this.groups
-      .map(group => {
+      .map((group) => {
         return {
           name: group.name,
-          children: this.filterChildren(group.children, filterValue),
+          children: this.filterChildren(group.children, filterValue)
         };
       })
-      .filter(group => group.children.length);
+      .filter((group) => group.children.length);
   }
 
   private find(value: string): Group[] {
     const normalizedValue = value.toLowerCase();
     return this.groups
-      .map(group => {
+      .map((group) => {
         return {
           name: group.name,
-          children: this.findChildren(group.children, normalizedValue),
+          children: this.findChildren(group.children, normalizedValue)
         };
       })
-      .filter(group => group.children.length > 0);
+      .filter((group) => group.children.length > 0);
   }
 
   trackByFn(index, item) {
@@ -123,7 +131,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
       return option.label;
     }
     return option;
-  }
+  };
 
   onSelectedChange(selected: FilterOption) {
     if (selected === this.noFilter) {
@@ -155,7 +163,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
 
   onClick() {
     if (this.cleanupIfSelected) {
-      setTimeout(_ => {
+      setTimeout((_) => {
         this.cachedValue = this.selectedValue;
         this.selectedValue = '';
       });
@@ -165,7 +173,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
   onDoubleClick() {
     this.cachedValue = this.selectedValue;
     this.selectedValue = '';
-    setTimeout(_ => {
+    setTimeout((_) => {
       const e = this.autoBlurElement.nativeElement;
       e.click();
       e.focus();
@@ -186,10 +194,9 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
         this.autoBlurElement.nativeElement.disabled = true;
         this.selectedValue = this.cachedValue;
         setTimeout(() => {
-            this.autoBlurElement.nativeElement.disabled = false;
-            this.cachedValue = this.selectedValue;
-          },
-          0);
+          this.autoBlurElement.nativeElement.disabled = false;
+          this.cachedValue = this.selectedValue;
+        }, 0);
       }
     }
   }

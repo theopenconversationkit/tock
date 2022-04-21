@@ -14,43 +14,68 @@
   ~ limitations under the License.
   -->
 
-<div *ngIf="container" [style.padding-left]="paddingLeft+'px'">
-  <div *ngFor="let entity of container.getEntities()" class="entity">
+<div
+  *ngIf="container"
+  [style.padding-left]="paddingLeft + 'px'"
+>
+  <div
+    *ngFor="let entity of container.getEntities()"
+    class="entity"
+  >
     <mat-chip-list class="role-container">
-      <mat-chip [style.background-color]="entity.entityColor"
-               [matTooltip]="entity.qualifiedName(state.user)"
-               selected="false"
-               color="primary">
-        {{entity.role}}
+      <mat-chip
+        [style.background-color]="entity.entityColor"
+        [matTooltip]="entity.qualifiedName(state.user)"
+        selected="false"
+        color="primary"
+      >
+        {{ entity.role }}
       </mat-chip>
     </mat-chip-list>
-    <span *ngIf="!readOnly" class="value">
-      {{container.entityValue(entity)}}
-    <span *ngIf="displayProbabilities && entity.hasProbability()"
-          class="probability"
-          matTooltip="Probability of entity recognition">
-               {{entity.probability | percent:'1.0-2'}}
-          </span>
-    <button mat-icon-button color="warn" (click)="onDeleteEntity(entity)" matTooltip="Delete">
-      <mat-icon>delete</mat-icon>
-    </button>
+    <span
+      *ngIf="!readOnly"
+      class="value"
+    >
+      {{ container.entityValue(entity) }}
+      <span
+        *ngIf="displayProbabilities && entity.hasProbability()"
+        class="probability"
+        matTooltip="Probability of entity recognition"
+      >
+        {{ entity.probability | percent: '1.0-2' }}
+      </span>
+      <button
+        mat-icon-button
+        color="warn"
+        (click)="onDeleteEntity(entity)"
+        matTooltip="Delete"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
     </span>
 
-    <span *ngIf="readOnly" class="read-only">
-    {{entity.value ? container.entityText(entity) : ""}}
-    {{container.entityValue(entity)}}
+    <span
+      *ngIf="readOnly"
+      class="read-only"
+    >
+      {{ entity.value ? container.entityText(entity) : '' }}
+      {{ container.entityValue(entity) }}
 
-    <span *ngIf="displayProbabilities && entity.hasProbability()"
-          class="probability"
-          matTooltip="Probability of entity recognition">
-               {{entity.probability | percent:'1.0-2'}}
-          </span>
+      <span
+        *ngIf="displayProbabilities && entity.hasProbability()"
+        class="probability"
+        matTooltip="Probability of entity recognition"
+      >
+        {{ entity.probability | percent: '1.0-2' }}
+      </span>
     </span>
 
-    <tock-edit-entities *ngIf="container.findEditedSubEntities(entity)"
-                        [container]="container.findEditedSubEntities(entity)"
-                        (containerChange)="onContainerChange()"
-                        [displayProbabilities]="displayProbabilities"
-                        [paddingLeft]="paddingLeft + 50"></tock-edit-entities>
+    <tock-edit-entities
+      *ngIf="container.findEditedSubEntities(entity)"
+      [container]="container.findEditedSubEntities(entity)"
+      (containerChange)="onContainerChange()"
+      [displayProbabilities]="displayProbabilities"
+      [paddingLeft]="paddingLeft + 50"
+    ></tock-edit-entities>
   </div>
 </div>
