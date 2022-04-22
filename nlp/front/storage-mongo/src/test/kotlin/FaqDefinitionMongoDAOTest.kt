@@ -121,6 +121,16 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             FaqDefinition(faqId2, intentId2, i18nId2, tagList2, true, now.plusSeconds(1), now.plusSeconds(1))
         faqDefinitionDao.save(otherFaqDefinition)
 
+        //some another faq
+        val faqId3 = "faqDefId3".toId<FaqDefinition>()
+        val intentId3 = "idIntent3".toId<IntentDefinition>()
+        val i18nId3 = "idI18n3".toId<I18nLabel>()
+        val tagList3 = listOf("TAG2")
+
+        val someOtherFaqDefinition =
+            FaqDefinition(faqId3, intentId3, i18nId3, tagList3, true, now.plusSeconds(2), now.plusSeconds(2))
+        faqDefinitionDao.save(someOtherFaqDefinition)
+
         assertEquals(
             expected = 2,
             actual = faqDefinitionDao.getFaqDefinitionByTags(setOf("TAG1")).size,
