@@ -84,7 +84,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
         hidden: this.state.hasRole(UserRole.nlpUser)
       },
       {
-        title: 'Scenarios',
+        title: 'Scenarios management',
         icon: 'film-outline',
         link: '/scenarios',
         hidden: this.state.hasRole(UserRole.botUser)

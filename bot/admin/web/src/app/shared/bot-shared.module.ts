@@ -39,6 +39,7 @@ import {
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
 
 @NgModule({
   imports: [
@@ -64,14 +65,16 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
+    MouseWheelListnerDirective
   ],
   exports: [
     BotMessageComponent,
     DisplayDialogComponent,
     SelectBotComponent,
     DateRangeCalendarComponent,
-    InfoButtonComponent
+    InfoButtonComponent,
+    MouseWheelListnerDirective
   ],
   providers: [BotSharedService],
   entryComponents: []

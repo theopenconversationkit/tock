@@ -17,10 +17,16 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import { ScenariosEditComponent } from './scenarios-edit/scenarios-edit.component';
+import { EditorEntryComponent } from './scenarios-edit/editor-entry.component';
+import { DndModule } from 'ngx-drag-drop';
+import { BotSharedModule } from '../shared/bot-shared.module';
+import { SharedModule } from '../shared-nlp/shared.module';
+import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
 
 const routes: Routes = [
   {
@@ -56,17 +62,18 @@ export class ScenariosRoutingModule {}
 @NgModule({
   imports: [
     CommonModule,
-    ScenariosRoutingModule
+    FormsModule,
+    SharedModule,
+    BotSharedModule,
+    ScenariosRoutingModule,
+    DndModule,
+    NbCheckboxModule,
+    NbChatModule
   ],
-  declarations: [
-        ScenariosListComponent,
-        ScenariosEditComponent
-  ],
+  declarations: [ScenariosListComponent, ScenariosEditComponent, EditorEntryComponent],
   exports: [],
   providers: [],
-  entryComponents: [
-    
-  ]
+  entryComponents: []
 })
 export class ScenariosModule {
   constructor() {}
