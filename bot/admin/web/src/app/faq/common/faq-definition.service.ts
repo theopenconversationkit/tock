@@ -77,12 +77,12 @@ export class FaqDefinitionService {
 
     this.faqData.rows
       .filter(item => item.id == faq.id)
-      .some(item=>{
-      if (FaqDefinitionService.compareFaqSave(faq, item)) {
-        console.log(FaqDefinitionService.compareFaqSave(faq, item))
-        dirty = true
-      }
-    });
+      .some(item => {
+        if (FaqDefinitionService.compareFaqSave(faq, item)) {
+          console.log(FaqDefinitionService.compareFaqSave(faq, item))
+          dirty = true
+        }
+      });
 
     if (!dirty) {
       return this.rest.post("/faq", faq)
@@ -142,7 +142,7 @@ export class FaqDefinitionService {
   updateFaqStatus(faq: FaqDefinition, status: boolean, cancel$: Observable<any>): Observable<FaqDefinition> {
     let dirty = false;
 
-    this.faqData.rows.filter(item => item.id == faq.id).some( item=>{
+    this.faqData.rows.filter(item => item.id == faq.id).some(item => {
       if (item.enabled == status) {
         dirty = true
       }
