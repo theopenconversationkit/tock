@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-import { ScenarioService } from '../services/scenario.service';
+import { RestService } from '../../core-nlp/rest/rest.service';
+import { Scenario } from '../models';
 
-@Component({
-  selector: 'scenarios-list',
-  templateUrl: './scenarios-list.component.html',
-  styleUrls: ['./scenarios-list.component.scss']
-})
-export class ScenariosListComponent implements OnInit {
-  data = [];
-  constructor(private scenarioService: ScenarioService) {}
-  ngOnInit() {
-    this.scenarioService.getScenarios().subscribe((data) => {
-      this.data = data;
-    });
+@Injectable()
+export class ScenarioService {
+  private tmpBaseHref = 'http://localhost:3000';
+
+  constructor(private rest: RestService, private httpClient: HttpClient) {}
+
+  getScenarios(): Observable<Array<Scenario>> {
+    return this.httpClient.get<Array<Scenario>>(`${this.tmpBaseHref}/scenarios`);
   }
 }

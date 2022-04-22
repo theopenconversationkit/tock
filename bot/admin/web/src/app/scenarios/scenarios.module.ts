@@ -21,6 +21,7 @@ import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import { ScenariosEditComponent } from './scenarios-edit/scenarios-edit.component';
+import { ScenarioService } from './services/scenario.service';
 
 const routes: Routes = [
   {
@@ -54,19 +55,11 @@ const routes: Routes = [
 export class ScenariosRoutingModule {}
 
 @NgModule({
-  imports: [
-    CommonModule,
-    ScenariosRoutingModule
-  ],
-  declarations: [
-        ScenariosListComponent,
-        ScenariosEditComponent
-  ],
+  imports: [CommonModule, ScenariosRoutingModule],
+  declarations: [ScenariosListComponent, ScenariosEditComponent],
   exports: [],
-  providers: [],
-  entryComponents: [
-    
-  ]
+  providers: [ScenarioService],
+  entryComponents: []
 })
 export class ScenariosModule {
   constructor() {}
