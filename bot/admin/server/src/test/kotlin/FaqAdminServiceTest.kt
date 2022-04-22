@@ -17,14 +17,12 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.admin.AdminService
-import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
@@ -93,6 +91,7 @@ class FaqAdminServiceTest : AbstractTest() {
         private const val userLogin: UserLogin = "userLogin"
 
         private val faqDefinition = FaqDefinition(faqId, intentId, i18nId, tagList, true, now, now)
+
         val applicationDefinition = ApplicationDefinition("my App", namespace = namespace)
         val storyId = "storyId".toId<StoryDefinitionConfiguration>()
 
@@ -313,6 +312,7 @@ class FaqAdminServiceTest : AbstractTest() {
             @Test
             fun `GIVEN save faq WHEN and saving the same story THEN update the story`() {
                 val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+                val savedFaqDefinition = FaqDefinition(faqId, intentId, i18nId, listOf("NEW TAG"), true, now, now)
 
                 every {
                     faqAdminService["createOrUpdateIntent"](
@@ -321,7 +321,7 @@ class FaqAdminServiceTest : AbstractTest() {
                     )
                 } returns theSavedIntent
                 every {
-                    faqAdminService["createOrUpdateActiveStoryOrRemoveDisabledStory"](
+                    faqAdminService["createOrUpdateStory"](
                         allAny<FaqDefinitionRequest>(),
                         allAny<IntentDefinition>(),
                         allAny<UserLogin>(),
@@ -330,9 +330,18 @@ class FaqAdminServiceTest : AbstractTest() {
                     ) as Unit
                 } just Runs
 
+                every {
+                    faqAdminService["prepareCreationOrUpdatingFaqDefinition"](
+                        allAny<FaqDefinitionRequest>(),
+                        allAny<IntentDefinition>(),
+                        allAny<I18nLabel>(),
+                        allAny<FaqDefinition>()
+                    ) as FaqDefinition
+                } returns savedFaqDefinition
+
                 faqAdminService.saveFAQ(faqDefinitionRequest, userLogin, applicationDefinition)
 
-                verify(exactly = 1) { faqDefinitionDAO.save(any()) }
+                verify(exactly = 1) { faqDefinitionDAO.save(savedFaqDefinition) }
                 verify(exactly = 1) { i18nDAO.save(listOf(mockedI18n)) }
 
                 val slotFaq = slot<FaqDefinition>()
@@ -340,7 +349,6 @@ class FaqAdminServiceTest : AbstractTest() {
 
                 assertEquals(slotFaq.captured._id, faqDefinitionRequest.id?.toId())
                 assertEquals(slotFaq.captured.tags, faqDefinitionRequest.tags)
-
             }
         }
 

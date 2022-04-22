@@ -775,14 +775,17 @@ open class BotAdminVerticle : AdminVerticle() {
             botUser,
             logger<FaqDefinitionRequest>("Save FAQ")
         ) { context, query: FaqDefinitionRequest ->
-            val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
-            if (context.organization == applicationDefinition?.namespace) {
-                FaqAdminService.saveFAQ(query, context.userLogin,applicationDefinition)
+            if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
+                badRequest("Missing argument or trouble in query: $query")
             } else {
-                unauthorized()
+                val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
+                if (context.organization == applicationDefinition?.namespace) {
+                    FaqAdminService.saveFAQ(query, context.userLogin, applicationDefinition)
+                } else {
+                    unauthorized()
+                }
             }
         }
-
 
         blockingJsonDelete(
             "/faq/:faqId",
