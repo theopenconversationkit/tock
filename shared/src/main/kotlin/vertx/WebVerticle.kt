@@ -16,36 +16,18 @@
 
 package ai.tock.shared.vertx
 
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.devEnvironment
-import ai.tock.shared.error
-import ai.tock.shared.intProperty
+import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.longProperty
-import ai.tock.shared.property
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
-import ai.tock.shared.security.auth.AWSJWTAuthProvider
-import ai.tock.shared.security.auth.CASAuthProvider
-import ai.tock.shared.security.auth.GithubOAuthProvider
-import ai.tock.shared.security.auth.OAuth2Provider
-import ai.tock.shared.security.auth.PropertyBasedAuthProvider
-import ai.tock.shared.security.auth.TockAuthProvider
+import ai.tock.shared.security.auth.*
 import ai.tock.shared.security.auth.spi.CASAuthProviderFactory
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.AbstractVerticle
-import io.vertx.core.AsyncResult
-import io.vertx.core.Future
-import io.vertx.core.Handler
-import io.vertx.core.Promise
-import io.vertx.core.Vertx
+import io.vertx.core.*
 import io.vertx.core.http.HttpMethod
-import io.vertx.core.http.HttpMethod.DELETE
-import io.vertx.core.http.HttpMethod.GET
-import io.vertx.core.http.HttpMethod.POST
-import io.vertx.core.http.HttpMethod.PUT
+import io.vertx.core.http.HttpMethod.*
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
@@ -57,18 +39,16 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.ErrorHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
-import java.io.File
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.EnumSet
-import java.util.Locale
-import java.util.ServiceLoader
-import kotlin.LazyThreadSafetyMode.PUBLICATION
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.io.File
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.*
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -269,6 +249,7 @@ abstract class WebVerticle : AbstractVerticle() {
      * The default role of a service.
      */
     open fun defaultRole(): TockUserRole? = null
+
     /**
      * The default roles of a service.
      */
@@ -374,9 +355,9 @@ abstract class WebVerticle : AbstractVerticle() {
         val tockUser = user() as TockUser
         val tockUserRoles = tockUser.roles
         // if any of the role are in the profile then you can invoke the handler
-        if (roles.any { tockUserRole -> tockUserRole?.name in tockUser.roles}){
+        if (roles.any { tockUserRole -> tockUserRole?.name in tockUser.roles }) {
             val aRole = roles.first { it?.name in tockUserRoles }?.name
-                user()?.isAuthorized(aRole, resultHandler)
+            user()?.isAuthorized(aRole, resultHandler)
         } else {
             resultHandler.invoke(Future.failedFuture("Not authorized for user"))
         }
@@ -423,7 +404,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole,
         handler: (RoutingContext) -> O
     ) {
-        blockingJsonGet(path,setOf(role),handler)
+        blockingJsonGet(path, setOf(role), handler)
     }
 
     fun <O> blockingJsonGet(
@@ -443,7 +424,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingPost(path,setOf(role),logger,handler)
+        blockingPost(path, setOf(role), logger, handler)
     }
 
     protected fun blockingPost(
@@ -483,7 +464,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, F) -> O
     ) {
-        blockingUploadJsonPost(path, setOf(role),logger,handler)
+        blockingUploadJsonPost(path, setOf(role), logger, handler)
     }
 
     protected inline fun <reified F : Any, O> blockingUploadJsonPost(
@@ -515,7 +496,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         crossinline handler: (RoutingContext, String) -> O
     ) {
-        blockingUploadPost(path,setOf(role),logger,handler)
+        blockingUploadPost(path, setOf(role), logger, handler)
     }
 
     protected inline fun <O> blockingUploadPost(
@@ -545,7 +526,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole,
         crossinline handler: (RoutingContext, Pair<String, ByteArray>) -> O
     ) {
-        blockingUploadBinaryPost(path,setOf(role), handler)
+        blockingUploadBinaryPost(path, setOf(role), handler)
     }
 
     protected inline fun <O> blockingUploadBinaryPost(
@@ -602,7 +583,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path,role?.let { setOf(role) },logger,handler)
+        blockingDelete(path, role?.let { setOf(role) }, logger, handler)
     }
 
     fun blockingDelete(
@@ -631,7 +612,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Boolean
     ) {
-        blockingJsonDelete(path,setOf(role),logger,handler)
+        blockingJsonDelete(path, setOf(role), logger, handler)
     }
 
     protected fun blockingJsonDelete(

@@ -54,14 +54,17 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   private checkLogin(url: string): boolean {
     const login = this.authService.isLoggedIn();
     if (login) {
-      if (
-        (!this.userState.hasRole(UserRole.nlpUser) &&
-          url.startsWith(this.rolesMap.get(UserRole.nlpUser))) ||
-        (!this.userState.hasRole(UserRole.botUser) &&
-          url.startsWith(this.rolesMap.get(UserRole.botUser)))
+      if ((!this.userState.hasRole(UserRole.nlpUser) && url.startsWith(this.rolesMap.get(UserRole.nlpUser)))
+        || (!this.userState.hasRole(UserRole.botUser) && url.startsWith(this.rolesMap.get(UserRole.botUser)))
+        || (!this.userState.hasRole(UserRole.faqBotUser) && url.startsWith(this.rolesMap.get(UserRole.faqBotUser)))
+        || (!this.userState.hasRole(UserRole.faqNlpUser) && url.startsWith(this.rolesMap.get(UserRole.faqNlpUser)))
       ) {
-        setTimeout((_) => {
-          if (this.userState.hasRole(UserRole.nlpUser)) {
+        setTimeout(_ => {
+          if (this.userState.hasRole(UserRole.faqNlpUser)) {
+            this.router.navigateByUrl(this.rolesMap.get(UserRole.faqNlpUser));
+          } else if (this.userState.hasRole(UserRole.faqBotUser)) {
+            this.router.navigateByUrl(this.rolesMap.get(UserRole.faqBotUser));
+          } else if (this.userState.hasRole(UserRole.nlpUser)) {
             this.router.navigateByUrl(this.rolesMap.get(UserRole.nlpUser));
           } else if (this.userState.hasRole(UserRole.botUser)) {
             this.router.navigateByUrl(this.rolesMap.get(UserRole.botUser));

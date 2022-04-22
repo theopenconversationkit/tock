@@ -310,7 +310,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonGet(
             "/sentence/users/:applicationId",
-            nlpUser
+            setOf(nlpUser,faqNlpUser)
         ) { context ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
@@ -538,7 +538,7 @@ open class AdminVerticle : WebVerticle() {
                 .sortedBy { it.second }
         }
 
-        blockingJsonPost("/parse", nlpUser) { context, query: ParseQuery ->
+        blockingJsonPost("/parse", setOf(nlpUser,faqNlpUser)) { context, query: ParseQuery ->
             if (context.organization == query.namespace) {
                 service.parseSentence(query)
             } else {
@@ -548,7 +548,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/sentence",
-            nlpUser,
+            setOf(nlpUser,faqNlpUser),
             logger<SentenceReport>("Update Sentence") { _, s ->
                 s?.applicationId
             }
@@ -560,7 +560,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/sentences/search", nlpUser) { context, s: SearchQuery ->
+        blockingJsonPost("/sentences/search", setOf(faqNlpUser,nlpUser)) { context, s: SearchQuery ->
             if (context.organization == s.namespace) {
                 try {
                     service.searchSentences(s)
@@ -791,7 +791,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/intent-errors", nlpUser) { context, query: TestBuildQuery ->
+        blockingJsonPost("/test/intent-errors", setOf(nlpUser,faqNlpUser)) { context, query: TestBuildQuery ->
             if (context.organization == query.namespace) {
                 val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
                     ?: error("application for $query not found")
@@ -803,7 +803,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/test/intent-error/delete",
-            nlpUser,
+            setOf(nlpUser,faqNlpUser),
             logger<IntentTestErrorWithSentenceReport>("Delete Intent Test Error") { _, e -> e?.sentence?.applicationId }
         ) { context, error: IntentTestErrorWithSentenceReport ->
             if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
@@ -817,7 +817,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/entity-errors", nlpUser) { context, query: TestBuildQuery ->
+        blockingJsonPost("/test/entity-errors", setOf(nlpUser,faqNlpUser)) { context, query: TestBuildQuery ->
             if (context.organization == query.namespace) {
                 val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
                     ?: error("application for $query not found")
@@ -829,7 +829,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/test/entity-error/delete",
-            nlpUser,
+            setOf(nlpUser,faqNlpUser),
             logger<EntityTestErrorWithSentenceReport>("Delete Entity Test Error") { _, e -> e?.sentence?.applicationId }
         ) { context, error: EntityTestErrorWithSentenceReport ->
             if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
@@ -843,7 +843,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/stats", nlpUser) { context, query: TestBuildQuery ->
+        blockingJsonPost("/test/stats", setOf(nlpUser,faqNlpUser)) { context, query: TestBuildQuery ->
             val app = front.getApplicationByNamespaceAndName(
                 query.namespace,
                 query.applicationName
