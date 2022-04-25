@@ -27,6 +27,8 @@ import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
 import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
+import { ScenarioService } from './services/scenario.service';
+
 
 const routes: Routes = [
   {
@@ -72,7 +74,7 @@ export class ScenariosRoutingModule {}
   ],
   declarations: [ScenariosListComponent, ScenariosEditComponent, EditorEntryComponent],
   exports: [],
-  providers: [],
+  providers: [ScenarioService],
   entryComponents: []
 })
 export class ScenariosModule {
