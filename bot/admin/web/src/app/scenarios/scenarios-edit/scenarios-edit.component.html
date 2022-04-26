@@ -1,10 +1,19 @@
-<div>
-  <div>
+<div class="mb-2">
+  <nb-icon
+    *ngIf="this.scenario?.name"
+    nbTooltip="Scenario"
+    icon="film-outline"
+  ></nb-icon>
+
+  <strong>
+    {{ this.scenario?.name }}
+  </strong>
+
+  <div class="float-right">
     <button
       nbButton
       size="tiny"
       status="danger"
-      class="m-2"
       (click)="clearStory()"
     >
       reset
@@ -13,7 +22,7 @@
       nbButton
       size="tiny"
       status="success"
-      class="m-2"
+      class="ml-2"
       (click)="mockData(1)"
     >
       Story 1
@@ -22,7 +31,7 @@
       nbButton
       size="tiny"
       status="success"
-      class="m-2"
+      class="ml-2"
       (click)="mockData(2)"
     >
       Story 2
@@ -31,7 +40,7 @@
       nbButton
       size="tiny"
       status="success"
-      class="m-2"
+      class="ml-2"
       (click)="mockData(3)"
     >
       Story 3
@@ -40,7 +49,7 @@
       nbButton
       size="tiny"
       status="info"
-      class="m-2"
+      class="ml-2"
       (click)="exportStory()"
     >
       Export
@@ -49,7 +58,7 @@
       nbButton
       size="tiny"
       status="primary"
-      class="m-2"
+      class="ml-2"
       (click)="testStory()"
     >
       Test story
@@ -70,8 +79,9 @@
     <div class="card-row">
       <div class="card-col">
         <app-editor-entry
+          *ngIf="scenarioData?.length"
           [itemId]="0"
-          [dataList]="story"
+          [dataList]="scenarioData"
           [selectedItem]="selectedItem"
         ></app-editor-entry>
       </div>

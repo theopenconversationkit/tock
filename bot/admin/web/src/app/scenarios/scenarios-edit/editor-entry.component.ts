@@ -42,13 +42,13 @@ export class EditorEntryComponent implements OnInit {
   }
 
   focusItem(item: scenarioItem): void {
-    if (item.id == this.item.id) {
+    if (item == this.item) {
       this.itemTextarea.nativeElement.focus();
     }
   }
 
   requireItemPosition(item: scenarioItem): void {
-    if (item.id == this.item.id) {
+    if (item == this.item) {
       this.editorService.exposeItemPosition(this.item, {
         left: this.itemCard.nativeElement.offsetLeft,
         top: this.itemCard.nativeElement.offsetTop,

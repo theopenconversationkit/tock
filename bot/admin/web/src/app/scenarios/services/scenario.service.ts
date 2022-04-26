@@ -30,4 +30,8 @@ export class ScenarioService {
   getScenarios(): Observable<Array<Scenario>> {
     return this.httpClient.get<Array<Scenario>>(`${this.tmpBaseHref}/scenarios`);
   }
+
+  getScenario(id: number): Observable<Scenario> {
+    return this.httpClient.get<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`);
+  }
 }

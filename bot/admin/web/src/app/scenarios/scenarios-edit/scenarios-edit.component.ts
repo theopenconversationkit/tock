@@ -18,8 +18,9 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorServiceService } from './editor-service.service';
-import { scenarioItem } from '../models/scenario.model';
+import { Scenario, scenarioItem } from '../models/scenario.model';
 import * as mockingStories from './mocking-data';
+import { ScenarioService } from '../services/scenario.service';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -33,9 +34,13 @@ export class ScenariosEditComponent implements OnInit {
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
-  story: scenarioItem[]; //= mockingStories.mockingStory_1
+  scenario: Scenario;
+  scenarioData: scenarioItem[];
 
-  constructor(private editorService: EditorServiceService) {}
+  constructor(
+    private scenarioService: ScenarioService,
+    private editorService: EditorServiceService
+  ) {}
 
   ngOnInit(): void {
     this.editorService.editorItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
@@ -47,7 +52,18 @@ export class ScenariosEditComponent implements OnInit {
       if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
     });
 
-    this.mockData(1);
+    this.scenarioService.getScenario(3).subscribe((data) => {
+      this.scenario = data;
+      this.scenarioData = this.scenario.data;
+      if (!this.scenarioData.length) {
+        this.scenarioData.push({
+          id: 0,
+          from: 'client',
+          text: ''
+        });
+      }
+    });
+    // this.mockData(1);
   }
 
   ngAfterViewInit(): void {
@@ -57,25 +73,24 @@ export class ScenariosEditComponent implements OnInit {
   }
 
   clearStory(): void {
-    this.story = [
+    this.scenarioData = [
       {
         id: 0,
         from: 'client',
         text: ''
       }
     ];
-    this.nextId = this.story.length;
     this.centerCanvas();
   }
 
   mockData(which): void {
-    this.story = [];
-    this.story = JSON.parse(JSON.stringify(mockingStories[`mockingStory_${which}`]));
+    this.scenarioData = [];
+    this.scenarioData = JSON.parse(JSON.stringify(mockingStories[`mockingStory_${which}`]));
     let nextId = 0;
-    this.story.forEach((element) => {
+    this.scenarioData.forEach((element) => {
       if (element.id > nextId) nextId = element.id;
     });
-    this.nextId = nextId;
+
     setTimeout(() => {
       this.canvasScale = 1;
       this.centerCanvas();
@@ -83,7 +98,7 @@ export class ScenariosEditComponent implements OnInit {
   }
 
   exportStory(): void {
-    let json = JSON.stringify(this.story);
+    let json = JSON.stringify(this.scenarioData);
     navigator.clipboard.writeText(json);
     console.log(json);
   }
@@ -92,16 +107,18 @@ export class ScenariosEditComponent implements OnInit {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
-      this.story = this.story.filter((item) => item.id != itemRef.id);
+      this.scenarioData = this.scenarioData.filter((item) => item.id != itemRef.id);
     }
   }
 
-  nextId;
+  getNextItemId() {
+    return Math.max(...this.scenarioData.map((i) => i.id)) + 1;
+  }
 
   addAnswer(itemRef: scenarioItem, from?: string): void {
     let fromType = from || 'client';
     let newEntry: scenarioItem = {
-      id: ++this.nextId,
+      id: this.getNextItemId(),
       parentIds: [itemRef.id],
       from: fromType,
       text: ''
@@ -111,7 +128,7 @@ export class ScenariosEditComponent implements OnInit {
       newEntry.from = 'bot';
     }
 
-    this.story.push(newEntry);
+    this.scenarioData.push(newEntry);
 
     setTimeout(() => {
       this.selectItem(newEntry);
@@ -334,19 +351,19 @@ export class ScenariosEditComponent implements OnInit {
   }
 
   findItemChild(item: scenarioItem): scenarioItem {
-    return this.story.find((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenarioData.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   findItemById(id: number): scenarioItem {
-    return this.story.find((oitem) => oitem.id == id);
+    return this.scenarioData.find((oitem) => oitem.id == id);
   }
 
   getChildren(item: scenarioItem): scenarioItem[] {
-    return this.story.filter((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenarioData.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   getBrotherhood(item: scenarioItem): scenarioItem[] {
-    return this.story.filter((oitem) =>
+    return this.scenarioData.filter((oitem) =>
       oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
     );
   }
