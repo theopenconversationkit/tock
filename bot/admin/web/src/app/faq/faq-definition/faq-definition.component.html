@@ -14,7 +14,10 @@
   ~ limitations under the License.
   -->
 
-  <h5 class="h5 mb-4">FAQ Content Management</h5>
+  <div class="title-faq mb-4" *ngIf="!isDockedOrSmall()">
+      <h5 class="h5 mr-4">FAQ Content Management</h5>
+      <button (click)="openNewSidepanel()" nbButton status="primary">New FAQ</button>
+  </div>
 
   <nb-alert
     *ngIf="configurations?.length === 0"

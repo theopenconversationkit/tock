@@ -57,25 +57,6 @@
         <nb-checkbox [checked]="activationStatus" [indeterminate]="activationStatus === null" [ngModel]="activationStatus" (ngModelChange)="toggleFaqActivationSearch($event)">Active
         </nb-checkbox>
       </div>
-
-      <div class="col-md-2 mt-1 mb-1">
-        <div *ngIf="!isDockedOrSmall()">
-          <!-- NOT YET IMPLEMENTED-->
-          <!--      <button class="mr-2" nbButton status="basic">Export FAQ</button>-->
-          <!--      <button (click)="importFaq()" class="mr-2" nbButton status="basic">Import FAQ</button>-->
-          <button (click)="newFaqDefinition()" nbButton status="primary">New FAQ</button>
-        </div>
-
-        <nb-icon
-          *ngIf="isDockedOrSmall()"
-          [ngClass]="'tock-burger-icon'"
-          [nbPopover]="menu"
-          nbPopoverPlacement="bottom"
-          nbPrefix
-          pack="material-icons"
-          icon="view_headline">
-        </nb-icon>
-      </div>
     </nb-card-body>
   </nb-card>
 
