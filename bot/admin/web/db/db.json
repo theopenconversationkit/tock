@@ -2,7 +2,8 @@
   "scenarios": [
     {
       "id": 1,
-      "name": "Scenario 1",
+      "name": "test Scenario 1",
+      "description": "Description 1",
       "category": "scenarios",
       "tags": ["tag1", "tag2"],
       "dateCreation": "01/01/1970",
@@ -11,8 +12,19 @@
     },
     {
       "id": 2,
-      "name": "Scenario 2",
+      "name": "a Scenario 2",
+      "description": "Description 2",
       "category": "scenarios",
+      "tags": ["tag1", "tag2"],
+      "dateCreation": "01/01/1970",
+      "dateModification": "02/01/1970",
+      "data": []
+    },
+    {
+      "id": 3,
+      "name": "Scenario 3",
+      "description": "Description 3 Lorem ipsum dolor sit amet consectetur, adipisicing elit. Provident sapiente mollitia eligendi voluptate minima eius sit, molestiae aliquid soluta nesciunt consectetur ratione animi numquam laudantium dolorem molestias, amet, qui incidunt.",
+      "category": "default",
       "tags": ["tag1", "tag2"],
       "dateCreation": "01/01/1970",
       "dateModification": "02/01/1970",

@@ -15,20 +15,54 @@
  */
 
 import { Component, OnInit } from '@angular/core';
+import { NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 
+import { Scenario } from '../models';
 import { ScenarioService } from '../services/scenario.service';
-
 @Component({
   selector: 'scenarios-list',
   templateUrl: './scenarios-list.component.html',
   styleUrls: ['./scenarios-list.component.scss']
 })
 export class ScenariosListComponent implements OnInit {
-  data = [];
-  constructor(private scenarioService: ScenarioService) {}
+  actionsColumn = 'actions';
+  categoryColumn = 'category';
+  defaultColumns = ['name', 'description'];
+  allColumns = [this.categoryColumn, ...this.defaultColumns, this.actionsColumn];
+
+  dataSource: NbTreeGridDataSource<any>;
+
+  loading: boolean = false;
+  isSidePanelOpen: boolean = false;
+
+  constructor(
+    private scenarioService: ScenarioService,
+    private dataSourceBuilder: NbTreeGridDataSourceBuilder<Scenario>
+  ) {}
+
   ngOnInit() {
-    this.scenarioService.getScenarios().subscribe((data) => {
-      this.data = data;
+    this.loading = true;
+    this.scenarioService.getScenariosTreeGrid().subscribe((data: any) => {
+      this.loading = false;
+      this.dataSource = this.dataSourceBuilder.create(data);
     });
+  }
+
+  add(): void {
+    this.isSidePanelOpen = true;
+    console.log('add');
+  }
+
+  edit(scenario: any): void {
+    this.isSidePanelOpen = true;
+    console.log('edit', scenario);
+  }
+
+  delete(scenario: any): void {
+    console.log('delete', scenario);
+  }
+
+  closeSidePanel(): void {
+    this.isSidePanelOpen = false;
   }
 }
