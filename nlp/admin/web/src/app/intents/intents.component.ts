@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { StateService } from '../core-nlp/state.service';
 import { EntityDefinition, Intent, IntentsCategory } from '../model/nlp';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { Component, Input, ViewChild } from '@angular/core';
 import { Log, LogsQuery, PaginatedResult } from '../model/nlp';
 import { ScrollComponent } from '../scroll/scroll.component';

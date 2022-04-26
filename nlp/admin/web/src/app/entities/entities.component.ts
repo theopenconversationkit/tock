@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { map } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../core-nlp/state.service';
