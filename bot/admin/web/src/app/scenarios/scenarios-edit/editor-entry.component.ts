@@ -1,8 +1,8 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { scenarioItem } from '../models/scenario.model';
 import { EditorServiceService } from './editor-service.service';
-import { storyCollectorItem } from './story-collector.types';
 
 @Component({
   selector: 'app-editor-entry',
@@ -13,8 +13,8 @@ export class EditorEntryComponent implements OnInit {
   destroy = new Subject();
   @Input() itemId: number;
   @Input() parentId: number;
-  @Input() dataList: storyCollectorItem[];
-  @Input() selectedItem: storyCollectorItem;
+  @Input() dataList: scenarioItem[];
+  @Input() selectedItem: scenarioItem;
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
@@ -41,13 +41,13 @@ export class EditorEntryComponent implements OnInit {
     this.editorService.selectItem(this.item);
   }
 
-  focusItem(item: storyCollectorItem): void {
+  focusItem(item: scenarioItem): void {
     if (item.id == this.item.id) {
       this.itemTextarea.nativeElement.focus();
     }
   }
 
-  requireItemPosition(item: storyCollectorItem): void {
+  requireItemPosition(item: scenarioItem): void {
     if (item.id == this.item.id) {
       this.editorService.exposeItemPosition(this.item, {
         left: this.itemCard.nativeElement.offsetLeft,
@@ -62,7 +62,7 @@ export class EditorEntryComponent implements OnInit {
     this.editorService.testItem(this.item);
   }
 
-  getChildItems(): storyCollectorItem[] {
+  getChildItems(): scenarioItem[] {
     return this.dataList.filter((item) => item.parentIds?.includes(this.item.id));
   }
 
@@ -81,7 +81,7 @@ export class EditorEntryComponent implements OnInit {
   getItemCardCssClass(): string {
     let classes = this.item.from;
     if (this.item.from == 'bot') {
-      if (this.item.botAnswerType == 'final') classes += ' final';
+      if (this.item.final) classes += ' final';
     }
     if (this.item.parentIds?.length > 1) classes += ' duplicate';
     if (this.selectedItem?.id == this.item.id) classes += ' selected';
@@ -91,22 +91,18 @@ export class EditorEntryComponent implements OnInit {
   switchItemType(which): void {
     if (which == 'client') {
       this.item.from = 'client';
-      delete this.item.botAnswerType;
     }
     if (which == 'bot') {
       this.item.from = 'bot';
-      this.item.botAnswerType = 'question';
     }
     if (which == 'verification') {
       this.item.from = 'verification';
-      delete this.item.botAnswerType;
     }
   }
 
   toggleFinal($event): void {
-    console.log($event);
-    if ($event) this.item.botAnswerType = 'final';
-    else this.item.botAnswerType = 'question';
+    if ($event) this.item.final = true;
+    else delete this.item.final;
   }
 
   shouldShowArrowTop(which): boolean {
@@ -140,7 +136,7 @@ export class EditorEntryComponent implements OnInit {
   }
 
   itemCanHaveAnswer(): boolean {
-    return !this.item.botAnswerType || this.item.botAnswerType != 'final';
+    return !this.item.final;
   }
 
   draggable;

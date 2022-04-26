@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { storyCollectorItem } from './story-collector.types';
+import { scenarioItem } from '../models/scenario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +10,14 @@ export class EditorServiceService {
   constructor() {}
 
   // Child components to editor communication
-  addAnswer(item: storyCollectorItem): void {
+  addAnswer(item: scenarioItem): void {
     this.editorItemsCommunication.next({
       type: 'addAnswer',
       item: item
     });
   }
 
-  deleteAnswer(item: storyCollectorItem, parentItemId: number): void {
+  deleteAnswer(item: scenarioItem, parentItemId: number): void {
     this.editorItemsCommunication.next({
       type: 'deleteAnswer',
       item: item,
@@ -33,14 +33,14 @@ export class EditorServiceService {
     });
   }
 
-  selectItem(item: storyCollectorItem): void {
+  selectItem(item: scenarioItem): void {
     this.editorItemsCommunication.next({
       type: 'itemSelected',
       item: item
     });
   }
 
-  testItem(item: storyCollectorItem): void {
+  testItem(item: scenarioItem): void {
     this.editorItemsCommunication.next({
       type: 'testItem',
       item: item
@@ -48,7 +48,7 @@ export class EditorServiceService {
   }
 
   exposeItemPosition(
-    item: storyCollectorItem,
+    item: scenarioItem,
     position: { left: number; top: number; width: number; height: number }
   ) {
     this.editorItemsCommunication.next({
@@ -59,14 +59,14 @@ export class EditorServiceService {
   }
 
   // Editor to child components communication
-  focusItem(item: storyCollectorItem): void {
+  focusItem(item: scenarioItem): void {
     this.editorItemsCommunication.next({
       type: 'focusItem',
       item: item
     });
   }
 
-  requireItemPosition(item: storyCollectorItem): void {
+  requireItemPosition(item: scenarioItem): void {
     this.editorItemsCommunication.next({
       type: 'requireItemPosition',
       item: item

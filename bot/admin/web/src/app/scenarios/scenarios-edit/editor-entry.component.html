@@ -102,7 +102,7 @@
     <div *ngIf="item.from == 'bot' && itemHasNoChildren()">
       <nb-checkbox
         (checkedChange)="toggleFinal($event)"
-        [checked]="item.botAnswerType == 'final'"
+        [checked]="item.final"
         >End of chat</nb-checkbox
       >
     </div>

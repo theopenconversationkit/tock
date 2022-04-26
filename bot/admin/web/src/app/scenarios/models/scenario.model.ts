@@ -5,5 +5,13 @@ export interface Scenario {
   tags: Array<string>;
   dateCreation: Date;
   dateModification?: Date;
-  data?: Array<any>;
+  data?: scenarioItem[];
+}
+
+export interface scenarioItem {
+  id: number;
+  parentIds?: number[];
+  text: string;
+  from: string;
+  final?: boolean;
 }

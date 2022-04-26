@@ -18,7 +18,7 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorServiceService } from './editor-service.service';
-import { storyCollectorItem } from './story-collector.types';
+import { scenarioItem } from '../models/scenario.model';
 import * as mockingStories from './mocking-data';
 
 const CANVAS_TRANSITION_TIMING = 300;
@@ -33,7 +33,7 @@ export class ScenariosEditComponent implements OnInit {
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
-  story: storyCollectorItem[]; //= mockingStories.mockingStory_1
+  story: scenarioItem[]; //= mockingStories.mockingStory_1
 
   constructor(private editorService: EditorServiceService) {}
 
@@ -88,7 +88,7 @@ export class ScenariosEditComponent implements OnInit {
     console.log(json);
   }
 
-  deleteAnswer(itemRef: storyCollectorItem, parentItemId: number): void {
+  deleteAnswer(itemRef: scenarioItem, parentItemId: number): void {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
@@ -98,9 +98,9 @@ export class ScenariosEditComponent implements OnInit {
 
   nextId;
 
-  addAnswer(itemRef: storyCollectorItem, from?: string): void {
+  addAnswer(itemRef: scenarioItem, from?: string): void {
     let fromType = from || 'client';
-    let newEntry: storyCollectorItem = {
+    let newEntry: scenarioItem = {
       id: ++this.nextId,
       parentIds: [itemRef.id],
       from: fromType,
@@ -119,9 +119,9 @@ export class ScenariosEditComponent implements OnInit {
     }, 0);
   }
 
-  selectedItem: storyCollectorItem;
+  selectedItem: scenarioItem;
 
-  selectItem(item?: storyCollectorItem): void {
+  selectItem(item?: scenarioItem): void {
     this.selectedItem = item ? item : undefined;
   }
 
@@ -157,7 +157,7 @@ export class ScenariosEditComponent implements OnInit {
     else dropped.parentIds.push(targetId);
   }
 
-  isInFiliation(parent: storyCollectorItem, child: storyCollectorItem): boolean {
+  isInFiliation(parent: scenarioItem, child: scenarioItem): boolean {
     let current = parent;
     while (true) {
       if (!current.parentIds) return false;
@@ -296,7 +296,7 @@ export class ScenariosEditComponent implements OnInit {
 
   chatResponsesTimeout = 1000;
 
-  processChatEntry(item: storyCollectorItem): void {
+  processChatEntry(item: scenarioItem): void {
     if (item) {
       this.addChatMessage(item.from, item.text);
 
@@ -313,14 +313,14 @@ export class ScenariosEditComponent implements OnInit {
     }
   }
 
-  makePropositions(item: storyCollectorItem): void {
+  makePropositions(item: scenarioItem): void {
     this.chatPropositions = this.getBrotherhood(item);
     let from = item.from;
     this.chatControlsFrom = from;
     this.chatControlsDisplay = true;
   }
 
-  chooseProposition(item: storyCollectorItem): void {
+  chooseProposition(item: scenarioItem): void {
     this.chatPropositions = undefined;
     this.chatControlsFrom = undefined;
     this.chatControlsDisplay = false;
@@ -333,29 +333,29 @@ export class ScenariosEditComponent implements OnInit {
     }
   }
 
-  findItemChild(item: storyCollectorItem): storyCollectorItem {
+  findItemChild(item: scenarioItem): scenarioItem {
     return this.story.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  findItemById(id: number): storyCollectorItem {
+  findItemById(id: number): scenarioItem {
     return this.story.find((oitem) => oitem.id == id);
   }
 
-  getChildren(item: storyCollectorItem): storyCollectorItem[] {
+  getChildren(item: scenarioItem): scenarioItem[] {
     return this.story.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  getBrotherhood(item: storyCollectorItem): storyCollectorItem[] {
+  getBrotherhood(item: scenarioItem): scenarioItem[] {
     return this.story.filter((oitem) =>
       oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
     );
   }
 
-  getItemBrothers(item: storyCollectorItem): storyCollectorItem[] {
+  getItemBrothers(item: scenarioItem): scenarioItem[] {
     return this.getBrotherhood(item).filter((oitem) => oitem.id !== item.id);
   }
 
-  isItemOnlyChild(item: storyCollectorItem): boolean {
+  isItemOnlyChild(item: scenarioItem): boolean {
     if (!this.getItemBrothers(item).length) return true;
     return false;
   }
