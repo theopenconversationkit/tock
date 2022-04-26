@@ -47,10 +47,28 @@ export class EditorServiceService {
     });
   }
 
+  exposeItemPosition(
+    item: storyCollectorItem,
+    position: { left: number; top: number; width: number; height: number }
+  ) {
+    this.editorItemsCommunication.next({
+      type: 'exposeItemPosition',
+      item: item,
+      position: position
+    });
+  }
+
   // Editor to child components communication
   focusItem(item: storyCollectorItem): void {
     this.editorItemsCommunication.next({
       type: 'focusItem',
+      item: item
+    });
+  }
+
+  requireItemPosition(item: storyCollectorItem): void {
+    this.editorItemsCommunication.next({
+      type: 'requireItemPosition',
       item: item
     });
   }

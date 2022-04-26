@@ -21,6 +21,8 @@ import { EditorServiceService } from './editor-service.service';
 import { storyCollectorItem } from './story-collector.types';
 import * as mockingStories from './mocking-data';
 
+const CANVAS_TRANSITION_TIMING = 300;
+
 @Component({
   selector: 'scenarios-edit',
   templateUrl: './scenarios-edit.component.html',
@@ -42,6 +44,7 @@ export class ScenariosEditComponent implements OnInit {
       if (evt.type == 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
       if (evt.type == 'itemSelected') this.selectItem(evt.item);
       if (evt.type == 'testItem') this.testStory(evt.item);
+      if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
     });
 
     this.mockData(1);
@@ -106,14 +109,13 @@ export class ScenariosEditComponent implements OnInit {
 
     if (from == undefined && (itemRef.from == 'client' || itemRef.from == 'verification')) {
       newEntry.from = 'bot';
-      // newEntry.botAnswerType = "question"
     }
 
     this.story.push(newEntry);
 
     setTimeout(() => {
       this.selectItem(newEntry);
-      this.editorService.focusItem(newEntry);
+      this.editorService.requireItemPosition(newEntry);
     }, 0);
   }
 
@@ -198,6 +200,32 @@ export class ScenariosEditComponent implements OnInit {
     canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
   }
 
+  centerCanvas(): void {
+    let wrapper = this.canvasWrapperElem.nativeElement;
+    let canvas = this.canvasElem.nativeElement;
+    this.canvasPos.x = ((canvas.offsetWidth * this.canvasScale - wrapper.offsetWidth) / 2) * -1;
+    this.canvasPos.y = 0;
+
+    canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
+  }
+
+  centerOnItem(item, position, setFocus = true) {
+    let wrapper = this.canvasWrapperElem.nativeElement;
+    let canvas = this.canvasElem.nativeElement;
+    this.canvasPos.x =
+      position.left * this.canvasScale * -1 + (wrapper.offsetWidth - position.width) / 2;
+    this.canvasPos.y =
+      position.top * this.canvasScale * -1 + (wrapper.offsetHeight - position.height) / 2;
+
+    canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
+
+    if (setFocus) {
+      setTimeout(() => {
+        this.editorService.focusItem(item);
+      }, CANVAS_TRANSITION_TIMING);
+    }
+  }
+
   @HostListener('window:contextmenu', ['$event'])
   onContextMenuCanvas(event: MouseEvent) {
     event.preventDefault();
@@ -220,7 +248,7 @@ export class ScenariosEditComponent implements OnInit {
     if (event.which == 3) {
       this.isDragingCanvas = undefined;
       let canvas = this.canvasElem.nativeElement;
-      canvas.style.transition = 'transform .3s';
+      canvas.style.transition = `transform .${CANVAS_TRANSITION_TIMING}s`;
     }
   }
   @HostListener('mousemove', ['$event'])
@@ -233,15 +261,6 @@ export class ScenariosEditComponent implements OnInit {
       this.canvasPos.y = this.isDragingCanvas.top + dy;
       canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
     }
-  }
-
-  centerCanvas(): void {
-    let wrapper = this.canvasWrapperElem.nativeElement;
-    let canvas = this.canvasElem.nativeElement;
-    this.canvasPos.x = ((canvas.offsetWidth * this.canvasScale - wrapper.offsetWidth) / 2) * -1;
-    this.canvasPos.y = 0;
-
-    canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
   }
 
   chatDisplayed = false;
@@ -278,10 +297,7 @@ export class ScenariosEditComponent implements OnInit {
   chatResponsesTimeout = 1000;
 
   processChatEntry(item: storyCollectorItem): void {
-    // let item = this.findItemById(itemIndex)
-
     if (item) {
-      // if(this.isItemOnlyChild(item)){
       this.addChatMessage(item.from, item.text);
 
       let children = this.getChildren(item);
@@ -294,10 +310,6 @@ export class ScenariosEditComponent implements OnInit {
       } else {
         this.makePropositions(children[0]);
       }
-      // }
-      // else{
-      //   this.makePropositions(item)
-      // }
     }
   }
 

@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EditorServiceService } from './editor-service.service';
@@ -23,6 +15,7 @@ export class EditorEntryComponent implements OnInit {
   @Input() parentId: number;
   @Input() dataList: storyCollectorItem[];
   @Input() selectedItem: storyCollectorItem;
+  @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
   item;
@@ -36,6 +29,7 @@ export class EditorEntryComponent implements OnInit {
 
     this.editorService.editorItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'focusItem') this.focusItem(evt.item);
+      if (evt.type == 'requireItemPosition') this.requireItemPosition(evt.item);
     });
   }
 
@@ -48,10 +42,23 @@ export class EditorEntryComponent implements OnInit {
   }
 
   focusItem(item: storyCollectorItem): void {
-    if (item.id == this.item.id) this.itemTextarea.nativeElement.focus();
+    if (item.id == this.item.id) {
+      this.itemTextarea.nativeElement.focus();
+    }
   }
 
-  test() {
+  requireItemPosition(item: storyCollectorItem): void {
+    if (item.id == this.item.id) {
+      this.editorService.exposeItemPosition(this.item, {
+        left: this.itemCard.nativeElement.offsetLeft,
+        top: this.itemCard.nativeElement.offsetTop,
+        width: this.itemCard.nativeElement.offsetWidth,
+        height: this.itemCard.nativeElement.offsetHeight
+      });
+    }
+  }
+
+  test(): void {
     this.editorService.testItem(this.item);
   }
 
@@ -102,7 +109,7 @@ export class EditorEntryComponent implements OnInit {
     else this.item.botAnswerType = 'question';
   }
 
-  shouldShowArrowTop(which) {
+  shouldShowArrowTop(which): boolean {
     let brothers = this.dataList.filter((item) => {
       return (
         item.id != this.item.id &&
@@ -125,20 +132,20 @@ export class EditorEntryComponent implements OnInit {
     return true;
   }
 
-  itemHasNoChildren() {
+  itemHasNoChildren(): boolean {
     let childs = this.dataList.filter(
       (item) => item.parentIds && item.parentIds.includes(this.item.id)
     );
     return !childs.length;
   }
 
-  itemCanHaveAnswer() {
+  itemCanHaveAnswer(): boolean {
     return !this.item.botAnswerType || this.item.botAnswerType != 'final';
   }
 
   draggable;
 
-  onDrop($event) {
+  onDrop($event): void {
     if (this.item.id == $event.data) return;
     this.editorService.itemDropped(this.item.id, $event.data);
   }

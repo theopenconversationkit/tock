@@ -16,6 +16,7 @@
 <div [dndDraggable]="draggable.data">
   <div
     class="item-card"
+    #itemCard
     [ngClass]="getItemCardCssClass()"
     dndDropzone
     (dndDrop)="onDrop($event)"
