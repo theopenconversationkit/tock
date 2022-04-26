@@ -43,6 +43,12 @@
 
 }
 
+.title-faq{
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
 .tock-form-problems {
   position: absolute;
   user-select: none;
