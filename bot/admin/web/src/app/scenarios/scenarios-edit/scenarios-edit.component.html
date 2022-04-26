@@ -1,15 +1,61 @@
-<div class="mb-2">
-  <nb-icon
-    *ngIf="this.scenario?.name"
-    nbTooltip="Scenario"
-    icon="film-outline"
-  ></nb-icon>
+<div class="row mb-3">
+  <div class="col">
+    <nb-icon
+      *ngIf="this.scenario?.name"
+      nbTooltip="Scenario"
+      icon="film-outline"
+    ></nb-icon>
 
-  <strong>
-    {{ this.scenario?.name }}
-  </strong>
+    <strong>
+      {{ this.scenario?.name }}
+    </strong>
+  </div>
 
-  <div class="float-right">
+  <div class="col text-right">
+    <button
+      nbButton
+      size="small"
+      status="basic"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="ml-2"
+    >
+      Save
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="ml-2"
+    >
+      Save & exit
+    </button>
+
+    <button
+      nbButton
+      size="small"
+      status="info"
+      class="ml-2"
+      (click)="testStory()"
+    >
+      Test story
+    </button>
+
+    <!-- 
+      <button
+      nbButton
+      size="tiny"
+      status="info"
+      class="ml-2"
+      (click)="exportStory()"
+    >
+      Export
+    </button>
     <button
       nbButton
       size="tiny"
@@ -44,25 +90,7 @@
       (click)="mockData(3)"
     >
       Story 3
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="info"
-      class="ml-2"
-      (click)="exportStory()"
-    >
-      Export
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="primary"
-      class="ml-2"
-      (click)="testStory()"
-    >
-      Test story
-    </button>
+    </button> -->
   </div>
 </div>
 
