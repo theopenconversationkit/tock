@@ -2,7 +2,7 @@
   "scenarios": [
     {
       "id": 1,
-      "name": "Scenario 1",
+      "name": "test Scenario 1",
       "description": "Description 1",
       "category": "scenarios",
       "tags": ["tag1", "tag2"],
@@ -12,7 +12,7 @@
     },
     {
       "id": 2,
-      "name": "Scenario 2",
+      "name": "a Scenario 2",
       "description": "Description 2",
       "category": "scenarios",
       "tags": ["tag1", "tag2"],

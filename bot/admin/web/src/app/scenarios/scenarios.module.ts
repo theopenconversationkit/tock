@@ -17,6 +17,15 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {
+  NbButtonModule,
+  NbCardModule,
+  NbIconModule,
+  NbSpinnerModule,
+  NbTooltipModule,
+  NbTreeGridModule
+} from '@nebular/theme';
+
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
@@ -55,7 +64,16 @@ const routes: Routes = [
 export class ScenariosRoutingModule {}
 
 @NgModule({
-  imports: [CommonModule, ScenariosRoutingModule],
+  imports: [
+    CommonModule,
+    ScenariosRoutingModule,
+    NbCardModule,
+    NbTreeGridModule,
+    NbSpinnerModule,
+    NbButtonModule,
+    NbIconModule,
+    NbTooltipModule
+  ],
   declarations: [ScenariosListComponent, ScenariosEditComponent],
   exports: [],
   providers: [ScenarioService],

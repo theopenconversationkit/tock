@@ -17,6 +17,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { Scenario } from '../models';
@@ -29,5 +30,46 @@ export class ScenarioService {
 
   getScenarios(): Observable<Array<Scenario>> {
     return this.httpClient.get<Array<Scenario>>(`${this.tmpBaseHref}/scenarios`);
+  }
+
+  getScenariosTreeGrid(): Observable<Array<any>> {
+    return this.getScenarios().pipe(map(this.buildTreeNodeByCategory));
+  }
+
+  // HELPERS
+
+  buildTreeNodeByCategory(scenarios: Array<Scenario>): Array<any> {
+    const scenariosByCatagory = new Map();
+
+    scenarios.forEach((s) => {
+      let category = scenariosByCatagory.get(s.category);
+
+      if (!category) {
+        category = [];
+        scenariosByCatagory.set(s.category, category);
+      }
+
+      category.push(s);
+    });
+
+    scenariosByCatagory.forEach((t) => {
+      t = t.sort((a: Scenario, b: Scenario) => {
+        if (a.name < b.name) return -1;
+        else if (a.name > b.name) return 1;
+        else return 0;
+      });
+    });
+
+    return Array.from(scenariosByCatagory, ([key, value]) => ({
+      data: {
+        category: key,
+        expandable: true
+      },
+      children: value.map((v: Scenario) => {
+        return {
+          data: v
+        };
+      })
+    }));
   }
 }
