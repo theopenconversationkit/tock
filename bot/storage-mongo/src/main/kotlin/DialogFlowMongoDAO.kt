@@ -471,6 +471,16 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         return countMessagesByStoryProperty(applicationIds, from, to, "currentType")
     }
 
+    override fun countMessagesByStoryLocale(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int> {
+        return countMessagesByStoryProperty(applicationIds, from, to, "userSentenceLocale")
+    }
+
     private fun countMessagesByStoryProperty(
         applicationIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,

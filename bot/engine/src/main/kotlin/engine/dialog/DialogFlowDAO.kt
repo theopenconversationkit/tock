@@ -240,4 +240,17 @@ interface DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int>
+
+    /**
+     * Counts the total number of messages sent for each story locale over a given period of time.
+     *
+     * @return a [Map] of message counts, indexed by story category
+     */
+    fun countMessagesByStoryLocale(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int>
 }

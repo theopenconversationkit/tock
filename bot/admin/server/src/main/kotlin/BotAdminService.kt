@@ -614,6 +614,14 @@ object BotAdminService {
         }
     }
 
+    fun reportMessagesByStoryLocale2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val (series, data) = dialogFlowDAO.countMessagesByStoryLocale(namespace, botId, applicationIds, request.from, request.to).toList().unzip()
+        return UserAnalyticsQueryResult(data, series)
+    }
+
     fun reportMessagesByActionType(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithActionType)
