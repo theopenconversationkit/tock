@@ -458,23 +458,54 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int> {
+        return countMessagesByStoryProperty(applicationIds, from, to, "category")
+    }
+
+    override fun countMessagesByStoryType(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int> {
+        return countMessagesByStoryProperty(applicationIds, from, to, "currentType")
+    }
+
+    private fun countMessagesByStoryProperty(
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?,
+        queriedProperty: String,
+    ): Map<String, Int> {
         val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
-        val projectStory = project(BsonDocument.parse("""
-            {
-                storyDefinitionId: {
-                    $ arrayElemAt: ["$ nextState.storyDefinitionId", 0]
+        val projectStory = project(
+            BsonDocument.parse(
+                """
+                {
+                    storyDefinitionId: {
+                        $ arrayElemAt: ["$ nextState.storyDefinitionId", 0]
+                    }
                 }
-            }
-        """.formatJson()))
+            """.formatJson()
+            )
+        )
         val storyLookup = lookup("story_configuration", "storyDefinitionId", "storyId", "story")
         val group = group(
-            BsonDocument.parse("""{
-                $ ifNull: [{$ arrayElemAt: ["$ story.category", 0]}, "unknown"]
-            }""".formatJson()),
+            BsonDocument.parse(
+                """{
+                    $ ifNull: [{$ arrayElemAt: ["$ story.$queriedProperty", 0]}, "unknown"]
+                }""".formatJson()
+            ),
             Accumulators.sum("count", 1)
         )
         val proj = projectToResult()
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*nextStateLookup, projectStory, storyLookup, group, proj).associateBy({ it.seriesKey }, { it.count })
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(
+            *nextStateLookup,
+            projectStory,
+            storyLookup,
+            group,
+            proj
+        ).associateBy({ it.seriesKey }, { it.count })
     }
 
     private fun projectToResult() = project(

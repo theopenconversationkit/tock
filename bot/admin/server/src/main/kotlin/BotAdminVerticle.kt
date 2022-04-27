@@ -404,6 +404,19 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonPost("/analytics/messages/byStoryType2", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(
+                    context,
+                    {
+                        BotAdminService.reportMessagesByStoryType2(request)
+                    }
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/analytics/messages/byStoryLocale", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(

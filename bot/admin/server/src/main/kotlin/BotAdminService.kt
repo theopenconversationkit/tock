@@ -580,6 +580,14 @@ object BotAdminService {
         ) { it?.let { stories.find { story -> story._id.toString() == it }?.currentType?.name } ?: "unknown" }
     }
 
+    fun reportMessagesByStoryType2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val (series, data) = dialogFlowDAO.countMessagesByStoryType(namespace, botId, applicationIds, request.from, request.to).toList().unzip()
+        return UserAnalyticsQueryResult(data, series)
+    }
+
     fun reportMessagesByStoryCategory(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)
