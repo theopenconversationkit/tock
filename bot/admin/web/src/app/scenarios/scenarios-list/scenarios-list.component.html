@@ -12,7 +12,16 @@
 <section [class.grid]="isSidePanelOpen">
   <nb-card [nbSpinner]="loading">
     <nb-card-body>
-      <table [nbTreeGrid]="dataSource">
+      <h2
+        *ngIf="!loading && !dataSource"
+        class="text-center"
+      >
+        No data
+      </h2>
+      <table
+        *ngIf="!loading && dataSource"
+        [nbTreeGrid]="dataSource"
+      >
         <tr
           nbTreeGridHeaderRow
           *nbTreeGridHeaderRowDef="allColumns"
