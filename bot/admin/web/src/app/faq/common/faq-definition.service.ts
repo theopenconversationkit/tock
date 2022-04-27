@@ -56,6 +56,8 @@ export class FaqDefinitionService {
     return this.rest.delete(`/faq/${fq.id}`).pipe(
       takeUntil(cancel$),
       map(r => {
+        //delete to current state
+        this.state.resetConfiguration()
         if (r) {
           this.faqData.rows = this.faqData.rows.map(item => {
             if (fq.id && item.id === fq.id) {
@@ -65,7 +67,6 @@ export class FaqDefinitionService {
             } else {
               return item;
             }
-
           });
           return r
         }
