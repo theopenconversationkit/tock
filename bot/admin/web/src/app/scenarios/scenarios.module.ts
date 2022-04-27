@@ -38,7 +38,6 @@ import { SharedModule } from '../shared-nlp/shared.module';
 import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
 import { ScenarioService } from './services/scenario.service';
 
-
 const routes: Routes = [
   {
     path: '',
@@ -49,15 +48,12 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'scenarios-list',
-        pathMatch: 'full'
-      },
-      {
-        path: 'scenarios-list',
+        redirectTo: '',
+        pathMatch: 'full',
         component: ScenariosListComponent
       },
       {
-        path: 'scenarios-edit',
+        path: ':id',
         component: ScenariosEditComponent
       }
     ]
