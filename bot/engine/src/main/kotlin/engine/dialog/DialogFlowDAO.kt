@@ -187,6 +187,19 @@ interface DialogFlowDAO {
     ): Map<String, Int>
 
     /**
+     * Counts the total number of messages sent for each story over a given period of time.
+     *
+     * @return a [Map] of message counts, indexed by story name
+     */
+    fun countMessagesByStory(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int>
+
+    /**
      * Counts the number of messages per day and story over a given period of time.
      *
      * In the returned map, the keys represent dates using the "YYYY-MM-DD" format.
