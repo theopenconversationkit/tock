@@ -588,6 +588,14 @@ object BotAdminService {
         ) { it?.let { stories.find { story -> story._id.toString() == it }?.category } ?: "unknown" }
     }
 
+    fun reportMessagesByStoryCategory2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val (series, data) = dialogFlowDAO.countMessagesByStoryCategory(namespace, botId, applicationIds, request.from, request.to).toList().unzip()
+        return UserAnalyticsQueryResult(data, series)
+    }
+
     fun reportMessagesByStoryLocale(request: DialogFlowRequest): UserAnalyticsQueryResult {
         val applications = loadApplications(request)
         val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(request.namespace, request.botId)

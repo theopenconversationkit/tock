@@ -214,4 +214,17 @@ interface DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
+
+    /**
+     * Counts the total number of messages sent for each story category over a given period of time.
+     *
+     * @return a [Map] of message counts, indexed by story category
+     */
+    fun countMessagesByStoryCategory(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int>
 }

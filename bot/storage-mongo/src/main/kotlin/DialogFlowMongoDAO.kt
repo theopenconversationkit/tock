@@ -395,10 +395,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             }""".formatJson()),
             Accumulators.sum("count", 1)
         )
-        val proj = project(
-            DialogFlowAggregateResult::seriesKey from "\$_id",
-            DialogFlowAggregateResult::count from "\$count",
-        )
+        val proj = projectToResult()
         logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
         return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj).associateBy({ it.seriesKey }, { it.count })
     }
@@ -410,18 +407,15 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int> {
-        val storyLookup = buildStoryLookup(applicationIds, from, to)
+        val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
         val group = group(
             BsonDocument.parse("""{
                 $ arrayElemAt: ["$ nextState.storyDefinitionId", 0]
             }""".formatJson()),
             Accumulators.sum("count", 1)
         )
-        val proj = project(
-            DialogFlowAggregateResult::seriesKey from "\$_id",
-            DialogFlowAggregateResult::count from "\$count",
-        )
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*storyLookup, group, proj).associateBy({ it.seriesKey }, { it.count })
+        val proj = projectToResult()
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*nextStateLookup, group, proj).associateBy({ it.seriesKey }, { it.count })
     }
 
     override fun countMessagesByDateAndStory(
@@ -431,7 +425,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
-        val storyLookup = buildStoryLookup(applicationIds, from, to)
+        val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
         val group = group(
             BsonDocument.parse("""
             {
@@ -454,12 +448,43 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             DialogFlowAggregateResult::count from "\$count",
             DialogFlowAggregateResult::seriesKey from "\$_id.storyDefinitionId"
         )
-        return aggregateFlowTransitionStats(*storyLookup, group, proj)
+        return aggregateFlowTransitionStats(*nextStateLookup, group, proj)
     }
 
-    private fun buildStoryLookup(applicationIds: Set<Id<BotApplicationConfiguration>>,
-                                 from: ZonedDateTime?,
-                                 to: ZonedDateTime?): Array<Bson> {
+    override fun countMessagesByStoryCategory(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int> {
+        val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
+        val projectStory = project(BsonDocument.parse("""
+            {
+                storyDefinitionId: {
+                    $ arrayElemAt: ["$ nextState.storyDefinitionId", 0]
+                }
+            }
+        """.formatJson()))
+        val storyLookup = lookup("story_configuration", "storyDefinitionId", "storyId", "story")
+        val group = group(
+            BsonDocument.parse("""{
+                $ ifNull: [{$ arrayElemAt: ["$ story.category", 0]}, "unknown"]
+            }""".formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = projectToResult()
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*nextStateLookup, projectStory, storyLookup, group, proj).associateBy({ it.seriesKey }, { it.count })
+    }
+
+    private fun projectToResult() = project(
+        DialogFlowAggregateResult::seriesKey from "\$_id",
+        DialogFlowAggregateResult::count from "\$count",
+    )
+
+    private fun buildNextStateLookup(applicationIds: Set<Id<BotApplicationConfiguration>>,
+                                     from: ZonedDateTime?,
+                                     to: ZonedDateTime?): Array<Bson> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val transitionLookup = lookup("flow_transition", "transitionId", "_id", "transition")
         val proj = project(BsonDocument.parse("""
