@@ -1,0 +1,33 @@
+table th {
+  width: 10rem;
+
+  &::first-letter {
+    text-transform: capitalize;
+  }
+
+  &.actionColumn {
+    width: 125px;
+  }
+
+  &.descriptionColumn {
+    width: auto;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 100%;
+
+  & .side-panel {
+    height: min-content;
+    position: sticky;
+    top: 5.75rem;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .grid {
+    grid-template-columns: calc(65% - 1rem) 35%;
+  }
+}
