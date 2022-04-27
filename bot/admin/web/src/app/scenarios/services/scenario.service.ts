@@ -31,13 +31,17 @@ export class ScenarioService {
   getScenario(id: number): Observable<Scenario> {
     return this.httpClient.get<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`);
   }
-  
+
   getScenarios(): Observable<Array<Scenario>> {
     return this.httpClient.get<Array<Scenario>>(`${this.tmpBaseHref}/scenarios`);
   }
 
   getScenariosTreeGrid(): Observable<Array<any>> {
     return this.getScenarios().pipe(map(this.buildTreeNodeByCategory));
+  }
+
+  deleteScenario(id: number): Observable<any> {
+    return this.httpClient.delete(`${this.tmpBaseHref}/scenarios/${id}`);
   }
 
   // HELPERS
@@ -58,8 +62,11 @@ export class ScenarioService {
 
     scenariosByCatagory.forEach((t) => {
       t = t.sort((a: Scenario, b: Scenario) => {
-        if (a.name < b.name) return -1;
-        else if (a.name > b.name) return 1;
+        const firstScenarioName = a.name.toUpperCase();
+        const secondScenarioName = b.name.toUpperCase();
+
+        if (firstScenarioName < secondScenarioName) return -1;
+        else if (firstScenarioName > secondScenarioName) return 1;
         else return 0;
       });
     });
