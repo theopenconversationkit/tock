@@ -53,6 +53,7 @@
     "ng2-ckeditor": "^1.2.7",
     "ng2-completer": "^3.0.3",
     "ng2-file-upload": "^1.4.0",
+    "ngx-drag-drop": "^2.0.0",
     "ngx-echarts": "^5.2.2",
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-moment": "^5.0.0",

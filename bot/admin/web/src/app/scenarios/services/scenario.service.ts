@@ -28,6 +28,10 @@ export class ScenarioService {
 
   constructor(private rest: RestService, private httpClient: HttpClient) {}
 
+  getScenario(id: number): Observable<Scenario> {
+    return this.httpClient.get<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`);
+  }
+  
   getScenarios(): Observable<Array<Scenario>> {
     return this.httpClient.get<Array<Scenario>>(`${this.tmpBaseHref}/scenarios`);
   }

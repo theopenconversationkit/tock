@@ -1,0 +1,160 @@
+<div
+  class="arrow-wrapper"
+  *ngIf="item.id > 0"
+>
+  <div
+    class="arrow-top-left"
+    *ngIf="shouldShowArrowTop('left')"
+  ></div>
+  <div
+    class="arrow-top-right"
+    *ngIf="shouldShowArrowTop('right')"
+  ></div>
+  <div class="arrow"></div>
+</div>
+
+<div [dndDraggable]="draggable.data">
+  <div
+    class="item-card"
+    #itemCard
+    [ngClass]="getItemCardCssClass()"
+    dndDropzone
+    (dndDrop)="onDrop($event)"
+    dndDragoverClass="dragHover"
+    (click)="selectItem()"
+  >
+    <div
+      class="from-icon client"
+      (click)="switchItemType('client')"
+    >
+      <img
+        src="assets/images/scenario-client.svg"
+        class="move"
+        dndHandle
+        *ngIf="item.from == 'client'"
+      />
+      <img
+        src="assets/images/scenario-client.svg"
+        *ngIf="item.from != 'client'"
+      />
+      <div
+        class="duplication-count"
+        dndHandle
+        *ngIf="item.from == 'client' && item.parentIds?.length > 1"
+      >
+        {{ item.parentIds?.length }}
+      </div>
+    </div>
+    <div
+      class="from-icon bot"
+      (click)="switchItemType('bot')"
+    >
+      <img
+        src="assets/images/scenario-bot.svg"
+        class="move"
+        dndHandle
+        *ngIf="item.from == 'bot'"
+      />
+      <img
+        src="assets/images/scenario-bot.svg"
+        *ngIf="item.from != 'bot'"
+      />
+      <div
+        class="duplication-count"
+        dndHandle
+        *ngIf="item.from == 'bot' && item.parentIds?.length > 1"
+      >
+        {{ item.parentIds?.length }}
+      </div>
+    </div>
+    <div
+      class="from-icon verification"
+      (click)="switchItemType('verification')"
+    >
+      <img
+        src="assets/images/scenario-verification.svg"
+        class="move"
+        dndHandle
+        *ngIf="item.from == 'verification'"
+      />
+      <img
+        src="assets/images/scenario-verification.svg"
+        *ngIf="item.from != 'verification'"
+      />
+      <div
+        class="duplication-count"
+        dndHandle
+        *ngIf="item.from == 'verification' && item.parentIds?.length > 1"
+      >
+        {{ item.parentIds?.length }}
+      </div>
+    </div>
+
+    <textarea
+      #itemTextarea
+      nbInput
+      fullWidth
+      rows="4"
+      placeholder="Question"
+      [(ngModel)]="item.text"
+    ></textarea>
+
+    <div *ngIf="item.from == 'bot' && itemHasNoChildren()">
+      <nb-checkbox
+        (checkedChange)="toggleFinal($event)"
+        [checked]="item.final"
+        >End of chat</nb-checkbox
+      >
+    </div>
+
+    <button
+      nbButton
+      size="tiny"
+      status="info"
+      *ngIf="itemCanHaveAnswer()"
+      (click)="answering()"
+    >
+      Add answer
+    </button>
+    <button
+      nbButton
+      size="tiny"
+      status="primary"
+      style="float: right"
+      *ngIf="!itemHasNoChildren()"
+      (click)="test()"
+    >
+      Test
+    </button>
+    <button
+      nbButton
+      size="tiny"
+      status="warning"
+      style="float: right"
+      *ngIf="item.id > 0 && itemHasNoChildren()"
+      (click)="delete()"
+    >
+      Delete
+    </button>
+  </div>
+
+  <div
+    class="arrow-wrapper"
+    *ngIf="itemHasSeveralChildren()"
+  >
+    <div class="arrow"></div>
+  </div>
+
+  <div class="card-row">
+    <ng-container *ngFor="let childItem of getChildItems()">
+      <div class="card-col">
+        <app-editor-entry
+          [itemId]="childItem.id"
+          [parentId]="item.id"
+          [dataList]="dataList"
+          [selectedItem]="selectedItem"
+        ></app-editor-entry>
+      </div>
+    </ng-container>
+  </div>
+</div>

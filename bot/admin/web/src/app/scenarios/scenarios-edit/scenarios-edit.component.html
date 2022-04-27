@@ -1,1 +1,152 @@
-Hello scenarios list
+<div class="mb-2">
+  <nb-icon
+    *ngIf="this.scenario?.name"
+    nbTooltip="Scenario"
+    icon="film-outline"
+  ></nb-icon>
+
+  <strong>
+    {{ this.scenario?.name }}
+  </strong>
+
+  <div class="float-right">
+    <button
+      nbButton
+      size="tiny"
+      status="danger"
+      (click)="clearStory()"
+    >
+      reset
+    </button>
+    <button
+      nbButton
+      size="tiny"
+      status="success"
+      class="ml-2"
+      (click)="mockData(1)"
+    >
+      Story 1
+    </button>
+    <button
+      nbButton
+      size="tiny"
+      status="success"
+      class="ml-2"
+      (click)="mockData(2)"
+    >
+      Story 2
+    </button>
+    <button
+      nbButton
+      size="tiny"
+      status="success"
+      class="ml-2"
+      (click)="mockData(3)"
+    >
+      Story 3
+    </button>
+    <button
+      nbButton
+      size="tiny"
+      status="info"
+      class="ml-2"
+      (click)="exportStory()"
+    >
+      Export
+    </button>
+    <button
+      nbButton
+      size="tiny"
+      status="primary"
+      class="ml-2"
+      (click)="testStory()"
+    >
+      Test story
+    </button>
+  </div>
+</div>
+
+<div
+  class="canvas-wrapper"
+  #canvasWrapperElem
+  appMouseWheelListner
+  (onMouseWheel)="mouseWheel($event)"
+>
+  <div
+    class="canvas"
+    #canvasElem
+  >
+    <div class="card-row">
+      <div class="card-col">
+        <app-editor-entry
+          *ngIf="scenarioData?.length"
+          [itemId]="0"
+          [dataList]="scenarioData"
+          [selectedItem]="selectedItem"
+        ></app-editor-entry>
+      </div>
+    </div>
+  </div>
+  <div class="canvas-shader"></div>
+</div>
+
+<div
+  class="chat-wrapper"
+  (click)="closeChat()"
+  *ngIf="chatDisplayed"
+>
+  <div
+    class="chat-container"
+    (click)="stopPropagation($event)"
+  >
+    <nb-chat
+      title="Test story"
+      status="primary"
+      size="large"
+    >
+      <nb-chat-message
+        *ngFor="let msg of messages"
+        [type]="msg.type"
+        [message]="msg.text"
+        [reply]="msg.reply"
+        [sender]="msg.user.name"
+        [date]="msg.date"
+        [files]="msg.files"
+        [quote]="msg.quote"
+        [latitude]="msg.latitude"
+        [longitude]="msg.longitude"
+        [avatar]="msg.user.avatar"
+      >
+      </nb-chat-message>
+    </nb-chat>
+
+    <div
+      class="chat-controls"
+      *ngIf="chatControlsDisplay"
+    >
+      <div
+        class="from"
+        [ngSwitch]="chatControlsFrom"
+      >
+        <ng-container *ngSwitchCase="'client'">
+          <img src="assets/images/scenario-client.svg" />
+        </ng-container>
+        <ng-container *ngSwitchCase="'bot'">
+          <img src="assets/images/scenario-bot.svg" />
+        </ng-container>
+        <ng-container *ngSwitchCase="'verification'">
+          <img src="assets/images/scenario-verification.svg" />
+        </ng-container>
+      </div>
+      <div class="propositions">
+        <span
+          class="prop-button"
+          *ngFor="let proposition of chatPropositions"
+          (click)="chooseProposition(proposition)"
+        >
+          {{ proposition.text }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
