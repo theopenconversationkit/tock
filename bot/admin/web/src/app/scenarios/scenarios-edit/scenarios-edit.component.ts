@@ -16,11 +16,12 @@
 
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { pluck, takeUntil } from 'rxjs/operators';
 import { EditorServiceService } from './editor-service.service';
 import { Scenario, scenarioItem } from '../models/scenario.model';
 import * as mockingStories from './mocking-data';
 import { ScenarioService } from '../services/scenario.service';
+import { ActivatedRoute } from '@angular/router';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -34,13 +35,19 @@ export class ScenariosEditComponent implements OnInit {
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
+  scenarioId: number;
   scenario: Scenario;
   scenarioData: scenarioItem[];
 
   constructor(
     private scenarioService: ScenarioService,
-    private editorService: EditorServiceService
-  ) {}
+    private editorService: EditorServiceService,
+    route: ActivatedRoute
+  ) {
+    route.params
+      .pipe(takeUntil(this.destroy), pluck('id'))
+      .subscribe((id) => (this.scenarioId = +id));
+  }
 
   ngOnInit(): void {
     this.editorService.editorItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
@@ -52,7 +59,7 @@ export class ScenariosEditComponent implements OnInit {
       if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
     });
 
-    this.scenarioService.getScenario(3).subscribe((data) => {
+    this.scenarioService.getScenario(this.scenarioId).subscribe((data) => {
       this.scenario = data;
       this.scenarioData = this.scenario.data;
       if (!this.scenarioData.length) {
@@ -63,7 +70,6 @@ export class ScenariosEditComponent implements OnInit {
         });
       }
     });
-    // this.mockData(1);
   }
 
   ngAfterViewInit(): void {
