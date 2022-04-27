@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
-import { NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NbToastrService, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
+import { Subscription } from 'rxjs';
 
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 @Component({
@@ -24,28 +27,42 @@ import { ScenarioService } from '../services/scenario.service';
   templateUrl: './scenarios-list.component.html',
   styleUrls: ['./scenarios-list.component.scss']
 })
-export class ScenariosListComponent implements OnInit {
+export class ScenariosListComponent implements OnInit, OnDestroy {
   actionsColumn = 'actions';
   categoryColumn = 'category';
   defaultColumns = ['name', 'description'];
   allColumns = [this.categoryColumn, ...this.defaultColumns, this.actionsColumn];
 
   dataSource: NbTreeGridDataSource<any>;
+  subscriptions: Subscription = new Subscription();
 
   loading: boolean = false;
   isSidePanelOpen: boolean = false;
 
   constructor(
+    private dataSourceBuilder: NbTreeGridDataSourceBuilder<any>,
+    private dialogService: DialogService,
     private scenarioService: ScenarioService,
-    private dataSourceBuilder: NbTreeGridDataSourceBuilder<Scenario>
+    private toastrService: NbToastrService
   ) {}
 
   ngOnInit() {
     this.loading = true;
-    this.scenarioService.getScenariosTreeGrid().subscribe((data: any) => {
-      this.loading = false;
-      this.dataSource = this.dataSourceBuilder.create(data);
-    });
+    this.subscriptions.add(
+      this.scenarioService.getScenariosTreeGrid().subscribe({
+        next: (data: any) => {
+          this.loading = false;
+          this.dataSource = this.dataSourceBuilder.create(data);
+        },
+        error: () => {
+          this.loading = false;
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   add(): void {
@@ -58,11 +75,42 @@ export class ScenariosListComponent implements OnInit {
     console.log('edit', scenario);
   }
 
-  delete(scenario: any): void {
-    console.log('delete', scenario);
+  delete(scenario: Scenario): void {
+    const deleteAction = 'delete';
+    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: `Delete scenario "${scenario.name}"`,
+        subtitle: 'Are you sure you want to delete the scenario ?',
+        action: deleteAction
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === deleteAction) {
+        this.deleteScenario(scenario.id);
+      }
+    });
   }
 
   closeSidePanel(): void {
     this.isSidePanelOpen = false;
+  }
+
+  deleteScenario(id: number): void {
+    this.subscriptions.add(
+      this.scenarioService.deleteScenario(id).subscribe({
+        next: () => {
+          this.toastrService.success(`Scenario successfully deleted`, 'Success', {
+            duration: 5000,
+            status: 'success'
+          });
+        },
+        error: () => {
+          this.toastrService.danger(`Failed to delete scenario`, 'Error', {
+            duration: 5000,
+            status: 'danger'
+          });
+        }
+      })
+    );
   }
 }
