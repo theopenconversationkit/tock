@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { scenarioItem } from '../models/scenario.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EditorServiceService {
-  public editorItemsCommunication = new BehaviorSubject<any>({});
+  public editorItemsCommunication = new Subject<any>();
   constructor() {}
 
   // Child components to editor communication

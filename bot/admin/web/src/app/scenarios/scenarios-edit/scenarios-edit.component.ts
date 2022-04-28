@@ -106,16 +106,16 @@ export class ScenariosEditComponent implements OnInit {
 
   addAnswer(itemRef: scenarioItem, from?: string): void {
     let fromType = from || 'client';
+    if (from == undefined && (itemRef.from == 'client' || itemRef.from == 'verification')) {
+      fromType = 'bot';
+    }
+
     let newEntry: scenarioItem = {
       id: this.getNextItemId(),
       parentIds: [itemRef.id],
       from: fromType,
       text: ''
     };
-
-    if (from == undefined && (itemRef.from == 'client' || itemRef.from == 'verification')) {
-      newEntry.from = 'bot';
-    }
 
     this.scenario.data.push(newEntry);
 
