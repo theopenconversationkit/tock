@@ -19,7 +19,7 @@ import { I18LabelQuery, I18nLabel, I18nLabelStateQuery } from '../model/i18n';
 import { BotService } from '../bot-service';
 import { StateService } from '../../core-nlp/state.service';
 import { PageEvent } from '@angular/material/paginator';
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { FileUploader } from 'ng2-file-upload';
 import { I18nController } from './i18n-label.component';
 import { Subject } from 'rxjs';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { Component, OnInit } from '@angular/core';
 import { EntityTestError, TestErrorQuery } from '../model/nlp';
 import { StateService } from '../core-nlp/state.service';

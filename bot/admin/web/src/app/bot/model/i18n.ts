@@ -15,7 +15,7 @@
  */
 
 import { defaultUserInterfaceType, UserInterfaceType } from '../../core/model/configuration';
-import { isNullOrUndefined } from 'util';
+import { isNullOrUndefined } from 'src/app/model/commons';
 import { RestService } from '../../core-nlp/rest/rest.service';
 
 export const userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
