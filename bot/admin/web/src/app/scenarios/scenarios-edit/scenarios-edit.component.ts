@@ -29,7 +29,8 @@ const CANVAS_TRANSITION_TIMING = 300;
 @Component({
   selector: 'scenarios-edit',
   templateUrl: './scenarios-edit.component.html',
-  styleUrls: ['./scenarios-edit.component.scss']
+  styleUrls: ['./scenarios-edit.component.scss'],
+  providers: [EditorServiceService]
 })
 export class ScenariosEditComponent implements OnInit {
   destroy = new Subject();
