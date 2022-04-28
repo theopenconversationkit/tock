@@ -16,7 +16,7 @@
       nbButton
       size="small"
       status="basic"
-      [routerLink]="'../'"
+      (click)="exit()"
     >
       Cancel
     </button>
@@ -25,6 +25,7 @@
       size="small"
       status="primary"
       class="ml-2"
+      (click)="save()"
     >
       Save
     </button>
@@ -33,64 +34,10 @@
       size="small"
       status="primary"
       class="ml-2"
+      (click)="save(true)"
     >
       Save & exit
     </button>
-
-    <!-- 
-    <button
-      nbButton
-      size="small"
-      status="info"
-      class="ml-2"
-      (click)="testStory()"
-    >
-      Test story
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="info"
-      class="ml-2"
-      (click)="exportStory()"
-    >
-      Export
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="danger"
-      (click)="clearStory()"
-    >
-      reset
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="success"
-      class="ml-2"
-      (click)="mockData(1)"
-    >
-      Story 1
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="success"
-      class="ml-2"
-      (click)="mockData(2)"
-    >
-      Story 2
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="success"
-      class="ml-2"
-      (click)="mockData(3)"
-    >
-      Story 3
-    </button> -->
   </div>
 </div>
 
@@ -107,9 +54,9 @@
     <div class="card-row">
       <div class="card-col">
         <app-editor-entry
-          *ngIf="scenarioData?.length"
+          *ngIf="scenario?.data.length"
           [itemId]="0"
-          [dataList]="scenarioData"
+          [dataList]="scenario.data"
           [selectedItem]="selectedItem"
         ></app-editor-entry>
       </div>

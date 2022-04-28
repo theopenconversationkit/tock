@@ -19,9 +19,8 @@ import { Subject } from 'rxjs';
 import { pluck, takeUntil } from 'rxjs/operators';
 import { EditorServiceService } from './editor-service.service';
 import { Scenario, scenarioItem } from '../models/scenario.model';
-import * as mockingStories from './mocking-data';
 import { ScenarioService } from '../services/scenario.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -37,12 +36,12 @@ export class ScenariosEditComponent implements OnInit {
 
   scenarioId: number;
   scenario: Scenario;
-  scenarioData: scenarioItem[];
 
   constructor(
     private scenarioService: ScenarioService,
     private editorService: EditorServiceService,
-    route: ActivatedRoute
+    route: ActivatedRoute,
+    private router: Router
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -61,9 +60,9 @@ export class ScenariosEditComponent implements OnInit {
 
     this.scenarioService.getScenario(this.scenarioId).subscribe((data) => {
       this.scenario = data;
-      this.scenarioData = this.scenario.data;
-      if (!this.scenarioData.length) {
-        this.scenarioData.push({
+      this.scenario.data = this.scenario.data;
+      if (!this.scenario.data.length) {
+        this.scenario.data.push({
           id: 0,
           from: 'client',
           text: ''
@@ -78,47 +77,26 @@ export class ScenariosEditComponent implements OnInit {
     }, 0);
   }
 
-  clearStory(): void {
-    this.scenarioData = [
-      {
-        id: 0,
-        from: 'client',
-        text: ''
-      }
-    ];
-    this.centerCanvas();
-  }
-
-  mockData(which): void {
-    this.scenarioData = [];
-    this.scenarioData = JSON.parse(JSON.stringify(mockingStories[`mockingStory_${which}`]));
-    let nextId = 0;
-    this.scenarioData.forEach((element) => {
-      if (element.id > nextId) nextId = element.id;
+  save(exit: boolean = false) {
+    this.scenarioService.putScenario(this.scenarioId, this.scenario).subscribe((data) => {
+      if (exit) this.exit();
     });
-
-    setTimeout(() => {
-      this.canvasScale = 1;
-      this.centerCanvas();
-    }, 0);
   }
 
-  exportStory(): void {
-    let json = JSON.stringify(this.scenarioData);
-    navigator.clipboard.writeText(json);
-    console.log(json);
+  exit() {
+    this.router.navigateByUrl('/scenarios');
   }
 
   deleteAnswer(itemRef: scenarioItem, parentItemId: number): void {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
-      this.scenarioData = this.scenarioData.filter((item) => item.id != itemRef.id);
+      this.scenario.data = this.scenario.data.filter((item) => item.id != itemRef.id);
     }
   }
 
   getNextItemId() {
-    return Math.max(...this.scenarioData.map((i) => i.id)) + 1;
+    return Math.max(...this.scenario.data.map((i) => i.id)) + 1;
   }
 
   addAnswer(itemRef: scenarioItem, from?: string): void {
@@ -134,7 +112,7 @@ export class ScenariosEditComponent implements OnInit {
       newEntry.from = 'bot';
     }
 
-    this.scenarioData.push(newEntry);
+    this.scenario.data.push(newEntry);
 
     setTimeout(() => {
       this.selectItem(newEntry);
@@ -357,19 +335,19 @@ export class ScenariosEditComponent implements OnInit {
   }
 
   findItemChild(item: scenarioItem): scenarioItem {
-    return this.scenarioData.find((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenario.data.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   findItemById(id: number): scenarioItem {
-    return this.scenarioData.find((oitem) => oitem.id == id);
+    return this.scenario.data.find((oitem) => oitem.id == id);
   }
 
   getChildren(item: scenarioItem): scenarioItem[] {
-    return this.scenarioData.filter((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenario.data.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   getBrotherhood(item: scenarioItem): scenarioItem[] {
-    return this.scenarioData.filter((oitem) =>
+    return this.scenario.data.filter((oitem) =>
       oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
     );
   }
@@ -418,4 +396,35 @@ export class ScenariosEditComponent implements OnInit {
     this.destroy.next();
     this.destroy.complete();
   }
+
+  // clearStory(): void {
+  //   this.scenario.data = [
+  //     {
+  //       id: 0,
+  //       from: 'client',
+  //       text: ''
+  //     }
+  //   ];
+  //   this.centerCanvas();
+  // }
+
+  // mockData(which): void {
+  //   this.scenario.data = [];
+  //   this.scenario.data = JSON.parse(JSON.stringify(mockingStories[`mockingStory_${which}`]));
+  //   let nextId = 0;
+  //   this.scenario.data.forEach((element) => {
+  //     if (element.id > nextId) nextId = element.id;
+  //   });
+
+  //   setTimeout(() => {
+  //     this.canvasScale = 1;
+  //     this.centerCanvas();
+  //   }, 0);
+  // }
+
+  // exportStory(): void {
+  //   let json = JSON.stringify(this.scenario.data);
+  //   navigator.clipboard.writeText(json);
+  //   console.log(json);
+  // }
 }
