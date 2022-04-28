@@ -456,6 +456,19 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonPost("/analytics/messages/byActionType2", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                measureTimeMillis(
+                    context,
+                    {
+                        BotAdminService.reportMessagesByActionType2(request)
+                    }
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonGet("/dialog/:applicationId/:dialogId", botUser) { context ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {

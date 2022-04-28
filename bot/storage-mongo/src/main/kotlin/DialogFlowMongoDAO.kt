@@ -311,7 +311,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
         return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
-            .associateBy({ DayOfWeek.of(it.date.toInt()) }, { it.count })
+            .associateByTo(sortedMapOf(), { DayOfWeek.of(it.date.toInt()) }, { it.count })
     }
 
     override fun countMessagesByHour(
@@ -340,7 +340,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
         return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
-            .associateBy({ it.date.toInt() }, { it.count })
+            .associateByTo(sortedMapOf(), { it.date.toInt() }, { it.count })
     }
 
     override fun countMessagesByDateAndIntent(
@@ -397,7 +397,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         val proj = projectToResult()
         logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj).associateBy({ it.seriesKey }, { it.count })
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj)
+            .associateByTo(sortedMapOf(), { it.seriesKey }, { it.count })
     }
 
     override fun countMessagesByStory(
@@ -415,7 +416,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             Accumulators.sum("count", 1)
         )
         val proj = projectToResult()
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*nextStateLookup, group, proj).associateBy({ it.seriesKey }, { it.count })
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*nextStateLookup, group, proj)
+            .associateByTo(sortedMapOf(), { it.seriesKey }, { it.count })
     }
 
     override fun countMessagesByDateAndStory(
@@ -515,7 +517,28 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             storyLookup,
             group,
             proj
-        ).associateBy({ it.seriesKey }, { it.count })
+        ).associateByTo(sortedMapOf(), { it.seriesKey }, { it.count })
+    }
+
+    override fun countMessagesByActionType(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int> {
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val lookup = lookup("flow_transition", "transitionId", "_id", "transition")
+        val group = group(
+            BsonDocument.parse("""{
+                    $ arrayElemAt: ["$ transition.type", 0]
+            }""".formatJson()),
+            Accumulators.sum("count", 1)
+        )
+        val proj = projectToResult()
+        logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
+        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj).associateByTo(
+            sortedMapOf(), { it.seriesKey }, { it.count })
     }
 
     private fun projectToResult() = project(

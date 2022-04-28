@@ -627,6 +627,21 @@ object BotAdminService {
         return reportMessagesByFunction(request, applications, dialogFlowDAO::searchByDateWithActionType)
     }
 
+    fun reportMessagesByActionType2(request: DialogFlowRequest): UserAnalyticsQueryResult {
+        val namespace = request.namespace
+        val botId = request.botId
+        val applicationIds = loadApplications(request).mapTo(mutableSetOf()) { it._id }
+        val (series, data) = dialogFlowDAO.countMessagesByActionType(namespace, botId, applicationIds, request.from, request.to).toList().unzip()
+        val usedIntents = dialogFlowDAO.countMessagesByIntent(
+            namespace,
+            botId,
+            applicationIds,
+            request.from,
+            request.to
+        ).keys.toList()
+        return UserAnalyticsQueryResult(data, series, usedIntents)
+    }
+
     private fun reportAnalytics(
         request: DialogFlowRequest, method: DialogFlowDAO.(
             namespace: String,

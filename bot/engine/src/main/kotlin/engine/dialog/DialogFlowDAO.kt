@@ -231,7 +231,7 @@ interface DialogFlowDAO {
     /**
      * Counts the total number of messages sent for each story category over a given period of time.
      *
-     * @return a [Map] of message counts, indexed by story category
+     * @return a [Map] of message counts, indexed by story type
      */
     fun countMessagesByStoryType(
         namespace: String,
@@ -244,9 +244,22 @@ interface DialogFlowDAO {
     /**
      * Counts the total number of messages sent for each story locale over a given period of time.
      *
-     * @return a [Map] of message counts, indexed by story category
+     * @return a [Map] of message counts, indexed by story locale
      */
     fun countMessagesByStoryLocale(
+        namespace: String,
+        botId: String,
+        applicationIds: Set<Id<BotApplicationConfiguration>>,
+        from: ZonedDateTime?,
+        to: ZonedDateTime?
+    ): Map<String, Int>
+
+    /**
+     * Counts the total number of messages sent for each action type over a given period of time.
+     *
+     * @return a [Map] of message counts, indexed by action type
+     */
+    fun countMessagesByActionType(
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,

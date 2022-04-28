@@ -22,9 +22,10 @@ data class UserAnalyticsQueryResult(
     val connectorsType: List<String> = emptyList(),
     val intents: List<String> = emptyList()
 ) {
-    constructor(usersData: List<Int?>, series: List<String>): this(
+    constructor(usersData: List<Int?>, series: List<String>, intents: List<String> = emptyList()): this(
         dates = listOf("All Range"),
         usersData = listOf(usersData),
-        connectorsType = series
+        connectorsType = series,
+        intents = intents
     )
 }
