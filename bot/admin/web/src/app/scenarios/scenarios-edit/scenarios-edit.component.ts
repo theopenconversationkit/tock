@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { pluck, takeUntil } from 'rxjs/operators';
 import { EditorServiceService } from './editor-service.service';
 import { Scenario, scenarioItem } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
+import { DialogService } from 'src/app/core-nlp/dialog.service';
+import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -36,6 +38,7 @@ export class ScenariosEditComponent implements OnInit {
 
   scenarioId: number;
   scenario: Scenario;
+  scenarioBackup: string;
 
   constructor(
     private scenarioService: ScenarioService,
@@ -59,8 +62,8 @@ export class ScenariosEditComponent implements OnInit {
     });
 
     this.scenarioService.getScenario(this.scenarioId).subscribe((data) => {
+      this.scenarioBackup = JSON.stringify(data);
       this.scenario = data;
-      this.scenario.data = this.scenario.data;
       if (!this.scenario.data.length) {
         this.scenario.data.push({
           id: 0,
@@ -79,6 +82,7 @@ export class ScenariosEditComponent implements OnInit {
 
   save(exit: boolean = false) {
     this.scenarioService.putScenario(this.scenarioId, this.scenario).subscribe((data) => {
+      this.scenarioBackup = JSON.stringify(data);
       if (exit) this.exit();
     });
   }
@@ -396,35 +400,31 @@ export class ScenariosEditComponent implements OnInit {
     this.destroy.next();
     this.destroy.complete();
   }
+}
 
-  // clearStory(): void {
-  //   this.scenario.data = [
-  //     {
-  //       id: 0,
-  //       from: 'client',
-  //       text: ''
-  //     }
-  //   ];
-  //   this.centerCanvas();
-  // }
+@Injectable()
+export class ScenarioEditorNavigationGuard implements CanDeactivate<any> {
+  constructor(private dialogService: DialogService) {}
 
-  // mockData(which): void {
-  //   this.scenario.data = [];
-  //   this.scenario.data = JSON.parse(JSON.stringify(mockingStories[`mockingStory_${which}`]));
-  //   let nextId = 0;
-  //   this.scenario.data.forEach((element) => {
-  //     if (element.id > nextId) nextId = element.id;
-  //   });
+  canDeactivate(component: any) {
+    const canDeactivate = component.scenarioBackup == JSON.stringify(component.scenario);
 
-  //   setTimeout(() => {
-  //     this.canvasScale = 1;
-  //     this.centerCanvas();
-  //   }, 0);
-  // }
+    if (!canDeactivate) {
+      const subject = new Subject<boolean>();
+      const dialogResponseVerb = 'Exit';
+      const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
+        context: {
+          title: `You're about to leave without saving the changes`,
+          subtitle: 'Are you sure?',
+          action: dialogResponseVerb
+        }
+      });
+      modal.onClose.subscribe((res) => {
+        subject.next(res == dialogResponseVerb.toLowerCase());
+      });
 
-  // exportStory(): void {
-  //   let json = JSON.stringify(this.scenario.data);
-  //   navigator.clipboard.writeText(json);
-  //   console.log(json);
-  // }
+      return subject.asObservable();
+    }
+    return true;
+  }
 }
