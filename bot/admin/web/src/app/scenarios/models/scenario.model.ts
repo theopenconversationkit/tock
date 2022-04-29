@@ -1,10 +1,11 @@
 export interface Scenario {
-  id: number;
+  id: number | null;
   name: string;
-  category: string;
-  tags: Array<string>;
+  category?: string;
+  tags?: Array<string>;
   dateCreation: Date;
   dateModification?: Date;
+  description?: string;
   data?: scenarioItem[];
 }
 
