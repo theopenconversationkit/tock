@@ -39,12 +39,14 @@ un ou plusieurs de ces rôles, lui donnant différents accès dans l'application
 
 Les rôles disponibles sont définis dans l'enum `TockUserRole`:
 
-| Rôle             | Description                                   |
-|------------------|-----------------------------------------------|
-| `nlpUser` | NLP platform user, allowed to qualify and search sentences. |
-| `botUser` | Bot platform user, allowed to create and modify stories, rules and answers.  |
-| `admin` | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc.. |
-| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc. |
+| Rôle             | Description                                                                                                    |
+|------------------|----------------------------------------------------------------------------------------------------------------|
+| `nlpUser`        | NLP platform user, allowed to qualify and search sentences.                                                    |
+| `faqNlpUser`     | FAQ NLP platform user, allowed to qualify and search sentences.                                                |
+| `faqBotUser`     | A faq bot user is allowed to manage the FAQ content, and train the FAQ                                            |
+| `botUser`        | Bot platform user, allowed to create and modify stories, rules and answers.                                    |
+| `admin`          | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc.. |
+| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc.                                        |
 
 La manière de configurer quel utilisateur _Tock Studio_ a quel rôle dépend du mode d'authentification, 
 autrement dit l'implémentation de `TockAuthProvider` utilisée.
@@ -158,7 +160,7 @@ Voici les propriétés et leurs valeurs par défaut :
 Ci-dessous un exemple au format Docker-Compose :
 
 ```yaml
-{ "name" : "tock_jwt_custom_roles_mapping", "value" : "MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,admin,technicalAdmin" },
+{ "name" : "tock_jwt_custom_roles_mapping", "value" : "MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,faqNlpUser,faqBotUser,admin,technicalAdmin" },
 ```
 
 Dans cet exemple, les utilisateurs appartenant au groupe `MY_USER_GROUP` possèdent les rôles `nlpUser` et `botUser`, 

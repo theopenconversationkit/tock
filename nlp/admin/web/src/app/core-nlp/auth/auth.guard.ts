@@ -54,15 +54,21 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   private checkLogin(url: string): boolean {
     const login = this.authService.isLoggedIn();
     if (login) {
-      if (
-        (!this.userState.hasRole(UserRole.nlpUser) &&
-          url.startsWith(this.rolesMap.get(UserRole.nlpUser))) ||
-        (!this.userState.hasRole(UserRole.botUser) &&
-          url.startsWith(this.rolesMap.get(UserRole.botUser)))
-      ) {
-        setTimeout((_) => {
+      // check the user connected has the role
+      // and check there is an url present in configuration.roleMap in core.module.ts in tock-nlp-admin-web
+      // and bot-core.module.ts in tock-bot-admin
+      if ((!this.userState.hasRole(UserRole.nlpUser) && url.startsWith(this.rolesMap.get(UserRole.nlpUser)))
+      || (!this.userState.hasRole(UserRole.faqNlpUser) && url.startsWith(this.rolesMap.get(UserRole.faqNlpUser)))
+      || (!this.userState.hasRole(UserRole.faqBotUser) && url.startsWith(this.rolesMap.get(UserRole.faqBotUser)))
+      || (!this.userState.hasRole(UserRole.botUser) && url.startsWith(this.rolesMap.get(UserRole.botUser)))) {
+        setTimeout(_ => {
+          // try to navigate to the url present for the role
           if (this.userState.hasRole(UserRole.nlpUser)) {
             this.router.navigateByUrl(this.rolesMap.get(UserRole.nlpUser));
+          } else if (this.userState.hasRole(UserRole.faqNlpUser)) {
+            this.router.navigateByUrl(this.rolesMap.get(UserRole.faqNlpUser));
+          } else if (this.userState.hasRole(UserRole.faqBotUser)) {
+            this.router.navigateByUrl(this.rolesMap.get(UserRole.faqBotUser));
           } else if (this.userState.hasRole(UserRole.botUser)) {
             this.router.navigateByUrl(this.rolesMap.get(UserRole.botUser));
           } else if (this.userState.hasRole(UserRole.admin)) {
