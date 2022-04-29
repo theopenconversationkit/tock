@@ -32,7 +32,9 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
-import ai.tock.shared.security.TockUserRole.*
+import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.faqBotUser
+import ai.tock.shared.security.TockUserRole.faqNlpUser
 import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
