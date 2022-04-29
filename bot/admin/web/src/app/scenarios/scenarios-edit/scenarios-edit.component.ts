@@ -14,33 +14,43 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { pluck, takeUntil } from 'rxjs/operators';
 import { EditorServiceService } from './editor-service.service';
 import { Scenario, scenarioItem } from '../models/scenario.model';
-import * as mockingStories from './mocking-data';
 import { ScenarioService } from '../services/scenario.service';
+import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
+import { DialogService } from 'src/app/core-nlp/dialog.service';
+import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
 @Component({
   selector: 'scenarios-edit',
   templateUrl: './scenarios-edit.component.html',
-  styleUrls: ['./scenarios-edit.component.scss']
+  styleUrls: ['./scenarios-edit.component.scss'],
+  providers: [EditorServiceService]
 })
 export class ScenariosEditComponent implements OnInit {
   destroy = new Subject();
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
+  scenarioId: number;
   scenario: Scenario;
-  scenarioData: scenarioItem[];
+  scenarioBackup: string;
 
   constructor(
     private scenarioService: ScenarioService,
-    private editorService: EditorServiceService
-  ) {}
+    private editorService: EditorServiceService,
+    route: ActivatedRoute,
+    private router: Router
+  ) {
+    route.params
+      .pipe(takeUntil(this.destroy), pluck('id'))
+      .subscribe((id) => (this.scenarioId = +id));
+  }
 
   ngOnInit(): void {
     this.editorService.editorItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
@@ -52,18 +62,17 @@ export class ScenariosEditComponent implements OnInit {
       if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
     });
 
-    this.scenarioService.getScenario(3).subscribe((data) => {
+    this.scenarioService.getScenario(this.scenarioId).subscribe((data) => {
+      this.scenarioBackup = JSON.stringify(data);
       this.scenario = data;
-      this.scenarioData = this.scenario.data;
-      if (!this.scenarioData.length) {
-        this.scenarioData.push({
+      if (!this.scenario.data.length) {
+        this.scenario.data.push({
           id: 0,
           from: 'client',
           text: ''
         });
       }
     });
-    // this.mockData(1);
   }
 
   ngAfterViewInit(): void {
@@ -72,51 +81,35 @@ export class ScenariosEditComponent implements OnInit {
     }, 0);
   }
 
-  clearStory(): void {
-    this.scenarioData = [
-      {
-        id: 0,
-        from: 'client',
-        text: ''
-      }
-    ];
-    this.centerCanvas();
-  }
-
-  mockData(which): void {
-    this.scenarioData = [];
-    this.scenarioData = JSON.parse(JSON.stringify(mockingStories[`mockingStory_${which}`]));
-    let nextId = 0;
-    this.scenarioData.forEach((element) => {
-      if (element.id > nextId) nextId = element.id;
+  save(exit: boolean = false) {
+    this.scenarioService.putScenario(this.scenarioId, this.scenario).subscribe((data) => {
+      this.scenarioBackup = JSON.stringify(data);
+      if (exit) this.exit();
     });
-
-    setTimeout(() => {
-      this.canvasScale = 1;
-      this.centerCanvas();
-    }, 0);
   }
 
-  exportStory(): void {
-    let json = JSON.stringify(this.scenarioData);
-    navigator.clipboard.writeText(json);
-    console.log(json);
+  exit() {
+    this.router.navigateByUrl('/scenarios');
   }
 
   deleteAnswer(itemRef: scenarioItem, parentItemId: number): void {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
-      this.scenarioData = this.scenarioData.filter((item) => item.id != itemRef.id);
+      this.scenario.data = this.scenario.data.filter((item) => item.id != itemRef.id);
     }
   }
 
   getNextItemId() {
-    return Math.max(...this.scenarioData.map((i) => i.id)) + 1;
+    return Math.max(...this.scenario.data.map((i) => i.id)) + 1;
   }
 
   addAnswer(itemRef: scenarioItem, from?: string): void {
     let fromType = from || 'client';
+    if (from == undefined && (itemRef.from == 'client' || itemRef.from == 'verification')) {
+      fromType = 'bot';
+    }
+
     let newEntry: scenarioItem = {
       id: this.getNextItemId(),
       parentIds: [itemRef.id],
@@ -124,11 +117,7 @@ export class ScenariosEditComponent implements OnInit {
       text: ''
     };
 
-    if (from == undefined && (itemRef.from == 'client' || itemRef.from == 'verification')) {
-      newEntry.from = 'bot';
-    }
-
-    this.scenarioData.push(newEntry);
+    this.scenario.data.push(newEntry);
 
     setTimeout(() => {
       this.selectItem(newEntry);
@@ -351,19 +340,19 @@ export class ScenariosEditComponent implements OnInit {
   }
 
   findItemChild(item: scenarioItem): scenarioItem {
-    return this.scenarioData.find((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenario.data.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   findItemById(id: number): scenarioItem {
-    return this.scenarioData.find((oitem) => oitem.id == id);
+    return this.scenario.data.find((oitem) => oitem.id == id);
   }
 
   getChildren(item: scenarioItem): scenarioItem[] {
-    return this.scenarioData.filter((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenario.data.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   getBrotherhood(item: scenarioItem): scenarioItem[] {
-    return this.scenarioData.filter((oitem) =>
+    return this.scenario.data.filter((oitem) =>
       oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
     );
   }
@@ -411,5 +400,32 @@ export class ScenariosEditComponent implements OnInit {
   ngOnDestroy() {
     this.destroy.next();
     this.destroy.complete();
+  }
+}
+
+@Injectable()
+export class ScenarioEditorNavigationGuard implements CanDeactivate<any> {
+  constructor(private dialogService: DialogService) {}
+
+  canDeactivate(component: any) {
+    const canDeactivate = component.scenarioBackup == JSON.stringify(component.scenario);
+
+    if (!canDeactivate) {
+      const subject = new Subject<boolean>();
+      const dialogResponseVerb = 'Exit';
+      const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
+        context: {
+          title: `You're about to leave without saving the changes`,
+          subtitle: 'Are you sure?',
+          action: dialogResponseVerb
+        }
+      });
+      modal.onClose.subscribe((res) => {
+        subject.next(res == dialogResponseVerb.toLowerCase());
+      });
+
+      return subject.asObservable();
+    }
+    return true;
   }
 }

@@ -28,7 +28,19 @@
       "tags": ["tag1", "tag2"],
       "dateCreation": "01/01/1970",
       "dateModification": "02/01/1970",
-      "data": []
+      "data": [
+        {
+          "id": 0,
+          "from": "client",
+          "text": "fsdf sdf "
+        },
+        {
+          "id": 1,
+          "parentIds": [0],
+          "from": "bot",
+          "text": " sdf sdf dfg dfg dfg dfg"
+        }
+      ]
     },
     {
       "id": 3,
@@ -42,7 +54,7 @@
         {
           "id": 0,
           "from": "client",
-          "text": "Bonjour je n'arrive pas à faire mon virement"
+          "text": "Bonjour je n'arrive pas à faire mon virement..."
         },
         {
           "id": 2,
@@ -191,7 +203,7 @@
           "id": 1,
           "parentIds": [0],
           "from": "verification",
-          "text": "Recup identifiant Topaze"
+          "text": "Recup identifiant Topaze."
         },
         {
           "id": 2,
