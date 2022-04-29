@@ -17,7 +17,13 @@
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
-import ai.tock.nlp.front.shared.config.*
+import ai.tock.nlp.front.shared.config.Classification
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.FaqDefinition
+import ai.tock.nlp.front.shared.config.FaqDefinitionDetailed
+import ai.tock.nlp.front.shared.config.FaqQuery
+import ai.tock.nlp.front.shared.config.FaqQueryResult
+import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
@@ -25,8 +31,36 @@ import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.UnwindOptions
 import config.FaqDefinitionTag
 import mu.KotlinLogging
-import org.litote.kmongo.*
+import org.litote.kmongo.Id
+import org.litote.kmongo.`in`
+import org.litote.kmongo.aggregate
+import org.litote.kmongo.allPosOp
+import org.litote.kmongo.and
+import org.litote.kmongo.ascending
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.div
+import org.litote.kmongo.document
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
+import org.litote.kmongo.excludeId
+import org.litote.kmongo.findOne
+import org.litote.kmongo.findOneById
+import org.litote.kmongo.first
+import org.litote.kmongo.from
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.group
+import org.litote.kmongo.json
+import org.litote.kmongo.limit
+import org.litote.kmongo.lookup
+import org.litote.kmongo.match
+import org.litote.kmongo.or
+import org.litote.kmongo.project
 import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.regex
+import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.skip
+import org.litote.kmongo.sort
+import org.litote.kmongo.unwind
 
 
 object FaqDefinitionMongoDAO : FaqDefinitionDAO {
