@@ -16,36 +16,112 @@
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
+import { map, tap, switchMap, filter, mergeMap } from 'rxjs/operators';
+import { Scenario } from '../models';
+import { ScenarioApiService } from './scenario.api.service';
 
-import { RestService } from '../../core-nlp/rest/rest.service';
-import { Scenario, scenarioItem } from '../models';
+interface ScenarioState {
+  loaded: boolean;
+  loading: boolean;
+  scenarios: Scenario[];
+}
+
+const scenariosInitialState: ScenarioState = {
+  loaded: false,
+  loading: false,
+  scenarios: []
+};
 
 @Injectable()
 export class ScenarioService {
-  private tmpBaseHref = 'http://localhost:3000';
+  private _state: BehaviorSubject<ScenarioState>;
+  state$: Observable<ScenarioState>;
 
-  constructor(private rest: RestService, private httpClient: HttpClient) {}
-
-  getScenario(id: number): Observable<Scenario> {
-    return this.httpClient.get<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`);
+  constructor(private scenarioApiService: ScenarioApiService, private httpClient: HttpClient) {
+    this._state = new BehaviorSubject(scenariosInitialState);
+    this.state$ = this._state.asObservable();
   }
 
-  putScenario(id: number, scenario: Scenario) {
-    return this.httpClient.put<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`, scenario);
+  getState(): ScenarioState {
+    return this._state.getValue();
+  }
+  setState(state: ScenarioState): void {
+    return this._state.next(state);
+  }
+
+  setScenariosLoading(): void {
+    let state = this.getState();
+    state = {
+      ...state,
+      loading: true,
+      loaded: false
+    };
+    this.setState(state);
+  }
+
+  setScenariosData(scenariosCollection): void {
+    let state = this.getState();
+    state = {
+      ...state,
+      loading: false,
+      loaded: true,
+      scenarios: scenariosCollection
+    };
+    this.setState(state);
   }
 
   getScenarios(): Observable<Array<Scenario>> {
-    return this.httpClient.get<Array<Scenario>>(`${this.tmpBaseHref}/scenarios`);
+    const scenariosState = this.state$;
+    const notLoaded = scenariosState.pipe(
+      filter((state) => !state.loaded && !state.loading),
+      tap(() => this.setScenariosLoading()),
+      switchMap(() => this.scenarioApiService.getScenarios()),
+      tap((scenariosCollection) => this.setScenariosData(scenariosCollection)),
+      switchMap(() => scenariosState),
+      map((state) => state.scenarios)
+    );
+    const loaded = scenariosState.pipe(
+      filter((state) => state.loaded === true),
+      map((state) => state.scenarios)
+    );
+    return merge(notLoaded, loaded);
+  }
+
+  getScenario(id: number): Observable<Scenario> {
+    return this.getScenarios().pipe(
+      switchMap(() => this.state$),
+      mergeMap((state) => state.scenarios),
+      filter((scenario) => scenario.id === id)
+    );
+  }
+
+  putScenario(id: number, scenario: Scenario): Observable<Scenario> {
+    return this.scenarioApiService.putScenario(id, scenario).pipe(
+      tap((modifiedScenario) => {
+        let state = this.getState();
+        const scenario = state.scenarios.find((s) => s.id === id);
+        if (scenario) {
+          const index = state.scenarios.indexOf(scenario);
+          state.scenarios[index] = modifiedScenario;
+          this.setState(state);
+        }
+      })
+    );
+  }
+
+  deleteScenario(id: number): Observable<any> {
+    return this.scenarioApiService.deleteScenario(id).pipe(
+      tap(() => {
+        let state = this.getState();
+        state.scenarios = state.scenarios.filter((s) => s.id !== id);
+        this.setState(state);
+      })
+    );
   }
 
   getScenariosTreeGrid(): Observable<Array<any>> {
     return this.getScenarios().pipe(map(this.buildTreeNodeByCategory));
-  }
-
-  deleteScenario(id: number): Observable<any> {
-    return this.httpClient.delete(`${this.tmpBaseHref}/scenarios/${id}`);
   }
 
   // HELPERS

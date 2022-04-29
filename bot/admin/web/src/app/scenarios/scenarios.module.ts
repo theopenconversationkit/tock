@@ -42,6 +42,7 @@ import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
 import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
 import { ScenarioService } from './services/scenario.service';
+import { ScenarioApiService } from './services/scenario.api.service';
 import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
 
 const routes: Routes = [
@@ -101,7 +102,7 @@ export class ScenariosRoutingModule {}
     ScenarioEditComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioEditorNavigationGuard],
+  providers: [ScenarioService, ScenarioApiService, ScenarioEditorNavigationGuard],
   entryComponents: []
 })
 export class ScenariosModule {

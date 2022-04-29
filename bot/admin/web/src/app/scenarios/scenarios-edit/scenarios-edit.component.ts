@@ -23,6 +23,7 @@ import { ScenarioService } from '../services/scenario.service';
 import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
+import { NbToastrService } from '@nebular/theme';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -45,7 +46,8 @@ export class ScenariosEditComponent implements OnInit {
     private scenarioService: ScenarioService,
     private editorService: EditorServiceService,
     route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toastrService: NbToastrService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -62,17 +64,20 @@ export class ScenariosEditComponent implements OnInit {
       if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
     });
 
-    this.scenarioService.getScenario(this.scenarioId).subscribe((data) => {
-      this.scenarioBackup = JSON.stringify(data);
-      this.scenario = data;
-      if (!this.scenario.data.length) {
-        this.scenario.data.push({
-          id: 0,
-          from: 'client',
-          text: ''
-        });
-      }
-    });
+    this.scenarioService
+      .getScenario(this.scenarioId)
+      .pipe(takeUntil(this.destroy))
+      .subscribe((data) => {
+        this.scenarioBackup = JSON.stringify(data);
+        this.scenario = JSON.parse(JSON.stringify(data));
+        if (!this.scenario.data.length) {
+          this.scenario.data.push({
+            id: 0,
+            from: 'client',
+            text: ''
+          });
+        }
+      });
   }
 
   ngAfterViewInit(): void {
@@ -83,6 +88,10 @@ export class ScenariosEditComponent implements OnInit {
 
   save(exit: boolean = false) {
     this.scenarioService.putScenario(this.scenarioId, this.scenario).subscribe((data) => {
+      this.toastrService.success(`Scenario successfully saved`, 'Success', {
+        duration: 5000,
+        status: 'success'
+      });
       this.scenarioBackup = JSON.stringify(data);
       if (exit) this.exit();
     });
