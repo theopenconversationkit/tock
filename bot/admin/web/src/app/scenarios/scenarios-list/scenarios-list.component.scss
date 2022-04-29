@@ -14,16 +14,14 @@ table th {
   }
 }
 
+section nb-card {
+  height: min-content;
+}
+
 .grid {
   display: grid;
   grid-gap: 1rem;
   grid-template-columns: 100%;
-
-  & .side-panel {
-    height: min-content;
-    position: sticky;
-    top: 5.75rem;
-  }
 }
 
 @media screen and (min-width: 1200px) {

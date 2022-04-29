@@ -17,12 +17,14 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   NbButtonModule,
   NbCardModule,
   NbIconModule,
+  NbInputModule,
   NbSpinnerModule,
+  NbTagModule,
   NbTooltipModule,
   NbTreeGridModule
 } from '@nebular/theme';
@@ -37,6 +39,7 @@ import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
 import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
 import { ScenarioService } from './services/scenario.service';
+import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
 
 const routes: Routes = [
   {
@@ -62,7 +65,8 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  declarations: []
 })
 export class ScenariosRoutingModule {}
 
@@ -81,9 +85,17 @@ export class ScenariosRoutingModule {}
     NbSpinnerModule,
     NbButtonModule,
     NbIconModule,
-    NbTooltipModule
+    NbTooltipModule,
+    NbInputModule,
+    NbTagModule,
+    ReactiveFormsModule
   ],
-  declarations: [ScenariosListComponent, ScenariosEditComponent, EditorEntryComponent],
+  declarations: [
+    ScenariosListComponent,
+    ScenariosEditComponent,
+    EditorEntryComponent,
+    ScenarioEditComponent
+  ],
   exports: [],
   providers: [ScenarioService],
   entryComponents: []

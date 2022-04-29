@@ -1,6 +1,16 @@
 {
   "scenarios": [
     {
+      "id": 10,
+      "name": "test Scenario 1",
+      "description": "Description 1 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deserunt atque tenetur perspiciatis aliquam maxime quas? Inventore voluptatibus architecto nam ab autem nostrum, atque aliquam odio veniam animi tenetur consequatur aut?",
+      "category": "default",
+      "tags": ["tag1", "tag2"],
+      "dateCreation": "01/01/1970",
+      "dateModification": "02/01/1970",
+      "data": []
+    },
+    {
       "id": 1,
       "name": "test Scenario 1",
       "description": "Description 1",
@@ -23,12 +33,17 @@
     {
       "id": 3,
       "name": "Faire virement",
+      "description": "",
       "category": "scenarios",
       "tags": [],
       "dateCreation": "26/04/2022",
       "dateModification": "26/04/2022",
       "data": [
-        { "id": 0, "from": "client", "text": "Bonjour je n'arrive pas à faire mon virement" },
+        {
+          "id": 0,
+          "from": "client",
+          "text": "Bonjour je n'arrive pas à faire mon virement"
+        },
         {
           "id": 2,
           "parentIds": [0],
@@ -47,14 +62,24 @@
           "from": "bot",
           "text": "Réponse KO : Message de service indisponible, il faut une intervention d'un conseiller.\nProposer au client:\n- Débranchement\n- Message conseiller pour rappel"
         },
-        { "id": 5, "parentIds": [3], "from": "client", "text": "2000€" },
+        {
+          "id": 5,
+          "parentIds": [3],
+          "from": "client",
+          "text": "2000€"
+        },
         {
           "id": 6,
           "parentIds": [5],
           "from": "bot",
           "text": "Virement en France ou à l'étranger?"
         },
-        { "id": 7, "parentIds": [6], "from": "client", "text": "En France" },
+        {
+          "id": 7,
+          "parentIds": [6],
+          "from": "client",
+          "text": "En France"
+        },
         {
           "id": 8,
           "parentIds": [7],
@@ -67,8 +92,18 @@
           "from": "verification",
           "text": "Appel API :\nVérifier si possible de le faire en autonomie pour le client (vérifier si ça dépasse la limite ou pas)"
         },
-        { "id": 12, "parentIds": [6], "from": "client", "text": "A l'étranger" },
-        { "id": 13, "parentIds": [4], "from": "client", "text": "Je veux parler à un conseiller" },
+        {
+          "id": 12,
+          "parentIds": [6],
+          "from": "client",
+          "text": "A l'étranger"
+        },
+        {
+          "id": 13,
+          "parentIds": [4],
+          "from": "client",
+          "text": "Je veux parler à un conseiller"
+        },
         {
           "id": 14,
           "parentIds": [4],
@@ -141,21 +176,41 @@
     {
       "id": 4,
       "name": "Activer carte",
+      "description": "",
       "category": "scenarios",
       "tags": [],
       "dateCreation": "26/04/2022",
       "dateModification": "26/04/2022",
       "data": [
-        { "id": 0, "from": "client", "text": "Comment activer ma carte?" },
-        { "id": 1, "parentIds": [0], "from": "verification", "text": "Recup identifiant Topaze" },
+        {
+          "id": 0,
+          "from": "client",
+          "text": "Comment activer ma carte?"
+        },
+        {
+          "id": 1,
+          "parentIds": [0],
+          "from": "verification",
+          "text": "Recup identifiant Topaze"
+        },
         {
           "id": 2,
           "parentIds": [1],
           "from": "bot",
           "text": "Souhaitez-vous :\n- Activer une nouvelle carte max ?\n\n- Ou activer une carte bancaire externe que vous avez ajoutée dans l'application ?"
         },
-        { "id": 3, "parentIds": [2], "from": "client", "text": "Ajouter ma carte BNP" },
-        { "id": 4, "parentIds": [2], "from": "client", "text": "Activer ma carte max" },
+        {
+          "id": 3,
+          "parentIds": [2],
+          "from": "client",
+          "text": "Ajouter ma carte BNP"
+        },
+        {
+          "id": 4,
+          "parentIds": [2],
+          "from": "client",
+          "text": "Activer ma carte max"
+        },
         {
           "id": 5,
           "parentIds": [3],
@@ -169,18 +224,48 @@
           "from": "bot",
           "text": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?"
         },
-        { "id": 7, "parentIds": [6], "from": "client", "text": "Souscription" },
-        { "id": 8, "parentIds": [6], "from": "client", "text": "Opposition" },
-        { "id": 9, "parentIds": [6], "from": "client", "text": "Renouvellement" },
-        { "id": 10, "parentIds": [6], "from": "client", "text": "Montée en gamme" },
+        {
+          "id": 7,
+          "parentIds": [6],
+          "from": "client",
+          "text": "Souscription"
+        },
+        {
+          "id": 8,
+          "parentIds": [6],
+          "from": "client",
+          "text": "Opposition"
+        },
+        {
+          "id": 9,
+          "parentIds": [6],
+          "from": "client",
+          "text": "Renouvellement"
+        },
+        {
+          "id": 10,
+          "parentIds": [6],
+          "from": "client",
+          "text": "Montée en gamme"
+        },
         {
           "id": 11,
           "parentIds": [7],
           "from": "bot",
           "text": "Lors de la commande, avez-vous scanné une carte bancaire ou avez-vous fait un selfie ?"
         },
-        { "id": 12, "parentIds": [11], "from": "client", "text": "J'ai scanné une carte" },
-        { "id": 13, "parentIds": [11], "from": "client", "text": "J'ai fait un selfie" },
+        {
+          "id": 12,
+          "parentIds": [11],
+          "from": "client",
+          "text": "J'ai scanné une carte"
+        },
+        {
+          "id": 13,
+          "parentIds": [11],
+          "from": "client",
+          "text": "J'ai fait un selfie"
+        },
         {
           "id": 14,
           "parentIds": [12],
@@ -201,8 +286,18 @@
           "from": "bot",
           "text": "Pouvez-vous m'indiquer les 4 derniers chiffres de la nouvelle carte max ?"
         },
-        { "id": 17, "parentIds": [16], "from": "client", "text": "1234" },
-        { "id": 18, "parentIds": [17], "from": "verification", "text": "Activation auto" },
+        {
+          "id": 17,
+          "parentIds": [16],
+          "from": "client",
+          "text": "1234"
+        },
+        {
+          "id": 18,
+          "parentIds": [17],
+          "from": "verification",
+          "text": "Activation auto"
+        },
         {
           "id": 19,
           "parentIds": [18],
@@ -229,6 +324,7 @@
     {
       "id": 5,
       "name": "Prendre rdv",
+      "description": "",
       "category": "scenarios",
       "tags": [],
       "dateCreation": "26/04/2022",
