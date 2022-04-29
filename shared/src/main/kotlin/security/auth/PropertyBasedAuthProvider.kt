@@ -16,12 +16,23 @@
 
 package ai.tock.shared.security.auth
 
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.defaultNamespace
+import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.listProperty
+import ai.tock.shared.property
+import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
-import ai.tock.shared.security.TockUserRole.*
+import ai.tock.shared.security.TockUserRole.admin
+import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.faqBotUser
+import ai.tock.shared.security.TockUserRole.faqNlpUser
+import ai.tock.shared.security.TockUserRole.nlpUser
+import ai.tock.shared.security.TockUserRole.technicalAdmin
+import ai.tock.shared.security.TockUserRole.values
 import ai.tock.shared.vertx.WebVerticle
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.AsyncResult
@@ -89,6 +100,8 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                                         context.isAuthorized(admin) { adminResult ->
                                             context.isAuthorized(technicalAdmin) { technicalAdminResult ->
                                                 context.endJson(
+                                                    // if any of the role is detected for the user
+                                                    // add the role to the response
                                                     AuthenticateResponse(
                                                         true,
                                                         request.email,
@@ -144,7 +157,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                             username,
                             organizations[index],
                             roles.getOrNull(index)
-                                ?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
+                                ?.takeIf { role -> role.size > 1 || role.firstOrNull()?.isBlank() == false }
                                 ?: allRoles
                         ),
                         true

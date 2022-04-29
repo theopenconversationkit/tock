@@ -16,18 +16,36 @@
 
 package ai.tock.shared.vertx
 
-import ai.tock.shared.*
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.devEnvironment
+import ai.tock.shared.error
+import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.longProperty
+import ai.tock.shared.property
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
-import ai.tock.shared.security.auth.*
+import ai.tock.shared.security.auth.AWSJWTAuthProvider
+import ai.tock.shared.security.auth.CASAuthProvider
+import ai.tock.shared.security.auth.GithubOAuthProvider
+import ai.tock.shared.security.auth.OAuth2Provider
+import ai.tock.shared.security.auth.PropertyBasedAuthProvider
+import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.auth.spi.CASAuthProviderFactory
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.vertx.core.*
+import io.vertx.core.AbstractVerticle
+import io.vertx.core.AsyncResult
+import io.vertx.core.Future
+import io.vertx.core.Handler
+import io.vertx.core.Promise
+import io.vertx.core.Vertx
 import io.vertx.core.http.HttpMethod
-import io.vertx.core.http.HttpMethod.*
+import io.vertx.core.http.HttpMethod.DELETE
+import io.vertx.core.http.HttpMethod.GET
+import io.vertx.core.http.HttpMethod.POST
+import io.vertx.core.http.HttpMethod.PUT
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
@@ -47,7 +65,9 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
+import java.util.EnumSet
+import java.util.Locale
+import java.util.ServiceLoader
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
