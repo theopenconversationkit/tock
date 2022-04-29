@@ -120,5 +120,6 @@
     *ngIf="isSidePanelOpen"
     [scenario]="scenarioEdit"
     (handleClose)="closeSidePanel()"
+    (handleSave)="saveScenario($event)"
   ></tock-scenario-edit>
 </section>

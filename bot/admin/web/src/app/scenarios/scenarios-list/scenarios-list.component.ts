@@ -22,6 +22,7 @@ import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
 import { ScenarioService } from '../services/scenario.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'scenarios-list',
   templateUrl: './scenarios-list.component.html',
@@ -44,7 +45,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     private dataSourceBuilder: NbTreeGridDataSourceBuilder<any>,
     private dialogService: DialogService,
     private scenarioService: ScenarioService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -120,5 +122,50 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  saveScenario(result) {
+    if (!result.scenario.id) {
+      this.subscriptions.add(
+        this.scenarioService.postScenario(result.scenario).subscribe({
+          next: (newScenario) => {
+            this.toastrService.success(`Scenario successfully created`, 'Success', {
+              duration: 5000,
+              status: 'success'
+            });
+            if (result.redirect) {
+              this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
+            }
+          },
+          error: () => {
+            this.toastrService.danger(`Failed to create scenario`, 'Error', {
+              duration: 5000,
+              status: 'danger'
+            });
+          }
+        })
+      );
+    } else {
+      this.subscriptions.add(
+        this.scenarioService.putScenario(result.scenario.id, result.scenario).subscribe({
+          next: (newScenario) => {
+            this.toastrService.success(`Scenario successfully updated`, 'Success', {
+              duration: 5000,
+              status: 'success'
+            });
+            if (result.redirect) {
+              this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
+            }
+          },
+          error: () => {
+            this.toastrService.danger(`Failed to update scenario`, 'Error', {
+              duration: 5000,
+              status: 'danger'
+            });
+          }
+        })
+      );
+    }
+    this.closeSidePanel();
   }
 }

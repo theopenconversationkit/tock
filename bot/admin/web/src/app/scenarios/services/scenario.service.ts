@@ -96,6 +96,16 @@ export class ScenarioService {
     );
   }
 
+  postScenario(scenario: Scenario): Observable<Scenario> {
+    return this.scenarioApiService.postScenario(scenario).pipe(
+      tap((newScenario) => {
+        let state = this.getState();
+        state.scenarios = [...state.scenarios, newScenario];
+        this.setState(state);
+      })
+    );
+  }
+
   putScenario(id: number, scenario: Scenario): Observable<Scenario> {
     return this.scenarioApiService.putScenario(id, scenario).pipe(
       tap((modifiedScenario) => {

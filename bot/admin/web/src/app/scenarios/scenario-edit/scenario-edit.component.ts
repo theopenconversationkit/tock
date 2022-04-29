@@ -25,7 +25,7 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
   handleClose = new EventEmitter<boolean>();
 
   @Output()
-  handleSave = new EventEmitter<Scenario>();
+  handleSave = new EventEmitter();
 
   isSubmitted: boolean = false;
 
@@ -98,18 +98,15 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     this.handleClose.emit(true);
   }
 
-  save(): void {
+  save(redirect = false): void {
     this.isSubmitted = true;
 
     if (this.canSave) {
-      console.log({ ...this.scenario, ...this.form.value });
-      this.handleSave.emit({ ...this.scenario, ...this.form.value } as Scenario);
+      this.handleSave.emit({
+        redirect: redirect,
+        scenario: { ...this.scenario, ...this.form.value }
+      });
     }
-  }
-
-  saveRedirectDesigner(): void {
-    this.save();
-    // TODO redirect to designer
   }
 
   eventPreventDefault(e: KeyboardEvent): void {

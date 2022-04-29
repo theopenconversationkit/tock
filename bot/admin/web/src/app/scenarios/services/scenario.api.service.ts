@@ -32,8 +32,8 @@ export class ScenarioApiService {
     return this.httpClient.get<Array<Scenario>>(`${this.tmpBaseHref}/scenarios`);
   }
 
-  getScenario(id: number): Observable<Scenario> {
-    return this.httpClient.get<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`);
+  postScenario(scenario: Scenario): Observable<Scenario> {
+    return this.httpClient.post<Scenario>(`${this.tmpBaseHref}/scenarios`, scenario);
   }
 
   putScenario(id: number, scenario: Scenario): Observable<Scenario> {

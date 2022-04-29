@@ -70,6 +70,7 @@ export class ScenariosEditComponent implements OnInit {
       .subscribe((data) => {
         this.scenarioBackup = JSON.stringify(data);
         this.scenario = JSON.parse(JSON.stringify(data));
+        if (!this.scenario.data) this.scenario.data = [];
         if (!this.scenario.data.length) {
           this.scenario.data.push({
             id: 0,
