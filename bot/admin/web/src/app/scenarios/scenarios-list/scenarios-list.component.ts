@@ -34,6 +34,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   allColumns = [this.categoryColumn, ...this.defaultColumns, this.actionsColumn];
 
   dataSource: NbTreeGridDataSource<any>;
+  scenarioEdit?: Scenario;
   subscriptions: Subscription = new Subscription();
 
   loading: boolean = false;
@@ -66,13 +67,19 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   add(): void {
+    this.scenarioEdit = {
+      id: null,
+      category: '',
+      description: '',
+      name: '',
+      tags: []
+    } as Scenario;
     this.isSidePanelOpen = true;
-    console.log('add');
   }
 
-  edit(scenario: any): void {
+  edit(scenario: Scenario): void {
+    this.scenarioEdit = scenario;
     this.isSidePanelOpen = true;
-    console.log('edit', scenario);
   }
 
   delete(scenario: Scenario): void {
@@ -93,6 +100,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   closeSidePanel(): void {
     this.isSidePanelOpen = false;
+    this.scenarioEdit = undefined;
   }
 
   deleteScenario(id: number): void {
