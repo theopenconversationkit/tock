@@ -1,67 +1,42 @@
-<div class="mb-2">
-  <nb-icon
-    *ngIf="this.scenario?.name"
-    nbTooltip="Scenario"
-    icon="film-outline"
-  ></nb-icon>
+<div class="row mb-3">
+  <div class="col">
+    <nb-icon
+      *ngIf="this.scenario?.name"
+      nbTooltip="Scenario"
+      icon="film-outline"
+    ></nb-icon>
 
-  <strong>
-    {{ this.scenario?.name }}
-  </strong>
+    <strong>
+      {{ this.scenario?.name }}
+    </strong>
+  </div>
 
-  <div class="float-right">
+  <div class="col text-right">
     <button
       nbButton
-      size="tiny"
-      status="danger"
-      (click)="clearStory()"
+      size="small"
+      status="basic"
+      (click)="exit()"
     >
-      reset
+      Cancel
     </button>
     <button
       nbButton
-      size="tiny"
-      status="success"
-      class="ml-2"
-      (click)="mockData(1)"
-    >
-      Story 1
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="success"
-      class="ml-2"
-      (click)="mockData(2)"
-    >
-      Story 2
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="success"
-      class="ml-2"
-      (click)="mockData(3)"
-    >
-      Story 3
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="info"
-      class="ml-2"
-      (click)="exportStory()"
-    >
-      Export
-    </button>
-    <button
-      nbButton
-      size="tiny"
+      size="small"
       status="primary"
       class="ml-2"
-      (click)="testStory()"
+      (click)="save()"
     >
-      Test story
+      Save
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="ml-2"
+      (click)="save(true)"
+    >
+      Save & exit
     </button>
   </div>
 </div>
@@ -79,9 +54,9 @@
     <div class="card-row">
       <div class="card-col">
         <app-editor-entry
-          *ngIf="scenarioData?.length"
+          *ngIf="scenario?.data.length"
           [itemId]="0"
-          [dataList]="scenarioData"
+          [dataList]="scenario.data"
           [selectedItem]="selectedItem"
         ></app-editor-entry>
       </div>

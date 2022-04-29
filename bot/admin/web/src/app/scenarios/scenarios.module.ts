@@ -30,7 +30,10 @@ import {
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
-import { ScenariosEditComponent } from './scenarios-edit/scenarios-edit.component';
+import {
+  ScenarioEditorNavigationGuard,
+  ScenariosEditComponent
+} from './scenarios-edit/scenarios-edit.component';
 import { EditorEntryComponent } from './scenarios-edit/editor-entry.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
@@ -54,7 +57,8 @@ const routes: Routes = [
       },
       {
         path: ':id',
-        component: ScenariosEditComponent
+        component: ScenariosEditComponent,
+        canDeactivate: [ScenarioEditorNavigationGuard]
       }
     ]
   }
@@ -85,7 +89,7 @@ export class ScenariosRoutingModule {}
   ],
   declarations: [ScenariosListComponent, ScenariosEditComponent, EditorEntryComponent],
   exports: [],
-  providers: [ScenarioService],
+  providers: [ScenarioService, ScenarioEditorNavigationGuard],
   entryComponents: []
 })
 export class ScenariosModule {

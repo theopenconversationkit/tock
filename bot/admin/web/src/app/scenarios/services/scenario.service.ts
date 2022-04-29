@@ -20,7 +20,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { Scenario } from '../models';
+import { Scenario, scenarioItem } from '../models';
 
 @Injectable()
 export class ScenarioService {
@@ -30,6 +30,10 @@ export class ScenarioService {
 
   getScenario(id: number): Observable<Scenario> {
     return this.httpClient.get<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`);
+  }
+
+  putScenario(id: number, scenario: Scenario) {
+    return this.httpClient.put<Scenario>(`${this.tmpBaseHref}/scenarios/${id}`, scenario);
   }
 
   getScenarios(): Observable<Array<Scenario>> {
