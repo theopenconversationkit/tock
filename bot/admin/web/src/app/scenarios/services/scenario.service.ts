@@ -35,8 +35,6 @@ const scenariosInitialState: ScenarioState = {
 
 @Injectable()
 export class ScenarioService {
-  private tmpBaseHref = 'http://localhost:3000';
-
   private _state: BehaviorSubject<ScenarioState>;
   state$: Observable<ScenarioState>;
 
@@ -45,14 +43,14 @@ export class ScenarioService {
     this.state$ = this._state.asObservable();
   }
 
-  getState() {
+  getState(): ScenarioState {
     return this._state.getValue();
   }
-  setState(state: ScenarioState) {
+  setState(state: ScenarioState): void {
     return this._state.next(state);
   }
 
-  setScenariosLoading() {
+  setScenariosLoading(): void {
     let state = this.getState();
     state = {
       ...state,
@@ -62,7 +60,7 @@ export class ScenarioService {
     this.setState(state);
   }
 
-  setScenariosData(scenariosCollection) {
+  setScenariosData(scenariosCollection): void {
     let state = this.getState();
     state = {
       ...state,
