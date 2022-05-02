@@ -1,6 +1,6 @@
 <nb-card class="side-panel">
-  <nb-card-body>
-    <div class="d-flex justify-content-between align-items-start mb-4">
+  <nb-card-header>
+    <div class="d-flex justify-content-between align-items-start">
       <h2>{{ scenario?.id ? 'Edit "' + scenario.name + '"' : 'New scenario' }}</h2>
       <button
         nbButton
@@ -12,7 +12,9 @@
         <nb-icon icon="close-outline"></nb-icon>
       </button>
     </div>
+  </nb-card-header>
 
+  <nb-card-body>
     <form [formGroup]="form">
       <div class="d-flex flex-column mb-2">
         <label for="name">Name <span class="text-muted">(*)</span></label>
@@ -70,7 +72,7 @@
         </nb-tag-list>
       </div>
 
-      <div class="d-flex justify-content-between align-items-start flex-wrap mt-4">
+      <div class="grid-button mt-4">
         <button
           nbButton
           outline
@@ -81,29 +83,26 @@
         >
           Cancel
         </button>
-        <div>
-          <button
-            nbButton
-            status="primary"
-            size="small"
-            type="submit"
-            [disabled]="!canSave"
-            (click)="save()"
-          >
-            Save
-          </button>
-          <button
-            nbButton
-            class="ml-1"
-            status="primary"
-            size="small"
-            type="button"
-            [disabled]="!canSave"
-            (click)="save(true)"
-          >
-            Save & design
-          </button>
-        </div>
+        <button
+          nbButton
+          status="primary"
+          size="small"
+          type="submit"
+          [disabled]="!canSave"
+          (click)="save()"
+        >
+          Save
+        </button>
+        <button
+          nbButton
+          status="primary"
+          size="small"
+          type="button"
+          [disabled]="!canSave"
+          (click)="save(true)"
+        >
+          Save & design
+        </button>
       </div>
     </form>
   </nb-card-body>
