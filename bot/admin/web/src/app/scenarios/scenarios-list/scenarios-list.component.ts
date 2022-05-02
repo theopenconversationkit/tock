@@ -38,6 +38,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   scenarioEdit?: Scenario;
   subscriptions: Subscription = new Subscription();
 
+  emptyData: boolean = false;
   loading: boolean = false;
   isSidePanelOpen: boolean = false;
 
@@ -56,6 +57,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         next: (data: any) => {
           this.loading = false;
           this.dataSource = this.dataSourceBuilder.create(data);
+          this.emptyData = data.length === 0;
         },
         error: () => {
           this.loading = false;
