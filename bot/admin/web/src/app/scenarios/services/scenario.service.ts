@@ -139,13 +139,14 @@ export class ScenarioService {
 
   buildTreeNodeByCategory(scenarios: Array<Scenario>): Array<any> {
     const scenariosByCatagory = new Map();
+    const defaultCategory = 'default';
 
     scenarios.forEach((s) => {
-      let category = scenariosByCatagory.get(s.category);
+      let category = scenariosByCatagory.get(s.category || defaultCategory);
 
       if (!category) {
         category = [];
-        scenariosByCatagory.set(s.category, category);
+        scenariosByCatagory.set(s.category || defaultCategory, category);
       }
 
       category.push(s);
