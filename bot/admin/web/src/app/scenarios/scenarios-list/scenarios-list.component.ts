@@ -15,6 +15,7 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NbToastrService, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 
@@ -22,7 +23,6 @@ import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
 import { ScenarioService } from '../services/scenario.service';
-import { Router } from '@angular/router';
 @Component({
   selector: 'scenarios-list',
   templateUrl: './scenarios-list.component.html',
