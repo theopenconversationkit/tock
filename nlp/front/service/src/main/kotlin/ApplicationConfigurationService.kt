@@ -23,9 +23,19 @@ import ai.tock.nlp.core.NlpCore
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
 import ai.tock.nlp.front.service.ConfigurationRepository.addNewEntityType
-import ai.tock.nlp.front.service.storage.*
+import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
+import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
+import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
+import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
+import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
+import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.nlp.front.shared.ApplicationConfiguration
-import ai.tock.nlp.front.shared.config.*
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.EntityDefinition
+import ai.tock.nlp.front.shared.config.EntityTypeDefinition
+import ai.tock.nlp.front.shared.config.FaqDefinition
+import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.namespace
 import ai.tock.shared.namespaceAndName
@@ -40,7 +50,7 @@ val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
 val intentDAO: IntentDefinitionDAO get() = injector.provide()
 val sentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
 val userNamespaceDAO: UserNamespaceDAO get() = injector.provide()
-val faqDefinitionDAO : FaqDefinitionDAO get() = injector.provide()
+val faqDefinitionDAO: FaqDefinitionDAO get() = injector.provide()
 
 /**
  *
@@ -81,7 +91,7 @@ object ApplicationConfigurationService :
         val app = applicationDAO.getApplicationById(id)!!
         intentDAO.getIntentsByApplicationId(id).forEach { intent ->
             faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
-                .let { faqDefinitionDAO.deleteFaqDefinitionById(it!!._id)}
+                .let { faqDefinitionDAO.deleteFaqDefinitionById(it!!._id) }
             removeIntentFromApplication(app, intent._id)
         }
         applicationDAO.deleteApplicationById(id)
@@ -92,7 +102,7 @@ object ApplicationConfigurationService :
         intentId: Id<IntentDefinition>
     ): Boolean {
         val intent = intentDAO.getIntentById(intentId)!!
-        sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT_NAME.toId())
+        sentenceDAO.switchSentencesIntent(application._id, intentId, UNKNOWN_INTENT_NAME.toId())
         applicationDAO.save(application.copy(intents = application.intents - intentId))
         val newIntent = intent.copy(applications = intent.applications - application._id)
         return if (newIntent.applications.isEmpty()) {
@@ -195,7 +205,7 @@ object ApplicationConfigurationService :
     private fun findIntent(intentId: Id<IntentDefinition>): Intent {
         return getIntentById(intentId)?.let {
             toIntent(it)
-        } ?: Intent(Intent.UNKNOWN_INTENT_NAME, emptyList())
+        } ?: Intent(UNKNOWN_INTENT_NAME, emptyList())
     }
 
     fun toIntent(intent: IntentDefinition): Intent {

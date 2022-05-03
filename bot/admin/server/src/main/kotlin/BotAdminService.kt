@@ -105,13 +105,9 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.TextStyle
 import java.util.*
-import java.util.stream.LongStream
-import java.util.stream.Stream
+import java.util.stream.*
 import kotlin.streams.toList
 
-/**
- *
- */
 object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
@@ -1097,7 +1093,7 @@ object BotAdminService {
         namespace: String,
         story: BotStoryDefinitionConfiguration,
         user: UserLogin,
-        createdIntent : IntentDefinition? = null
+        createdIntent: IntentDefinition? = null
     ): BotStoryDefinitionConfiguration? {
 
         // Two stories (built-in or configured) should not have the same _id
@@ -1214,7 +1210,8 @@ object BotAdminService {
                     story.userSentenceLocale,
                     application._id,
                     createdIntent?._id ?: intent._id,
-                    user)
+                    user
+                )
             }
 
             // save all intents of steps
