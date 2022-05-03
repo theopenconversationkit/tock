@@ -40,6 +40,7 @@ import {
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
+import { OrderByPipe } from './pipes/orderBy.pipe';
 
 @NgModule({
   imports: [
@@ -66,7 +67,8 @@ import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mou
     DateRangeCalendarComponent,
     InfoButtonComponent,
     ConfirmationDialogComponent,
-    MouseWheelListnerDirective
+    MouseWheelListnerDirective,
+    OrderByPipe
   ],
   exports: [
     BotMessageComponent,
@@ -74,7 +76,8 @@ import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mou
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,
-    MouseWheelListnerDirective
+    MouseWheelListnerDirective,
+    OrderByPipe
   ],
   providers: [BotSharedService],
   entryComponents: []
