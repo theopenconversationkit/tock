@@ -20,7 +20,13 @@ import ai.tock.translator.I18nLabel
 import org.litote.kmongo.Id
 import java.time.Instant
 
+/**
+ * Faq Definition Detailed with mongo aggregation
+ */
 data class FaqDefinitionDetailed(
+    /**
+     * The unique [Id] of the intent.
+     */
     val _id: Id<FaqDefinition>?,
     /**
      * The intent id.
@@ -32,17 +38,37 @@ data class FaqDefinitionDetailed(
      */
     val i18nId: Id<I18nLabel>,
 
+    /**
+     * List of tags for better Faq categorisation
+     */
     val tags: List<String>,
 
+    /**
+     * Is the Faq enabled?
+     */
     val enabled: Boolean,
-
+    /**
+     * Faq creation date
+     */
     val creationDate: Instant,
 
+    /**
+     * Faq update date
+     */
     val updateDate: Instant,
 
+    /**
+     * Questions/Utterances list inspired by [ClassifiedSentence]
+     */
     val utterances: List<ClassifiedSentence>,
 
+    /**
+     * The [IntentDefinition] identity of the faq
+     */
     val faq: IntentDefinition,
 
+    /**
+     * The [I18nLabel] answer associated to the faq
+     */
     val i18nLabel: I18nLabel
 )

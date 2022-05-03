@@ -16,4 +16,7 @@
 
 package config
 
+/**
+ * Tag element of a FaqDefinition
+ */
 data class FaqDefinitionTag(val tag: String)
