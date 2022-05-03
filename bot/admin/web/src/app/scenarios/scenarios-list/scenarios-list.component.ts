@@ -15,14 +15,15 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NbToastrService, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { Scenario } from '../models';
+import { Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
-import { Router } from '@angular/router';
+
 @Component({
   selector: 'scenarios-list',
   templateUrl: './scenarios-list.component.html',
@@ -35,8 +36,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   allColumns = [this.categoryColumn, ...this.defaultColumns, this.actionsColumn];
 
   dataSource: NbTreeGridDataSource<any>;
+  scenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
   subscriptions: Subscription = new Subscription();
+
+  currentViewMode: ViewMode = ViewMode.LIST;
+  viewMode: typeof ViewMode = ViewMode;
 
   loading: boolean = false;
   isSidePanelOpen: boolean = false;
@@ -56,6 +61,18 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         next: (data: any) => {
           this.loading = false;
           this.dataSource = this.dataSourceBuilder.create(data);
+        },
+        error: () => {
+          this.loading = false;
+        }
+      })
+    );
+
+    this.subscriptions.add(
+      this.scenarioService.getScenarios().subscribe({
+        next: (data: Scenario[]) => {
+          this.loading = false;
+          this.scenarios = data;
         },
         error: () => {
           this.loading = false;
@@ -167,5 +184,10 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       );
     }
     this.closeSidePanel();
+  }
+
+  switchViewMode(): void {
+    this.currentViewMode =
+      this.currentViewMode === ViewMode.LIST ? this.viewMode.TREE : this.viewMode.LIST;
   }
 }

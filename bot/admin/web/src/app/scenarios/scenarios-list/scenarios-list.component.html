@@ -1,5 +1,25 @@
 <section class="d-flex justify-content-end mb-3">
   <button
+    *ngIf="currentViewMode === viewMode.LIST"
+    nbButton
+    ghost
+    shape="round"
+    nbTooltip="Switch to tree view"
+    (click)="switchViewMode()"
+  >
+    <nb-icon icon="grid-outline"></nb-icon>
+  </button>
+  <button
+    *ngIf="currentViewMode === viewMode.TREE"
+    nbButton
+    ghost
+    shape="round"
+    nbTooltip="Switch to list view"
+    (click)="switchViewMode()"
+  >
+    <nb-icon icon="menu-outline"></nb-icon>
+  </button>
+  <button
     nbButton
     status="primary"
     (click)="add()"
@@ -10,7 +30,18 @@
 </section>
 
 <section [class.grid]="isSidePanelOpen">
-  <nb-card [nbSpinner]="loading">
+  <tock-scenario-list-simple
+    *ngIf="currentViewMode === viewMode.LIST"
+    [scenarios]="scenarios"
+  ></tock-scenario-list-simple>
+  <tock-scenario-tree
+    *ngIf="currentViewMode === viewMode.TREE"
+    [scenarios]="scenarios"
+  ></tock-scenario-tree>
+  <nb-card
+    *ngIf="currentViewMode === viewMode.TREE"
+    [nbSpinner]="loading"
+  >
     <nb-card-body>
       <h2
         *ngIf="!loading && !dataSource"

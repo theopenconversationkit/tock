@@ -44,36 +44,9 @@ import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
 import { ScenarioService } from './services/scenario.service';
 import { ScenarioApiService } from './services/scenario.api.service';
 import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
-
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    resolve: {
-      application: ApplicationResolver
-    },
-    children: [
-      {
-        path: '',
-        redirectTo: '',
-        pathMatch: 'full',
-        component: ScenariosListComponent
-      },
-      {
-        path: ':id',
-        component: ScenariosEditComponent,
-        canDeactivate: [ScenarioEditorNavigationGuard]
-      }
-    ]
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-  declarations: []
-})
-export class ScenariosRoutingModule {}
+import { ScenariosRoutingModule } from './scenarios-routing.module';
+import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
+import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-tree.component';
 
 @NgModule({
   imports: [
@@ -99,7 +72,9 @@ export class ScenariosRoutingModule {}
     ScenariosListComponent,
     ScenariosEditComponent,
     EditorEntryComponent,
-    ScenarioEditComponent
+    ScenarioEditComponent,
+    ScenarioListSimpleComponent,
+    ScenarioTreeComponent
   ],
   exports: [],
   providers: [ScenarioService, ScenarioApiService, ScenarioEditorNavigationGuard],

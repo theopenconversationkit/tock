@@ -1,0 +1,15 @@
+table th {
+  width: 10rem;
+
+  &::first-letter {
+    text-transform: capitalize;
+  }
+
+  &.actionColumn {
+    width: 165px;
+  }
+
+  &.descriptionColumn {
+    width: auto;
+  }
+}
