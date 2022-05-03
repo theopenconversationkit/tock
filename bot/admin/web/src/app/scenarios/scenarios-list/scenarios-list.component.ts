@@ -30,12 +30,6 @@ import { ScenarioService } from '../services/scenario.service';
   styleUrls: ['./scenarios-list.component.scss']
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
-  actionsColumn = 'actions';
-  categoryColumn = 'category';
-  defaultColumns = ['name', 'description'];
-  allColumns = [this.categoryColumn, ...this.defaultColumns, this.actionsColumn];
-
-  dataSource: NbTreeGridDataSource<any>;
   scenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
   subscriptions: Subscription = new Subscription();
@@ -47,7 +41,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   isSidePanelOpen: boolean = false;
 
   constructor(
-    private dataSourceBuilder: NbTreeGridDataSourceBuilder<any>,
     private dialogService: DialogService,
     private scenarioService: ScenarioService,
     private toastrService: NbToastrService,
@@ -56,23 +49,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loading = true;
-    this.subscriptions.add(
-      this.scenarioService.getScenariosTreeGrid().subscribe({
-        next: (data: any) => {
-          this.loading = false;
-          this.dataSource = this.dataSourceBuilder.create(data);
-        },
-        error: () => {
-          this.loading = false;
-        }
-      })
-    );
 
     this.subscriptions.add(
       this.scenarioService.getScenarios().subscribe({
         next: (data: Scenario[]) => {
           this.loading = false;
-          this.scenarios = data;
+          this.scenarios = [...data];
         },
         error: () => {
           this.loading = false;

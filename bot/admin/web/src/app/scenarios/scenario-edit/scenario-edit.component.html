@@ -13,7 +13,10 @@
       </button>
     </div>
 
-    <form [formGroup]="form">
+    <form
+      [formGroup]="form"
+      (submit)="save()"
+    >
       <div class="d-flex flex-column mb-2">
         <label for="name">Name <span class="text-muted">(*)</span></label>
         <input
@@ -86,7 +89,6 @@
             status="primary"
             type="submit"
             [disabled]="!canSave"
-            (click)="save()"
           >
             Save
           </button>

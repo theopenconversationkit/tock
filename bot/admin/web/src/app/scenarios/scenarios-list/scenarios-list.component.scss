@@ -1,21 +1,18 @@
-table th {
-  width: 10rem;
-
-  &::first-letter {
-    text-transform: capitalize;
+section {
+  &.grid-actions {
+    display: grid;
+    grid-gap: 0.5rem;
+    grid-auto-flow: column;
+    justify-content: end;
   }
 
-  &.actionColumn {
-    width: 165px;
-  }
-
-  &.descriptionColumn {
-    width: auto;
+  & nb-card {
+    height: min-content;
   }
 }
 
-section nb-card {
-  height: min-content;
+.loading {
+  min-height: 50px;
 }
 
 .grid {

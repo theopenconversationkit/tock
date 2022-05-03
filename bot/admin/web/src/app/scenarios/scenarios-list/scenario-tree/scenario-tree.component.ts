@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 
 import { Scenario } from '../../models';
@@ -9,7 +9,7 @@ import { ScenarioService } from '../../services/scenario.service';
   templateUrl: './scenario-tree.component.html',
   styleUrls: ['./scenario-tree.component.scss']
 })
-export class ScenarioTreeComponent implements OnInit {
+export class ScenarioTreeComponent implements OnChanges {
   @Input() scenarios!: Scenario[];
 
   @Output() handleEdit = new EventEmitter<Scenario>();
@@ -27,10 +27,12 @@ export class ScenarioTreeComponent implements OnInit {
     private scenarioService: ScenarioService
   ) {}
 
-  ngOnInit(): void {
-    this.dataSource = this.dataSourceBuilder.create(
-      this.scenarioService.buildTreeNodeByCategory(this.scenarios)
-    );
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.scenarios.currentValue) {
+      this.dataSource = this.dataSourceBuilder.create(
+        this.scenarioService.buildTreeNodeByCategory(changes.scenarios.currentValue)
+      );
+    }
   }
 
   edit(scenario: Scenario): void {

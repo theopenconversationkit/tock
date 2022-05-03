@@ -1,1 +1,43 @@
-<p>{{ scenarios | json }}</p>
+<nb-card *ngFor="let scenario of scenarios | orderBy: 'name'">
+  <nb-card-body>
+    <div class="row">
+      <div class="col-sm-3 mt-2 mb-2">
+        {{ scenario.name }}
+      </div>
+
+      <div class="col mt-2 mb-2">
+        {{ scenario.description }}
+      </div>
+
+      <div class="col-lg-auto mt-2 mb-2">
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Edit"
+          (click)="edit(scenario)"
+        >
+          <nb-icon icon="edit-outline"></nb-icon>
+        </button>
+        <a
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Designer"
+          [routerLink]="'./' + scenario.id"
+        >
+          <nb-icon icon="color-palette-outline"></nb-icon>
+        </a>
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Delete"
+          (click)="delete(scenario)"
+        >
+          <nb-icon icon="trash-2-outline"></nb-icon>
+        </button>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

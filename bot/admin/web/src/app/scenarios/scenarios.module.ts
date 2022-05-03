@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -29,8 +28,6 @@ import {
   NbTreeGridModule
 } from '@nebular/theme';
 
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
-import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import {
   ScenarioEditorNavigationGuard,
