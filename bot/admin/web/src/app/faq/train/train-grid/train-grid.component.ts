@@ -122,19 +122,19 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
     for (let sentence of this.selection.selected) {
 
       switch (actionName) {
-        case "delete":
+        case BatchActionName.delete :
           actionLabel = 'delete';
           sentence.status = SentenceStatus.deleted;
           break;
 
-        case "unknown":
+        case BatchActionName.unknown :
           actionLabel = 'set unknown';
           sentence.classification.intentId = Intent.unknown;
           sentence.classification.entities = [];
           sentence.status = SentenceStatus.validated;
           break;
 
-        case "validate":
+        case BatchActionName.validate:
           actionLabel = 'validate';
           const intentId = sentence.classification.intentId;
           if (intentId === Intent.unknown) {

@@ -16,7 +16,12 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
-export type BatchActionName = 'validate' | 'unknown' | 'delete';
+export enum BatchActionName {
+  validate = "validate",
+  unknown = "unknown",
+  delete = "delete"
+}
+
 
 @Component({
   selector: 'tock-train-toolbar',
@@ -48,15 +53,15 @@ export class TrainToolbarComponent implements OnInit {
   }
 
   validateAll(): void {
-    this.onBatchAction.emit('validate');
+    this.onBatchAction.emit(BatchActionName.validate);
   }
 
   unknownAll(): void {
-    this.onBatchAction.emit('unknown');
+    this.onBatchAction.emit(BatchActionName.unknown);
   }
 
   deleteAll(): void {
-    this.onBatchAction.emit('delete');
+    this.onBatchAction.emit(BatchActionName.delete);
   }
 
 }
