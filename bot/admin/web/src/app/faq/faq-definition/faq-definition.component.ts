@@ -15,7 +15,7 @@
  */
 
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 import {ReplaySubject, Subscription} from 'rxjs';
 import {takeUntil} from "rxjs/operators";
 
@@ -23,14 +23,15 @@ import {StateService} from 'src/app/core-nlp/state.service';
 import {isDockedOrSmall} from '../common/model/view-mode';
 import {DEFAULT_PANEL_NAME, WithSidePanel} from '../common/mixin/with-side-panel';
 import {blankFaqDefinition, FaqDefinition} from '../common/model/faq-definition';
-import {FaqQaFilter, FaqGridComponent} from './faq-grid/faq-grid.component';
+import {FaqGridComponent} from './faq-grid/faq-grid.component';
 import {truncate} from '../common/util/string-utils';
 import {DialogService} from 'src/app/core-nlp/dialog.service';
 import {FormProblems, InvalidFormProblems} from '../common/model/form-problems';
 import {FaqDefinitionSidepanelEditorService} from "./sidepanels/faq-definition-sidepanel-editor.service";
-import { Utterance } from '../common/model/utterance';
-import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { BotApplicationConfiguration } from '../../core/model/configuration';
+import {Utterance} from '../common/model/utterance';
+import {BotConfigurationService} from '../../core/bot-configuration.service';
+import {BotApplicationConfiguration} from '../../core/model/configuration';
+import {FaqDefinitionFilter} from "../common/model/faq-definition-filter";
 
 // Specific action payload
 export type EditorTabName = 'Info' | 'Answer' | 'Question';
@@ -57,7 +58,7 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
 
   subscriptions = new Subscription();
 
-  public filter: FaqQaFilter;
+  public filter: FaqDefinitionFilter;
   @ViewChild(FaqGridComponent) grid;
 
   private readonly destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -116,7 +117,7 @@ export class FaqDefinitionComponent extends WithSidePanel() implements OnInit, O
     };
   }
 
-  search(filter: Partial<FaqQaFilter>): void {
+  search(filter: Partial<FaqDefinitionFilter>): void {
     this.filter.search = filter.search;
     this.filter.sort = filter.sort;
     this.grid.refresh();

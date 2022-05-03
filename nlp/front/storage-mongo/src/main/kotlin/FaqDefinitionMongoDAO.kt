@@ -17,7 +17,13 @@
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
-import ai.tock.nlp.front.shared.config.*
+import ai.tock.nlp.front.shared.config.Classification
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.FaqDefinition
+import ai.tock.nlp.front.shared.config.FaqDefinitionDetailed
+import ai.tock.nlp.front.shared.config.FaqQuery
+import ai.tock.nlp.front.shared.config.FaqQueryResult
+import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
@@ -25,8 +31,37 @@ import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.UnwindOptions
 import config.FaqDefinitionTag
 import mu.KotlinLogging
-import org.litote.kmongo.*
+import org.bson.conversions.Bson
+import org.litote.kmongo.Id
+import org.litote.kmongo.`in`
+import org.litote.kmongo.aggregate
+import org.litote.kmongo.allPosOp
+import org.litote.kmongo.and
+import org.litote.kmongo.ascending
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.div
+import org.litote.kmongo.document
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
+import org.litote.kmongo.excludeId
+import org.litote.kmongo.findOne
+import org.litote.kmongo.findOneById
+import org.litote.kmongo.first
+import org.litote.kmongo.from
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.group
+import org.litote.kmongo.json
+import org.litote.kmongo.limit
+import org.litote.kmongo.lookup
+import org.litote.kmongo.match
+import org.litote.kmongo.or
+import org.litote.kmongo.project
 import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.regex
+import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.skip
+import org.litote.kmongo.sort
+import org.litote.kmongo.unwind
 
 
 object FaqDefinitionMongoDAO : FaqDefinitionDAO {
@@ -98,13 +133,56 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private const val INTENT_DEFINITION_COLLECTION = "intent_definition"
 
+    /**
+     * Retrieve faq details with total count numbers according to the filter present un [FaqQuery]
+     * @param : [FaqQuery] the query search
+     * @param : applicationId
+     * @param : i18nIds optional to request eventually on i18nIds
+     */
     override fun getFaqDetailsWithCount(
         query: FaqQuery,
         applicationId: String,
         i18nIds: List<Id<I18nLabel>>?
     ): Pair<List<FaqQueryResult>, Long> {
         with(query) {
-            val baseAggregation = arrayListOf(
+            //prepare aggregation without skip and limit to know the total number of faq available
+            val baseAggregation = prepareFaqDetailBaseAggregation(query, applicationId, i18nIds)
+            logger.debug { baseAggregation.map { it.json } }
+            //counting total
+            val count = col.aggregate(baseAggregation, FaqQueryResult::class.java).count()
+            logger.debug { "count : $count" }
+
+            //add skip and limit on the baseAggregation
+            val aggregationWithSkipAndLimit =
+                if (start.toInt() > 0) baseAggregation.plusElement(skip(start.toInt())) else baseAggregation
+
+            aggregationWithSkipAndLimit.plusElement(limit(size))
+
+            return if (count > start) {
+                val res = col.aggregate(aggregationWithSkipAndLimit, FaqQueryResult::class.java)
+                Pair(
+                    res.mapNotNull { it }.sortedBy { it.faq._id.toString() },
+                    count.toLong()
+                )
+            } else {
+                Pair(emptyList(), 0)
+            }
+        }
+    }
+
+    /**
+     * Prepare the faq detail aggregation without skip and limit
+     * @param : [FaqQuery] the query search
+     * @param : applicationId
+     * @param : i18nIds optional to request eventually on i18nIds
+     */
+    private fun prepareFaqDetailBaseAggregation(
+        query: FaqQuery,
+        applicationId: String,
+        i18nIds: List<Id<I18nLabel>>?
+    ): ArrayList<Bson> {
+        with(query) {
+            return arrayListOf(
                 sort(ascending(FaqDefinition::i18nId)),
                 lookup(
                     INTENT_DEFINITION_COLLECTION,
@@ -122,7 +200,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 match(
                     or(
                         listOfNotNull(
-                            //regex is use like contains because not accessible with this writing
+                            //most search on filters are using regex (like contains) because not accessible with this writing
                             if (search == null) null else FaqQueryResult::faq / IntentDefinition::name regex search!!,
                             if (search == null) null else FaqQueryResult::faq / IntentDefinition::description regex search!!,
                             if (search == null) null else FaqQueryResult::utterances.allPosOp / ClassifiedSentence::text regex search!!,
@@ -134,7 +212,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                         listOfNotNull(
                             FaqQueryResult::faq / IntentDefinition::applications `in` applicationId,
                             if (tags.isEmpty()) null else FaqQueryResult::tags `in` tags,
-                            if (query.enabled == null) null else FaqQueryResult::enabled eq query.enabled
+                            if (enabled == null) null else FaqQueryResult::enabled eq enabled
                         )
                     )
                 ),
@@ -144,25 +222,14 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                     )
                 ),
             )
-            logger.debug { baseAggregation.map { it.json } }
-            //counting total aggregation without skip and limit
-            val count = col.aggregate(baseAggregation, FaqQueryResult::class.java).count()
-            logger.debug { "count : $count" }
-            val aggregationWithSkipAndLimit =
-                if (start.toInt() > 0) baseAggregation.plusElement(skip(start.toInt())) else baseAggregation
-            aggregationWithSkipAndLimit.plusElement(limit(size))
-            return if (count > start) {
-                val res = col.aggregate(aggregationWithSkipAndLimit, FaqQueryResult::class.java)
-                Pair(
-                    res.mapNotNull { it }.sortedBy { it.faq._id.toString() },
-                    count.toLong()
-                )
-            } else {
-                Pair(emptyList(), 0)
-            }
         }
     }
 
+    /**
+     * Retrieve tags according to the applicationId present in IntentDefinition with aggregation
+     * @param applicationId : the applicationId
+     * @return a string list of tags
+     */
     override fun getTags(applicationId: String): List<String> {
         return col.aggregate<FaqDefinitionTag>(
             lookup(

@@ -219,11 +219,11 @@ export class TrainGridItemComponent implements OnInit, OnDestroy {
 
   isSelected(): boolean {
     switch (this.selectionMode) {
-      case "SELECT_ALWAYS":
+      case SelectionMode.SELECT_ALWAYS:
         return true;
-      case "SELECT_NEVER":
+      case SelectionMode.SELECT_NEVER:
         return false;
-      case "SELECT_SOME":
+      case SelectionMode.SELECT_SOME:
       default:
         return this.selection.isSelected(this.sentence);
     }

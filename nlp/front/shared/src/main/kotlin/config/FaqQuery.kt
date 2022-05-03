@@ -16,8 +16,6 @@
 
 package ai.tock.nlp.front.shared.config
 
-import org.litote.kmongo.Id
-
 class FaqQuery(
     val start: Long = 0,
     val size: Int = 1,
@@ -25,7 +23,7 @@ class FaqQuery(
     val searchMark: SearchMark? = null,
     val tags: List<String>,
     val enabled: Boolean?,
-    val user :String?,
+    val user: String?,
     val allButUser: String?,
     val applicationName: String,
     val namespace: String

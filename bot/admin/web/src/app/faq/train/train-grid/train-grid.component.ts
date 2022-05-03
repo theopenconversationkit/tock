@@ -50,7 +50,7 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
-  selectionMode: SelectionMode = 'SELECT_NEVER';
+  selectionMode: SelectionMode = SelectionMode.SELECT_NEVER;
 
   UserRole = UserRole;
   pageIndex: number = 0;
@@ -122,19 +122,19 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
     for (let sentence of this.selection.selected) {
 
       switch (actionName) {
-        case "delete":
+        case BatchActionName.delete :
           actionLabel = 'delete';
           sentence.status = SentenceStatus.deleted;
           break;
 
-        case "unknown":
+        case BatchActionName.unknown :
           actionLabel = 'set unknown';
           sentence.classification.intentId = Intent.unknown;
           sentence.classification.entities = [];
           sentence.status = SentenceStatus.validated;
           break;
 
-        case "validate":
+        case BatchActionName.validate:
           actionLabel = 'validate';
           const intentId = sentence.classification.intentId;
           if (intentId === Intent.unknown) {
@@ -163,11 +163,15 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
     this.onDetails.emit(sentence);
   }
 
-  // this allow to transition from SELECT_NEVER/SELECT_ALWAYS to SELECT_SOME mode
-  // because it was costly/too complicated to recompute "All elements are selected?" at each cycle
+  /**
+   * this allows the transition from SELECT_NEVER/SELECT_ALWAYS to SELECT_SOME mode
+   * because it was costly/too complicated to recompute "All elements are selected?" at each cycle
+   */
   onToggle(active: boolean): void {
-    this.selectionMode  = 'SELECT_SOME';
+    this.selectionMode = SelectionMode.SELECT_SOME;
   }
+
+
 
   refresh() {
     this.selection.clear();
@@ -176,16 +180,16 @@ export class TrainGridComponent extends ScrollComponent<Sentence> implements Aft
 
   onToggleSelectAll(value: boolean): void {
     if (!value) {
-      this.selectionMode = 'SELECT_NEVER';
+      this.selectionMode = SelectionMode.SELECT_NEVER;
       this.selection.clear();
     } else {
-      this.selectionMode = 'SELECT_ALWAYS';
+      this.selectionMode = SelectionMode.SELECT_ALWAYS;
       this.data.forEach(data => this.selection.select(data));
     }
   }
 
   isAllSelected(): boolean {
-    return this.selectionMode === 'SELECT_ALWAYS';
+    return this.selectionMode === SelectionMode.SELECT_ALWAYS;
   }
 
   refreshOnEmpty() {

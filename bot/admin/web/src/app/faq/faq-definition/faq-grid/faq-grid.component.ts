@@ -15,7 +15,7 @@
  */
 
 import {AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
-import {Entry, PaginatedQuery} from 'src/app/model/commons';
+import {PaginatedQuery} from 'src/app/model/commons';
 import {FaqDefinition} from '../../common/model/faq-definition';
 import {MatPaginator} from '@angular/material/paginator';
 import {DataSource} from '@angular/cdk/collections';
@@ -30,6 +30,7 @@ import {takeUntil} from 'rxjs/operators';
 import {FaqSearchQuery} from '../../common/model/faq-search-query';
 import {FaqDefinitionSidepanelEditorService} from "../sidepanels/faq-definition-sidepanel-editor.service";
 import {FaqDefinitionResult} from "../../common/model/faq-definition-result";
+import {FaqDefinitionFilter} from "../../common/model/faq-definition-filter";
 
 
 @Component({
@@ -40,16 +41,16 @@ import {FaqDefinitionResult} from "../../common/model/faq-definition-result";
 export class FaqGridComponent extends ScrollComponent<FaqDefinition> implements AfterViewInit, OnDestroy, OnInit {
 
   @Input()
-  viewMode : ViewMode;
+  viewMode: ViewMode;
 
   @Input()
-  filter: FaqQaFilter;
+  filter: FaqDefinitionFilter;
 
   @Output()
   onDetails = new EventEmitter<FaqDefinition>();
 
   @Output()
-  onEdit= new EventEmitter<FaqDefinition>();
+  onEdit = new EventEmitter<FaqDefinition>();
 
   @ViewChild(MatPaginator)
   paginator: MatPaginator;
@@ -81,15 +82,15 @@ export class FaqGridComponent extends ScrollComponent<FaqDefinition> implements 
     this.paginator.page
       .pipe(takeUntil(this.destroy$))
       .subscribe(e => {
-      this.add = false;
-      if (this.pageSize === e.pageSize) {
-        this.cursor = Math.floor(e.pageIndex * e.pageSize);
-      } else {
-        this.cursor = 0;
-        this.pageSize = e.pageSize;
-      }
-      this.load();
-    });
+        this.add = false;
+        if (this.pageSize === e.pageSize) {
+          this.cursor = Math.floor(e.pageIndex * e.pageSize);
+        } else {
+          this.cursor = 0;
+          this.pageSize = e.pageSize;
+        }
+        this.load();
+      });
 
     this.observeEditModeExit(); // unselect item when user undock or dock another panel
   }
@@ -151,20 +152,6 @@ export class FaqGridComponent extends ScrollComponent<FaqDefinition> implements 
     } else {
       return false;
     }
-  }
-}
-
-export class FaqQaFilter {
-  constructor(
-    public enabled?: Boolean,
-    public search?: string,
-    public sort?: Entry<string, boolean>[],
-    public tags?: string[],
-  ) {
-  }
-
-  clone(): FaqQaFilter {
-    return { ...this }; // shallow copy
   }
 }
 

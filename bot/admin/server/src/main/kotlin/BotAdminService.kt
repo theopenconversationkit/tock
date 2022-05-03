@@ -34,7 +34,23 @@ import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.bot.admin.model.*
+import ai.tock.bot.admin.model.BotAnswerConfiguration
+import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
+import ai.tock.bot.admin.model.BotConfiguredAnswer
+import ai.tock.bot.admin.model.BotConfiguredSteps
+import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
+import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
+import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
+import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
+import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
+import ai.tock.bot.admin.model.CreateI18nLabelRequest
+import ai.tock.bot.admin.model.CreateStoryRequest
+import ai.tock.bot.admin.model.DialogFlowRequest
+import ai.tock.bot.admin.model.DialogsSearchQuery
+import ai.tock.bot.admin.model.Feature
+import ai.tock.bot.admin.model.StorySearchRequest
+import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.UserSearchQueryResult
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -57,9 +73,15 @@ import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
-import ai.tock.nlp.front.shared.config.*
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.Classification
+import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import ai.tock.nlp.front.shared.config.EntityDefinition
+import ai.tock.nlp.front.shared.config.EntityTypeDefinition
+import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.Dice
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultZoneId
@@ -82,13 +104,10 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.TextStyle
-import java.util.Locale
-import java.util.stream.LongStream
-import java.util.stream.Stream
+import java.util.*
+import java.util.stream.*
 import kotlin.streams.toList
-/**
- *
- */
+
 object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
@@ -1068,13 +1087,13 @@ object BotAdminService {
      * @param namespace
      * @param : story : botStoryDefinitionConfiguration
      * @param: user : userLogin
-     * @param: createIntent : intent can be created out of the method
+     * @param: createdIntent : intent can be created out of the method
      */
     fun saveStory(
         namespace: String,
         story: BotStoryDefinitionConfiguration,
         user: UserLogin,
-        createdIntent : IntentDefinition? = null
+        createdIntent: IntentDefinition? = null
     ): BotStoryDefinitionConfiguration? {
 
         // Two stories (built-in or configured) should not have the same _id
@@ -1191,7 +1210,8 @@ object BotAdminService {
                     story.userSentenceLocale,
                     application._id,
                     createdIntent?._id ?: intent._id,
-                    user)
+                    user
+                )
             }
 
             // save all intents of steps

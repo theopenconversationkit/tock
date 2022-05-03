@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package config
+import {Entry} from "../../../model/commons";
 
-/**
- * Tag element of a FaqDefinition
- */
-data class FaqDefinitionTag(val tag: String)
+export class FaqDefinitionFilter {
+  constructor(
+    public enabled?: Boolean,
+    public search?: string,
+    public sort?: Entry<string, boolean>[],
+    public tags?: string[],
+  ) {
+  }
+
+  clone(): FaqDefinitionFilter {
+    return {...this}; // shallow copy
+  }
+}
