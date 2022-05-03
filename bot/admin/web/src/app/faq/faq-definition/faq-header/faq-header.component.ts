@@ -20,8 +20,8 @@ import {take, takeUntil} from 'rxjs/operators';
 import {StateService} from 'src/app/core-nlp/state.service';
 import {isDockedOrSmall, ViewMode} from '../../common/model/view-mode';
 import {FaqDefinitionService} from '../../common/faq-definition.service';
-import {FaqQaFilter} from '../faq-grid/faq-grid.component';
 import {FaqDefinitionSidepanelEditorService} from "../sidepanels/faq-definition-sidepanel-editor.service";
+import {FaqDefinitionFilter} from "../../common/model/faq-definition-filter";
 
 @Component({
   selector: 'tock-qa-header',
@@ -44,13 +44,13 @@ export class FaqHeaderComponent implements OnInit {
   /* Input/Output */
 
   @Input()
-  filter: FaqQaFilter;
+  filter: FaqDefinitionFilter;
 
   @Input()
   viewMode: ViewMode;
 
   @Output()
-  onSearch = new EventEmitter<Partial<FaqQaFilter>>();
+  onSearch = new EventEmitter<Partial<FaqDefinitionFilter>>();
 
   @Output()
   onImport = new EventEmitter<void>();
@@ -71,7 +71,8 @@ export class FaqHeaderComponent implements OnInit {
     private readonly state: StateService,
     private readonly faqService: FaqDefinitionService,
     private readonly sidepanelEditorService: FaqDefinitionSidepanelEditorService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.fetchAvailableTags();
@@ -120,25 +121,6 @@ export class FaqHeaderComponent implements OnInit {
     this.search();
   }
 
-  /**
-   * Toggle the search activation with cycling states
-   * Enabled / Disbaled / Inderterminate
-   * @param value
-   * @private
-   */
-  private toggleActivationStatus(value: Boolean) {
-    let isToggable = this.statusCycleRound > 0
-
-    if(isToggable && value != null) {
-      this.activationStatus = value;
-      this.statusCycleRound--
-    } else {
-      this.activationStatus = null;
-      //put back default round available click
-      this.statusCycleRound = 2
-    }
-  }
-
   importFaq(): void {
     this.onImport.next(null);
   }
@@ -149,6 +131,25 @@ export class FaqHeaderComponent implements OnInit {
 
   isDockedOrSmall(): boolean {
     return isDockedOrSmall(this.viewMode);
+  }
+
+  /**
+   * Toggle the search activation with cycling states
+   * Enabled / Disbaled / Inderterminate
+   * @param value
+   * @private
+   */
+  private toggleActivationStatus(value: Boolean) {
+    let isToggable = this.statusCycleRound > 0
+
+    if (isToggable && value != null) {
+      this.activationStatus = value;
+      this.statusCycleRound--
+    } else {
+      this.activationStatus = null;
+      //put back default round available click
+      this.statusCycleRound = 2
+    }
   }
 
 
