@@ -1,7 +1,10 @@
-<nb-card *ngFor="let scenario of scenarios | orderBy: 'name'">
+<nb-card
+  *ngFor="let scenario of scenarios | orderBy: 'name'"
+  class="mb-2"
+>
   <nb-card-body>
     <div class="row">
-      <div class="col-sm-3 mt-2 mb-2">
+      <div class="col-sm-3 mt-2 mb-2 font-weight-bold">
         {{ scenario.name }}
       </div>
 

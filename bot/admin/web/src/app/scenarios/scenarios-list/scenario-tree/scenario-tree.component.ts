@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 
 import { Scenario } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
 
 @Component({
   selector: 'tock-scenario-tree',
@@ -22,15 +21,12 @@ export class ScenarioTreeComponent implements OnChanges {
 
   dataSource: NbTreeGridDataSource<any>;
 
-  constructor(
-    private dataSourceBuilder: NbTreeGridDataSourceBuilder<any>,
-    private scenarioService: ScenarioService
-  ) {}
+  constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<any>) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scenarios.currentValue) {
       this.dataSource = this.dataSourceBuilder.create(
-        this.scenarioService.buildTreeNodeByCategory(changes.scenarios.currentValue)
+        this.buildTreeNodeByCategory(changes.scenarios.currentValue)
       );
     }
   }
@@ -41,5 +37,45 @@ export class ScenarioTreeComponent implements OnChanges {
 
   delete(scenario: Scenario): void {
     this.handleDelete.emit(scenario);
+  }
+
+  private buildTreeNodeByCategory(scenarios: Array<Scenario>): Array<any> {
+    const scenariosByCatagory = new Map();
+    const defaultCategory = 'default';
+
+    scenarios.forEach((s) => {
+      let category = scenariosByCatagory.get(s.category || defaultCategory);
+
+      if (!category) {
+        category = [];
+        scenariosByCatagory.set(s.category || defaultCategory, category);
+      }
+
+      category.push(s);
+    });
+
+    scenariosByCatagory.forEach((t) => {
+      t = t.sort((a: Scenario, b: Scenario) => {
+        if (a.name.toUpperCase() < b.name.toUpperCase()) return -1;
+        else if (a.name.toUpperCase() > b.name.toUpperCase()) return 1;
+        else return 0;
+      });
+    });
+
+    return Array.from(scenariosByCatagory, ([key, value]) => ({
+      data: {
+        category: key,
+        expandable: true
+      },
+      children: value.map((v: Scenario) => {
+        return {
+          data: v
+        };
+      })
+    })).sort((a, b) => {
+      if (a.data.category.toUpperCase() < b.data.category.toUpperCase()) return -1;
+      else if (a.data.category.toUpperCase() > b.data.category.toUpperCase()) return 1;
+      else return 0;
+    });
   }
 }
