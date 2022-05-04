@@ -5,20 +5,20 @@ import { scenarioItem } from '../models/scenario.model';
 @Injectable({
   providedIn: 'root'
 })
-export class EditorServiceService {
-  public editorItemsCommunication = new Subject<any>();
+export class ScenarioDesignerService {
+  public scenarioDesignerItemsCommunication = new Subject<any>();
   constructor() {}
 
-  // Child components to editor communication
+  // Child components to designer communication
   addAnswer(item: scenarioItem): void {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'addAnswer',
       item: item
     });
   }
 
   deleteAnswer(item: scenarioItem, parentItemId: number): void {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'deleteAnswer',
       item: item,
       parentItemId: parentItemId
@@ -26,7 +26,7 @@ export class EditorServiceService {
   }
 
   itemDropped(targetId: number, droppedId: number): void {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'itemDropped',
       targetId: targetId,
       droppedId: droppedId
@@ -34,14 +34,14 @@ export class EditorServiceService {
   }
 
   selectItem(item: scenarioItem): void {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'itemSelected',
       item: item
     });
   }
 
   testItem(item: scenarioItem): void {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'testItem',
       item: item
     });
@@ -51,23 +51,23 @@ export class EditorServiceService {
     item: scenarioItem,
     position: { left: number; top: number; width: number; height: number }
   ) {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'exposeItemPosition',
       item: item,
       position: position
     });
   }
 
-  // Editor to child components communication
+  // Designer to child components communication
   focusItem(item: scenarioItem): void {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'focusItem',
       item: item
     });
   }
 
   requireItemPosition(item: scenarioItem): void {
-    this.editorItemsCommunication.next({
+    this.scenarioDesignerItemsCommunication.next({
       type: 'requireItemPosition',
       item: item
     });

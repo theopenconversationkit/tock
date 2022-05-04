@@ -5,9 +5,9 @@ import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import {
-  ScenarioEditorNavigationGuard,
-  ScenariosEditComponent
-} from './scenarios-edit/scenarios-edit.component';
+  ScenarioDesignerNavigationGuard,
+  ScenarioDesignerComponent
+} from './scenario-designer/scenario-designer.component';
 
 const routes: Routes = [
   {
@@ -25,8 +25,8 @@ const routes: Routes = [
       },
       {
         path: ':id',
-        component: ScenariosEditComponent,
-        canDeactivate: [ScenarioEditorNavigationGuard]
+        component: ScenarioDesignerComponent,
+        canDeactivate: [ScenarioDesignerNavigationGuard]
       }
     ]
   }

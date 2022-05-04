@@ -2,14 +2,14 @@ import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { scenarioItem } from '../models/scenario.model';
-import { EditorServiceService } from './editor-service.service';
+import { ScenarioDesignerService } from './scenario-designer-service.service';
 
 @Component({
-  selector: 'app-editor-entry',
-  templateUrl: './editor-entry.component.html',
-  styleUrls: ['./editor-entry.component.scss']
+  selector: 'scenario-designer-entry',
+  templateUrl: './scenario-designer-entry.component.html',
+  styleUrls: ['./scenario-designer-entry.component.scss']
 })
-export class EditorEntryComponent implements OnInit {
+export class ScenarioDesignerEntryComponent implements OnInit {
   destroy = new Subject();
   @Input() itemId: number;
   @Input() parentId: number;
@@ -19,7 +19,7 @@ export class EditorEntryComponent implements OnInit {
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
   item;
-  constructor(private editorService: EditorServiceService) {}
+  constructor(private scenarioDesignerService: ScenarioDesignerService) {}
 
   ngOnInit(): void {
     this.item = this.dataList.find((item) => item.id === this.itemId);
@@ -27,10 +27,12 @@ export class EditorEntryComponent implements OnInit {
       data: this.item.id
     };
 
-    this.editorService.editorItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
-      if (evt.type == 'focusItem') this.focusItem(evt.item);
-      if (evt.type == 'requireItemPosition') this.requireItemPosition(evt.item);
-    });
+    this.scenarioDesignerService.scenarioDesignerItemsCommunication
+      .pipe(takeUntil(this.destroy))
+      .subscribe((evt) => {
+        if (evt.type == 'focusItem') this.focusItem(evt.item);
+        if (evt.type == 'requireItemPosition') this.requireItemPosition(evt.item);
+      });
   }
 
   ngOnChanges(): void {
@@ -38,7 +40,7 @@ export class EditorEntryComponent implements OnInit {
   }
 
   selectItem(): void {
-    this.editorService.selectItem(this.item);
+    this.scenarioDesignerService.selectItem(this.item);
   }
 
   focusItem(item: scenarioItem): void {
@@ -49,7 +51,7 @@ export class EditorEntryComponent implements OnInit {
 
   requireItemPosition(item: scenarioItem): void {
     if (item == this.item) {
-      this.editorService.exposeItemPosition(this.item, {
+      this.scenarioDesignerService.exposeItemPosition(this.item, {
         left: this.itemCard.nativeElement.offsetLeft,
         top: this.itemCard.nativeElement.offsetTop,
         width: this.itemCard.nativeElement.offsetWidth,
@@ -59,7 +61,7 @@ export class EditorEntryComponent implements OnInit {
   }
 
   test(): void {
-    this.editorService.testItem(this.item);
+    this.scenarioDesignerService.testItem(this.item);
   }
 
   getChildItems(): scenarioItem[] {
@@ -71,11 +73,11 @@ export class EditorEntryComponent implements OnInit {
   }
 
   answering(): void {
-    this.editorService.addAnswer(this.item);
+    this.scenarioDesignerService.addAnswer(this.item);
   }
 
   delete(): void {
-    this.editorService.deleteAnswer(this.item, this.parentId);
+    this.scenarioDesignerService.deleteAnswer(this.item, this.parentId);
   }
 
   getItemCardCssClass(): string {
@@ -143,7 +145,7 @@ export class EditorEntryComponent implements OnInit {
 
   onDrop($event): void {
     if (this.item.id == $event.data) return;
-    this.editorService.itemDropped(this.item.id, $event.data);
+    this.scenarioDesignerService.itemDropped(this.item.id, $event.data);
   }
 
   ngOnDestroy() {

@@ -30,10 +30,10 @@ import {
 
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import {
-  ScenarioEditorNavigationGuard,
-  ScenariosEditComponent
-} from './scenarios-edit/scenarios-edit.component';
-import { EditorEntryComponent } from './scenarios-edit/editor-entry.component';
+  ScenarioDesignerNavigationGuard,
+  ScenarioDesignerComponent
+} from './scenario-designer/scenario-designer.component';
+import { ScenarioDesignerEntryComponent } from './scenario-designer/scenario-designer-entry.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -67,14 +67,15 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
   ],
   declarations: [
     ScenariosListComponent,
-    ScenariosEditComponent,
-    EditorEntryComponent,
     ScenarioEditComponent,
     ScenarioListSimpleComponent,
-    ScenarioTreeComponent
+    ScenarioTreeComponent,
+    ScenarioDesignerComponent,
+    ScenarioDesignerEntryComponent,
+    ScenarioEditComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioApiService, ScenarioEditorNavigationGuard],
+  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard],
   entryComponents: []
 })
 export class ScenariosModule {
