@@ -17,7 +17,7 @@
 import { Component, ElementRef, HostListener, Injectable, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { pluck, takeUntil } from 'rxjs/operators';
-import { EditorServiceService } from './editor-service.service';
+import { ScenarioDesignerService } from './scenario-designer-service.service';
 import { Scenario, scenarioItem } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
 import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
@@ -28,12 +28,12 @@ import { NbToastrService } from '@nebular/theme';
 const CANVAS_TRANSITION_TIMING = 300;
 
 @Component({
-  selector: 'scenarios-edit',
-  templateUrl: './scenarios-edit.component.html',
-  styleUrls: ['./scenarios-edit.component.scss'],
-  providers: [EditorServiceService]
+  selector: 'scenario-designer',
+  templateUrl: './scenario-designer.component.html',
+  styleUrls: ['./scenario-designer.component.scss'],
+  providers: [ScenarioDesignerService]
 })
-export class ScenariosEditComponent implements OnInit {
+export class ScenarioDesignerComponent implements OnInit {
   destroy = new Subject();
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
@@ -44,7 +44,7 @@ export class ScenariosEditComponent implements OnInit {
 
   constructor(
     private scenarioService: ScenarioService,
-    private editorService: EditorServiceService,
+    private scenarioDesignerService: ScenarioDesignerService,
     route: ActivatedRoute,
     private router: Router,
     private toastrService: NbToastrService
@@ -55,14 +55,16 @@ export class ScenariosEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.editorService.editorItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
-      if (evt.type == 'addAnswer') this.addAnswer(evt.item);
-      if (evt.type == 'deleteAnswer') this.deleteAnswer(evt.item, evt.parentItemId);
-      if (evt.type == 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
-      if (evt.type == 'itemSelected') this.selectItem(evt.item);
-      if (evt.type == 'testItem') this.testStory(evt.item);
-      if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
-    });
+    this.scenarioDesignerService.scenarioDesignerItemsCommunication
+      .pipe(takeUntil(this.destroy))
+      .subscribe((evt) => {
+        if (evt.type == 'addAnswer') this.addAnswer(evt.item);
+        if (evt.type == 'deleteAnswer') this.deleteAnswer(evt.item, evt.parentItemId);
+        if (evt.type == 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
+        if (evt.type == 'itemSelected') this.selectItem(evt.item);
+        if (evt.type == 'testItem') this.testStory(evt.item);
+        if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
+      });
 
     this.scenarioService
       .getScenario(this.scenarioId)
@@ -131,7 +133,7 @@ export class ScenariosEditComponent implements OnInit {
 
     setTimeout(() => {
       this.selectItem(newEntry);
-      this.editorService.requireItemPosition(newEntry);
+      this.scenarioDesignerService.requireItemPosition(newEntry);
     }, 0);
   }
 
@@ -237,7 +239,7 @@ export class ScenariosEditComponent implements OnInit {
 
     if (setFocus) {
       setTimeout(() => {
-        this.editorService.focusItem(item);
+        this.scenarioDesignerService.focusItem(item);
       }, CANVAS_TRANSITION_TIMING);
     }
   }
@@ -414,7 +416,7 @@ export class ScenariosEditComponent implements OnInit {
 }
 
 @Injectable()
-export class ScenarioEditorNavigationGuard implements CanDeactivate<any> {
+export class ScenarioDesignerNavigationGuard implements CanDeactivate<any> {
   constructor(private dialogService: DialogService) {}
 
   canDeactivate(component: any) {

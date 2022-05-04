@@ -147,12 +147,12 @@
   <div class="card-row">
     <ng-container *ngFor="let childItem of getChildItems()">
       <div class="card-col">
-        <app-editor-entry
+        <scenario-designer-entry
           [itemId]="childItem.id"
           [parentId]="item.id"
           [dataList]="dataList"
           [selectedItem]="selectedItem"
-        ></app-editor-entry>
+        ></scenario-designer-entry>
       </div>
     </ng-container>
   </div>
