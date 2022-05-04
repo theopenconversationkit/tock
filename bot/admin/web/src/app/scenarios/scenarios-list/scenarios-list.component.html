@@ -1,4 +1,24 @@
-<section class="d-flex justify-content-end mb-3">
+<section class="grid-actions mb-3">
+  <button
+    *ngIf="currentViewMode === viewMode.LIST"
+    nbButton
+    ghost
+    shape="round"
+    nbTooltip="Switch to table view"
+    (click)="switchViewMode()"
+  >
+    <nb-icon icon="grid-outline"></nb-icon>
+  </button>
+  <button
+    *ngIf="currentViewMode === viewMode.TREE"
+    nbButton
+    ghost
+    shape="round"
+    nbTooltip="Switch to scroll view"
+    (click)="switchViewMode()"
+  >
+    <nb-icon icon="menu-outline"></nb-icon>
+  </button>
   <button
     nbButton
     status="primary"
@@ -10,111 +30,24 @@
 </section>
 
 <section [class.grid]="isSidePanelOpen">
-  <nb-card [nbSpinner]="loading">
-    <nb-card-body>
-      <h2
-        *ngIf="(!loading && !dataSource) || emptyData"
-        class="text-center"
-      >
-        No data
-      </h2>
-      <table
-        *ngIf="!loading && dataSource && !emptyData"
-        [nbTreeGrid]="dataSource"
-      >
-        <tr
-          nbTreeGridHeaderRow
-          *nbTreeGridHeaderRowDef="allColumns"
-        ></tr>
-        <tr
-          nbTreeGridRow
-          *nbTreeGridRowDef="let row; columns: allColumns"
-        ></tr>
+  <nb-card
+    *ngIf="loading"
+    class="loading"
+    [nbSpinner]="loading"
+  ></nb-card>
+  <tock-scenario-list-simple
+    *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.LIST"
+    [scenarios]="scenarios"
+    (handleEdit)="edit($event)"
+    (handleDelete)="delete($event)"
+  ></tock-scenario-list-simple>
 
-        <ng-container [nbTreeGridColumnDef]="categoryColumn">
-          <th
-            nbTreeGridHeaderCell
-            *nbTreeGridHeaderCellDef
-          >
-            {{ categoryColumn }}
-          </th>
-          <td
-            nbTreeGridCell
-            *nbTreeGridCellDef="let row"
-          >
-            <nb-tree-grid-row-toggle
-              *ngIf="row.data.expandable"
-              [expanded]="row.expanded"
-            ></nb-tree-grid-row-toggle>
-            <span *ngIf="row.data.expandable">{{ row.data[categoryColumn] }}</span>
-          </td>
-        </ng-container>
-
-        <ng-container
-          *ngFor="let column of defaultColumns; let index = index"
-          [nbTreeGridColumnDef]="column"
-        >
-          <th
-            nbTreeGridHeaderCell
-            *nbTreeGridHeaderCellDef
-            [class.descriptionColumn]="column === 'description'"
-          >
-            {{ column }}
-          </th>
-          <td
-            nbTreeGridCell
-            *nbTreeGridCellDef="let row"
-          >
-            {{ row.data[column] }}
-          </td>
-        </ng-container>
-
-        <ng-container [nbTreeGridColumnDef]="actionsColumn">
-          <th
-            nbTreeGridHeaderCell
-            *nbTreeGridHeaderCellDef
-            class="actionColumn"
-          >
-            {{ actionsColumn }}
-          </th>
-          <td
-            nbTreeGridCell
-            *nbTreeGridCellDef="let row"
-          >
-            <div *ngIf="!row.data.expandable">
-              <button
-                nbButton
-                ghost
-                shape="round"
-                nbTooltip="Edit"
-                (click)="edit(row.data)"
-              >
-                <nb-icon icon="edit-outline"></nb-icon>
-              </button>
-              <a
-                nbButton
-                ghost
-                shape="round"
-                nbTooltip="Designer"
-                [routerLink]="'./' + row.data.id"
-              >
-                <nb-icon icon="color-palette-outline"></nb-icon>
-              </a>
-              <button
-                nbButton
-                ghost
-                shape="round"
-                nbTooltip="Delete"
-                (click)="delete(row.data)"
-              >
-                <nb-icon icon="trash-2-outline"></nb-icon>
-              </button>
-            </div>
-          </td>
-        </ng-container>
-      </table>
-    </nb-card-body>
-  </nb-card>
+  <tock-scenario-tree
+    *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.TREE"
+    [scenarios]="scenarios"
+    (handleEdit)="edit($event)"
+    (handleDelete)="delete($event)"
+  ></tock-scenario-tree>
 
   <tock-scenario-edit
     *ngIf="isSidePanelOpen"

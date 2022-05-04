@@ -21,29 +21,26 @@ import { Subscription } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { Scenario } from '../models';
+import { Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
+
 @Component({
   selector: 'scenarios-list',
   templateUrl: './scenarios-list.component.html',
   styleUrls: ['./scenarios-list.component.scss']
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
-  actionsColumn = 'actions';
-  categoryColumn = 'category';
-  defaultColumns = ['name', 'description'];
-  allColumns = [this.categoryColumn, ...this.defaultColumns, this.actionsColumn];
-
-  dataSource: NbTreeGridDataSource<any>;
+  scenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
   subscriptions: Subscription = new Subscription();
 
-  emptyData: boolean = false;
+  currentViewMode: ViewMode = ViewMode.LIST;
+  viewMode: typeof ViewMode = ViewMode;
+
   loading: boolean = false;
   isSidePanelOpen: boolean = false;
 
   constructor(
-    private dataSourceBuilder: NbTreeGridDataSourceBuilder<any>,
     private dialogService: DialogService,
     private scenarioService: ScenarioService,
     private toastrService: NbToastrService,
@@ -52,12 +49,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loading = true;
+
     this.subscriptions.add(
-      this.scenarioService.getScenariosTreeGrid().subscribe({
-        next: (data: any) => {
+      this.scenarioService.getScenarios().subscribe({
+        next: (data: Scenario[]) => {
           this.loading = false;
-          this.dataSource = this.dataSourceBuilder.create(data);
-          this.emptyData = data.length === 0;
+          this.scenarios = [...data];
         },
         error: () => {
           this.loading = false;
@@ -169,5 +166,10 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       );
     }
     this.closeSidePanel();
+  }
+
+  switchViewMode(): void {
+    this.currentViewMode =
+      this.currentViewMode === ViewMode.LIST ? this.viewMode.TREE : this.viewMode.LIST;
   }
 }

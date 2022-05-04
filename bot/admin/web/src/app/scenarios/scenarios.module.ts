@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -29,8 +28,6 @@ import {
   NbTreeGridModule
 } from '@nebular/theme';
 
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
-import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import {
   ScenarioDesignerNavigationGuard,
@@ -44,36 +41,9 @@ import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
 import { ScenarioService } from './services/scenario.service';
 import { ScenarioApiService } from './services/scenario.api.service';
 import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
-
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    resolve: {
-      application: ApplicationResolver
-    },
-    children: [
-      {
-        path: '',
-        redirectTo: '',
-        pathMatch: 'full',
-        component: ScenariosListComponent
-      },
-      {
-        path: ':id',
-        component: ScenarioDesignerComponent,
-        canDeactivate: [ScenarioDesignerNavigationGuard]
-      }
-    ]
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-  declarations: []
-})
-export class ScenariosRoutingModule {}
+import { ScenariosRoutingModule } from './scenarios-routing.module';
+import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
+import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-tree.component';
 
 @NgModule({
   imports: [
@@ -97,6 +67,9 @@ export class ScenariosRoutingModule {}
   ],
   declarations: [
     ScenariosListComponent,
+    ScenarioEditComponent,
+    ScenarioListSimpleComponent,
+    ScenarioTreeComponent,
     ScenarioDesignerComponent,
     ScenarioDesignerEntryComponent,
     ScenarioEditComponent
