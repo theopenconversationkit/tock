@@ -18,6 +18,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map, tap, switchMap, filter, mergeMap } from 'rxjs/operators';
+
 import { Scenario } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
@@ -138,13 +139,14 @@ export class ScenarioService {
 
   buildTreeNodeByCategory(scenarios: Array<Scenario>): Array<any> {
     const scenariosByCatagory = new Map();
+    const defaultCategory = 'default';
 
     scenarios.forEach((s) => {
-      let category = scenariosByCatagory.get(s.category);
+      let category = scenariosByCatagory.get(s.category || defaultCategory);
 
       if (!category) {
         category = [];
-        scenariosByCatagory.set(s.category, category);
+        scenariosByCatagory.set(s.category || defaultCategory, category);
       }
 
       category.push(s);
@@ -152,11 +154,8 @@ export class ScenarioService {
 
     scenariosByCatagory.forEach((t) => {
       t = t.sort((a: Scenario, b: Scenario) => {
-        const firstScenarioName = a.name.toUpperCase();
-        const secondScenarioName = b.name.toUpperCase();
-
-        if (firstScenarioName < secondScenarioName) return -1;
-        else if (firstScenarioName > secondScenarioName) return 1;
+        if (a.name.toUpperCase() < b.name.toUpperCase()) return -1;
+        else if (a.name.toUpperCase() > b.name.toUpperCase()) return 1;
         else return 0;
       });
     });
@@ -171,6 +170,10 @@ export class ScenarioService {
           data: v
         };
       })
-    }));
+    })).sort((a, b) => {
+      if (a.data.category.toUpperCase() < b.data.category.toUpperCase()) return -1;
+      else if (a.data.category.toUpperCase() > b.data.category.toUpperCase()) return 1;
+      else return 0;
+    });
   }
 }
