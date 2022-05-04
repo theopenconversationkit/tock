@@ -15,6 +15,7 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NbToastrService, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 
@@ -22,7 +23,6 @@ import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
 import { ScenarioService } from '../services/scenario.service';
-import { Router } from '@angular/router';
 @Component({
   selector: 'scenarios-list',
   templateUrl: './scenarios-list.component.html',
@@ -38,6 +38,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   scenarioEdit?: Scenario;
   subscriptions: Subscription = new Subscription();
 
+  emptyData: boolean = false;
   loading: boolean = false;
   isSidePanelOpen: boolean = false;
 
@@ -56,6 +57,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         next: (data: any) => {
           this.loading = false;
           this.dataSource = this.dataSourceBuilder.create(data);
+          this.emptyData = data.length === 0;
         },
         error: () => {
           this.loading = false;

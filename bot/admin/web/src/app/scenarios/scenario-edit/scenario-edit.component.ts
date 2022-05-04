@@ -10,6 +10,8 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
 
 @Component({
@@ -56,7 +58,7 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
-  constructor() {}
+  constructor(private dialogService: DialogService) {}
 
   ngOnInit(): void {}
 
@@ -81,6 +83,8 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
   onTagAdd({ value, input }: NbTagInputAddEvent): void {
     if (value && !this.tags.value.find((v: string) => v.toUpperCase() === value.toUpperCase())) {
       this.tags.push(new FormControl(value));
+      this.form.markAsDirty();
+      this.form.markAsTouched();
     }
 
     input.nativeElement.value = '';
@@ -91,11 +95,29 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
 
     if (tagToRemove !== -1) {
       this.tags.removeAt(tagToRemove);
+      this.form.markAsDirty();
+      this.form.markAsTouched();
     }
   }
 
   close(): void {
-    this.handleClose.emit(true);
+    if (this.form.dirty) {
+      const validAction = 'yes';
+      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+        context: {
+          title: `Cancel ${this.scenario?.id ? 'edit' : 'create'} scenario`,
+          subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
+          action: validAction
+        }
+      });
+      dialogRef.onClose.subscribe((result) => {
+        if (result === validAction) {
+          this.handleClose.emit(true);
+        }
+      });
+    } else {
+      this.handleClose.emit(true);
+    }
   }
 
   save(redirect = false): void {

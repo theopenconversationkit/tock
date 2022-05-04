@@ -13,13 +13,13 @@
   <nb-card [nbSpinner]="loading">
     <nb-card-body>
       <h2
-        *ngIf="!loading && !dataSource"
+        *ngIf="(!loading && !dataSource) || emptyData"
         class="text-center"
       >
         No data
       </h2>
       <table
-        *ngIf="!loading && dataSource"
+        *ngIf="!loading && dataSource && !emptyData"
         [nbTreeGrid]="dataSource"
       >
         <tr
