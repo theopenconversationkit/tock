@@ -1,33 +1,37 @@
-<section class="grid-actions mb-3">
-  <button
-    *ngIf="currentViewMode === viewMode.LIST"
-    nbButton
-    ghost
-    shape="round"
-    nbTooltip="Switch to table view"
-    (click)="switchViewMode()"
-  >
-    <nb-icon icon="grid-outline"></nb-icon>
-  </button>
-  <button
-    *ngIf="currentViewMode === viewMode.TREE"
-    nbButton
-    ghost
-    shape="round"
-    nbTooltip="Switch to scroll view"
-    (click)="switchViewMode()"
-  >
-    <nb-icon icon="menu-outline"></nb-icon>
-  </button>
-  <button
-    nbButton
-    status="primary"
-    (click)="add()"
-  >
-    <nb-icon icon="plus-outline"></nb-icon>
-    Create
-  </button>
-</section>
+<div class="d-flex mb-2">
+  <h4 class="flex-grow-1">Scenarios management</h4>
+
+  <section class="grid-actions">
+    <button
+      *ngIf="currentViewMode === viewMode.LIST"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Switch to table view"
+      (click)="switchViewMode()"
+    >
+      <nb-icon icon="grid-outline"></nb-icon>
+    </button>
+    <button
+      *ngIf="currentViewMode === viewMode.TREE"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Switch to scroll view"
+      (click)="switchViewMode()"
+    >
+      <nb-icon icon="menu-outline"></nb-icon>
+    </button>
+    <button
+      nbButton
+      status="primary"
+      (click)="add()"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      Create
+    </button>
+  </section>
+</div>
 
 <section [class.grid]="isSidePanelOpen">
   <nb-card
@@ -35,6 +39,7 @@
     class="loading"
     [nbSpinner]="loading"
   ></nb-card>
+
   <tock-scenario-list-simple
     *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.LIST"
     [scenarios]="scenarios"
