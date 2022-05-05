@@ -14,8 +14,11 @@
   ~ limitations under the License.
   -->
 
-  <div class="title-faq mb-4" *ngIf="!isDockedOrSmall()">
+  <div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
       <h5 class="h5">FAQ Content Management</h5>
+      <!-- NOT YET IMPLEMENTED-->
+      <!-- <button class="mr-2" nbButton status="basic">Export FAQ</button>-->
+      <!-- <button (click)="importFaq()" class="mr-2" nbButton status="basic">Import FAQ</button>-->
       <button (click)="openNewSidepanel()" nbButton status="primary">New FAQ</button>
   </div>
 
@@ -62,10 +65,10 @@
         <tock-qa-sidepanel-import-content tock-content></tock-qa-sidepanel-import-content>
 
         <ng-container tock-footer>
-          <button class="float-left mx-2" nbButton outline status="primary" size="small" (click)="undock()">
+          <button nbButton outline status="primary" size="small" (click)="undock()">
             Cancel
           </button>
-          <button class="float-right mx-2" nbButton status="primary" size="small">
+          <button class="float-right" nbButton status="primary" size="small">
             Start
           </button>
         </ng-container>
@@ -112,10 +115,10 @@
                                         [fq]="currentItem">
         </tock-qa-sidepanel-editor-content>
         <ng-container tock-footer>
-          <button class="float-left mx-2" nbButton outline status="primary" size="small" (click)="undock()">
+          <button nbButton outline status="primary" size="small" (click)="undock()">
             Cancel
           </button>
-          <button [disabled]="!editorFormValid" class="float-right mx-2"
+          <button [disabled]="!editorFormValid" class="float-right"
                   (click)="save()"
                   nbButton status="primary" size="small">
             Save

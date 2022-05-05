@@ -15,11 +15,7 @@
  */
 
 :host {
-  display: flex;
-  flex-flow: column nowrap;
-  margin: 10px 20px;
-  border-top-left-radius: 3px;
-  border-bottom-left-radius: 3px;
+  margin: 2.25rem 0 0 1rem;
 
   /* experimental: more place in the page for it */
   position: relative;
@@ -28,9 +24,8 @@
 }
 
 .tock--sticky {
-  position: -webkit-sticky;
   position: sticky;
-  top: 90px;
+  top: 5.75rem;
   display: flex;
   height: calc(100vh - 80px);
   flex-flow: column nowrap;

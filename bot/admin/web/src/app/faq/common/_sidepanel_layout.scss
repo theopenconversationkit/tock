@@ -47,7 +47,7 @@ TODO: Use a common sidepanel layout for training view as well
   /* Header when Side Panel docked */
   .tock-header.tock--docked {
     display: block;
-    width: calc(100% - #{$sidepanel-width} - 40px);
+    width: calc(100% - #{$sidepanel-width} - 1rem);
   }
 
 }

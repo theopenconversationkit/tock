@@ -23,13 +23,3 @@
 .tock-search-bar {
   width: 100%;
 }
-
-/* Button for Menu Buttons when there is not enough space */
-.tock-burger-icon {
-  cursor: pointer;
-  position: absolute;
-  right: 5px;
-  top: calc(50% - 10px);
-  transform: scale(1.5);
-  user-select: none;
-}
