@@ -16,8 +16,9 @@ export class ScenarioTreeComponent implements OnChanges {
 
   actionsColumn = 'actions';
   categoryColumn = 'category';
+  tagsColumn = 'tags';
   defaultColumns = ['name', 'description'];
-  allColumns = [this.categoryColumn, ...this.defaultColumns, this.actionsColumn];
+  allColumns = [this.categoryColumn, ...this.defaultColumns, this.tagsColumn, this.actionsColumn];
 
   dataSource: NbTreeGridDataSource<any>;
 

@@ -48,6 +48,29 @@
         </td>
       </ng-container>
 
+      <ng-container [nbTreeGridColumnDef]="tagsColumn">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+        >
+          {{ tagsColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <nb-tag-list>
+            <nb-tag
+              *ngFor="let tag of row.data.tags"
+              appearance="filled"
+              size="tiny"
+              status="basic"
+              [text]="tag"
+            ></nb-tag>
+          </nb-tag-list>
+        </td>
+      </ng-container>
+
       <ng-container [nbTreeGridColumnDef]="actionsColumn">
         <th
           nbTreeGridHeaderCell

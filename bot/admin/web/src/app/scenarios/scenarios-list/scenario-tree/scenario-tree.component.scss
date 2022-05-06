@@ -13,3 +13,9 @@ table th {
     width: auto;
   }
 }
+
+.nb-tree-grid-cell,
+.nb-tree-grid-header-cell,
+.nb-tree-grid-footer-cell {
+  overflow-x: auto;
+}
