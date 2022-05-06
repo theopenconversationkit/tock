@@ -18,6 +18,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
+  NbAutocompleteModule,
   NbButtonModule,
   NbCardModule,
   NbFormFieldModule,
@@ -60,6 +61,7 @@ import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scen
     BotSharedModule,
     SharedModule,
 
+    NbAutocompleteModule,
     NbButtonModule,
     NbCardModule,
     NbChatModule,
