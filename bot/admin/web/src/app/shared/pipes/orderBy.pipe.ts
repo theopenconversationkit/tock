@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'orderBy'
 })
 export class OrderByPipe implements PipeTransform {
-  transform(array: any, field: string): any[] {
+  transform(array: any, field: string, reverse: boolean = false, secondField?: string): any[] {
     if (!Array.isArray(array)) {
       throw new TypeError('Invalid array argument');
     }
@@ -14,13 +14,14 @@ export class OrderByPipe implements PipeTransform {
     }
 
     array.sort((a: any, b: any) => {
-      if (!a[field] && !b[field]) return 0;
+      if (!a[field] || !b[field]) return 0;
 
-      if (a[field].toUpperCase() < b[field].toUpperCase()) return -1;
-      else if (a[field].toUpperCase() > b[field].toUpperCase()) return 1;
-      else return 0;
+      if (secondField) {
+        return a[field].localeCompare(b[field]) || a[secondField].localeCompare(b[secondField]);
+      }
+      return a[field].localeCompare(b[field]);
     });
 
-    return array;
+    return reverse ? array.reverse() : array;
   }
 }

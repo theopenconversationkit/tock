@@ -1,46 +1,102 @@
+<div class="grid-columns grid-columns-header mb-1">
+  <div>
+    <span
+      (click)="setOrderBy('name')"
+      class="pointer"
+    >
+      Name
+      <nb-icon
+        icon="chevron-down-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'name' && !orderByReverse"
+      ></nb-icon>
+      <nb-icon
+        icon="chevron-up-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'name' && orderByReverse"
+      ></nb-icon>
+    </span>
+  </div>
+  <div>
+    <span
+      (click)="setOrderBy('category')"
+      class="pointer"
+    >
+      Category
+      <nb-icon
+        icon="chevron-down-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'category' && !orderByReverse"
+      ></nb-icon>
+      <nb-icon
+        icon="chevron-up-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'category' && orderByReverse"
+      ></nb-icon>
+    </span>
+  </div>
+  <div>Tags</div>
+  <div></div>
+</div>
+
 <nb-card
-  *ngFor="let scenario of scenarios | orderBy: 'name'"
+  *ngFor="let scenario of scenarios | orderBy: orderBy:orderByReverse:'name'"
   class="mb-2"
 >
-  <nb-card-body>
-    <div class="row">
-      <div class="col-sm-3 mt-2 mb-2 font-weight-bold">
+  <nb-card-body class="grid-columns">
+    <div>
+      <div class="font-weight-bold initial-capitalize">
         {{ scenario.name }}
       </div>
-
-      <div class="col mt-2 mb-2">
+      <span class="text-muted">
         {{ scenario.description }}
-      </div>
+      </span>
+    </div>
 
-      <div class="col-lg-auto mt-2 mb-2">
-        <button
-          nbButton
-          ghost
-          shape="round"
-          nbTooltip="Edit"
-          (click)="edit(scenario)"
-        >
-          <nb-icon icon="edit-outline"></nb-icon>
-        </button>
-        <a
-          nbButton
-          ghost
-          shape="round"
-          nbTooltip="Designer"
-          [routerLink]="'./' + scenario.id"
-        >
-          <nb-icon icon="color-palette-outline"></nb-icon>
-        </a>
-        <button
-          nbButton
-          ghost
-          shape="round"
-          nbTooltip="Delete"
-          (click)="delete(scenario)"
-        >
-          <nb-icon icon="trash-2-outline"></nb-icon>
-        </button>
-      </div>
+    <div class="initial-capitalize">
+      {{ scenario.category }}
+    </div>
+
+    <div>
+      <nb-tag-list>
+        <nb-tag
+          appearance="filled"
+          *ngFor="let tag of scenario.tags"
+          [text]="tag"
+          status="basic"
+          size="tiny"
+        ></nb-tag>
+      </nb-tag-list>
+    </div>
+
+    <div class="text-right">
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Edit"
+        (click)="edit(scenario)"
+      >
+        <nb-icon icon="edit-outline"></nb-icon>
+      </button>
+      <a
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Designer"
+        [routerLink]="'./' + scenario.id"
+      >
+        <nb-icon icon="color-palette-outline"></nb-icon>
+      </a>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Delete"
+        (click)="delete(scenario)"
+      >
+        <nb-icon icon="trash-2-outline"></nb-icon>
+      </button>
     </div>
   </nb-card-body>
 </nb-card>

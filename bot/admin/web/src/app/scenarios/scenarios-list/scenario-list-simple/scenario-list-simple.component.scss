@@ -1,0 +1,11 @@
+.grid-columns {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 4fr 1fr 2fr 1fr;
+}
+
+.grid-columns-header {
+  font-size: 70%;
+  color: gray;
+  padding: 0 1.5rem 0 1.5rem;
+}
