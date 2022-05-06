@@ -1,11 +1,13 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ViewChild
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
@@ -13,6 +15,7 @@ import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'tock-scenario-edit',
@@ -23,11 +26,16 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
   @Input()
   scenario?: Scenario;
 
+  @Input()
+  scenarios?: Scenario[];
+
   @Output()
   handleClose = new EventEmitter<boolean>();
 
   @Output()
   handleSave = new EventEmitter();
+
+  @ViewChild('nameInput') nameInput: ElementRef;
 
   isSubmitted: boolean = false;
 
@@ -62,6 +70,9 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {}
 
+  categoryAutocompleteValues;
+  tagsAutocompleteValues;
+
   ngOnChanges(changes: SimpleChanges): void {
     const scenario: Scenario = changes.scenario.currentValue;
 
@@ -78,6 +89,20 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
         });
       }
     }
+
+    this.categoryAutocompleteValues = of([...new Set(this.scenarios.map((v) => v.category))]);
+    this.tagsAutocompleteValues = of([
+      ...new Set(
+        [].concat.apply(
+          [],
+          this.scenarios.map((v) => v.tags)
+        )
+      )
+    ]);
+
+    setTimeout(() => {
+      this.nameInput.nativeElement.focus();
+    }, 100);
   }
 
   onTagAdd({ value, input }: NbTagInputAddEvent): void {
