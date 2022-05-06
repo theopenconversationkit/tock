@@ -70,6 +70,7 @@
   <tock-scenario-edit
     *ngIf="isSidePanelOpen"
     [scenario]="scenarioEdit"
+    [scenarios]="scenarios"
     (handleClose)="closeSidePanel()"
     (handleSave)="saveScenario($event)"
   ></tock-scenario-edit>

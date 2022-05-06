@@ -18,6 +18,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
+  NbAutocompleteModule,
   NbButtonModule,
   NbCardModule,
   NbIconModule,
@@ -63,6 +64,7 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     NbTooltipModule,
     NbInputModule,
     NbTagModule,
+    NbAutocompleteModule,
     ReactiveFormsModule
   ],
   declarations: [
