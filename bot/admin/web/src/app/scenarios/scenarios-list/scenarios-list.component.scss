@@ -8,6 +8,11 @@ section {
 
   & nb-card {
     height: min-content;
+
+    .tock-robot {
+      width: 4rem;
+      height: fit-content;
+    }
   }
 }
 
