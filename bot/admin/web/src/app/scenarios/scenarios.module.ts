@@ -45,6 +45,7 @@ import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
 import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
 import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-tree.component';
+import { ScenariosResolver } from './scenarios.resolver';
 
 @NgModule({
   imports: [
@@ -77,7 +78,12 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     ScenarioEditComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard],
+  providers: [
+    ScenarioService,
+    ScenarioApiService,
+    ScenarioDesignerNavigationGuard,
+    ScenariosResolver
+  ],
   entryComponents: []
 })
 export class ScenariosModule {
