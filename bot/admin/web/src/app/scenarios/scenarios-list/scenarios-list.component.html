@@ -53,19 +53,23 @@
     </nb-card-body>
   </nb-card>
 
-  <tock-scenario-list-simple
-    *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.LIST"
-    [scenarios]="scenarios"
-    (handleEdit)="edit($event)"
-    (handleDelete)="delete($event)"
-  ></tock-scenario-list-simple>
+  <div>
+    <tock-scenario-filters></tock-scenario-filters>
 
-  <tock-scenario-tree
-    *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.TREE"
-    [scenarios]="scenarios"
-    (handleEdit)="edit($event)"
-    (handleDelete)="delete($event)"
-  ></tock-scenario-tree>
+    <tock-scenario-list-simple
+      *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.LIST"
+      [scenarios]="scenarios"
+      (handleEdit)="edit($event)"
+      (handleDelete)="delete($event)"
+    ></tock-scenario-list-simple>
+
+    <tock-scenario-tree
+      *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.TREE"
+      [scenarios]="scenarios"
+      (handleEdit)="edit($event)"
+      (handleDelete)="delete($event)"
+    ></tock-scenario-tree>
+  </div>
 
   <tock-scenario-edit
     *ngIf="isSidePanelOpen"

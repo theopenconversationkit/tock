@@ -20,8 +20,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   NbButtonModule,
   NbCardModule,
+  NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbSelectModule,
   NbSpinnerModule,
   NbTagModule,
   NbTooltipModule,
@@ -44,26 +46,32 @@ import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
 import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
 import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-tree.component';
+import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    SharedModule,
-    BotSharedModule,
-    ScenariosRoutingModule,
+    ReactiveFormsModule,
     DndModule,
-    NbCheckboxModule,
-    NbChatModule,
-    NbCardModule,
-    NbTreeGridModule,
-    NbSpinnerModule,
+
+    ScenariosRoutingModule,
+
+    BotSharedModule,
+    SharedModule,
+
     NbButtonModule,
+    NbCardModule,
+    NbChatModule,
+    NbCheckboxModule,
+    NbFormFieldModule,
     NbIconModule,
-    NbTooltipModule,
     NbInputModule,
+    NbSelectModule,
+    NbSpinnerModule,
     NbTagModule,
-    ReactiveFormsModule
+    NbTooltipModule,
+    NbTreeGridModule
   ],
   declarations: [
     ScenariosListComponent,
@@ -72,7 +80,8 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     ScenarioTreeComponent,
     ScenarioDesignerComponent,
     ScenarioDesignerEntryComponent,
-    ScenarioEditComponent
+    ScenarioEditComponent,
+    ScenarioFiltersComponent
   ],
   exports: [],
   providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard],

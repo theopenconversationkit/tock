@@ -1,0 +1,31 @@
+<nb-card>
+  <nb-card-body class="grid">
+    <nb-form-field>
+      <nb-icon
+        nbPrefix
+        icon="search-outline"
+      ></nb-icon>
+      <input
+        nbInput
+        fullWidth
+        fieldSize="medium"
+        placeholder="Search"
+        type="text"
+      />
+    </nb-form-field>
+
+    <nb-select
+      multiple
+      placeholder="Tags"
+      fullWidth
+      [optionsListClass]="'option-list--break-word'"
+    >
+      <nb-option
+        *ngFor="let tag of ['tag1', 'tag2']"
+        value="{{ tag }}"
+      >
+        {{ tag }}
+      </nb-option>
+    </nb-select>
+  </nb-card-body>
+</nb-card>
