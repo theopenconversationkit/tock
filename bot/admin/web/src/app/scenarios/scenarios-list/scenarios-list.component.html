@@ -54,7 +54,7 @@
   </nb-card>
 
   <div>
-    <tock-scenario-filters></tock-scenario-filters>
+    <tock-scenario-filters [scenarios]="scenarios"></tock-scenario-filters>
 
     <tock-scenario-list-simple
       *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.LIST"

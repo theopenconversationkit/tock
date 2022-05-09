@@ -6,6 +6,10 @@
 
 @media screen and (min-width: 576px) {
   .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    .actions {
+      justify-self: end;
+    }
   }
 }
