@@ -16,8 +16,16 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.iadvize.IadvizeConnectorProvider
 import ai.tock.bot.connector.iadvize.model.response.conversation.ReplyType
+import com.fasterxml.jackson.annotation.JsonIgnore
 
-interface IadvizeReply {
+interface IadvizeReply : ConnectorMessage {
+
+    override val connectorType: ConnectorType
+        @JsonIgnore get() = IadvizeConnectorProvider.connectorType
+
     val type: ReplyType
 }

@@ -16,14 +16,4 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation
 
-import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.iadvize.IadvizeConnectorProvider
-import com.fasterxml.jackson.annotation.JsonIgnore
-
-interface IadvizeResponse : ConnectorMessage {
-
-    override val connectorType: ConnectorType
-        @JsonIgnore get() = IadvizeConnectorProvider.connectorType
-
-}
+interface IadvizeResponse

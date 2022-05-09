@@ -20,6 +20,11 @@ import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
+import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.payload.GenericCardPayload
+import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
@@ -64,7 +69,7 @@ class IadvizeConnectorTest {
     }
 
     @Test
-    fun handleRequest_shouldHandleWell_MessageMarcus() {
+    fun handleRequestWithoutQuickReply_shouldHandleWell_MessageMarcus() {
         val iAdvizeRequest: IadvizeRequest = getIadvizeRequestMessage("/request_message_text.json", conversationId)
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
 
@@ -88,6 +93,35 @@ class IadvizeConnectorTest {
         verify { response.end(capture(messageResponse)) }
         assertEquals(expectedResponse, messageResponse.captured)
     }
+
+    @Test
+    fun handleRequestWithQuickReply_shouldHandleWell_MessageMarcus() {
+        val iAdvizeRequest: IadvizeRequest = getIadvizeRequestMessage("/request_message_text.json", conversationId)
+        val expectedResponse: String = Resources.toString(resource("/response_message_quickreply.json"), Charsets.UTF_8)
+
+        val iadvizeReply: IadvizeReply = IadvizeMessage(TextPayload("MARCUS"), listOf(QuickReply("MARCUS_YES"), QuickReply("MARCUS_NO")))
+
+        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeReply))
+        val connectorData = slot<ConnectorData>()
+        every { controller.handle(any(), capture(connectorData)) } answers {
+            val callback = connectorData.captured.callback as IadvizeConnectorCallback
+            callback.addAction(action, 0)
+            callback.eventAnswered(action)
+        }
+
+        connector.handleRequest(
+            controller,
+            context,
+            iAdvizeRequest
+        )
+
+        verify { controller.handle(any(), any()) }
+
+        val messageResponse = slot<String>()
+        verify { response.end(capture(messageResponse)) }
+        assertEquals(expectedResponse, messageResponse.captured)
+    }
+
 
     @Test
     fun handlerGetBots_shouldHandleWell_TockBot() {

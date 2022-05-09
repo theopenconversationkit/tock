@@ -26,6 +26,7 @@ import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
@@ -37,7 +38,6 @@ import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.stream.Collectors
 
 class IadvizeConnectorCallback(override val  applicationId: String,
                                val controller: ConnectorController,
@@ -86,16 +86,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
         }
     }
 
-    fun buildResponse(): IadvizeResponse {
-        val texts: List<Payload> =
-            actions
-                .filter { it.action is SendSentence && it.action.text != null }
-                .mapIndexed { i, a ->
-                    val s = a.action as SendSentence
-                    val text = s.text!!
-                    TextPayload(text.toString())
-                }
-
+    fun buildResponse(): MessageResponse {
         val response = MessageResponse(
             request.idConversation,
             request.idOperator,
@@ -106,7 +97,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
            is ConversationsRequest -> response
 
            is MessageRequest -> {
-               response.replies.addAll(texts.stream().map { IadvizeMessage(it) }.collect(Collectors.toList()))
+               response.replies.addAll(toListIadvizeReply(actions))
                return response
            }
 
@@ -119,6 +110,25 @@ class IadvizeConnectorCallback(override val  applicationId: String,
 
            else -> response
        }
+    }
+
+    private fun toListIadvizeReply(actions: List<ActionWithDelay>): List<IadvizeReply> {
+        return actions.map {
+            if (it.action is SendSentence) {
+                val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterIsInstance<IadvizeReply>()
+                if (it.action.text != null) {
+                    //Extract text to a simple TextPayload
+                    val simpleTextPayload = IadvizeMessage(TextPayload(it.action.text.toString()))
+                    //Combine 1 TextPayload with messages IadvizeReply
+                    listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
+                } else {
+                    //No simple TextPayload, juste return IadvizeReply
+                    listIadvizeReply
+                }
+            } else {
+                emptyList()
+            }
+        }.flatten()
     }
 
     override fun exceptionThrown(event: Event, throwable: Throwable) {

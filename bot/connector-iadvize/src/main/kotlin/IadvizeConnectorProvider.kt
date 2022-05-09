@@ -17,6 +17,7 @@ package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.*
 import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeResponse
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
 import ai.tock.shared.resourceAsString
 import kotlin.reflect.KClass
 
@@ -56,7 +57,7 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
         )
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
-        IadvizeResponse::class
+        IadvizeReply::class
     )
 }
 

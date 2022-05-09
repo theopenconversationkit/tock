@@ -19,6 +19,7 @@ package ai.tock.bot.connector.iadvize
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.iadvize.model.request.*
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
 import ai.tock.bot.connector.iadvize.model.request.UnsupportRequest.UnsupportRequestJson
@@ -32,6 +33,8 @@ import mu.KotlinLogging
 import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies.Strategy.customAvailability
 import ai.tock.bot.connector.iadvize.model.response.conversation.RepliesResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.media.MediaMessage
+import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.shared.jackson.mapper
 import io.vertx.core.http.HttpServerResponse
@@ -178,7 +181,6 @@ class IadvizeConnector internal constructor(
                 UnsupportRequest(unsupportRequestJson, idConversation, typeMessage.type)
             }
         }
-
     }
 
     private fun isEcho(idConversation: String): Boolean {
@@ -228,4 +230,7 @@ class IadvizeConnector internal constructor(
             else -> callback.sendResponse()
         }
     }
+
+    override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
+        MediaConverter.toConnectorMessage(message)
 }
