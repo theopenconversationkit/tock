@@ -1,0 +1,39 @@
+<nb-card>
+  <nb-card-header>{{ title }}</nb-card-header>
+  <nb-card-body
+    class="message"
+    [nbSpinner]="loading"
+  >
+    <div *ngIf="!loading">
+      <button
+        nbButton
+        status="info"
+        class="m-1"
+      >
+        Intent 1
+      </button>
+      <button
+        nbButton
+        status="info"
+        class="m-1"
+      >
+        Intent 2
+      </button>
+      <button
+        nbButton
+        status="info"
+        class="m-1"
+      >
+        Intent 3
+      </button>
+      <br />
+      <button
+        nbButton
+        status="primary"
+        class="m-1"
+      >
+        Create new intent
+      </button>
+    </div>
+  </nb-card-body>
+</nb-card>

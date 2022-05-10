@@ -1,11 +1,11 @@
 <div class="row mb-3">
   <div class="col">
-    <h4 class="capitalize">
+    <h4 class="initial-capitalize">
       {{ this.scenario?.name }}
     </h4>
   </div>
 
-  <div class="col text-right">
+  <div class="col-auto text-right d-flex">
     <button
       nbButton
       size="small"
@@ -32,6 +32,15 @@
     >
       Save & exit
     </button>
+
+    <div class="mt-2 ml-3">
+      <nb-toggle
+        [(ngModel)]="modeBoolean"
+        (checkedChange)="modeSwitched($event)"
+        [labelPosition]="modeLabelPosition"
+        ><span class="initial-capitalize">{{ mode }}</span></nb-toggle
+      >
+    </div>
   </div>
 </div>
 
@@ -52,6 +61,7 @@
           [itemId]="0"
           [dataList]="scenario.data"
           [selectedItem]="selectedItem"
+          [mode]="mode"
         ></scenario-designer-entry>
       </div>
     </div>

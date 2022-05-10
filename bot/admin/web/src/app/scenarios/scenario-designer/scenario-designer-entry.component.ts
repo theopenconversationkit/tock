@@ -1,7 +1,9 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { scenarioItem } from '../models/scenario.model';
+import { IntentsSearchComponent } from './intents-search/intents-search.component';
 import { ScenarioDesignerService } from './scenario-designer-service.service';
 
 @Component({
@@ -15,11 +17,15 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   @Input() parentId: number;
   @Input() dataList: scenarioItem[];
   @Input() selectedItem: scenarioItem;
+  @Input() mode: string;
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
   item;
-  constructor(private scenarioDesignerService: ScenarioDesignerService) {}
+  constructor(
+    private scenarioDesignerService: ScenarioDesignerService,
+    private dialogService: DialogService
+  ) {}
 
   ngOnInit(): void {
     this.item = this.dataList.find((item) => item.id === this.itemId);
@@ -37,6 +43,14 @@ export class ScenarioDesignerEntryComponent implements OnInit {
 
   ngOnChanges(): void {
     this.ngOnInit();
+  }
+
+  manageIntent() {
+    const modal = this.dialogService.openDialog(IntentsSearchComponent, {
+      context: {
+        intentSentence: this.item.text
+      }
+    });
   }
 
   selectItem(): void {

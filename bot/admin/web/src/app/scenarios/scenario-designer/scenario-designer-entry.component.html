@@ -35,7 +35,7 @@
       />
       <img
         src="assets/images/scenario-client.svg"
-        *ngIf="item.from != 'client'"
+        *ngIf="item.from != 'client' && mode == 'edition'"
       />
       <div
         class="duplication-count"
@@ -57,7 +57,7 @@
       />
       <img
         src="assets/images/scenario-bot.svg"
-        *ngIf="item.from != 'bot'"
+        *ngIf="item.from != 'bot' && mode == 'edition'"
       />
       <div
         class="duplication-count"
@@ -79,7 +79,7 @@
       />
       <img
         src="assets/images/scenario-verification.svg"
-        *ngIf="item.from != 'verification'"
+        *ngIf="item.from != 'verification' && mode == 'edition'"
       />
       <div
         class="duplication-count"
@@ -98,7 +98,7 @@
       [(ngModel)]="item.text"
     ></textarea>
 
-    <div *ngIf="item.from == 'bot' && itemHasNoChildren()">
+    <div *ngIf="mode == 'edition' && item.from == 'bot' && itemHasNoChildren()">
       <nb-checkbox
         (checkedChange)="toggleFinal($event)"
         [checked]="item.final"
@@ -106,35 +106,45 @@
       >
     </div>
 
-    <button
-      nbButton
-      size="tiny"
-      status="info"
-      *ngIf="itemCanHaveAnswer()"
-      (click)="answering()"
-    >
-      Add answer
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="primary"
-      style="float: right"
-      *ngIf="!itemHasNoChildren()"
-      (click)="test()"
-    >
-      Test
-    </button>
-    <button
-      nbButton
-      size="tiny"
-      status="warning"
-      style="float: right"
-      *ngIf="item.id > 0 && itemHasNoChildren()"
-      (click)="delete()"
-    >
-      Delete
-    </button>
+    <div class="d-flex justify-content-between mt-1">
+      <button
+        nbButton
+        size="tiny"
+        status="primary"
+        *ngIf="!itemHasNoChildren()"
+        (click)="test()"
+      >
+        Test
+      </button>
+      <button
+        nbButton
+        size="tiny"
+        status="warning"
+        *ngIf="mode == 'edition' && item.id > 0 && itemHasNoChildren()"
+        (click)="delete()"
+      >
+        Delete
+      </button>
+      <button
+        nbButton
+        size="tiny"
+        status="info"
+        *ngIf="mode == 'edition' && itemCanHaveAnswer()"
+        (click)="answering()"
+      >
+        Add answer
+      </button>
+
+      <button
+        nbButton
+        size="tiny"
+        status="info"
+        *ngIf="mode != 'edition'"
+        (click)="manageIntent()"
+      >
+        Manage intents
+      </button>
+    </div>
   </div>
 
   <div
@@ -152,6 +162,7 @@
           [parentId]="item.id"
           [dataList]="dataList"
           [selectedItem]="selectedItem"
+          [mode]="mode"
         ></scenario-designer-entry>
       </div>
     </ng-container>

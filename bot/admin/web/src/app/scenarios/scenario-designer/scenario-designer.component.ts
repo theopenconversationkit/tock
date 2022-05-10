@@ -80,6 +80,8 @@ export class ScenarioDesignerComponent implements OnInit {
             text: ''
           });
         }
+
+        this.modeSwitched(false);
       });
   }
 
@@ -87,6 +89,22 @@ export class ScenarioDesignerComponent implements OnInit {
     setTimeout(() => {
       this.centerCanvas();
     }, 0);
+  }
+
+  mode: string;
+  modeBoolean: boolean;
+  modeLabel: string;
+  modeLabelPosition: string;
+
+  modeSwitched(event) {
+    this.modeBoolean = event;
+    if (this.modeBoolean) {
+      this.mode = 'realisation';
+      this.modeLabelPosition = 'right';
+    } else {
+      this.mode = 'edition';
+      this.modeLabelPosition = 'left';
+    }
   }
 
   save(exit: boolean = false) {
