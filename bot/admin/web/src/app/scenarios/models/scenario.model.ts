@@ -16,3 +16,8 @@ export interface scenarioItem {
   from: string;
   final?: boolean;
 }
+
+export interface Filter {
+  search: string;
+  tags: Array<string>;
+}
