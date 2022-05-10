@@ -21,7 +21,7 @@ import { Subscription } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { Scenario, ViewMode } from '../models';
+import { Filter, Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 
 @Component({
@@ -31,7 +31,9 @@ import { ScenarioService } from '../services/scenario.service';
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
   scenarios: Scenario[] = [];
+  filteredScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
+
   subscriptions: Subscription = new Subscription();
 
   currentViewMode: ViewMode = ViewMode.LIST;
@@ -39,6 +41,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   loading: boolean = false;
   isSidePanelOpen: boolean = false;
+
+  private currentFilters: Filter = { search: '', tags: [] };
 
   constructor(
     private dialogService: DialogService,
@@ -55,6 +59,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         next: (data: Scenario[]) => {
           this.loading = false;
           this.scenarios = [...data];
+          this.filterScenarios(this.currentFilters);
         },
         error: () => {
           this.loading = false;
@@ -171,5 +176,28 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   switchViewMode(): void {
     this.currentViewMode =
       this.currentViewMode === ViewMode.LIST ? this.viewMode.TREE : this.viewMode.LIST;
+  }
+
+  filterScenarios(filters: Filter): void {
+    const { search, tags } = filters;
+    this.currentFilters = filters;
+
+    this.filteredScenarios = this.scenarios.filter((scenario: Scenario) => {
+      if (
+        search &&
+        !(
+          scenario.name.toUpperCase().includes(search.toUpperCase()) ||
+          scenario.description.toUpperCase().includes(search.toUpperCase())
+        )
+      ) {
+        return;
+      }
+
+      if (tags?.length && !scenario.tags.some((tag) => tags.includes(tag))) {
+        return;
+      }
+
+      return scenario;
+    });
   }
 }

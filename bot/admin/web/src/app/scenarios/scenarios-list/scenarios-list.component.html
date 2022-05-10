@@ -40,32 +40,35 @@
     [nbSpinner]="loading"
   ></nb-card>
 
-  <nb-card *ngIf="!loading && !scenarios?.length">
-    <nb-card-body class="d-flex">
-      <img
-        src="{{ baseHref }}assets/images/best_bot_gray.png"
-        class="tock-robot mr-4"
-      />
-      <div>
-        <h2 class="text-muted">No Scenario found</h2>
-        You may create a new one using above button "Create".
-      </div>
-    </nb-card-body>
-  </nb-card>
-
   <div>
-    <tock-scenario-filters [scenarios]="scenarios"></tock-scenario-filters>
+    <tock-scenario-filters
+      [scenarios]="scenarios"
+      (onFilter)="filterScenarios($event)"
+    ></tock-scenario-filters>
+
+    <nb-card *ngIf="!loading && (!scenarios?.length || !filteredScenarios.length)">
+      <nb-card-body class="d-flex">
+        <img
+          src="{{ baseHref }}assets/images/best_bot_gray.png"
+          class="tock-robot mr-4"
+        />
+        <div>
+          <h2 class="text-muted">No Scenario found</h2>
+          You may create a new one using above button "Create".
+        </div>
+      </nb-card-body>
+    </nb-card>
 
     <tock-scenario-list-simple
-      *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.LIST"
-      [scenarios]="scenarios"
+      *ngIf="!loading && filteredScenarios?.length && currentViewMode === viewMode.LIST"
+      [scenarios]="filteredScenarios"
       (handleEdit)="edit($event)"
       (handleDelete)="delete($event)"
     ></tock-scenario-list-simple>
 
     <tock-scenario-tree
-      *ngIf="!loading && scenarios?.length && currentViewMode === viewMode.TREE"
-      [scenarios]="scenarios"
+      *ngIf="!loading && filteredScenarios?.length && currentViewMode === viewMode.TREE"
+      [scenarios]="filteredScenarios"
       (handleEdit)="edit($event)"
       (handleDelete)="delete($event)"
     ></tock-scenario-tree>

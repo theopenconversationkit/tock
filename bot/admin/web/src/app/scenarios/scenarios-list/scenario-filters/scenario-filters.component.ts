@@ -49,7 +49,6 @@ export class ScenarioFiltersComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.subscription = this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
-      console.log(this.form.value);
       this.onFilter.emit(this.form.value as Filter);
     });
   }
@@ -57,7 +56,7 @@ export class ScenarioFiltersComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges): void {
     const scenarios = changes.scenarios.currentValue;
 
-    if (scenarios && !this.tagsAvailableValues.length) {
+    if (scenarios) {
       this.tagsAvailableValues = [
         ...new Set(
           <string>[].concat.apply(
