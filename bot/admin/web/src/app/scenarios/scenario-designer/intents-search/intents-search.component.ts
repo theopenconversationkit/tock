@@ -17,31 +17,31 @@ export class IntentsSearchComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.loading = false;
-      this.title = `Intents corresponding to sentence : ${this.intentSentence}`;
-    }, 1000);
+      this.title = `Existing intents`;
+    }, 500);
   }
 
-  cancel() {
+  cancel(): void {
     this.dialogRef.close();
   }
 
-  createNewIntent() {
+  createNewIntent(): void {
     this.createNewIntentEvent.emit();
   }
 
   foundIntents = [
     {
-      intentId: '625e821d8e89505241619a6a',
+      intentId: 'activer_ca',
       sentences: [
-        'Comment activer ma carte?',
+        'Comment activer ma carte ?',
         'Je souhaite activer ma carte',
         'Comment activer ma carte bancaire'
       ]
     },
     {
-      intentId: '514e710d7e78505241619a6a',
+      intentId: 'activer_carte_banc',
       sentences: [
-        'Comment activer ma carte Aumax?',
+        "Bonjour, je n'arrive pas à activer ma carte Aumax",
         'Je souhaite activer ma carte Aumax',
         'Comment activer ma carte Aumax'
       ]

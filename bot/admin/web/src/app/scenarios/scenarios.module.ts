@@ -23,6 +23,7 @@ import {
   NbCardModule,
   NbIconModule,
   NbInputModule,
+  NbListModule,
   NbSpinnerModule,
   NbTagModule,
   NbTooltipModule,
@@ -37,6 +38,7 @@ import {
 import { ScenarioDesignerEntryComponent } from './scenario-designer/scenario-designer-entry.component';
 import { IntentsSearchComponent } from './scenario-designer/intents-search/intents-search.component';
 import { IntentCreateComponent } from './scenario-designer/intent-create/intent-create.component';
+import { IntentEditComponent } from './scenario-designer/intent-edit/intent-edit.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -67,6 +69,7 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     NbInputModule,
     NbTagModule,
     NbAutocompleteModule,
+    NbListModule,
     ReactiveFormsModule
   ],
   declarations: [
@@ -78,7 +81,8 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     ScenarioDesignerEntryComponent,
     ScenarioEditComponent,
     IntentsSearchComponent,
-    IntentCreateComponent
+    IntentCreateComponent,
+    IntentEditComponent
   ],
   exports: [],
   providers: [
@@ -86,7 +90,8 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     ScenarioApiService,
     ScenarioDesignerNavigationGuard,
     IntentsSearchComponent,
-    IntentCreateComponent
+    IntentCreateComponent,
+    IntentEditComponent
   ],
   entryComponents: []
 })
