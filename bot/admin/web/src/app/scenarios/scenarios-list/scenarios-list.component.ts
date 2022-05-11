@@ -39,8 +39,13 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   currentViewMode: ViewMode = ViewMode.LIST;
   viewMode: typeof ViewMode = ViewMode;
 
-  loading: boolean = false;
   isSidePanelOpen: boolean = false;
+
+  loading = {
+    delete: false,
+    edit: false,
+    list: false
+  };
 
   private currentFilters: Filter = { search: '', tags: [] };
 
@@ -52,17 +57,17 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loading = true;
+    this.loading.list = true;
 
     this.subscriptions.add(
       this.scenarioService.getScenarios().subscribe({
         next: (data: Scenario[]) => {
-          this.loading = false;
+          this.loading.list = false;
           this.scenarios = [...data];
           this.filterScenarios(this.currentFilters);
         },
         error: () => {
-          this.loading = false;
+          this.loading.list = false;
         }
       })
     );
@@ -110,6 +115,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   deleteScenario(id: number): void {
+    this.loading.delete = true;
+
     this.subscriptions.add(
       this.scenarioService.deleteScenario(id).subscribe({
         next: () => {
@@ -117,22 +124,27 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             duration: 5000,
             status: 'success'
           });
+          this.loading.delete = false;
         },
         error: () => {
           this.toastrService.danger(`Failed to delete scenario`, 'Error', {
             duration: 5000,
             status: 'danger'
           });
+          this.loading.delete = false;
         }
       })
     );
   }
 
   saveScenario(result) {
+    this.loading.edit = true;
+
     if (!result.scenario.id) {
       this.subscriptions.add(
         this.scenarioService.postScenario(result.scenario).subscribe({
           next: (newScenario) => {
+            this.loading.edit = false;
             this.toastrService.success(`Scenario successfully created`, 'Success', {
               duration: 5000,
               status: 'success'
@@ -148,6 +160,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               duration: 5000,
               status: 'danger'
             });
+            this.loading.edit = false;
           }
         })
       );
@@ -155,6 +168,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.scenarioService.putScenario(result.scenario.id, result.scenario).subscribe({
           next: (newScenario) => {
+            this.loading.edit = false;
             this.toastrService.success(`Scenario successfully updated`, 'Success', {
               duration: 5000,
               status: 'success'
@@ -170,6 +184,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               duration: 5000,
               status: 'danger'
             });
+            this.loading.edit = false;
           }
         })
       );

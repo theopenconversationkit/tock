@@ -35,9 +35,9 @@
 
 <section [class.grid]="isSidePanelOpen">
   <nb-card
-    *ngIf="loading"
+    *ngIf="loading.list"
     class="loading"
-    [nbSpinner]="loading"
+    [nbSpinner]="loading.list"
   ></nb-card>
 
   <div>
@@ -46,7 +46,7 @@
       (onFilter)="filterScenarios($event)"
     ></tock-scenario-filters>
 
-    <nb-card *ngIf="!loading && (!scenarios?.length || !filteredScenarios.length)">
+    <nb-card *ngIf="!loading.list && (!scenarios?.length || !filteredScenarios.length)">
       <nb-card-body class="d-flex">
         <img
           src="{{ baseHref }}assets/images/best_bot_gray.png"
@@ -60,14 +60,16 @@
     </nb-card>
 
     <tock-scenario-list-simple
-      *ngIf="!loading && filteredScenarios?.length && currentViewMode === viewMode.LIST"
+      *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.LIST"
+      [nbSpinner]="loading.delete"
       [scenarios]="filteredScenarios"
       (handleEdit)="edit($event)"
       (handleDelete)="delete($event)"
     ></tock-scenario-list-simple>
 
     <tock-scenario-tree
-      *ngIf="!loading && filteredScenarios?.length && currentViewMode === viewMode.TREE"
+      *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.TREE"
+      [nbSpinner]="loading.delete"
       [scenarios]="filteredScenarios"
       (handleEdit)="edit($event)"
       (handleDelete)="delete($event)"
@@ -76,6 +78,7 @@
 
   <tock-scenario-edit
     *ngIf="isSidePanelOpen"
+    [loading]="loading.edit"
     [scenario]="scenarioEdit"
     [scenarios]="scenarios"
     (handleClose)="closeSidePanel()"
