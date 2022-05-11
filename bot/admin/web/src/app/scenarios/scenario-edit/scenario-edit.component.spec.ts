@@ -1,5 +1,8 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 
+import { DialogService } from '../../core-nlp/dialog.service';
 import { ScenarioEditComponent } from './scenario-edit.component';
 
 describe('ScenarioEditComponent', () => {
@@ -8,9 +11,11 @@ describe('ScenarioEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScenarioEditComponent ]
-    })
-    .compileComponents();
+      declarations: [ScenarioEditComponent],
+      imports: [ReactiveFormsModule],
+      providers: [{ provide: DialogService, useValue: {} }],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
   });
 
   beforeEach(() => {

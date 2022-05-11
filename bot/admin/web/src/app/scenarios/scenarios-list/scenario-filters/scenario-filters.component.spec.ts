@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ScenarioFiltersComponent } from './scenario-filters.component';
@@ -8,9 +9,9 @@ describe('ScenarioFiltersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScenarioFiltersComponent ]
-    })
-    .compileComponents();
+      declarations: [ScenarioFiltersComponent],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
   });
 
   beforeEach(() => {
