@@ -251,7 +251,8 @@ internal class BotApiHandler(
                 MediaFile(
                     it.url,
                     it.url,
-                    it.type?.let { AttachmentType.valueOf(it.name) } ?: UploadedFilesService.attachmentType(it.url)
+                    it.type?.let { AttachmentType.valueOf(it.name) } ?: UploadedFilesService.attachmentType(it.url),
+                    translateText(it.description)
                 )
             },
             card.actions.map {

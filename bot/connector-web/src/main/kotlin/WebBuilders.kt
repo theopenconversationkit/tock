@@ -287,13 +287,17 @@ fun <T : Bus<T>> T.webCardWithAttachment(
     attachmentUrl: CharSequence,
     buttons: List<Button>,
     type: AttachmentType = AttachmentType.file,
-    attachementName: String = ""
+    attachementName: String = "",
+    fileDescription: CharSequence? = null
 ): WebCard {
     return WebCard(
         title = translate(title).toString(),
         subTitle = translate(subTitle).toString(),
         file = WebMediaFile(
-            attachmentUrl.toString(), attachementName, type
+            attachmentUrl.toString(),
+            attachementName,
+            type,
+            if (fileDescription != null) translate(fileDescription).toString() else null
         ),
         buttons = buttons
     )
@@ -303,9 +307,15 @@ fun <T : Bus<T>> T.webCardWithAttachment(
  * Creates a [WebMessage] from a [WebImage].
  */
 
-fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence): WebMessage =
+fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence, description: CharSequence? = null): WebMessage =
     WebMessage(
-        image = WebImage(WebMediaFile(imageUrl, title.toString(), AttachmentType.image), title)
+        image = WebImage(
+            WebMediaFile(
+                imageUrl,
+                title.toString(),
+                AttachmentType.image,
+                if (description != null) translate(description).toString() else null
+            ),title)
     )
 
 /**

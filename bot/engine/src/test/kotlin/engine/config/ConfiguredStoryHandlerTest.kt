@@ -251,17 +251,32 @@ class ConfiguredStoryHandlerTest {
                 SimpleAnswer(
                     key = I18nLabelValue(label2Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label2Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label2Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label3Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label3Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label3Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label4Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label4Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label4Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label5Text),
@@ -274,12 +289,22 @@ class ConfiguredStoryHandlerTest {
                 SimpleAnswer(
                     key = I18nLabelValue(label7Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label7Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label7Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label8Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label8Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label8Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 )
             )
         )
