@@ -36,6 +36,7 @@ import {
 } from './scenario-designer/scenario-designer.component';
 import { ScenarioDesignerEntryComponent } from './scenario-designer/scenario-designer-entry.component';
 import { IntentsSearchComponent } from './scenario-designer/intents-search/intents-search.component';
+import { IntentCreateComponent } from './scenario-designer/intent-create/intent-create.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -76,14 +77,16 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     ScenarioDesignerComponent,
     ScenarioDesignerEntryComponent,
     ScenarioEditComponent,
-    IntentsSearchComponent
+    IntentsSearchComponent,
+    IntentCreateComponent
   ],
   exports: [],
   providers: [
     ScenarioService,
     ScenarioApiService,
     ScenarioDesignerNavigationGuard,
-    IntentsSearchComponent
+    IntentsSearchComponent,
+    IntentCreateComponent
   ],
   entryComponents: []
 })

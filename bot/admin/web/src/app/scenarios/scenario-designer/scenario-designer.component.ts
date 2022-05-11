@@ -99,10 +99,12 @@ export class ScenarioDesignerComponent implements OnInit {
   modeSwitched(event) {
     this.modeBoolean = event;
     if (this.modeBoolean) {
-      this.mode = 'realisation';
+      this.mode = 'production';
+      this.modeLabel = 'Production';
       this.modeLabelPosition = 'right';
     } else {
-      this.mode = 'edition';
+      this.mode = 'writing';
+      this.modeLabel = 'Writing';
       this.modeLabelPosition = 'left';
     }
   }

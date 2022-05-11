@@ -35,7 +35,7 @@
       />
       <img
         src="assets/images/scenario-client.svg"
-        *ngIf="item.from != 'client' && mode == 'edition'"
+        *ngIf="item.from != 'client' && mode == 'writing'"
       />
       <div
         class="duplication-count"
@@ -57,7 +57,7 @@
       />
       <img
         src="assets/images/scenario-bot.svg"
-        *ngIf="item.from != 'bot' && mode == 'edition'"
+        *ngIf="item.from != 'bot' && mode == 'writing'"
       />
       <div
         class="duplication-count"
@@ -79,7 +79,7 @@
       />
       <img
         src="assets/images/scenario-verification.svg"
-        *ngIf="item.from != 'verification' && mode == 'edition'"
+        *ngIf="item.from != 'verification' && mode == 'writing'"
       />
       <div
         class="duplication-count"
@@ -98,7 +98,7 @@
       [(ngModel)]="item.text"
     ></textarea>
 
-    <div *ngIf="mode == 'edition' && item.from == 'bot' && itemHasNoChildren()">
+    <div *ngIf="mode == 'writing' && item.from == 'bot' && itemHasNoChildren()">
       <nb-checkbox
         (checkedChange)="toggleFinal($event)"
         [checked]="item.final"
@@ -120,7 +120,7 @@
         nbButton
         size="tiny"
         status="warning"
-        *ngIf="mode == 'edition' && item.id > 0 && itemHasNoChildren()"
+        *ngIf="mode == 'writing' && item.id > 0 && itemHasNoChildren()"
         (click)="delete()"
       >
         Delete
@@ -129,7 +129,7 @@
         nbButton
         size="tiny"
         status="info"
-        *ngIf="mode == 'edition' && itemCanHaveAnswer()"
+        *ngIf="mode == 'writing' && itemCanHaveAnswer()"
         (click)="answering()"
       >
         Add answer
@@ -139,7 +139,7 @@
         nbButton
         size="tiny"
         status="info"
-        *ngIf="mode != 'edition'"
+        *ngIf="mode != 'writing'"
         (click)="manageIntent()"
       >
         Manage intents

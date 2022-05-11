@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { scenarioItem } from '../models/scenario.model';
+import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentsSearchComponent } from './intents-search/intents-search.component';
 import { ScenarioDesignerService } from './scenario-designer-service.service';
 
@@ -45,8 +46,22 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     this.ngOnInit();
   }
 
-  manageIntent() {
+  manageIntent(): void {
     const modal = this.dialogService.openDialog(IntentsSearchComponent, {
+      context: {
+        intentSentence: this.item.text
+      }
+    });
+    const modalSubscription = modal.componentRef.instance.createNewIntentEvent
+      .pipe(takeUntil(this.destroy))
+      .subscribe((res) => {
+        modal.close();
+        this.createIntent();
+      });
+  }
+
+  createIntent(): void {
+    const modal = this.dialogService.openDialog(IntentCreateComponent, {
       context: {
         intentSentence: this.item.text
       }

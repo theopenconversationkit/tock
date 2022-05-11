@@ -1,39 +1,51 @@
 <nb-card>
   <nb-card-header>{{ title }}</nb-card-header>
-  <nb-card-body
-    class="message"
-    [nbSpinner]="loading"
-  >
+
+  <nb-card-body [nbSpinner]="loading">
     <div *ngIf="!loading">
-      <button
-        nbButton
-        status="info"
-        class="m-1"
-      >
-        Intent 1
-      </button>
-      <button
-        nbButton
-        status="info"
-        class="m-1"
-      >
-        Intent 2
-      </button>
-      <button
-        nbButton
-        status="info"
-        class="m-1"
-      >
-        Intent 3
-      </button>
-      <br />
-      <button
-        nbButton
-        status="primary"
-        class="m-1"
-      >
-        Create new intent
-      </button>
+      <nb-card *ngFor="let intent of foundIntents">
+        <nb-card-header>
+          {{ intent.intentId }}
+          <button
+            nbButton
+            size="small"
+            status="primary"
+            class="m-1 float-right"
+          >
+            Use this intent
+            <nb-icon icon="chevron-right-outline"></nb-icon>
+          </button>
+        </nb-card-header>
+        <nb-card-body>
+          <nb-list>
+            <nb-list-item *ngFor="let sentence of intent.sentences">
+              {{ sentence }}
+            </nb-list-item>
+          </nb-list>
+        </nb-card-body>
+      </nb-card>
     </div>
   </nb-card-body>
+
+  <nb-card-footer class="text-right">
+    <button
+      nbButton
+      size="small"
+      status="basic"
+      class="m-1"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="m-1"
+      (click)="createNewIntent()"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      Create new intent
+    </button>
+  </nb-card-footer>
 </nb-card>
