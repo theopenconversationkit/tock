@@ -139,6 +139,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             });
             if (result.redirect) {
               this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
+            } else {
+              this.closeSidePanel();
             }
           },
           error: () => {
@@ -159,6 +161,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             });
             if (result.redirect) {
               this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
+            } else {
+              this.closeSidePanel();
             }
           },
           error: () => {
@@ -170,7 +174,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         })
       );
     }
-    this.closeSidePanel();
   }
 
   switchViewMode(): void {
