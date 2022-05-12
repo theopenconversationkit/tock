@@ -18,12 +18,12 @@
   <nb-card [ngClass]="['tock-sidepanel-header', 'mt-0', 'ml-0', 'mr-0', 'mb-2', 'w-100']">
 
     <!-- SIDE PANEL HEADER -->
-    <nb-card-body [ngClass]="['d-flex', 'justify-content-between', 'align-items-center']">
+    <nb-card-body class="d-flex justify-content-between align-items-start">
       <ng-content select="[tock-header]">
       </ng-content>
 
-      <button class="d-flex m-0 p-0" nbButton ghost (click)="close()">
-        <mat-icon>close</mat-icon>
+      <button nbButton ghost shape="round" (click)="close()">
+        <nb-icon icon="close-outline"></nb-icon>
       </button>
 
     </nb-card-body>
