@@ -35,10 +35,10 @@
 
     <div class="mt-2 ml-3">
       <nb-toggle
-        [(ngModel)]="modeBoolean"
+        [(ngModel)]="modeSwitchState.modeBoolean"
         (checkedChange)="modeSwitched($event)"
-        [labelPosition]="modeLabelPosition"
-        >{{ modeLabel }}</nb-toggle
+        [labelPosition]="modeSwitchState.labelPosition"
+        >{{ modeSwitchState.label }}</nb-toggle
       >
     </div>
   </div>
@@ -61,7 +61,7 @@
           [itemId]="0"
           [dataList]="scenario.data"
           [selectedItem]="selectedItem"
-          [mode]="mode"
+          [mode]="scenario.mode"
         ></scenario-designer-entry>
       </div>
     </div>

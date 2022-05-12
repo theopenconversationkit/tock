@@ -18,7 +18,12 @@ import { Component, ElementRef, HostListener, Injectable, OnInit, ViewChild } fr
 import { Subject } from 'rxjs';
 import { pluck, takeUntil } from 'rxjs/operators';
 import { ScenarioDesignerService } from './scenario-designer-service.service';
-import { Scenario, scenarioItem } from '../models/scenario.model';
+import {
+  Scenario,
+  scenarioItem,
+  SCENARIO_MODE_PRODUCTION,
+  SCENARIO_MODE_WRITING
+} from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
 import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
@@ -70,8 +75,10 @@ export class ScenarioDesignerComponent implements OnInit {
       .getScenario(this.scenarioId)
       .pipe(takeUntil(this.destroy))
       .subscribe((data) => {
+        if (typeof data.mode == 'undefined') data.mode = SCENARIO_MODE_WRITING;
         this.scenarioBackup = JSON.stringify(data);
         this.scenario = JSON.parse(JSON.stringify(data));
+        this.setMode(this.scenario.mode || 'writing');
         if (!this.scenario.data) this.scenario.data = [];
         if (!this.scenario.data.length) {
           this.scenario.data.push({
@@ -80,8 +87,6 @@ export class ScenarioDesignerComponent implements OnInit {
             text: ''
           });
         }
-
-        this.modeSwitched(false);
       });
   }
 
@@ -91,21 +96,35 @@ export class ScenarioDesignerComponent implements OnInit {
     }, 0);
   }
 
-  mode: string;
-  modeBoolean: boolean;
-  modeLabel: string;
-  modeLabelPosition: string;
+  modeSwitchState = {
+    modeBoolean: false,
+    label: 'Writing',
+    labelPosition: 'left'
+  };
 
   modeSwitched(event) {
-    this.modeBoolean = event;
-    if (this.modeBoolean) {
-      this.mode = 'production';
-      this.modeLabel = 'Production';
-      this.modeLabelPosition = 'right';
+    if (event) {
+      this.setMode(SCENARIO_MODE_PRODUCTION);
     } else {
-      this.mode = 'writing';
-      this.modeLabel = 'Writing';
-      this.modeLabelPosition = 'left';
+      this.setMode(SCENARIO_MODE_WRITING);
+    }
+  }
+
+  setMode(mode) {
+    if (mode == SCENARIO_MODE_PRODUCTION) {
+      this.scenario.mode = SCENARIO_MODE_PRODUCTION;
+      this.modeSwitchState = {
+        modeBoolean: true,
+        label: 'Production',
+        labelPosition: 'right'
+      };
+    } else {
+      this.scenario.mode = SCENARIO_MODE_WRITING;
+      this.modeSwitchState = {
+        modeBoolean: false,
+        label: 'Writing',
+        labelPosition: 'left'
+      };
     }
   }
 
