@@ -21,6 +21,7 @@ import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinitionDetailed
+import ai.tock.nlp.front.shared.config.FaqDefinitionTag
 import ai.tock.nlp.front.shared.config.FaqQuery
 import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.IntentDefinition
@@ -29,7 +30,6 @@ import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
 import com.mongodb.client.model.UnwindOptions
-import config.FaqDefinitionTag
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.kmongo.Id
@@ -62,7 +62,6 @@ import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.skip
 import org.litote.kmongo.sort
 import org.litote.kmongo.unwind
-
 
 object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 

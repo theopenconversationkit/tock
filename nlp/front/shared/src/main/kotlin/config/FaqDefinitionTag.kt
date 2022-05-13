@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config
+package ai.tock.nlp.front.shared.config
 
 /**
  * Tag element of a FaqDefinition

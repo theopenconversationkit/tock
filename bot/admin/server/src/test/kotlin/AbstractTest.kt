@@ -28,7 +28,12 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
-import ai.tock.nlp.front.shared.*
+import ai.tock.nlp.front.shared.ApplicationCodec
+import ai.tock.nlp.front.shared.ApplicationConfiguration
+import ai.tock.nlp.front.shared.ApplicationMonitor
+import ai.tock.nlp.front.shared.ModelTester
+import ai.tock.nlp.front.shared.ModelUpdater
+import ai.tock.nlp.front.shared.Parser
 import ai.tock.nlp.front.shared.codec.alexa.AlexaCodec
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
@@ -40,13 +45,13 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.util.*
+import java.util.Locale
 
 abstract class AbstractTest {
 
     companion object {
 
-        fun defaultModulesBinding() : Kodein.Module {
+        fun defaultModulesBinding(): Kodein.Module {
             val module = Kodein.Module {
                 bind<ApplicationConfiguration>() with provider { mockk<ApplicationConfiguration>(relaxed = true) }
                 bind<UserReportDAO>() with provider { mockk<UserReportDAO>(relaxed = true) }

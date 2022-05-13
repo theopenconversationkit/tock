@@ -86,6 +86,8 @@ open class BotAdminVerticle : AdminVerticle() {
 
     private val i18n: I18nDAO by injector.instance()
 
+    private val front = FrontClient
+
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
     override fun configureServices() {
@@ -786,7 +788,7 @@ open class BotAdminVerticle : AdminVerticle() {
             if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
                 badRequest("Missing argument or trouble in query: $query")
             } else {
-                val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
+                val applicationDefinition = front.getApplicationById(query.applicationId)
                 if (context.organization == applicationDefinition?.namespace) {
                     FaqAdminService.saveFAQ(query, context.userLogin, applicationDefinition)
                 } else {
@@ -803,8 +805,8 @@ open class BotAdminVerticle : AdminVerticle() {
             FaqAdminService.deleteFaqDefinition(context.organization, context.path("faqId"))
         }
 
-        blockingJsonPost("/faq/tags", setOf(botUser,faqBotUser)) { context, applicationId : String ->
-            val applicationDefinition = BotAdminService.front.getApplicationById(applicationId.toId())
+        blockingJsonPost("/faq/tags", setOf(botUser, faqBotUser)) { context, applicationId: String ->
+            val applicationDefinition = front.getApplicationById(applicationId.toId())
             if (context.organization == applicationDefinition?.namespace) {
                 try {
                     FaqAdminService.searchTags(applicationDefinition._id.toString())
@@ -844,9 +846,9 @@ open class BotAdminVerticle : AdminVerticle() {
             setOf(botUser,faqBotUser),
             logger<FaqDefinitionRequest>("Change FAQ status")
         ) { context, query: FaqDefinitionRequest ->
-            val applicationDefinition = BotAdminService.front.getApplicationById(query.applicationId)
+            val applicationDefinition = front.getApplicationById(query.applicationId)
             if (context.organization == applicationDefinition?.namespace) {
-                FaqAdminService.updateActivationStatusStory(query, context.userLogin,applicationDefinition)
+                FaqAdminService.updateActivationStatusStory(query, context.userLogin, applicationDefinition)
             } else {
                 unauthorized()
             }

@@ -81,7 +81,7 @@ import java.util.concurrent.TimeUnit
 /**
  *
  */
-object I18nMongoDAO : I18nDAO {
+internal object I18nMongoDAO : I18nDAO {
 
     private val logger = KotlinLogging.logger {}
 

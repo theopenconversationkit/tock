@@ -18,7 +18,6 @@ package ai.tock.bot.admin.model
 
 import ai.tock.nlp.admin.model.PaginatedQuery
 import ai.tock.nlp.front.shared.config.FaqQuery
-import ai.tock.nlp.front.shared.config.FaqStatus
 
 data class FaqSearchRequest(
     val tags: List<String>,
