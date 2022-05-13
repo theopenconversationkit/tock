@@ -3,7 +3,23 @@
   size="large"
 >
   <nb-card-header class="d-flex justify-content-between align-items-start">
-    <h4>{{ title }}</h4>
+    <div class="mr-3">
+      <h4>{{ title }}</h4>
+      <div *ngIf="groupedIntents?.length">
+        <span *ngIf="groupedIntents.length == 1">
+          There is one intent matching the given sentence "{{ intentSentence }}"
+          <br />
+          Do you want to use it as intent for this scenario ?
+        </span>
+        <span *ngIf="groupedIntents.length > 1">
+          There are {{ groupedIntents.length }} intents matching the given sentence "{{
+            intentSentence
+          }}"
+          <br />
+          Do you want to use one of them as intent for this scenario ?
+        </span>
+      </div>
+    </div>
 
     <button
       nbButton
@@ -18,18 +34,19 @@
 
   <nb-card-body [nbSpinner]="loading">
     <div *ngIf="!loading">
-      <p *ngIf="foundIntents?.length">
-        Here are the intents matching the given sentence "{{ intentSentence }}"
-      </p>
-
-      <nb-card *ngFor="let intent of foundIntents">
+      <nb-card *ngFor="let intent of groupedIntents">
         <nb-card-header>
-          {{ intent.intentId }}
+          {{ intent.intent.label }}
+          <span *ngIf="!intent.intent.label">
+            {{ intent.intent.name }}
+          </span>
+
           <button
             nbButton
             size="small"
             status="primary"
             class="m-1 float-right"
+            (click)="useIntent(intent)"
           >
             Use this intent
             <nb-icon icon="chevron-right-outline"></nb-icon>

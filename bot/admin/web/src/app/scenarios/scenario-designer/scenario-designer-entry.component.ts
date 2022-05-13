@@ -53,12 +53,20 @@ export class ScenarioDesignerEntryComponent implements OnInit {
         intentSentence: this.item.text
       }
     });
-    const modalSubscription = modal.componentRef.instance.createNewIntentEvent
+    modal.componentRef.instance.createNewIntentEvent
       .pipe(takeUntil(this.destroy))
       .subscribe((res) => {
-        modal.close();
         this.createIntent();
+        modal.close();
       });
+    modal.componentRef.instance.useIntentEvent.pipe(takeUntil(this.destroy)).subscribe((intent) => {
+      this.setItemIntent(intent);
+      modal.close();
+    });
+  }
+
+  setItemIntent(intent) {
+    this.item.intentId = intent._id;
   }
 
   createIntent(): void {
@@ -70,8 +78,8 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     const modalSubscription = modal.componentRef.instance.createIntentEvent
       .pipe(takeUntil(this.destroy))
       .subscribe((res) => {
-        modal.close();
         this.editIntent();
+        modal.close();
       });
   }
 

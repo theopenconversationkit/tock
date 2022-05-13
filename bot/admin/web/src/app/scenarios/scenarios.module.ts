@@ -85,14 +85,7 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     IntentEditComponent
   ],
   exports: [],
-  providers: [
-    ScenarioService,
-    ScenarioApiService,
-    ScenarioDesignerNavigationGuard,
-    IntentsSearchComponent,
-    IntentCreateComponent,
-    IntentEditComponent
-  ],
+  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard],
   entryComponents: []
 })
 export class ScenariosModule {

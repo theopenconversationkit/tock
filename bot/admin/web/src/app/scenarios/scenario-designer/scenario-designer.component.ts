@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, HostListener, Injectable, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Injectable,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { pluck, takeUntil } from 'rxjs/operators';
 import { ScenarioDesignerService } from './scenario-designer-service.service';
@@ -38,7 +46,7 @@ const CANVAS_TRANSITION_TIMING = 300;
   styleUrls: ['./scenario-designer.component.scss'],
   providers: [ScenarioDesignerService]
 })
-export class ScenarioDesignerComponent implements OnInit {
+export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;

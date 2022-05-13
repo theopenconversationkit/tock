@@ -22,4 +22,5 @@ export interface scenarioItem {
   text: string;
   from: string;
   final?: boolean;
+  intentId?: string;
 }

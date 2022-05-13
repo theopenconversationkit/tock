@@ -51,7 +51,8 @@
           "from": "bot",
           "text": " sdf sdf dfg dfg dfg dfg"
         }
-      ]
+      ],
+      "mode": "production"
     },
     {
       "id": 3,
@@ -248,7 +249,8 @@
         {
           "id": 0,
           "from": "client",
-          "text": "Comment activer ma carte?"
+          "text": "Comment activer ma carte?",
+          "intentId": "627a77415238af3bed8e94fb"
         },
         {
           "id": 1,
@@ -425,7 +427,8 @@
           "text": "Pour activer la carte, il vous suffit de faire une opération avec le code PIN de la carte (retrait ou paiement) en France métropolitaine. Les opérations \"sans contact\" et par internet seront actives après cela.\n\nVotre code PIN n'a pas changé :)",
           "final": true
         }
-      ]
+      ],
+      "mode": "production"
     },
     {
       "id": 5,
