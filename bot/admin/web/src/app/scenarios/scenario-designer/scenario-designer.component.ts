@@ -86,7 +86,9 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         if (typeof data.mode == 'undefined') data.mode = SCENARIO_MODE_WRITING;
         this.scenarioBackup = JSON.stringify(data);
         this.scenario = JSON.parse(JSON.stringify(data));
+
         this.setMode(this.scenario.mode || 'writing');
+
         if (!this.scenario.data) this.scenario.data = [];
         if (!this.scenario.data.length) {
           this.scenario.data.push({
@@ -136,8 +138,19 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
+  stringifiedCleanScenario() {
+    return JSON.stringify(this.scenario, function (key, value) {
+      if (key.indexOf('_') == 0) return undefined;
+      return value;
+    });
+  }
+
+  getCleanScenario() {
+    return JSON.parse(this.stringifiedCleanScenario());
+  }
+
   save(exit: boolean = false) {
-    this.scenarioService.putScenario(this.scenarioId, this.scenario).subscribe((data) => {
+    this.scenarioService.putScenario(this.scenarioId, this.getCleanScenario()).subscribe((data) => {
       this.toastrService.success(`Scenario successfully saved`, 'Success', {
         duration: 5000,
         status: 'success'
@@ -467,7 +480,7 @@ export class ScenarioDesignerNavigationGuard implements CanDeactivate<any> {
   constructor(private dialogService: DialogService) {}
 
   canDeactivate(component: any) {
-    const canDeactivate = component.scenarioBackup == JSON.stringify(component.scenario);
+    const canDeactivate = component.scenarioBackup == component.stringifiedCleanScenario();
 
     if (!canDeactivate) {
       const subject = new Subject<boolean>();

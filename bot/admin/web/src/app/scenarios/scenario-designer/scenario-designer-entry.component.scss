@@ -64,6 +64,23 @@ $verification-color: #bebebe;
     border-color: #00000030;
   }
 
+  .sentences {
+    overflow-y: auto;
+    max-height: 7rem;
+
+    UL {
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+      LI {
+        font-size: 0.6rem;
+        line-height: 1.4;
+        padding: 0.2rem;
+        border-bottom: 1px solid #bebebe;
+      }
+    }
+  }
+
   .from-icon {
     position: absolute;
     left: -2.4rem;

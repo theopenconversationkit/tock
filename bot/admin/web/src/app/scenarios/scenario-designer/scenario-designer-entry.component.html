@@ -99,8 +99,16 @@
       [(ngModel)]="item.text"
     ></textarea>
 
-    <div *ngIf="item.intentId">
-      {{ item.intentId }}
+    <div
+      *ngIf="item.intentId"
+      class="sentences mb-2"
+      [nbSpinner]="utterancesLoading"
+    >
+      <ul>
+        <li *ngFor="let sentence of item._sentences">
+          {{ sentence }}
+        </li>
+      </ul>
     </div>
 
     <div *ngIf="mode == 'writing' && item.from == 'bot' && itemHasNoChildren()">

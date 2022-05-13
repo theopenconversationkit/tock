@@ -1,7 +1,11 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
+import { StateService } from 'src/app/core-nlp/state.service';
+import { PaginatedQuery } from 'src/app/model/commons';
+import { SearchQuery } from 'src/app/model/nlp';
+import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { scenarioItem } from '../models/scenario.model';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
@@ -11,7 +15,8 @@ import { ScenarioDesignerService } from './scenario-designer-service.service';
 @Component({
   selector: 'scenario-designer-entry',
   templateUrl: './scenario-designer-entry.component.html',
-  styleUrls: ['./scenario-designer-entry.component.scss']
+  styleUrls: ['./scenario-designer-entry.component.scss'],
+  providers: [NlpService]
 })
 export class ScenarioDesignerEntryComponent implements OnInit {
   destroy = new Subject();
@@ -26,15 +31,10 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   item;
   constructor(
     private scenarioDesignerService: ScenarioDesignerService,
-    private dialogService: DialogService
-  ) {}
-
-  ngOnInit(): void {
-    this.item = this.dataList.find((item) => item.id === this.itemId);
-    this.draggable = {
-      data: this.item.id
-    };
-
+    private dialogService: DialogService,
+    protected state: StateService,
+    private nlp: NlpService
+  ) {
     this.scenarioDesignerService.scenarioDesignerItemsCommunication
       .pipe(takeUntil(this.destroy))
       .subscribe((evt) => {
@@ -43,8 +43,12 @@ export class ScenarioDesignerEntryComponent implements OnInit {
       });
   }
 
-  ngOnChanges(): void {
-    this.ngOnInit();
+  ngOnInit(): void {
+    this.item = this.dataList.find((item) => item.id === this.itemId);
+    this.draggable = {
+      data: this.item.id
+    };
+    if (this.item.intentId) this.collectIntentUtterances();
   }
 
   searchIntent(): void {
@@ -67,6 +71,31 @@ export class ScenarioDesignerEntryComponent implements OnInit {
 
   setItemIntent(intent) {
     this.item.intentId = intent._id;
+    this.collectIntentUtterances();
+  }
+
+  utterancesLoading = true;
+
+  collectIntentUtterances() {
+    const cursor: number = 0;
+    const pageSize: number = 10;
+    const mark = null;
+    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
+    const searchQuery: SearchQuery = new SearchQuery(
+      paginatedQuery.namespace,
+      paginatedQuery.applicationName,
+      paginatedQuery.language,
+      paginatedQuery.start,
+      paginatedQuery.size,
+      paginatedQuery.searchMark,
+      null,
+      this.item.intentId
+    );
+    const nlpSubscription = this.nlp.searchSentences(searchQuery).subscribe((sentencesResearch) => {
+      this.item._sentences = sentencesResearch.rows.map((sentence) => sentence.text);
+      this.utterancesLoading = false;
+      nlpSubscription.unsubscribe();
+    });
   }
 
   createIntent(): void {
