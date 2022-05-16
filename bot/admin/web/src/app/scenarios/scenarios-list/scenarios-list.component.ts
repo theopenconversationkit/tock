@@ -23,6 +23,7 @@ import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
+import { StateService } from 'src/app/core-nlp/state.service';
 
 @Component({
   selector: 'scenarios-list',
@@ -44,11 +45,16 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private scenarioService: ScenarioService,
     private toastrService: NbToastrService,
-    private router: Router
+    private router: Router,
+    protected state: StateService
   ) {}
 
   ngOnInit() {
     this.loading = true;
+
+    this.state.configurationChange.subscribe((_) => {
+      console.log('Application change');
+    });
 
     this.subscriptions.add(
       this.scenarioService.getScenarios().subscribe({
