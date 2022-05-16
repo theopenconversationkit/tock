@@ -49,6 +49,7 @@ import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
 import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
 import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-tree.component';
+import { NlpService } from '../nlp-tabs/nlp.service';
 
 @NgModule({
   imports: [
@@ -79,13 +80,12 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
     ScenarioTreeComponent,
     ScenarioDesignerComponent,
     ScenarioDesignerEntryComponent,
-    ScenarioEditComponent,
     IntentsSearchComponent,
     IntentCreateComponent,
     IntentEditComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard],
+  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, NlpService],
   entryComponents: []
 })
 export class ScenariosModule {

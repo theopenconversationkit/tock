@@ -15,8 +15,7 @@ import { ScenarioDesignerService } from './scenario-designer-service.service';
 @Component({
   selector: 'scenario-designer-entry',
   templateUrl: './scenario-designer-entry.component.html',
-  styleUrls: ['./scenario-designer-entry.component.scss'],
-  providers: [NlpService]
+  styleUrls: ['./scenario-designer-entry.component.scss']
 })
 export class ScenarioDesignerEntryComponent implements OnInit {
   destroy = new Subject();
