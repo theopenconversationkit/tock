@@ -61,6 +61,16 @@ export class ScenarioService {
     this.setState(state);
   }
 
+  setScenariosUnloading(): void {
+    let state = this.getState();
+    state = {
+      ...state,
+      loading: false,
+      loaded: false
+    };
+    this.setState(state);
+  }
+
   setScenariosData(scenariosCollection): void {
     let state = this.getState();
     state = {
@@ -72,7 +82,11 @@ export class ScenarioService {
     this.setState(state);
   }
 
-  getScenarios(): Observable<Array<Scenario>> {
+  getScenarios(forceReload: boolean = false): Observable<Array<Scenario>> {
+    if (forceReload) {
+      this.setScenariosUnloading();
+    }
+
     const scenariosState = this.state$;
     const notLoaded = scenariosState.pipe(
       filter((state) => !state.loaded && !state.loading),

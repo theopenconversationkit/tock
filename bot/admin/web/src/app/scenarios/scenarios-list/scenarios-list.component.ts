@@ -16,12 +16,12 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbToastrService, NbTreeGridDataSource, NbTreeGridDataSourceBuilder } from '@nebular/theme';
+import { NbToastrService } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { Scenario, ViewMode } from '../models';
+import { Filter, Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { StateService } from 'src/app/core-nlp/state.service';
 
@@ -32,14 +32,23 @@ import { StateService } from 'src/app/core-nlp/state.service';
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
   scenarios: Scenario[] = [];
+  filteredScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
+
   subscriptions: Subscription = new Subscription();
 
   currentViewMode: ViewMode = ViewMode.LIST;
   viewMode: typeof ViewMode = ViewMode;
 
-  loading: boolean = false;
   isSidePanelOpen: boolean = false;
+
+  loading = {
+    delete: false,
+    edit: false,
+    list: false
+  };
+
+  private currentFilters: Filter = { search: '', tags: [] };
 
   constructor(
     private dialogService: DialogService,
@@ -50,7 +59,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loading = true;
+    this.loading.list = true;
 
     this.state.configurationChange.subscribe((_) => {
       console.log('Application change');
@@ -59,11 +68,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.scenarioService.getScenarios().subscribe({
         next: (data: Scenario[]) => {
-          this.loading = false;
+          this.loading.list = false;
           this.scenarios = [...data];
+          this.filterScenarios(this.currentFilters);
         },
         error: () => {
-          this.loading = false;
+          this.loading.list = false;
         }
       })
     );
@@ -111,6 +121,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   deleteScenario(id: number): void {
+    this.loading.delete = true;
+
     this.subscriptions.add(
       this.scenarioService.deleteScenario(id).subscribe({
         next: () => {
@@ -118,28 +130,35 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             duration: 5000,
             status: 'success'
           });
+          this.loading.delete = false;
         },
         error: () => {
           this.toastrService.danger(`Failed to delete scenario`, 'Error', {
             duration: 5000,
             status: 'danger'
           });
+          this.loading.delete = false;
         }
       })
     );
   }
 
   saveScenario(result) {
+    this.loading.edit = true;
+
     if (!result.scenario.id) {
       this.subscriptions.add(
         this.scenarioService.postScenario(result.scenario).subscribe({
           next: (newScenario) => {
+            this.loading.edit = false;
             this.toastrService.success(`Scenario successfully created`, 'Success', {
               duration: 5000,
               status: 'success'
             });
             if (result.redirect) {
               this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
+            } else {
+              this.closeSidePanel();
             }
           },
           error: () => {
@@ -147,6 +166,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               duration: 5000,
               status: 'danger'
             });
+            this.loading.edit = false;
           }
         })
       );
@@ -154,12 +174,15 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.scenarioService.putScenario(result.scenario.id, result.scenario).subscribe({
           next: (newScenario) => {
+            this.loading.edit = false;
             this.toastrService.success(`Scenario successfully updated`, 'Success', {
               duration: 5000,
               status: 'success'
             });
             if (result.redirect) {
               this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
+            } else {
+              this.closeSidePanel();
             }
           },
           error: () => {
@@ -167,15 +190,38 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               duration: 5000,
               status: 'danger'
             });
+            this.loading.edit = false;
           }
         })
       );
     }
-    this.closeSidePanel();
   }
 
   switchViewMode(): void {
     this.currentViewMode =
       this.currentViewMode === ViewMode.LIST ? this.viewMode.TREE : this.viewMode.LIST;
+  }
+
+  filterScenarios(filters: Filter): void {
+    const { search, tags } = filters;
+    this.currentFilters = filters;
+
+    this.filteredScenarios = this.scenarios.filter((scenario: Scenario) => {
+      if (
+        search &&
+        !(
+          scenario.name.toUpperCase().includes(search.toUpperCase()) ||
+          scenario.description.toUpperCase().includes(search.toUpperCase())
+        )
+      ) {
+        return;
+      }
+
+      if (tags?.length && !scenario.tags.some((tag) => tags.includes(tag))) {
+        return;
+      }
+
+      return scenario;
+    });
   }
 }

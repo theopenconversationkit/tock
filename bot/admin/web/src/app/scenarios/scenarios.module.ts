@@ -21,9 +21,11 @@ import {
   NbAutocompleteModule,
   NbButtonModule,
   NbCardModule,
+  NbFormFieldModule,
   NbIconModule,
   NbInputModule,
   NbListModule,
+  NbSelectModule,
   NbSpinnerModule,
   NbTagModule,
   NbTooltipModule,
@@ -50,28 +52,33 @@ import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
 import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-tree.component';
 import { NlpService } from '../nlp-tabs/nlp.service';
+import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
+import { ScenariosResolver } from './scenarios.resolver';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    SharedModule,
-    BotSharedModule,
-    ScenariosRoutingModule,
+    ReactiveFormsModule,
     DndModule,
-    NbCheckboxModule,
-    NbChatModule,
-    NbCardModule,
-    NbTreeGridModule,
-    NbSpinnerModule,
-    NbButtonModule,
-    NbIconModule,
-    NbTooltipModule,
-    NbInputModule,
-    NbTagModule,
+    ScenariosRoutingModule,
+    BotSharedModule,
+    SharedModule,
     NbAutocompleteModule,
     NbListModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NbButtonModule,
+    NbCardModule,
+    NbChatModule,
+    NbCheckboxModule,
+    NbFormFieldModule,
+    NbIconModule,
+    NbInputModule,
+    NbSelectModule,
+    NbSpinnerModule,
+    NbTagModule,
+    NbTooltipModule,
+    NbTreeGridModule
   ],
   declarations: [
     ScenariosListComponent,
@@ -80,12 +87,19 @@ import { NlpService } from '../nlp-tabs/nlp.service';
     ScenarioTreeComponent,
     ScenarioDesignerComponent,
     ScenarioDesignerEntryComponent,
+    ScenarioFiltersComponent,
     IntentsSearchComponent,
     IntentCreateComponent,
     IntentEditComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, NlpService],
+  providers: [
+    ScenarioService,
+    ScenarioApiService,
+    ScenarioDesignerNavigationGuard,
+    ScenariosResolver,
+    NlpService
+  ],
   entryComponents: []
 })
 export class ScenariosModule {

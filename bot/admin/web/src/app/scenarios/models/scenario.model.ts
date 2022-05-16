@@ -24,3 +24,8 @@ export interface scenarioItem {
   final?: boolean;
   intentId?: string;
 }
+
+export interface Filter {
+  search: string;
+  tags: Array<string>;
+}

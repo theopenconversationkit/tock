@@ -24,6 +24,9 @@ import { of } from 'rxjs';
 })
 export class ScenarioEditComponent implements OnInit, OnChanges {
   @Input()
+  loading: boolean;
+
+  @Input()
   scenario?: Scenario;
 
   @Input()
@@ -74,19 +77,21 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
   tagsAutocompleteValues;
 
   ngOnChanges(changes: SimpleChanges): void {
-    const scenario: Scenario = changes.scenario.currentValue;
+    if (changes.scenario?.currentValue) {
+      const scenario: Scenario = changes.scenario.currentValue;
 
-    this.form.reset();
-    this.tags.clear();
-    this.isSubmitted = false;
+      this.form.reset();
+      this.tags.clear();
+      this.isSubmitted = false;
 
-    if (scenario) {
-      this.form.patchValue(scenario);
+      if (scenario) {
+        this.form.patchValue(scenario);
 
-      if (scenario.tags?.length) {
-        scenario.tags.forEach((tag) => {
-          this.tags.push(new FormControl(tag));
-        });
+        if (scenario.tags?.length) {
+          scenario.tags.forEach((tag) => {
+            this.tags.push(new FormControl(tag));
+          });
+        }
       }
     }
 
