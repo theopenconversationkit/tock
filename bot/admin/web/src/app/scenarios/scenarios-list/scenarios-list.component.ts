@@ -17,13 +17,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
-import { Subscription } from 'rxjs';
+import { Observable, Observer, Subject, Subscription } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Filter, Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { StateService } from 'src/app/core-nlp/state.service';
+import { first, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'scenarios-list',
@@ -31,11 +32,10 @@ import { StateService } from 'src/app/core-nlp/state.service';
   styleUrls: ['./scenarios-list.component.scss']
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
   scenarios: Scenario[] = [];
   filteredScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
-
-  subscriptions: Subscription = new Subscription();
 
   currentViewMode: ViewMode = ViewMode.LIST;
   viewMode: typeof ViewMode = ViewMode;
@@ -61,26 +61,30 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loading.list = true;
 
-    this.state.configurationChange.subscribe((_) => {
-      console.log('Application change');
-    });
+    this.subscribeToScenarios();
 
-    this.subscriptions.add(
-      this.scenarioService.getScenarios().subscribe({
-        next: (data: Scenario[]) => {
-          this.loading.list = false;
-          this.scenarios = [...data];
-          this.filterScenarios(this.currentFilters);
-        },
-        error: () => {
-          this.loading.list = false;
-        }
-      })
-    );
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
+      this.subscribeToScenarios(true);
+    });
+  }
+
+  scenariosSubscription: Subscription;
+  subscribeToScenarios(forceRelaod = false) {
+    if (this.scenariosSubscription) this.scenariosSubscription.unsubscribe();
+
+    this.scenariosSubscription = this.scenarioService
+      .getScenarios(forceRelaod)
+      .pipe(takeUntil(this.destroy))
+      .subscribe((data: Scenario[]) => {
+        this.loading.list = false;
+        this.scenarios = [...data];
+        this.filterScenarios(this.currentFilters);
+      });
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.destroy.next();
+    this.destroy.complete();
   }
 
   add(): void {
@@ -123,8 +127,10 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   deleteScenario(id: number): void {
     this.loading.delete = true;
 
-    this.subscriptions.add(
-      this.scenarioService.deleteScenario(id).subscribe({
+    this.scenarioService
+      .deleteScenario(id)
+      .pipe(first())
+      .subscribe({
         next: () => {
           this.toastrService.success(`Scenario successfully deleted`, 'Success', {
             duration: 5000,
@@ -139,16 +145,17 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
           });
           this.loading.delete = false;
         }
-      })
-    );
+      });
   }
 
   saveScenario(result) {
     this.loading.edit = true;
 
     if (!result.scenario.id) {
-      this.subscriptions.add(
-        this.scenarioService.postScenario(result.scenario).subscribe({
+      this.scenarioService
+        .postScenario(result.scenario)
+        .pipe(first())
+        .subscribe({
           next: (newScenario) => {
             this.loading.edit = false;
             this.toastrService.success(`Scenario successfully created`, 'Success', {
@@ -168,11 +175,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             });
             this.loading.edit = false;
           }
-        })
-      );
+        });
     } else {
-      this.subscriptions.add(
-        this.scenarioService.putScenario(result.scenario.id, result.scenario).subscribe({
+      this.scenarioService
+        .putScenario(result.scenario.id, result.scenario)
+        .pipe(first())
+        .subscribe({
           next: (newScenario) => {
             this.loading.edit = false;
             this.toastrService.success(`Scenario successfully updated`, 'Success', {
@@ -192,8 +200,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             });
             this.loading.edit = false;
           }
-        })
-      );
+        });
     }
   }
 
