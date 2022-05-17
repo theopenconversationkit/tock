@@ -1,8 +1,19 @@
 import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { Scenario } from '../../models';
+import {
+  NbButtonModule,
+  NbCardModule,
+  NbFormFieldModule,
+  NbIconModule,
+  NbInputModule,
+  NbOptionModule,
+  NbSelectModule
+} from '@nebular/theme';
 
+import { TestSharedModule } from '../../../shared/test-shared.module';
+import { Scenario } from '../../models';
 import { ScenarioFiltersComponent } from './scenario-filters.component';
 
 const mockScenarios = [
@@ -22,6 +33,17 @@ describe('ScenarioFiltersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [
+        ReactiveFormsModule,
+        TestSharedModule,
+        NbButtonModule,
+        NbCardModule,
+        NbFormFieldModule,
+        NbIconModule,
+        NbInputModule,
+        NbOptionModule,
+        NbSelectModule
+      ],
       declarations: [ScenarioFiltersComponent],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
