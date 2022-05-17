@@ -27,7 +27,7 @@ import ai.tock.bot.engine.Bus
 internal const val IADVIZE_CONNECTOR_TYPE_ID = "iadvize"
 
 /**
- * The Messenger connector type.
+ * The iAdvize connector type.
  */
 val iadvizeConnectorType = ConnectorType(IADVIZE_CONNECTOR_TYPE_ID)
 
