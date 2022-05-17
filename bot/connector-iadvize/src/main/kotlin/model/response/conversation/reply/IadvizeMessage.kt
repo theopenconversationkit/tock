@@ -22,7 +22,7 @@ import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 
 data class IadvizeMessage(val payload: Payload,
-                          val quickReplies: List<QuickReply> = mutableListOf()): IadvizeReply {
+                          val quickReplies: List<QuickReply> = mutableListOf()) : IadvizeReply {
     override val type: ReplyType = ReplyType.message
     constructor(messagePayload: String) : this(TextPayload(messagePayload))
 }

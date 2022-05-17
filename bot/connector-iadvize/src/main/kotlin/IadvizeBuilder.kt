@@ -18,6 +18,11 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.bot.engine.Bus
 
 internal const val IADVIZE_CONNECTOR_TYPE_ID = "iadvize"
 
@@ -25,3 +30,30 @@ internal const val IADVIZE_CONNECTOR_TYPE_ID = "iadvize"
  * The Messenger connector type.
  */
 val iadvizeConnectorType = ConnectorType(IADVIZE_CONNECTOR_TYPE_ID)
+
+fun <T : Bus<T>> T.withIadvize(messageProvider: () -> IadvizeReply): T {
+    return withMessage(iadvizeConnectorType, messageProvider)
+}
+
+/**
+ * Creates a iAdvize quickreply sentence
+ */
+fun <T : Bus<T>> T.iadvizeQuickReply(
+    title: CharSequence,
+): QuickReply = QuickReply(translate(title).toString())
+
+
+/**
+ * Creates a iAdvize message sentence
+ */
+fun <T : Bus<T>> T.iadvizeMessage(
+    title: CharSequence
+): IadvizeReply = IadvizeMessage(translate(title).toString())
+
+/**
+ * Creates a iAdvize message with quickreplies sentence
+ */
+fun <T : Bus<T>> T.iadvizeMessage(
+    title: CharSequence,
+    quickReplies: List<QuickReply>
+): IadvizeReply = IadvizeMessage(TextPayload(translate(title).toString()), quickReplies)

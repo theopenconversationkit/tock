@@ -17,7 +17,6 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.GenericCardPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
