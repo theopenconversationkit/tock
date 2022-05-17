@@ -50,6 +50,14 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     if (this.item.intentId) this.collectIntentUtterances();
   }
 
+  manageIntent(): void {
+    if (this.item.intentId) {
+      this.editIntent();
+    } else {
+      this.searchIntent();
+    }
+  }
+
   searchIntent(): void {
     const modal = this.dialogService.openDialog(IntentsSearchComponent, {
       context: {

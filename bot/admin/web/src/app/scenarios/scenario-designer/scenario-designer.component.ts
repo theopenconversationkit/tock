@@ -37,6 +37,7 @@ import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
+import { StateService } from 'src/app/core-nlp/state.service';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -60,7 +61,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     private scenarioDesignerService: ScenarioDesignerService,
     route: ActivatedRoute,
     private router: Router,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    protected state: StateService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -98,6 +100,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           });
         }
       });
+
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
+      // TODO : Alert user that he is going to loose its modifications and allow him to cancel, switch back to the initial application and save his work
+      this.exit();
+    });
   }
 
   ngAfterViewInit(): void {

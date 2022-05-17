@@ -69,11 +69,11 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   scenariosSubscription: Subscription;
-  subscribeToScenarios(forceRelaod = false) {
+  subscribeToScenarios(forceReload = false) {
     if (this.scenariosSubscription) this.scenariosSubscription.unsubscribe();
 
     this.scenariosSubscription = this.scenarioService
-      .getScenarios(forceRelaod)
+      .getScenarios(forceReload)
       .pipe(takeUntil(this.destroy))
       .subscribe((data: Scenario[]) => {
         this.loading.list = false;
