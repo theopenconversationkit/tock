@@ -63,8 +63,8 @@ fun <T : Bus<T>> T.nlpCardAction(
     title: CharSequence
 ): CardAction =
     translate(title).toString().let { t ->
-        CardAction(IM_BACK, t).apply {
-            displayText = t
+        CardAction(IM_BACK, t, t).apply {
+            value = t
             text = t
         }
     }
