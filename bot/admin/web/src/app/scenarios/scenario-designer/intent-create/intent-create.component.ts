@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
+import { of } from 'rxjs';
+import { StateService } from 'src/app/core-nlp/state.service';
 
 @Component({
   selector: 'scenario-intent-create',
@@ -10,10 +12,17 @@ import { NbDialogRef } from '@nebular/theme';
 export class IntentCreateComponent implements OnInit {
   @Input() intentSentence: string;
   @Output() createIntentEvent = new EventEmitter();
+  categories: string[] = [];
+  categoryAutocompleteValues;
 
-  constructor(public dialogRef: NbDialogRef<IntentCreateComponent>) {}
+  constructor(public dialogRef: NbDialogRef<IntentCreateComponent>, private state: StateService) {}
 
   ngOnInit(): void {
+    this.state.currentIntentsCategories.subscribe((c) => {
+      this.categories = c.map((cat) => cat.category);
+      this.categoryAutocompleteValues = of(this.categories);
+    });
+
     if (this.intentSentence.trim()) {
       this.form.patchValue({ label: this.intentSentence });
       this.copyLabelToName();
@@ -49,6 +58,8 @@ export class IntentCreateComponent implements OnInit {
 
   private formatName(name: string): string {
     return name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^A-Za-z_-]*/g, '')
       .toLowerCase()
       .trim();
@@ -63,8 +74,6 @@ export class IntentCreateComponent implements OnInit {
   }
 
   save() {
-    this.createIntentEvent.emit({
-      intent: { ...this.form.value }
-    });
+    this.createIntentEvent.emit(this.form.value);
   }
 }

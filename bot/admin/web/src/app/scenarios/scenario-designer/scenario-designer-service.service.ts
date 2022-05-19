@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { StateService } from 'src/app/core-nlp/state.service';
+import { PaginatedQuery } from 'src/app/model/commons';
+import { SearchQuery } from 'src/app/model/nlp';
 import { scenarioItem } from '../models/scenario.model';
 
 @Injectable({
@@ -7,8 +10,28 @@ import { scenarioItem } from '../models/scenario.model';
 })
 export class ScenarioDesignerService {
   public scenarioDesignerItemsCommunication = new Subject<any>();
-  constructor() {}
+  constructor(protected state: StateService) {}
 
+  createSearchIntentsQuery(params: { searchString?: string; intentId?: string }): SearchQuery {
+    const cursor: number = 0;
+    const pageSize: number = 50;
+    const mark = null;
+    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
+    return new SearchQuery(
+      paginatedQuery.namespace,
+      paginatedQuery.applicationName,
+      paginatedQuery.language,
+      paginatedQuery.start,
+      paginatedQuery.size,
+      paginatedQuery.searchMark,
+      params.searchString || null,
+      params.intentId || null
+    );
+  }
+
+  /*
+    COMMUNICATION BETWEEN MAIN COMPONENT AND ITEMS COMPONENT
+  */
   // Child components to designer communication
   addAnswer(item: scenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({

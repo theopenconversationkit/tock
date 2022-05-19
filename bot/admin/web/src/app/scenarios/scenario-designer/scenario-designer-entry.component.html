@@ -22,6 +22,8 @@
     (dndDrop)="onDrop($event)"
     dndDragoverClass="dragHover"
     (click)="selectItem()"
+    appMouseWheelListner
+    (onMouseWheel)="mouseWheel($event)"
   >
     <div
       class="from-icon client"
@@ -91,7 +93,7 @@
     </div>
 
     <textarea
-      *ngIf="!item.intentId"
+      *ngIf="!itemHasIntent()"
       #itemTextarea
       fullWidth
       rows="4"
@@ -100,15 +102,19 @@
     ></textarea>
 
     <div
-      *ngIf="item.intentId"
+      *ngIf="itemHasIntent()"
       class="sentences mb-2"
       [nbSpinner]="utterancesLoading"
     >
-      <ul>
-        <li *ngFor="let sentence of item._sentences">
-          {{ sentence }}
-        </li>
-      </ul>
+      <strong>{{ item.text }}</strong>
+
+      <div class="questions">
+        <ul *ngIf="item.intentDefinition?.intentId">
+          <li *ngFor="let sentence of item._sentences">
+            {{ sentence }}
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div *ngIf="mode == 'writing' && item.from == 'bot' && itemHasNoChildren()">
@@ -153,7 +159,7 @@
         size="tiny"
         status="info"
         *ngIf="mode != 'writing' && item.from == 'client' && item.text?.length"
-        (click)="searchIntent()"
+        (click)="manageIntent()"
       >
         Manage intent
       </button>

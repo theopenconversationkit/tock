@@ -65,18 +65,22 @@ $verification-color: #bebebe;
   }
 
   .sentences {
-    overflow-y: auto;
-    max-height: 7rem;
+    font-size: 0.7rem;
+    min-height: 7rem;
+    .questions {
+      overflow-y: auto;
+      max-height: 6rem;
 
-    UL {
-      padding: 0;
-      margin: 0;
-      list-style-type: none;
-      LI {
-        font-size: 0.6rem;
-        line-height: 1.4;
-        padding: 0.2rem;
-        border-bottom: 1px solid #bebebe;
+      UL {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+        LI {
+          font-size: 0.6rem;
+          line-height: 1.4;
+          padding: 0.2rem;
+          border-bottom: 1px solid #bebebe;
+        }
       }
     }
   }

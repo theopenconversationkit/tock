@@ -1,6 +1,6 @@
 <nb-card id="modal-wrapper">
   <nb-card-header class="d-flex justify-content-between align-items-start">
-    <h4>Intent sentences</h4>
+    <h4>Intent definition</h4>
 
     <button
       nbButton
@@ -13,5 +13,117 @@
     </button>
   </nb-card-header>
 
-  <nb-card-body> </nb-card-body>
+  <nb-card-body>
+    <div>
+      <label class="font-weight-bold">Status :</label>
+      <span *ngIf="item.intentDefinition.intentId">
+        Already exists. Will be reassigned upon publication.
+      </span>
+      <span *ngIf="!item.intentDefinition.intentId">
+        Does not exist. Will be created upon publishing.
+      </span>
+    </div>
+    <div *ngIf="item.intentDefinition.intentId">
+      <label class="font-weight-bold">Id :</label>
+      <span>
+        {{ item.intentDefinition.intentId }}
+      </span>
+    </div>
+    <div>
+      <label class="font-weight-bold">Name :</label>
+      <span>
+        {{ item.intentDefinition.name }}
+      </span>
+    </div>
+    <div *ngIf="item.intentDefinition.label">
+      <label class="font-weight-bold">Label :</label>
+      <span>
+        {{ item.intentDefinition.label }}
+      </span>
+    </div>
+
+    <div *ngIf="item.intentDefinition.description">
+      <label class="font-weight-bold">Description :</label>
+      <span>
+        {{ item.intentDefinition.description }}
+      </span>
+    </div>
+    <div *ngIf="item.intentDefinition.category">
+      <label class="font-weight-bold">Category :</label>
+      <span>
+        {{ item.intentDefinition.category }}
+      </span>
+    </div>
+
+    <hr class="my-2" />
+
+    <strong> Questions matching this Intent :</strong>
+    <div class="questions">
+      <ul
+        *ngIf="item.intentDefinition?.intentId"
+        class="mt-2"
+      >
+        <li
+          *ngFor="let sentence of item._sentences"
+          class="d-flex justify-content-between align-items-start"
+        >
+          <div>
+            {{ sentence }}
+          </div>
+          <div>
+            <nb-icon
+              icon="trash-2-outline"
+              status="danger"
+              (click)="removeSentence(sentence)"
+              class="pointer"
+            ></nb-icon>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <input
+      #labelInput
+      nbInput
+      fullWidth
+      id="newQuestion"
+      type="text"
+      placeholder="Add a new question formulation and press enter"
+      class="mt-2"
+      (keyup.enter)="addSentence($event)"
+    />
+  </nb-card-body>
+
+  <nb-card-footer class="grid-button">
+    <button
+      nbButton
+      size="small"
+      status="basic"
+      class="m-1"
+      (click)="cancel()"
+    >
+      Close
+    </button>
+
+    <button
+      nbButton
+      size="small"
+      status="danger"
+      class="m-1"
+      (click)="dissociateIntent()"
+    >
+      <nb-icon icon="slash-outline"></nb-icon>
+      Dissociate from this intent
+    </button>
+
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="m-1"
+      (click)="save()"
+    >
+      <nb-icon icon="save-outline"></nb-icon>
+      Save
+    </button>
+  </nb-card-footer>
 </nb-card>

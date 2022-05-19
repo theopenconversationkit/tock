@@ -9,20 +9,28 @@ export interface Scenario {
   name: string;
   category?: string;
   tags?: Array<string>;
-  dateCreation: Date;
-  dateModification?: Date;
+  creationDate: Date;
+  updateDate?: Date;
   description?: string;
   data?: scenarioItem[];
   mode: scenarioMode;
 }
 
+export interface intentDefinition {
+  label: string;
+  name: string;
+  category?: string;
+  description?: string;
+  intentId?: string;
+}
 export interface scenarioItem {
   id: number;
   parentIds?: number[];
   text: string;
   from: string;
   final?: boolean;
-  intentId?: string;
+  intentDefinition?: intentDefinition;
+  _sentences?: string[];
 }
 
 export interface Filter {

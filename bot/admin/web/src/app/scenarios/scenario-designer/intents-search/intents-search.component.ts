@@ -3,9 +3,9 @@ import { NbDialogRef } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { PaginatedQuery } from 'src/app/model/commons';
-import { SearchQuery, SentencesResult } from 'src/app/model/nlp';
+import { SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
+import { ScenarioDesignerService } from '../scenario-designer-service.service';
 
 @Component({
   selector: 'scenario-intents-search',
@@ -22,7 +22,8 @@ export class IntentsSearchComponent implements OnInit, OnDestroy {
   constructor(
     public dialogRef: NbDialogRef<IntentsSearchComponent>,
     protected state: StateService,
-    private nlp: NlpService
+    private nlp: NlpService,
+    private scenarioDesignerService: ScenarioDesignerService
   ) {}
 
   loading: boolean = true;
@@ -46,7 +47,7 @@ export class IntentsSearchComponent implements OnInit, OnDestroy {
     this.useIntentEvent.emit(intent.intent);
   }
 
-  getObjectValueByPath(obj, key) {
+  getObjectValueByPath(obj, key: string) {
     if (key.indexOf('.') > -1) {
       let nameSpaces = key.split('.');
       return nameSpaces.reduce((accumulator, value) => {
@@ -79,19 +80,10 @@ export class IntentsSearchComponent implements OnInit, OnDestroy {
   }
 
   searchIntents() {
-    const cursor: number = 0;
-    const pageSize: number = 10;
-    const mark = null;
-    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
-    const searchQuery: SearchQuery = new SearchQuery(
-      paginatedQuery.namespace,
-      paginatedQuery.applicationName,
-      paginatedQuery.language,
-      paginatedQuery.start,
-      paginatedQuery.size,
-      paginatedQuery.searchMark,
-      this.intentSentence
-    );
+    const searchQuery: SearchQuery = this.scenarioDesignerService.createSearchIntentsQuery({
+      searchString: this.intentSentence
+    });
+
     return this.nlp.searchSentences(searchQuery);
   }
 

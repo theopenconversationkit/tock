@@ -27,7 +27,8 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
-  item;
+  item: scenarioItem;
+
   constructor(
     private scenarioDesignerService: ScenarioDesignerService,
     private dialogService: DialogService,
@@ -47,11 +48,15 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     this.draggable = {
       data: this.item.id
     };
-    if (this.item.intentId) this.collectIntentUtterances();
+
+    if (this.item.intentDefinition?.intentId) this.collectIntentUtterances();
+    else {
+      this.utterancesLoading = false;
+    }
   }
 
   manageIntent(): void {
-    if (this.item.intentId) {
+    if (this.item.intentDefinition?.intentId || this.item.intentDefinition) {
       this.editIntent();
     } else {
       this.searchIntent();
@@ -77,27 +82,23 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   }
 
   setItemIntent(intent) {
-    this.item.intentId = intent._id;
+    this.item.intentDefinition = {
+      label: intent.label,
+      name: intent.name,
+      category: intent.category,
+      description: intent.description,
+      intentId: intent._id
+    };
     this.collectIntentUtterances();
   }
 
   utterancesLoading = true;
 
   collectIntentUtterances() {
-    const cursor: number = 0;
-    const pageSize: number = 10;
-    const mark = null;
-    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
-    const searchQuery: SearchQuery = new SearchQuery(
-      paginatedQuery.namespace,
-      paginatedQuery.applicationName,
-      paginatedQuery.language,
-      paginatedQuery.start,
-      paginatedQuery.size,
-      paginatedQuery.searchMark,
-      null,
-      this.item.intentId
-    );
+    const searchQuery: SearchQuery = this.scenarioDesignerService.createSearchIntentsQuery({
+      intentId: this.item.intentDefinition.intentId
+    });
+
     const nlpSubscription = this.nlp.searchSentences(searchQuery).subscribe((sentencesResearch) => {
       this.item._sentences = sentencesResearch.rows.map((sentence) => sentence.text);
       this.utterancesLoading = false;
@@ -114,6 +115,8 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     const modalSubscription = modal.componentRef.instance.createIntentEvent
       .pipe(takeUntil(this.destroy))
       .subscribe((res) => {
+        this.item.intentDefinition = res;
+
         this.editIntent();
         modal.close();
       });
@@ -121,8 +124,14 @@ export class ScenarioDesignerEntryComponent implements OnInit {
 
   editIntent(): void {
     const modal = this.dialogService.openDialog(IntentEditComponent, {
-      context: {}
+      context: {
+        item: this.item
+      }
     });
+  }
+
+  itemHasIntent() {
+    return this.item.intentDefinition;
   }
 
   selectItem(): void {
@@ -232,6 +241,10 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   onDrop($event): void {
     if (this.item.id == $event.data) return;
     this.scenarioDesignerService.itemDropped(this.item.id, $event.data);
+  }
+
+  mouseWheel($event) {
+    $event.stopPropagation();
   }
 
   ngOnDestroy() {
