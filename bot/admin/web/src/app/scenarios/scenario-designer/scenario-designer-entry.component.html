@@ -27,66 +27,68 @@
   >
     <div
       class="from-icon client"
-      (click)="switchItemType('client')"
+      (click)="switchItemType(SCENARIO_ITEM_FROM_CLIENT)"
     >
       <img
         src="assets/images/scenario-client.svg"
         class="move"
         dndHandle
-        *ngIf="item.from == 'client'"
+        *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT"
       />
       <img
         src="assets/images/scenario-client.svg"
-        *ngIf="item.from != 'client' && mode == 'writing'"
+        *ngIf="item.from != SCENARIO_ITEM_FROM_CLIENT && mode == SCENARIO_MODE_WRITING"
       />
       <div
         class="duplication-count"
         dndHandle
-        *ngIf="item.from == 'client' && item.parentIds?.length > 1"
+        *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && item.parentIds?.length > 1"
       >
         {{ item.parentIds?.length }}
       </div>
     </div>
     <div
       class="from-icon bot"
-      (click)="switchItemType('bot')"
+      (click)="switchItemType(SCENARIO_ITEM_FROM_BOT)"
+      *ngIf="item.parentIds?.length && !item.intentDefinition"
     >
       <img
         src="assets/images/scenario-bot.svg"
         class="move"
         dndHandle
-        *ngIf="item.from == 'bot'"
+        *ngIf="item.from == SCENARIO_ITEM_FROM_BOT"
       />
       <img
         src="assets/images/scenario-bot.svg"
-        *ngIf="item.from != 'bot' && mode == 'writing'"
+        *ngIf="item.from != SCENARIO_ITEM_FROM_BOT && mode == SCENARIO_MODE_WRITING"
       />
       <div
         class="duplication-count"
         dndHandle
-        *ngIf="item.from == 'bot' && item.parentIds?.length > 1"
+        *ngIf="item.from == SCENARIO_ITEM_FROM_BOT && item.parentIds?.length > 1"
       >
         {{ item.parentIds?.length }}
       </div>
     </div>
     <div
-      class="from-icon verification"
-      (click)="switchItemType('verification')"
+      class="from-icon api"
+      (click)="switchItemType(SCENARIO_ITEM_FROM_API)"
+      *ngIf="item.parentIds?.length && !item.intentDefinition"
     >
       <img
         src="assets/images/scenario-verification.svg"
         class="move"
         dndHandle
-        *ngIf="item.from == 'verification'"
+        *ngIf="item.from == SCENARIO_ITEM_FROM_API"
       />
       <img
         src="assets/images/scenario-verification.svg"
-        *ngIf="item.from != 'verification' && mode == 'writing'"
+        *ngIf="item.from != SCENARIO_ITEM_FROM_API && mode == SCENARIO_MODE_WRITING"
       />
       <div
         class="duplication-count"
         dndHandle
-        *ngIf="item.from == 'verification' && item.parentIds?.length > 1"
+        *ngIf="item.from == SCENARIO_ITEM_FROM_API && item.parentIds?.length > 1"
       >
         {{ item.parentIds?.length }}
       </div>
@@ -109,18 +111,36 @@
       <strong>{{ item.text }}</strong>
 
       <div class="questions">
-        <ul *ngIf="item.intentDefinition?.intentId">
-          <li *ngFor="let sentence of item._sentences">
+        <ul>
+          <li
+            *ngFor="let sentence of item.intentDefinition.sentences"
+            class="ellipsis"
+            [title]="sentence"
+          >
+            {{ sentence }}
+          </li>
+        </ul>
+        <ul>
+          <li
+            *ngFor="let sentence of item.intentDefinition._sentences"
+            class="ellipsis text-muted"
+            [title]="sentence"
+          >
             {{ sentence }}
           </li>
         </ul>
       </div>
     </div>
 
-    <div *ngIf="mode == 'writing' && item.from == 'bot' && itemHasNoChildren()">
+    <div
+      *ngIf="
+        mode == SCENARIO_MODE_WRITING && item.from == SCENARIO_ITEM_FROM_BOT && itemHasNoChildren()
+      "
+    >
       <nb-checkbox
         (checkedChange)="toggleFinal($event)"
         [checked]="item.final"
+        nbTooltip="Define this item as ending the conversation"
         >End of chat</nb-checkbox
       >
     </div>
@@ -132,6 +152,7 @@
         status="primary"
         *ngIf="!itemHasNoChildren()"
         (click)="test()"
+        nbTooltip="Test the conversation from this point"
       >
         Test
       </button>
@@ -139,8 +160,9 @@
         nbButton
         size="tiny"
         status="warning"
-        *ngIf="mode == 'writing' && item.id > 0 && itemHasNoChildren()"
+        *ngIf="mode == SCENARIO_MODE_WRITING && item.id > 0 && itemHasNoChildren()"
         (click)="delete()"
+        nbTooltip="Remove this item"
       >
         Delete
       </button>
@@ -148,8 +170,9 @@
         nbButton
         size="tiny"
         status="info"
-        *ngIf="mode == 'writing' && itemCanHaveAnswer()"
+        *ngIf="mode == SCENARIO_MODE_WRITING && itemCanHaveAnswer()"
         (click)="answering()"
+        nbTooltip="Add an answer to this item"
       >
         Add answer
       </button>
@@ -158,10 +181,30 @@
         nbButton
         size="tiny"
         status="info"
-        *ngIf="mode != 'writing' && item.from == 'client' && item.text?.length"
+        *ngIf="
+          mode == SCENARIO_MODE_PRODUCTION &&
+          item.from == SCENARIO_ITEM_FROM_CLIENT &&
+          item.text?.length
+        "
         (click)="manageIntent()"
+        nbTooltip="Intent infos and edition"
       >
         Manage intent
+      </button>
+
+      <button
+        nbButton
+        size="tiny"
+        status="info"
+        *ngIf="
+          mode == SCENARIO_MODE_PRODUCTION &&
+          item.from == SCENARIO_ITEM_FROM_API &&
+          item.text?.length
+        "
+        (click)="manageApi()"
+        nbTooltip="Api call infos and edition"
+      >
+        Manage api call
       </button>
     </div>
   </div>

@@ -10,9 +10,13 @@ import { scenarioItem } from '../../models';
 })
 export class IntentEditComponent implements OnInit {
   @Input() item: scenarioItem;
+  @Output() saveModifications = new EventEmitter();
+  itemCopy: scenarioItem;
   constructor(public dialogRef: NbDialogRef<IntentEditComponent>, protected state: StateService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.itemCopy = JSON.parse(JSON.stringify(this.item));
+  }
 
   dissociateIntent() {
     delete this.item.intentDefinition;
@@ -21,17 +25,21 @@ export class IntentEditComponent implements OnInit {
 
   addSentence($event) {
     if ($event.target.value.trim()) {
-      if (!this.item._sentences) this.item._sentences = [];
-      this.item._sentences.push($event.target.value.trim());
+      if (!this.itemCopy.intentDefinition.sentences) this.itemCopy.intentDefinition.sentences = [];
+      this.itemCopy.intentDefinition.sentences.push($event.target.value.trim());
       $event.target.value = '';
     }
   }
 
   removeSentence(sentence) {
-    this.item._sentences = this.item._sentences.filter((s) => s != sentence);
+    this.itemCopy.intentDefinition.sentences = this.itemCopy.intentDefinition.sentences.filter(
+      (s) => s != sentence
+    );
   }
 
-  save() {}
+  save() {
+    this.saveModifications.emit(this.itemCopy);
+  }
 
   cancel(): void {
     this.dialogRef.close();

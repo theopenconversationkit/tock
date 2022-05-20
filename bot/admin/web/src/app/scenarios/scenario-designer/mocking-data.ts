@@ -5,7 +5,7 @@ export const mockingStory_3: scenarioItem[] = [
   {
     id: 2,
     parentIds: [0],
-    from: 'verification',
+    from: 'api',
     text: 'Vérifier si le service est disponible pour les clients'
   },
   {
@@ -31,13 +31,13 @@ export const mockingStory_3: scenarioItem[] = [
   {
     id: 8,
     parentIds: [7],
-    from: 'verification',
+    from: 'api',
     text: "Appel API :\nCalculer l'encours et comparer aux plafonds du client"
   },
   {
     id: 9,
     parentIds: [17],
-    from: 'verification',
+    from: 'api',
     text: 'Appel API :\nVérifier si possible de le faire en autonomie pour le client (vérifier si ça dépasse la limite ou pas)'
   },
   { id: 12, parentIds: [6], from: 'client', text: "A l'étranger" },
@@ -46,7 +46,7 @@ export const mockingStory_3: scenarioItem[] = [
   {
     id: 15,
     parentIds: [14],
-    from: 'verification',
+    from: 'api',
     text: 'Appel API:\nEnvoyer message au conseiller'
   },
   {
@@ -108,7 +108,7 @@ export const mockingStory_3: scenarioItem[] = [
 
 export const mockingStory_2: scenarioItem[] = [
   { id: 0, from: 'client', text: 'Comment activer ma carte?' },
-  { id: 1, parentIds: [0], from: 'verification', text: 'Recup identifiant Topaze' },
+  { id: 1, parentIds: [0], from: 'api', text: 'Recup identifiant Topaze' },
   {
     id: 2,
     parentIds: [1],
@@ -163,7 +163,7 @@ export const mockingStory_2: scenarioItem[] = [
     text: "Pouvez-vous m'indiquer les 4 derniers chiffres de la nouvelle carte max ?"
   },
   { id: 17, parentIds: [16], from: 'client', text: '1234' },
-  { id: 18, parentIds: [17], from: 'verification', text: 'Activation auto' },
+  { id: 18, parentIds: [17], from: 'api', text: 'Activation auto' },
   {
     id: 19,
     parentIds: [18],
@@ -257,7 +257,7 @@ export const mockingStory_1: scenarioItem[] = [
   {
     id: 15,
     parentIds: [14],
-    from: 'verification',
+    from: 'api',
     text: 'Récupération des horaires caisse'
   },
   {

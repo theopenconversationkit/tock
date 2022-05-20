@@ -3,10 +3,17 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { PaginatedQuery } from 'src/app/model/commons';
 import { SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
-import { scenarioItem } from '../models/scenario.model';
+import {
+  scenarioItem,
+  SCENARIO_ITEM_FROM_API,
+  SCENARIO_ITEM_FROM_BOT,
+  SCENARIO_ITEM_FROM_CLIENT,
+  SCENARIO_MODE_PRODUCTION,
+  SCENARIO_MODE_WRITING
+} from '../models/scenario.model';
+import { ApiEditComponent } from './api-edit/api-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
 import { IntentsSearchComponent } from './intents-search/intents-search.component';
@@ -28,6 +35,12 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
   item: scenarioItem;
+
+  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
+  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
+  readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
+  readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
+  readonly SCENARIO_ITEM_FROM_API = SCENARIO_ITEM_FROM_API;
 
   constructor(
     private scenarioDesignerService: ScenarioDesignerService,
@@ -55,8 +68,16 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     }
   }
 
+  manageApi() {
+    const modal = this.dialogService.openDialog(ApiEditComponent, {
+      context: {
+        item: this.item
+      }
+    });
+  }
+
   manageIntent(): void {
-    if (this.item.intentDefinition?.intentId || this.item.intentDefinition) {
+    if (this.item.intentDefinition) {
       this.editIntent();
     } else {
       this.searchIntent();
@@ -89,6 +110,7 @@ export class ScenarioDesignerEntryComponent implements OnInit {
       description: intent.description,
       intentId: intent._id
     };
+    this.utterancesLoading = true;
     this.collectIntentUtterances();
   }
 
@@ -100,7 +122,9 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     });
 
     const nlpSubscription = this.nlp.searchSentences(searchQuery).subscribe((sentencesResearch) => {
-      this.item._sentences = sentencesResearch.rows.map((sentence) => sentence.text);
+      this.item.intentDefinition._sentences = sentencesResearch.rows.map(
+        (sentence) => sentence.text
+      );
       this.utterancesLoading = false;
       nlpSubscription.unsubscribe();
     });
@@ -112,14 +136,12 @@ export class ScenarioDesignerEntryComponent implements OnInit {
         intentSentence: this.item.text
       }
     });
-    const modalSubscription = modal.componentRef.instance.createIntentEvent
-      .pipe(takeUntil(this.destroy))
-      .subscribe((res) => {
-        this.item.intentDefinition = res;
+    modal.componentRef.instance.createIntentEvent.pipe(takeUntil(this.destroy)).subscribe((res) => {
+      this.item.intentDefinition = res;
 
-        this.editIntent();
-        modal.close();
-      });
+      this.editIntent();
+      modal.close();
+    });
   }
 
   editIntent(): void {
@@ -128,6 +150,14 @@ export class ScenarioDesignerEntryComponent implements OnInit {
         item: this.item
       }
     });
+    const saveModificationsSubsciption = modal.componentRef.instance.saveModifications
+      .pipe(takeUntil(this.destroy))
+      .subscribe((modifiedItem) => {
+        this.item.intentDefinition = modifiedItem.intentDefinition;
+        console.log(this.item);
+        saveModificationsSubsciption.unsubscribe();
+        modal.close();
+      });
   }
 
   itemHasIntent() {
@@ -177,7 +207,7 @@ export class ScenarioDesignerEntryComponent implements OnInit {
 
   getItemCardCssClass(): string {
     let classes = this.item.from;
-    if (this.item.from == 'bot') {
+    if (this.item.from == SCENARIO_ITEM_FROM_BOT) {
       if (this.item.final) classes += ' final';
     }
     if (this.item.parentIds?.length > 1) classes += ' duplicate';
@@ -186,14 +216,14 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   }
 
   switchItemType(which): void {
-    if (which == 'client') {
-      this.item.from = 'client';
+    if (which == SCENARIO_ITEM_FROM_CLIENT) {
+      this.item.from = SCENARIO_ITEM_FROM_CLIENT;
     }
-    if (which == 'bot') {
-      this.item.from = 'bot';
+    if (which == SCENARIO_ITEM_FROM_BOT) {
+      this.item.from = SCENARIO_ITEM_FROM_BOT;
     }
-    if (which == 'verification') {
-      this.item.from = 'verification';
+    if (which == SCENARIO_ITEM_FROM_API) {
+      this.item.from = SCENARIO_ITEM_FROM_API;
     }
   }
 

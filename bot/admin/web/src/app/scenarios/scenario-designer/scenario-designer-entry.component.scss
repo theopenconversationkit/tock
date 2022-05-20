@@ -34,7 +34,7 @@ $inactive-color: transparent;
 $bot-color: #90c3ea;
 $bot-final-color: #43abf5;
 $client-color: white;
-$verification-color: #bebebe;
+$api-color: #bebebe;
 
 .item-card {
   background-color: white;
@@ -106,7 +106,7 @@ $verification-color: #bebebe;
     &.bot {
       top: 3.2rem;
     }
-    &.verification {
+    &.api {
       top: 6.4rem;
     }
 
@@ -130,7 +130,7 @@ $verification-color: #bebebe;
       &.bot {
         background-color: $inactive-color;
       }
-      &.verification {
+      &.api {
         background-color: $inactive-color;
       }
     }
@@ -142,7 +142,7 @@ $verification-color: #bebebe;
       &.client {
         background-color: $inactive-color;
       }
-      &.verification {
+      &.api {
         background-color: $inactive-color;
       }
     }
@@ -153,16 +153,16 @@ $verification-color: #bebebe;
         &.client {
           background-color: $inactive-color;
         }
-        &.verification {
+        &.api {
           background-color: $inactive-color;
         }
       }
     }
   }
-  &.verification {
-    background-color: $verification-color;
+  &.api {
+    background-color: $api-color;
     .from-icon {
-      background-color: $verification-color;
+      background-color: $api-color;
       &.client {
         background-color: $inactive-color;
       }
@@ -184,8 +184,8 @@ $verification-color: #bebebe;
     &.client {
       border-color: #{scale-color($client-color, $lightness: -25%)};
     }
-    &.verification {
-      border-color: #{scale-color($verification-color, $lightness: -25%)};
+    &.api {
+      border-color: #{scale-color($api-color, $lightness: -25%)};
     }
   }
 }

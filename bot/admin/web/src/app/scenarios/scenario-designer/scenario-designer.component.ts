@@ -29,6 +29,10 @@ import { ScenarioDesignerService } from './scenario-designer-service.service';
 import {
   Scenario,
   scenarioItem,
+  scenarioItemFrom,
+  SCENARIO_ITEM_FROM_API,
+  SCENARIO_ITEM_FROM_BOT,
+  SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE_PRODUCTION,
   SCENARIO_MODE_WRITING
 } from '../models/scenario.model';
@@ -55,6 +59,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   scenarioId: number;
   scenario: Scenario;
   scenarioBackup: string;
+
+  readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
+  readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
+  readonly SCENARIO_ITEM_FROM_API = SCENARIO_ITEM_FROM_API;
 
   constructor(
     private scenarioService: ScenarioService,
@@ -95,7 +103,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         if (!this.scenario.data.length) {
           this.scenario.data.push({
             id: 0,
-            from: 'client',
+            from: SCENARIO_ITEM_FROM_CLIENT,
             text: ''
           });
         }
@@ -183,10 +191,13 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     return Math.max(...this.scenario.data.map((i) => i.id)) + 1;
   }
 
-  addAnswer(itemRef: scenarioItem, from?: string): void {
-    let fromType = from || 'client';
-    if (from == undefined && (itemRef.from == 'client' || itemRef.from == 'verification')) {
-      fromType = 'bot';
+  addAnswer(itemRef: scenarioItem, from?: scenarioItemFrom): void {
+    let fromType = from || SCENARIO_ITEM_FROM_CLIENT;
+    if (
+      from == undefined &&
+      (itemRef.from == SCENARIO_ITEM_FROM_CLIENT || itemRef.from == SCENARIO_ITEM_FROM_API)
+    ) {
+      fromType = SCENARIO_ITEM_FROM_BOT;
     }
 
     let newEntry: scenarioItem = {
@@ -215,13 +226,13 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     if (this.selectedItem) {
       if ($event.altKey) {
         if ($event.key == 'c') {
-          this.addAnswer(this.selectedItem, 'client');
+          this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_CLIENT);
         }
         if ($event.key == 'b') {
-          this.addAnswer(this.selectedItem, 'bot');
+          this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_BOT);
         }
         if ($event.key == 'v') {
-          this.addAnswer(this.selectedItem, 'verification');
+          this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_API);
         }
         if ($event.key == 'n') {
           this.addAnswer(this.selectedItem);
@@ -454,21 +465,21 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   addChatMessage(from: string, text: string, type: string = 'text'): void {
     let user;
     switch (from) {
-      case 'client':
-        user = this.userIdentities.client;
+      case SCENARIO_ITEM_FROM_CLIENT:
+        user = this.userIdentities[SCENARIO_ITEM_FROM_CLIENT];
         break;
-      case 'bot':
-        user = this.userIdentities.bot;
+      case SCENARIO_ITEM_FROM_BOT:
+        user = this.userIdentities[SCENARIO_ITEM_FROM_BOT];
         break;
-      case 'verification':
-        user = this.userIdentities.verification;
+      case SCENARIO_ITEM_FROM_API:
+        user = this.userIdentities[SCENARIO_ITEM_FROM_API];
         break;
     }
 
     this.messages.push({
       text: text,
       date: new Date(),
-      reply: from == 'client' ? true : false,
+      reply: from == SCENARIO_ITEM_FROM_CLIENT ? true : false,
       type: type,
       user: user
     });
@@ -480,6 +491,17 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.destroy.next();
     this.destroy.complete();
   }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (!this.canDeactivate()) {
+      $event.returnValue = true;
+    }
+  }
+
+  canDeactivate() {
+    return this.scenarioBackup == this.stringifiedCleanScenario();
+  }
 }
 
 @Injectable()
@@ -487,7 +509,7 @@ export class ScenarioDesignerNavigationGuard implements CanDeactivate<any> {
   constructor(private dialogService: DialogService) {}
 
   canDeactivate(component: any) {
-    const canDeactivate = component.scenarioBackup == component.stringifiedCleanScenario();
+    const canDeactivate = component.canDeactivate();
 
     if (!canDeactivate) {
       const subject = new Subject<boolean>();

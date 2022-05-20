@@ -1,3 +1,7 @@
+.text-muted {
+  color: #8f959b;
+}
+
 .valign-middle {
   vertical-align: middle;
 }
@@ -6,4 +10,10 @@
 }
 .initial-capitalize::first-letter {
   text-transform: uppercase;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

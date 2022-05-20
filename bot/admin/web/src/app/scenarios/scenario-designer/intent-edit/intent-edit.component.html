@@ -16,42 +16,42 @@
   <nb-card-body>
     <div>
       <label class="font-weight-bold">Status :</label>
-      <span *ngIf="item.intentDefinition.intentId">
+      <span *ngIf="itemCopy.intentDefinition.intentId">
         Already exists. Will be reassigned upon publication.
       </span>
-      <span *ngIf="!item.intentDefinition.intentId">
+      <span *ngIf="!itemCopy.intentDefinition.intentId">
         Does not exist. Will be created upon publishing.
       </span>
     </div>
-    <div *ngIf="item.intentDefinition.intentId">
+    <div *ngIf="itemCopy.intentDefinition.intentId">
       <label class="font-weight-bold">Id :</label>
       <span>
-        {{ item.intentDefinition.intentId }}
+        {{ itemCopy.intentDefinition.intentId }}
       </span>
     </div>
     <div>
       <label class="font-weight-bold">Name :</label>
       <span>
-        {{ item.intentDefinition.name }}
+        {{ itemCopy.intentDefinition.name }}
       </span>
     </div>
-    <div *ngIf="item.intentDefinition.label">
+    <div *ngIf="itemCopy.intentDefinition.label">
       <label class="font-weight-bold">Label :</label>
       <span>
-        {{ item.intentDefinition.label }}
+        {{ itemCopy.intentDefinition.label }}
       </span>
     </div>
 
-    <div *ngIf="item.intentDefinition.description">
+    <div *ngIf="itemCopy.intentDefinition.description">
       <label class="font-weight-bold">Description :</label>
       <span>
-        {{ item.intentDefinition.description }}
+        {{ itemCopy.intentDefinition.description }}
       </span>
     </div>
-    <div *ngIf="item.intentDefinition.category">
+    <div *ngIf="itemCopy.intentDefinition.category">
       <label class="font-weight-bold">Category :</label>
       <span>
-        {{ item.intentDefinition.category }}
+        {{ itemCopy.intentDefinition.category }}
       </span>
     </div>
 
@@ -59,12 +59,9 @@
 
     <strong> Questions matching this Intent :</strong>
     <div class="questions">
-      <ul
-        *ngIf="item.intentDefinition?.intentId"
-        class="mt-2"
-      >
+      <ul>
         <li
-          *ngFor="let sentence of item._sentences"
+          *ngFor="let sentence of itemCopy.intentDefinition.sentences"
           class="d-flex justify-content-between align-items-start"
         >
           <div>
@@ -76,11 +73,24 @@
               status="danger"
               (click)="removeSentence(sentence)"
               class="pointer"
+              nbTooltip="Remove this formulation"
             ></nb-icon>
           </div>
         </li>
       </ul>
+
+      <ul>
+        <li
+          *ngFor="let sentence of itemCopy.intentDefinition._sentences"
+          class="d-flex justify-content-between align-items-start"
+        >
+          <div class="text-muted">
+            {{ sentence }}
+          </div>
+        </li>
+      </ul>
     </div>
+
     <input
       #labelInput
       nbInput
@@ -93,7 +103,7 @@
     />
   </nb-card-body>
 
-  <nb-card-footer class="grid-button">
+  <nb-card-footer class="d-flex justify-content-between">
     <button
       nbButton
       size="small"
@@ -101,7 +111,7 @@
       class="m-1"
       (click)="cancel()"
     >
-      Close
+      Cancel
     </button>
 
     <button
@@ -112,7 +122,8 @@
       (click)="dissociateIntent()"
     >
       <nb-icon icon="slash-outline"></nb-icon>
-      Dissociate from this intent
+      <span *ngIf="itemCopy.intentDefinition.intentId"> Dissociate intent </span>
+      <span *ngIf="!itemCopy.intentDefinition.intentId"> Delete intent </span>
     </button>
 
     <button

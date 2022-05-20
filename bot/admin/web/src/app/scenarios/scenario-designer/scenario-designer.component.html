@@ -107,13 +107,13 @@
         class="from"
         [ngSwitch]="chatControlsFrom"
       >
-        <ng-container *ngSwitchCase="'client'">
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_CLIENT">
           <img src="assets/images/scenario-client.svg" />
         </ng-container>
-        <ng-container *ngSwitchCase="'bot'">
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_BOT">
           <img src="assets/images/scenario-bot.svg" />
         </ng-container>
-        <ng-container *ngSwitchCase="'verification'">
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_API">
           <img src="assets/images/scenario-verification.svg" />
         </ng-container>
       </div>
