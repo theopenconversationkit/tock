@@ -1083,6 +1083,7 @@ object BotAdminService {
                 it.toConfiguredAnswer(botId, oldStory)
             },
             configuredSteps = story.configuredSteps.mapSteps(application, botId, oldStory),
+            nextIntentsQualifiers = story.nextIntentsQualifiers
         )
     }
 
@@ -1186,7 +1187,8 @@ object BotAdminService {
                                 null
                             )
                         },
-                        configuredSteps = story.configuredSteps.mapSteps(application, botConf.botId, null)
+                        configuredSteps = story.configuredSteps.mapSteps(application, botConf.botId, null),
+                        nextIntentsQualifiers = story.nextIntentsQualifiers
                     )
                 }
             }

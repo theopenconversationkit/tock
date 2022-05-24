@@ -34,6 +34,7 @@ import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.RawString
@@ -366,5 +367,32 @@ class ConfiguredStoryHandlerTest {
                 defaultLabel = "Default $label",
                 i18n = LinkedHashSet()
             )
+    }
+
+    @Test
+    fun `nextIntentQualifiers are taking in account`() {
+
+        val bus: BotBus = mockk(relaxed = true){
+            every { botDefinition } returns BotDefinitionTest()
+            every { dialog } returns mockk{
+                every { state } returns mockk(relaxed = true){
+                    every{ nextActionState } returns mockk{
+                        every {intentsQualifiers} returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
+                    }
+                }
+            }
+        }
+
+        val configuration: StoryDefinitionConfiguration = mockk{
+            every { mandatoryEntities } returns emptyList()
+            every { findCurrentAnswer() } returns null
+            every { findEnabledEndWithStoryId(any()) } returns null
+            every { nextIntentsQualifiers } returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
+        }
+
+        val handler = ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration)
+        handler.handle(bus)
+
+        assertEquals(bus.dialog.state.nextActionState?.intentsQualifiers, listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5)))
     }
 }
