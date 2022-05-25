@@ -32,7 +32,7 @@ export class IntentCreateComponent implements OnInit {
   form: FormGroup = new FormGroup({
     label: new FormControl(undefined, Validators.required),
     name: new FormControl(undefined, Validators.required),
-    category: new FormControl(),
+    category: new FormControl('scenarios'),
     description: new FormControl()
   });
 

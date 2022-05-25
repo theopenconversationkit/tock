@@ -25,6 +25,12 @@ import { ScenarioDesignerService } from './scenario-designer-service.service';
   styleUrls: ['./scenario-designer-entry.component.scss']
 })
 export class ScenarioDesignerEntryComponent implements OnInit {
+  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
+  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
+  readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
+  readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
+  readonly SCENARIO_ITEM_FROM_API = SCENARIO_ITEM_FROM_API;
+
   destroy = new Subject();
   @Input() itemId: number;
   @Input() parentId: number;
@@ -35,12 +41,7 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
   item: scenarioItem;
-
-  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
-  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
-  readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
-  readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
-  readonly SCENARIO_ITEM_FROM_API = SCENARIO_ITEM_FROM_API;
+  utterancesLoading = true;
 
   constructor(
     private scenarioDesignerService: ScenarioDesignerService,
@@ -80,7 +81,14 @@ export class ScenarioDesignerEntryComponent implements OnInit {
         item: this.item
       }
     });
+    const saveModifications = modal.componentRef.instance.saveModifications
+      .pipe(takeUntil(this.destroy))
+      .subscribe((res) => {
+        saveModifications.unsubscribe();
+        modal.close();
+      });
   }
+  setItemApiDefinition(apiDef) {}
 
   manageIntent(): void {
     if (this.item.intentDefinition) {
@@ -96,31 +104,33 @@ export class ScenarioDesignerEntryComponent implements OnInit {
         intentSentence: this.item.text
       }
     });
-    modal.componentRef.instance.createNewIntentEvent
+    const createNewIntentEvent = modal.componentRef.instance.createNewIntentEvent
       .pipe(takeUntil(this.destroy))
       .subscribe((res) => {
         this.createIntent();
+        createNewIntentEvent.unsubscribe();
         modal.close();
       });
-    modal.componentRef.instance.useIntentEvent.pipe(takeUntil(this.destroy)).subscribe((intent) => {
-      this.setItemIntent(intent);
-      modal.close();
-    });
+    const useIntentEvent = modal.componentRef.instance.useIntentEvent
+      .pipe(takeUntil(this.destroy))
+      .subscribe((intent) => {
+        this.setItemIntentDefinition(intent);
+        useIntentEvent.unsubscribe();
+        modal.close();
+      });
   }
 
-  setItemIntent(intent) {
+  setItemIntentDefinition(intentDef) {
     this.item.intentDefinition = {
-      label: intent.label,
-      name: intent.name,
-      category: intent.category,
-      description: intent.description,
-      intentId: intent._id
+      label: intentDef.label,
+      name: intentDef.name,
+      category: intentDef.category,
+      description: intentDef.description,
+      intentId: intentDef._id
     };
     this.utterancesLoading = true;
     this.collectIntentUtterances();
   }
-
-  utterancesLoading = true;
 
   collectIntentUtterances() {
     const searchQuery: SearchQuery = this.scenarioDesignerService.createSearchIntentsQuery({
@@ -142,12 +152,14 @@ export class ScenarioDesignerEntryComponent implements OnInit {
         intentSentence: this.item.text
       }
     });
-    modal.componentRef.instance.createIntentEvent.pipe(takeUntil(this.destroy)).subscribe((res) => {
-      this.item.intentDefinition = res;
-
-      this.editIntent();
-      modal.close();
-    });
+    const createIntentEvent = modal.componentRef.instance.createIntentEvent
+      .pipe(takeUntil(this.destroy))
+      .subscribe((res) => {
+        this.item.intentDefinition = res;
+        this.editIntent();
+        createIntentEvent.unsubscribe();
+        modal.close();
+      });
   }
 
   editIntent(): void {
@@ -160,7 +172,6 @@ export class ScenarioDesignerEntryComponent implements OnInit {
       .pipe(takeUntil(this.destroy))
       .subscribe((modifiedItem) => {
         this.item.intentDefinition = modifiedItem.intentDefinition;
-        console.log(this.item);
         saveModificationsSubsciption.unsubscribe();
         modal.close();
       });
