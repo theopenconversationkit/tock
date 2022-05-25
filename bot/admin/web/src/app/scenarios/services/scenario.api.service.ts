@@ -17,7 +17,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { Scenario } from '../models';

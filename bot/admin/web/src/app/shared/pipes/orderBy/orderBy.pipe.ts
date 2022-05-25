@@ -14,7 +14,9 @@ export class OrderByPipe implements PipeTransform {
     }
 
     array.sort((a: any, b: any) => {
-      if (typeof a[field] == 'undefined' || typeof b[field] == 'undefined') return 0;
+      if (a[field] == null || a[field] == '') return 1;
+
+      if (b[field] == null || b[field] == '') return -1;
 
       if (secondField) {
         return a[field].localeCompare(b[field]) || a[secondField].localeCompare(b[secondField]);

@@ -40,7 +40,7 @@ import {
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
-import { OrderByPipe } from './pipes/orderBy.pipe';
+import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
 
 @NgModule({
   imports: [
