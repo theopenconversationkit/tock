@@ -68,6 +68,12 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.itemCard.nativeElement.addEventListener('mousedown', function (event) {
+      event.stopPropagation();
+    });
+  }
+
   manageApi() {
     const modal = this.dialogService.openDialog(ApiEditComponent, {
       context: {
@@ -206,7 +212,7 @@ export class ScenarioDesignerEntryComponent implements OnInit {
   }
 
   getItemCardCssClass(): string {
-    let classes = this.item.from;
+    let classes = 'cursor-default ' + this.item.from;
     if (this.item.from == SCENARIO_ITEM_FROM_BOT) {
       if (this.item.final) classes += ' final';
     }
@@ -273,8 +279,8 @@ export class ScenarioDesignerEntryComponent implements OnInit {
     this.scenarioDesignerService.itemDropped(this.item.id, $event.data);
   }
 
-  mouseWheel($event) {
-    $event.stopPropagation();
+  mouseWheel(event) {
+    event.stopPropagation();
   }
 
   ngOnDestroy() {

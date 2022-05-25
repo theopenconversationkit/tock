@@ -328,7 +328,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
   @HostListener('mousedown', ['$event'])
   onMouseDownCanvas(event: MouseEvent) {
-    if (event.which == 3) {
+    if (event.button == 0) {
       this.isDragingCanvas = {
         left: this.canvasPos.x,
         top: this.canvasPos.y,
@@ -341,7 +341,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
   @HostListener('mouseup', ['$event'])
   onMouseUpCanvas(event: MouseEvent) {
-    if (event.which == 3) {
+    if (event.button == 0) {
       this.isDragingCanvas = undefined;
       let canvas = this.canvasElem.nativeElement;
       canvas.style.transition = `transform .${CANVAS_TRANSITION_TIMING}s`;
@@ -349,7 +349,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
   @HostListener('mousemove', ['$event'])
   onMouseMoveCanvas(event: MouseEvent) {
-    if (this.isDragingCanvas && event.which == 3) {
+    if (this.isDragingCanvas && event.button == 0) {
       let canvas = this.canvasElem.nativeElement;
       const dx = event.clientX - this.isDragingCanvas.x;
       const dy = event.clientY - this.isDragingCanvas.y;
