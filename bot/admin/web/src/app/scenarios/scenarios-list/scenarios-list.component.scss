@@ -3,6 +3,7 @@ section {
     display: grid;
     grid-gap: 0.5rem;
     grid-auto-flow: column;
+    align-items: center;
     justify-content: end;
   }
 
@@ -26,7 +27,7 @@ section {
   grid-template-columns: 100%;
 }
 
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1000px) {
   .grid {
     grid-template-columns: calc(65% - 1rem) 35%;
   }
