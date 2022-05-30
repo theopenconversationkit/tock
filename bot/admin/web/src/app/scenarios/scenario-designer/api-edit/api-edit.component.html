@@ -50,10 +50,48 @@
           placeholder="Select api call response type"
           formControlName="responseType"
         >
-          <nb-option value="string">Text or Number</nb-option>
-          <nb-option value="boolean">Boolean</nb-option>
-          <nb-option value="codes">Response codes</nb-option>
+          <nb-option [value]="SCENARIO_ITEM_API_RESPONSETYPE_STRING">Text or Number</nb-option>
+          <nb-option [value]="SCENARIO_ITEM_API_RESPONSETYPE_BOOLEAN">Boolean</nb-option>
+          <nb-option [value]="SCENARIO_ITEM_API_RESPONSETYPE_CODES">Response codes</nb-option>
         </nb-select>
+      </div>
+
+      <div
+        class="d-flex flex-column mb-2"
+        *ngIf="form.value.responseType == 'codes'"
+      >
+        <label for="description">Response codes <span class="text-muted">(*)</span></label>
+        <ul>
+          <li
+            *ngFor="let code of responseCodes.value"
+            class="d-flex justify-content-between align-items-start"
+          >
+            <div class="text-muted">
+              {{ code }}
+            </div>
+            <div>
+              <nb-icon
+                icon="trash-2-outline"
+                status="danger"
+                (click)="removeResponseCode(code)"
+                class="pointer"
+                nbTooltip="Remove this response code"
+              ></nb-icon>
+            </div>
+          </li>
+        </ul>
+
+        <input
+          #labelInput
+          nbInput
+          fullWidth
+          id="newQuestion"
+          type="text"
+          placeholder="Add a code and press enter"
+          class="mt-2"
+          fieldSize="small"
+          (keyup.enter)="addResponseCode($event)"
+        />
       </div>
     </form>
   </nb-card-body>
@@ -75,7 +113,7 @@
       status="danger"
       class="m-1"
       (click)="removeApiDefinition()"
-      *ngIf="itemCopy.apiDefinition"
+      *ngIf="item.apiCallDefinition"
     >
       <nb-icon icon="slash-outline"></nb-icon>
       Delete api call definition

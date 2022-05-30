@@ -322,10 +322,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:contextmenu', ['$event'])
-  onContextMenuCanvas(event: MouseEvent) {
-    event.preventDefault();
-  }
   @HostListener('mousedown', ['$event'])
   onMouseDownCanvas(event: MouseEvent) {
     if (event.button == 0) {
@@ -459,7 +455,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   userIdentities = {
     client: { name: 'Pierre Martin', avatar: 'assets/images/scenario-client.svg' },
     bot: { name: 'Bot', avatar: 'assets/images/scenario-bot.svg' },
-    verification: { name: 'Vérification', avatar: 'assets/images/scenario-verification.svg' }
+    api: { name: 'Vérification', avatar: 'assets/images/scenario-verification.svg' }
   };
 
   addChatMessage(from: string, text: string, type: string = 'text'): void {

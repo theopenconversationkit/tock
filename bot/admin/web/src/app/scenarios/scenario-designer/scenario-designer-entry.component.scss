@@ -53,6 +53,10 @@ $api-color: #bebebe;
     box-shadow: 0px 5px 8px -2px rgba($color: #000000, $alpha: 0.5);
   }
 
+  .item-infos {
+    min-height: 140px;
+  }
+
   textarea {
     font-size: 80%;
     padding: 0.3rem 0.5rem;
@@ -66,7 +70,6 @@ $api-color: #bebebe;
 
   .sentences {
     font-size: 0.7rem;
-    min-height: 7rem;
     .questions {
       overflow-y: auto;
       max-height: 6rem;

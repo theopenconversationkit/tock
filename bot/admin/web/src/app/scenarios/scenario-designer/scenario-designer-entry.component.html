@@ -94,118 +94,147 @@
       </div>
     </div>
 
-    <textarea
-      *ngIf="!itemHasIntent()"
-      #itemTextarea
-      fullWidth
-      rows="4"
-      placeholder="Question"
-      [(ngModel)]="item.text"
-    ></textarea>
-
-    <div
-      *ngIf="itemHasIntent()"
-      class="sentences mb-2"
-      [nbSpinner]="utterancesLoading"
-    >
-      <strong>{{ item.text }}</strong>
-
-      <div class="questions">
-        <ul>
-          <li
-            *ngFor="let sentence of item.intentDefinition.sentences"
-            class="ellipsis"
-            [title]="sentence"
+    <div class="item-infos d-flex align-items-start flex-column">
+      <div class="align-self-stretch">
+        <div
+          class="mb-2"
+          *ngIf="isAnApiAnswer()"
+        >
+          <nb-select
+            [(ngModel)]="item.apiResponse"
+            (selectedChange)="onApiAnswerSelected()"
+            fullWidth
+            [status]="getApiResponseSelectStatus()"
+            size="tiny"
+            filled
+            placeholder="Select api response"
+            [title]="item.apiResponse"
           >
-            {{ sentence }}
-          </li>
-        </ul>
-        <ul>
-          <li
-            *ngFor="let sentence of item.intentDefinition._sentences"
-            class="ellipsis text-muted"
-            [title]="sentence"
-          >
-            {{ sentence }}
-          </li>
-        </ul>
+            <nb-option
+              *ngFor="let responseVal of getApiAnswers()"
+              [value]="responseVal"
+              >{{ responseVal }}</nb-option
+            >
+          </nb-select>
+        </div>
+
+        <textarea
+          *ngIf="!itemHasDefinition()"
+          #itemTextarea
+          fullWidth
+          rows="4"
+          placeholder="Question"
+          [(ngModel)]="item.text"
+        ></textarea>
+
+        <strong *ngIf="itemHasDefinition()">{{ item.text }}</strong>
+
+        <div
+          *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()"
+          class="sentences mb-2"
+          [nbSpinner]="utterancesLoading"
+        >
+          <div class="questions">
+            <ul>
+              <li
+                *ngFor="let sentence of item.intentDefinition.sentences"
+                class="ellipsis"
+                [title]="sentence"
+              >
+                {{ sentence }}
+              </li>
+            </ul>
+            <ul>
+              <li
+                *ngFor="let sentence of item.intentDefinition._sentences"
+                class="ellipsis text-muted"
+                [title]="sentence"
+              >
+                {{ sentence }}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div
-      *ngIf="
-        mode == SCENARIO_MODE_WRITING && item.from == SCENARIO_ITEM_FROM_BOT && itemHasNoChildren()
-      "
-    >
-      <nb-checkbox
-        (checkedChange)="toggleFinal($event)"
-        [checked]="item.final"
-        nbTooltip="Define this item as ending the conversation"
-        >End of chat</nb-checkbox
-      >
-    </div>
+      <div class="mt-auto align-self-stretch">
+        <div class="d-flex justify-content-between mt-1">
+          <div
+            *ngIf="
+              mode == SCENARIO_MODE_WRITING &&
+              item.from == SCENARIO_ITEM_FROM_BOT &&
+              itemHasNoChildren()
+            "
+          >
+            <nb-checkbox
+              (checkedChange)="toggleFinal($event)"
+              [checked]="item.final"
+              nbTooltip="Define this item as ending the conversation"
+              >End of chat</nb-checkbox
+            >
+          </div>
+          <button
+            nbButton
+            size="tiny"
+            status="primary"
+            *ngIf="!itemHasNoChildren()"
+            (click)="test()"
+            nbTooltip="Test the conversation from this point"
+          >
+            Test
+          </button>
+          <button
+            nbButton
+            size="tiny"
+            status="warning"
+            *ngIf="mode == SCENARIO_MODE_WRITING && item.id > 0 && itemHasNoChildren()"
+            (click)="delete()"
+            nbTooltip="Remove this item"
+          >
+            Delete
+          </button>
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="mode == SCENARIO_MODE_WRITING && itemCanHaveAnswer()"
+            (click)="answering()"
+            nbTooltip="Add an answer to this item"
+          >
+            Add answer
+          </button>
 
-    <div class="d-flex justify-content-between mt-1">
-      <button
-        nbButton
-        size="tiny"
-        status="primary"
-        *ngIf="!itemHasNoChildren()"
-        (click)="test()"
-        nbTooltip="Test the conversation from this point"
-      >
-        Test
-      </button>
-      <button
-        nbButton
-        size="tiny"
-        status="warning"
-        *ngIf="mode == SCENARIO_MODE_WRITING && item.id > 0 && itemHasNoChildren()"
-        (click)="delete()"
-        nbTooltip="Remove this item"
-      >
-        Delete
-      </button>
-      <button
-        nbButton
-        size="tiny"
-        status="info"
-        *ngIf="mode == SCENARIO_MODE_WRITING && itemCanHaveAnswer()"
-        (click)="answering()"
-        nbTooltip="Add an answer to this item"
-      >
-        Add answer
-      </button>
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="
+              mode == SCENARIO_MODE_PRODUCTION &&
+              item.from == SCENARIO_ITEM_FROM_CLIENT &&
+              item.text?.length
+            "
+            (click)="manageIntent()"
+            nbTooltip="Intent infos and edition"
+          >
+            Manage intent
+          </button>
 
-      <button
-        nbButton
-        size="tiny"
-        status="info"
-        *ngIf="
-          mode == SCENARIO_MODE_PRODUCTION &&
-          item.from == SCENARIO_ITEM_FROM_CLIENT &&
-          item.text?.length
-        "
-        (click)="manageIntent()"
-        nbTooltip="Intent infos and edition"
-      >
-        Manage intent
-      </button>
-
-      <button
-        nbButton
-        size="tiny"
-        status="info"
-        *ngIf="
-          mode == SCENARIO_MODE_PRODUCTION &&
-          item.from == SCENARIO_ITEM_FROM_API &&
-          item.text?.length
-        "
-        (click)="manageApi()"
-        nbTooltip="Api call infos and edition"
-      >
-        Manage api call
-      </button>
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="
+              mode == SCENARIO_MODE_PRODUCTION &&
+              item.from == SCENARIO_ITEM_FROM_API &&
+              item.text?.length
+            "
+            (click)="manageApi()"
+            nbTooltip="Api call infos and edition"
+          >
+            Manage api call
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

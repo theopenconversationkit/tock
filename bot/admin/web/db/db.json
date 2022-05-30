@@ -90,7 +90,14 @@
         {
           "id": 0,
           "from": "client",
-          "text": "Je n'arrive pas à faire mon virement"
+          "text": "Je n'arrive pas à faire mon virement",
+          "intentDefinition": {
+            "label": "faire virement",
+            "name": "fairevirement",
+            "category": "scenarios",
+            "description": null,
+            "intentId": "62750f877c671d6e57529bf9"
+          }
         },
         {
           "id": 2,
@@ -98,7 +105,13 @@
             0
           ],
           "from": "api",
-          "text": "Vérifier si le service est disponible pour les clients"
+          "text": "Vérifier si le service est disponible pour les clients",
+          "apiCallDefinition": {
+            "name": "test",
+            "description": null,
+            "responseType": "boolean",
+            "responseCodes": []
+          }
         },
         {
           "id": 3,
@@ -106,7 +119,8 @@
             2
           ],
           "from": "bot",
-          "text": "Réponse OK : Quel montant souhaitez-vous virer ?"
+          "text": "Réponse OK : Quel montant souhaitez-vous virer ?",
+          "apiResponse": "true"
         },
         {
           "id": 4,
@@ -114,7 +128,8 @@
             2
           ],
           "from": "bot",
-          "text": "Réponse KO : Message de service indisponible, il faut une intervention d'un conseiller.\nProposer au client:\n- Débranchement\n- Message conseiller pour rappel"
+          "text": "Réponse KO : Message de service indisponible, il faut une intervention d'un conseiller.\nProposer au client:\n- Débranchement\n- Message conseiller pour rappel",
+          "apiResponse": "false"
         },
         {
           "id": 5,
@@ -154,7 +169,18 @@
             17
           ],
           "from": "api",
-          "text": "Appel API :\nVérifier si possible de le faire en autonomie pour le client (vérifier si ça dépasse la limite ou pas)"
+          "text": "Appel API :\nVérifier si possible de le faire en autonomie pour le client (vérifier si ça dépasse la limite ou pas)",
+          "apiCallDefinition": {
+            "name": "test",
+            "description": null,
+            "responseType": "codes",
+            "responseCodes": [
+              "ELIGIBLE_LIMITE_DEPASSEE_ET_CDR_OUVERT",
+              "ELIGIBLE_LIMITE_NON_DEPASSEE",
+              "ELIGIBLE_LIMITE_DEPASSEE_ET_HNO",
+              "NON_ELIGIBLE"
+            ]
+          }
         },
         {
           "id": 12,
@@ -212,7 +238,8 @@
           ],
           "from": "bot",
           "text": "Eligible & Limite non dépassée : \nProposer de modifier lui-même ses plafonds (lien vers la page du site / lien sur l'applicaion)",
-          "final": true
+          "final": true,
+          "apiResponse": "ELIGIBLE_LIMITE_NON_DEPASSEE"
         },
         {
           "id": 19,
@@ -221,7 +248,8 @@
           ],
           "from": "bot",
           "text": "Eligible & Limite dépassée et CDR ouvert : \nDébranchement vers un conseiller pour faire la modification",
-          "final": true
+          "final": true,
+          "apiResponse": "ELIGIBLE_LIMITE_DEPASSEE_ET_CDR_OUVERT"
         },
         {
           "id": 20,
@@ -230,7 +258,8 @@
           ],
           "from": "bot",
           "text": "Eligible & Limite dépassée et HNO : \nMessage revenir demain",
-          "final": true
+          "final": true,
+          "apiResponse": "ELIGIBLE_LIMITE_DEPASSEE_ET_HNO"
         },
         {
           "id": 21,
@@ -239,7 +268,8 @@
           ],
           "from": "bot",
           "text": "Non éligible : \nMessage revenir demain",
-          "final": true
+          "final": true,
+          "apiResponse": "NON_ELIGIBLE"
         },
         {
           "id": 22,
@@ -293,7 +323,15 @@
             0
           ],
           "from": "api",
-          "text": "Recup identifiant Topaze."
+          "text": "Recup identifiant Topaze.",
+          "apiCallDefinition": {
+            "id": 1,
+            "parentIds": [
+              0
+            ],
+            "from": "api",
+            "text": "Recup identifiant Topaze."
+          }
         },
         {
           "id": 2,
