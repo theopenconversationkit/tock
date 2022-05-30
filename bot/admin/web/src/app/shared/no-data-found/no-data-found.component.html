@@ -1,0 +1,12 @@
+<nb-card>
+  <nb-card-body class="d-flex">
+    <img
+      src="{{ BASE_HREF }}assets/images/best_bot_gray.png"
+      class="tock-robot mr-4"
+    />
+    <div>
+      <h2 class="text-muted">{{ title }}</h2>
+      <p *ngIf="message">{{ message }}</p>
+    </div>
+  </nb-card-body>
+</nb-card>

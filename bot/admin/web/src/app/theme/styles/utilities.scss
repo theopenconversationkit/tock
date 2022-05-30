@@ -1,0 +1,87 @@
+@for $i from 1 through 4 {
+  .gap-#{$i} {
+    gap: #{$i}rem;
+  }
+}
+
+.lineHeight-0 {
+  line-height: 0;
+}
+
+.text-muted {
+  color: #8f959b;
+}
+
+.valign-middle {
+  vertical-align: middle;
+}
+.pointer {
+  cursor: pointer;
+}
+.cursor-move {
+  cursor: move;
+}
+.cursor-default {
+  cursor: default;
+}
+.initial-capitalize::first-letter {
+  text-transform: uppercase;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+nb-select.appearance-outline .select-button {
+  min-width: auto !important;
+}
+
+// Makes the disabled ghost button more discreet. By default, the background color makes it more visible than the non-deactivated buttons.
+.nb-theme-default [nbButton].appearance-ghost.status-basic[disabled],
+.nb-theme-default .appearance-ghost.status-basic[disabled][nbButtonToggle],
+.nb-theme-dark [nbButton].appearance-ghost.status-basic[disabled],
+.nb-theme-dark .appearance-ghost.status-basic[disabled][nbButtonToggle] {
+  background-color: unset;
+  color: #8f9bb354;
+}
+
+.option-list--break-word {
+  .option-list > * {
+    word-break: break-word;
+  }
+}
+
+.cdk-overlay-pane {
+  nb-option-list {
+    min-width: 15rem;
+  }
+}
+
+nb-chat.minimalInterface {
+  box-shadow: none;
+  border-radius: unset;
+  > .header {
+    display: none;
+  }
+}
+
+nb-chat-message.currentsentence {
+  .text {
+    background-color: var(--success) !important;
+    color: white !important;
+  }
+}
+
+nb-card.selected {
+  border-left: 0.5rem solid var(--success);
+  nb-card-body {
+    padding-left: 1rem;
+  }
+}
+
+.nb-theme-default nb-tabset .tab-link,
+.nb-theme-dark nb-tabset .tab-link {
+  padding: 1rem 1.5rem;
+}

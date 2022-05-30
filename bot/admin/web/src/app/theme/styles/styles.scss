@@ -23,16 +23,33 @@
 @import '~@nebular/theme/styles/globals';
 
 @import '~bootstrap/scss/functions';
+
+$blue: #3366ff;
+$green: #00d68f;
+$cyan: #0095ff;
+$yellow: #ffaa00;
+$red: #ff3d71;
+
 @import '~bootstrap/scss/variables';
 @import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/root';
+@import '~bootstrap/scss/reboot';
+@import '~bootstrap/scss/type';
+@import '~bootstrap/scss/images';
 @import '~bootstrap/scss/grid';
+@import '~bootstrap/scss/tables';
+@import '~bootstrap/scss/forms';
+@import '~bootstrap/scss/transitions';
+@import '~bootstrap/scss/pagination';
+@import '~bootstrap/scss/close';
+@import '~bootstrap/scss/utilities';
+@import '~bootstrap/scss/print';
 
 // loading progress bar theme
 @import './pace.theme';
 
 @import './layout';
 @import './overrides';
-@import './shared';
 
 // install the framework and custom global styles
 @include nb-install() {
@@ -44,4 +61,6 @@
   @include ngx-pace-theme();
 
   @include nb-overrides();
-} ;
+}
+
+@import './utilities';

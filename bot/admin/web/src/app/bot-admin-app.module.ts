@@ -35,7 +35,7 @@ import {
   NbThemeModule,
   NbIconLibraries
 } from '@nebular/theme';
-import { CustomNbIconLibraries } from "./shared/icons/custom-nb-icon-libraries";
+import { CustomNbIconLibraries } from './shared/icons/custom-nb-icon-libraries';
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { BotService } from './bot/bot-service';
 
@@ -68,14 +68,15 @@ const routes: Routes = [
   },
   {
     path: 'faq',
-    loadChildren: () => import('./faq/faq.module').then(m => m.FaqModule)
+    loadChildren: () => import('./faq/faq.module').then((m) => m.FaqModule)
   },
-  {path: '**', redirectTo: '/nlp/inbox' }
+  { path: '**', redirectTo: '/nlp/inbox' }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  declarations: []
 })
 export class BotAdminAppRoutingModule {}
 
@@ -114,16 +115,14 @@ export class BotAdminAppRoutingModule {}
   bootstrap: [BotAdminAppComponent]
 })
 export class BotAdminAppModule {
-
   constructor(private iconLibraries: NbIconLibraries) {
     this.registerMaterialIcons();
   }
 
   private registerMaterialIcons() {
-    this.iconLibraries.registerFontPack("material-icons", {
-      packClass: "material-icons",
+    this.iconLibraries.registerFontPack('material-icons', {
+      packClass: 'material-icons',
       ligature: true
     });
-
   }
 }

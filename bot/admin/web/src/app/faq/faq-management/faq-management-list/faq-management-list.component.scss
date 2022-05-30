@@ -1,0 +1,15 @@
+.grid-columns {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 5fr 2fr 2fr;
+}
+
+.truncate {
+  max-height: 5rem;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  display: block;
+  display: -webkit-box;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}

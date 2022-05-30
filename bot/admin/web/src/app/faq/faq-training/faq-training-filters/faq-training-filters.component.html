@@ -1,0 +1,33 @@
+<nb-card class="mb-0">
+  <nb-card-body>
+    <form
+      class="grid"
+      [formGroup]="form"
+    >
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="search-outline"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          placeholder="Search"
+          type="text"
+          formControlName="search"
+        />
+        <button
+          *ngIf="!!search.value"
+          nbButton
+          nbSuffix
+          nbTooltip="Clear"
+          ghost
+          (click)="clearSearch()"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </nb-form-field>
+    </form>
+  </nb-card-body>
+</nb-card>

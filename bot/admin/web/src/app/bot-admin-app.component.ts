@@ -24,26 +24,25 @@ import { RestService } from './core-nlp/rest/rest.service';
 import { StateService } from './core-nlp/state.service';
 import { User, UserRole } from './model/auth';
 
+
+
 @Component({
   selector: 'tock-bot-admin-root',
   templateUrl: './bot-admin-app.component.html',
   styleUrls: ['./bot-admin-app.component.css']
 })
 export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
-
   UserRole = UserRole;
 
   private errorUnsuscriber: any;
   public menu: NbMenuItem[] = [];
 
-  constructor(
-    public auth: AuthService,
-    public state: StateService,
-    private rest: RestService,
-    private toastrService: NbToastrService,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer
-  ) {
+  constructor(public auth: AuthService,
+              public state: StateService,
+              private rest: RestService,
+              private toastrService: NbToastrService,
+              iconRegistry: MatIconRegistry,
+              sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon(
       'logo',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg')
@@ -52,8 +51,8 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.errorUnsuscriber = this.rest.errorEmitter.subscribe((e) =>
-      this.toastrService.show(e, 'Error', { duration: 5000, status: 'danger' })
+    this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
+      this.toastrService.show(e, "Error", {duration: 5000, status: 'danger'})
     );
   }
 
@@ -101,8 +100,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           icon: 'school',
           pack: 'material-icons'
         },
-        link: '/faq/train'
-        ,
+        link: '/faq/training',
         hidden: !this.state.hasRole(UserRole.faqNlpUser)
       },
       {
@@ -111,9 +109,14 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           icon: 'question_answer',
           pack: 'material-icons'
         },
-        link: '/faq/qa'
-        ,
+        link: '/faq/management',
         hidden: !this.state.hasRole(UserRole.faqBotUser)
+      },
+      {
+        title: 'Answers',
+        icon: 'color-palette-outline',
+        link: '/build/i18n',
+        hidden: this.state.hasRole(UserRole.botUser) || !this.state.hasRole(UserRole.faqBotUser)
       }
     ];
   }
@@ -122,4 +125,5 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.errorUnsuscriber.unsubscribe();
   }
+
 }

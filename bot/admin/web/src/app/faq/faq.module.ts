@@ -1,171 +1,83 @@
-/*
- * Copyright (C) 2017/2022 e-voyageurs technologies
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {RouterModule, Routes} from "@angular/router";
-import {NgModule} from "@angular/core";
-import {CommonModule} from "@angular/common";
-import {InfiniteScrollModule} from "ngx-infinite-scroll";
-import {SharedModule} from "../shared-nlp/shared.module";
-import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {ApplicationResolver} from "../core-nlp/application.resolver";
-import {BotSharedModule} from "../shared/bot-shared.module";
-import {BotModule} from "../bot/bot.module";
-import {NlpModule} from '../nlp-tabs/nlp.module';
-import {MomentModule} from "ngx-moment";
-import {MatNativeDateModule} from "@angular/material/core";
-import {MatDatepickerModule} from "@angular/material/datepicker";
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 import {
-  NbAccordionModule,
   NbAlertModule,
+  NbAutocompleteModule,
+  NbBadgeModule,
   NbButtonModule,
-  NbCalendarModule,
-  NbCalendarRangeModule,
   NbCardModule,
+  NbChatModule,
   NbCheckboxModule,
-  NbContextMenuModule,
-  NbDatepickerModule,
-  NbDialogModule,
+  NbFormFieldModule,
+  NbIconModule,
   NbInputModule,
-  NbListModule,
-  NbMenuModule,
-  NbPopoverModule,
-  NbRadioModule,
-  NbRouteTabsetModule,
   NbSelectModule,
-  NbSidebarModule,
   NbSpinnerModule,
+  NbTabsetModule,
   NbTagModule,
-  NbTooltipModule,
-  NbUserModule
-} from "@nebular/theme";
-import {TrainComponent} from './train/train.component';
-import {TrainHeaderComponent} from './train/train-header/train-header.component';
-import {IntentsService} from "./common/intents.service";
-import {SentencesService} from "./common/sentences.service";
-import {ClickCaptureDirective} from './common/directives/click-capture.directive';
-import {NgModelChangeDebouncedDirective} from './common/directives/ng-model-change-debounced.directive';
-import {DelayDirective} from './common/directives/delay.directive';
+  NbTooltipModule
+} from '@nebular/theme';
+import { NlpModule } from '../nlp-tabs/nlp.module';
 
-import {TrainToolbarComponent} from './train/train-toolbar/train-toolbar.component';
-import {TrainSidepanelComponent} from './train/train-sidepanel/train-sidepanel.component';
-import {TrainGridItemComponent} from "./train/train-grid-item/train-grid-item.component";
-import {TrainGridComponent} from "./train/train-grid/train-grid.component";
-import {BotAnalyticsModule} from "../analytics/analytics.module";
-import {FaqDefinitionComponent} from "./faq-definition/faq-definition.component";
-import {FaqHeaderComponent} from "./faq-definition/faq-header/faq-header.component";
-import {FaqGridComponent} from "./faq-definition/faq-grid/faq-grid.component";
-import {FaqGridItemComponent} from "./faq-definition/faq-grid-item/faq-grid-item.component";
-import {FaqDefinitionService} from "./common/faq-definition.service";
-import {InviewSidepanelComponent} from './common/components/inview-sidepanel/inview-sidepanel.component';
-import {FaqSidepanelImportContentComponent} from "./faq-definition/sidepanels/faq-sidepanel-import-content/faq-sidepanel-import-content.component";
-import {FaqSidepanelEditorContentComponent} from "./faq-definition/sidepanels/faq-sidepanel-editor-content/faq-sidepanel-editor-content.component";
-import {ReactiveFormsModule} from "@angular/forms";
-import {EditUtteranceComponent} from './common/components/edit-utterance/edit-utterance.component';
-import {FaqDefinitionSidepanelEditorService} from "./faq-definition/sidepanels/faq-definition-sidepanel-editor.service";
-
-const routes: Routes = [
-  {
-    path: 'train',
-    component: TrainComponent,
-    canActivate: [AuthGuard],
-    resolve: {
-      application: ApplicationResolver
-    },
-  },
-  {
-    path: 'qa',
-    component: FaqDefinitionComponent,
-    canActivate: [AuthGuard],
-    resolve: {
-      application: ApplicationResolver
-    },
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-  declarations: []
-})
-export class FaqRoutingModule {
-}
+import { FaqManagementComponent } from './faq-management/faq-management.component';
+import { FaqRoutingModule } from './faq-routing.module';
+import { FaqTrainingFiltersComponent } from './faq-training/faq-training-filters/faq-training-filters.component';
+import { FaqTrainingComponent } from './faq-training/faq-training.component';
+import { FaqTrainingListComponent } from './faq-training/faq-training-list/faq-training-list.component';
+import { FaqTrainingDialogComponent } from './faq-training/faq-training-dialog/faq-training-dialog.component';
+import { SharedModule } from '../shared-nlp/shared.module';
+import { MomentModule } from 'ngx-moment';
+import { FaqManagementFiltersComponent } from './faq-management/faq-management-filters/faq-management-filters.component';
+import { FaqManagementListComponent } from './faq-management/faq-management-list/faq-management-list.component';
+import { FaqManagementEditComponent } from './faq-management/faq-management-edit/faq-management-edit.component';
+import { BotSharedModule } from '../shared/bot-shared.module';
+import { FaqManagementSettingsComponent } from './faq-management/faq-management-settings/faq-management-settings.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { FaqService } from './services/faq.service';
+import { BotAnalyticsModule } from '../analytics/analytics.module';
 
 @NgModule({
   imports: [
-    CommonModule,
-    SharedModule,
-    FaqRoutingModule,
-    InfiniteScrollModule,
-    MomentModule,
     BotSharedModule,
-    BotModule,
+    CommonModule,
+    FaqRoutingModule,
     NlpModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    NbRouteTabsetModule,
-    NbPopoverModule,
-    NbCheckboxModule,
-    NbCardModule,
-    NbTooltipModule,
-    NbSpinnerModule,
+    MomentModule,
+    SharedModule,
+    ReactiveFormsModule,
+    NbAlertModule,
+    NbAutocompleteModule,
+    NbBadgeModule,
     NbButtonModule,
+    NbCardModule,
+    NbCheckboxModule,
+    NbFormFieldModule,
+    NbIconModule,
     NbInputModule,
     NbSelectModule,
-    NbCalendarModule,
-    NbUserModule,
-    NbDatepickerModule,
-    NbListModule,
-    NbAccordionModule,
-    NbContextMenuModule,
-    NbMenuModule.forRoot(),
-    NbCalendarRangeModule,
-    NbDialogModule.forRoot(),
-    NbRadioModule,
-    NbSidebarModule.forRoot(),
-    BotAnalyticsModule,
-    ReactiveFormsModule,
+    NbSpinnerModule,
     NbTagModule,
-    NbAlertModule
+    NbTabsetModule,
+    NbTooltipModule,
+    NbAutocompleteModule,
+    NbAlertModule,
+    NbChatModule,
+    InfiniteScrollModule,
+    BotAnalyticsModule
   ],
   declarations: [
-    TrainComponent,
-    TrainGridComponent,
-    TrainHeaderComponent,
-    TrainGridItemComponent,
-    ClickCaptureDirective,
-    NgModelChangeDebouncedDirective,
-    DelayDirective,
-    TrainToolbarComponent,
-    TrainSidepanelComponent,
-    FaqDefinitionComponent,
-    FaqHeaderComponent,
-    FaqGridComponent,
-    FaqGridItemComponent,
-    InviewSidepanelComponent,
-    FaqSidepanelImportContentComponent,
-    FaqSidepanelEditorContentComponent,
-    EditUtteranceComponent
+    FaqManagementComponent,
+    FaqTrainingComponent,
+    FaqTrainingFiltersComponent,
+    FaqTrainingListComponent,
+    FaqTrainingDialogComponent,
+    FaqManagementFiltersComponent,
+    FaqManagementListComponent,
+    FaqManagementEditComponent,
+    FaqManagementSettingsComponent
   ],
   exports: [],
-  providers: [
-    IntentsService,
-    SentencesService,
-    FaqDefinitionService,
-    FaqDefinitionSidepanelEditorService
-  ],
+  providers: [FaqService]
 })
-export class FaqModule {
-}
+export class FaqModule {}
