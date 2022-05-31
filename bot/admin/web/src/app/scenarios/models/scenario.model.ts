@@ -1,3 +1,5 @@
+import { Sentence } from '../../model/nlp';
+
 export const SCENARIO_MODE_WRITING = 'writing';
 export type scenario_mode_writing = typeof SCENARIO_MODE_WRITING;
 export const SCENARIO_MODE_PRODUCTION = 'production';
@@ -38,7 +40,7 @@ export interface intentDefinition {
   description?: string;
   intentId?: string;
   sentences?: string[];
-  _sentences?: string[];
+  _sentences?: Sentence[];
 }
 
 export const SCENARIO_ITEM_FROM_CLIENT = 'client';

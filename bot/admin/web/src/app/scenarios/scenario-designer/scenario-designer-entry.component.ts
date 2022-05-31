@@ -174,9 +174,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
     });
 
     const nlpSubscription = this.nlp.searchSentences(searchQuery).subscribe((sentencesResearch) => {
-      this.item.intentDefinition._sentences = sentencesResearch.rows.map(
-        (sentence) => sentence.text
-      );
+      this.item.intentDefinition._sentences = sentencesResearch.rows;
       this.utterancesLoading = false;
       nlpSubscription.unsubscribe();
     });

@@ -81,11 +81,20 @@
 
       <ul>
         <li
-          *ngFor="let sentence of itemCopy.intentDefinition._sentences"
+          *ngFor="let sentence of item.intentDefinition._sentences"
           class="d-flex justify-content-between align-items-start"
         >
           <div class="text-muted">
-            {{ sentence }}
+            <!-- {{ sentence.text }} -->
+
+            <span
+              *ngFor="let t of sentence._tokens"
+              [ngClass]="{ token: t.entity }"
+              [title]="'Entity : ' + t.entity?.role"
+              [style.background]="t.color()"
+              [style.color]="getContrastYIQ(t.color())"
+              >{{ t.text }}</span
+            >
           </div>
         </li>
       </ul>

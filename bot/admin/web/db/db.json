@@ -212,7 +212,13 @@
             14
           ],
           "from": "api",
-          "text": "Appel API:\nEnvoyer message au conseiller"
+          "text": "Appel API:\nEnvoyer message au conseiller",
+          "apiCallDefinition": {
+            "name": "send_message",
+            "description": null,
+            "responseType": "boolean",
+            "responseCodes": []
+          }
         },
         {
           "id": 16,
@@ -221,7 +227,8 @@
           ],
           "from": "bot",
           "text": "Confirmer l'envoi du message au conseiller",
-          "final": true
+          "final": true,
+          "apiResponse": "true"
         },
         {
           "id": 17,
@@ -288,6 +295,16 @@
           "from": "bot",
           "text": "HNO :\nMessage revenir demain",
           "final": true
+        },
+        {
+          "id": 24,
+          "parentIds": [
+            15
+          ],
+          "from": "bot",
+          "text": "Echec envoi message",
+          "final": true,
+          "apiResponse": "false"
         }
       ],
       "mode": "production"
@@ -304,16 +321,19 @@
         {
           "id": 0,
           "from": "client",
-          "text": "Comment activer ma carte?",
+          "text": "Comment faire pour activer ma carte Max suite à une opposition ?",
           "intentDefinition": {
             "label": null,
-            "name": "comment_ac",
+            "name": "comment_fa",
             "category": "build",
             "description": null,
-            "intentId": "627a77415238af3bed8e94fb",
+            "intentId": "6294ce2ebabad268692173f4",
             "sentences": [
-              "Ma carte est inactive. Que dois-je faire ?",
-              "Comment faire pour activer ma carte ?"
+              "Comment faire pour activer ma carte ?",
+              "Comment activer ma carte ?",
+              "Je souhaite activer ma carte. Comment dois-je faire ?",
+              "Comment activer ma carte Max ?",
+              "J'ai une carte Max. Comment l'activer ?"
             ]
           }
         },
