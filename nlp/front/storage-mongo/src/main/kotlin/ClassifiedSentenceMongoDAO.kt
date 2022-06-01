@@ -106,7 +106,7 @@ import java.util.concurrent.TimeUnit.DAYS
 /**
  *
  */
-object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
+internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private val logger = KotlinLogging.logger {}
 

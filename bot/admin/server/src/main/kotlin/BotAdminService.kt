@@ -119,7 +119,7 @@ object BotAdminService {
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
-    internal val front = FrontClient
+    private val front = FrontClient
 
     private class BotStoryDefinitionConfigurationDumpController(
         override val targetNamespace: String,
