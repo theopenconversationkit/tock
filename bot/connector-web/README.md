@@ -189,3 +189,11 @@ bot_api:
 
 > To add extra headers from a [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) front-end, 
 > refer to its [README#extra-headers](https://github.com/theopenconversationkit/tock-react-kit#extra-headers).
+
+# Cookie storage for userId
+
+By default, a user's unique identifier is generated and stored by the client as an arbitrary string,
+which is passed to the web connector through the HTTP body and/or through query parameters.
+Setting the `tock_web_cookie_auth` environment variable to `true`
+makes it so the server stores users' identifiers in a secure, HTTP-only cookie, generating random unique identifiers
+(using the UUID V4 format) if no such cookie is found.

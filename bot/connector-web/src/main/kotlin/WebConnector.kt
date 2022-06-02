@@ -62,14 +62,20 @@ import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.vertx.core.http.Cookie
+import io.vertx.core.http.CookieSameSite
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpServerResponse
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
 import mu.KotlinLogging
 import java.time.Duration
+import java.util.*
 
 internal const val WEB_CONNECTOR_ID = "web"
+
+private const val TOCK_USER_ID = "tock_user_id"
 
 /**
  * The web (REST) connector type.
@@ -78,6 +84,7 @@ val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 
 private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
+private val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
 
@@ -108,7 +115,8 @@ class WebConnector internal constructor(
 
             router.route(path)
                 .handler(
-                    CorsHandler.create("*")
+                    // "*"+credentials is rejected by browsers, so we use the equivalent regex instead
+                    CorsHandler.create(if (cookieAuth) ".*" else "*")
                         .allowedMethod(HttpMethod.POST)
                         .run {
                             if (sseEnabled) allowedMethod(HttpMethod.GET) else this
@@ -120,12 +128,17 @@ class WebConnector internal constructor(
                                 this.allowedHeader(it)
                             }
                         }
+                        .allowCredentials(cookieAuth) // browsers do not send or save cookies unless credentials are allowed
                 )
             if (sseEnabled) {
                 router.route("$path/sse")
                     .handler { context ->
                         try {
-                            val userId = context.queryParams()["userId"]
+                            val userId = if (cookieAuth) {
+                                getOrCreateUserIdCookie(context)
+                            } else {
+                                context.queryParams()["userId"]
+                            }
                             val response = context.response()
                             response.isChunked = true
                             response.headers().add("Content-Type", "text/event-stream;charset=UTF-8")
@@ -152,7 +165,15 @@ class WebConnector internal constructor(
                 .handler { context ->
                     try {
                         executor.executeBlocking {
-                            handleRequest(controller, context, context.bodyAsString)
+                            val body = if (cookieAuth) {
+                                val jsonBody = context.bodyAsJson ?: JsonObject()
+                                val userId = getOrCreateUserIdCookie(context)
+                                jsonBody.put("userId", userId)   // note: mutating jsonBody does not mutate the original buffer
+                                jsonBody.toString()
+                            } else {
+                                context.bodyAsString
+                            }
+                            handleRequest(controller, context, body)
                         }
                     } catch (e: Throwable) {
                         context.fail(e)
@@ -160,6 +181,16 @@ class WebConnector internal constructor(
                 }
         }
     }
+
+    private fun getOrCreateUserIdCookie(context: RoutingContext) = (context.getCookie(TOCK_USER_ID)?.value
+        ?: UUID.randomUUID().toString().also { uuid ->
+            context.addCookie(
+                Cookie.cookie(TOCK_USER_ID, uuid).setHttpOnly(true).setSecure(true)
+                    .setSameSite(
+                        CookieSameSite.NONE
+                    )
+            )
+        })
 
     private fun HttpServerResponse.sendSsePing() {
         write("event: ping\n")
