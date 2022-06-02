@@ -1,4 +1,6 @@
-# Provides a Bot REST API
+# TOCK Web Connector
+
+## Bot REST API usage
 
 1) Add a web connector in admin interface with /test relative path.
 
@@ -123,16 +125,45 @@ response:
 }
 ```
 
-# Swagger
+### Swagger
 
 A simple [Swagger descriptor](./Swagger_TOCKWebConnector.yaml) of the rest service is provided¬.
 
-# React chat widget
+## Server-sent events (SSE)
+
+This connector supports sending messages using [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
+This feature can be enabled by setting the `tock_web_sse` optional property to `true`.
+When SSE is enabled, bot answers will be sent both as POST responses and as new events in the event stream -
+the [tock-react-kit](https://github.com/theopenconversationkit/tock-react-kit#sse) is configured to ignore the former
+while it is listening to server-sent events.
+
+The `tock_web_sse_keepalive_delay` optional property can be used to configure the number of seconds between
+two SSE pings (default: 10).
+
+## React chat widget
 
 The [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) component provides integration with
 Web pages, customizable chat widgets and orchestration with a Web connector back-end.
 
-# Extra headers
+To send a custom widget, make a class implementing `WebWidget` and override the `data` property with one of
+the desired type, which must serialize to a JSON object.
+
+For example:
+```kotlin
+data class TrainCardWidget(override val data: TrainCardProps) : WebWidget
+
+data class TrainCardProps(val departure: String, val arrival: String)
+```
+
+When sending messages using the [SSE](#server-sent-events-sse) feature, widgets must also be deserializable by KMongo.
+This requires registering the widget's class in the application's bootstrap:
+```kotlin
+KMongoConfiguration.bsonMapper.subtypeResolver.registerSubtypes(
+    TrainCardWidget::class.java,
+)
+```
+
+## Extra headers
 
 Sometimes it is useful to allow extra HTTP headers to bot requests, for instance to provide/pass authentication or 
 custom parameters from the front-end.
