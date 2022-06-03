@@ -37,6 +37,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val intentId = "idIntent".toId<IntentDefinition>()
     private val faqId = "faqDefId".toId<FaqDefinition>()
     private val faqId2 = "faqDefId2".toId<FaqDefinition>()
+    private val faqId3 = "faqDefId3".toId<FaqDefinition>()
     private val i18nId = "idI18n".toId<I18nLabel>()
     private val now = Instant.now().truncatedTo(ChronoUnit.MILLIS)
     private val tagList = listOf("TAG1", "TAG2")
@@ -49,6 +50,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     fun cleanup() {
         faqDefinitionDao.deleteFaqDefinitionById(faqId)
         faqDefinitionDao.deleteFaqDefinitionById(faqId2)
+        faqDefinitionDao.deleteFaqDefinitionById(faqId3)
     }
 
     @Test
@@ -122,7 +124,6 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         faqDefinitionDao.save(otherFaqDefinition)
 
         //some another faq
-        val faqId3 = "faqDefId3".toId<FaqDefinition>()
         val intentId3 = "idIntent3".toId<IntentDefinition>()
         val i18nId3 = "idI18n3".toId<I18nLabel>()
         val tagList3 = listOf("TAG2")
