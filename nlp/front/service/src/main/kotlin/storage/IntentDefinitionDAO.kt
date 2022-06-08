@@ -36,9 +36,16 @@ interface IntentDefinitionDAO {
 
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?
 
+    fun getIntentByIds(ids: Set<Id<IntentDefinition>>): List<IntentDefinition>?
+
     fun save(intent: IntentDefinition)
 
     fun deleteIntentById(id: Id<IntentDefinition>)
 
     fun getIntentsUsingEntity(entityType: String): List<IntentDefinition>
+
+    fun getIntentsByApplicationIdAndCategory(
+        applicationId: Id<ApplicationDefinition>,
+        category: String
+    ): List<IntentDefinition>
 }

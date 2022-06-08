@@ -55,6 +55,10 @@ export class RestService {
     return this.ssologin || document.cookie.indexOf('tock-sso=') !== -1;
   }
 
+  isCas():boolean{
+    return this.isSSO() && document.cookie.indexOf("pac4jCsrfToken=") !== -1;
+  }
+
   private headers(): HttpHeaders {
     const headers = this.notAuthenticatedHeaders();
     //hack for dev env
