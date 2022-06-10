@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin
+package ai.tock.bot.admin.scenario
 
-import ai.tock.bot.BotIoc
-import ai.tock.bot.admin.scenario.ScenarioVerticle
-import ai.tock.nlp.front.ioc.FrontIoc
-import ai.tock.shared.vertx.vertx
-import com.github.salomonbrys.kodein.Kodein
 
-fun main() {
-    startAdminServer()
-}
+class ScenarioService {
+    fun findAllService(): Collection<Scenario> {
+        TODO("Not yet implemented")
+    }
 
-fun startAdminServer(vararg modules: Kodein.Module) {
-    // setup ioc
-    FrontIoc.setup(BotIoc.coreModules + modules.toList())
-    // deploy verticle
-    vertx.deployVerticle(BotAdminVerticle())
-    vertx.deployVerticle(ScenarioVerticle())
+    fun findById(scenarioId: String): Scenario {
+        TODO("Not yet implemented")
+    }
+
+    fun existe(scenarioId: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    fun create(request: Scenario): Scenario {
+        TODO("Not yet implemented")
+    }
+
+    fun update(mapToScenario: Scenario): Scenario {
+        TODO("Not yet implemented")
+    }
+
+    fun delete(scenarioId: String) {
+        TODO("Not yet implemented")
+    }
 }

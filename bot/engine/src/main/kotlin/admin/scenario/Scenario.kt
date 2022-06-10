@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin
+package ai.tock.bot.admin.scenario
 
-import ai.tock.bot.BotIoc
-import ai.tock.bot.admin.scenario.ScenarioVerticle
-import ai.tock.nlp.front.ioc.FrontIoc
-import ai.tock.shared.vertx.vertx
-import com.github.salomonbrys.kodein.Kodein
+import java.time.ZonedDateTime
 
-fun main() {
-    startAdminServer()
-}
-
-fun startAdminServer(vararg modules: Kodein.Module) {
-    // setup ioc
-    FrontIoc.setup(BotIoc.coreModules + modules.toList())
-    // deploy verticle
-    vertx.deployVerticle(BotAdminVerticle())
-    vertx.deployVerticle(ScenarioVerticle())
-}
+data class Scenario(
+    val id: String,
+    val name: String,
+    val category: String? = null,
+    val tags: List<String> = emptyList(),
+    val applicationId: String,
+    val createDate: ZonedDateTime? = null,
+    val updateDate: ZonedDateTime? = null,
+    val description: String? = null,
+    val state: String
+)

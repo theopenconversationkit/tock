@@ -455,7 +455,7 @@ abstract class WebVerticle : AbstractVerticle() {
         blocking(POST, path, roles) { context ->
             try {
                 handler.invoke(context)
-                context.success()
+                context.successTrue()
                 logger.log(context, null)
             } catch (t: Throwable) {
                 if (t !is UnauthorizedException) {
@@ -621,7 +621,7 @@ abstract class WebVerticle : AbstractVerticle() {
                 }
                 throw t
             }
-            context.success()
+            context.successTrue()
         }
     }
 
@@ -777,7 +777,12 @@ abstract class WebVerticle : AbstractVerticle() {
         )
     }
 
-    fun RoutingContext.success() {
+    fun RoutingContext.successNoContent() {
+        this.endJson(null)
+    }
+
+    fun RoutingContext.successTrue() {
+        //TODO: vérifier si il y a ou non un un body "true"
         this.endJson(true)
     }
 
@@ -813,6 +818,8 @@ abstract class WebVerticle : AbstractVerticle() {
         get() = user?.user ?: error("no user in session")
 
     fun HttpServerResponse.endJson(result: Any?) {
+
+        //TODO: normalement, si result n'est pas null, il devrait y avoir autre chose qu'un 204, donc pour un BooleanResponse true le code ne sera pas 204 (à vérifier)
         if (result == null) {
             statusCode = 204
         }

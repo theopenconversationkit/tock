@@ -25,6 +25,9 @@ import kotlin.test.Test
 
 class WebVerticleTest {
 
+    //TODO: aucun test pour la réponse 204 , aucun test des blocking... () , les tests de WebVerticle sont TRES incomplet
+    //TODO: à compléter d'urgence !
+
     // check that WebVerticleImpl does not need to implement healthcheck methods to compile
     class WebVerticleImpl : WebVerticle() {
         override fun configure() {}

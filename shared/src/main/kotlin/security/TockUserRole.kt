@@ -32,6 +32,10 @@ enum class TockUserRole {
      */
     botUser,
     /**
+     * A bot editor is allowed to create and edit scenario and FAQ.
+     */
+    botEditor,
+    /**
      * An admin is allowed to update applications and builds, and to export/intent sentences dump.
      */
     admin,
