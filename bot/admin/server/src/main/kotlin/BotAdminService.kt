@@ -94,6 +94,9 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -105,13 +108,7 @@ import java.util.Locale
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 
-/**
- *
- */
 object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
@@ -180,7 +177,7 @@ object BotAdminService {
         }
     }
 
-    private fun createOrGetIntent(
+    fun createOrGetIntent(
         namespace: String,
         intentName: String,
         applicationId: Id<ApplicationDefinition>,
@@ -1086,10 +1083,18 @@ object BotAdminService {
         )
     }
 
+    /**
+     * Checks and save the story
+     * @param namespace
+     * @param : story : botStoryDefinitionConfiguration
+     * @param: user : userLogin
+     * @param: createdIntent : intent can be created out of the method
+     */
     fun saveStory(
         namespace: String,
         story: BotStoryDefinitionConfiguration,
-        user: UserLogin
+        user: UserLogin,
+        createdIntent: IntentDefinition? = null
     ): BotStoryDefinitionConfiguration? {
 
         // Two stories (built-in or configured) should not have the same _id
@@ -1124,7 +1129,7 @@ object BotAdminService {
             storyWithSameNsBotAndIntent.let {
                 if (it == null || it.currentType == builtin) {
                     // intent change
-                    if (storyWithSameId?._id != null) {
+                    if (storyWithSameId?._id != null && createdIntent == null) {
                         createOrGetIntent(
                             namespace,
                             story.intent.name,
@@ -1201,7 +1206,13 @@ object BotAdminService {
                     application._id,
                     story.category
                 )
-                saveSentence(story.userSentence, story.userSentenceLocale, application._id, intent._id, user)
+                saveSentence(
+                    story.userSentence,
+                    story.userSentenceLocale,
+                    application._id,
+                    createdIntent?._id ?: intent._id,
+                    user
+                )
             }
 
             // save all intents of steps
@@ -1238,7 +1249,7 @@ object BotAdminService {
         )
     }
 
-    private fun saveSentence(
+    fun saveSentence(
         text: String,
         locale: Locale,
         applicationId: Id<ApplicationDefinition>,
@@ -1410,12 +1421,13 @@ object BotAdminService {
             applicationConfigurationDAO.delete(it)
         }
 
-        // delete stories
+        // delete stories and faqDefinitions
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
             app.namespace, app.name
-        ).forEach {
-            storyDefinitionDAO.delete(it)
+        ).forEach { story ->
+            storyDefinitionDAO.delete(story)
         }
+
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {
@@ -1444,4 +1456,5 @@ object BotAdminService {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
     }
+
 }

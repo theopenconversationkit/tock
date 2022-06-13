@@ -19,7 +19,7 @@ package ai.tock.bot.connector.teams.messages
 import ai.tock.bot.connector.teams.teamsConnectorType
 import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
-import com.microsoft.bot.schema.ActionTypes.MESSAGE_BACK
+import com.microsoft.bot.schema.ActionTypes.IM_BACK
 import com.microsoft.bot.schema.ActionTypes.OPEN_URL
 import com.microsoft.bot.schema.CardAction
 import com.microsoft.bot.schema.CardImage
@@ -63,8 +63,8 @@ fun <T : Bus<T>> T.nlpCardAction(
     title: CharSequence
 ): CardAction =
     translate(title).toString().let { t ->
-        CardAction(MESSAGE_BACK, t).apply {
-            displayText = t
+        CardAction(IM_BACK, t, t).apply {
+            value = t
             text = t
         }
     }
