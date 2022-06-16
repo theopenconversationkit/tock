@@ -685,6 +685,59 @@
         }
       ],
       "mode": "production"
+    },
+    {
+      "id": 11,
+      "category": "scenarios",
+      "description": "https://stately.ai/viz/f6acaf2e-501d-4598-89e9-11a90672e269",
+      "name": "StateMachine TRANSFER",
+      "tags": [
+        "stateMachines"
+      ],
+      "mode": "production",
+      "data": [
+        {
+          "id": 0,
+          "from": "client",
+          "text": "Je n'arrive pas à faire mon virement"
+        },
+        {
+          "id": 1,
+          "parentIds": [
+            0
+          ],
+          "from": "api",
+          "text": "STATE  => S_CHECK_SERVICE_AVAILABLE\nVérifier que le service modification de plafond en autonomie est dispo.\nINPUTS:\nnone\nOUTPUTS : \nCONTEXT.ServiceAvalaible\nCONTEXT.ServiceUnavalaible",
+          "apiCallDefinition": {
+            "name": "API CALL : CHECK_SERVICE_AVAILABLE ",
+            "description": null,
+            "responseType": "codes",
+            "responseCodes": [
+              "S_SERVICE_UNAVAILABLE_REDIRECT",
+              "S_CHECK_SERVICE_AVAILABLE"
+            ]
+          }
+        },
+        {
+          "id": 2,
+          "parentIds": [
+            1
+          ],
+          "from": "bot",
+          "text": "STATE  => ",
+          "apiResponse": "S_CHECK_SERVICE_AVAILABLE"
+        },
+        {
+          "id": 3,
+          "parentIds": [
+            1
+          ],
+          "from": "bot",
+          "text": "\"Désolé le service est indisponible. Je vous redirige vers un opérateur\"\n\nSTATE  => S_SERVICE_UNAVAILABLE_REDIRECT\nOUTPUTS :\nCONTEXT.ServiceUnavalaible",
+          "final": true,
+          "apiResponse": "S_SERVICE_UNAVAILABLE_REDIRECT"
+        }
+      ]
     }
   ]
 }
