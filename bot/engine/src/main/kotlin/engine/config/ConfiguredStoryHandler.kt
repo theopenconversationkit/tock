@@ -127,11 +127,11 @@ internal class ConfiguredStoryHandler(
             // Story steps (choices) intents are always allowed:
             configuration.steps.forEach { step ->
                 val intentName: String? = step.intent?.name
-                if (intentName is String) {
+                if (intentName != null) {
                     nextIntentsQualifiers.add(NlpIntentQualifier(intentName, .5))
                 }
                 val targetIntentName: String? = step.targetIntent?.name
-                if (targetIntentName is String) {
+                if (targetIntentName != null) {
                     nextIntentsQualifiers.add(NlpIntentQualifier(targetIntentName, .5))
                 }
             }
