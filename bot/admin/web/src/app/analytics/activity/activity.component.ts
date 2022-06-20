@@ -86,13 +86,15 @@ export class ActivityComponent implements OnInit {
     });
     this.userPreferences = this.analytics.getUserPreferences();
   }
+
   ngOnInit(): void {
     this.reload();
   }
 
   getNumberOfDays(): number {
     return Number(
-      ((this.filter.to.getTime() - this.filter.from.getTime()) / (1000 * 3600 * 24)).toFixed(0)
+      !this.filter.to || !this.filter.from ? 1 :
+        ((this.filter.to.getTime() - this.filter.from.getTime()) / (1000 * 3600 * 24)).toFixed(0)
     );
   }
 
@@ -354,6 +356,9 @@ export class ActivityComponent implements OnInit {
   }
 
   private buildPreviousDateSearchQuery(nbDays: number): DialogFlowRequest {
+    if(!this.filter.to) {
+      this.filter.to = this.filter.from
+    }
     const oldFromDate = new Date(this.filter.from.getTime());
     oldFromDate.setDate(oldFromDate.getDate() - nbDays);
     const oldToDate = new Date(this.filter.to.getTime());

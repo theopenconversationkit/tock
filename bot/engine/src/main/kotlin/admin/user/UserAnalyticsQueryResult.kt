@@ -18,7 +18,14 @@ package ai.tock.bot.admin.user
 
 data class UserAnalyticsQueryResult(
     val dates: List<String> = emptyList(),
-    val usersData: List<List<Int?>> = emptyList(),
+    val usersData: List<List<Int>> = emptyList(),
     val connectorsType: List<String> = emptyList(),
     val intents: List<String> = emptyList()
-)
+) {
+    constructor(usersData: List<Int>, series: List<String>, intents: List<String> = emptyList()) : this(
+        dates = listOf("All Range"),
+        usersData = listOf(usersData),
+        connectorsType = series,
+        intents = intents
+    )
+}

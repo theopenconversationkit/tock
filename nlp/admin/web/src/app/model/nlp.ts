@@ -408,7 +408,9 @@ export class Sentence extends EntityContainer {
   getIntentLabel(state: StateService): string {
     if (!this.intentLabel) {
       const intent = state.findIntentById(this.classification.intentId);
-      this.intentLabel = intent ? intent.name : nameFromQualifiedName(Intent.unknown);
+      this.intentLabel = intent ?
+        intent.label ? intent.label : intent.name :
+        nameFromQualifiedName(Intent.unknown);
     }
     return this.intentLabel;
   }
@@ -472,6 +474,21 @@ export class Sentence extends EntityContainer {
       this.qualifier,
       this.key
     );
+  }
+
+  public withIntent(state: StateService, intentId: string): Sentence {
+    // setup a new version of sentence bound to newer intent
+    const newSentence = this.clone();
+    newSentence.classification.intentId = intentId;
+
+    // Keep only entities compatible with newer intent
+    const newIntent = state.findIntentById(intentId);
+    newSentence.classification.entities =
+      this
+        .classification
+        .entities
+        .filter(e => newIntent && newIntent.containsEntity(e.type, e.role));
+    return newSentence;
   }
 
   static fromJSON(json?: any): Sentence {

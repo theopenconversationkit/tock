@@ -38,8 +38,8 @@ data class UserState(
         private const val PROFILE_REFRESHED_FLAG = "tock_profile_refreshed"
         private const val BOT_DISABLED_FLAG = "tock_bot_disabled"
 
-        private val refreshDuration = longProperty("tock_bot_refresh_profil_duration_in_minutes", 60 * 24 * 5)
-        private val disabledDuration = longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5)
+        private val refreshDuration: Long = longProperty("tock_bot_refresh_profil_duration_in_minutes", 60 * 24 * 5)
+        private val disabledDuration: Long = longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5)
     }
 
     /**
