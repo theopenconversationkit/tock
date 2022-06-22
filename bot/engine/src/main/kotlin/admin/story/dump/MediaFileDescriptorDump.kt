@@ -23,6 +23,7 @@ import ai.tock.bot.engine.config.UploadedFilesService.fileId
 import ai.tock.bot.engine.config.UploadedFilesService.getFileContentFromId
 import ai.tock.bot.engine.config.UploadedFilesService.uploadFile
 import ai.tock.shared.Dice
+import ai.tock.translator.I18nLabel
 
 /**
  * A file descriptor.
@@ -33,7 +34,8 @@ class MediaFileDescriptorDump(
     val data: ByteArray?,
     val id: String = Dice.newId(),
     val type: AttachmentType = UploadedFilesService.attachmentType(suffix),
-    val externalUrl: String? = null
+    val externalUrl: String? = null,
+    val description: I18nLabel?
 ) {
 
     constructor(file: MediaFileDescriptor) :
@@ -43,22 +45,23 @@ class MediaFileDescriptorDump(
             if (file.externalUrl == null) getFileContentFromId(fileId(file.id, file.suffix)) else null,
             file.id,
             file.type,
-            file.externalUrl
+            file.externalUrl,
+            file.description
         )
 
     fun toFile(controller: StoryDefinitionConfigurationDumpController): MediaFileDescriptor? =
         if (externalUrl != null) {
             MediaFileDescriptor(
-                suffix, name, id, type, externalUrl
+                suffix, name, id, type, externalUrl, description
             )
         } else {
             val content = getFileContentFromId(fileId(id, suffix))
             if (content != null && content.size == data?.size) {
                 MediaFileDescriptor(
-                    suffix, name, id, type
+                    suffix, name, id, type, description = description
                 )
             } else if (data != null) {
-                uploadFile(controller.targetNamespace, name, data)
+                uploadFile(controller.targetNamespace, name, data, description = description)
             } else {
                 null
             }

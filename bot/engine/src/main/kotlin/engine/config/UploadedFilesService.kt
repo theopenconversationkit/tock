@@ -25,11 +25,12 @@ import ai.tock.shared.cache.getFromCache
 import ai.tock.shared.cache.putInCache
 import ai.tock.shared.property
 import ai.tock.shared.vertx.blocking
+import ai.tock.translator.I18nLabel
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import org.litote.kmongo.toId
 import java.util.UUID
+import org.litote.kmongo.toId
 
 /**
  * To manage uploaded files.
@@ -56,7 +57,12 @@ object UploadedFilesService {
             file
         }
 
-    fun uploadFile(namespace: String, fileName: String, bytes: ByteArray): MediaFileDescriptor? {
+    fun uploadFile(
+        namespace: String,
+        fileName: String,
+        bytes: ByteArray,
+        description: I18nLabel? = null
+    ): MediaFileDescriptor? {
         val id = (namespace + UUID.randomUUID().toString()).toLowerCase()
         val name = fileName.trim().toLowerCase()
         val lastDot = name.lastIndexOf(".")
@@ -67,7 +73,8 @@ object UploadedFilesService {
         val suffix = name.substring(lastDot + 1)
         val fileId = "$id.$suffix"
         putInCache(fileId.toId(), UPLOADED_TYPE, bytes)
-        return MediaFileDescriptor(suffix, fileName, id)
+
+        return MediaFileDescriptor(suffix, fileName, id, description = description)
     }
 
     fun downloadFile(context: RoutingContext, id: String, suffix: String) {

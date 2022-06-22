@@ -170,6 +170,39 @@ internal class WebConnectorResponseTest {
     }
 
     @Test
+    fun `web card with buttons and description`() {
+        val expected = WebConnectorResponseContent(
+            responses = listOf(
+                WebMessageContent(
+                    card = WebCard(
+                        title = "title",
+                        subTitle = "subTitle",
+                        file = WebMediaFile(
+                            url = "http://www.sncf.com/image.png",
+                            name = "imageName",
+                            type = SendAttachment.AttachmentType.image,
+                            description = "description"
+                        ),
+                        buttons = listOf(
+                            PostbackButton(
+                                title = "title",
+                                payload = "payload"
+                            ),
+                            UrlButton(
+                                title = "title",
+                                url = "http://www.sncf.com"
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        val deserializedEvent =
+            mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/card_with_buttons_and_file_description.json"))
+        Assertions.assertThat(deserializedEvent).isEqualTo(expected)
+    }
+
+    @Test
     fun `carousel with two cards and one button`() {
         val expected = WebConnectorResponseContent(
             responses = listOf(

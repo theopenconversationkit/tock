@@ -50,7 +50,7 @@ class MediaConverterTest {
         val mediaCard = MediaCard(
             "title",
             "subtitle",
-            MediaFile("https://a/image.png", "image"),
+            MediaFile("https://a/image.png", "image", description = "description File"),
             listOf(MediaAction("Test"))
         )
         val result = MediaConverter.toConnectorMessage(mediaCard).invoke(bus)
