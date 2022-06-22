@@ -111,6 +111,7 @@ class ConfiguredStoryHandlerTest {
         val configuration: StoryDefinitionConfiguration = mockk {
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
+            every { nextIntentsQualifiers } returns emptyList()
             every { findEnabledEndWithStoryId(any()) } returns null
         }
 
@@ -202,6 +203,7 @@ class ConfiguredStoryHandlerTest {
         val configuration: StoryDefinitionConfiguration = mockk {
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
+            every { nextIntentsQualifiers } returns emptyList()
             every { findEnabledEndWithStoryId(any()) } returns null
         }
 
@@ -341,6 +343,7 @@ class ConfiguredStoryHandlerTest {
         val configuration: StoryDefinitionConfiguration = mockk {
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
+            every { nextIntentsQualifiers } returns emptyList()
             every { findEnabledEndWithStoryId(any()) } returns null
         }
 
@@ -400,6 +403,7 @@ class ConfiguredStoryHandlerTest {
         val bus: BotBus = mockk(relaxed = true){
             every { botDefinition } returns BotDefinitionTest()
             every { dialog } returns mockk{
+                every { stories } returns mutableListOf()
                 every { state } returns mockk(relaxed = true){
                     every{ nextActionState } returns mockk{
                         every {intentsQualifiers} returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
@@ -411,6 +415,7 @@ class ConfiguredStoryHandlerTest {
         val configuration: StoryDefinitionConfiguration = mockk{
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns null
+            every { steps } returns emptyList()
             every { findEnabledEndWithStoryId(any()) } returns null
             every { nextIntentsQualifiers } returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
         }
