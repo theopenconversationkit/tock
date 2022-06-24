@@ -16,77 +16,73 @@
 
 package ai.tock.bot.admin.scenario
 
-import ai.tock.bot.admin.model.scenario.ScenarioRequest
-import ai.tock.bot.admin.model.scenario.ScenarioResult
-import java.time.ZonedDateTime
-
 class ScenarioAbstractTest {
-    companion object {
-        fun draft(
-            version: String?,
-            createDate: ZonedDateTime? = null,
-            updateDate: ZonedDateTime? = null
-        ): ScenarioVersion {
-            return createScenarioVersion(version, ScenarioState.DRAFT, createDate, updateDate)
-        }
-
-        fun current(
-            version: String?,
-            createDate: ZonedDateTime? = null,
-            updateDate: ZonedDateTime? = null
-        ): ScenarioVersion {
-            return createScenarioVersion(version, ScenarioState.CURRENT, createDate, updateDate)
-        }
-
-        fun archived(
-            version: String?,
-            createDate: ZonedDateTime? = null,
-            updateDate: ZonedDateTime? = null
-        ): ScenarioVersion {
-            return createScenarioVersion(version, ScenarioState.ARCHIVED, createDate, updateDate)
-        }
-
-        private fun createScenarioVersion(
-            version: String?,
-            state: ScenarioState,
-            createDate: ZonedDateTime?,
-            updateDate: ZonedDateTime?
-        ): ScenarioVersion {
-            return ScenarioVersion(
-                version = version,
-                name = "test",
-                applicationId = "test",
-                creationDate = createDate,
-                updateDate = updateDate,
-                state = state
-            )
-        }
-
-        fun createScenarioResult(sagaId: String, id: String, state: ScenarioState): ScenarioResult {
-            return ScenarioResult(
-                sagaId = sagaId,
-                id = id,
-                name = "test",
-                applicationId = "test",
-                state = state.value.uppercase()
-            )
-        }
-
-        fun createScenario(id: String?, vararg versions: ScenarioVersion): Scenario {
-            return Scenario(
-                id = id,
-                versions = versions.toList()
-            )
-        }
-
-        fun createScenarioRequest(sagaId: String? = null, id: String? = null, state: ScenarioState = ScenarioState.DRAFT): ScenarioRequest {
-            return ScenarioRequest(
-                id = id,
-                sagaId = sagaId,
-                name = "test",
-                applicationId = "test",
-                state = state.value
-            )
-        }
-    }
+//    companion object {
+//        fun draft(
+//            version: String?,
+//            createDate: ZonedDateTime? = null,
+//            updateDate: ZonedDateTime? = null
+//        ): ScenarioVersion {
+//            return createScenarioVersion(version, ScenarioVersionState.DRAFT, createDate, updateDate)
+//        }
+//
+//        fun current(
+//            version: String?,
+//            createDate: ZonedDateTime? = null,
+//            updateDate: ZonedDateTime? = null
+//        ): ScenarioVersion {
+//            return createScenarioVersion(version, ScenarioVersionState.CURRENT, createDate, updateDate)
+//        }
+//
+//        fun archived(
+//            version: String?,
+//            createDate: ZonedDateTime? = null,
+//            updateDate: ZonedDateTime? = null
+//        ): ScenarioVersion {
+//            return createScenarioVersion(version, ScenarioVersionState.ARCHIVED, createDate, updateDate)
+//        }
+//
+//        private fun createScenarioVersion(
+//            version: String?,
+//            state: ScenarioVersionState,
+//            createDate: ZonedDateTime?,
+//            updateDate: ZonedDateTime?
+//        ): ScenarioVersion {
+//            return ScenarioVersion(
+//                version = version,
+//                name = "test",
+//                applicationId = "test",
+//                creationDate = createDate,
+//                updateDate = updateDate,
+//                state = state
+//            )
+//        }
+//
+//        fun createScenarioResult(sagaId: String, id: String, state: ScenarioVersionState): ScenarioResult {
+//            return ScenarioResult(
+//                sagaId = sagaId,
+//                id = id,
+//                name = "test",
+//                applicationId = "test",
+//                state = state.value.uppercase()
+//            )
+//        }
+//
+//        fun createScenario(id: String?, vararg versions: ScenarioVersion): Scenario {
+//            return Scenario(
+//                id = id,
+//                versions = versions.toList()
+//            )
+//        }
+//
+//        fun createScenarioRequest(sagaId: String? = null, id: String? = null, state: ScenarioVersionState = ScenarioVersionState.DRAFT): ScenarioRequest {
+//            return ScenarioRequest(
+//                id = id,
+//                sagaId = sagaId,
+//                name = "test",
+//                applicationId = "test",
+//                state = state.value
+//            )
+//        }
+//    }
 }

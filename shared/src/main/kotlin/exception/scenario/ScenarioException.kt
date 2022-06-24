@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,4 @@
 
 package ai.tock.shared.exception.scenario
 
-import ai.tock.shared.exception.TockException
-
-abstract class ScenarioException(message: String) : TockException(message)
+abstract class ScenarioException(override val message : String) : RuntimeException(message)

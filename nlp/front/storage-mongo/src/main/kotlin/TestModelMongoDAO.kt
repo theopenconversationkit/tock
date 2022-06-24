@@ -149,7 +149,7 @@ internal object TestModelMongoDAO : TestModelDAO {
                     )
                 )
             }
-            ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text)))
+            ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text))) else return
     }
 
     override fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
@@ -207,7 +207,7 @@ internal object TestModelMongoDAO : TestModelDAO {
                     )
                 )
             }
-            ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text)))
+            ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text))) else return
     }
 
     override fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {

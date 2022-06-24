@@ -16,27 +16,34 @@
 
 package ai.tock.bot.admin.scenario
 
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.ZonedDateTime
 
-/**
- * There was no functional reflection on what should be versioned and what should not be.
- * As a result, everything has been versioned to be able to provide coherent responses
- * to the front in relation to their requests.
- * It seems important to me to take the time to rethink the problem so as not to version everything.
- * Some elements such as the name, or the description, or the applicationID for example,
- * are common to all versions of the same scenario and should therefore be saved in the parent object (Scenario).
- * All variables that appear moveable have a //must be moved comment.
- * Think about it.
- */
 data class ScenarioVersion(
-    val version: String? = null,
-    val name: String, //must be moved in Scenario ?
-    val category: String? = null, //must be moved in Scenario ?
-    val tags: List<String> = emptyList(), //must be moved in Scenario ?
-    val applicationId: String, //must be moved in Scenario ?
-    val creationDate: ZonedDateTime? = null,
-    val updateDate: ZonedDateTime? = null,
-    val description: String? = null, //must be moved in Scenario ?
-    val data: String? = null,
-    val state: ScenarioState
-)
+    val _id: Id<ScenarioVersion> = newId(),
+    val scenarioGroupId: Id<ScenarioGroup>,
+    val creationDate: ZonedDateTime = ZonedDateTime.now(),
+    val updateDate: ZonedDateTime = ZonedDateTime.now(),
+    val data: Any? = null,
+    val state: ScenarioVersionState,
+    val comment: String
+) {
+
+    /**
+     * Return true when scenario version state is draft
+     */
+    fun isDraft(): Boolean = isState(ScenarioVersionState.DRAFT)
+
+    /**
+     * Return true when scenario version state is current
+     */
+    fun isCurrent(): Boolean = isState(ScenarioVersionState.CURRENT)
+
+    /*
+     * Return true when state is the specified state
+     */
+    private fun isState(stateRequired: ScenarioVersionState): Boolean {
+        return state === stateRequired
+    }
+}

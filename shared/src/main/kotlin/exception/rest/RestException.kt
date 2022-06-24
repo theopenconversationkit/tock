@@ -16,8 +16,13 @@
 
 package ai.tock.shared.exception.rest
 
+import ai.tock.shared.exception.error.ErrorMessageWrapper
+import io.netty.handler.codec.http.HttpResponseStatus
+
 /**
  * Base class for rest exceptions.
  */
-open class RestException(message: String?, val statusMessage:String, val statusCode: Int = 500) :
-    Exception(message)
+open class RestException(
+    val httpResponseBody: ErrorMessageWrapper = ErrorMessageWrapper(),
+    val httpResponseStatus: HttpResponseStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR)
+    : Exception(httpResponseStatus.reasonPhrase())

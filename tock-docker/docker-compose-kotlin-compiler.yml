@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+
+  kotlin_compiler:
+    image: tock/kotlin_compiler:$TAG
+    environment:
+      - tock_env=prod
+      - tock_kotlin_compiler_classpath=/maven
+    ports:
+      - "8887:8080"

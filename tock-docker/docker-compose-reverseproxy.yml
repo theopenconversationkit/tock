@@ -1,0 +1,166 @@
+version: '3'
+
+# Adapted from docker-compose-bot.yml with a Traefik reverse proxy.
+# Possible usage (examples):
+# - Forward trafic by hosts/paths rather than ports (port redirection no more required)
+# - Setup HTTPs/TLS (eg. using Let's Encrypt)
+# - Balance trafic over multiple service instances
+# - Register to Traefik Pilot to enable metrics etc.
+# Once up and running, visit:
+# - http://localhost:8080 for reverse proxy dashboard
+# - http://localhost:8080/api/rawdata for reverse proxy raw data
+# - http://admin-web-tock-docker.localhost for admin_web
+# - http://bot-api-tock-docker.localhost for bot_api
+# - Etc.
+
+services:
+
+  mongo:
+    image: mongo:3.6.5
+    volumes:
+      - tockmongo:/data/db
+    ports:
+      - "27017:27017"
+    command: --smallfiles --bind_ip_all --port 27017 --replSet "tock"
+
+  mongo2:
+    image: mongo:3.6.5
+    depends_on:
+      - mongo
+    volumes:
+      - tockmongo2:/data/db
+    ports:
+      - "27018:27018"
+    command: --smallfiles --bind_ip_all --port 27018 --replSet "tock"
+
+  mongo3:
+    image: mongo:3.6.5
+    depends_on:
+      - mongo
+      - mongo2
+    volumes:
+      - tockmongo3:/data/db
+    ports:
+      - "27019:27019"
+    command: --smallfiles --bind_ip_all --port 27019 --replSet "tock"
+
+  mongo-setup:
+    container_name: "mongo-setup"
+    image: mongo:3.6.5
+    depends_on:
+      - "mongo"
+      - "mongo2"
+      - "mongo3"
+    links:
+      - mongo:mongo
+      - mongo2:mongo2
+      - mongo3:mongo3
+    volumes:
+      - ./scripts:/scripts
+    environment:
+      - MONGO1=mongo
+      - MONGO2=mongo2
+      - MONGO3=mongo3
+      - RS=tock
+    entrypoint: [ "/scripts/setup.sh" ]
+
+  build_worker:
+    image: tock/build_worker:$TAG
+    depends_on:
+      - mongo
+      - mongo2
+      - mongo3
+    environment:
+      - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+      - tock_env=prod
+      - JAVA_ARGS=-Xmx1g -XX:MaxMetaspaceSize=256m
+    labels:
+      - traefik.enable=false # No incoming traffic, therefore no need for reverse proxy
+
+  duckling:
+    image: tock/duckling:$TAG
+    environment:
+      - tock_env=prod
+    expose:
+      - "8080"
+
+  kotlin_compiler:
+    image: tock/kotlin_compiler:$TAG
+    environment:
+      - tock_env=prod
+      - tock_kotlin_compiler_classpath=/maven
+    expose:
+      - "8080"
+
+  admin_web:
+    image: tock/bot_admin:$TAG
+    depends_on:
+      - mongo
+      - mongo2
+      - mongo3
+      - duckling
+      - kotlin_compiler
+    environment:
+      - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+      - nlp_duckling_url=http://duckling:8080
+      - tock_env=prod
+      - tock_bot_admin_rest_default_base_url=http://bot_api:8080
+      - tock_bot_compiler_service_url=http://kotlin_compiler:8080
+      - tock_configuration_bot_default_base_url=http://bot_api:8080
+      #remove this in production
+      - tock_https_env=false
+      - botadminverticle_body_limit=-1
+    ports:
+      - "8080"
+
+  nlp_api:
+    image: tock/nlp_api:$TAG
+    depends_on:
+      - mongo
+      - mongo2
+      - mongo3
+      - duckling
+    environment:
+      - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+      - nlp_duckling_url=http://duckling:8080
+      - tock_env=prod
+      - tock_web_use_default_cors_handler=true
+      - tock_web_use_default_cors_handler_with_credentials=false
+      - tock_web_use_default_cors_handler_url=*
+    ports:
+      - "8080"
+
+  bot_api:
+    image: tock/bot_api:$TAG
+    depends_on:
+      - mongo
+      - mongo2
+      - mongo3
+      - nlp_api
+    environment:
+      - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+      - tock_nlp_service_url=http://nlp_api:8080
+      - tock_env=integ
+      - tock_websocket_enabled=true
+    ports:
+      - "8080"
+
+  reverse-proxy:
+    image: traefik:v2.3
+    command:
+#      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=true"
+      - "--providers.docker.defaultRule=Host(`{{ normalize .Name }}.localhost`)" # eg. 'admin-web-tock-docker.localhost'
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080" # The Web UI (enabled by --api.insecure=true)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  tockmongo:
+  tockmongo2:
+  tockmongo3:

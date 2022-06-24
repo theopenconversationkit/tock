@@ -21,11 +21,13 @@ import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
+import ai.tock.bot.bean.TickSession
 import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
@@ -36,12 +38,19 @@ import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.nlp.api.client.model.Entity
+import ai.tock.bot.bean.TickUserAction
+import ai.tock.bot.engine.config.tickstory.TickSenderBotBus
+import ai.tock.bot.engine.config.tickstory.TickStoryHandler
+import ai.tock.bot.engine.dialog.TickState
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import mu.KotlinLogging
+import ai.tock.bot.processor.TickStoryProcessor
+import java.time.Instant
 
 /**
  *
@@ -198,6 +207,7 @@ internal class ConfiguredStoryHandler(
                 is BuiltInAnswerConfiguration ->
                     (bus.botDefinition as BotDefinitionWrapper).builtInStory(configuration.storyId)
                         .storyHandler.handle(bus)
+                is TickAnswerConfiguration -> bus.handleTickAnswer(this@send, this)
                 else -> error("type not supported for now: $this")
             }
         }
@@ -243,6 +253,14 @@ internal class ConfiguredStoryHandler(
                 }
         }
     }
+
+    /**
+     * A tick story handler
+     */
+    private fun BotBus.handleTickAnswer(container: StoryDefinitionAnswersContainer, configuration: TickAnswerConfiguration) {
+        TickStoryHandler.handle(this, container, configuration)
+    }
+
 
     private fun BotBus.fillCarousel(simple: SimpleAnswerConfiguration): List<SimpleAnswer> {
         val transformedAnswers = mutableListOf<SimpleAnswer>()
@@ -292,7 +310,7 @@ internal class ConfiguredStoryHandler(
         return transformedAnswers
     }
 
-    private fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {
+    fun BotBus.send(container: StoryDefinitionAnswersContainer, answer: SimpleAnswer, end: Boolean = false) {
         val label = translate(answer.key)
         val suggestions = container.findNextSteps(this, configuration).map { this.translate(it) }
         val connectorMessages =

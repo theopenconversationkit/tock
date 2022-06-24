@@ -628,7 +628,7 @@ object FaqAdminService {
                             intent.name
                         )
                         if (existingStory != null) {
-                            BotAdminService.deleteStory(existingStory.namespace, existingStory._id.toString())
+                            // TODO MASS BotAdminService.deleteStory(existingStory.namespace, existingStory._id.toString())
                         }
                         return true
                     }

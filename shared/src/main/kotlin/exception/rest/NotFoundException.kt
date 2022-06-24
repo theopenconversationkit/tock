@@ -16,8 +16,14 @@
 
 package ai.tock.shared.exception.rest
 
+import ai.tock.shared.exception.error.ErrorMessageWrapper
+import io.netty.handler.codec.http.HttpResponseStatus
+
 /**
  * Http 404 exception.
  */
-class NotFoundException(message: String? = null, statusMessage: String = "Not Found") :
-    RestException(message, statusMessage, 404)
+class NotFoundException(httpResponseBody: ErrorMessageWrapper)
+    : RestException(httpResponseBody, HttpResponseStatus.NOT_FOUND) {
+    constructor() : this(ErrorMessageWrapper())
+    constructor(message: String) : this(ErrorMessageWrapper(message))
+}

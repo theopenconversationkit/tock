@@ -19,6 +19,8 @@ package ai.tock.shared.vertx
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
+import ai.tock.shared.exception.error.ErrorMessage
+import ai.tock.shared.exception.error.ErrorMessageWrapper
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.exception.rest.RestException
@@ -69,9 +71,7 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.EnumSet
-import java.util.Locale
-import java.util.ServiceLoader
+import java.util.*
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
@@ -92,6 +92,7 @@ abstract class WebVerticle : AbstractVerticle() {
         val defaultRequestLogger: RequestLogger = object : RequestLogger {
             override fun log(context: RoutingContext, data: Any?, error: Boolean) {
                 // do nothing
+                val a = ""
             }
         }
 
@@ -681,7 +682,7 @@ abstract class WebVerticle : AbstractVerticle() {
         blockingJsonDelete(path, setOf(role), logger, basePath, handler)
     }
 
-    protected fun blockingJsonDelete(
+    fun blockingJsonDelete(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
@@ -795,7 +796,7 @@ abstract class WebVerticle : AbstractVerticle() {
         sharedVertx.executeBlocking<Unit>(
             {
                 try {
-                    handler.invoke(this)
+                        handler.invoke(this)
                     it.tryComplete()
                 } catch (t: Throwable) {
                     it.tryFail(t)
@@ -807,9 +808,9 @@ abstract class WebVerticle : AbstractVerticle() {
                     it.cause().apply {
                         when {
                             this is RestException -> {
-                                response().statusCode = statusCode
-                                response().statusMessage = statusMessage
-                                fail(statusCode, this)
+                                response().statusCode = httpResponseStatus.code()
+                                response().statusMessage = message
+                                response().endJson(httpResponseBody)
                             }
                             this != null -> {
                                 logger.error(this)
@@ -873,7 +874,7 @@ abstract class WebVerticle : AbstractVerticle() {
     val RoutingContext.userLogin: String
         get() = user?.user ?: error("no user in session")
 
-    fun HttpServerResponse.endJson(result: Any?) {
+    private fun HttpServerResponse.endJson(result: Any?) {
         if (result == null) {
             statusCode = 204
         }
@@ -885,19 +886,19 @@ abstract class WebVerticle : AbstractVerticle() {
             end(output)
         }
     }
+// TODO MASS
+//    fun HttpServerResponse.endJson(result: Any, httpStatus: Int) {
+//        this.putHeader("content-type", "application/json; charset=utf-8")
+//        statusCode = httpStatus
+//        end(mapper.writeValueAsString(result))
+//    }
 
     /**
      * The error handler for match failures.
      * See https://vertx.io/docs/vertx-web/java/#_route_match_failures
      */
     open fun defaultErrorHandler(statusCode: Int): Handler<RoutingContext> = Handler<RoutingContext> { event ->
-        val failure: Throwable? = event.failure()
-        if(failure?.message?.isNotBlank() ?: false) {
-            logger.info { failure!!.message }
-            event.response().end(failure!!.message)
-        } else {
-            logger.info { "Error $statusCode: ${event.request().path()}" }
-            tockErrorHandler.handle(event)
-        }
+        logger.info { "Error $statusCode: ${event.request().path()}" }
+        tockErrorHandler.handle(event)
     }
 }

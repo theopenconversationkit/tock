@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+
+  mongo:
+    image: mongo:3.6.5
+    volumes:
+      - tockmongo:/data/db
+    ports:
+      - "27017:27017"
+    command: --smallfiles --bind_ip_all --port 27017 --replSet "tock"
+
+  mongo2:
+    image: mongo:3.6.5
+    depends_on:
+      - mongo
+    volumes:
+      - tockmongo2:/data/db
+    ports:
+      - "27018:27018"
+    command: --smallfiles --bind_ip_all --port 27018 --replSet "tock"
+
+  mongo3:
+    image: mongo:3.6.5
+    depends_on:
+      - mongo
+      - mongo2
+    volumes:
+      - tockmongo3:/data/db
+    ports:
+      - "27019:27019"
+    command: --smallfiles --bind_ip_all --port 27019 --replSet "tock"
+
+  mongo-setup:
+    container_name: "mongo-setup"
+    image: mongo:3.6.5
+    depends_on:
+      - "mongo"
+      - "mongo2"
+      - "mongo3"
+    links:
+      - mongo:mongo
+      - mongo2:mongo2
+      - mongo3:mongo3
+    volumes:
+      - ./scripts:/scripts
+    environment:
+      - MONGO1=mongo
+      - MONGO2=mongo2
+      - MONGO3=mongo3
+      - RS=tock
+    entrypoint: [ "/scripts/setup.sh" ]
+    
+  duckling:
+      image: tock/duckling:$TAG
+      environment:
+        - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+        - tock_env=prod
+      ports:
+        - "8889:8080"
+
+  build_worker:
+    image: tock/build_worker:$TAG
+    depends_on:
+      - mongo
+      - mongo2
+      - mongo3
+    environment:
+      - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+      - tock_env=prod
+
+volumes:
+  tockmongo:
+  tockmongo2:
+  tockmongo3:

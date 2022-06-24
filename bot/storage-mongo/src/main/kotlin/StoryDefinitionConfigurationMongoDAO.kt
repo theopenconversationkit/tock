@@ -153,6 +153,16 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
     }
 
+    override fun deleteStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ) {
+        getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId, storyId)?.let {
+            delete(it)
+        }
+    }
+
     override fun getStoryDefinitionsByNamespaceAndBotId(
         namespace: String,
         botId: String

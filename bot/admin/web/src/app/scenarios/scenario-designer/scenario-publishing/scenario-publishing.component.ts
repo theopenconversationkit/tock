@@ -389,9 +389,8 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     let tickStory: TickStory = {
       name: this.scenario.name,
       botId: botId,
-      storyId: `${this.scenario.name}_${this.scenario.id}`, //A préciser
+      storyId: this.scenario.id,
       description: this.scenario.description,
-      sagaId: '0',
       mainIntent: mainIntent,
       primaryIntents: primaryIntents,
       secondaryIntents: secondaryIntents,

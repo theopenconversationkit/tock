@@ -50,6 +50,12 @@ interface StoryDefinitionConfigurationDAO {
         storyId: String
     ): StoryDefinitionConfiguration?
 
+    fun deleteStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    )
+
     fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration>
 
     fun getStoryDefinitionsByNamespaceBotIdStoryId(

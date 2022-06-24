@@ -33,6 +33,7 @@ import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.dialog.TickState
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.shared.checkMaxLengthAllowed
@@ -61,6 +62,7 @@ internal data class DialogCol(
     val playerIds: Set<PlayerId>,
     var _id: Id<Dialog>,
     val state: DialogStateMongoWrapper,
+    val tickStates: Map<String, TickState> = emptyMap(),
     val stories: List<StoryMongoWrapper>,
     val applicationIds: Set<String> = emptySet(),
     val lastUpdateDate: Instant = now(),
@@ -85,6 +87,7 @@ internal data class DialogCol(
         dialog.playerIds,
         dialog.id,
         DialogStateMongoWrapper(dialog.state),
+        dialog.tickStates,
         dialog.stories.map { StoryMongoWrapper(it) },
         userTimeline.applicationIds,
         groupId = dialog.groupId,
@@ -99,7 +102,8 @@ internal data class DialogCol(
                 _id,
                 state.toState(stories.flatMap { it.actions }.map { it.toActionId() to it }.toMap()),
                 stories.toMutableList(),
-                groupId = groupId
+                groupId = groupId,
+                tickStates = this.tickStates.toMutableMap()
             )
         }
     }

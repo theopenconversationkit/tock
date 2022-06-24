@@ -50,7 +50,11 @@ data class Dialog(
     /**
      * An optional group identifier.
      */
-    val groupId: String? = null
+    val groupId: String? = null,
+
+    // TODO MASS : Experimental. à mettre dans DialogState ?
+    // TODO : suggestion de david  -> il faudrait peut être faire une surcharge de dialog, pour faire des "TickDialog" ?
+    val tickStates: MutableMap<String, TickState> = mutableMapOf()
 ) {
 
     companion object {
@@ -70,7 +74,13 @@ data class Dialog(
                         }
                         s
                     }
-                ).toMutableList()
+                ).toMutableList(),
+                tickStates = dialog.tickStates
+//            // TODO MASS
+//                David :
+//                j'ai l'impression que ce comportement est un peu trop spécifique au dev qui est fait ici. d'un point de vu expérimental, je comprend l'idée, mais un dialog est un objet générique.
+//                si on commence à avoir des éléments vide qui ne sont remplie que lorsqu'on utilise tock d'une certaine manière, ça risque de fortement nuire à la maintenabilité du code.
+//                Je n'ai pas de solution alternative à proposer à la place, il faudrait y réfléchir.
             )
         }
     }
