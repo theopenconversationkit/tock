@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 
-class BotApiHandlerTest {
+class   BotApiHandlerTest {
 
     private val provider: BotApiDefinitionProvider = mockk()
     private val configuration: BotConfiguration = mockk {
@@ -85,7 +85,6 @@ class BotApiHandlerTest {
                         step = null,
                         messages = listOf(Sentence(I18nText("user text"))),
                         context = mockk(),
-                        nextIntentsQualifiers = listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
                     )
                 )
     }

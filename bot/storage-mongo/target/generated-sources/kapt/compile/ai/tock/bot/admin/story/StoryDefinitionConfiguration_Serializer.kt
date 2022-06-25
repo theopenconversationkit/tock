@@ -138,6 +138,17 @@ internal class StoryDefinitionConfiguration_Serializer :
                 null
                 )
                 .serialize(_configuredSteps_, gen, serializers)
+        gen.writeFieldName("nextIntentsQualifiers")
+        val _nextIntentsQualifiers_ = value.nextIntentsQualifiers
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                serializers.config.typeFactory.constructType(ai.tock.nlp.api.client.model.NlpIntentQualifier::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_nextIntentsQualifiers_, gen, serializers)
         gen.writeEndObject()
     }
 }
