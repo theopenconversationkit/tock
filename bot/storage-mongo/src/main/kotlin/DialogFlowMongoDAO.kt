@@ -72,7 +72,6 @@ import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.sumByLong
-import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.IndexOptions
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -81,22 +80,17 @@ import java.time.ZonedDateTime
 import java.time.temporal.TemporalAccessor
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KProperty
-import kotlin.reflect.KProperty1
 import mu.KotlinLogging
-import org.bson.BsonDocument
-import org.bson.BsonInt32
-import org.bson.BsonString
-import org.bson.BsonValue
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.MongoOperator
-import org.litote.kmongo.MongoOperator.ifNull
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
+import org.litote.kmongo.arrayElemAt
 import org.litote.kmongo.ascendingSort
+import org.litote.kmongo.dateToString
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -105,13 +99,14 @@ import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
 import org.litote.kmongo.gt
+import org.litote.kmongo.ifNull
 import org.litote.kmongo.`in`
 import org.litote.kmongo.lookup
 import org.litote.kmongo.lt
 import org.litote.kmongo.match
-import org.litote.kmongo.path
 import org.litote.kmongo.project
 import org.litote.kmongo.projection
+import org.litote.kmongo.projectionWith
 import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
@@ -215,7 +210,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         // group messages that were sent the same day together
-        val group = group(Date.dateToString(), Count.sum(1))
+        val group = group(Date.kDateToString(), Count.sum(1))
 
         val proj = project(
             Date from _id.projection,
@@ -237,7 +232,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         // keep one object for every date/user combination
         val distinct = group(
             document(
-                Date from Date.dateToString(),
+                Date from Date.kDateToString(),
                 DialogId from DialogId
             )
         )
@@ -269,8 +264,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         val group = group(
             document(
-                Date from Date.dateToString(),
-                ConnectorType from arrayElemAt(Configuration.connectorType.id, 0)
+                Date from Date.kDateToString(),
+                ConnectorType from Configuration.connectorType.id.arrayElemAt(0)
             ),
             Count.sum(1)
         )
@@ -298,8 +293,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         val group = group(
             document(
-                Date from Date.dateToString(),
-                GroupById_.Configuration from arrayElemAt(Configuration.applicationId, 0)
+                Date from Date.kDateToString(),
+                GroupById_.Configuration from Configuration.applicationId.arrayElemAt(0)
             ),
             Count.sum(1)
         )
@@ -319,7 +314,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<DayOfWeek, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val group = group(Date.dateToString(format = "%u"), Count.sum(1))
+        val group = group(Date.kDateToString(format = "%u"), Count.sum(1))
         val proj = project(
             DialogFlowAggregateResult::date from _id.projection,
             DialogFlowAggregateResult::count from Count.projection,
@@ -337,7 +332,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<Int, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val group = group(Date.dateToString(format = "%H"), Count.sum(1))
+        val group = group(Date.kDateToString(format = "%H"), Count.sum(1))
         val proj = project(
             DialogFlowAggregateResult::date from _id.projection,
             DialogFlowAggregateResult::count from Count.projection,
@@ -363,8 +358,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         val group = group(
             document(
-                Date from Date.dateToString(),
-                GroupById_.Intent from arrayElemAt(Transition.intent, 0)
+                Date from Date.kDateToString(),
+                GroupById_.Intent from Transition.intent.arrayElemAt(0)
             ),
             Count.sum(1)
         )
@@ -391,7 +386,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             Transition
         )
         val group = group(
-            ifNull(arrayElemAt(Transition.intent, 0), "unknown"),
+            ifNull(Transition.intent.arrayElemAt(0), "unknown"),
             Count.sum(1)
         )
         val proj = projectToResult()
@@ -409,7 +404,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     ): Map<String, Int> {
         val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
         val group = group(
-            arrayElemAt(NextState.storyDefinitionId, 0),
+            NextState.storyDefinitionId.arrayElemAt(0),
             Count.sum(1)
         )
 
@@ -428,8 +423,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
         val group = group(
             document(
-                Date from Date.dateToString(),
-                StoryDefinitionId from arrayElemAt(NextState.storyDefinitionId, 0)
+                Date from Date.kDateToString(),
+                StoryDefinitionId from NextState.storyDefinitionId.arrayElemAt(0)
             ),
             Count.sum(1)
         )
@@ -479,7 +474,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         builtInStoryQualifier: String
     ): Map<String, Int> {
         val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
-        val projectStory = project(StoryDefinitionId from arrayElemAt(NextState.storyDefinitionId, 0))
+        val projectStory = project(StoryDefinitionId from NextState.storyDefinitionId.arrayElemAt(0))
 
         //built-in story are not handled here - we would need an other join
         val storyLookup =
@@ -514,7 +509,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val lookup = lookup(flowTransitionCol, TransitionId, DialogFlowStateTransitionCol_._id, Transition)
         val group = group(
-            arrayElemAt(Transition.type, 0),
+            Transition.type.arrayElemAt(0),
             Count.sum(1)
         )
         val proj = projectToResult()
@@ -542,7 +537,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         )
         val proj = project(
             Date from 1,
-            NextStateId from arrayElemAt(Transition.nextStateId, 0)
+            NextStateId from Transition.nextStateId.arrayElemAt(0)
         )
         val nextStateLookup = lookup(flowStateCol, NextStateId, _id, NextState)
         return arrayOf(match, transitionLookup, proj, nextStateLookup)
@@ -880,43 +875,8 @@ internal data class NextStateLookup(val nextState: DialogFlowStateCol)
 @JacksonData(internal = true)
 internal data class StoryLookup(val story: StoryDefinitionConfiguration)
 
-
-//TODO move to kmongo
-
-fun <FROM : Any> lookup(
-    from: MongoCollection<FROM>,
-    localField: KProperty1<out Any, Any?>,
-    foreignField: KProperty1<FROM, Any?>,
-    newAs: KProperty1<out Any, Any?>
-) =
-    lookup(from.namespace.collectionName, localField.path(), foreignField.path(), newAs.path())
-
-fun arrayElemAt(property: KProperty1<out Any, Any?>, index: Int = 0): Bson =
-    arrayElemAt(property.projection, index)
-
-fun arrayElemAt(path: String, index: Int = 0): Bson =
-    document(MongoOperator.arrayElemAt from listOf(BsonString(path), BsonInt32(index)))
-
-fun ifNull(expression: Any, defaultValue: Any): Bson =
-    document(ifNull from listOf(expression, defaultValue))
-
-fun KProperty<TemporalAccessor?>.dateToString(
+private fun KProperty<TemporalAccessor?>.kDateToString(
     format: String? = "%Y-%m-%d",
     zoneId: ZoneId = defaultZoneId,
-    onNull: BsonValue? = null
-): Bson =
-    BsonDocument(
-        MongoOperator.dateToString.toString(),
-        BsonDocument().apply {
-            set("date", BsonString(projection))
-            if (format != null) {
-                set("format", BsonString(format))
-            }
-            set("timezone", BsonString(zoneId.id))
-            if (onNull != null) {
-                set("onNull", onNull)
-            }
-        }
-    )
-
-infix fun <T0, T1> KProperty1<T0, T1?>.projectionWith(p2: String): String = "$projection.$p2"
+    onNull: String? = null
+): Bson = dateToString(format, zoneId, onNull)
