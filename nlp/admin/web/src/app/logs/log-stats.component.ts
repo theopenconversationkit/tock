@@ -192,7 +192,7 @@ export class LogStatsComponent implements OnInit, OnDestroy {
 
   buildDurationChart(result) {
     const durationData = result.map((p) => {
-      return [p.day, Math.round(10000 * p.averageDuration) / 100];
+      return [p.day, Math.round(10000 * p.averageDuration) / 10000];
     });
     this.durationChartOptions = {
       tooltip: {
