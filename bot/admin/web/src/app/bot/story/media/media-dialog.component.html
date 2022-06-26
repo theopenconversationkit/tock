@@ -144,14 +144,15 @@
         <div class="actions">
           <h6>Actions</h6>
           <div
-            *ngFor="let action of media.actions; let i = index"
+            *ngFor="let action of media.actions"
             class="action-row"
           >
+            {{action.titleLabel}}
             <span class="nb-form-field inline">
               <label>Action title</label>
               <input
                 class="action"
-                [name]="'titleLabel' + i"
+                [name]="'titleLabel' + action.internalId"
                 nbInput
                 placeholder="Title"
                 [(ngModel)]="action.titleLabel"
@@ -162,7 +163,7 @@
               <label>Optional action Url</label>
               <input
                 class="action"
-                [name]="'url' + i"
+                [name]="'url' + action.internalId"
                 nbInput
                 placeholder="Url"
                 [(ngModel)]="action.url"

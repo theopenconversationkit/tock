@@ -731,6 +731,7 @@ export class MediaAction extends Media {
   }
 
   public titleLabel = '';
+  public readonly internalId = Math.random()
 
   static fromJSON(json: any): MediaAction {
     const value = Object.create(MediaAction.prototype);
