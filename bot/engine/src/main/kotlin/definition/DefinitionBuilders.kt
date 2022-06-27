@@ -22,6 +22,7 @@ import ai.tock.bot.definition.BotDefinitionBase.Companion.defaultKeywordStory
 import ai.tock.bot.definition.BotDefinitionBase.Companion.defaultUnknownStory
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.translator.UserInterfaceType
@@ -90,7 +91,11 @@ fun bot(
     /**
      * The optional dialog flow.
      */
-    conversation: DialogFlowDefinition? = null
+    conversation: DialogFlowDefinition? = null,
+    /**
+     * Listener invoked when bot is enabled.
+     */
+    botEnabledListener: (Action) -> Unit = {}
 ): SimpleBotDefinition {
     fun findStory(intent: IntentAware?): StoryDefinition? =
         intent as? StoryDefinition
@@ -122,7 +127,8 @@ fun bot(
         findStory(handleAttachment),
         eventListener,
         keywordStory,
-        conversation
+        conversation,
+        botEnabledListener,
     )
 }
 

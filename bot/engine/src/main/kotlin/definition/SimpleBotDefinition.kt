@@ -16,6 +16,8 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.engine.action.Action
+
 /**
  * A simple [BotDefinition].
  */
@@ -34,7 +36,8 @@ class SimpleBotDefinition(
     handleAttachmentStory: StoryDefinition? = null,
     eventListener: EventListener = EventListenerBase(),
     keywordStory: StoryDefinition = defaultKeywordStory,
-    conversation: DialogFlowDefinition? = null
+    conversation: DialogFlowDefinition? = null,
+    botEnabledListener: (Action) -> Unit = {},
 ) :
     BotDefinitionBase(
         botId,
@@ -51,7 +54,8 @@ class SimpleBotDefinition(
         handleAttachmentStory,
         eventListener,
         keywordStory,
-        conversation
+        conversation,
+        botEnabledListener
     ) {
 
     // set namespace for story handler
