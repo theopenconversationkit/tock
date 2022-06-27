@@ -34,8 +34,8 @@
         <kotlin>1.7.0</kotlin>
         <couroutine>1.6.3</couroutine>
 
-        <slf4j>1.7.30</slf4j>
-        <logback>1.2.3</logback>
+        <slf4j>1.7.36</slf4j>
+        <logback>1.2.11</logback>
 
         <kotlin-logging>2.1.23</kotlin-logging>
 

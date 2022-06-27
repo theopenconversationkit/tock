@@ -1,6 +1,8 @@
 language: java
+os: linux
+dist: bionic
 jdk:
-- openjdk8
+  - openjdk8
 branches:
   only:
     - master
