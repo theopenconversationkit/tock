@@ -31,4 +31,11 @@ export class ScenarioListSimpleComponent {
   delete(scenario: Scenario): void {
     this.handleDelete.emit(scenario);
   }
+
+  versions = [
+    { date: '05/11/2022', current: false, description: "Correction d'une entité" },
+    { date: '09/11/2022', current: false, description: 'Nouveau process métier' },
+    { date: '18/11/2022', current: true, description: "Faute d'orthographe" },
+    { date: '28/12/2022', current: false, description: 'Evolutions' }
+  ];
 }

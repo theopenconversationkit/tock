@@ -18,6 +18,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
+  NbAccordionModule,
   NbAutocompleteModule,
   NbButtonModule,
   NbCardModule,
@@ -79,7 +80,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     NbSpinnerModule,
     NbTagModule,
     NbTooltipModule,
-    NbTreeGridModule
+    NbTreeGridModule,
+    NbAccordionModule
   ],
   declarations: [
     ScenariosListComponent,

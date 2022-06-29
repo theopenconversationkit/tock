@@ -2,6 +2,8 @@
   display: grid;
   grid-gap: 1rem;
   grid-template-columns: 4fr 1fr 2fr 1fr;
+  width: 100%;
+  margin-right: 1.5rem;
 }
 
 .grid-columns-header {
