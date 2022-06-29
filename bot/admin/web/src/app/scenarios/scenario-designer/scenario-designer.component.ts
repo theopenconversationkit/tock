@@ -99,9 +99,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
         this.setMode(this.scenario.mode || 'writing');
 
-        if (!this.scenario.data) this.scenario.data = [];
-        if (!this.scenario.data.length) {
-          this.scenario.data.push({
+        if (!this.scenario.data) this.scenario.data = { scenarioItems: [] };
+        console.log(this.scenario);
+        if (!this.scenario.data.scenarioItems.length) {
+          this.scenario.data.scenarioItems.push({
             id: 0,
             from: SCENARIO_ITEM_FROM_CLIENT,
             text: ''
@@ -183,12 +184,14 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
-      this.scenario.data = this.scenario.data.filter((item) => item.id != itemRef.id);
+      this.scenario.data.scenarioItems = this.scenario.data.scenarioItems.filter(
+        (item) => item.id != itemRef.id
+      );
     }
   }
 
   getNextItemId() {
-    return Math.max(...this.scenario.data.map((i) => i.id)) + 1;
+    return Math.max(...this.scenario.data.scenarioItems.map((i) => i.id)) + 1;
   }
 
   addAnswer(itemRef: scenarioItem, from?: scenarioItemFrom): void {
@@ -207,7 +210,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       text: ''
     };
 
-    this.scenario.data.push(newEntry);
+    this.scenario.data.scenarioItems.push(newEntry);
 
     setTimeout(() => {
       this.selectItem(newEntry);
@@ -426,19 +429,19 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   findItemChild(item: scenarioItem): scenarioItem {
-    return this.scenario.data.find((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenario.data.scenarioItems.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   findItemById(id: number): scenarioItem {
-    return this.scenario.data.find((oitem) => oitem.id == id);
+    return this.scenario.data.scenarioItems.find((oitem) => oitem.id == id);
   }
 
   getChildren(item: scenarioItem): scenarioItem[] {
-    return this.scenario.data.filter((oitem) => oitem.parentIds?.includes(item.id));
+    return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
   getBrotherhood(item: scenarioItem): scenarioItem[] {
-    return this.scenario.data.filter((oitem) =>
+    return this.scenario.data.scenarioItems.filter((oitem) =>
       oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
     );
   }

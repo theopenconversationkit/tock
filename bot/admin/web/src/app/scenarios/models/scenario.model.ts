@@ -13,8 +13,20 @@ export interface Scenario {
   creationDate: Date;
   updateDate?: Date;
   description?: string;
-  data?: scenarioItem[];
+  data?: ScenarioData;
   mode: scenarioMode;
+}
+
+export type EntityTypeName = string;
+export type EntityRole = string;
+export interface TickContext {
+  name: string;
+  entity: [EntityTypeName, EntityRole];
+  type: 'string';
+}
+export interface ScenarioData {
+  scenarioItems: scenarioItem[];
+  contexts?: TickContext[];
 }
 
 export const SCENARIO_ITEM_API_RESPONSETYPE_STRING = 'string';
@@ -42,6 +54,14 @@ export interface intentDefinition {
   sentences?: string[];
   _sentences?: Sentence[];
 }
+export interface TickActionDefinition {
+  name: string;
+  description?: string;
+  inputContexts: TickContext[];
+  outputContexts: TickContext[];
+  handler: string;
+  answer: string;
+}
 
 export const SCENARIO_ITEM_FROM_CLIENT = 'client';
 export type scenario_item_from_client = typeof SCENARIO_ITEM_FROM_CLIENT;
@@ -59,7 +79,10 @@ export interface scenarioItem {
   text: string;
   from: scenarioItemFrom;
   final?: boolean;
+
   intentDefinition?: intentDefinition;
+  tickActionDefinition?: TickActionDefinition;
+
   apiCallDefinition?: apiCallDefinition;
   apiResponse?: string;
 }

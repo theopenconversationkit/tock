@@ -57,9 +57,9 @@
     <div class="card-row">
       <div class="card-col">
         <scenario-designer-entry
-          *ngIf="scenario?.data.length"
+          *ngIf="scenario?.data.scenarioItems.length"
           [itemId]="0"
-          [dataList]="scenario.data"
+          [dataList]="scenario.data.scenarioItems"
           [selectedItem]="selectedItem"
           [mode]="scenario.mode"
         ></scenario-designer-entry>
