@@ -19,8 +19,9 @@ export interface Scenario {
 
 export type EntityTypeName = string;
 export type EntityRole = string;
+export type TickContextName = string;
 export interface TickContext {
-  name: string;
+  name: TickContextName;
   entity: [EntityTypeName, EntityRole];
   type: 'string';
 }
@@ -57,8 +58,8 @@ export interface intentDefinition {
 export interface TickActionDefinition {
   name: string;
   description?: string;
-  inputContexts: TickContext[];
-  outputContexts: TickContext[];
+  inputContexts: TickContextName[];
+  outputContexts: TickContextName[];
   handler: string;
   answer: string;
 }
