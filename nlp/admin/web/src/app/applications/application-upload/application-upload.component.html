@@ -131,6 +131,17 @@
               <mat-icon mat-list-icon>speaker_notes</mat-icon>
               <h4 mat-line>{{ report.sentencesImported }}</h4>
             </mat-list-item>
+            <mat-divider></mat-divider>
+            <h3
+              *ngIf="report.faqsImported !== 0"
+              mat-subheader
+            >
+              Number of FAQs imported
+            </h3>
+            <mat-list-item *ngIf="report.faqsImported != 0">
+              <mat-icon mat-list-icon>speaker_notes</mat-icon>
+              <h4 mat-line>{{ report.faqsImported }}</h4>
+            </mat-list-item>
           </mat-list>
           <div *ngIf="report.errorMessages.length !== 0">
             <h5>Errors:</h5>

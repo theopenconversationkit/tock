@@ -108,6 +108,13 @@ export function randomString(): string {
   return '_' + Math.random().toString(36).substr(2, 9);
 }
 
+export function truncate(input?: string, len = 40): string {
+  if (input && input.length > len) {
+    return input.substring(0, len) + '...';
+  }
+  return input;
+}
+
 export function groupBy(list, keyGetter) {
   const map = new Map();
   list.forEach((item) => {

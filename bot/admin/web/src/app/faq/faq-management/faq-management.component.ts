@@ -90,7 +90,6 @@ export class FaqManagementComponent implements OnInit {
 
   onScroll(): void {
     if (this.loading.list || this.pagination.end >= this.pagination.total) return;
-
     return this.search(this.pagination.end, this.pagination.size, true, false);
   }
 
@@ -138,7 +137,8 @@ export class FaqManagementComponent implements OnInit {
     start: number = 0,
     size: number = this.pagination.size,
     add: boolean = false,
-    showLoadingSpinner: boolean = true
+    showLoadingSpinner: boolean = true,
+    partialReload: boolean = false
   ): void {
     if (showLoadingSpinner) this.loading.list = true;
 
@@ -150,7 +150,9 @@ export class FaqManagementComponent implements OnInit {
       .pipe(takeUntil(this.destroy))
       .subscribe((faqs: PaginatedFaqResult) => {
         this.pagination.total = faqs.total;
-        this.pagination.end = faqs.end;
+        if (!partialReload || this.pagination.end > this.pagination.total) {
+          this.pagination.end = faqs.end;
+        }
 
         if (add) {
           this.faqs = [...this.faqs, ...faqs.rows];
@@ -234,8 +236,15 @@ export class FaqManagementComponent implements OnInit {
       .subscribe({
         next: () => {
           this.faqs = this.faqs.filter((f) => f.id != faqId);
-          this.pagination.end--;
           this.pagination.total--;
+          if (this.pagination.end <= this.pagination.total) {
+            this.search(this.pagination.end - 1, 1, true, true, true);
+          } else {
+            this.pagination.end--;
+            if (this.pagination.start > 0 && this.pagination.start === this.pagination.total) {
+              this.search(this.pagination.end - this.pagination.size);
+            }
+          }
 
           this.toastrService.success(`Faq successfully deleted`, 'Success', {
             duration: 5000,

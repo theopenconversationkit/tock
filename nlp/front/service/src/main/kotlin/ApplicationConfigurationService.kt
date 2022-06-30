@@ -103,7 +103,7 @@ object ApplicationConfigurationService :
         intentId: Id<IntentDefinition>
     ): Boolean {
         val intent = intentDAO.getIntentById(intentId)!!
-        sentenceDAO.switchSentencesIntent(application._id, intentId, UNKNOWN_INTENT_NAME.toId())
+        sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT_NAME.toId())
         applicationDAO.save(application.copy(intents = application.intents - intentId))
         val newIntent = intent.copy(applications = intent.applications - application._id)
         return if (newIntent.applications.isEmpty()) {
@@ -206,7 +206,7 @@ object ApplicationConfigurationService :
     private fun findIntent(intentId: Id<IntentDefinition>): Intent {
         return getIntentById(intentId)?.let {
             toIntent(it)
-        } ?: Intent(UNKNOWN_INTENT_NAME, emptyList())
+        } ?: Intent(Intent.UNKNOWN_INTENT_NAME, emptyList())
     }
 
     fun toIntent(intent: IntentDefinition): Intent {

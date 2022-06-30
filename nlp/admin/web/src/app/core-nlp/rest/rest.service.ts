@@ -16,14 +16,14 @@
 
 import {NEVER, Observable, throwError as observableThrowError} from 'rxjs';
 
-import {catchError, map} from 'rxjs/operators';
-import {EventEmitter, Inject, Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {environment} from '../../../environments/environment';
-import {Router} from '@angular/router';
-import {FileItem, FileUploader, ParsedResponseHeaders} from 'ng2-file-upload';
-import {JsonUtils} from '../../model/commons';
-import {APP_BASE_HREF} from '@angular/common';
+import { catchError, map } from 'rxjs/operators';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { JsonUtils } from '../../model/commons';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Injectable()
 export class RestService {
