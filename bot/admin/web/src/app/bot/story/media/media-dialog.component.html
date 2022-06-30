@@ -124,20 +124,34 @@
             />
           </span>
         </p>
-
-        <hr />
+        <!--- Description -->
+        <span
+          *ngIf="media.file"
+          class="nb-form-field inline">
+            <label>File Description</label>
+            <input
+              nbInput
+              type="text"
+              name="description"
+              placeholder="Description"
+              [(ngModel)]="media.file.descriptionLabel"
+              class="width-50"
+              nbTooltip="File Description"
+            />
+          </span>
+        <hr/>
         <!-- actions -->
         <div class="actions">
           <h6>Actions</h6>
           <div
-            *ngFor="let action of media.actions; let i = index"
+            *ngFor="let action of media.actions"
             class="action-row"
           >
             <span class="nb-form-field inline">
               <label>Action title</label>
               <input
                 class="action"
-                [name]="'titleLabel' + i"
+                [name]="'titleLabel' + action.internalId"
                 nbInput
                 placeholder="Title"
                 [(ngModel)]="action.titleLabel"
@@ -148,7 +162,7 @@
               <label>Optional action Url</label>
               <input
                 class="action"
-                [name]="'url' + i"
+                [name]="'url' + action.internalId"
                 nbInput
                 placeholder="Url"
                 [(ngModel)]="action.url"

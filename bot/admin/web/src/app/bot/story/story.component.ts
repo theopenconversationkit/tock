@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import {
   Component,
   EventEmitter,
@@ -199,7 +199,6 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe((result) => {
       if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
-        // console.log(this.story);
         this.saveStory(this.story.selected);
       }
     });

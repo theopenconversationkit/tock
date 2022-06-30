@@ -14,14 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+export GPG_TTY=$(tty)
 export MAVEN_OPTS="-Dkotlin.environment.keepalive=true"
 echo "branch : $TRAVIS_BRANCH"
 echo "pull_request : $TRAVIS_PULL_REQUEST"
 echo "tag : $TRAVIS_TAG"
 if [[ $TRAVIS_BRANCH = *"build"* || $TRAVIS_BRANCH = "master" ]] && [ "$TRAVIS_PULL_REQUEST" = 'false' ]; then
   openssl aes-256-cbc -K $encrypted_30d9879477f5_key -iv $encrypted_30d9879477f5_iv -in etc/codesigning.asc.enc -out etc/codesigning.asc -d
-  gpg --fast-import etc/codesigning.asc
+  gpg --fast-import --batch etc/codesigning.asc
   if [ "$TRAVIS_TAG" = '' ];
   then
     if [ "$SKIP_DEPLOY" != 'true' ]; then

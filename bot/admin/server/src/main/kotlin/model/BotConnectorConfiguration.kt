@@ -19,6 +19,7 @@ package ai.tock.bot.admin.model
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
 import ai.tock.bot.connector.ConnectorType
+import ai.tock.shared.defaultLocale
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
@@ -51,7 +52,7 @@ data class BotConnectorConfiguration(
             name,
             if (baseUrl.isNullOrBlank() && _id == null) defaultBaseUrl else baseUrl,
             parameters,
-            path?.toLowerCase(),
+            path?.lowercase(defaultLocale),
             _id ?: newId(),
             targetConfigurationId
         )

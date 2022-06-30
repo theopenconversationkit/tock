@@ -15,7 +15,7 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import * as html2pdf from 'html2pdf.js';
+// import * as html2pdf from 'html2pdf.js';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
 import { BotApplicationConfiguration, ConnectorType } from 'src/app/core/model/configuration';
@@ -86,13 +86,15 @@ export class ActivityComponent implements OnInit {
     });
     this.userPreferences = this.analytics.getUserPreferences();
   }
+
   ngOnInit(): void {
     this.reload();
   }
 
   getNumberOfDays(): number {
     return Number(
-      ((this.filter.to.getTime() - this.filter.from.getTime()) / (1000 * 3600 * 24)).toFixed(0)
+      !this.filter.to || !this.filter.from ? 1 :
+        ((this.filter.to.getTime() - this.filter.from.getTime()) / (1000 * 3600 * 24)).toFixed(0)
     );
   }
 
@@ -156,16 +158,16 @@ export class ActivityComponent implements OnInit {
     return fileName;
   }
 
-  onPdfAction() {
-    const options = {
-      filename: this.getFileName(),
-      image: { type: 'jpeg ', quality: 0.95 },
-      html2canvas: {},
-      jsPDF: { orientation: 'landscape' }
-    };
-    const content: Element = document.getElementById('element-id');
-    html2pdf().from(content).set(options).save();
-  }
+  // onPdfAction() {
+  //   const options = {
+  //     filename: this.getFileName(),
+  //     image: { type: 'jpeg ', quality: 0.95 },
+  //     html2canvas: {},
+  //     jsPDF: { orientation: 'landscape' }
+  //   };
+  //   const content: Element = document.getElementById('element-id');
+  //   html2pdf().from(content).set(options).save();
+  // }
 
   getConnector(connectorId: string): ConnectorType {
     let connectors = this.configurations
@@ -354,6 +356,9 @@ export class ActivityComponent implements OnInit {
   }
 
   private buildPreviousDateSearchQuery(nbDays: number): DialogFlowRequest {
+    if(!this.filter.to) {
+      this.filter.to = this.filter.from
+    }
     const oldFromDate = new Date(this.filter.from.getTime());
     oldFromDate.setDate(oldFromDate.getDate() - nbDays);
     const oldToDate = new Date(this.filter.to.getTime());

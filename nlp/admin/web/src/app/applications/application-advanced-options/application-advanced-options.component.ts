@@ -24,7 +24,7 @@ import {
   NlpModelConfiguration
 } from '../../model/application';
 import { ApplicationService } from '../../core-nlp/applications.service';
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { ApplicationScopedQuery } from '../../model/commons';
 import { NlpEngineType } from '../../model/nlp';
 import { Subject } from 'rxjs';

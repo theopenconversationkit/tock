@@ -112,14 +112,15 @@ fun Button.toChoice(): Choice =
     }
 
 fun WebMediaFile.toMediaFile(): MediaFile =
-    MediaFile(url, name, attachmentType(type))
+    MediaFile(url, name, attachmentType(type), description)
 
 fun MediaFile.toWebMediaFile(): WebMediaFile =
-    WebMediaFile(url, name, type)
+    WebMediaFile(url, name, type, description?.toString())
 
 fun WebMediaFile(
     url: String,
     name: String,
-    type: AttachmentType = attachmentType(url)
+    type: AttachmentType = attachmentType(url),
+    description: String? = null
 ): WebMediaFile =
-    WebMediaFile(url, name, type.name)
+    WebMediaFile(url, name, type.name, description)

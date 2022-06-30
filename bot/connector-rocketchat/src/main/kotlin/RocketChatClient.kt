@@ -29,6 +29,7 @@ import chat.rocket.core.internal.rest.joinChat
 import chat.rocket.core.internal.rest.login
 import chat.rocket.core.internal.rest.sendMessage
 import chat.rocket.core.model.Room
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -37,7 +38,6 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -120,6 +120,7 @@ internal class RocketChatClient(
                                 logger.debug("Connected")
                                 client.subscribeRooms { _, _ -> }
                             }
+                            else -> logger.debug { status }
                         }
                     }
                     logger.debug("Done on statusChannel")

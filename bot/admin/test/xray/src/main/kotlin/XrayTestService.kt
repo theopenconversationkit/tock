@@ -42,7 +42,7 @@ class XrayTestService : TestService by testCoreService {
             ).execute(context.organization)
         }
 
-        blockingJsonGet("/xray/test/plans", botUser) { context ->
+        blockingJsonGet("/xray/test/plans", botUser) {
             XrayService().getTestPlans()
         }
     }

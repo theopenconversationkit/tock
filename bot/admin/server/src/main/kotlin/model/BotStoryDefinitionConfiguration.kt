@@ -25,6 +25,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryTag
+import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
@@ -64,7 +65,8 @@ data class BotStoryDefinitionConfiguration(
     val tags: Set<StoryTag> = emptySet(),
     val configuredAnswers: List<BotConfiguredAnswer> = emptyList(),
     val configuredSteps: List<BotConfiguredSteps> = emptyList(),
-    val _id: Id<StoryDefinitionConfiguration> = newId()
+    val _id: Id<StoryDefinitionConfiguration> = newId(),
+    val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList()
 ) {
 
     constructor(story: StoryDefinitionConfiguration, userLocale: Locale, readOnly: Boolean = false) : this(
@@ -86,6 +88,7 @@ data class BotStoryDefinitionConfiguration(
         story.tags,
         story.configuredAnswers.map { BotConfiguredAnswer(it, story.userSentenceLocale, readOnly) },
         story.configuredSteps.mapSteps(story, readOnly),
-        story._id
+        story._id,
+        story.nextIntentsQualifiers
     )
 }

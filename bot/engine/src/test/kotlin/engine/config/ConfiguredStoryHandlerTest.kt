@@ -34,6 +34,7 @@ import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.RawString
@@ -110,6 +111,7 @@ class ConfiguredStoryHandlerTest {
         val configuration: StoryDefinitionConfiguration = mockk {
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
+            every { nextIntentsQualifiers } returns emptyList()
             every { findEnabledEndWithStoryId(any()) } returns null
         }
 
@@ -201,6 +203,7 @@ class ConfiguredStoryHandlerTest {
         val configuration: StoryDefinitionConfiguration = mockk {
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
+            every { nextIntentsQualifiers } returns emptyList()
             every { findEnabledEndWithStoryId(any()) } returns null
         }
 
@@ -250,17 +253,32 @@ class ConfiguredStoryHandlerTest {
                 SimpleAnswer(
                     key = I18nLabelValue(label2Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label2Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label2Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label3Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label3Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label3Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label4Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label4Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label4Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label5Text),
@@ -273,12 +291,22 @@ class ConfiguredStoryHandlerTest {
                 SimpleAnswer(
                     key = I18nLabelValue(label7Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label7Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label7Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 ),
                 SimpleAnswer(
                     key = I18nLabelValue(label8Card),
                     delay = -1,
-                    mediaMessage = MediaCardDescriptor(I18nLabelValue(label8Card), null, null, fillCarousel = true)
+                    mediaMessage = MediaCardDescriptor(
+                        I18nLabelValue(label8Card),
+                        null,
+                        null,
+                        fillCarousel = true
+                    )
                 )
             )
         )
@@ -315,6 +343,7 @@ class ConfiguredStoryHandlerTest {
         val configuration: StoryDefinitionConfiguration = mockk {
             every { mandatoryEntities } returns emptyList()
             every { findCurrentAnswer() } returns simpleAnswerConfiguration
+            every { nextIntentsQualifiers } returns emptyList()
             every { findEnabledEndWithStoryId(any()) } returns null
         }
 
@@ -366,5 +395,34 @@ class ConfiguredStoryHandlerTest {
                 defaultLabel = "Default $label",
                 i18n = LinkedHashSet()
             )
+    }
+
+    @Test
+    fun `nextIntentQualifiers are taking in account`() {
+
+        val bus: BotBus = mockk(relaxed = true){
+            every { botDefinition } returns BotDefinitionTest()
+            every { dialog } returns mockk{
+                every { stories } returns mutableListOf()
+                every { state } returns mockk(relaxed = true){
+                    every{ nextActionState } returns mockk{
+                        every {intentsQualifiers} returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
+                    }
+                }
+            }
+        }
+
+        val configuration: StoryDefinitionConfiguration = mockk{
+            every { mandatoryEntities } returns emptyList()
+            every { findCurrentAnswer() } returns null
+            every { steps } returns emptyList()
+            every { findEnabledEndWithStoryId(any()) } returns null
+            every { nextIntentsQualifiers } returns listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5))
+        }
+
+        val handler = ConfiguredStoryHandler(BotDefinitionWrapper(BotDefinitionTest()), configuration)
+        handler.handle(bus)
+
+        assertEquals(bus.dialog.state.nextActionState?.intentsQualifiers, listOf(NlpIntentQualifier("intent1",0.5), NlpIntentQualifier("intent2",0.5)))
     }
 }

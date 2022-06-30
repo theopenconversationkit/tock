@@ -14,6 +14,8 @@ title: Table of Contents
     * [Configure your bot for _Messenger_](../guide/messenger)
     * [Build NLP models](../build-nlp-model)
     * [Monitor NLP models](../evaluate-the-model)
+    * [Reducing the scope of intentions](../guide/intents-restrictions)
+
 
 * Develop Stories :
     * [Bot API mode](../dev/bot-api)

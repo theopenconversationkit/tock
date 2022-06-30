@@ -30,6 +30,7 @@ import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
+import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.shared.defaultNamespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -120,7 +121,12 @@ data class StoryDefinitionConfiguration(
     /**
      * Steps by bot application configuration
      */
-    val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList()
+    val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList(),
+
+    /**
+     * To filter/re-qualify next intents
+     */
+    val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList()
 
 ) : StoryDefinitionAnswersContainer {
 

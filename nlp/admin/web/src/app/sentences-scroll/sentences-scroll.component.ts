@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import {
   AfterViewInit,
   Component,

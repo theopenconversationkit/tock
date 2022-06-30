@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
 import { BotService } from '../bot-service';
 import { NlpService } from '../../nlp-tabs/nlp.service';

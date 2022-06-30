@@ -194,7 +194,7 @@ export class StepsComponent implements OnInit, OnChanges {
       data: { generate: true }
     });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result.entity) {
+      if (result?.entity) {
         this.nlp.getDictionary(result.entity).subscribe((dictionary) => {
           //dictionary
           const newSteps = StoryStep.generateEntitySteps(

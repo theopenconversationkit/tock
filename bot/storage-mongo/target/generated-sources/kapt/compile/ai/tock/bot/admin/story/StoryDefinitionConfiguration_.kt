@@ -6,6 +6,7 @@ import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.IntentWithoutNamespace_
 import ai.tock.bot.definition.StoryTag
+import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import java.util.Locale
 import kotlin.Int
 import kotlin.String
@@ -66,6 +67,9 @@ private val __ConfiguredAnswers: KProperty1<StoryDefinitionConfiguration,
 private val __ConfiguredSteps: KProperty1<StoryDefinitionConfiguration,
         List<StoryDefinitionConfigurationByBotStep>?>
     get() = StoryDefinitionConfiguration::configuredSteps
+private val __NextIntentsQualifiers: KProperty1<StoryDefinitionConfiguration,
+        List<NlpIntentQualifier>?>
+    get() = StoryDefinitionConfiguration::nextIntentsQualifiers
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         StoryDefinitionConfiguration?>) : KPropertyPath<T,
         StoryDefinitionConfiguration?>(previous,property) {
@@ -130,6 +134,10 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val configuredSteps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationByBotStep?>
         get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredSteps)
 
+    val nextIntentsQualifiers: KCollectionSimplePropertyPath<T, NlpIntentQualifier?>
+        get() =
+                KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::nextIntentsQualifiers)
+
     companion object {
         val StoryId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __StoryId
@@ -176,7 +184,10 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = KCollectionSimplePropertyPath(null, __ConfiguredAnswers)
         val ConfiguredSteps: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
                 StoryDefinitionConfigurationByBotStep?>
-            get() = KCollectionSimplePropertyPath(null, __ConfiguredSteps)}
+            get() = KCollectionSimplePropertyPath(null, __ConfiguredSteps)
+        val NextIntentsQualifiers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
+                NlpIntentQualifier?>
+            get() = KCollectionSimplePropertyPath(null, __NextIntentsQualifiers)}
 }
 
 class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -242,6 +253,10 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val configuredSteps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationByBotStep?>
         get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredSteps)
+
+    val nextIntentsQualifiers: KCollectionSimplePropertyPath<T, NlpIntentQualifier?>
+        get() =
+                KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::nextIntentsQualifiers)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>
@@ -310,6 +325,10 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val configuredSteps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationByBotStep?>
         get() = KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::configuredSteps)
+
+    val nextIntentsQualifiers: KCollectionSimplePropertyPath<T, NlpIntentQualifier?>
+        get() =
+                KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::nextIntentsQualifiers)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>

@@ -65,14 +65,12 @@ export class SimpleAnswerComponent implements OnInit {
   }
 
   updateLabel(answer: SimpleAnswer) {
-    this.bot
-      .saveI18nLabel(answer.label)
-      .subscribe((_) =>
-        this.dialog.notify(`Story label has been updated successfully.`, 'Label Updated', {
-          duration: 3000,
-          status: 'success'
-        })
-      );
+    this.bot.saveI18nLabel(answer.label).subscribe((_) =>
+      this.dialog.notify(`Story label has been updated successfully.`, 'Label Updated', {
+        duration: 3000,
+        status: 'success'
+      })
+    );
   }
 
   private addAnswerIfNonEmpty(callback) {
@@ -153,16 +151,19 @@ export class SimpleAnswerComponent implements OnInit {
         category: this.container.category
       }
     });
+
     dialogRef.onClose.subscribe((result) => {
-      const removeMedia = result.removeMedia;
-      const media = result.media;
-      if (removeMedia || media) {
-        if (removeMedia) {
-          if (answer) answer.mediaMessage = null;
-          else this.newMedia = null;
-        } else {
-          if (answer) answer.mediaMessage = media;
-          else this.newMedia = media;
+      if (result) {
+        const removeMedia = result.removeMedia;
+        const media = result.media;
+        if (removeMedia || media) {
+          if (removeMedia) {
+            if (answer) answer.mediaMessage = null;
+            else this.newMedia = null;
+          } else {
+            if (answer) answer.mediaMessage = media;
+            else this.newMedia = media;
+          }
         }
       }
     });

@@ -36,9 +36,11 @@ import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.nlp.api.client.model.Entity
+import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import mu.KotlinLogging
 
 /**
@@ -116,6 +118,29 @@ internal class ConfiguredStoryHandler(
         answerContainer.send(bus)
 
         switchStoryIfEnding(null, bus)
+
+        // Restrict next intents if defined in story settings:
+
+        if (configuration.nextIntentsQualifiers.isNotEmpty()) {
+            val nextIntentsQualifiers: MutableList<NlpIntentQualifier> = configuration.nextIntentsQualifiers.toMutableList()
+
+            // Story steps (choices) intents are always allowed:
+            configuration.steps.forEach { step ->
+                val intentName: String? = step.intent?.name
+                if (intentName != null) {
+                    nextIntentsQualifiers.add(NlpIntentQualifier(intentName, .5))
+                }
+                val targetIntentName: String? = step.targetIntent?.name
+                if (targetIntentName != null) {
+                    nextIntentsQualifiers.add(NlpIntentQualifier(targetIntentName, .5))
+                }
+            }
+
+            bus.dialog.state.nextActionState = NextUserActionState(nextIntentsQualifiers.distinctBy { it.intent }.toList())
+            logger.debug { "bus.dialog.state.nextActionState  : $bus.dialog.state.nextActionState " }
+            logger.debug { "NextIntentsQualifiers : ${bus.dialog.state.nextActionState} " }
+        }
+
     }
 
     /**
