@@ -25,12 +25,14 @@ import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
+import ai.tock.nlp.front.service.storage.FaqSettingsDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.FaqDefinition
+import ai.tock.nlp.front.shared.config.FaqSettingsQuery
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
 import ai.tock.shared.security.UserLogin
@@ -47,6 +49,7 @@ import com.github.salomonbrys.kodein.provider
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
@@ -60,7 +63,7 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -71,6 +74,7 @@ class FaqAdminServiceTest : AbstractTest() {
         val sentenceDAO: ClassifiedSentenceDAO = mockk(relaxed = false)
         val intentDAO: IntentDefinitionDAO = mockk(relaxed = false)
         val i18nDAO: I18nDAO = mockk(relaxed = false)
+        val faqSettingsDAO: FaqSettingsDAO = mockk(relaxed = true)
 
         init {
             // IOC
@@ -81,6 +85,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 bind<ClassifiedSentenceDAO>() with provider { sentenceDAO }
                 bind<IntentDefinitionDAO>() with provider { intentDAO }
                 bind<I18nDAO>() with provider { i18nDAO }
+                bind<FaqSettingsDAO>() with provider { faqSettingsDAO }
             }
             tockInternalInjector.inject(
                 Kodein {
@@ -102,7 +107,7 @@ class FaqAdminServiceTest : AbstractTest() {
 
         private const val userLogin: UserLogin = "userLogin"
 
-        private val faqDefinition = FaqDefinition(faqId, intentId, i18nId, tagList, true, now, now)
+        private val faqDefinition = FaqDefinition(faqId, applicationId, intentId, i18nId, tagList, true, now, now)
 
         val applicationDefinition = ApplicationDefinition("my App", namespace = namespace)
         val storyId = "storyId".toId<StoryDefinitionConfiguration>()
@@ -324,7 +329,8 @@ class FaqAdminServiceTest : AbstractTest() {
             @Test
             fun `GIVEN save faq WHEN and saving the same story THEN update the story`() {
                 val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
-                val savedFaqDefinition = FaqDefinition(faqId, intentId, i18nId, listOf("NEW TAG"), true, now, now)
+                val savedFaqDefinition =
+                    FaqDefinition(faqId, applicationId, intentId, i18nId, listOf("NEW TAG"), true, now, now)
 
                 every {
                     faqAdminService["createOrUpdateIntent"](
@@ -338,13 +344,15 @@ class FaqAdminServiceTest : AbstractTest() {
                         allAny<IntentDefinition>(),
                         allAny<UserLogin>(),
                         allAny<I18nLabel>(),
-                        allAny<ApplicationDefinition>()
+                        allAny<ApplicationDefinition>(),
+                        allAny<FaqSettingsQuery>()
                     ) as Unit
                 } just Runs
 
                 every {
                     faqAdminService["prepareCreationOrUpdatingFaqDefinition"](
                         allAny<FaqDefinitionRequest>(),
+                        allAny<ApplicationDefinition>(),
                         allAny<IntentDefinition>(),
                         allAny<I18nLabel>(),
                         allAny<FaqDefinition>()
@@ -432,11 +440,187 @@ class FaqAdminServiceTest : AbstractTest() {
                 //story name must no be overwritten
                 assertNotEquals(slotStory.captured.name, existingMessageStory.name)
                 assertEquals(slotStory.captured.category, FAQ_CATEGORY)
+            }
 
+            @Test
+            fun `GIVEN save faq and story When existing Faq THEN save and disable the story`() {
+
+                val faqDefinitionRequestDisabledStory = faqDefinitionRequest.copy(enabled = false)
+                val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+                every {
+                    faqAdminService["createOrUpdateIntent"](
+                        allAny<FaqDefinitionRequest>(),
+                        allAny<ApplicationDefinition>()
+                    )
+                } returns existingIntent
+
+                faqAdminService.saveFAQ(faqDefinitionRequestDisabledStory, userLogin, applicationDefinition)
+
+                val botAdminService = spyk<BotAdminService>()
+                every {
+                    botAdminService["getBotConfigurationsByNamespaceAndBotId"](
+                        any<String>(),
+                        any<String>()
+                    )
+                } answers { aApplication }
+                every {
+                    botAdminService.saveStory(
+                        any<String>(),
+                        any<BotStoryDefinitionConfiguration>(),
+                        any<UserLogin>(),
+                        any<IntentDefinition>()
+                    )
+                } returns existingMessageStory
+
+                val slotStory = slot<StoryDefinitionConfiguration>()
+
+                verify(exactly = 0) {
+                    botAdminService["createOrGetIntent"](
+                        any<String>(),
+                        any<String>(),
+                        any<Id<ApplicationDefinition>>(),
+                        any<String>()
+                    )
+                }
+                verify(exactly = 1) { faqDefinitionDAO.save(any()) }
+                verify(exactly = 1) { i18nDAO.save(listOf(mockedI18n)) }
+                verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
+
+                assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
+                //story name must no be overwritten
+                assertNotEquals(slotStory.captured.name, existingMessageStory.name)
+                assertEquals(
+                    slotStory.captured.features.get(0).enabled,
+                    faqDefinitionRequestDisabledStory.enabled,
+                    "Should be equals to false, considered as disabled"
+                )
+                assertEquals(slotStory.captured.category, FAQ_CATEGORY)
             }
 
         }
     }
 
+    @Nested
+    inner class FaqWithIntentNameTest {
 
+        private val newFaqQuery = FaqDefinitionRequest(
+            null,
+            null,
+            Locale.FRENCH,
+            applicationId,
+            now,
+            now,
+            "NEW FAQ TITLE",
+            "NEW FAQ DESCRIPTION",
+            listOf("NEW FAQ QUESTION"),
+            emptyList(),
+            "NEW FAQ ANSWER",
+            true,
+            intentName = "new_faq_intent"
+        )
+
+        private val existingFaqQuery = newFaqQuery.copy(
+            id = "myFaq",
+            intentName = null
+        )
+
+        private val newIntentDefinition = IntentDefinition(
+            name = "myIntentName",
+            namespace = namespace,
+            applications = setOf(applicationId),
+            label = "my Intent Label",
+            description = "my Intent Description",
+            category = "faq",
+            entities = emptySet()
+        )
+
+        private val existingIntentDefinition = newIntentDefinition.copy(
+            _id = "myIntent".toId<IntentDefinition>(),
+        )
+
+        private val newFaqDefinition = FaqDefinition(
+            applicationId = applicationId,
+            intentId = "myIntent".toId<IntentDefinition>(),
+            i18nId = "myI18n".toId<I18nLabel>(),
+            tags = emptyList(),
+            enabled = true,
+            creationDate = Instant.now(),
+            updateDate = Instant.now(),
+        )
+
+        private val existingFaqDefinition = newFaqDefinition.copy(
+            _id = "myFaq".toId<FaqDefinition>()
+        )
+
+        @Test
+        fun `GIVEN create faq WHEN intent name is null THEN Throw IllegalArgumentException`() {
+            val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+            assertThrows<BadRequestException>() {
+                faqAdminService.saveFAQ(
+                    newFaqQuery.copy(id = null, intentName = null),
+                    userLogin,
+                    applicationDefinition
+                )
+            }
+        }
+
+        @Test
+        fun `GIVEN create faq WHEN intent name is not null THEN Throw IllegalArgumentException`() {
+            val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+            initMock(faqAdminService)
+
+            faqAdminService.saveFAQ(newFaqQuery, userLogin, applicationDefinition)
+
+            verify(exactly = 1) { faqAdminService["getIntentName"](any<FaqDefinitionRequest>()) }
+            verify(exactly = 0) { faqAdminService["findFaqDefinitionIntent"](any<Id<FaqDefinition>>()) }
+        }
+
+        @Test
+        fun `GIVEN update faq WHEN intent name is null THEN save`() {
+            val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+            initMock(faqAdminService)
+
+            faqAdminService.saveFAQ(existingFaqQuery, userLogin, applicationDefinition)
+
+            verify(exactly = 1) { faqAdminService["getIntentName"](any<FaqDefinitionRequest>()) }
+            verify(exactly = 1) { faqAdminService["findFaqDefinitionIntent"](any<Id<FaqDefinition>>()) }
+        }
+
+        private fun initMock(faqAdminService: FaqAdminService) {
+            every {
+                faqAdminService["findFaqDefinitionIntent"](any<Id<FaqDefinition>>())
+            } returns existingIntentDefinition
+
+            justRun {
+                faqAdminService["createOrUpdateUtterances"](
+                    any<FaqDefinitionRequest>(),
+                    any<Id<IntentDefinition>>(),
+                    any<UserLogin>()
+                )
+            }
+
+            every {
+                faqAdminService["manageI18nLabelUpdate"](
+                    any<FaqDefinitionRequest>(),
+                    any<String>(),
+                    any<FaqDefinition>()
+                )
+            } returns mockedI18n
+
+            every { faqDefinitionDAO.getFaqDefinitionByIntentId(any()) } returns existingFaqDefinition
+
+            justRun { faqDefinitionDAO.save(any()) }
+
+            justRun {
+                faqAdminService["createOrUpdateStory"](
+                    any<FaqDefinitionRequest>(),
+                    any<IntentDefinition>(),
+                    any<UserLogin>(),
+                    any<I18nLabel>(),
+                    any<ApplicationDefinition>(),
+                    any<FaqSettingsQuery>()
+                )
+            }
+        }
+    }
 }

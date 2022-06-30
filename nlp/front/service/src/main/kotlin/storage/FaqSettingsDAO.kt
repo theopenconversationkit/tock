@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.nlp.front.service.storage
 
-data class FaqDefinitionSearchResult(
-    val total: Long,
-    val start: Long = 0,
-    val end: Long = 10,
-    val rows: List<FaqDefinitionRequest> = emptyList(),
-)
+import ai.tock.nlp.front.shared.config.*
+import org.litote.kmongo.Id
+
+interface FaqSettingsDAO {
+
+    fun getFaqSettingsById(id: Id<FaqSettings>): FaqSettings?
+
+    fun deleteFaqSettingsById(id: Id<FaqSettings>)
+
+    fun save(faqSettings: FaqSettings)
+
+    fun getFaqSettingsByApplicationId(id: Id<ApplicationDefinition>): FaqSettings?
+
+}

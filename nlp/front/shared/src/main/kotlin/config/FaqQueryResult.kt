@@ -29,10 +29,13 @@ data class FaqQueryResult(
      */
     val _id: Id<FaqDefinition>?,
     /**
+     * The application id.
+     */
+    val applicationId: Id<ApplicationDefinition>,
+    /**
      * The intent id.
      */
     val intentId: Id<IntentDefinition>,
-
     /**
      * The i18n label id.
      */
@@ -76,6 +79,7 @@ data class FaqQueryResult(
     fun toFaqDefinitionDetailed(faqQueryResult: FaqQueryResult, i18nLabel: I18nLabel): FaqDefinitionDetailed {
         return FaqDefinitionDetailed(
             faqQueryResult._id,
+            faqQueryResult.applicationId,
             faqQueryResult.intentId,
             faqQueryResult.i18nId,
             faqQueryResult.tags,

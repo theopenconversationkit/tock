@@ -6,12 +6,12 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class FaqDefinition_Serializer : StdSerializer<FaqDefinition>(FaqDefinition::class.java),
+internal class FaqSettings_Serializer : StdSerializer<FaqSettings>(FaqSettings::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(FaqDefinition::class.java, this)
+    override fun module() = SimpleModule().addSerializer(FaqSettings::class.java, this)
 
     override fun serialize(
-        value: FaqDefinition,
+        value: FaqSettings,
         gen: JsonGenerator,
         serializers: SerializerProvider
     ) {
@@ -22,26 +22,14 @@ internal class FaqDefinition_Serializer : StdSerializer<FaqDefinition>(FaqDefini
         gen.writeFieldName("applicationId")
         val _applicationId_ = value.applicationId
         serializers.defaultSerializeValue(_applicationId_, gen)
-        gen.writeFieldName("intentId")
-        val _intentId_ = value.intentId
-        serializers.defaultSerializeValue(_intentId_, gen)
-        gen.writeFieldName("i18nId")
-        val _i18nId_ = value.i18nId
-        serializers.defaultSerializeValue(_i18nId_, gen)
-        gen.writeFieldName("tags")
-        val _tags_ = value.tags
-        serializers.findTypedValueSerializer(
-                serializers.config.typeFactory.constructCollectionType(
-                kotlin.collections.List::class.java,
-                serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                ),
-                true,
-                null
-                )
-                .serialize(_tags_, gen, serializers)
-        gen.writeFieldName("enabled")
-        val _enabled_ = value.enabled
-        gen.writeBoolean(_enabled_)
+        gen.writeFieldName("satisfactionEnabled")
+        val _satisfactionEnabled_ = value.satisfactionEnabled
+        gen.writeBoolean(_satisfactionEnabled_)
+        gen.writeFieldName("satisfactionStoryId")
+        val _satisfactionStoryId_ = value.satisfactionStoryId
+        if(_satisfactionStoryId_ == null) { gen.writeNull() } else {
+                gen.writeString(_satisfactionStoryId_)
+                }
         gen.writeFieldName("creationDate")
         val _creationDate_ = value.creationDate
         serializers.defaultSerializeValue(_creationDate_, gen)

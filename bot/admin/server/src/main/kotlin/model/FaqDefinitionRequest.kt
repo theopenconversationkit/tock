@@ -34,4 +34,5 @@ data class FaqDefinitionRequest(
     val tags: List<String>,
     val answer: String,
     val enabled: Boolean,
+    val intentName: String? = null
 )

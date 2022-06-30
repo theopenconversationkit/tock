@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.nlp.front.shared.config
 
-data class FaqDefinitionSearchResult(
-    val total: Long,
-    val start: Long = 0,
-    val end: Long = 10,
-    val rows: List<FaqDefinitionRequest> = emptyList(),
+/**
+ * Global Faq settings transmitted to front (DTO)
+ */
+class FaqSettingsQuery(
+    val satisfactionEnabled: Boolean,
+    val satisfactionStoryId: String?
 )

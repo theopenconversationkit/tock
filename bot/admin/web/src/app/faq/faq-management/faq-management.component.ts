@@ -62,10 +62,7 @@ export class FaqManagementComponent implements OnInit {
 
       if (confs.length) {
         this.search();
-        this.stateService.configurationChange.pipe(takeUntil(this.destroy)).subscribe(() => {
-          this.search();
-          this.closeSidePanel();
-        });
+        this.closeSidePanel();
 
         if (this.initUtterance) {
           let initUtterance = this.initUtterance;

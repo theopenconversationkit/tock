@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,41 +16,34 @@
 
 package ai.tock.nlp.front.shared.config
 
-import ai.tock.translator.I18nLabel
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
-/**
- * Faq Definition Detailed with mongo aggregation
- */
-data class FaqDefinitionDetailed(
+@JacksonData(internal = true)
+data class FaqSettings(
+
     /**
-     * The unique [Id] of the intent.
+     * The unique [Id] of the settings.
      */
-    val _id: Id<FaqDefinition>?,
+    val _id: Id<FaqSettings> = newId(),
+
     /**
      * The application id.
      */
     val applicationId: Id<ApplicationDefinition>,
-    /**
-     * The intent id.
-     */
-    val intentId: Id<IntentDefinition>,
 
     /**
-     * The i18n label id.
+     * Is the satisfaction story is asked ?
      */
-    val i18nId: Id<I18nLabel>,
+    val satisfactionEnabled: Boolean = false,
 
     /**
-     * List of tags for better Faq categorisation
+     * The satisfaction story identifier.
      */
-    val tags: List<String>,
+    val satisfactionStoryId: String? = null,
 
-    /**
-     * Is the Faq enabled?
-     */
-    val enabled: Boolean,
     /**
      * Faq creation date
      */
@@ -61,18 +54,9 @@ data class FaqDefinitionDetailed(
      */
     val updateDate: Instant,
 
-    /**
-     * Questions/Utterances list inspired by [ClassifiedSentence]
-     */
-    val utterances: List<ClassifiedSentence>,
+    ){
 
-    /**
-     * The [IntentDefinition] identity of the faq
-     */
-    val faq: IntentDefinition,
-
-    /**
-     * The [I18nLabel] answer associated to the faq
-     */
-    val i18nLabel: I18nLabel
-)
+    fun toFaqSettingsQuery(): FaqSettingsQuery{
+        return FaqSettingsQuery(satisfactionEnabled, satisfactionStoryId)
+    }
+}

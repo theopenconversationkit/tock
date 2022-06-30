@@ -31,6 +31,11 @@ data class FaqDefinition(
     val _id: Id<FaqDefinition> = newId(),
 
     /**
+     * The application id.
+     */
+    val applicationId: Id<ApplicationDefinition>,
+
+    /**
      * The intent id.
      */
     val intentId: Id<IntentDefinition>,
