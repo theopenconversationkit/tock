@@ -96,28 +96,6 @@
 
     <div class="item-infos d-flex align-items-start flex-column">
       <div class="align-self-stretch">
-        <div
-          class="mb-2"
-          *ngIf="isAnApiAnswer()"
-        >
-          <nb-select
-            [(ngModel)]="item.apiResponse"
-            (selectedChange)="onApiAnswerSelected()"
-            fullWidth
-            [status]="getApiResponseSelectStatus()"
-            size="tiny"
-            filled
-            placeholder="Select api response"
-            [title]="item.apiResponse"
-          >
-            <nb-option
-              *ngFor="let responseVal of getApiAnswers()"
-              [value]="responseVal"
-              >{{ responseVal }}</nb-option
-            >
-          </nb-select>
-        </div>
-
         <textarea
           *ngIf="!itemHasDefinition()"
           #itemTextarea

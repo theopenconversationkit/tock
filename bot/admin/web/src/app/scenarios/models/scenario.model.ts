@@ -84,8 +84,8 @@ export interface scenarioItem {
   intentDefinition?: intentDefinition;
   tickActionDefinition?: TickActionDefinition;
 
-  apiCallDefinition?: apiCallDefinition;
-  apiResponse?: string;
+  // apiCallDefinition?: apiCallDefinition;
+  // apiResponse?: string;
 }
 
 export interface Filter {

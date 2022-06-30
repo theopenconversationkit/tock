@@ -16,7 +16,6 @@ import {
   SCENARIO_MODE_PRODUCTION,
   SCENARIO_MODE_WRITING
 } from '../models/scenario.model';
-import { ApiEditComponent } from './api-edit/api-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
 import { IntentsSearchComponent } from './intents-search/intents-search.component';
@@ -81,50 +80,50 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
     });
   }
 
-  manageApi() {
-    const modal = this.dialogService.openDialog(ApiEditComponent, {
-      context: {
-        item: this.item
-      }
-    });
-    const saveModifications = modal.componentRef.instance.saveModifications
-      .pipe(takeUntil(this.destroy))
-      .subscribe((apiDef) => {
-        this.setItemApiCallDefinition(apiDef);
-        saveModifications.unsubscribe();
-        modal.close();
-      });
+  // manageApi() {
+  //   const modal = this.dialogService.openDialog(ApiEditComponent, {
+  //     context: {
+  //       item: this.item
+  //     }
+  //   });
+  //   const saveModifications = modal.componentRef.instance.saveModifications
+  //     .pipe(takeUntil(this.destroy))
+  //     .subscribe((apiDef) => {
+  //       this.setItemApiCallDefinition(apiDef);
+  //       saveModifications.unsubscribe();
+  //       modal.close();
+  //     });
 
-    const deleteDefinition = modal.componentRef.instance.deleteDefinition
-      .pipe(takeUntil(this.destroy))
-      .subscribe(() => {
-        delete this.item.apiCallDefinition;
-        this.checkChildrenResponsesCodes();
-        deleteDefinition.unsubscribe();
-        modal.close();
-      });
-  }
+  //   const deleteDefinition = modal.componentRef.instance.deleteDefinition
+  //     .pipe(takeUntil(this.destroy))
+  //     .subscribe(() => {
+  //       delete this.item.apiCallDefinition;
+  //       this.checkChildrenResponsesCodes();
+  //       deleteDefinition.unsubscribe();
+  //       modal.close();
+  //     });
+  // }
 
-  setItemApiCallDefinition(apiDef) {
-    this.item.apiCallDefinition = {
-      name: apiDef.name,
-      description: apiDef.description,
-      responseType: apiDef.responseType,
-      responseCodes: apiDef.responseCodes
-    };
-    this.checkChildrenResponsesCodes();
-  }
+  // setItemApiCallDefinition(apiDef) {
+  //   this.item.apiCallDefinition = {
+  //     name: apiDef.name,
+  //     description: apiDef.description,
+  //     responseType: apiDef.responseType,
+  //     responseCodes: apiDef.responseCodes
+  //   };
+  //   this.checkChildrenResponsesCodes();
+  // }
 
-  checkChildrenResponsesCodes() {
-    this.getChildItems().forEach((child) => {
-      if (
-        this.item.apiCallDefinition?.responseType != 'codes' ||
-        !this.item.apiCallDefinition?.responseCodes.includes(child.apiResponse)
-      ) {
-        delete child.apiResponse;
-      }
-    });
-  }
+  // checkChildrenResponsesCodes() {
+  //   this.getChildItems().forEach((child) => {
+  //     if (
+  //       this.item.apiCallDefinition?.responseType != 'codes' ||
+  //       !this.item.apiCallDefinition?.responseCodes.includes(child.apiResponse)
+  //     ) {
+  //       delete child.apiResponse;
+  //     }
+  //   });
+  // }
 
   manageIntent(): void {
     if (this.item.intentDefinition) {
@@ -212,7 +211,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   itemHasDefinition() {
-    return this.item.intentDefinition || this.item.apiCallDefinition;
+    return this.item.intentDefinition; //|| this.item.apiCallDefinition;
   }
 
   selectItem(): void {
@@ -238,38 +237,6 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
 
   test(): void {
     this.scenarioDesignerService.testItem(this.item);
-  }
-
-  isAnApiAnswer(): boolean {
-    const parent = this.getParentItem();
-    if (!parent) return false;
-    return (
-      parent.from == SCENARIO_ITEM_FROM_API &&
-      [SCENARIO_ITEM_API_RESPONSETYPE_BOOLEAN, SCENARIO_ITEM_API_RESPONSETYPE_CODES].includes(
-        parent.apiCallDefinition?.responseType
-      )
-    );
-  }
-
-  getApiResponseSelectStatus() {
-    return this.item.apiResponse ? 'primary' : 'danger';
-  }
-
-  getApiAnswers() {
-    const parent = this.getParentItem();
-    if (!parent) return null;
-    if (parent.apiCallDefinition?.responseType == SCENARIO_ITEM_API_RESPONSETYPE_BOOLEAN)
-      return ['true', 'false'];
-    return parent.apiCallDefinition?.responseCodes || [];
-  }
-
-  onApiAnswerSelected() {
-    const parent = this.getParentItem();
-    const brothers = this.getItemBrothers();
-    let answers = this.getApiAnswers().filter((a) => a != this.item.apiResponse);
-    brothers.forEach((bro) => {
-      if (bro.apiResponse == this.item.apiResponse) bro.apiResponse = undefined;
-    });
   }
 
   getParentItem(): scenarioItem {
