@@ -7,15 +7,13 @@ import { SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import {
   scenarioItem,
-  SCENARIO_ITEM_API_RESPONSETYPE_BOOLEAN,
-  SCENARIO_ITEM_API_RESPONSETYPE_CODES,
-  SCENARIO_ITEM_API_RESPONSETYPE_STRING,
-  SCENARIO_ITEM_FROM_API,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE_PRODUCTION,
-  SCENARIO_MODE_WRITING
+  SCENARIO_MODE_WRITING,
+  TickContext
 } from '../models/scenario.model';
+import { ActionEditComponent } from './action-edit/action-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
 import { IntentsSearchComponent } from './intents-search/intents-search.component';
@@ -31,15 +29,12 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
-  readonly SCENARIO_ITEM_FROM_API = SCENARIO_ITEM_FROM_API;
-  readonly SCENARIO_ITEM_API_RESPONSETYPE_STRING = SCENARIO_ITEM_API_RESPONSETYPE_STRING;
-  readonly SCENARIO_ITEM_API_RESPONSETYPE_BOOLEAN = SCENARIO_ITEM_API_RESPONSETYPE_BOOLEAN;
-  readonly SCENARIO_ITEM_API_RESPONSETYPE_CODES = SCENARIO_ITEM_API_RESPONSETYPE_CODES;
 
   destroy = new Subject();
   @Input() itemId: number;
   @Input() parentId: number;
-  @Input() dataList: scenarioItem[];
+  @Input() scenarioItems: scenarioItem[];
+  @Input() contexts: TickContext[];
   @Input() selectedItem: scenarioItem;
   @Input() mode: string;
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
@@ -63,7 +58,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.item = this.dataList.find((item) => item.id === this.itemId);
+    this.item = this.scenarioItems.find((item) => item.id === this.itemId);
     this.draggable = {
       data: this.item.id
     };
@@ -80,50 +75,44 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
     });
   }
 
-  // manageApi() {
-  //   const modal = this.dialogService.openDialog(ApiEditComponent, {
-  //     context: {
-  //       item: this.item
-  //     }
-  //   });
-  //   const saveModifications = modal.componentRef.instance.saveModifications
-  //     .pipe(takeUntil(this.destroy))
-  //     .subscribe((apiDef) => {
-  //       this.setItemApiCallDefinition(apiDef);
-  //       saveModifications.unsubscribe();
-  //       modal.close();
-  //     });
+  manageAction() {
+    const modal = this.dialogService.openDialog(ActionEditComponent, {
+      context: {
+        item: this.item,
+        contexts: this.contexts
+      }
+    });
+    const saveModifications = modal.componentRef.instance.saveModifications
+      .pipe(takeUntil(this.destroy))
+      .subscribe((actionDef) => {
+        this.checkAndAddNewContexts(actionDef.inputContexts);
+        this.checkAndAddNewContexts(actionDef.outputContexts);
+        this.item.tickActionDefinition = actionDef;
 
-  //   const deleteDefinition = modal.componentRef.instance.deleteDefinition
-  //     .pipe(takeUntil(this.destroy))
-  //     .subscribe(() => {
-  //       delete this.item.apiCallDefinition;
-  //       this.checkChildrenResponsesCodes();
-  //       deleteDefinition.unsubscribe();
-  //       modal.close();
-  //     });
-  // }
+        saveModifications.unsubscribe();
+        modal.close();
+      });
 
-  // setItemApiCallDefinition(apiDef) {
-  //   this.item.apiCallDefinition = {
-  //     name: apiDef.name,
-  //     description: apiDef.description,
-  //     responseType: apiDef.responseType,
-  //     responseCodes: apiDef.responseCodes
-  //   };
-  //   this.checkChildrenResponsesCodes();
-  // }
+    const deleteDefinition = modal.componentRef.instance.deleteDefinition
+      .pipe(takeUntil(this.destroy))
+      .subscribe(() => {
+        delete this.item.tickActionDefinition;
 
-  // checkChildrenResponsesCodes() {
-  //   this.getChildItems().forEach((child) => {
-  //     if (
-  //       this.item.apiCallDefinition?.responseType != 'codes' ||
-  //       !this.item.apiCallDefinition?.responseCodes.includes(child.apiResponse)
-  //     ) {
-  //       delete child.apiResponse;
-  //     }
-  //   });
-  // }
+        deleteDefinition.unsubscribe();
+        modal.close();
+      });
+  }
+
+  checkAndAddNewContexts(contextNames) {
+    contextNames.forEach((context) => {
+      if (!this.contexts.find((c) => c.name == context)) {
+        this.contexts.push({
+          name: context,
+          type: 'string'
+        });
+      }
+    });
+  }
 
   manageIntent(): void {
     if (this.item.intentDefinition) {
@@ -240,11 +229,11 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   getParentItem(): scenarioItem {
-    return this.dataList.find((item) => item.id == this.parentId);
+    return this.scenarioItems.find((item) => item.id == this.parentId);
   }
 
   getChildItems(): scenarioItem[] {
-    return this.dataList.filter((item) => item.parentIds?.includes(this.item.id));
+    return this.scenarioItems.filter((item) => item.parentIds?.includes(this.item.id));
   }
 
   itemHasNoChildren(): boolean {
@@ -281,9 +270,6 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
     if (which == SCENARIO_ITEM_FROM_BOT) {
       this.item.from = SCENARIO_ITEM_FROM_BOT;
     }
-    if (which == SCENARIO_ITEM_FROM_API) {
-      this.item.from = SCENARIO_ITEM_FROM_API;
-    }
   }
 
   toggleFinal($event): void {
@@ -292,7 +278,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   getItemBrothers(): scenarioItem[] {
-    return this.dataList.filter((item) => {
+    return this.scenarioItems.filter((item) => {
       return (
         item.id != this.item.id &&
         item.parentIds?.some((id) => this.item.parentIds && this.item.parentIds.includes(id))

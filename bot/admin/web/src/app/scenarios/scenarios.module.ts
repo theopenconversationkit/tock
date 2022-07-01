@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+7 * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import { ScenarioDesignerEntryComponent } from './scenario-designer/scenario-des
 import { IntentsSearchComponent } from './scenario-designer/intents-search/intents-search.component';
 import { IntentCreateComponent } from './scenario-designer/intent-create/intent-create.component';
 import { IntentEditComponent } from './scenario-designer/intent-edit/intent-edit.component';
+import { ActionEditComponent } from './scenario-designer/action-edit/action-edit.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -92,7 +93,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     ScenarioFiltersComponent,
     IntentsSearchComponent,
     IntentCreateComponent,
-    IntentEditComponent
+    IntentEditComponent,
+    ActionEditComponent
   ],
   exports: [],
   providers: [

@@ -34,7 +34,6 @@ $inactive-color: transparent;
 $bot-color: #90c3ea;
 $bot-final-color: #43abf5;
 $client-color: white;
-$api-color: #bebebe;
 
 .item-card {
   background-color: white;
@@ -109,9 +108,6 @@ $api-color: #bebebe;
     &.bot {
       top: 3.2rem;
     }
-    &.api {
-      top: 6.4rem;
-    }
 
     .duplication-count {
       position: absolute;
@@ -133,9 +129,6 @@ $api-color: #bebebe;
       &.bot {
         background-color: $inactive-color;
       }
-      &.api {
-        background-color: $inactive-color;
-      }
     }
   }
   &.bot {
@@ -143,9 +136,6 @@ $api-color: #bebebe;
     .from-icon {
       background-color: $bot-color;
       &.client {
-        background-color: $inactive-color;
-      }
-      &.api {
         background-color: $inactive-color;
       }
     }
@@ -156,21 +146,6 @@ $api-color: #bebebe;
         &.client {
           background-color: $inactive-color;
         }
-        &.api {
-          background-color: $inactive-color;
-        }
-      }
-    }
-  }
-  &.api {
-    background-color: $api-color;
-    .from-icon {
-      background-color: $api-color;
-      &.client {
-        background-color: $inactive-color;
-      }
-      &.bot {
-        background-color: $inactive-color;
       }
     }
   }
@@ -186,9 +161,6 @@ $api-color: #bebebe;
     }
     &.client {
       border-color: #{scale-color($client-color, $lightness: -25%)};
-    }
-    &.api {
-      border-color: #{scale-color($api-color, $lightness: -25%)};
     }
   }
 }

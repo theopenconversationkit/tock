@@ -30,7 +30,6 @@ import {
   Scenario,
   scenarioItem,
   scenarioItemFrom,
-  SCENARIO_ITEM_FROM_API,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE_PRODUCTION,
@@ -62,7 +61,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
-  readonly SCENARIO_ITEM_FROM_API = SCENARIO_ITEM_FROM_API;
 
   constructor(
     private scenarioService: ScenarioService,
@@ -100,7 +98,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         this.setMode(this.scenario.mode || 'writing');
 
         if (!this.scenario.data) this.scenario.data = { scenarioItems: [] };
-        console.log(this.scenario);
         if (!this.scenario.data.scenarioItems.length) {
           this.scenario.data.scenarioItems.push({
             id: 0,
@@ -111,7 +108,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       });
 
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
-      // TODO : Alert user that he is going to loose its modifications and allow him to cancel, switch back to the initial application and save his work
       this.exit();
     });
   }
@@ -196,10 +192,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   addAnswer(itemRef: scenarioItem, from?: scenarioItemFrom): void {
     let fromType = from || SCENARIO_ITEM_FROM_CLIENT;
-    if (
-      from == undefined &&
-      (itemRef.from == SCENARIO_ITEM_FROM_CLIENT || itemRef.from == SCENARIO_ITEM_FROM_API)
-    ) {
+    if (from == undefined && itemRef.from == SCENARIO_ITEM_FROM_CLIENT) {
       fromType = SCENARIO_ITEM_FROM_BOT;
     }
 
@@ -233,9 +226,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         }
         if ($event.key == 'b') {
           this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_BOT);
-        }
-        if ($event.key == 'v') {
-          this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_API);
         }
         if ($event.key == 'n') {
           this.addAnswer(this.selectedItem);
@@ -469,9 +459,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         break;
       case SCENARIO_ITEM_FROM_BOT:
         user = this.userIdentities[SCENARIO_ITEM_FROM_BOT];
-        break;
-      case SCENARIO_ITEM_FROM_API:
-        user = this.userIdentities[SCENARIO_ITEM_FROM_API];
         break;
     }
 

@@ -70,29 +70,6 @@
         {{ item.parentIds?.length }}
       </div>
     </div>
-    <div
-      class="from-icon api"
-      (click)="switchItemType(SCENARIO_ITEM_FROM_API)"
-      *ngIf="item.parentIds?.length && !item.intentDefinition"
-    >
-      <img
-        src="assets/images/scenario-verification.svg"
-        class="cursor-move"
-        dndHandle
-        *ngIf="item.from == SCENARIO_ITEM_FROM_API"
-      />
-      <img
-        src="assets/images/scenario-verification.svg"
-        *ngIf="item.from != SCENARIO_ITEM_FROM_API && mode == SCENARIO_MODE_WRITING"
-      />
-      <div
-        class="duplication-count"
-        dndHandle
-        *ngIf="item.from == SCENARIO_ITEM_FROM_API && item.parentIds?.length > 1"
-      >
-        {{ item.parentIds?.length }}
-      </div>
-    </div>
 
     <div class="item-infos d-flex align-items-start flex-column">
       <div class="align-self-stretch">
@@ -203,13 +180,13 @@
             status="info"
             *ngIf="
               mode == SCENARIO_MODE_PRODUCTION &&
-              item.from == SCENARIO_ITEM_FROM_API &&
+              item.from == SCENARIO_ITEM_FROM_BOT &&
               item.text?.length
             "
-            (click)="manageApi()"
-            nbTooltip="Api call infos and edition"
+            (click)="manageAction()"
+            nbTooltip="Action infos and edition"
           >
-            Manage api call
+            Manage action
           </button>
         </div>
       </div>
@@ -229,7 +206,8 @@
         <scenario-designer-entry
           [itemId]="childItem.id"
           [parentId]="item.id"
-          [dataList]="dataList"
+          [scenarioItems]="scenarioItems"
+          [contexts]="contexts"
           [selectedItem]="selectedItem"
           [mode]="mode"
         ></scenario-designer-entry>

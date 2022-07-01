@@ -59,7 +59,8 @@
         <scenario-designer-entry
           *ngIf="scenario?.data.scenarioItems.length"
           [itemId]="0"
-          [dataList]="scenario.data.scenarioItems"
+          [scenarioItems]="scenario.data.scenarioItems"
+          [contexts]="scenario.data.contexts"
           [selectedItem]="selectedItem"
           [mode]="scenario.mode"
         ></scenario-designer-entry>
