@@ -21,71 +21,95 @@
     >
       <div class="row main-row">
         <div class="col-6">
-          <div class="mb-3">
-            <label for="name">Name <span class="text-muted">(*)</span></label>
-            <input
-              nbInput
-              formControlName="name"
-              fullWidth
-              id="name"
-              type="text"
-              placeholder="Enter endpoint name"
-              (blur)="formatActionName()"
-            />
+          <div class="mb-4">
+            <tock-form-control
+              label="Name"
+              name="name"
+              required="true"
+              [controls]="name"
+              [showError]="isSubmitted"
+            >
+              <input
+                nbInput
+                formControlName="name"
+                fullWidth
+                id="name"
+                type="text"
+                placeholder="Enter endpoint name"
+                (blur)="formatActionName()"
+              />
+            </tock-form-control>
           </div>
 
-          <div class="mb-3">
-            <label for="description">Description</label>
-            <textarea
-              nbInput
-              formControlName="description"
-              fullWidth
-              id="description"
-              placeholder="Enter description"
-              rows="5"
-            ></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="handler">Api handler</label>
-            <input
-              nbInput
-              formControlName="handler"
-              fullWidth
-              id="handler"
-              type="text"
-              placeholder="Enter handler class name"
-            />
+          <div class="mb-4">
+            <tock-form-control
+              label="Description"
+              name="description"
+              [controls]="description"
+              [showError]="isSubmitted"
+            >
+              <textarea
+                nbInput
+                formControlName="description"
+                fullWidth
+                id="description"
+                placeholder="Enter description"
+                rows="4"
+              ></textarea>
+            </tock-form-control>
           </div>
 
-          <div class="mb-3">
-            <label for="answer">Answer</label>
-            <textarea
-              nbInput
-              formControlName="answer"
-              fullWidth
-              id="answer"
-              placeholder="Enter answer"
-              rows="5"
-            ></textarea>
-          </div>
-        </div>
+          <div class="mb-4">
+            <tock-form-control
+              label="Input contexts"
+              name="inputContexts"
+              [controls]="inputContextsAddError"
+              showError="true"
+            >
+              <div class="d-flex">
+                <div class="w-100">
+                  <input
+                    #inputContextsInput
+                    nbInput
+                    fullWidth
+                    id="inputContexts"
+                    type="text"
+                    placeholder="Add an input context and press enter"
+                    (keyup)="resetContextsAddErrors()"
+                    (keyup.enter)="addContext('input')"
+                    autocomplete="off"
+                    [nbAutocomplete]="inputContextsAutocomplete"
+                    (focus)="updateContextsAutocompleteValues()"
+                    (keyup)="updateContextsAutocompleteValues($event)"
+                  />
+                  <nb-autocomplete #inputContextsAutocomplete>
+                    <nb-option
+                      *ngFor="let option of contextsAutocompleteValues | async"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </nb-option>
+                  </nb-autocomplete>
+                </div>
 
-        <div class="col-6">
-          <div class="mb-3">
-            <label for="inputContexts">Input contexts</label>
-            <input
-              nbInput
-              fullWidth
-              id="inputContexts"
-              type="text"
-              placeholder="Add an input context and press enter"
-              (keyup.enter)="addContext('input', $event)"
-            />
+                <button
+                  type="button"
+                  nbButton
+                  ghost
+                  size="small"
+                  class="ml-1"
+                  [disabled]="!inputContextsInput.value.length"
+                  (click)="addContext('input')"
+                >
+                  Add
+                </button>
+              </div>
+            </tock-form-control>
 
-            <nb-list>
+            <nb-list class="contexts-list">
               <nb-list-item
-                *ngFor="let inputContext of inputContexts.value"
-                class="p-2 d-flex justify-content-between"
+                *ngFor="let inputContext of inputContextNames.value"
+                class="p-2 d-flex justify-content-between font-weight-bold"
               >
                 {{ inputContext }}
                 <nb-icon
@@ -93,34 +117,109 @@
                   status="danger"
                   (click)="removeContext('input', inputContext)"
                   class="pointer"
-                  nbTooltip="Remove this context"
+                  nbTooltip="Remove this context from inputs"
                 ></nb-icon>
               </nb-list-item>
             </nb-list>
           </div>
+        </div>
 
-          <div class="mb-3">
-            <label for="outputContexts">Output contexts</label>
-            <input
-              nbInput
-              fullWidth
-              id="outputContexts"
-              type="text"
-              placeholder="Add an output context and press enter"
-              (keyup.enter)="addContext('output', $event)"
-            />
-            <nb-list>
+        <div class="col-6">
+          <div class="mb-4">
+            <tock-form-control
+              label="Api handler"
+              name="handler"
+              [controls]="handler"
+              [showError]="isSubmitted"
+            >
+              <input
+                nbInput
+                formControlName="handler"
+                fullWidth
+                id="handler"
+                type="text"
+                placeholder="Enter handler class name"
+              />
+            </tock-form-control>
+          </div>
+
+          <div class="mb-4">
+            <tock-form-control
+              label="Answer"
+              name="answer"
+              [controls]="answer"
+              [showError]="isSubmitted"
+            >
+              <textarea
+                nbInput
+                formControlName="answer"
+                fullWidth
+                id="answer"
+                placeholder="Enter answer"
+                rows="4"
+              ></textarea>
+            </tock-form-control>
+          </div>
+
+          <div class="mb-4">
+            <tock-form-control
+              label="Output contexts"
+              name="outputContexts"
+              [controls]="outputContextsAddError"
+              showError="true"
+            >
+              <div class="d-flex">
+                <div class="w-100">
+                  <input
+                    #outputContextsInput
+                    nbInput
+                    fullWidth
+                    id="outputContexts"
+                    type="text"
+                    placeholder="Add an output context and press enter"
+                    (keyup)="resetContextsAddErrors()"
+                    (keyup.enter)="addContext('output')"
+                    autocomplete="off"
+                    [nbAutocomplete]="outputContextsAutocomplete"
+                    (focus)="updateContextsAutocompleteValues()"
+                    (keyup)="updateContextsAutocompleteValues($event)"
+                  />
+                  <nb-autocomplete #outputContextsAutocomplete>
+                    <nb-option
+                      *ngFor="let option of contextsAutocompleteValues | async"
+                      [value]="option"
+                    >
+                      {{ option }}
+                    </nb-option>
+                  </nb-autocomplete>
+                </div>
+
+                <button
+                  type="button"
+                  nbButton
+                  ghost
+                  size="small"
+                  class="ml-1"
+                  [disabled]="!outputContextsInput.value.length"
+                  (click)="addContext('output')"
+                >
+                  Add
+                </button>
+              </div>
+            </tock-form-control>
+
+            <nb-list class="contexts-list">
               <nb-list-item
-                *ngFor="let outputContext of outputContexts.value"
-                class="p-2 d-flex justify-content-between"
+                *ngFor="let outputContext of outputContextNames.value"
+                class="p-2 d-flex justify-content-between font-weight-bold"
               >
                 {{ outputContext }}
                 <nb-icon
                   icon="trash-2-outline"
                   status="danger"
-                  (click)="removeContext('input', outputContext)"
+                  (click)="removeContext('output', outputContext)"
                   class="pointer"
-                  nbTooltip="Remove this context"
+                  nbTooltip="Remove this context from outputs"
                 ></nb-icon>
               </nb-list-item>
             </nb-list>

@@ -28,6 +28,7 @@ import { BotSharedService } from './bot-shared.service';
 import { DisplayDialogComponent } from './bot-dialog/display-dialog.component';
 import { MomentModule } from 'ngx-moment';
 import { SelectBotComponent } from './select-bot/select-bot.component';
+import { PaginationComponent } from './pagination/pagination.component';
 import {
   NbCalendarRangeModule,
   NbCardModule,
@@ -39,6 +40,10 @@ import {
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { ErrorHelperComponent } from './error-helper/error-helper.component';
+import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
+import { FormControlComponent } from './form-control/form-control.component';
+import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
 import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
 import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
 
@@ -67,6 +72,11 @@ import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
     DateRangeCalendarComponent,
     InfoButtonComponent,
     ConfirmationDialogComponent,
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChoiceDialogComponent,
     MouseWheelListnerDirective,
     OrderByPipe
   ],
@@ -76,6 +86,11 @@ import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChoiceDialogComponent,
     MouseWheelListnerDirective,
     OrderByPipe
   ],

@@ -1,15 +1,22 @@
 .canvas-wrapper {
   position: relative;
-  z-index: 1;
+  z-index: 10;
   margin-left: -2.25rem;
   margin-right: -2.25rem;
   margin-bottom: -0.75rem;
   height: 75vh;
   overflow: hidden;
 
-  // background-color: #85838336;
+  .contexts-panel {
+    z-index: 5;
+    background-color: white;
+    box-shadow: 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+    width: 15rem;
+    position: absolute;
+  }
 
   .canvas {
+    z-index: 1;
     padding: 1.5rem;
     width: 100vw;
     height: 100vh;

@@ -1,3 +1,9 @@
 .main-row {
   min-width: 60vw;
 }
+
+.contexts-list {
+  max-height: calc(100vh - 620px);
+  min-height: 20vh;
+  overflow-y: auto;
+}

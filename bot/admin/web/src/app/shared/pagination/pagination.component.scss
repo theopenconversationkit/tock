@@ -1,0 +1,7 @@
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
+:host {
+  font-size: nb-theme(text-label-font-size);
+  color: nb-theme(color-basic-600);
+}

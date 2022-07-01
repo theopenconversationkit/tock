@@ -41,8 +41,8 @@ export interface intentDefinition {
 export interface TickActionDefinition {
   name: string;
   description?: string;
-  inputContexts?: TickContextName[];
-  outputContexts?: TickContextName[];
+  inputContextNames?: TickContextName[];
+  outputContextNames?: TickContextName[];
   handler?: string;
   answer?: string;
 }

@@ -97,13 +97,16 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
         this.setMode(this.scenario.mode || 'writing');
 
-        if (!this.scenario.data) this.scenario.data = { scenarioItems: [] };
+        if (!this.scenario.data) this.scenario.data = { scenarioItems: [], contexts: [] };
         if (!this.scenario.data.scenarioItems.length) {
           this.scenario.data.scenarioItems.push({
             id: 0,
             from: SCENARIO_ITEM_FROM_CLIENT,
             text: ''
           });
+        }
+        if (!this.scenario.data.contexts) {
+          this.scenario.data.contexts = [];
         }
       });
 

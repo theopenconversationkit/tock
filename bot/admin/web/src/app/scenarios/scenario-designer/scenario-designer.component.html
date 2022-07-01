@@ -50,6 +50,17 @@
   appMouseWheelListner
   (onMouseWheel)="mouseWheel($event)"
 >
+  <div class="contexts-panel p-3">
+    <strong> Contexts </strong>
+    <nb-list>
+      <nb-list-item
+        *ngFor="let context of scenario.data.contexts"
+        class="px-0 py-2 d-flex justify-content-between"
+      >
+        {{ context.name }}
+      </nb-list-item>
+    </nb-list>
+  </div>
   <div
     class="canvas cursor-move"
     #canvasElem

@@ -85,8 +85,8 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
     const saveModifications = modal.componentRef.instance.saveModifications
       .pipe(takeUntil(this.destroy))
       .subscribe((actionDef) => {
-        this.checkAndAddNewContexts(actionDef.inputContexts);
-        this.checkAndAddNewContexts(actionDef.outputContexts);
+        this.checkAndAddNewContexts(actionDef.inputContextNames);
+        this.checkAndAddNewContexts(actionDef.outputContextNames);
         this.item.tickActionDefinition = actionDef;
 
         saveModifications.unsubscribe();
@@ -105,7 +105,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
 
   checkAndAddNewContexts(contextNames) {
     contextNames.forEach((context) => {
-      if (!this.contexts.find((c) => c.name == context)) {
+      if (!this.contexts?.find((c) => c.name == context)) {
         this.contexts.push({
           name: context,
           type: 'string'
