@@ -1,10 +1,10 @@
-import { saveAs } from 'file-saver';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {saveAs} from 'file-saver-es';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
-import { FaqDefinitionExtended } from '../faq-management.component';
-import { StateService } from '../../../core-nlp/state.service';
-import { DialogService } from '../../../core-nlp/dialog.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import {FaqDefinitionExtended} from '../faq-management.component';
+import {StateService} from '../../../core-nlp/state.service';
+import {DialogService} from '../../../core-nlp/dialog.service';
+import {ConfirmDialogComponent} from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'tock-faq-management-list',
@@ -19,7 +19,8 @@ export class FaqManagementListComponent {
   @Output() onDelete = new EventEmitter<FaqDefinitionExtended>();
   @Output() onEnable = new EventEmitter<FaqDefinitionExtended>();
 
-  constructor(private state: StateService, private dialogService: DialogService) {}
+  constructor(private state: StateService, private dialogService: DialogService) {
+  }
 
   toggleEnabled(faq: FaqDefinitionExtended) {
     let action = 'Enable';
@@ -69,11 +70,11 @@ export class FaqManagementListComponent {
     saveAs(
       jsonBlob,
       this.state.currentApplication.name +
-        '_' +
-        this.state.currentLocale +
-        '_faq_' +
-        faq.title +
-        '.json'
+      '_' +
+      this.state.currentLocale +
+      '_faq_' +
+      faq.title +
+      '.json'
     );
   }
 }
