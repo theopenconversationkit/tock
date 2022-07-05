@@ -8,6 +8,7 @@
       ghost
       shape="round"
       nbTooltip="Switch to table view"
+      [disabled]="!configurations?.length"
       (click)="switchViewMode()"
     >
       <nb-icon icon="grid-outline"></nb-icon>
@@ -18,6 +19,7 @@
       ghost
       shape="round"
       nbTooltip="Switch to scroll view"
+      [disabled]="!configurations?.length"
       (click)="switchViewMode()"
     >
       <nb-icon icon="menu-outline"></nb-icon>
@@ -25,6 +27,7 @@
     <button
       nbButton
       status="primary"
+      [disabled]="!configurations?.length"
       (click)="add()"
     >
       <nb-icon icon="plus-outline"></nb-icon>
@@ -34,50 +37,67 @@
 </div>
 
 <section [class.grid]="isSidePanelOpen">
-  <nb-card
-    *ngIf="loading.list"
-    class="loading"
-    [nbSpinner]="loading.list"
-  ></nb-card>
+  <nb-alert
+    *ngIf="configurations?.length === 0"
+    class="alert-config flex-row align-items-center"
+    accent="warning"
+  >
+    <nb-icon
+      class="mr-1"
+      icon="alert-triangle-outline"
+      status="warning"
+    ></nb-icon>
+    No bot configuration detected
+  </nb-alert>
 
-  <div>
+  <div
+    *ngIf="configurations?.length"
+    class="main"
+  >
     <tock-scenario-filters
+      class="d-block mb-2"
       [scenarios]="scenarios"
       (onFilter)="filterScenarios($event)"
     ></tock-scenario-filters>
 
-    <nb-card *ngIf="!loading.list && (!scenarios?.length || !filteredScenarios.length)">
-      <nb-card-body class="d-flex">
-        <img
-          src="{{ baseHref }}assets/images/best_bot_gray.png"
-          class="tock-robot mr-4"
-        />
-        <div>
-          <h2 class="text-muted">No Scenario found</h2>
-          You may create a new one using above button "Create".
-        </div>
-      </nb-card-body>
-    </nb-card>
+    <div
+      class="loading"
+      [nbSpinner]="loading.list"
+    >
+      <nb-card *ngIf="!loading.list && (!scenarios?.length || !filteredScenarios.length)">
+        <nb-card-body class="d-flex">
+          <img
+            src="{{ baseHref }}assets/images/best_bot_gray.png"
+            class="tock-robot mr-4"
+          />
+          <div>
+            <h2 class="text-muted">No Scenario found</h2>
+            You may create a new one using above button "Create".
+          </div>
+        </nb-card-body>
+      </nb-card>
 
-    <tock-scenario-list-simple
-      *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.LIST"
-      [nbSpinner]="loading.delete"
-      [scenarios]="filteredScenarios"
-      (handleEdit)="edit($event)"
-      (handleDelete)="delete($event)"
-    ></tock-scenario-list-simple>
+      <tock-scenario-list-simple
+        *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.LIST"
+        [nbSpinner]="loading.delete"
+        [scenarios]="filteredScenarios"
+        (handleEdit)="edit($event)"
+        (handleDelete)="delete($event)"
+      ></tock-scenario-list-simple>
 
-    <tock-scenario-tree
-      *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.TREE"
-      [nbSpinner]="loading.delete"
-      [scenarios]="filteredScenarios"
-      (handleEdit)="edit($event)"
-      (handleDelete)="delete($event)"
-    ></tock-scenario-tree>
+      <tock-scenario-tree
+        *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.TREE"
+        [nbSpinner]="loading.delete"
+        [scenarios]="filteredScenarios"
+        (handleEdit)="edit($event)"
+        (handleDelete)="delete($event)"
+      ></tock-scenario-tree>
+    </div>
   </div>
 
   <tock-scenario-edit
     *ngIf="isSidePanelOpen"
+    class="aside"
     [loading]="loading.edit"
     [scenario]="scenarioEdit"
     [scenarios]="scenarios"

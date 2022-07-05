@@ -1,3 +1,9 @@
+@import '~@nebular/theme/styles/global/_breakpoints.scss';
+
+.aside {
+  height: fit-content;
+}
+
 section {
   &.grid-actions {
     display: grid;
@@ -15,6 +21,10 @@ section {
       height: fit-content;
     }
   }
+
+  & .alert-config {
+    height: fit-content;
+  }
 }
 
 .loading {
@@ -25,10 +35,29 @@ section {
   display: grid;
   grid-gap: 1rem;
   grid-template-columns: 100%;
+
+  .main {
+    order: 2;
+  }
+
+  .aside {
+    order: 1;
+    position: inherit;
+  }
 }
 
-@media screen and (min-width: 1000px) {
+@include media-breakpoint-up(lg) {
   .grid {
-    grid-template-columns: calc(65% - 1rem) 35%;
+    grid-template-columns: 6fr minmax(0, 4fr);
+
+    .main {
+      order: 1;
+    }
+
+    .aside {
+      order: 2;
+      position: sticky;
+      top: 5.75rem;
+    }
   }
 }
