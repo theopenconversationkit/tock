@@ -16,29 +16,15 @@
 
 package ai.tock.bot.admin.scenario
 
+interface ScenarioService {
 
-class ScenarioService {
-    fun findAllService(): Collection<Scenario> {
-        TODO("Not yet implemented")
-    }
+    fun findAll(): Collection<Scenario>
 
-    fun findById(scenarioId: String): Scenario {
-        TODO("Not yet implemented")
-    }
+    fun findById(scenarioId: String): Scenario
 
-    fun existe(scenarioId: String): Boolean {
-        TODO("Not yet implemented")
-    }
+    fun create(scenario: Scenario): Scenario
 
-    fun create(request: Scenario): Scenario {
-        TODO("Not yet implemented")
-    }
+    fun update(scenarioId: String, scenario: Scenario): Scenario
 
-    fun update(mapToScenario: Scenario): Scenario {
-        TODO("Not yet implemented")
-    }
-
-    fun delete(scenarioId: String) {
-        TODO("Not yet implemented")
-    }
+    fun delete(scenarioId: String)
 }

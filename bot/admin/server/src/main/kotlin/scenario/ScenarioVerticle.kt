@@ -18,105 +18,118 @@ package ai.tock.bot.admin.scenario
 
 import ai.tock.bot.admin.model.scenario.ScenarioRequest
 import ai.tock.bot.admin.model.scenario.ScenarioResult
+import ai.tock.shared.exception.TockException
 import ai.tock.shared.injector
 import ai.tock.shared.security.TockUserRole.*
-import ai.tock.shared.vertx.RestException
+import ai.tock.shared.vertx.InternalServerException
+import ai.tock.shared.vertx.NotFoundException
 import ai.tock.shared.vertx.WebVerticle
-import ai.tock.translator.I18nDAO
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
 
-/**
- *
- */
-open class ScenarioVerticle : WebVerticle() {
+open class ScenarioVerticle() {
 
-    override val logger: KLogger = KotlinLogging.logger {}
+    private val logger: KLogger = KotlinLogging.logger {}
 
-    private val scenarioService = ScenarioService()
+    private val scenarioService: ScenarioService by injector.instance()
 
-    private val SCENARIO_ID = "scenarioID"
+    private val scenarioId = "scenarioID"
 
-    override fun configure() {
-        blockingJsonGet("/scenarios", botUser, handler = getAllScenarios)
+    private val scenarioBasePath = ""
 
-        blockingJsonGet("/scenarios/:"+SCENARIO_ID, botUser, handler = getOneScenario)
+    val scenariosPath = "/scenarios"
 
-        blockingJsonPost("/scenarios", botEditor, handler = createScenario)
+    fun configureScenario(webVerticle: WebVerticle) {
+        logger.info { "configure ScenarioVerticle" }
+        with(webVerticle) {
+            blockingJsonGet(scenarioBasePath, setOf(botUser), basePath= scenariosPath,  handler= getAllScenarios)
 
-        blockingJsonPut("/scenarios/:"+SCENARIO_ID, botEditor, handler = updateScenario)
+            blockingJsonGet("$scenarioBasePath/:$scenarioId", setOf(botUser), basePath= scenariosPath, handler= getOneScenario)
 
-        blockingDelete("/scenarios/:"+SCENARIO_ID, botEditor, handler = deleteScenario)
-    }
+            blockingJsonPost(scenarioBasePath, setOf(botUser), basePath= scenariosPath, handler= createScenario)
 
-    protected val getAllScenarios: (RoutingContext) -> Unit = { context ->
-        logger.debug { "request to get all scenario" }
-        scenarioService.findAllService()
-    }
+            blockingJsonPut("$scenarioBasePath/:$scenarioId", setOf(botUser), basePath= scenariosPath, handler= updateScenario)
 
-    protected val getOneScenario: (RoutingContext) -> Unit = { context ->
-        val scenarioId = context.path(SCENARIO_ID)
-        logger.debug { "request to get scenario id \"$scenarioId\"" }
-        val scenario: Scenario = scenarioService.findById(scenarioId)
-        //return
-        scenario.mapToScenarioResult()
-    }
-
-    protected val createScenario: (RoutingContext, ScenarioRequest) -> Unit = { context, request ->
-        logger.debug { "request to create scenario name \"${request.name}\"" }
-        val scenario: Scenario = scenarioService.create(request.mapToScenario())
-        //return
-        scenario.mapToScenarioResult()
-    }
-
-    protected val updateScenario: (RoutingContext, ScenarioRequest) -> Unit = { context, request ->
-        val scenarioId = context.path(SCENARIO_ID)
-        logger.debug { "request to update scenario id \"$scenarioId\"" }
-        val scenario: Scenario = if(scenarioService.existe(scenarioId)) {
-            scenarioService.update(request.mapToScenario())
-        } else {
-            //TODO: a encapsulé dans une exception plus spécifique
-            throw RestException("scenario \"$scenarioId\" not found ", 404)
+            blockingDeleteEmptyResponse("$scenarioBasePath/:$scenarioId", setOf(botUser), basePath= scenariosPath, handler= deleteScenario)
         }
+    }
+
+    protected val getAllScenarios: (RoutingContext) -> List<ScenarioResult> = { context ->
+        logger.debug { "request to get all scenario" }
+        catchExternalException {
+            scenarioService
+                .findAll()
+                .map(mapToScenarioResult)
+        }
+    }
+
+    protected val getOneScenario: (RoutingContext) -> ScenarioResult = { context ->
+        val scenarioId = extractScenarioId(context)
+        logger.debug { "request to get scenario id $scenarioId" }
         //return
-        scenario.mapToScenarioResult()
+        catchExternalException {
+            scenarioService
+                .findById(scenarioId)
+                .mapToScenarioResult()
+        }
+    }
+
+    protected val createScenario: (RoutingContext, ScenarioRequest) -> ScenarioResult = { context, request ->
+        logger.debug { "request to create scenario name ${request.name}" }
+        context.setResponseStatusCode(201)
+        //return
+        catchExternalException {
+            scenarioService
+                .create(request.mapToScenario())
+                .mapToScenarioResult()
+        }
+    }
+
+    protected val updateScenario: (RoutingContext, ScenarioRequest) -> ScenarioResult = { context, request ->
+        val scenarioId = extractScenarioId(context)
+        logger.debug { "request to update scenario id $scenarioId" }
+        context.setResponseStatusCode(202)
+        //return
+        catchExternalException {
+            scenarioService
+                .update(scenarioId, request.mapToScenario())
+                .mapToScenarioResult()
+        }
+    }
+
+    private fun RoutingContext.setResponseStatusCode(statusCode: Int) {
+        response().statusCode = statusCode
     }
 
     protected val deleteScenario: (RoutingContext) -> Unit = { context ->
-        val scenarioId = context.path(SCENARIO_ID)
-        logger.debug { "request to delete scenario id \"$scenarioId\"" }
-        if(scenarioService.existe(scenarioId)) {
+        val scenarioId = extractScenarioId(context)
+        logger.debug { "request to delete scenario id $scenarioId" }
+        //no return
+        catchExternalException {
             scenarioService.delete(scenarioId)
-        } else {
-            logger.debug { "scenario \"$scenarioId\" already don't exist" }
         }
     }
 
-    private fun ScenarioRequest.mapToScenario(): Scenario {
-        return Scenario(
-            id = id,
-            name = name,
-            category = category,
-            tags = tags,
-            applicationId = applicationId,
-            createDate = createDate,
-            updateDate = updateDate,
-            description= description,
-            state = state )
+    private fun <O> catchExternalException(fallibleSection: () -> O): O {
+        try {
+            return fallibleSection.invoke()
+        } catch (tockException: TockException) {
+            logger.error(fallibleSection)
+            throw InternalServerException(tockException.message!!)
+        }
     }
 
-    private fun Scenario.mapToScenarioResult(): ScenarioResult {
-        return ScenarioResult(
-            id = id,
-            name = name,
-            category = category,
-            tags = tags,
-            applicationId = applicationId,
-            createDate = createDate,
-            updateDate = updateDate,
-            description= description,
-            state = state )
+    private fun extractScenarioId(context: RoutingContext): String {
+        return context.pathParam(scenarioId).checkParameterExist(scenarioId)
+    }
+
+    private val checkParameterExist: String?.(String) -> String = { parameter ->
+        if(this == null) {
+            throw NotFoundException("$parameter uri parameter not found")
+        } else {
+            this
+        }
     }
 }

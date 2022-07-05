@@ -19,7 +19,7 @@ package ai.tock.bot.admin.scenario
 import java.time.ZonedDateTime
 
 data class Scenario(
-    val id: String,
+    val id: String?,
     val name: String,
     val category: String? = null,
     val tags: List<String> = emptyList(),
@@ -27,5 +27,6 @@ data class Scenario(
     val createDate: ZonedDateTime? = null,
     val updateDate: ZonedDateTime? = null,
     val description: String? = null,
+    val data: String? = null,
     val state: String
 )

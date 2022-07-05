@@ -31,7 +31,7 @@ class WebVerticleTest {
     // check that WebVerticleImpl does not need to implement healthcheck methods to compile
     class WebVerticleImpl : WebVerticle() {
         override fun configure() {}
-    }
+     }
 
     @Test
     fun `GIVEN WebVerticle simple implementation THEN healthcheck returns HTTP 200`() {

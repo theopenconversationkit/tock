@@ -25,6 +25,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.model.*
+import ai.tock.bot.admin.scenario.ScenarioVerticle
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
@@ -63,11 +64,15 @@ open class BotAdminVerticle : AdminVerticle() {
 
     private val botAdminConfiguration = BotAdminConfiguration()
 
+    private val scenarioVerticle = ScenarioVerticle()
+
     override val logger: KLogger = KotlinLogging.logger {}
 
     private val i18n: I18nDAO by injector.instance()
 
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
+
+    override fun protectedPaths(): Set<String> = setOf(rootPath, scenarioVerticle.scenariosPath)
 
     override fun configureServices() {
         initTranslator()
@@ -83,6 +88,8 @@ open class BotAdminVerticle : AdminVerticle() {
 
     override fun configure() {
         configureServices()
+
+        scenarioVerticle.configureScenario(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {

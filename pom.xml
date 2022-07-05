@@ -313,6 +313,12 @@
                 <version>${vertx}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-web-client</artifactId>
+                <version>${vertx}</version>
+                <scope>test</scope>
+            </dependency>
 
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
@@ -612,6 +618,18 @@
                 <groupId>org.pac4j</groupId>
                 <artifactId>pac4j-cas</artifactId>
                 <version>${pac4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-unit</artifactId>
+                <version>${vertx}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-junit5</artifactId>
+                <version>${vertx}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.pac4j</groupId>

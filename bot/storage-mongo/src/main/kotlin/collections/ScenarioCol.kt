@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model.scenario
+package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.scenario.Scenario
+import org.litote.jackson.data.JacksonData
+import org.litote.kmongo.Data
+import org.litote.kmongo.Id
 import java.time.ZonedDateTime
 
-data class ScenarioRequest(
-    val id: String?,
+@Data(internal = true)
+@JacksonData(internal = true)
+internal data class ScenarioCol (
+    var _id: Id<Scenario>,
     val name: String,
     val category: String? = null,
     val tags: List<String> = emptyList(),

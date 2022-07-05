@@ -27,5 +27,6 @@ data class ScenarioResult(
     val createDate: ZonedDateTime? = null,
     val updateDate: ZonedDateTime? = null,
     val description: String? = null,
+    val data: String? = null,
     val state: String
 )

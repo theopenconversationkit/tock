@@ -19,4 +19,5 @@ package ai.tock.shared.vertx
 /**
  * Http 404 exception.
  */
-class NotFoundException : RestException("not found", 404)
+class NotFoundException(message: String? = null, statusMessage: String = "Not Found") :
+    RestException(message, statusMessage, 404)

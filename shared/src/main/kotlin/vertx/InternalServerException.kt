@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin
+package ai.tock.shared.vertx
 
-import ai.tock.bot.BotIoc
-import ai.tock.nlp.front.ioc.FrontIoc
-import ai.tock.shared.vertx.vertx
-import com.github.salomonbrys.kodein.Kodein
-
-
-fun main() {
-    startAdminServer()
-}
-
-fun startAdminServer(vararg modules: Kodein.Module) {
-    // setup ioc
-    FrontIoc.setup(BotIoc.coreModules + modules.toList() + botAdminServiceModule)
-    // deploy verticle
-    vertx.deployVerticle(BotAdminVerticle())
-}
+/**
+ * Http 500 exception.
+ */
+class InternalServerException(message: String, statusMessage: String = "Internal Server Error") :
+    RestException(message, statusMessage, 500)
