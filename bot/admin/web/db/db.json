@@ -103,7 +103,8 @@
               "name": "je_veux_fa",
               "category": "build",
               "description": null,
-              "intentId": "62879e420f199e5793b64e75"
+              "intentId": "62879e420f199e5793b64e75",
+              "sentences": []
             }
           },
           {
@@ -126,7 +127,17 @@
               2
             ],
             "from": "bot",
-            "text": "Réponse OK : Quel montant souhaitez-vous virer ?"
+            "text": "Réponse OK : Quel montant souhaitez-vous virer ?",
+            "tickActionDefinition": {
+              "name": "AMOUNT",
+              "description": null,
+              "handler": null,
+              "answer": "Quel montant souhaitez-vous virer ?",
+              "inputContextNames": [
+                "AMOUNT"
+              ],
+              "outputContextNames": []
+            }
           },
           {
             "id": 4,
@@ -289,7 +300,14 @@
             "final": true
           }
         ],
-        "contexts": []
+        "contexts": [
+          {
+            "name": "AMOUNT",
+            "type": "string",
+            "entityType": "duckling:amount-of-money",
+            "entityRole": "amount-of-money"
+          }
+        ]
       },
       "mode": "production"
     },
@@ -547,7 +565,15 @@
             ],
             "from": "bot",
             "text": "Pour activer la carte, il vous suffit de faire une opération avec le code PIN de la carte (retrait ou paiement) en France métropolitaine. Les opérations \"sans contact\" et par internet seront actives après cela.\n\nVotre code PIN n'a pas changé :)",
-            "final": true
+            "final": true,
+            "tickActionDefinition": {
+              "name": "HOW_TO_ACTIVATE_EXTERNAL_CARD",
+              "description": "",
+              "handler": null,
+              "answer": "Pour activer la carte, il vous suffit de faire une opération avec le code PIN de la carte (retrait ou paiement) en France métropolitaine. Les opérations \"sans contact\" et par internet seront actives après cela.\n\nVotre code PIN n'a pas changé :)",
+              "inputContextNames": [],
+              "outputContextNames": []
+            }
           }
         ],
         "contexts": [
@@ -581,6 +607,30 @@
           },
           {
             "name": "SEVENTH_CONTEXT",
+            "type": "string"
+          },
+          {
+            "name": "TYRTY",
+            "type": "string"
+          },
+          {
+            "name": "DFG_DFGDFG",
+            "type": "string"
+          },
+          {
+            "name": "DFGDFG_DFG",
+            "type": "string"
+          },
+          {
+            "name": "D_FGDFGDFG_DFG",
+            "type": "string"
+          },
+          {
+            "name": "DFG_DFGDFGDFG",
+            "type": "string"
+          },
+          {
+            "name": "DFGDFG_DFG",
             "type": "string"
           }
         ]

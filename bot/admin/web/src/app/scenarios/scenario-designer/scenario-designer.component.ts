@@ -43,6 +43,7 @@ import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedRole } from '../../model/nlp';
 import { getContrastYIQ } from '../commons/utils';
+import { ContextCreateComponent } from './context-create/context-create.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -63,16 +64,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
-
-  getContextEntityColor(context) {
-    if (context.entityType)
-      return entityColor(qualifiedRole(context.entityType, context.entityRole));
-  }
-
-  getContextEntityContrast(context) {
-    if (context.entityType)
-      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
-  }
+  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
+  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
 
   constructor(
     private scenarioService: ScenarioService,
@@ -80,7 +73,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     route: ActivatedRoute,
     private router: Router,
     private toastrService: NbToastrService,
-    protected state: StateService
+    protected state: StateService,
+    private dialogService: DialogService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -139,7 +133,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     labelPosition: 'left'
   };
 
-  modeSwitched(event) {
+  modeSwitched(event): void {
     if (event) {
       this.setMode(SCENARIO_MODE_PRODUCTION);
     } else {
@@ -147,7 +141,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMode(mode) {
+  setMode(mode): void {
     if (mode == SCENARIO_MODE_PRODUCTION) {
       this.scenario.mode = SCENARIO_MODE_PRODUCTION;
       this.modeSwitchState = {
@@ -165,18 +159,47 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  stringifiedCleanScenario() {
+  contextsPanelShowed: boolean = true;
+
+  getContextEntityColor(context): string {
+    if (context.entityType)
+      return entityColor(qualifiedRole(context.entityType, context.entityRole));
+  }
+
+  getContextEntityContrast(context): string {
+    if (context.entityType)
+      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
+  }
+
+  addContext(): void {
+    const modal = this.dialogService.openDialog(ContextCreateComponent, {
+      context: {}
+    });
+    const validate = modal.componentRef.instance.validate
+      .pipe(takeUntil(this.destroy))
+      .subscribe((contextDef) => {
+        this.scenario.data.contexts.push({
+          name: contextDef.name,
+          type: 'string'
+        });
+
+        validate.unsubscribe();
+        modal.close();
+      });
+  }
+
+  stringifiedCleanScenario(): string {
     return JSON.stringify(this.scenario, function (key, value) {
       if (key.indexOf('_') == 0) return undefined;
       return value;
     });
   }
 
-  getCleanScenario() {
+  getCleanScenario(): Scenario {
     return JSON.parse(this.stringifiedCleanScenario());
   }
 
-  save(exit: boolean = false) {
+  save(exit: boolean = false): void {
     this.scenarioService.putScenario(this.scenarioId, this.getCleanScenario()).subscribe((data) => {
       this.toastrService.success(`Scenario successfully saved`, 'Success', {
         duration: 5000,
@@ -187,7 +210,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     });
   }
 
-  exit() {
+  exit(): void {
     this.router.navigateByUrl('/scenarios');
   }
 
@@ -201,7 +224,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  getNextItemId() {
+  getNextItemId(): number {
     return Math.max(...this.scenario.data.scenarioItems.map((i) => i.id)) + 1;
   }
 
@@ -233,16 +256,16 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:keydown', ['$event'])
-  onKeyPress($event: KeyboardEvent): void {
+  onKeyPress(event: KeyboardEvent): void {
     if (this.selectedItem) {
-      if ($event.altKey) {
-        if ($event.key == 'c') {
+      if (event.altKey) {
+        if (event.key == 'c') {
           this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_CLIENT);
         }
-        if ($event.key == 'b') {
+        if (event.key == 'b') {
           this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_BOT);
         }
-        if ($event.key == 'n') {
+        if (event.key == 'n') {
           this.addAnswer(this.selectedItem);
         }
       }
@@ -271,7 +294,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  mouseWheel(event: WheelEvent) {
+  mouseWheel(event: WheelEvent): void {
     event.preventDefault();
     this.zoomCanvas(event);
   }
@@ -279,11 +302,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   canvasPos = { x: 0, y: 0 };
   canvasPosOffset = { x: 0, y: 0 };
   pointer = { x: 0, y: 0 };
-  canvasScale = 1;
-  zoomSpeed = 0.5;
+  canvasScale: number = 1;
+  zoomSpeed: number = 0.5;
   isDragingCanvas;
 
-  zoomCanvas(event: WheelEvent) {
+  zoomCanvas(event: WheelEvent): void {
     let wrapper = this.canvasWrapperElem.nativeElement;
     let canvas = this.canvasElem.nativeElement;
 
@@ -313,7 +336,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
   }
 
-  centerOnItem(item, position, setFocus = true) {
+  centerOnItem(item: scenarioItem, position, setFocus: boolean = true): void {
     let wrapper = this.canvasWrapperElem.nativeElement;
     let canvas = this.canvasElem.nativeElement;
     this.canvasPos.x =
@@ -331,7 +354,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('mousedown', ['$event'])
-  onMouseDownCanvas(event: MouseEvent) {
+  onMouseDownCanvas(event: MouseEvent): void {
     if (event.button == 0) {
       this.isDragingCanvas = {
         left: this.canvasPos.x,
@@ -344,7 +367,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
   @HostListener('mouseup', ['$event'])
-  onMouseUpCanvas(event: MouseEvent) {
+  onMouseUpCanvas(event: MouseEvent): void {
     if (event.button == 0) {
       this.isDragingCanvas = undefined;
       let canvas = this.canvasElem.nativeElement;
@@ -352,7 +375,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
   @HostListener('mousemove', ['$event'])
-  onMouseMoveCanvas(event: MouseEvent) {
+  onMouseMoveCanvas(event: MouseEvent): void {
     if (this.isDragingCanvas && event.button == 0) {
       let canvas = this.canvasElem.nativeElement;
       const dx = event.clientX - this.isDragingCanvas.x;
@@ -363,13 +386,13 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  chatDisplayed = false;
-  chatControlsDisplay = false;
+  chatDisplayed: boolean = false;
+  chatControlsDisplay: boolean = false;
   chatControlsFrom;
   chatPropositions;
 
-  stopPropagation(event: MouseEvent): void {
-    event.preventDefault();
+  stopPropagation(event: MouseEvent, preventDefault = true): void {
+    if (preventDefault) event.preventDefault();
     event.stopPropagation();
   }
 
@@ -394,7 +417,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.chatDisplayed = true;
   }
 
-  chatResponsesTimeout = 1000;
+  chatResponsesTimeout: number = 1000;
 
   processChatEntry(item: scenarioItem): void {
     if (item) {
@@ -488,19 +511,19 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   messages: any[] = [];
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroy.next();
     this.destroy.complete();
   }
 
   @HostListener('window:beforeunload', ['$event'])
-  unloadNotification($event: any) {
+  unloadNotification($event: any): void {
     if (!this.canDeactivate()) {
       $event.returnValue = true;
     }
   }
 
-  canDeactivate() {
+  canDeactivate(): boolean {
     return this.scenarioBackup == this.stringifiedCleanScenario();
   }
 }

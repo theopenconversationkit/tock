@@ -9,13 +9,20 @@
 
   .contexts-panel {
     z-index: 5;
-    background-color: rgba($color: #ffffff, $alpha: 0.7);
+    background-color: rgba($color: #ffffff, $alpha: 0.85);
     box-shadow: 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
     width: 15rem;
     position: absolute;
-    .entity {
-      border-radius: 0.45rem;
-      padding: 0rem 0.3rem 0.1rem 0.3rem;
+    .contexts-list {
+      overflow: auto;
+      max-height: 30rem;
+
+      .entity {
+        border-radius: 0.45rem;
+        padding: 0rem 0.3rem 0.1rem 0.3rem;
+        font-size: 0.7rem;
+        display: inline-block;
+      }
     }
   }
 
@@ -97,4 +104,23 @@
 
 .font-2rem {
   font-size: 2rem;
+}
+
+:host .contexts-list::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 0.15625rem;
+}
+
+.nb-theme-default :host .contexts-list::-webkit-scrollbar-thumb {
+  background: #e4e9f2;
+}
+.nb-theme-default :host .contexts-list::-webkit-scrollbar-track {
+  background: #f7f9fc;
+}
+
+.nb-theme-dark :host .contexts-list::-webkit-scrollbar-thumb {
+  background: #101426;
+}
+.nb-theme-dark :host .contexts-list::-webkit-scrollbar-track {
+  background: #192038;
 }

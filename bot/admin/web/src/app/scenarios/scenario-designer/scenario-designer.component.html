@@ -50,33 +50,76 @@
   appMouseWheelListner
   (onMouseWheel)="mouseWheel($event)"
 >
-  <div class="contexts-panel p-3">
-    <strong> Contexts </strong>
-    <nb-list class="mt-2">
-      <nb-list-item
-        *ngIf="!scenario.data.contexts.length"
-        class="px-0 py-2 d-block justify-content-between text-muted font-italic"
-      >
-        No context defined yet
-      </nb-list-item>
+  <div
+    *ngIf="scenario.mode == SCENARIO_MODE_PRODUCTION"
+    class="contexts-panel pointer"
+    [ngClass]="{ 'p-3': contextsPanelShowed, 'p-2': !contextsPanelShowed }"
+  >
+    <div
+      class="d-flex justify-content-between"
+      (click)="contextsPanelShowed = !contextsPanelShowed"
+    >
+      <strong> Contexts </strong>
+      <nb-icon
+        *ngIf="contextsPanelShowed"
+        icon="chevron-up-outline"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="!contextsPanelShowed"
+        icon="chevron-down-outline"
+      ></nb-icon>
+    </div>
 
-      <nb-list-item
-        *ngFor="let context of scenario.data.contexts"
-        class="px-0 py-2 d-block justify-content-between"
+    <div
+      class="mt-2 contexts-list"
+      *ngIf="contextsPanelShowed"
+    >
+      <nb-list
+        appMouseWheelListner
+        (onMouseWheel)="stopPropagation($event, false)"
       >
-        {{ context.name }}
-        <div *ngIf="context.entityType">
-          <span
-            class="entity"
-            [style.background]="getContextEntityColor(context)"
-            [style.color]="getContextEntityContrast(context)"
+        <nb-list-item
+          *ngIf="!scenario.data.contexts.length"
+          class="px-0 py-2 d-block justify-content-between text-muted font-italic"
+        >
+          No context defined yet
+        </nb-list-item>
+
+        <nb-list-item
+          *ngFor="let context of scenario.data.contexts"
+          class="px-0 py-2 d-block justify-content-between"
+        >
+          {{ context.name }}
+
+          <div
+            *ngIf="context.entityType"
+            nbTooltip="Entity associated with the context"
           >
-            {{ context.entityType }}
-            {{ context.entityRole }}
-          </span>
-        </div>
-      </nb-list-item>
-    </nb-list>
+            <span
+              class="entity"
+              [style.background]="getContextEntityColor(context)"
+              [style.color]="getContextEntityContrast(context)"
+            >
+              {{ context.entityType }}
+              {{ context.entityRole }}
+            </span>
+          </div>
+        </nb-list-item>
+      </nb-list>
+    </div>
+
+    <button
+      *ngIf="contextsPanelShowed"
+      nbButton
+      size="tiny"
+      fullWidth
+      status="info"
+      class="mt-3"
+      nbTooltip="Add a new context to the scenario"
+      (click)="addContext()"
+    >
+      Add context
+    </button>
   </div>
   <div
     class="canvas cursor-move"

@@ -11,8 +11,9 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { scenarioItem, TickContext } from '../../models';
-import { normalizedSnakeCase } from '../../commons/utils';
+import { getContrastYIQ, normalizedSnakeCase } from '../../commons/utils';
 import { Observable, of } from 'rxjs';
+import { entityColor, qualifiedRole } from '../../../model/nlp';
 
 const ENTITY_NAME_MINLENGTH = 5;
 
@@ -41,6 +42,13 @@ export class ActionEditComponent implements OnInit {
     if (this.item.tickActionDefinition?.outputContextNames?.length) {
       this.item.tickActionDefinition.outputContextNames.forEach((contextName) => {
         this.outputContextNames.push(new FormControl(contextName));
+      });
+    }
+
+    if (!this.name.value) {
+      this.form.patchValue({
+        ...this.form.value,
+        description: this.item.text
       });
     }
   }
@@ -101,7 +109,7 @@ export class ActionEditComponent implements OnInit {
 
   formatActionName(): void {
     this.form.patchValue({
-      ...this.form,
+      ...this.form.value,
       name: normalizedSnakeCase(this.name.value)
     });
   }
@@ -161,6 +169,24 @@ export class ActionEditComponent implements OnInit {
 
   removeActionDefinition(): void {
     this.deleteDefinition.emit();
+  }
+
+  getContextByName(outputContext) {
+    return [
+      this.contexts.find((ctx) => {
+        return ctx.name == outputContext;
+      })
+    ];
+  }
+
+  getContextEntityColor(context) {
+    if (context.entityType)
+      return entityColor(qualifiedRole(context.entityType, context.entityRole));
+  }
+
+  getContextEntityContrast(context) {
+    if (context.entityType)
+      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
 
   isSubmitted: boolean = false;

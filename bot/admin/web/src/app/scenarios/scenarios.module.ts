@@ -29,6 +29,7 @@ import { IntentsSearchComponent } from './scenario-designer/intents-search/inten
 import { IntentCreateComponent } from './scenario-designer/intent-create/intent-create.component';
 import { IntentEditComponent } from './scenario-designer/intent-edit/intent-edit.component';
 import { ActionEditComponent } from './scenario-designer/action-edit/action-edit.component';
+import { ContextCreateComponent } from './scenario-designer/context-create/context-create.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -82,7 +83,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     IntentsSearchComponent,
     IntentCreateComponent,
     IntentEditComponent,
-    ActionEditComponent
+    ActionEditComponent,
+    ContextCreateComponent
   ],
   exports: [],
   providers: [
