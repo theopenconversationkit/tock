@@ -15,7 +15,7 @@ import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'tock-scenario-edit',
@@ -33,10 +33,10 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
   scenarios?: Scenario[];
 
   @Output()
-  handleClose = new EventEmitter<boolean>();
+  onClose = new EventEmitter<boolean>();
 
   @Output()
-  handleSave = new EventEmitter();
+  onSave = new EventEmitter();
 
   @ViewChild('nameInput') nameInput: ElementRef;
 
@@ -110,7 +110,7 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     }, 100);
   }
 
-  onTagAdd({ value, input }: NbTagInputAddEvent): void {
+  tagAdd({ value, input }: NbTagInputAddEvent): void {
     if (value && !this.tags.value.find((v: string) => v.toUpperCase() === value.toUpperCase())) {
       this.tags.push(new FormControl(value));
       this.form.markAsDirty();
@@ -120,7 +120,7 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     input.nativeElement.value = '';
   }
 
-  onTagRemove(tag: NbTagComponent): void {
+  tagRemove(tag: NbTagComponent): void {
     const tagToRemove = this.tags.value.findIndex((t: string) => t === tag.text);
 
     if (tagToRemove !== -1) {
@@ -130,9 +130,9 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     }
   }
 
-  close(): void {
+  close(): Observable<any> {
+    const validAction = 'yes';
     if (this.form.dirty) {
-      const validAction = 'yes';
       const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
         context: {
           title: `Cancel ${this.scenario?.id ? 'edit' : 'create'} scenario`,
@@ -142,11 +142,13 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
       });
       dialogRef.onClose.subscribe((result) => {
         if (result === validAction) {
-          this.handleClose.emit(true);
+          this.onClose.emit(true);
         }
       });
+      return dialogRef.onClose;
     } else {
-      this.handleClose.emit(true);
+      this.onClose.emit(true);
+      return of(validAction);
     }
   }
 
@@ -154,7 +156,7 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     this.isSubmitted = true;
 
     if (this.canSave) {
-      this.handleSave.emit({
+      this.onSave.emit({
         redirect: redirect,
         scenario: { ...this.scenario, ...this.form.value }
       });

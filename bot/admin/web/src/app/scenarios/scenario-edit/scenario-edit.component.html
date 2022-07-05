@@ -1,29 +1,35 @@
-<nb-card
-  class="side-panel"
-  [nbSpinner]="loading"
+<form
+  [formGroup]="form"
+  (submit)="save()"
 >
-  <nb-card-header>
-    <div class="d-flex justify-content-between align-items-start">
-      <h4>{{ scenario?.id ? 'Edit "' + scenario.name + '"' : 'New scenario' }}</h4>
-      <button
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Close"
-        (click)="close()"
-      >
-        <nb-icon icon="close-outline"></nb-icon>
-      </button>
-    </div>
-  </nb-card-header>
+  <nb-card
+    class="side-panel"
+    [nbSpinner]="loading"
+  >
+    <nb-card-header>
+      <div class="d-flex justify-content-between align-items-start">
+        <h4>{{ scenario?.id ? 'Edit "' + scenario.name + '"' : 'New scenario' }}</h4>
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Close"
+          type="button"
+          (click)="close()"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </div>
+    </nb-card-header>
 
-  <nb-card-body>
-    <form
-      [formGroup]="form"
-      (submit)="save()"
-    >
-      <div class="d-flex flex-column mb-2">
-        <label for="name">Name <span class="text-muted">(*)</span></label>
+    <nb-card-body>
+      <tock-form-control
+        label="Name"
+        name="name"
+        [controls]="name"
+        [showError]="isSubmitted"
+        [required]="true"
+      >
         <input
           #nameInput
           nbInput
@@ -33,10 +39,14 @@
           type="text"
           placeholder="Enter name"
         />
-      </div>
+      </tock-form-control>
 
-      <div class="d-flex flex-column mb-2">
-        <label for="category">Category</label>
+      <tock-form-control
+        label="Category"
+        name="category"
+        [controls]="category"
+        [showError]="isSubmitted"
+      >
         <input
           nbInput
           formControlName="category"
@@ -55,10 +65,14 @@
             {{ option }}
           </nb-option>
         </nb-autocomplete>
-      </div>
+      </tock-form-control>
 
-      <div class="d-flex flex-column mb-2">
-        <label for="description">Description</label>
+      <tock-form-control
+        label="Description"
+        name="description"
+        [controls]="description"
+        [showError]="isSubmitted"
+      >
         <textarea
           nbInput
           formControlName="description"
@@ -67,11 +81,18 @@
           type="text"
           placeholder="Enter description"
         ></textarea>
-      </div>
+      </tock-form-control>
 
-      <div class="d-flex flex-column mb-2">
-        <label for="tags">Tags</label>
-        <nb-tag-list (tagRemove)="onTagRemove($event)">
+      <tock-form-control
+        label="Tags"
+        name="tags"
+        [controls]="tags"
+        [showError]="isSubmitted"
+      >
+        <nb-tag-list
+          tock-delay
+          (tagRemove)="tagRemove($event)"
+        >
           <nb-tag
             *ngFor="let tag of tags.value"
             removable
@@ -83,7 +104,7 @@
             id="tags"
             type="text"
             placeholder="Enter tags"
-            (tagAdd)="onTagAdd($event)"
+            (tagAdd)="tagAdd($event)"
             (keydown.enter)="eventPreventDefault($event)"
             autocomplete="off"
             [nbAutocomplete]="tagsAutocomplete"
@@ -97,9 +118,11 @@
             </nb-option>
           </nb-autocomplete>
         </nb-tag-list>
-      </div>
+      </tock-form-control>
+    </nb-card-body>
 
-      <div class="grid-button mt-4">
+    <nb-card-footer>
+      <div class="grid-button">
         <button
           nbButton
           outline
@@ -130,6 +153,6 @@
           Save & design
         </button>
       </div>
-    </form>
-  </nb-card-body>
-</nb-card>
+    </nb-card-footer>
+  </nb-card>
+</form>

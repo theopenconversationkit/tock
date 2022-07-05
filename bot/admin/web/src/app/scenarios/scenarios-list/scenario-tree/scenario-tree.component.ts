@@ -11,8 +11,8 @@ import { Scenario } from '../../models';
 export class ScenarioTreeComponent implements OnChanges {
   @Input() scenarios!: Scenario[];
 
-  @Output() handleEdit = new EventEmitter<Scenario>();
-  @Output() handleDelete = new EventEmitter<Scenario>();
+  @Output() onEdit = new EventEmitter<Scenario>();
+  @Output() onDelete = new EventEmitter<Scenario>();
 
   actionsColumn = 'actions';
   categoryColumn = 'category';
@@ -33,11 +33,11 @@ export class ScenarioTreeComponent implements OnChanges {
   }
 
   edit(scenario: Scenario): void {
-    this.handleEdit.emit(scenario);
+    this.onEdit.emit(scenario);
   }
 
   delete(scenario: Scenario): void {
-    this.handleDelete.emit(scenario);
+    this.onDelete.emit(scenario);
   }
 
   private buildTreeNodeByCategory(scenarios: Array<Scenario>): Array<any> {

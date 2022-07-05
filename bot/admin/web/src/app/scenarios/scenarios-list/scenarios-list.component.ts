@@ -1,23 +1,7 @@
-/*
- * Copyright (C) 2017/2021 e-voyageurs technologies
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
-import { Observable, Observer, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
@@ -25,6 +9,8 @@ import { Filter, Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { first, takeUntil } from 'rxjs/operators';
+import { BotApplicationConfiguration } from 'src/app/core/model/configuration';
+import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
 
 @Component({
   selector: 'scenarios-list',
@@ -32,7 +18,9 @@ import { first, takeUntil } from 'rxjs/operators';
   styleUrls: ['./scenarios-list.component.scss']
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
-  destroy = new Subject();
+  configurations: BotApplicationConfiguration[];
+
+  destroy$ = new Subject();
   scenarios: Scenario[] = [];
   filteredScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
@@ -51,6 +39,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   private currentFilters: Filter = { search: '', tags: [] };
 
   constructor(
+    private botConfigurationService: BotConfigurationService,
     private dialogService: DialogService,
     private scenarioService: ScenarioService,
     private toastrService: NbToastrService,
@@ -59,11 +48,17 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.botConfigurationService.configurations
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((confs) => {
+        this.configurations = confs;
+      });
+
     this.loading.list = true;
 
     this.subscribeToScenarios();
 
-    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
+    this.state.configurationChange.pipe(takeUntil(this.destroy$)).subscribe((_) => {
       this.subscribeToScenarios(true);
     });
   }
@@ -74,7 +69,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
     this.scenariosSubscription = this.scenarioService
       .getScenarios(forceReload)
-      .pipe(takeUntil(this.destroy))
+      .pipe(takeUntil(this.destroy$))
       .subscribe((data: Scenario[]) => {
         this.loading.list = false;
         this.scenarios = [...data];
@@ -83,8 +78,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   add(): void {
