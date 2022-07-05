@@ -12,7 +12,7 @@
   cursor: move;
 }
 .cursor-default {
-  cursor: default;
+  cursor: default !important;
 }
 .initial-capitalize::first-letter {
   text-transform: uppercase;

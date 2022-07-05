@@ -82,34 +82,66 @@
           [(ngModel)]="item.text"
         ></textarea>
 
-        <strong *ngIf="itemHasDefinition()">{{ item.text }}</strong>
+        <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()">
+          <strong>{{ item.text }}</strong>
 
-        <div
-          *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()"
-          class="sentences mb-2"
-          [nbSpinner]="utterancesLoading"
-        >
-          <div class="questions">
-            <ul>
-              <li
-                *ngFor="let sentence of item.intentDefinition.sentences"
-                class="ellipsis"
-                [title]="sentence"
-              >
-                {{ sentence }}
-              </li>
-            </ul>
-            <ul>
-              <li
-                *ngFor="let sentence of item.intentDefinition._sentences"
-                class="ellipsis text-muted"
-                [title]="sentence"
-              >
-                {{ sentence.text }}
-              </li>
-            </ul>
+          <div
+            class="sentences mb-2"
+            [nbSpinner]="utterancesLoading"
+          >
+            <div class="questions">
+              <ul>
+                <li
+                  *ngFor="let sentence of item.intentDefinition.sentences"
+                  class="ellipsis"
+                  [title]="sentence"
+                >
+                  {{ sentence.query }}
+                </li>
+              </ul>
+              <ul>
+                <li
+                  *ngFor="let sentence of item.intentDefinition._sentences"
+                  class="ellipsis text-muted"
+                  [title]="sentence"
+                >
+                  {{ sentence.text }}
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
+        </ng-container>
+
+        <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_BOT && itemHasDefinition()">
+          <strong>{{ item.tickActionDefinition.name }}</strong>
+
+          <div
+            *ngIf="item.tickActionDefinition.inputContextNames?.length"
+            class="tiny-text"
+          >
+            <strong>INPUT</strong>
+            <span *ngFor="let inputCtx of item.tickActionDefinition.inputContextNames">
+              {{ inputCtx }}
+            </span>
+          </div>
+          <div
+            *ngIf="item.tickActionDefinition.outputContextNames?.length"
+            class="tiny-text"
+          >
+            <strong>OUTPUT</strong>
+            <span *ngFor="let inputCtx of item.tickActionDefinition.outputContextNames">
+              {{ inputCtx }}
+            </span>
+          </div>
+
+          <div
+            *ngIf="item.tickActionDefinition.answer"
+            class="tiny-text"
+          >
+            <strong>ANSWER</strong>
+            {{ item.tickActionDefinition.answer }}
+          </div>
+        </ng-container>
       </div>
 
       <div class="mt-auto align-self-stretch">
@@ -171,7 +203,9 @@
             (click)="manageIntent()"
             nbTooltip="Intent infos and edition"
           >
-            Manage intent
+            <span *ngIf="!item.intentDefinition">Add</span>
+            <span *ngIf="item.intentDefinition">Manage</span>
+            &nbsp; intent
           </button>
 
           <button
@@ -186,7 +220,9 @@
             (click)="manageAction()"
             nbTooltip="Action infos and edition"
           >
-            Manage action
+            <span *ngIf="!item.tickActionDefinition">Add</span>
+            <span *ngIf="item.tickActionDefinition">Manage</span>
+            &nbsp; action
           </button>
         </div>
       </div>

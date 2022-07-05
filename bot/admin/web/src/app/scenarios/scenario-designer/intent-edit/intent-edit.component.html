@@ -16,42 +16,42 @@
   <nb-card-body>
     <div>
       <label class="font-weight-bold">Status :</label>
-      <span *ngIf="itemCopy.intentDefinition.intentId">
+      <span *ngIf="item.intentDefinition.intentId">
         Already exists. Will be reassigned upon publication.
       </span>
-      <span *ngIf="!itemCopy.intentDefinition.intentId">
+      <span *ngIf="!item.intentDefinition.intentId">
         Does not exist. Will be created upon publishing.
       </span>
     </div>
-    <div *ngIf="itemCopy.intentDefinition.intentId">
+    <div *ngIf="item.intentDefinition.intentId">
       <label class="font-weight-bold">Id :</label>
       <span>
-        {{ itemCopy.intentDefinition.intentId }}
+        {{ item.intentDefinition.intentId }}
       </span>
     </div>
     <div>
       <label class="font-weight-bold">Name :</label>
       <span>
-        {{ itemCopy.intentDefinition.name }}
+        {{ item.intentDefinition.name }}
       </span>
     </div>
-    <div *ngIf="itemCopy.intentDefinition.label">
+    <div *ngIf="item.intentDefinition.label">
       <label class="font-weight-bold">Label :</label>
       <span>
-        {{ itemCopy.intentDefinition.label }}
+        {{ item.intentDefinition.label }}
       </span>
     </div>
 
-    <div *ngIf="itemCopy.intentDefinition.description">
+    <div *ngIf="item.intentDefinition.description">
       <label class="font-weight-bold">Description :</label>
       <span>
-        {{ itemCopy.intentDefinition.description }}
+        {{ item.intentDefinition.description }}
       </span>
     </div>
-    <div *ngIf="itemCopy.intentDefinition.category">
+    <div *ngIf="item.intentDefinition.category">
       <label class="font-weight-bold">Category :</label>
       <span>
-        {{ itemCopy.intentDefinition.category }}
+        {{ item.intentDefinition.category }}
       </span>
     </div>
 
@@ -61,11 +61,22 @@
     <div class="questions">
       <ul>
         <li
-          *ngFor="let sentence of itemCopy.intentDefinition.sentences"
+          *ngFor="let sentence of sentences.value"
           class="d-flex justify-content-between align-items-start"
         >
-          <div>
-            {{ sentence }}
+          <div class="text-muted">
+            <span
+              *ngFor="let token of sentence._tokens"
+              [ngClass]="{ token: token.entity, 'cursor-default': !token.entity }"
+              [title]="'Entity : ' + token.entity?.role"
+              [style.background]="token.color()"
+              [style.color]="getContrastYIQ(token.color())"
+              [nbContextMenu]="contextItems"
+              nbContextMenuTag="contextsMenu"
+              nbContextMenuTrigger="noop"
+              (click)="displayContextsMenu($event, token)"
+              >{{ token.text }}</span
+            >
           </div>
           <div>
             <nb-icon
@@ -81,20 +92,29 @@
 
       <ul>
         <li
-          *ngFor="let sentence of item.intentDefinition._sentences"
+          *ngFor="let sentence of _sentences"
           class="d-flex justify-content-between align-items-start"
         >
           <div class="text-muted">
-            <!-- {{ sentence.text }} -->
-
             <span
-              *ngFor="let t of sentence._tokens"
-              [ngClass]="{ token: t.entity }"
-              [title]="'Entity : ' + t.entity?.role"
-              [style.background]="t.color()"
-              [style.color]="getContrastYIQ(t.color())"
-              >{{ t.text }}</span
-            >
+              *ngFor="let token of sentence._tokens"
+              [ngClass]="{ token: token.entity, 'cursor-default': !token.entity }"
+              [nbTooltip]="getTokenTooltip(token)"
+              [style.background]="token.color()"
+              [style.color]="getContrastYIQ(token.color())"
+              ><span
+                [nbContextMenu]="contextItems"
+                nbContextMenuTag="contextsMenu"
+                nbContextMenuTrigger="noop"
+                (click)="displayContextsMenu($event, token)"
+                >{{ token.text }}</span
+              ><nb-icon
+                icon="attach-outline"
+                class="pointer valign-middle ml-1"
+                *ngIf="getContextOfEntity(token)"
+                (click)="dissociateContextFromEntity(token)"
+              ></nb-icon
+            ></span>
           </div>
         </li>
       </ul>
@@ -131,8 +151,8 @@
       (click)="dissociateIntent()"
     >
       <nb-icon icon="slash-outline"></nb-icon>
-      <span *ngIf="itemCopy.intentDefinition.intentId"> Dissociate intent </span>
-      <span *ngIf="!itemCopy.intentDefinition.intentId"> Delete intent </span>
+      <span *ngIf="item.intentDefinition.intentId"> Dissociate intent </span>
+      <span *ngIf="!item.intentDefinition.intentId"> Delete intent </span>
     </button>
 
     <button

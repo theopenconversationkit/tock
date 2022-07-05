@@ -1,8 +1,28 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
-import { NbDialogRef } from '@nebular/theme';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Inject,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
+import { NbContextMenuDirective, NbDialogRef, NbMenuService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { scenarioItem } from '../../models';
+import { scenarioItem, TickContext } from '../../models';
 import { Token } from '../../../sentence-analysis/highlight/highlight.component';
+import { ClassifiedEntity, ParseQuery, Sentence, SentenceStatus } from '../../../model/nlp';
+import { filter, map } from 'rxjs/operators';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+
+export type SentenceExtended = Sentence & { _tokens?: Token[] };
+export type ParseQueryExtended = ParseQuery & { _tokens?: Token[] };
 
 @Component({
   selector: 'scenario-intent-edit',
@@ -11,18 +31,52 @@ import { Token } from '../../../sentence-analysis/highlight/highlight.component'
 })
 export class IntentEditComponent implements OnInit {
   @Input() item: scenarioItem;
+  @Input() contexts: TickContext[];
   @Output() saveModifications = new EventEmitter();
-  itemCopy: scenarioItem;
-  constructor(public dialogRef: NbDialogRef<IntentEditComponent>, protected state: StateService) {}
+  @ViewChildren(NbContextMenuDirective) tokensButtons: QueryList<NbContextMenuDirective>;
+
+  constructor(
+    public dialogRef: NbDialogRef<IntentEditComponent>,
+    protected state: StateService,
+    private nbMenuService: NbMenuService
+  ) {}
+
+  _sentences = [];
 
   ngOnInit(): void {
-    this.itemCopy = JSON.parse(JSON.stringify(this.item));
-
-    if (this.item.intentDefinition?._sentences) {
-      this.item.intentDefinition?._sentences.forEach((sentence) => {
+    if (this.item.intentDefinition?.sentences?.length) {
+      this.item.intentDefinition?.sentences.forEach((sentence) => {
         this.initTokens(sentence);
+        this.sentences.push(new FormControl(sentence));
       });
     }
+    if (this.item.intentDefinition?._sentences?.length) {
+      this.item.intentDefinition?._sentences.forEach((sentence) => {
+        this.initTokens(sentence);
+        this._sentences.push(sentence);
+      });
+    }
+
+    this.contexts.forEach((ctx) => {
+      this.contextsEntities.push(new FormControl(ctx));
+    });
+
+    this.nbMenuService
+      .onItemClick()
+      .pipe(filter(({ tag }) => tag === 'contextsMenu'))
+      .subscribe((menuBag) => this.associateContextWithEntity(menuBag));
+  }
+
+  form: FormGroup = new FormGroup({
+    sentences: new FormArray([]),
+    contextsEntities: new FormArray([])
+  });
+
+  get sentences(): FormArray {
+    return this.form.get('sentences') as FormArray;
+  }
+  get contextsEntities(): FormArray {
+    return this.form.get('contextsEntities') as FormArray;
   }
 
   dissociateIntent() {
@@ -32,31 +86,53 @@ export class IntentEditComponent implements OnInit {
 
   addSentence($event) {
     if ($event.target.value.trim()) {
-      if (!this.itemCopy.intentDefinition.sentences) this.itemCopy.intentDefinition.sentences = [];
-      this.itemCopy.intentDefinition.sentences.push($event.target.value.trim());
+      const app = this.state.currentApplication;
+      const language = this.state.currentLocale;
+      const MySentence = new ParseQuery(
+        app.namespace,
+        app.name,
+        language,
+        $event.target.value.trim(),
+        false,
+        ''
+      );
+      this.initTokens(MySentence);
+      this.sentences.push(new FormControl(MySentence));
       $event.target.value = '';
     }
   }
 
+  isExistingSentence(sentence) {
+    return sentence instanceof Sentence;
+  }
+
   removeSentence(sentence) {
-    this.itemCopy.intentDefinition.sentences = this.itemCopy.intentDefinition.sentences.filter(
-      (s) => s != sentence
-    );
+    this.sentences.removeAt(this.sentences.value.findIndex((stce) => stce === sentence));
+    this.form.markAsDirty();
   }
 
   save() {
-    this.saveModifications.emit(this.itemCopy);
+    this.saveModifications.emit(this.form.value);
   }
 
   cancel(): void {
     this.dialogRef.close();
   }
 
-  private initTokens(sentence) {
+  private initTokens(sentence: SentenceExtended | ParseQueryExtended) {
     let i = 0;
     let entityIndex = 0;
-    const text = sentence.getText();
-    const entities = sentence.getEntities();
+    let text;
+    let entities;
+
+    if (sentence instanceof Sentence) {
+      text = sentence.getText();
+      entities = sentence.getEntities();
+    } else {
+      text = sentence.query;
+      entities = [];
+    }
+
     const result: Token[] = [];
     while (i <= text.length) {
       if (entities.length > entityIndex) {
@@ -74,7 +150,6 @@ export class IntentEditComponent implements OnInit {
         break;
       }
     }
-    console.log(result);
     sentence._tokens = result;
   }
 
@@ -86,5 +161,95 @@ export class IntentEditComponent implements OnInit {
     var b = parseInt(hexcolor.substr(4, 2), 16);
     var yiq = (r * 299 + g * 587 + b * 114) / 1000;
     return yiq >= 128 ? 'black' : 'white';
+  }
+
+  contextItems = [
+    {
+      title: 'Choose a context to associate',
+      expanded: false,
+      children: []
+    }
+  ];
+
+  @HostListener('click', ['$event.target'])
+  hideContextsMenus() {
+    this.tokensButtons.forEach((tb) => tb.hide());
+  }
+
+  displayContextsMenu(event: MouseEvent, token: Token) {
+    event.stopPropagation();
+    this.hideContextsMenus();
+    if (!token.entity) return;
+    const exists = this.getContextOfEntity({
+      entity: { type: token.entity.type, role: token.entity.role }
+    });
+    if (exists) return;
+
+    this.contextItems = [
+      {
+        title: 'Choose a context to associate',
+        expanded: true,
+        children: this.contexts.map((ctx) => {
+          return {
+            title: ctx.name,
+            context: <TickContext>ctx,
+            token: token
+          };
+        })
+      }
+    ];
+
+    let ClickedButton = this.tokensButtons.find((tButton) => {
+      return tButton['hostRef'].nativeElement.innerText == token.text;
+    });
+    if (ClickedButton) ClickedButton.show();
+  }
+
+  associateContextWithEntity(menuBag): void {
+    const item = menuBag.item;
+    const exists = this.getContextOfEntity({
+      entity: { type: item.token.entity.type, role: item.token.entity.role }
+    });
+    if (exists) return;
+
+    const newContextDef = {
+      ...item.context,
+      entityType: item.token.entity.type,
+      entityRole: item.token.entity.role
+    };
+    this.contextsEntities.push(new FormControl(newContextDef));
+  }
+
+  dissociateContextFromEntity(token) {
+    let index = this.getContextIndexOfEntity(token);
+    let context = this.getContextOfEntity(token);
+    delete context.entityType;
+    delete context.entityRole;
+    this.contextsEntities.setControl(index, new FormControl(context));
+  }
+
+  getContextIndexOfEntity(token) {
+    return this.contextsEntities.value.findIndex((ctx) => {
+      return (
+        token.entity?.type &&
+        token.entity?.type == ctx.entityType &&
+        token.entity?.role == ctx.entityRole
+      );
+    });
+  }
+  getContextOfEntity(token) {
+    return this.contextsEntities.value.find((ctx) => {
+      return (
+        token.entity?.type &&
+        token.entity?.type == ctx.entityType &&
+        token.entity?.role == ctx.entityRole
+      );
+    });
+  }
+
+  getTokenTooltip(token) {
+    const ctx = this.getContextOfEntity(token);
+    if (ctx) return `This entity is associated with the context ${ctx.name}`;
+    return 'No context associated';
   }
 }

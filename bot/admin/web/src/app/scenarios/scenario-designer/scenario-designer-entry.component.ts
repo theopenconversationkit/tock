@@ -187,20 +187,27 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   editIntent(): void {
     const modal = this.dialogService.openDialog(IntentEditComponent, {
       context: {
-        item: this.item
+        item: this.item,
+        contexts: this.contexts
       }
     });
-    const saveModificationsSubsciption = modal.componentRef.instance.saveModifications
+    const saveModificationsSubscription = modal.componentRef.instance.saveModifications
       .pipe(takeUntil(this.destroy))
-      .subscribe((modifiedItem) => {
-        this.item.intentDefinition = modifiedItem.intentDefinition;
-        saveModificationsSubsciption.unsubscribe();
+      .subscribe((intentDef) => {
+        console.log(intentDef);
+        this.item.intentDefinition.sentences = intentDef.sentences;
+
+        intentDef.contextsEntities.forEach((ctxEntity) => {
+          const ctxIndex = this.contexts.findIndex((ctx) => ctx.name == ctxEntity.name);
+          this.contexts.splice(ctxIndex, 1, ctxEntity);
+        });
+        saveModificationsSubscription.unsubscribe();
         modal.close();
       });
   }
 
   itemHasDefinition() {
-    return this.item.intentDefinition; //|| this.item.apiCallDefinition;
+    return this.item.intentDefinition || this.item.tickActionDefinition;
   }
 
   selectItem(): void {

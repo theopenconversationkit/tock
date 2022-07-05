@@ -1,4 +1,4 @@
-import { Sentence } from '../../model/nlp';
+import { ParseQuery, Sentence } from '../../model/nlp';
 
 export const SCENARIO_MODE_WRITING = 'writing';
 export type scenario_mode_writing = typeof SCENARIO_MODE_WRITING;
@@ -26,7 +26,8 @@ export type EntityRole = string;
 export type TickContextName = string;
 export interface TickContext {
   name: TickContextName;
-  entity?: [EntityTypeName, EntityRole];
+  entityType?: EntityTypeName;
+  entityRole?: EntityRole;
   type: 'string';
 }
 export interface intentDefinition {
@@ -35,7 +36,7 @@ export interface intentDefinition {
   category?: string;
   description?: string;
   intentId?: string;
-  sentences?: string[];
+  sentences?: ParseQuery[];
   _sentences?: Sentence[];
 }
 export interface TickActionDefinition {

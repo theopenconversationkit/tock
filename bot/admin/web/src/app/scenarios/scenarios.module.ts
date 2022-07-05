@@ -22,6 +22,7 @@ import {
   NbAutocompleteModule,
   NbButtonModule,
   NbCardModule,
+  NbContextMenuModule,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
@@ -81,7 +82,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     NbTagModule,
     NbTooltipModule,
     NbTreeGridModule,
-    NbAccordionModule
+    NbAccordionModule,
+    NbContextMenuModule
   ],
   declarations: [
     ScenariosListComponent,
