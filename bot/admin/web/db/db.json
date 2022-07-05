@@ -97,13 +97,13 @@
           {
             "id": 0,
             "from": "client",
-            "text": "Je n'arrive pas à faire mon virement",
+            "text": "Je n'arrive pas à virer 2000 €",
             "intentDefinition": {
-              "label": "faire virement",
-              "name": "fairevirement",
-              "category": "scenarios",
+              "label": null,
+              "name": "je_veux_fa",
+              "category": "build",
               "description": null,
-              "intentId": "62750f877c671d6e57529bf9"
+              "intentId": "62879e420f199e5793b64e75"
             }
           },
           {
@@ -288,7 +288,8 @@
             "text": "Echec envoi message",
             "final": true
           }
-        ]
+        ],
+        "contexts": []
       },
       "mode": "production"
     },
