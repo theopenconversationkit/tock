@@ -1,16 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { Subject, Subscription } from 'rxjs';
+import { first, take, takeUntil } from 'rxjs/operators';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Filter, Scenario, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
-import { StateService } from 'src/app/core-nlp/state.service';
-import { first, takeUntil } from 'rxjs/operators';
-import { BotApplicationConfiguration } from 'src/app/core/model/configuration';
-import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
+import { StateService } from '../../core-nlp/state.service';
+import { BotApplicationConfiguration } from '../../core/model/configuration';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { ScenarioEditComponent } from '../scenario-edit/scenario-edit.component';
 
 @Component({
   selector: 'scenarios-list',
@@ -18,6 +19,8 @@ import { BotConfigurationService } from 'src/app/core/bot-configuration.service'
   styleUrls: ['./scenarios-list.component.scss']
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
+  @ViewChild('scenarioEditComponent') scenarioEditComponent: ScenarioEditComponent;
+
   configurations: BotApplicationConfiguration[];
 
   destroy$ = new Subject();
@@ -52,6 +55,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((confs) => {
         this.configurations = confs;
+        this.closeSidePanel();
       });
 
     this.loading.list = true;
@@ -82,6 +86,24 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  addOrEditScenario(scenario?: Scenario): void {
+    if (this.scenarioEditComponent) {
+      this.scenarioEditComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel') {
+            setTimeout(() => {
+              this.addOrEditScenario(scenario);
+            }, 200);
+          }
+        });
+    } else {
+      if (scenario) this.edit(scenario);
+      else this.add();
+    }
+  }
+
   add(): void {
     this.scenarioEdit = {
       id: null,
@@ -109,6 +131,9 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     });
     dialogRef.onClose.subscribe((result) => {
       if (result === deleteAction) {
+        if (scenario.id === this.scenarioEdit?.id) {
+          this.closeSidePanel();
+        }
         this.deleteScenario(scenario.id);
       }
     });
