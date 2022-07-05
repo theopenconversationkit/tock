@@ -194,12 +194,12 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
     const saveModificationsSubscription = modal.componentRef.instance.saveModifications
       .pipe(takeUntil(this.destroy))
       .subscribe((intentDef) => {
-        console.log(intentDef);
         this.item.intentDefinition.sentences = intentDef.sentences;
 
         intentDef.contextsEntities.forEach((ctxEntity) => {
           const ctxIndex = this.contexts.findIndex((ctx) => ctx.name == ctxEntity.name);
-          this.contexts.splice(ctxIndex, 1, ctxEntity);
+          if (ctxIndex >= 0) this.contexts.splice(ctxIndex, 1, ctxEntity);
+          else this.contexts.push(ctxEntity);
         });
         saveModificationsSubscription.unsubscribe();
         modal.close();

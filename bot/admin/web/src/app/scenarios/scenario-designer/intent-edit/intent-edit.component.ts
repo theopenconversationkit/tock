@@ -6,21 +6,25 @@ import {
   HostListener,
   Inject,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   QueryList,
   ViewChild,
   ViewChildren
 } from '@angular/core';
+import { takeUntil } from 'rxjs/operators';
 import { NbContextMenuDirective, NbDialogRef, NbMenuService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { scenarioItem, TickContext } from '../../models';
 import { Token } from '../../../sentence-analysis/highlight/highlight.component';
-import { ClassifiedEntity, ParseQuery, Sentence, SentenceStatus } from '../../../model/nlp';
+import { ParseQuery, Sentence } from '../../../model/nlp';
 import { filter, map } from 'rxjs/operators';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { getContrastYIQ } from '../../commons/utils';
+import { DialogService } from '../../../core-nlp/dialog.service';
+import { ContextCreateComponent } from '../context-create/context-create.component';
+import { Subject } from 'rxjs';
 
 export type SentenceExtended = Sentence & { _tokens?: Token[] };
 export type ParseQueryExtended = ParseQuery & { _tokens?: Token[] };
@@ -30,7 +34,9 @@ export type ParseQueryExtended = ParseQuery & { _tokens?: Token[] };
   templateUrl: './intent-edit.component.html',
   styleUrls: ['./intent-edit.component.scss']
 })
-export class IntentEditComponent implements OnInit {
+export class IntentEditComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
+
   @Input() item: scenarioItem;
   @Input() contexts: TickContext[];
   @Output() saveModifications = new EventEmitter();
@@ -40,7 +46,8 @@ export class IntentEditComponent implements OnInit {
   constructor(
     public dialogRef: NbDialogRef<IntentEditComponent>,
     protected state: StateService,
-    private nbMenuService: NbMenuService
+    private nbMenuService: NbMenuService,
+    private dialogService: DialogService
   ) {}
 
   _sentences = [];
@@ -67,7 +74,10 @@ export class IntentEditComponent implements OnInit {
 
     this.nbMenuService
       .onItemClick()
-      .pipe(filter(({ tag }) => tag === 'contextsMenu'))
+      .pipe(
+        takeUntil(this.destroy),
+        filter(({ tag }) => tag === 'contextsMenu')
+      )
       .subscribe((menuBag) => this.associateContextWithEntity(menuBag));
   }
 
@@ -181,17 +191,27 @@ export class IntentEditComponent implements OnInit {
     });
     if (exists) return;
 
+    let childrens: any[] = this.contexts.map((ctx) => {
+      return {
+        title: ctx.name,
+        icon: 'attach-outline',
+        context: <TickContext>ctx,
+        token: token
+      };
+    });
+
+    childrens.push({
+      title: 'Add a new context',
+      icon: 'plus-outline',
+      addContext: true,
+      token: token
+    });
+
     this.contextItems = [
       {
         title: 'Choose a context to associate',
         expanded: true,
-        children: this.contexts.map((ctx) => {
-          return {
-            title: ctx.name,
-            context: <TickContext>ctx,
-            token: token
-          };
-        })
+        children: childrens
       }
     ];
 
@@ -201,8 +221,34 @@ export class IntentEditComponent implements OnInit {
     if (ClickedButton) ClickedButton.show();
   }
 
+  addContext(menuBag): void {
+    const modal = this.dialogService.openDialog(ContextCreateComponent, {
+      context: {}
+    });
+    const validate = modal.componentRef.instance.validate
+      .pipe(takeUntil(this.destroy))
+      .subscribe((contextDef) => {
+        this.contextsEntities.push(
+          new FormControl({
+            name: contextDef.name,
+            type: 'string',
+            entityType: menuBag.item.token.entity.type,
+            entityRole: menuBag.item.token.entity.role
+          })
+        );
+        validate.unsubscribe();
+        modal.close();
+      });
+  }
+
   associateContextWithEntity(menuBag): void {
     const item = menuBag.item;
+
+    if (item.addContext) {
+      this.addContext(menuBag);
+      return;
+    }
+
     const exists = this.getContextOfEntity({
       entity: { type: item.token.entity.type, role: item.token.entity.role }
     });
@@ -248,5 +294,10 @@ export class IntentEditComponent implements OnInit {
     if (ctx)
       return `This entity is associated with the context ${ctx.name} (click on attach to dissociate)`;
     return 'No context associated';
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

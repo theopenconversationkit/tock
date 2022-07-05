@@ -16,6 +16,8 @@
     .contexts-list {
       overflow: auto;
       max-height: 30rem;
+      margin-right: -1rem;
+      padding-right: 1rem;
 
       .entity {
         border-radius: 0.45rem;

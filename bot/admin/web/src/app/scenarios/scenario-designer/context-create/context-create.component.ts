@@ -41,6 +41,7 @@ export class ContextCreateComponent {
 
   save(): void {
     this.isSubmitted = true;
+    this.formatContextName();
     if (this.canSave) this.validate.emit(this.form.value);
   }
 
