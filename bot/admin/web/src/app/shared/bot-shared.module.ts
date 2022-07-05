@@ -43,6 +43,7 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { ErrorHelperComponent } from './error-helper/error-helper.component';
 import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
 import { FormControlComponent } from './form-control/form-control.component';
+import { DelayDirective } from './directives/delay.directive';
 import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
 import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
 import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
@@ -76,6 +77,7 @@ import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
     PaginationComponent,
     NoDataFoundComponent,
     FormControlComponent,
+    DelayDirective,
     ChoiceDialogComponent,
     MouseWheelListnerDirective,
     OrderByPipe

@@ -10,8 +10,8 @@ import { Scenario } from '../../models';
 export class ScenarioListSimpleComponent {
   @Input() scenarios!: Scenario[];
 
-  @Output() handleEdit = new EventEmitter<Scenario>();
-  @Output() handleDelete = new EventEmitter<Scenario>();
+  @Output() onEdit = new EventEmitter<Scenario>();
+  @Output() onDelete = new EventEmitter<Scenario>();
 
   orderBy = 'name';
   orderByReverse = false;
@@ -25,11 +25,11 @@ export class ScenarioListSimpleComponent {
   }
 
   edit(scenario: Scenario): void {
-    this.handleEdit.emit(scenario);
+    this.onEdit.emit(scenario);
   }
 
   delete(scenario: Scenario): void {
-    this.handleDelete.emit(scenario);
+    this.onDelete.emit(scenario);
   }
 
   versions = [

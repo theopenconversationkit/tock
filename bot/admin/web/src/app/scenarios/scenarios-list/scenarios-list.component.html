@@ -81,16 +81,16 @@
         *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.LIST"
         [nbSpinner]="loading.delete"
         [scenarios]="filteredScenarios"
-        (handleEdit)="edit($event)"
-        (handleDelete)="delete($event)"
+        (onEdit)="edit($event)"
+        (onDelete)="delete($event)"
       ></tock-scenario-list-simple>
 
       <tock-scenario-tree
         *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.TREE"
         [nbSpinner]="loading.delete"
         [scenarios]="filteredScenarios"
-        (handleEdit)="edit($event)"
-        (handleDelete)="delete($event)"
+        (onEdit)="edit($event)"
+        (onDelete)="delete($event)"
       ></tock-scenario-tree>
     </div>
   </div>
@@ -101,7 +101,7 @@
     [loading]="loading.edit"
     [scenario]="scenarioEdit"
     [scenarios]="scenarios"
-    (handleClose)="closeSidePanel()"
-    (handleSave)="saveScenario($event)"
+    (onClose)="closeSidePanel()"
+    (onSave)="saveScenario($event)"
   ></tock-scenario-edit>
 </section>
