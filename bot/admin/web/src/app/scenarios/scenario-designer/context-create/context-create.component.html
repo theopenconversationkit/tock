@@ -1,0 +1,71 @@
+<nb-card id="modal-wrapper">
+  <nb-card-header class="d-flex justify-content-between align-items-center">
+    <h4>Create context</h4>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Cancel"
+      (click)="cancel()"
+      class="ml-3"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <form
+      [formGroup]="form"
+      (submit)="save()"
+    >
+      <div class="row main-row">
+        <div class="col-12">
+          <div class="mb-4">
+            <tock-form-control
+              label="Name"
+              name="name"
+              required="true"
+              [controls]="name"
+              [showError]="isSubmitted"
+            >
+              <input
+                nbInput
+                formControlName="name"
+                fullWidth
+                id="name"
+                type="text"
+                placeholder="Enter new context name"
+                (blur)="formatContextName()"
+              />
+            </tock-form-control>
+          </div>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex justify-content-between">
+    <button
+      nbButton
+      size="small"
+      status="basic"
+      class="m-1"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="m-1"
+      (click)="save()"
+      [disabled]="!canSave"
+    >
+      <nb-icon icon="save-outline"></nb-icon>
+      Save
+    </button>
+  </nb-card-footer>
+</nb-card>

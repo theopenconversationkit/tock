@@ -218,7 +218,7 @@ export class IntentEditComponent implements OnInit {
 
   dissociateContextFromEntity(token) {
     let index = this.getContextIndexOfEntity(token);
-    let context = this.getContextOfEntity(token);
+    let context = JSON.parse(JSON.stringify(this.getContextOfEntity(token)));
     delete context.entityType;
     delete context.entityRole;
     this.contextsEntities.setControl(index, new FormControl(context));
@@ -245,7 +245,8 @@ export class IntentEditComponent implements OnInit {
 
   getTokenTooltip(token) {
     const ctx = this.getContextOfEntity(token);
-    if (ctx) return `This entity is associated with the context ${ctx.name}`;
+    if (ctx)
+      return `This entity is associated with the context ${ctx.name} (click on attach to dissociate)`;
     return 'No context associated';
   }
 }

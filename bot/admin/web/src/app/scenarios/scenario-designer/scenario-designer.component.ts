@@ -43,6 +43,7 @@ import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedRole } from '../../model/nlp';
 import { getContrastYIQ } from '../commons/utils';
+import { ContextCreateComponent } from './context-create/context-create.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -63,16 +64,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
-
-  getContextEntityColor(context) {
-    if (context.entityType)
-      return entityColor(qualifiedRole(context.entityType, context.entityRole));
-  }
-
-  getContextEntityContrast(context) {
-    if (context.entityType)
-      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
-  }
+  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
+  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
 
   constructor(
     private scenarioService: ScenarioService,
@@ -80,7 +73,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     route: ActivatedRoute,
     private router: Router,
     private toastrService: NbToastrService,
-    protected state: StateService
+    protected state: StateService,
+    private dialogService: DialogService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -163,6 +157,35 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         labelPosition: 'left'
       };
     }
+  }
+
+  contextsPanelShowed = true;
+
+  getContextEntityColor(context) {
+    if (context.entityType)
+      return entityColor(qualifiedRole(context.entityType, context.entityRole));
+  }
+
+  getContextEntityContrast(context) {
+    if (context.entityType)
+      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
+  }
+
+  addContext() {
+    const modal = this.dialogService.openDialog(ContextCreateComponent, {
+      context: {}
+    });
+    const validate = modal.componentRef.instance.validate
+      .pipe(takeUntil(this.destroy))
+      .subscribe((contextDef) => {
+        this.scenario.data.contexts.push({
+          name: contextDef.name,
+          type: 'string'
+        });
+
+        validate.unsubscribe();
+        modal.close();
+      });
   }
 
   stringifiedCleanScenario() {
@@ -368,8 +391,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   chatControlsFrom;
   chatPropositions;
 
-  stopPropagation(event: MouseEvent): void {
-    event.preventDefault();
+  stopPropagation(event: MouseEvent, preventDefault = true): void {
+    if (preventDefault) event.preventDefault();
     event.stopPropagation();
   }
 
