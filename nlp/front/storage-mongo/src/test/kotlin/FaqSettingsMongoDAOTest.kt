@@ -21,6 +21,9 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettings
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoCollection
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
@@ -41,6 +44,10 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
     private val faqSettings = FaqSettings(faqSettingsId, applicationId, false, null, now, now)
 
     private val col: MongoCollection<FaqSettings> by lazy { FaqSettingsMongoDAO.col }
+
+    override fun moreBindingModules() = Kodein.Module {
+        bind<FaqSettingsDAO>() with provider { FaqSettingsMongoDAO }
+    }
 
     @AfterEach
     fun cleanup() {
@@ -69,15 +76,15 @@ class FaqSettingsMongoDAOTest : AbstractTest() {
         faqSettingsDao.save(faqSettings)
         val faqSettingsSaved = faqSettingsDao.getFaqSettingsById(faqSettingsId)
 
-        assertEquals(expected = faqSettings.satisfactionEnabled, actual = faqSettingsSaved?.satisfactionEnabled )
-        assertEquals(expected = faqSettings.satisfactionStoryId, actual = faqSettingsSaved?.satisfactionStoryId )
+        assertEquals(expected = faqSettings.satisfactionEnabled, actual = faqSettingsSaved?.satisfactionEnabled)
+        assertEquals(expected = faqSettings.satisfactionStoryId, actual = faqSettingsSaved?.satisfactionStoryId)
 
         val faqSettings2 = faqSettings.copy(satisfactionEnabled = true, satisfactionStoryId = storyId)
         faqSettingsDao.save(faqSettings2)
         val faqSettingsUpdated = faqSettingsDao.getFaqSettingsById(faqSettingsId)
 
         assertEquals(expected = faqSettings2.satisfactionEnabled, actual = faqSettingsUpdated?.satisfactionEnabled)
-        assertEquals(expected = faqSettings2.satisfactionStoryId, actual = faqSettingsUpdated?.satisfactionStoryId )
+        assertEquals(expected = faqSettings2.satisfactionStoryId, actual = faqSettingsUpdated?.satisfactionStoryId)
 
         assertEquals(1, col.countDocuments())
     }
