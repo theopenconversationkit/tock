@@ -24,11 +24,13 @@ export class ScenarioListSimpleComponent {
     }
   }
 
-  edit(scenario: Scenario): void {
+  edit(event: MouseEvent, scenario: Scenario): void {
+    event.stopPropagation();
     this.onEdit.emit(scenario);
   }
 
-  delete(scenario: Scenario): void {
+  delete(event: MouseEvent, scenario: Scenario): void {
+    event.stopPropagation();
     this.onDelete.emit(scenario);
   }
 

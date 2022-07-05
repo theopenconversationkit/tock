@@ -76,7 +76,7 @@
             ghost
             shape="round"
             nbTooltip="Edit"
-            (click)="edit(scenario)"
+            (click)="edit($event, scenario)"
           >
             <nb-icon icon="edit-outline"></nb-icon>
           </button>
@@ -94,7 +94,7 @@
             ghost
             shape="round"
             nbTooltip="Delete"
-            (click)="delete(scenario)"
+            (click)="delete($event, scenario)"
           >
             <nb-icon icon="trash-2-outline"></nb-icon>
           </button>

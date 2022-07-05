@@ -28,7 +28,7 @@
       nbButton
       status="primary"
       [disabled]="!configurations?.length"
-      (click)="add()"
+      (click)="addOrEditScenario()"
     >
       <nb-icon icon="plus-outline"></nb-icon>
       Create
@@ -81,7 +81,7 @@
         *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.LIST"
         [nbSpinner]="loading.delete"
         [scenarios]="filteredScenarios"
-        (onEdit)="edit($event)"
+        (onEdit)="addOrEditScenario($event)"
         (onDelete)="delete($event)"
       ></tock-scenario-list-simple>
 
@@ -89,13 +89,14 @@
         *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.TREE"
         [nbSpinner]="loading.delete"
         [scenarios]="filteredScenarios"
-        (onEdit)="edit($event)"
+        (onEdit)="addOrEditScenario($event)"
         (onDelete)="delete($event)"
       ></tock-scenario-tree>
     </div>
   </div>
 
   <tock-scenario-edit
+    #scenarioEditComponent
     *ngIf="isSidePanelOpen"
     class="aside"
     [loading]="loading.edit"
