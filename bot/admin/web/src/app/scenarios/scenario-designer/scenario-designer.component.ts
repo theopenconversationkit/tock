@@ -41,6 +41,8 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
+import { entityColor, qualifiedRole } from '../../model/nlp';
+import { getContrastYIQ } from '../commons/utils';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -61,6 +63,16 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
+
+  getContextEntityColor(context) {
+    if (context.entityType)
+      return entityColor(qualifiedRole(context.entityType, context.entityRole));
+  }
+
+  getContextEntityContrast(context) {
+    if (context.entityType)
+      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
+  }
 
   constructor(
     private scenarioService: ScenarioService,

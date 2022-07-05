@@ -20,6 +20,7 @@ import { ClassifiedEntity, ParseQuery, Sentence, SentenceStatus } from '../../..
 import { filter, map } from 'rxjs/operators';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { getContrastYIQ } from '../../commons/utils';
 
 export type SentenceExtended = Sentence & { _tokens?: Token[] };
 export type ParseQueryExtended = ParseQuery & { _tokens?: Token[] };
@@ -34,6 +35,7 @@ export class IntentEditComponent implements OnInit {
   @Input() contexts: TickContext[];
   @Output() saveModifications = new EventEmitter();
   @ViewChildren(NbContextMenuDirective) tokensButtons: QueryList<NbContextMenuDirective>;
+  @ViewChild('addSentenceInput') addSentenceInput: ElementRef;
 
   constructor(
     public dialogRef: NbDialogRef<IntentEditComponent>,
@@ -42,6 +44,8 @@ export class IntentEditComponent implements OnInit {
   ) {}
 
   _sentences = [];
+
+  getContrastYIQ = getContrastYIQ;
 
   ngOnInit(): void {
     if (this.item.intentDefinition?.sentences?.length) {
@@ -84,21 +88,23 @@ export class IntentEditComponent implements OnInit {
     this.cancel();
   }
 
-  addSentence($event) {
-    if ($event.target.value.trim()) {
+  addSentence() {
+    const eventTarget = this.addSentenceInput.nativeElement as HTMLInputElement;
+
+    if (eventTarget.value.trim()) {
       const app = this.state.currentApplication;
       const language = this.state.currentLocale;
       const MySentence = new ParseQuery(
         app.namespace,
         app.name,
         language,
-        $event.target.value.trim(),
+        eventTarget.value.trim(),
         false,
         ''
       );
       this.initTokens(MySentence);
       this.sentences.push(new FormControl(MySentence));
-      $event.target.value = '';
+      eventTarget.value = '';
     }
   }
 
@@ -151,16 +157,6 @@ export class IntentEditComponent implements OnInit {
       }
     }
     sentence._tokens = result;
-  }
-
-  getContrastYIQ(hexcolor) {
-    if (!hexcolor) return '';
-    hexcolor = hexcolor.replace('#', '');
-    var r = parseInt(hexcolor.substr(0, 2), 16);
-    var g = parseInt(hexcolor.substr(2, 2), 16);
-    var b = parseInt(hexcolor.substr(4, 2), 16);
-    var yiq = (r * 299 + g * 587 + b * 114) / 1000;
-    return yiq >= 128 ? 'black' : 'white';
   }
 
   contextItems = [

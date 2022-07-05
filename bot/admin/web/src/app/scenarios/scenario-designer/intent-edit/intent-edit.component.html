@@ -120,16 +120,29 @@
       </ul>
     </div>
 
-    <input
-      #labelInput
-      nbInput
-      fullWidth
-      id="newQuestion"
-      type="text"
-      placeholder="Add a new question formulation and press enter"
-      class="mt-2"
-      (keyup.enter)="addSentence($event)"
-    />
+    <div class="d-flex mt-2">
+      <input
+        #addSentenceInput
+        nbInput
+        fullWidth
+        id="newQuestion"
+        type="text"
+        placeholder="Add a new question formulation and press enter"
+        (keyup.enter)="addSentence()"
+      />
+
+      <button
+        type="button"
+        nbButton
+        ghost
+        size="small"
+        class="ml-1"
+        [disabled]="!addSentenceInput.value.length"
+        (click)="addSentence()"
+      >
+        Add
+      </button>
+    </div>
   </nb-card-body>
 
   <nb-card-footer class="d-flex justify-content-between">

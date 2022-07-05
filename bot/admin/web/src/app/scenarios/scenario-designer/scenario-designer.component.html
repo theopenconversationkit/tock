@@ -52,14 +52,29 @@
 >
   <div class="contexts-panel p-3">
     <strong> Contexts </strong>
-    <nb-list>
+    <nb-list class="mt-2">
+      <nb-list-item
+        *ngIf="!scenario.data.contexts.length"
+        class="px-0 py-2 d-block justify-content-between text-muted font-italic"
+      >
+        No context defined yet
+      </nb-list-item>
+
       <nb-list-item
         *ngFor="let context of scenario.data.contexts"
-        class="px-0 py-2 d-flex justify-content-between"
+        class="px-0 py-2 d-block justify-content-between"
       >
         {{ context.name }}
-        {{ context.entityType }}
-        {{ context.entityRole }}
+        <div *ngIf="context.entityType">
+          <span
+            class="entity"
+            [style.background]="getContextEntityColor(context)"
+            [style.color]="getContextEntityContrast(context)"
+          >
+            {{ context.entityType }}
+            {{ context.entityRole }}
+          </span>
+        </div>
       </nb-list-item>
     </nb-list>
   </div>
