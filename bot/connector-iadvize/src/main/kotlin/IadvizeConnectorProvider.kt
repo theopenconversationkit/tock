@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.*
-import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
 import ai.tock.shared.resourceAsString
 import kotlin.reflect.KClass

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,7 +157,8 @@ class IadvizeConnector internal constructor(
     private fun mapRequest(idConversation: String, context: RoutingContext): IadvizeRequest {
         val typeMessage: TypeMessage = mapper.readValue(context.getBodyAsString(), TypeMessage::class.java)
         return when(typeMessage.type) {
-            // json don't contains idConversation, to prevent null pointer, used inner class MessageRequestJson
+            //json doesn't contain idConversation, to prevent null pointer,
+            // we use the inner class MessageRequestJson to enhance the json.
             "text" -> {
                 val messageRequestJson: MessageRequestJson =
                     mapper.readValue(context.getBodyAsString(), MessageRequestJson::class.java)

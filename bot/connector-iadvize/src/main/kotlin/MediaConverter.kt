@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,12 +61,6 @@ internal object MediaConverter {
         } else {
             null
         }
-        /*code java équivalent (que je trouve plus lisible), et sans besoin de mettre des commentaires explicatifs
-         * return Optional.ofNullable(file)
-         *                .filter(it -> image.equals(it.getType()))
-         *                .map(it -> new Image(it.getUrl(), it.getName()))
-         *                .orElse(null);
-         */
     }
 
     private fun BotBus.fromMediaCard(message: MediaCard): List<ConnectorMessage> {
