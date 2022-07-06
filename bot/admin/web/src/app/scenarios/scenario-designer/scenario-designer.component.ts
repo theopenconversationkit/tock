@@ -188,6 +188,36 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       });
   }
 
+  confirmDeleteContext(context) {
+    const deleteAction = 'delete';
+
+    const dialogResponseVerb = 'Exit';
+    const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: `You're about to delete a context`,
+        subtitle: 'Are you sure?',
+        action: deleteAction
+      }
+    });
+    modal.onClose.subscribe((res) => {
+      if (res == deleteAction) {
+        this.deleteContext(context);
+      }
+    });
+  }
+
+  deleteContext(context) {
+    this.scenario.data.scenarioItems.forEach((item) => {
+      if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
+        item.tickActionDefinition.inputContextNames =
+          item.tickActionDefinition.inputContextNames.filter((icn) => icn != context.name);
+        item.tickActionDefinition.outputContextNames =
+          item.tickActionDefinition.outputContextNames.filter((icn) => icn != context.name);
+      }
+    });
+    this.scenario.data.contexts = this.scenario.data.contexts.filter((ctx) => ctx !== context);
+  }
+
   stringifiedCleanScenario(): string {
     return JSON.stringify(this.scenario, function (key, value) {
       if (key.indexOf('_') == 0) return undefined;

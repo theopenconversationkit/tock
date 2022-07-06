@@ -87,22 +87,40 @@
 
         <nb-list-item
           *ngFor="let context of scenario.data.contexts"
-          class="px-0 py-2 d-block justify-content-between"
+          class="px-0 py-2 d-block"
         >
-          {{ context.name }}
+          <div class="d-flex justify-content-between">
+            <div>
+              <div
+                class="ellipsis context-name"
+                [title]="context.name"
+              >
+                {{ context.name }}
+              </div>
 
-          <div
-            *ngIf="context.entityType"
-            nbTooltip="Entity associated with the context"
-          >
-            <span
-              class="entity"
-              [style.background]="getContextEntityColor(context)"
-              [style.color]="getContextEntityContrast(context)"
-            >
-              {{ context.entityType }}
-              {{ context.entityRole }}
-            </span>
+              <div
+                *ngIf="context.entityType"
+                nbTooltip="Entity associated with the context"
+              >
+                <span
+                  class="entity"
+                  [style.background]="getContextEntityColor(context)"
+                  [style.color]="getContextEntityContrast(context)"
+                >
+                  {{ context.entityType }}
+                  {{ context.entityRole }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <nb-icon
+                icon="trash-2-outline"
+                status="danger"
+                (click)="confirmDeleteContext(context)"
+                class="pointer ml-2"
+                nbTooltip="Delete this context"
+              ></nb-icon>
+            </div>
           </div>
         </nb-list-item>
       </nb-list>

@@ -113,11 +113,11 @@
         </ng-container>
 
         <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_BOT && itemHasDefinition()">
-          <strong>{{ item.tickActionDefinition.name }}</strong>
+          <div class="ellipsis font-weight-bold">{{ item.tickActionDefinition.name }}</div>
 
           <div
             *ngIf="item.tickActionDefinition.inputContextNames?.length"
-            class="tiny-text"
+            class="tiny-text ellipsis"
           >
             <strong>INPUT</strong>
             <span *ngFor="let inputCtx of item.tickActionDefinition.inputContextNames">
@@ -126,7 +126,7 @@
           </div>
           <div
             *ngIf="item.tickActionDefinition.outputContextNames?.length"
-            class="tiny-text"
+            class="tiny-text ellipsis"
           >
             <strong>OUTPUT</strong>
             <span *ngFor="let inputCtx of item.tickActionDefinition.outputContextNames">
