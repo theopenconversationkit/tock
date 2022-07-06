@@ -1,0 +1,260 @@
+{
+	"info": {
+		"_postman_id": "80e57d06-c440-4a0a-9f58-9042fd6708a1",
+		"name": "scenario",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21664239"
+	},
+	"item": [
+		{
+			"name": "Authenticate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"admin@app.com\",\"password\":\"password\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/authenticate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"authenticate"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\n      \"id\": \"62c2de078af62438482f8cf\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/scenarios",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"scenarios"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get one",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\n      \"id\": \"62c2de078af62438482f8cf\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/scenarios/62c2de078af62438482f8cf2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"scenarios",
+						"62c2de078af62438482f8cf2"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/scenarios",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"scenarios"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\n        \"id\": \"62c3217b466d044ed40b03e9\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/scenarios/62c3217b466d044ed40b03e9",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"scenarios",
+						"62c3217b466d044ed40b03e9"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\n        \"id\": \"62c3217b466d044ed40b03e9\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/scenarios/62c3217b466d044ed40b03e9",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"scenarios",
+						"62c3217b466d044ed40b03e9"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
