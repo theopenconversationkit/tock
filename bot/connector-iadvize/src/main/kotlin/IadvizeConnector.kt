@@ -82,72 +82,54 @@ class IadvizeConnector internal constructor(
     }
 
     var handlerGetBots: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
-        try {
+        context.catchExternalExceptionToResponse500 {
             logger.info { "request : GET /external-bots\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(listOf(getBot(controller)))
-        } catch (e: Throwable) {
-            logger.error(e)
-            context.fail(500)
         }
     }
 
     var handlerGetBot: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
-        try {
+        context.catchExternalExceptionToResponse500 {
             val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
             logger.info { "request : GET /bots/$idOperator\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(getBotUpdate(idOperator, controller))
-        } catch (e: Throwable) {
-            logger.error(e)
-            context.fail(500)
         }
     }
 
     var handlerUpdateBot: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
-        try {
+        context.catchExternalExceptionToResponse500 {
             val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
             logger.info { "request : PUT /bots/$idOperator\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(getBotUpdate(idOperator, controller))
-        } catch (e: Throwable) {
-            logger.error(e)
-            context.fail(500)
         }
     }
 
     var handlerStrategies: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
-        try {
+        context.catchExternalExceptionToResponse500 {
             logger.info { "request : GET /availability-strategies\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(AvailabilityStrategies(strategy = customAvailability, availability = true))
-        } catch (e: Throwable) {
-            logger.error(e)
-            context.fail(500)
         }
     }
 
     var handlerFirstMessage: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
-        try {
+        context.catchExternalExceptionToResponse500 {
             val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
             logger.info { "request : GET /bots/$idOperator/conversation-first-messages\nbody : ${context.getBodyAsString()}" }
             context.response().endWithJson(RepliesResponse(IadvizeMessage(firstMessage)))
-        } catch (e: Throwable) {
-            logger.error(e)
-            context.fail(500)
         }
     }
 
     var handlerStartConversation: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
-        try {
+        context.catchExternalExceptionToResponse500 {
             logger.info { "request : POST /conversations\nbody : ${context.getBodyAsString()}" }
             val conversationRequest: ConversationsRequest = mapper.readValue(context.getBodyAsString(), ConversationsRequest::class.java)
             val callback = IadvizeConnectorCallback(applicationId, controller, context, conversationRequest)
             callback.sendResponse()
-        } catch (e: Throwable) {
-            logger.error(e)
-            context.fail(500)
         }
     }
 
     var handlerConversation: (RoutingContext, ConnectorController) -> Unit = { context, controller ->
-        try {
+        context.catchExternalExceptionToResponse500 {
             val idConversation: String = context.pathParam(QUERY_ID_CONVERSATION)
             if(!isEcho(idConversation)) {
                 logger.info { "request : POST /conversations/$idConversation/messages\nbody : ${context.getBodyAsString()}" }
@@ -160,9 +142,15 @@ class IadvizeConnector internal constructor(
                 logger.info { "request echo : POST /conversations/$idConversation/messages ${context.getBodyAsString()}"}
                 context.response().end()
             }
+        }
+    }
+
+    private fun RoutingContext.catchExternalExceptionToResponse500(fallibleSection: () -> Unit) {
+        try {
+            fallibleSection.invoke()
         } catch (e: Throwable) {
             logger.error(e)
-            context.fail(500)
+            this.fail(500)
         }
     }
 

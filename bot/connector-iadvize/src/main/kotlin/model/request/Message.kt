@@ -22,8 +22,6 @@ data class Message<T : Payload>(
     val idMessage: String,
     val author: Author,
     val payload: T,
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z[Etc/UTC]'")
-    //val createdAt: ZonedDateTime)
     val createdAt: String) {
 
     data class Author(val role: String)
