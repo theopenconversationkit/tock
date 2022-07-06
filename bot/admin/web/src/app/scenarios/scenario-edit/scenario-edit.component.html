@@ -56,13 +56,14 @@
           placeholder="Select category"
           autocomplete="off"
           [nbAutocomplete]="categoryAutocomplete"
+          (keyup)="updateCategoriesAutocompleteValues($event)"
         />
         <nb-autocomplete #categoryAutocomplete>
           <nb-option
-            *ngFor="let option of categoryAutocompleteValues | async"
+            *ngFor="let option of categoriesAutocompleteValues | async"
             [value]="option"
           >
-            {{ option }}
+            <span class="initial-capitalize">{{ option }}</span>
           </nb-option>
         </nb-autocomplete>
       </tock-form-control>

@@ -27,6 +27,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   scenarios: Scenario[] = [];
   filteredScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
+  categoriesCache: string[] = [];
   tagsCache: string[] = [];
 
   currentViewMode: ViewMode = ViewMode.LIST;
@@ -86,6 +87,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         this.loading.list = false;
         this.scenarios = [...data];
         this.filterScenarios(this.currentFilters);
+        this.updateCategoriesCache();
         this.updateTagsCache();
       });
   }
@@ -261,7 +263,13 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateTagsCache() {
+  updateCategoriesCache(): void {
+    this.categoriesCache = [
+      ...new Set([...this.categoriesCache, ...this.scenarios.map((v) => v.category)])
+    ].sort();
+  }
+
+  updateTagsCache(): void {
     this.tagsCache = [
       ...new Set(
         <string>[].concat.apply(

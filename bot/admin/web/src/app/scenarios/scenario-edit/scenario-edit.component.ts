@@ -32,6 +32,9 @@ export class ScenarioEditComponent implements OnChanges {
   scenarios?: Scenario[];
 
   @Input()
+  categoriesCache?: string[];
+
+  @Input()
   tagsCache?: string[];
 
   @Output()
@@ -73,8 +76,8 @@ export class ScenarioEditComponent implements OnChanges {
 
   constructor(private dialogService: DialogService) {}
 
-  categoryAutocompleteValues: Observable<string[]>;
-  tagsAutocompleteValues: Observable<unknown[]>;
+  categoriesAutocompleteValues: Observable<string[]>;
+  tagsAutocompleteValues: Observable<string[]>;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scenario?.currentValue) {
@@ -95,13 +98,20 @@ export class ScenarioEditComponent implements OnChanges {
       }
     }
 
-    this.categoryAutocompleteValues = of([...new Set(this.scenarios.map((v) => v.category))]);
-
-    this.tagsAutocompleteValues = of(this.tagsCache);
+    this.categoriesAutocompleteValues = of([...this.categoriesCache]);
+    this.tagsAutocompleteValues = of([...this.tagsCache]);
 
     setTimeout(() => {
       this.nameInput.nativeElement.focus();
     }, 100);
+  }
+
+  updateCategoriesAutocompleteValues(event: any) {
+    this.categoriesAutocompleteValues = of(
+      this.categoriesCache.filter((category) =>
+        category.toLowerCase().includes(event.target.value.toLowerCase())
+      )
+    );
   }
 
   updateTagsAutocompleteValues(event: any) {
