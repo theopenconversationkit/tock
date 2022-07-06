@@ -430,7 +430,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> O
     ) {
-        blockingJsonGet(path, setOf(role), basePath, handler= handler)
+        blockingJsonGet(path= path, roles= setOf(role), basePath= basePath, handler= handler)
     }
 
     fun <O> blockingJsonGet(
@@ -452,7 +452,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingPost(path, roles, logger, basePath, success= { it.successEmpty() }, handler)
+        blockingPost(path, roles, logger, basePath, success= successEmpty, handler)
     }
 
     protected fun blockingPost(
@@ -470,7 +470,7 @@ abstract class WebVerticle : AbstractVerticle() {
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
         basePath: String = rootPath,
-        success: (RoutingContext) -> Unit =  { it.success() },
+        success: (RoutingContext) -> Unit =  successTrue,
         handler: (RoutingContext) -> Unit
     ) {
         blocking(POST, path, roles, basePath) { context ->
@@ -632,7 +632,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path, roles, logger, basePath, { it.successEmpty() },  handler)
+        blockingDelete(path, roles, logger, basePath, successEmpty,  handler)
     }
 
     fun blockingDelete(
@@ -642,7 +642,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path= path, roles= setOf(role), logger= logger, basePath, handler= handler)
+        blockingDelete(path= path, roles= setOf(role), logger= logger, basePath= basePath, handler= handler)
     }
 
     fun blockingDelete(
@@ -650,7 +650,7 @@ abstract class WebVerticle : AbstractVerticle() {
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
         basePath: String = rootPath,
-        success: (RoutingContext) -> Unit =  { it.success() },
+        success: (RoutingContext) -> Unit =  successTrue,
         handler: (RoutingContext) -> Unit
     ) {
         blocking(DELETE, path, roles, basePath) { context ->
@@ -822,8 +822,16 @@ abstract class WebVerticle : AbstractVerticle() {
         )
     }
 
+    private val successEmpty: RoutingContext.() -> Unit = {
+        this.successEmpty()
+    }
+
     fun RoutingContext.successEmpty() {
         this.endJson(null)
+    }
+
+    private val successTrue: RoutingContext.() -> Unit = {
+        this.success()
     }
 
     fun RoutingContext.success() {

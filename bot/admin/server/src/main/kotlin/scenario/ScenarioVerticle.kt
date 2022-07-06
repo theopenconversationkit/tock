@@ -117,6 +117,9 @@ open class ScenarioVerticle() {
             return fallibleSection.invoke()
         } catch (tockException: TockException) {
             logger.error(fallibleSection)
+            //TockException use a non-null message,
+            // but extends RuntimeException which has nullable message
+            // tockException.message cannot be null
             throw InternalServerException(tockException.message!!)
         }
     }

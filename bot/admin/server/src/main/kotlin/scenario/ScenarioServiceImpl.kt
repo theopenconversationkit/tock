@@ -48,7 +48,7 @@ class ScenarioServiceImpl : ScenarioService {
     override fun update(scenarioId: String, scenario: Scenario): Scenario {
         scenario.mustExist(existe(scenarioId)).checkToUpdate(scenarioId)
         return scenarioDAO.update(scenario)
-                .checkScenarioFromDatabase()
+             .checkScenarioFromDatabase()
     }
 
     private fun existe(scenarioId: String): Boolean {
