@@ -87,8 +87,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         this.loading.list = false;
         this.scenarios = [...data];
         this.filterScenarios(this.currentFilters);
-        this.updateCategoriesCache();
-        this.updateTagsCache();
       });
   }
 
@@ -261,23 +259,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
       return scenario;
     });
-  }
-
-  updateCategoriesCache(): void {
-    this.categoriesCache = [
-      ...new Set([...this.categoriesCache, ...this.scenarios.map((v) => v.category)])
-    ].sort();
-  }
-
-  updateTagsCache(): void {
-    this.tagsCache = [
-      ...new Set(
-        <string>[].concat.apply(
-          [...this.tagsCache],
-          this.scenarios.map((s: Scenario) => s.tags)
-        )
-      )
-    ].sort();
   }
 
   paginationChange(pagination: Pagination): void {}

@@ -57,7 +57,6 @@
     <tock-scenario-filters
       class="d-block mb-2"
       [scenarios]="scenarios"
-      [tagsCache]="tagsCache"
       (onFilter)="filterScenarios($event)"
     ></tock-scenario-filters>
 
@@ -113,8 +112,6 @@
     [loading]="loading.edit"
     [scenario]="scenarioEdit"
     [scenarios]="scenarios"
-    [categoriesCache]="categoriesCache"
-    [tagsCache]="tagsCache"
     (onClose)="closeSidePanel()"
     (onSave)="saveScenario($event)"
   ></tock-scenario-edit>

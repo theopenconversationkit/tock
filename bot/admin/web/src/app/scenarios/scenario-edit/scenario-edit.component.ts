@@ -15,6 +15,7 @@ import { Observable, of } from 'rxjs';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
+import { ScenarioService } from '../services/scenario.service';
 
 @Component({
   selector: 'tock-scenario-edit',
@@ -30,12 +31,6 @@ export class ScenarioEditComponent implements OnChanges {
 
   @Input()
   scenarios?: Scenario[];
-
-  @Input()
-  categoriesCache?: string[];
-
-  @Input()
-  tagsCache?: string[];
 
   @Output()
   onClose = new EventEmitter<boolean>();
@@ -74,7 +69,7 @@ export class ScenarioEditComponent implements OnChanges {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
-  constructor(private dialogService: DialogService) {}
+  constructor(private dialogService: DialogService, private scenarioService: ScenarioService) {}
 
   categoriesAutocompleteValues: Observable<string[]>;
   tagsAutocompleteValues: Observable<string[]>;
@@ -98,8 +93,8 @@ export class ScenarioEditComponent implements OnChanges {
       }
     }
 
-    this.categoriesAutocompleteValues = of([...this.categoriesCache]);
-    this.tagsAutocompleteValues = of([...this.tagsCache]);
+    this.categoriesAutocompleteValues = of([...this.scenarioService.getState().categories]);
+    this.tagsAutocompleteValues = of([...this.scenarioService.getState().tags]);
 
     setTimeout(() => {
       this.nameInput.nativeElement.focus();
@@ -108,15 +103,19 @@ export class ScenarioEditComponent implements OnChanges {
 
   updateCategoriesAutocompleteValues(event: any) {
     this.categoriesAutocompleteValues = of(
-      this.categoriesCache.filter((category) =>
-        category.toLowerCase().includes(event.target.value.toLowerCase())
-      )
+      this.scenarioService
+        .getState()
+        .categories.filter((category) =>
+          category.toLowerCase().includes(event.target.value.toLowerCase())
+        )
     );
   }
 
   updateTagsAutocompleteValues(event: any) {
     this.tagsAutocompleteValues = of(
-      this.tagsCache.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase()))
+      this.scenarioService
+        .getState()
+        .tags.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase()))
     );
   }
 

@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { Filter, Scenario } from '../../models';
+import { ScenarioService } from '../../services/scenario.service';
 
 @Component({
   selector: 'tock-scenario-filters',
@@ -14,13 +15,11 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
   @Input()
   scenarios!: Scenario[];
 
-  @Input()
-  tagsCache: string[];
-
   @Output()
   onFilter = new EventEmitter<Filter>();
 
   subscription = new Subscription();
+  tagsCache: string[] = [];
 
   form = new FormGroup({
     search: new FormControl(''),
@@ -39,10 +38,20 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
     return this.search.value || this.tags.value?.length;
   }
 
+  constructor(private scenarioService: ScenarioService) {}
+
   ngOnInit(): void {
-    this.subscription = this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
-      this.onFilter.emit(this.form.value as Filter);
-    });
+    this.subscription.add(
+      this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
+        this.onFilter.emit(this.form.value as Filter);
+      })
+    );
+
+    this.subscription.add(
+      this.scenarioService.state$.subscribe((state) => {
+        this.tagsCache = state.tags;
+      })
+    );
   }
 
   ngOnDestroy(): void {
