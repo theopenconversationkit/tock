@@ -15,7 +15,8 @@ export class ScenarioListSimpleComponent {
 
   orderBy = 'name';
   orderByReverse = false;
-  setOrderBy(criteria) {
+
+  setOrderBy(criteria: string): void {
     if (criteria == this.orderBy) {
       this.orderByReverse = !this.orderByReverse;
     } else {

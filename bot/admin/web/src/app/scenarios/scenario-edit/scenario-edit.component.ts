@@ -4,25 +4,24 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
+import { Observable, of } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
-import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'tock-scenario-edit',
   templateUrl: './scenario-edit.component.html',
   styleUrls: ['./scenario-edit.component.scss']
 })
-export class ScenarioEditComponent implements OnInit, OnChanges {
+export class ScenarioEditComponent implements OnChanges {
   @Input()
   loading: boolean;
 
@@ -31,6 +30,9 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
 
   @Input()
   scenarios?: Scenario[];
+
+  @Input()
+  tagsCache?: string[];
 
   @Output()
   onClose = new EventEmitter<boolean>();
@@ -71,10 +73,8 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
 
   constructor(private dialogService: DialogService) {}
 
-  ngOnInit(): void {}
-
-  categoryAutocompleteValues;
-  tagsAutocompleteValues;
+  categoryAutocompleteValues: Observable<string[]>;
+  tagsAutocompleteValues: Observable<unknown[]>;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scenario?.currentValue) {
@@ -96,18 +96,18 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     }
 
     this.categoryAutocompleteValues = of([...new Set(this.scenarios.map((v) => v.category))]);
-    this.tagsAutocompleteValues = of([
-      ...new Set(
-        [].concat.apply(
-          [],
-          this.scenarios.map((v) => v.tags)
-        )
-      )
-    ]);
+
+    this.tagsAutocompleteValues = of(this.tagsCache);
 
     setTimeout(() => {
       this.nameInput.nativeElement.focus();
     }, 100);
+  }
+
+  updateTagsAutocompleteValues(event: any) {
+    this.tagsAutocompleteValues = of(
+      this.tagsCache.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase()))
+    );
   }
 
   tagAdd({ value, input }: NbTagInputAddEvent): void {

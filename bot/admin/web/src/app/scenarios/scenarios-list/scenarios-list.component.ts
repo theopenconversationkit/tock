@@ -12,6 +12,7 @@ import { StateService } from '../../core-nlp/state.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { ScenarioEditComponent } from '../scenario-edit/scenario-edit.component';
+import { Pagination } from '../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'scenarios-list',
@@ -22,11 +23,11 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   @ViewChild('scenarioEditComponent') scenarioEditComponent: ScenarioEditComponent;
 
   configurations: BotApplicationConfiguration[];
-
   destroy$ = new Subject();
   scenarios: Scenario[] = [];
   filteredScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
+  tagsCache: string[] = [];
 
   currentViewMode: ViewMode = ViewMode.LIST;
   viewMode: typeof ViewMode = ViewMode;
@@ -37,6 +38,13 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     delete: false,
     edit: false,
     list: false
+  };
+
+  pagination: Pagination = {
+    start: 0,
+    end: undefined,
+    size: 10,
+    total: undefined
   };
 
   private currentFilters: Filter = { search: '', tags: [] };
@@ -78,6 +86,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         this.loading.list = false;
         this.scenarios = [...data];
         this.filterScenarios(this.currentFilters);
+        this.updateTagsCache();
       });
   }
 
@@ -251,4 +260,17 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       return scenario;
     });
   }
+
+  updateTagsCache() {
+    this.tagsCache = [
+      ...new Set(
+        <string>[].concat.apply(
+          [...this.tagsCache],
+          this.scenarios.map((s: Scenario) => s.tags)
+        )
+      )
+    ].sort();
+  }
+
+  paginationChange(pagination: Pagination): void {}
 }

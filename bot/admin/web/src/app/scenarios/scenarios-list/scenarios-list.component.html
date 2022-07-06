@@ -57,8 +57,19 @@
     <tock-scenario-filters
       class="d-block mb-2"
       [scenarios]="scenarios"
+      [tagsCache]="tagsCache"
       (onFilter)="filterScenarios($event)"
     ></tock-scenario-filters>
+
+    <div
+      class="d-flex justify-content-end mb-2"
+      *ngIf="!loading.list && scenarios?.length"
+    >
+      <tock-pagination
+        [pagination]="pagination"
+        (onPaginationChange)="paginationChange($event)"
+      ></tock-pagination>
+    </div>
 
     <div
       class="loading"
@@ -102,6 +113,7 @@
     [loading]="loading.edit"
     [scenario]="scenarioEdit"
     [scenarios]="scenarios"
+    [tagsCache]="tagsCache"
     (onClose)="closeSidePanel()"
     (onSave)="saveScenario($event)"
   ></tock-scenario-edit>

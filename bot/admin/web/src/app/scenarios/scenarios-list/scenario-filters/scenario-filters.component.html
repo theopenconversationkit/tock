@@ -27,7 +27,7 @@
         formControlName="tags"
       >
         <nb-option
-          *ngFor="let tag of tagsAvailableValues"
+          *ngFor="let tag of tagsCache"
           value="{{ tag }}"
         >
           <span class="initial-capitalize">{{ tag }}</span>

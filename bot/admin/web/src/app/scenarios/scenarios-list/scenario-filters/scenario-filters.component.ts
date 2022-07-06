@@ -1,13 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -19,16 +10,17 @@ import { Filter, Scenario } from '../../models';
   templateUrl: './scenario-filters.component.html',
   styleUrls: ['./scenario-filters.component.scss']
 })
-export class ScenarioFiltersComponent implements OnInit, OnChanges, OnDestroy {
+export class ScenarioFiltersComponent implements OnInit, OnDestroy {
   @Input()
   scenarios!: Scenario[];
+
+  @Input()
+  tagsCache: string[];
 
   @Output()
   onFilter = new EventEmitter<Filter>();
 
   subscription = new Subscription();
-
-  tagsAvailableValues: string[] = [];
 
   form = new FormGroup({
     search: new FormControl(''),
@@ -51,21 +43,6 @@ export class ScenarioFiltersComponent implements OnInit, OnChanges, OnDestroy {
     this.subscription = this.form.valueChanges.pipe(debounceTime(500)).subscribe(() => {
       this.onFilter.emit(this.form.value as Filter);
     });
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    const scenarios = changes.scenarios.currentValue;
-
-    if (scenarios) {
-      this.tagsAvailableValues = [
-        ...new Set(
-          <string>[].concat.apply(
-            [],
-            scenarios.map((v: Scenario) => v.tags)
-          )
-        )
-      ];
-    }
   }
 
   ngOnDestroy(): void {
