@@ -159,7 +159,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  contextsPanelShowed: boolean = true;
+  contextsPanelDisplayed: boolean = true;
 
   getContextEntityColor(context): string {
     if (context.entityType)

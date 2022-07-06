@@ -53,41 +53,41 @@
   <div
     *ngIf="scenario.mode == SCENARIO_MODE_PRODUCTION"
     class="contexts-panel pointer"
-    [ngClass]="{ 'p-3': contextsPanelShowed, 'p-2': !contextsPanelShowed }"
+    [ngClass]="{ displayed: contextsPanelDisplayed }"
+    appMouseWheelListner
+    (onMouseWheel)="stopPropagation($event, false)"
   >
-    <div
-      class="d-flex justify-content-between"
-      (click)="contextsPanelShowed = !contextsPanelShowed"
-    >
-      <strong> Contexts </strong>
-      <nb-icon
-        *ngIf="contextsPanelShowed"
-        icon="chevron-up-outline"
-      ></nb-icon>
-      <nb-icon
-        *ngIf="!contextsPanelShowed"
-        icon="chevron-down-outline"
-      ></nb-icon>
+    <div class="panel-header-wrapper">
+      <div
+        class="panel-header d-flex justify-content-between"
+        (click)="contextsPanelDisplayed = !contextsPanelDisplayed"
+      >
+        <div class="font-weight-bold">Contexts</div>
+
+        <nb-icon
+          class="chevron-right"
+          icon="chevron-right-outline"
+        ></nb-icon>
+
+        <nb-icon
+          class="chevron-left"
+          icon="chevron-left-outline"
+        ></nb-icon>
+      </div>
     </div>
 
-    <div
-      class="mt-2 contexts-list"
-      *ngIf="contextsPanelShowed"
-    >
-      <nb-list
-        appMouseWheelListner
-        (onMouseWheel)="stopPropagation($event, false)"
-      >
+    <div class="contexts-list">
+      <nb-list>
         <nb-list-item
           *ngIf="!scenario.data.contexts.length"
-          class="px-0 py-2 d-block justify-content-between text-muted font-italic"
+          class="d-block justify-content-between text-muted font-italic"
         >
           No context defined yet
         </nb-list-item>
 
         <nb-list-item
           *ngFor="let context of scenario.data.contexts"
-          class="px-0 py-2 d-block"
+          class="d-block py-2"
         >
           <div class="d-flex justify-content-between">
             <div>
@@ -126,18 +126,19 @@
       </nb-list>
     </div>
 
-    <button
-      *ngIf="contextsPanelShowed"
-      nbButton
-      size="tiny"
-      fullWidth
-      status="info"
-      class="mt-3"
-      nbTooltip="Add a new context to the scenario"
-      (click)="addContext()"
-    >
-      Add context
-    </button>
+    <div class="addContextButton">
+      <button
+        *ngIf="contextsPanelDisplayed"
+        nbButton
+        size="tiny"
+        fullWidth
+        status="info"
+        nbTooltip="Add a new context to the scenario"
+        (click)="addContext()"
+      >
+        Add context
+      </button>
+    </div>
   </div>
   <div
     class="canvas cursor-move"
