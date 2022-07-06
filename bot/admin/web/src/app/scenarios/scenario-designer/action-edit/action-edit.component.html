@@ -112,7 +112,9 @@
                 class="p-2 d-flex justify-content-between font-weight-bold"
               >
                 <div class="d-flex flex-wrap justify-content-between w-100 mr-2">
-                  {{ inputContext }}
+                  <div class="ellipsis">
+                    {{ inputContext }}
+                  </div>
 
                   <ng-container *ngFor="let context of getContextByName(inputContext)">
                     <span
@@ -229,7 +231,9 @@
                 *ngFor="let outputContext of outputContextNames.value"
                 class="p-2 d-flex justify-content-between font-weight-bold"
               >
-                {{ outputContext }}
+                <div class="ellipsis">
+                  {{ outputContext }}
+                </div>
 
                 <ng-container *ngFor="let context of getContextByName(outputContext)">
                   <span
@@ -247,9 +251,9 @@
                 <nb-icon
                   icon="trash-2-outline"
                   status="danger"
-                  (click)="removeContext('output', outputContext)"
-                  class="pointer"
+                  class="pointer ml-2"
                   nbTooltip="Remove this context from outputs"
+                  (click)="removeContext('output', outputContext)"
                 ></nb-icon>
               </nb-list-item>
             </nb-list>
