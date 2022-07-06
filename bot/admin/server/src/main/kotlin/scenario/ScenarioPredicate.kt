@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package ai.tock.bot.admin.scenario
+
+import ai.tock.shared.vertx.ConflictException
+import ai.tock.shared.vertx.InternalServerException
+import ai.tock.shared.vertx.NotFoundException
+
+/**
+ * Throws RestException if scenario can't be create in database
+ */
+val checkToCreate: Scenario.() -> Scenario = {
+    if(id != null && id!!.isNotBlank()) {
+        throw ConflictException("scenario id must be null, but is $id")
+    } else {
+        this
+    }
+}
+
+/**
+ * Throws RestException if scenario can't be update in database
+ */
+val checkToUpdate: Scenario.(String) -> Scenario = { scenarioId ->
+    if(scenarioId != id) {
+        throw ConflictException("the scenario id of the uri must be the same as in the body but they are different, $scenarioId ≠ $id")
+    } else {
+        this
+    }
+}
+
+/**
+ * Check if the Scenario is not null, and return it
+ * else throws RestException scenario not found
+ */
+val checkIsNotNullForId: Scenario?.(String) -> Scenario = { id ->
+    if(this == null) {
+        throw NotFoundException("scenario $id not found")
+    } else {
+        this
+    }
+}
+
+/**
+ * Throws RestException if scenario don't existe in database
+ */
+val mustExist: Scenario.(Boolean) -> Scenario = { exist ->
+    if(!exist) {
+        throw NotFoundException("scenario id ${this.id} not found")
+    } else {
+        this
+    }
+}
+
+/*
+ * Throws RestException if id is null
+ */
+val checkScenarioFromDatabase: Scenario.() -> Scenario = {
+    if (this.id == null) {
+        throw InternalServerException("Scenario id from database cannot be null")
+    } else {
+        this
+    }
+}

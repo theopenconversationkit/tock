@@ -27,6 +27,7 @@ import ai.tock.bot.engine.user.TimeBoxedFlag
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserState
 import ai.tock.bot.engine.user.UserTimeline
+import ai.tock.bot.mongo.MongoBotConfiguration
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultZoneId
 import ai.tock.shared.security.TockObfuscatorService.obfuscate

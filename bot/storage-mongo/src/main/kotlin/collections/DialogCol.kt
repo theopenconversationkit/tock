@@ -114,7 +114,14 @@ internal data class DialogCol(
                 .toList()
                 .run {
                     val customMessagesMap = UserTimelineMongoDAO.loadConnectorMessages(
-                        mapNotNull { (it as? SendSentenceNotYetLoaded)?.let { ConnectorMessageColId(it.toActionId(), it.dialogId) } }
+                        mapNotNull {
+                            (it as? SendSentenceNotYetLoaded)?.let {
+                                ConnectorMessageColId(
+                                    it.toActionId(),
+                                    it.dialogId
+                                )
+                            }
+                        }
                     )
 
                     map { a ->

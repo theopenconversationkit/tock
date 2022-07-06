@@ -102,11 +102,13 @@ abstract class WebVerticle : AbstractVerticle() {
 
     val router: Router by lazy {
         Router.router(sharedVertx).apply {
+            errorHandler(400, defaultErrorHandler(400))
             errorHandler(404, defaultErrorHandler(404))
             errorHandler(405, defaultErrorHandler(405))
             errorHandler(406, defaultErrorHandler(406))
+            errorHandler(409, defaultErrorHandler(409))
             errorHandler(415, defaultErrorHandler(415))
-            errorHandler(400, defaultErrorHandler(400))
+            errorHandler(500, defaultErrorHandler(500))
         }
     }
 
@@ -120,7 +122,7 @@ abstract class WebVerticle : AbstractVerticle() {
 
     open val basePath: String = "/rest"
 
-    protected open val rootPath: String = ""
+    open val rootPath: String = ""
 
     open val authenticatePath: String get() = "$basePath/authenticate"
 
@@ -233,8 +235,9 @@ abstract class WebVerticle : AbstractVerticle() {
 
     fun addAuth(
         authProvider: TockAuthProvider = defaultAuthProvider(),
-        pathsToProtect: Set<String> = protectedPaths().map { "$it/*" }.toSet()
+        pathsToProtect: MutableSet<String> = protectedPaths().map { "$it/*" }.toMutableSet()
     ) {
+        pathsToProtect.addAll(protectedPaths())
         val https = !devEnvironment && booleanProperty("tock_https_env", true)
         val sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx))
             .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
@@ -388,9 +391,10 @@ abstract class WebVerticle : AbstractVerticle() {
         path: String,
         roles: Set<TockUserRole>?,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blocking(method, path, roles) { context ->
+        blocking(method, path, roles, basePath) { context ->
             var input: I? = null
             try {
                 input = context.readJson()
@@ -411,9 +415,10 @@ abstract class WebVerticle : AbstractVerticle() {
         method: HttpMethod,
         path: String,
         roles: Set<TockUserRole>?,
+        basePath: String = rootPath,
         handler: (RoutingContext) -> O
     ) {
-        blocking(method, path, roles) { context ->
+        blocking(method, path, roles, basePath) { context ->
             val result = handler.invoke(context)
             context.endJson(result)
         }
@@ -422,41 +427,56 @@ abstract class WebVerticle : AbstractVerticle() {
     fun <O> blockingJsonGet(
         path: String,
         role: TockUserRole,
+        basePath: String = rootPath,
         handler: (RoutingContext) -> O
     ) {
-        blockingJsonGet(path, setOf(role), handler)
+        blockingJsonGet(path, setOf(role), basePath, handler= handler)
     }
 
     fun <O> blockingJsonGet(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
+        basePath: String = rootPath,
         handler: (RoutingContext) -> O
     ) {
-        blocking(GET, path, roles) { context ->
+        blocking(GET, path, roles, basePath) { context ->
             val result = handler.invoke(context)
             context.endJson(result)
         }
+    }
+
+    protected fun blockingPostEmptyResponse(
+        path: String,
+        roles: Set<TockUserRole>? = defaultRoles(),
+        logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
+        handler: (RoutingContext) -> Unit
+    ) {
+        blockingPost(path, roles, logger, basePath, success= { it.successEmpty() }, handler)
     }
 
     protected fun blockingPost(
         path: String,
         role: TockUserRole,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingPost(path, setOf(role), logger, handler)
+        blockingPost(path= path, roles= setOf(role), logger= logger, basePath= basePath, handler= handler)
     }
 
     protected fun blockingPost(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
+        success: (RoutingContext) -> Unit =  { it.success() },
         handler: (RoutingContext) -> Unit
     ) {
-        blocking(POST, path, roles) { context ->
+        blocking(POST, path, roles, basePath) { context ->
             try {
                 handler.invoke(context)
-                context.success()
+                success.invoke(context)
                 logger.log(context, null)
             } catch (t: Throwable) {
                 if (t !is UnauthorizedException) {
@@ -482,18 +502,20 @@ abstract class WebVerticle : AbstractVerticle() {
         path: String,
         role: TockUserRole,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, F) -> O
     ) {
-        blockingUploadJsonPost(path, setOf(role), logger, handler)
+        blockingUploadJsonPost(path, setOf(role), logger, basePath, handler)
     }
 
     protected inline fun <reified F : Any, O> blockingUploadJsonPost(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, F) -> O
     ) {
-        blocking(POST, path, roles) { context ->
+        blocking(POST, path, roles, basePath) { context ->
             val upload = context.fileUploads().first()
             var f: F? = null
             try {
@@ -514,18 +536,20 @@ abstract class WebVerticle : AbstractVerticle() {
         path: String,
         role: TockUserRole,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, String) -> O
     ) {
-        blockingUploadPost(path, setOf(role), logger, handler)
+        blockingUploadPost(path, setOf(role), logger, basePath, handler)
     }
 
     protected inline fun <O> blockingUploadPost(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, String) -> O
     ) {
-        blocking(POST, path, roles) { context ->
+        blocking(POST, path, roles, basePath) { context ->
             val upload = context.fileUploads().first()
             try {
                 val f = readString(upload)
@@ -565,54 +589,71 @@ abstract class WebVerticle : AbstractVerticle() {
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson(POST, path, roles, logger, handler)
+        blockingWithBodyJson(POST, path, roles, logger, basePath, handler)
     }
 
     inline fun <reified I : Any, O> blockingJsonPost(
         path: String,
         role: TockUserRole,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson(POST, path, setOf(role), logger, handler)
+        blockingWithBodyJson(POST, path, setOf(role), logger, basePath, handler)
     }
 
-    protected inline fun <reified I : Any, O> blockingJsonPut(
+    inline fun <reified I : Any, O> blockingJsonPut(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson(PUT, path, roles, logger, handler)
+        blockingWithBodyJson(PUT, path, roles, logger, basePath, handler)
     }
 
     protected inline fun <reified I : Any, O> blockingJsonPut(
         path: String,
-        role: TockUserRole? = defaultRole(),
+        role: TockUserRole,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson(PUT, path, role?.let { setOf(role) }, logger, handler)
+        blockingWithBodyJson(PUT, path, setOf(role), logger, basePath, handler)
+    }
+
+    fun blockingDeleteEmptyResponse(
+        path: String,
+        roles: Set<TockUserRole>? = defaultRoles(),
+        logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
+        handler: (RoutingContext) -> Unit
+    ) {
+        blockingDelete(path, roles, logger, basePath, { it.successEmpty() },  handler)
     }
 
     fun blockingDelete(
         path: String,
         role: TockUserRole,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path, role?.let { setOf(role) }, logger, handler)
+        blockingDelete(path= path, roles= setOf(role), logger= logger, basePath, handler= handler)
     }
 
     fun blockingDelete(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
+        success: (RoutingContext) -> Unit =  { it.success() },
         handler: (RoutingContext) -> Unit
     ) {
-        blocking(DELETE, path, roles) { context ->
+        blocking(DELETE, path, roles, basePath) { context ->
             try {
                 handler.invoke(context)
                 logger.log(context, null)
@@ -622,7 +663,7 @@ abstract class WebVerticle : AbstractVerticle() {
                 }
                 throw t
             }
-            context.success()
+            success.invoke(context)
         }
     }
 
@@ -630,18 +671,20 @@ abstract class WebVerticle : AbstractVerticle() {
         path: String,
         role: TockUserRole,
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         handler: (RoutingContext) -> Boolean
     ) {
-        blockingJsonDelete(path, setOf(role), logger, handler)
+        blockingJsonDelete(path, setOf(role), logger, basePath, handler)
     }
 
     protected fun blockingJsonDelete(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
+        basePath: String = rootPath,
         handler: (RoutingContext) -> Boolean
     ) {
-        blockingWithoutBodyJson(DELETE, path, roles) { context ->
+        blockingWithoutBodyJson(DELETE, path, roles, basePath) { context ->
             try {
                 BooleanResponse(handler.invoke(context))
                 logger.log(context, null)
@@ -760,8 +803,9 @@ abstract class WebVerticle : AbstractVerticle() {
                     it.cause().apply {
                         when {
                             this is RestException -> {
-                                response().statusMessage = message
-                                fail(code)
+                                response().statusCode = statusCode
+                                response().statusMessage = statusMessage
+                                fail(statusCode, this)
                             }
                             this != null -> {
                                 logger.error(this)
@@ -776,6 +820,10 @@ abstract class WebVerticle : AbstractVerticle() {
                 }
             }
         )
+    }
+
+    fun RoutingContext.successEmpty() {
+        this.endJson(null)
     }
 
     fun RoutingContext.success() {
@@ -831,7 +879,13 @@ abstract class WebVerticle : AbstractVerticle() {
      * See https://vertx.io/docs/vertx-web/java/#_route_match_failures
      */
     open fun defaultErrorHandler(statusCode: Int): Handler<RoutingContext> = Handler<RoutingContext> { event ->
-        logger.info { "page not served ($statusCode): ${event.request().path()}" }
-        tockErrorHandler.handle(event)
+        val failure: Throwable? = event.failure()
+        if(failure?.message?.isNotBlank() ?: false) {
+            logger.info { failure!!.message }
+            event.response().end(failure!!.message)
+        } else {
+            logger.info { "Error $statusCode: ${event.request().path()}" }
+            tockErrorHandler.handle(event)
+        }
     }
 }

@@ -19,4 +19,5 @@ package ai.tock.shared.vertx
 /**
  * Http 401 exception.
  */
-class UnauthorizedException() : RestException("Not authorized", 401)
+class UnauthorizedException(message: String? = null, statusMessage: String = "Unauthorized") :
+    RestException(message, statusMessage, 401)

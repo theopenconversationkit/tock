@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package ai.tock.bot.admin.scenario
 
-package ai.tock.bot.admin
+interface ScenarioDAO {
 
-import ai.tock.bot.BotIoc
-import ai.tock.nlp.front.ioc.FrontIoc
-import ai.tock.shared.vertx.vertx
-import com.github.salomonbrys.kodein.Kodein
+    fun findAll(): Collection<Scenario>
 
+    fun findById(id: String): Scenario?
 
-fun main() {
-    startAdminServer()
-}
+    fun create(scenario: Scenario): Scenario
 
-fun startAdminServer(vararg modules: Kodein.Module) {
-    // setup ioc
-    FrontIoc.setup(BotIoc.coreModules + modules.toList() + botAdminServiceModule)
-    // deploy verticle
-    vertx.deployVerticle(BotAdminVerticle())
+    fun update(scenario: Scenario): Scenario
+
+    fun delete(id: String)
 }

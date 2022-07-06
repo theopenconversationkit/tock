@@ -16,19 +16,13 @@
 
 package ai.tock.bot.admin
 
-import ai.tock.bot.BotIoc
-import ai.tock.nlp.front.ioc.FrontIoc
-import ai.tock.shared.vertx.vertx
+import ai.tock.bot.admin.scenario.ScenarioService
+import ai.tock.bot.admin.scenario.ScenarioServiceImpl
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.singleton
 
 
-fun main() {
-    startAdminServer()
-}
-
-fun startAdminServer(vararg modules: Kodein.Module) {
-    // setup ioc
-    FrontIoc.setup(BotIoc.coreModules + modules.toList() + botAdminServiceModule)
-    // deploy verticle
-    vertx.deployVerticle(BotAdminVerticle())
+val botAdminServiceModule = Kodein.Module {
+    bind<ScenarioService>() with singleton { ScenarioServiceImpl() }
 }

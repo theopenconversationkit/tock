@@ -18,6 +18,7 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.scenario.ScenarioDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.test.TestPlanDAO
 import ai.tock.bot.admin.user.UserReportDAO
@@ -58,4 +59,5 @@ val botMongoModule = Kodein.Module {
     bind<FeatureCache>() with singleton { MongoFeatureCache() }
     bind<FeatureDAO>() with singleton { FeatureMongoDAO(instance(), MongoBotConfiguration.database.getCollection()) }
     bind<DialogFlowDAO>() with provider { DialogFlowMongoDAO }
+    bind<ScenarioDAO>() with provider { ScenarioMongoDAO }
 }
