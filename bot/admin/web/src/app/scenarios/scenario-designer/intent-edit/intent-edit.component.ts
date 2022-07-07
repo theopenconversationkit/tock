@@ -2,9 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  HostBinding,
   HostListener,
-  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -16,10 +14,10 @@ import {
 import { takeUntil } from 'rxjs/operators';
 import { NbContextMenuDirective, NbDialogRef, NbMenuService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { scenarioItem, TickContext } from '../../models';
-import { Token } from '../../../sentence-analysis/highlight/highlight.component';
-import { ParseQuery, Sentence } from '../../../model/nlp';
-import { filter, map } from 'rxjs/operators';
+import { scenarioItem, TempSentence, TickContext } from '../../models';
+import { SelectedResult, Token } from '../../../sentence-analysis/highlight/highlight.component';
+import { EntityDefinition, Intent, qualifiedName, Sentence } from '../../../model/nlp';
+import { filter } from 'rxjs/operators';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { getContrastYIQ } from '../../commons/utils';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -27,7 +25,7 @@ import { ContextCreateComponent } from '../context-create/context-create.compone
 import { Subject } from 'rxjs';
 
 export type SentenceExtended = Sentence & { _tokens?: Token[] };
-export type ParseQueryExtended = ParseQuery & { _tokens?: Token[] };
+export type TempSentenceExtended = TempSentence & { _tokens?: Token[] };
 
 @Component({
   selector: 'scenario-intent-edit',
@@ -43,6 +41,9 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   @ViewChildren(NbContextMenuDirective) tokensButtons: QueryList<NbContextMenuDirective>;
   @ViewChild('addSentenceInput') addSentenceInput: ElementRef;
 
+  qualifiedName = qualifiedName;
+  getContrastYIQ = getContrastYIQ;
+
   constructor(
     public dialogRef: NbDialogRef<IntentEditComponent>,
     protected state: StateService,
@@ -52,13 +53,12 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   _sentences = [];
 
-  getContrastYIQ = getContrastYIQ;
-
   ngOnInit(): void {
     if (this.item.intentDefinition?.sentences?.length) {
       this.item.intentDefinition?.sentences.forEach((sentence) => {
-        this.initTokens(sentence);
-        this.sentences.push(new FormControl(sentence));
+        const clone = JSON.parse(JSON.stringify(sentence));
+        this.initTokens(clone);
+        this.sentences.push(new FormControl(clone));
       });
     }
     if (this.item.intentDefinition?._sentences?.length) {
@@ -104,7 +104,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     if (eventTarget.value.trim()) {
       const app = this.state.currentApplication;
       const language = this.state.currentLocale;
-      const MySentence = new ParseQuery(
+      const MySentence = new TempSentence(
         app.namespace,
         app.name,
         language,
@@ -133,40 +133,6 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   cancel(): void {
     this.dialogRef.close();
-  }
-
-  private initTokens(sentence: SentenceExtended | ParseQueryExtended) {
-    let i = 0;
-    let entityIndex = 0;
-    let text;
-    let entities;
-
-    if (sentence instanceof Sentence) {
-      text = sentence.getText();
-      entities = sentence.getEntities();
-    } else {
-      text = sentence.query;
-      entities = [];
-    }
-
-    const result: Token[] = [];
-    while (i <= text.length) {
-      if (entities.length > entityIndex) {
-        const e = entities[entityIndex];
-        if (e.start !== i) {
-          result.push(new Token(i, text.substring(i, e.start), result.length));
-        }
-        result.push(new Token(e.start, text.substring(e.start, e.end), result.length, e));
-        i = e.end;
-        entityIndex++;
-      } else {
-        if (i != text.length) {
-          result.push(new Token(i, text.substring(i, text.length), result.length));
-        }
-        break;
-      }
-    }
-    sentence._tokens = result;
   }
 
   contextItems = [
@@ -294,6 +260,153 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     if (ctx)
       return `This entity is associated with the context ${ctx.name} (click on attach to dissociate)`;
     return 'No context associated';
+  }
+
+  private initTokens(sentence: SentenceExtended | TempSentenceExtended) {
+    let i = 0;
+    let entityIndex = 0;
+    let text;
+    let entities;
+    if (sentence instanceof Sentence) {
+      text = sentence.getText();
+      entities = sentence.getEntities();
+    } else {
+      text = sentence.query;
+      entities = sentence.classification.entities;
+    }
+
+    const result: Token[] = [];
+    while (i <= text.length) {
+      if (entities.length > entityIndex) {
+        const e = entities[entityIndex];
+        if (e.start !== i) {
+          result.push(new Token(i, text.substring(i, e.start), result.length));
+        }
+        result.push(new Token(e.start, text.substring(e.start, e.end), result.length, e));
+        i = e.end;
+        entityIndex++;
+      } else {
+        if (i != text.length) {
+          result.push(new Token(i, text.substring(i, text.length), result.length));
+        }
+        break;
+      }
+    }
+    sentence._tokens = result;
+  }
+
+  txtSelectionSentence: TempSentenceExtended;
+  txtSelectionStart: number;
+  txtSelectionEnd: number;
+
+  textSelected(sentence: TempSentenceExtended): void {
+    const windowsSelection = window.getSelection();
+    if (windowsSelection.rangeCount > 0) {
+      const selection = windowsSelection.getRangeAt(0);
+      let start = selection.startOffset;
+      let end = selection.endOffset;
+
+      if (selection.startContainer !== selection.endContainer) {
+        if (!selection.startContainer.childNodes[0]) {
+          return;
+        }
+        end = selection.startContainer.childNodes[0].textContent.length - start;
+      } else {
+        if (start > end) {
+          const tmp = start;
+          start = end;
+          end = tmp;
+        }
+      }
+      if (start === end) {
+        return;
+      }
+
+      const span = selection.startContainer.parentElement;
+      this.txtSelectionStart = -1;
+      this.txtSelectionEnd = -1;
+      this.findSelected(span.parentNode, new SelectedResult(span, start, end));
+
+      // this.txtSelectionStart = start;
+      // this.txtSelectionEnd = end;
+      this.txtSelectionSentence = sentence;
+    }
+  }
+
+  private findSelected(node, result) {
+    if (this.txtSelectionStart == -1) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const content = node.textContent;
+        result.alreadyCount += content.length;
+      } else {
+        for (const child of node.childNodes) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node === result.selectedNode) {
+              this.txtSelectionStart = result.alreadyCount + result.startOffset;
+              this.txtSelectionEnd = this.txtSelectionStart + result.endOffset - result.startOffset;
+            } else {
+              this.findSelected(child, result);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  collectAllEntities() {
+    let intents = new Set();
+    this._sentences.forEach((_sentence) => {
+      if (_sentence.classification) {
+        const intent = this.state.currentApplication.intentById(_sentence.classification.intentId);
+        intents.add(intent);
+      }
+    });
+
+    let entities = new Set();
+    intents.forEach((intent: Intent) => {
+      intent.entities.forEach((entity) => {
+        entities.add(entity);
+      });
+    });
+
+    return [...entities];
+  }
+
+  addEntityToSentence(entity: EntityDefinition) {
+    if (this.txtSelectionStart < this.txtSelectionEnd) {
+      // this.edited = false;
+      const text = this.txtSelectionSentence.query;
+      if (this.txtSelectionStart >= 0 && this.txtSelectionEnd <= text.length) {
+        //trim spaces
+        for (let i = this.txtSelectionEnd - 1; i >= this.txtSelectionStart; i--) {
+          if (text[i].trim().length === 0) {
+            this.txtSelectionEnd--;
+          } else {
+            break;
+          }
+        }
+        for (let i = this.txtSelectionStart; i < this.txtSelectionEnd; i++) {
+          if (text[i].trim().length === 0) {
+            this.txtSelectionStart++;
+          } else {
+            break;
+          }
+        }
+        if (this.txtSelectionStart < this.txtSelectionEnd) {
+          this.txtSelectionSentence.classification.entities.push({
+            type: entity.entityTypeName,
+            role: entity.role,
+            start: this.txtSelectionStart,
+            end: this.txtSelectionEnd,
+            entityColor: entity.entityColor
+          });
+          this.txtSelectionSentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
+        }
+        this.initTokens(this.txtSelectionSentence);
+      }
+
+      this.txtSelectionSentence = undefined;
+    }
   }
 
   ngOnDestroy(): void {

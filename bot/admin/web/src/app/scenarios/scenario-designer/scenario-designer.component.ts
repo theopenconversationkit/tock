@@ -41,7 +41,7 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { entityColor, qualifiedRole } from '../../model/nlp';
+import { entityColor, qualifiedName, qualifiedRole } from '../../model/nlp';
 import { getContrastYIQ } from '../commons/utils';
 import { ContextCreateComponent } from './context-create/context-create.component';
 
@@ -66,6 +66,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
   readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
   readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
+
+  qualifiedName = qualifiedName;
 
   constructor(
     private scenarioService: ScenarioService,

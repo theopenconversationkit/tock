@@ -109,10 +109,10 @@
             <nb-list class="contexts-list">
               <nb-list-item
                 *ngFor="let inputContext of inputContextNames.value"
-                class="p-2 d-flex justify-content-between font-weight-bold"
+                class="p-2 d-flex justify-content-between"
               >
                 <div class="d-flex flex-wrap justify-content-between w-100 mr-2">
-                  <div class="ellipsis">
+                  <div class="ellipsis font-weight-bold">
                     {{ inputContext }}
                   </div>
 
@@ -124,8 +124,7 @@
                       [style.background]="getContextEntityColor(context)"
                       [style.color]="getContextEntityContrast(context)"
                     >
-                      {{ context.entityType }}
-                      {{ context.entityRole }}
+                      {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
                     </span>
                   </ng-container>
                 </div>
@@ -134,7 +133,7 @@
                   icon="trash-2-outline"
                   status="danger"
                   (click)="removeContext('input', inputContext)"
-                  class="pointer"
+                  class="min-width-1em ml-2 pointer"
                   nbTooltip="Remove this context from inputs"
                 ></nb-icon>
               </nb-list-item>
@@ -229,9 +228,9 @@
             <nb-list class="contexts-list">
               <nb-list-item
                 *ngFor="let outputContext of outputContextNames.value"
-                class="p-2 d-flex justify-content-between font-weight-bold"
+                class="p-2 d-flex justify-content-between"
               >
-                <div class="ellipsis">
+                <div class="ellipsis font-weight-bold">
                   {{ outputContext }}
                 </div>
 
@@ -243,15 +242,14 @@
                     [style.background]="getContextEntityColor(context)"
                     [style.color]="getContextEntityContrast(context)"
                   >
-                    {{ context.entityType }}
-                    {{ context.entityRole }}
+                    {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
                   </span>
                 </ng-container>
 
                 <nb-icon
                   icon="trash-2-outline"
                   status="danger"
-                  class="pointer ml-2"
+                  class="min-width-1em ml-2 pointer"
                   nbTooltip="Remove this context from outputs"
                   (click)="removeContext('output', outputContext)"
                 ></nb-icon>

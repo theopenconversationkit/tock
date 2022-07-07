@@ -13,7 +13,7 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { scenarioItem, TickContext } from '../../models';
 import { getContrastYIQ, normalizedSnakeCase } from '../../commons/utils';
 import { Observable, of } from 'rxjs';
-import { entityColor, qualifiedRole } from '../../../model/nlp';
+import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 
 const ENTITY_NAME_MINLENGTH = 5;
 
@@ -29,6 +29,9 @@ export class ActionEditComponent implements OnInit {
   @Output() deleteDefinition = new EventEmitter();
   @ViewChild('inputContextsInput') inputContextsInput: ElementRef;
   @ViewChild('outputContextsInput') outputContextsInput: ElementRef;
+
+  qualifiedName = qualifiedName;
+
   constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {}
 
   ngOnInit(): void {

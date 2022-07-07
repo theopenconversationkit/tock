@@ -46,7 +46,71 @@
           {
             "id": 0,
             "from": "client",
-            "text": "fsdf sdf "
+            "text": "A new sentence to test Subentities",
+            "intentDefinition": {
+              "label": "Sentence with entities",
+              "name": "sentencewithentities",
+              "category": null,
+              "description": null,
+              "intentId": "62bb118e49e78735af27aa98",
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "A sentence where i want to define an entity",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "A very very very very very very very very very very very very very very very very very very very very very very very very very very very long sentence that spans over at least two or more lines where i want to define an entity",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Sentence to create",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:sentencetype",
+                        "role": "sentencerole",
+                        "start": 0,
+                        "end": 8,
+                        "entityColor": "#ccd3b5"
+                      },
+                      {
+                        "type": "app:parententity",
+                        "role": "parententity",
+                        "start": 9,
+                        "end": 11,
+                        "entityColor": "#d77d55"
+                      },
+                      {
+                        "type": "app:sentencetype",
+                        "role": "sentencerole",
+                        "start": 12,
+                        "end": 18,
+                        "entityColor": "#ccd3b5"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 1,
@@ -80,7 +144,8 @@
             "from": "client",
             "text": "Test sentence"
           }
-        ]
+        ],
+        "contexts": []
       },
       "mode": "production"
     },
@@ -118,7 +183,11 @@
               "name": "sdfdfsdfsdf",
               "description": "sdf sdf sdf sdf ",
               "handler": " sdf sdf sdf ",
-              "answer": " sdf sdf sdf sdf"
+              "answer": " sdf sdf sdf sdf",
+              "inputContextNames": [
+                "AMOUNT"
+              ],
+              "outputContextNames": []
             }
           },
           {
@@ -338,7 +407,10 @@
                   "language": "fr",
                   "query": "Sentence to create",
                   "checkExistingQuery": false,
-                  "state": ""
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
                 },
                 {
                   "namespace": "app",
@@ -346,7 +418,10 @@
                   "language": "fr",
                   "query": "An other sentence to create",
                   "checkExistingQuery": false,
-                  "state": ""
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
                 }
               ]
             }

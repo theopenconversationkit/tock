@@ -63,8 +63,9 @@
         <li
           *ngFor="let sentence of sentences.value"
           class="d-flex justify-content-between align-items-start"
+          (mouseup)="textSelected(sentence)"
         >
-          <div class="text-muted">
+          <div>
             <span
               *ngFor="let token of sentence._tokens"
               [ngClass]="{ token: token.entity, 'cursor-default': !token.entity }"
@@ -77,16 +78,30 @@
               (click)="displayContextsMenu($event, token)"
               >{{ token.text }}</span
             >
+
+            <div
+              *ngIf="txtSelectionSentence === sentence"
+              class="my-3"
+            >
+              <span
+                *ngFor="let entity of collectAllEntities()"
+                class="entity mt-2 mr-2 pointer"
+                [style.background]="entity.entityColor"
+                [style.color]="getContrastYIQ(entity.entityColor)"
+                (click)="addEntityToSentence(entity)"
+              >
+                {{ qualifiedName(state.user, entity.entityTypeName, entity.role) }}
+              </span>
+            </div>
           </div>
-          <div>
-            <nb-icon
-              icon="trash-2-outline"
-              status="danger"
-              (click)="removeSentence(sentence)"
-              class="pointer"
-              nbTooltip="Remove this formulation"
-            ></nb-icon>
-          </div>
+
+          <nb-icon
+            icon="trash-2-outline"
+            status="danger"
+            (click)="removeSentence(sentence)"
+            class="pointer ml-2 min-width-1em"
+            nbTooltip="Remove this formulation"
+          ></nb-icon>
         </li>
       </ul>
 
@@ -100,6 +115,7 @@
               *ngFor="let token of sentence._tokens"
               [ngClass]="{ token: token.entity, 'cursor-default': !token.entity }"
               [nbTooltip]="getTokenTooltip(token)"
+              [nbTooltipDisabled]="!token.entity"
               [style.background]="token.color()"
               [style.color]="getContrastYIQ(token.color())"
               ><span

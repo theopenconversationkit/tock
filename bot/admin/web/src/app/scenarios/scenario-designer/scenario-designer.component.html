@@ -107,8 +107,7 @@
                   [style.background]="getContextEntityColor(context)"
                   [style.color]="getContextEntityContrast(context)"
                 >
-                  {{ context.entityType }}
-                  {{ context.entityRole }}
+                  {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
                 </span>
               </div>
             </div>

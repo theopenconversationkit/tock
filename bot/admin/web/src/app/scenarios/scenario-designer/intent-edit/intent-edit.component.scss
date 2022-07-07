@@ -1,5 +1,6 @@
 #modal-wrapper {
-  min-width: 50vh;
+  min-width: 60vw;
+  max-width: 90vw;
 
   .questions {
     overflow-y: auto;
@@ -20,5 +21,10 @@
   .token {
     border-radius: 0.45rem;
     padding: 0rem 0.3rem 0.1rem 0.3rem;
+  }
+
+  .entity {
+    border-radius: 2em;
+    padding: 0.5rem 1rem;
   }
 }

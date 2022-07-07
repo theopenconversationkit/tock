@@ -36,7 +36,7 @@ export interface intentDefinition {
   category?: string;
   description?: string;
   intentId?: string;
-  sentences?: ParseQuery[];
+  sentences?: TempSentence[];
   _sentences?: Sentence[];
 }
 export interface TickActionDefinition {
@@ -68,4 +68,32 @@ export interface scenarioItem {
 export interface Filter {
   search: string;
   tags: Array<string>;
+}
+
+export interface TempClassification {
+  entities: TempEntity[];
+}
+
+export interface TempEntity {
+  type: string;
+  role: string;
+  start: number;
+  end: number;
+  entityColor: string;
+}
+
+export class TempSentence extends ParseQuery {
+  public classification: TempClassification;
+
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public query: string,
+    public checkExistingQuery: boolean,
+    public state?: string
+  ) {
+    super(namespace, applicationName, language, query, checkExistingQuery);
+    this.classification = { entities: [] };
+  }
 }
