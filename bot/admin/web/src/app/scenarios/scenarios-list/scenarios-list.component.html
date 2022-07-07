@@ -61,6 +61,16 @@
     ></tock-scenario-filters>
 
     <div
+      class="d-flex justify-content-end mb-2"
+      *ngIf="!loading.list && scenarios?.length"
+    >
+      <tock-pagination
+        [pagination]="pagination"
+        (onPaginationChange)="paginationChange($event)"
+      ></tock-pagination>
+    </div>
+
+    <div
       class="loading"
       [nbSpinner]="loading.list"
     >

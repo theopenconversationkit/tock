@@ -4,25 +4,25 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
   ViewChild
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
+import { Observable, of } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Scenario } from '../models';
-import { Observable, of } from 'rxjs';
+import { ScenarioService } from '../services/scenario.service';
 
 @Component({
   selector: 'tock-scenario-edit',
   templateUrl: './scenario-edit.component.html',
   styleUrls: ['./scenario-edit.component.scss']
 })
-export class ScenarioEditComponent implements OnInit, OnChanges {
+export class ScenarioEditComponent implements OnChanges {
   @Input()
   loading: boolean;
 
@@ -69,12 +69,10 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
-  constructor(private dialogService: DialogService) {}
+  constructor(private dialogService: DialogService, private scenarioService: ScenarioService) {}
 
-  ngOnInit(): void {}
-
-  categoryAutocompleteValues;
-  tagsAutocompleteValues;
+  categoriesAutocompleteValues: Observable<string[]>;
+  tagsAutocompleteValues: Observable<string[]>;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.scenario?.currentValue) {
@@ -95,19 +93,30 @@ export class ScenarioEditComponent implements OnInit, OnChanges {
       }
     }
 
-    this.categoryAutocompleteValues = of([...new Set(this.scenarios.map((v) => v.category))]);
-    this.tagsAutocompleteValues = of([
-      ...new Set(
-        [].concat.apply(
-          [],
-          this.scenarios.map((v) => v.tags)
-        )
-      )
-    ]);
+    this.categoriesAutocompleteValues = of([...this.scenarioService.getState().categories]);
+    this.tagsAutocompleteValues = of([...this.scenarioService.getState().tags]);
 
     setTimeout(() => {
       this.nameInput.nativeElement.focus();
     }, 100);
+  }
+
+  updateCategoriesAutocompleteValues(event: any) {
+    this.categoriesAutocompleteValues = of(
+      this.scenarioService
+        .getState()
+        .categories.filter((category) =>
+          category.toLowerCase().includes(event.target.value.toLowerCase())
+        )
+    );
+  }
+
+  updateTagsAutocompleteValues(event: any) {
+    this.tagsAutocompleteValues = of(
+      this.scenarioService
+        .getState()
+        .tags.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase()))
+    );
   }
 
   tagAdd({ value, input }: NbTagInputAddEvent): void {

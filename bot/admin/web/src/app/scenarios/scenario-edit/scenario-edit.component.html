@@ -56,13 +56,14 @@
           placeholder="Select category"
           autocomplete="off"
           [nbAutocomplete]="categoryAutocomplete"
+          (keyup)="updateCategoriesAutocompleteValues($event)"
         />
         <nb-autocomplete #categoryAutocomplete>
           <nb-option
-            *ngFor="let option of categoryAutocompleteValues | async"
+            *ngFor="let option of categoriesAutocompleteValues | async"
             [value]="option"
           >
-            {{ option }}
+            <span class="initial-capitalize">{{ option }}</span>
           </nb-option>
         </nb-autocomplete>
       </tock-form-control>
@@ -104,17 +105,18 @@
             id="tags"
             type="text"
             placeholder="Enter tags"
-            (tagAdd)="tagAdd($event)"
-            (keydown.enter)="eventPreventDefault($event)"
             autocomplete="off"
             [nbAutocomplete]="tagsAutocomplete"
+            (tagAdd)="tagAdd($event)"
+            (keydown.enter)="eventPreventDefault($event)"
+            (keyup)="updateTagsAutocompleteValues($event)"
           />
           <nb-autocomplete #tagsAutocomplete>
             <nb-option
               *ngFor="let option of tagsAutocompleteValues | async"
               [value]="option"
             >
-              {{ option }}
+              <span class="initial-capitalize">{{ option }}</span>
             </nb-option>
           </nb-autocomplete>
         </nb-tag-list>

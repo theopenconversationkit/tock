@@ -26,12 +26,16 @@ interface ScenarioState {
   loaded: boolean;
   loading: boolean;
   scenarios: Scenario[];
+  tags: string[];
+  categories: string[];
 }
 
 const scenariosInitialState: ScenarioState = {
   loaded: false,
   loading: false,
-  scenarios: []
+  scenarios: [],
+  tags: [],
+  categories: []
 };
 
 @Injectable()
@@ -77,7 +81,9 @@ export class ScenarioService {
       ...state,
       loading: false,
       loaded: true,
-      scenarios: scenariosCollection
+      scenarios: scenariosCollection,
+      categories: this.updateCategoriesCache(scenariosCollection),
+      tags: this.updateTagsCache(scenariosCollection)
     };
     this.setState(state);
   }
@@ -116,6 +122,8 @@ export class ScenarioService {
       tap((newScenario) => {
         let state = this.getState();
         state.scenarios = [...state.scenarios, newScenario];
+        state.categories = this.updateCategoriesCache(state.scenarios);
+        state.tags = this.updateTagsCache(state.scenarios);
         this.setState(state);
       })
     );
@@ -129,6 +137,8 @@ export class ScenarioService {
         if (scenario) {
           const index = state.scenarios.indexOf(scenario);
           state.scenarios[index] = modifiedScenario;
+          state.categories = this.updateCategoriesCache(state.scenarios);
+          state.tags = this.updateTagsCache(state.scenarios);
           this.setState(state);
         }
       })
@@ -140,8 +150,25 @@ export class ScenarioService {
       tap(() => {
         let state = this.getState();
         state.scenarios = state.scenarios.filter((s) => s.id !== id);
+        state.categories = this.updateCategoriesCache(state.scenarios);
+        state.tags = this.updateTagsCache(state.scenarios);
         this.setState(state);
       })
     );
+  }
+
+  updateCategoriesCache(scenarios: Scenario[]): string[] {
+    return [...new Set([...scenarios.map((v) => v.category)])].sort();
+  }
+
+  updateTagsCache(scenarios: Scenario[]): string[] {
+    return [
+      ...new Set(
+        <string>[].concat.apply(
+          [],
+          scenarios.map((s: Scenario) => s.tags)
+        )
+      )
+    ].sort();
   }
 }
