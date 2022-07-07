@@ -20,14 +20,11 @@ import ai.tock.bot.connector.ConnectorCallbackBase
 import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
-import ai.tock.bot.connector.iadvize.model.request.UnsupportRequest
+import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest
 import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
-import ai.tock.bot.connector.iadvize.model.response.conversation.IadvizeResponse
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
-import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
@@ -40,7 +37,6 @@ import java.time.LocalDateTime
 import java.util.concurrent.CopyOnWriteArrayList
 
 class IadvizeConnectorCallback(override val  applicationId: String,
-                               val controller: ConnectorController,
                                val context: RoutingContext,
                                val request: IadvizeRequest,
                                val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()) :
@@ -81,8 +77,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
                 context.response().endWithJson(buildResponse())
             }
         } catch (t: Throwable) {
-            logger.error(t)
-            context.fail(t)
+            sendTechnicalError(t)
         }
     }
 
@@ -101,7 +96,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
                return response
            }
 
-           is UnsupportRequest -> {
+           is UnsupportedRequest -> {
                logger.error("Request type ${request.type} is not supported by connector")
                //TODO: à replacer par un transfère vers un humain lorsque ce type de message sera pris en charge
                response.replies.add(IadvizeMessage(TextPayload("Désolé, je ne sais pas répondre à cette demande")))

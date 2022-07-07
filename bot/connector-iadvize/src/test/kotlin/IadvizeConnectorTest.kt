@@ -191,15 +191,6 @@ class IadvizeConnectorTest {
     }
 
     @Test
-    fun handlerStartConversation_failInternal_TockBot() {
-        every { context.getBodyAsString() } throws RuntimeException("runtime exception for test")
-
-        connector.handlerStartConversation(context, controller)
-
-        verify { context.fail(500) }
-    }
-
-    @Test
     fun handlerConversation_shouldHandleWell_TockBot() {
         val request: String = Resources.toString(resource("/request_message_text.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
@@ -218,15 +209,6 @@ class IadvizeConnectorTest {
         val messageResponse = slot<String>()
         verify { response.end(capture(messageResponse)) }
         assertEquals(expectedResponse, messageResponse.captured)
-    }
-
-    @Test
-    fun handlerConversation_failInternal_TockBot() {
-        every { context.getBodyAsString() } throws RuntimeException("runtime exception for test")
-
-        connector.handlerConversation(context, controller)
-
-        verify { context.fail(500) }
     }
 
     @Test
