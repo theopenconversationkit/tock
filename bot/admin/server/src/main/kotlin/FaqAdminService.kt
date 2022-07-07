@@ -41,12 +41,14 @@ import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinitionDetailed
+import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.FaqSettings
 import ai.tock.nlp.front.shared.config.FaqSettingsQuery
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.I18nDAO
@@ -76,6 +78,10 @@ object FaqAdminService {
 
     private const val FAQ_CATEGORY = "faq"
     private const val UNKNOWN_ANSWER = "UNKNOWN ANSWER"
+    internal const val MISSING_UTTERANCE = "MISSING_UTTERANCE"
+
+    private const val WARN_CANNOT_FIND_LABEL = "Could not found an associated i18nLabel"
+    private const val WARN_CANNOT_FIND_UTTERANCE = "Could not found an associated ClassifiedSentence"
 
     /**
      * Save the Frequently asked question into database
@@ -480,8 +486,7 @@ object FaqAdminService {
      * Search and find FAQ and their details in database and convert them to FaqDefinitionSearchResult
      */
     fun searchFAQ(query: FaqSearchRequest, applicationDefinition: ApplicationDefinition): FaqDefinitionSearchResult {
-        val faqResults = LinkedHashSet<FaqDefinitionRequest>()
-        //find predicates from i18n answers
+        //find predicates from i18n answers if search not empty
         val i18nLabels = query.search?.let { findPredicatesFrom18nLabels(applicationDefinition, query.search) }
         val i18nIds = i18nLabels?.map { it._id }?.toList()
 
@@ -493,37 +498,106 @@ object FaqAdminService {
             i18nIds
         )
 
-        // find details from the previous query with i18n filters
-        if (i18nLabels != null && i18nLabels.isNotEmpty()) {
-            val fromTockBotDb = faqDetailsWithCount.first
+        //search from tock bot Db with labels if some are found
+        val fromTockBotDb = i18nLabels?.let {
+            searchFromTockBotDbWithFoundTextLabels(faqDetailsWithCount.first, applicationDefinition, it)
+        }
+        // if no data search from tock front Db
+        val fromTockFrontDb = if (fromTockBotDb.isNullOrEmpty()) {
+            searchLabelsFromTockFrontDb(faqDetailsWithCount.first, applicationDefinition)
+        } else emptySet()
+
+        val faqResults = if (fromTockBotDb?.isNotEmpty() == true) fromTockBotDb else fromTockFrontDb
+
+        logger.debug { "faqResults $faqResults" }
+        return toFaqDefinitionSearchResult(query.start, faqResults, faqDetailsWithCount.second)
+    }
+
+    /**
+     * Search from the faqQuery the i18Labels associated with the Faq
+     * The search begin from Tock bot database because i18nLabels collection is located inside the database
+     * and there is a search on the text on the label
+     * @param faqQuery: the faq query result from the database query
+     * @param applicationDefinition: application definition
+     * @param i18nLabels: list of found labels to check from search text
+     */
+    private fun searchFromTockBotDbWithFoundTextLabels(
+        faqQuery: List<FaqQueryResult>,
+        applicationDefinition: ApplicationDefinition,
+        i18nLabels: List<I18nLabel>
+    ): Set<FaqDefinitionRequest> {
+        val faqDetailedResults = LinkedHashSet<FaqDefinitionRequest>()
+        if (i18nLabels.isNotEmpty()) {
+            val fromTockBotDb = faqQuery
                 .map { faqQueryResult ->
                     faqQueryResult.toFaqDefinitionDetailed(
                         faqQueryResult,
                         i18nLabels.firstOrNull { it._id == faqQueryResult.i18nId }
-                            ?: unknownI18n(applicationDefinition).also { logger.warn { "Could not found label for \"${it.i18n}\"" } }
+                            ?: unknownI18n(applicationDefinition).also { logger.warn { WARN_CANNOT_FIND_LABEL } }
                     )
                 }.toSet()
 
-            faqResults.addAll(addToFaqRequestSet(fromTockBotDb, applicationDefinition))
-        } else {
-            // find details from the i18n found in the faqDefinitionDao
-            val fromTockFrontDbOnly =
-                faqDetailsWithCount.first.map {
-                    i18nDao.getLabelById(it.i18nId).let { i18nLabel ->
+            faqDetailedResults.addAll(
+                convertFaqDefinitionDetailedToFaqDefinitionRequest(
+                    fromTockBotDb,
+                    applicationDefinition
+                )
+            )
+        }
+        return faqDetailedResults
+    }
+
+    /**
+     * Search from the faqQuery the i18Labels associated with the Faq
+     * The search begin from Tock front database to find the associated one in the i18nCollection
+     * @param faqQuery: the faq query result from the database query
+     * @param applicationDefinition: application definition
+     */
+    private fun searchLabelsFromTockFrontDb(
+        faqQuery: List<FaqQueryResult>,
+        applicationDefinition: ApplicationDefinition,
+    ): Set<FaqDefinitionRequest> {
+        val fromTockFrontDbOnly =
+            faqQuery.map {
+                i18nDao.getLabelById(it.i18nId)
+                    .let { i18nLabel ->
                         it.toFaqDefinitionDetailed(
                             it,
                             (i18nLabel
-                                ?: unknownI18n(applicationDefinition).also { logger.warn { "Could not found label for \"${it.i18n}\"" } })
+                                ?: unknownI18n(applicationDefinition).also { logger.warn { WARN_CANNOT_FIND_LABEL } })
                         )
                     }
-                }.toSet()
-            faqResults.addAll(addToFaqRequestSet(fromTockFrontDbOnly, applicationDefinition))
-        }
-        logger.debug { "faqResults $faqResults" }
+            }.toSet()
 
-        return toFaqDefinitionSearchResult(query.start, faqResults, faqDetailsWithCount.second)
+        return LinkedHashSet(
+            convertFaqDefinitionDetailedToFaqDefinitionRequest(
+                fromTockFrontDbOnly,
+                applicationDefinition
+            )
+        )
     }
 
+    /**
+     * Check the existing utterances and create a new fake one if there are missing utterances to show the unexpected MISSING_UTTERANCE
+     */
+    private fun checkAndInformAnyMissingUtterances(
+        applicationDefinition: ApplicationDefinition,
+        intentId: Id<IntentDefinition>,
+        utterances: List<ClassifiedSentence>
+    ): List<ClassifiedSentence> {
+        return utterances.ifEmpty {
+            listOf(
+                fakeMissingUtterance(
+                    applicationDefinition,
+                    intentId
+                )
+            ).also { logger.warn { WARN_CANNOT_FIND_UTTERANCE } }
+        }
+    }
+
+    /**
+     * Create a fake unknown i18n label named UNKNOWN_ANSWER
+     */
     private fun unknownI18n(applicationDefinition: ApplicationDefinition): I18nLabel {
         val supportedLocale = applicationDefinition.supportedLocales.first()
         val fakeLocalizedLabel = LinkedHashSet<I18nLocalizedLabel>()
@@ -535,6 +609,29 @@ object FaqAdminService {
             fakeLocalizedLabel,
             UNKNOWN_ANSWER,
             supportedLocale
+        )
+    }
+
+    /**
+     *  Fake the missing utterance when data is not found
+     */
+    private fun fakeMissingUtterance(
+        applicationDefinition: ApplicationDefinition,
+        intentId: Id<IntentDefinition>,
+    ): ClassifiedSentence {
+        val supportedLocale = applicationDefinition.supportedLocales.first()
+
+        return ClassifiedSentence(
+            text = MISSING_UTTERANCE,
+            language = supportedLocale,
+            applicationId = applicationDefinition._id,
+            creationDate = Instant.now(),
+            updateDate = Instant.now(),
+            status = ClassifiedSentenceStatus.inbox,
+            classification = Classification(intentId, emptyList()),
+            lastIntentProbability = 1.0,
+            lastEntityProbability = 1.0,
+            qualifier = UNKNOWN_USER_LOGIN
         )
     }
 
@@ -551,17 +648,19 @@ object FaqAdminService {
      * Create a set or FaqDefinitionRequest from FaqDefinitionDetailed
      * @sample FaqDefinitionRequest
      */
-    private fun addToFaqRequestSet(
-        setFaqDetailed: Set<FaqDefinitionDetailed>,
-        applicationDefinition: ApplicationDefinition
+    private fun convertFaqDefinitionDetailedToFaqDefinitionRequest(
+        detailedFaqs: Set<FaqDefinitionDetailed>,
+        applicationDefinition: ApplicationDefinition,
     ): Set<FaqDefinitionRequest> {
-
-        return setFaqDetailed
-            // filter empty utterances if any empty data to not create them
-            .filter { it.utterances.isNotEmpty() }
+        // filter empty utterances if any empty data to not create them
+        return detailedFaqs
             // map the FaqDefinition to the set
             .map { faqDefinition ->
-                val currentUtterance = faqDefinition.utterances.map { it }
+                val currentUtterance = checkAndInformAnyMissingUtterances(
+                    applicationDefinition,
+                    faqDefinition.intentId,
+                    faqDefinition.utterances
+                )
                 val currentLanguage = currentUtterance.map { it.language }.first()
                 FaqDefinitionRequest(
                     faqDefinition._id.toString(),
@@ -572,12 +671,17 @@ object FaqAdminService {
                     faqDefinition.updateDate,
                     faqDefinition.faq.label.orEmpty(),
                     faqDefinition.faq.description.orEmpty(),
-                    faqDefinition.utterances.map { it.text },
+                    currentUtterance.map { it.text },
                     faqDefinition.tags,
-                    faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty(),
+                    // find the label or replace it with a fake unknown answer
+                    faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty()
+                        .ifEmpty {
+                            unknownI18n(applicationDefinition).i18n.map { it.label }.first()
+                        },
                     faqDefinition.enabled,
                 )
             }.toSet()
+
     }
 
     private fun findPredicatesFrom18nLabels(
