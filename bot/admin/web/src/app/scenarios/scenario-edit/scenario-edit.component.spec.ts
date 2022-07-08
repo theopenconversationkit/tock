@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { DialogService } from '../../core-nlp/dialog.service';
+import { ScenarioService } from '../services/scenario.service';
 import { ScenarioEditComponent } from './scenario-edit.component';
 
 describe('ScenarioEditComponent', () => {
@@ -13,7 +14,10 @@ describe('ScenarioEditComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ScenarioEditComponent],
       imports: [ReactiveFormsModule],
-      providers: [{ provide: DialogService, useValue: {} }],
+      providers: [
+        { provide: DialogService, useValue: {} },
+        { provide: ScenarioService, useValue: {} }
+      ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
