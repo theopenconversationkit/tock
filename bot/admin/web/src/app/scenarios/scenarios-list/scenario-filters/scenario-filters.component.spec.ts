@@ -11,9 +11,11 @@ import {
   NbOptionModule,
   NbSelectModule
 } from '@nebular/theme';
+import { of } from 'rxjs';
 
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { Scenario } from '../../models';
+import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioFiltersComponent } from './scenario-filters.component';
 
 const mockScenarios = [
@@ -45,6 +47,16 @@ describe('ScenarioFiltersComponent', () => {
         NbSelectModule
       ],
       declarations: [ScenarioFiltersComponent],
+      providers: [
+        {
+          provide: ScenarioService,
+          useValue: {
+            state$: of({
+              tags: ['tag1', 'tag2']
+            })
+          }
+        }
+      ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
@@ -95,19 +107,6 @@ describe('ScenarioFiltersComponent', () => {
     fixture.detectChanges();
 
     expect(clearFiltersSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should populate tag list with no duplicates from a scenario array if scenarios is defined', () => {
-    component.scenarios = undefined;
-    fixture.detectChanges();
-
-    expect(component.tagsAvailableValues.length).toBe(0);
-
-    component.ngOnChanges({ scenarios: new SimpleChange(null, mockScenarios, true) });
-    fixture.detectChanges();
-
-    expect(component.tagsAvailableValues.length).toBe(4);
-    expect(component.tagsAvailableValues).toEqual(['tag', 'tag 1', 'tag 2', 'test']);
   });
 
   it('should emit the filters after 500ms after one of them is changed', fakeAsync(() => {
