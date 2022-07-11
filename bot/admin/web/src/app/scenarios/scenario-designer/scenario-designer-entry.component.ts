@@ -165,6 +165,8 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
       this.item.intentDefinition._sentences = sentencesResearch.rows;
       this.utterancesLoading = false;
       nlpSubscription.unsubscribe();
+
+      // if (this.item.id === 0) this.manageIntent();
     });
   }
 

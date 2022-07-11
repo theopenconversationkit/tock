@@ -4,27 +4,6 @@
 
   .questions {
     overflow-y: auto;
-    max-height: 13rem;
-
-    UL {
-      padding: 0;
-      margin: 0;
-      list-style-type: none;
-      LI {
-        padding: 0.4rem;
-        border-bottom: 1px solid #bebebe;
-        font-style: italic;
-      }
-    }
-  }
-
-  .token {
-    border-radius: 0.45rem;
-    padding: 0rem 0.3rem 0.1rem 0.3rem;
-  }
-
-  .entity {
-    border-radius: 2em;
-    padding: 0.5rem 1rem;
+    max-height: 15rem;
   }
 }

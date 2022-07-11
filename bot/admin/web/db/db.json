@@ -409,7 +409,15 @@
                   "checkExistingQuery": false,
                   "state": "",
                   "classification": {
-                    "entities": []
+                    "entities": [
+                      {
+                        "type": "app:event_occurence",
+                        "role": "event_occurence",
+                        "start": 12,
+                        "end": 18,
+                        "entityColor": "#b8ed86"
+                      }
+                    ]
                   }
                 },
                 {
@@ -417,6 +425,88 @@
                   "applicationName": "new_assistant",
                   "language": "fr",
                   "query": "An other sentence to create",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:carte_max",
+                        "role": "carte_max",
+                        "start": 3,
+                        "end": 8,
+                        "entityColor": "#fdb397"
+                      },
+                      {
+                        "type": "app:opposition",
+                        "role": "opposition",
+                        "start": 9,
+                        "end": 17,
+                        "entityColor": "#8c7253"
+                      },
+                      {
+                        "type": "app:event_occurence",
+                        "role": "event_occurence",
+                        "start": 21,
+                        "end": 27,
+                        "entityColor": "#b8ed86"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Une phrase à ajouter",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:oeuvre",
+                        "role": "oeuvre",
+                        "start": 13,
+                        "end": 20,
+                        "entityColor": "#6e6a97"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Une autre phrase correspondant à l'intent",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:place",
+                        "role": "place",
+                        "start": 17,
+                        "end": 30,
+                        "entityColor": "#8de451"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Toujours plus de sentences",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "En veux tu en voilà",
                   "checkExistingQuery": false,
                   "state": "",
                   "classification": {
@@ -496,7 +586,28 @@
               "label": "Activer ma carte max",
               "name": "activermacartemax",
               "category": "scenarios",
-              "description": "Activer carte Aumax"
+              "description": "Activer carte Aumax",
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Activer ma carte max",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:oeuvre",
+                        "role": "oeuvre",
+                        "start": 0,
+                        "end": 7,
+                        "entityColor": "#6e6a97"
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           },
           {
@@ -682,31 +793,9 @@
           },
           {
             "name": "SEVENTH_CONTEXT",
-            "type": "string"
-          },
-          {
-            "name": "TYRTY",
-            "type": "string"
-          },
-          {
-            "name": "DFG_DFGDFG",
-            "type": "string"
-          },
-          {
-            "name": "DFGDFG_DFG",
-            "type": "string"
-          },
-          {
-            "name": "D_FGDFGDFG_DFG",
-            "type": "string"
-          },
-          {
-            "name": "DFG_DFGDFGDFG",
-            "type": "string"
-          },
-          {
-            "name": "DFGDFG_DFG",
-            "type": "string"
+            "type": "string",
+            "entityType": "app:event_occurence",
+            "entityRole": "event_occurence"
           }
         ]
       },
