@@ -116,7 +116,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     );
   }
 
-  addContext(menuBag): void {
+  addContext(token): void {
     const modal = this.dialogService.openDialog(ContextCreateComponent, {
       context: {}
     });
@@ -127,12 +127,13 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
           new FormControl({
             name: contextDef.name,
             type: 'string',
-            entityType: menuBag.item.token.entity.type,
-            entityRole: menuBag.item.token.entity.role
+            entityType: token.entity.type,
+            entityRole: token.entity.role
           })
         );
         validate.unsubscribe();
         modal.close();
+        this.hideTokenMenu();
       });
   }
 

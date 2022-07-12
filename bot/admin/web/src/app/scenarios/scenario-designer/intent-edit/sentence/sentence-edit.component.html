@@ -87,5 +87,17 @@
         {{ ctx.name }}
       </div>
     </div>
+
+    <button
+      *ngIf="!getContextOfEntity(token)"
+      type="button"
+      nbButton
+      ghost
+      size="small"
+      class="ml-1 d-block w-100"
+      (click)="addContext(token)"
+    >
+      <nb-icon icon="plus-circle-outline"></nb-icon> Create a context
+    </button>
   </section>
 </ng-template>
