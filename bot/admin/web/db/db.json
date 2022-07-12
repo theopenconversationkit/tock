@@ -817,9 +817,112 @@
             "text": "Bonjour, je souhaite prendre un rdv",
             "intentDefinition": {
               "label": "Bonjour, je souhaite prendre un rdv",
-              "name": "bonjourjesouhaiteprendreunrdv",
+              "name": "bonjourJeSouhaitePrendreUnRdv",
               "category": "scenarios",
-              "description": "Demande de prise de rdv conseiller"
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Bonjour, je souhaite prendre un rdv",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Je souhaite prendre un rdv",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Comment obtenir un rendez-vous ?",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Comment prendre rendez vous",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Je souhaite prendre un rdv téléphonique",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:canalphone",
+                        "role": "canalphone",
+                        "start": 27,
+                        "end": 39,
+                        "entityColor": "#fb6a86"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Je souhaite prendre un rdv au guichet",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:canalcounter",
+                        "role": "canalcounter",
+                        "start": 27,
+                        "end": 37,
+                        "entityColor": "#f2babd"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Je souhaite prendre un rdv en visio",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "app:canalvisio",
+                        "role": "canalvisio",
+                        "start": 27,
+                        "end": 35,
+                        "entityColor": "#83756a"
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           },
           {
@@ -828,7 +931,19 @@
               0
             ],
             "from": "bot",
-            "text": "Sur quel canal ? En caisse, par téléphone ou en visio ?"
+            "text": "Sur quel canal ? En caisse, par téléphone ou en visio ?",
+            "tickActionDefinition": {
+              "name": "WICH_CANAL",
+              "description": "Sur quel canal ? En caisse, par téléphone ou en visio ?",
+              "handler": null,
+              "answer": "Sur quel canal ? En caisse, par téléphone ou en visio ?",
+              "inputContextNames": [],
+              "outputContextNames": [
+                "CANAL_COUNTER",
+                "CANAL_PHONE",
+                "CANAL_VISIO"
+              ]
+            }
           },
           {
             "id": 2,
@@ -836,7 +951,48 @@
               1
             ],
             "from": "client",
-            "text": "En caisse"
+            "text": "En caisse",
+            "intentDefinition": {
+              "label": "at counter",
+              "name": "atCounter",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "en caisse",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "au guichet",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "je souhaite rencontrer un conseiller",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 3,
@@ -844,7 +1000,37 @@
               1
             ],
             "from": "client",
-            "text": "Par téléphone"
+            "text": "Par téléphone",
+            "intentDefinition": {
+              "label": "by phone",
+              "name": "byPhone",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "par téléphone",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "je préfère par téléphone",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 4,
@@ -852,18 +1038,67 @@
               1
             ],
             "from": "client",
-            "text": "En visio"
+            "text": "En visio",
+            "intentDefinition": {
+              "label": "By visio",
+              "name": "byVisio",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "En visio",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Visioconférence",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Je préfère la visio",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 5,
             "parentIds": [
-              2,
-              3,
-              9
+              2
             ],
             "from": "bot",
             "final": true,
-            "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv"
+            "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+            "tickActionDefinition": {
+              "name": "APPOINTMENT_COUNTER",
+              "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+              "handler": null,
+              "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+              "inputContextNames": [
+                "CANAL_COUNTER"
+              ],
+              "outputContextNames": []
+            }
           },
           {
             "id": 8,
@@ -871,7 +1106,20 @@
               4
             ],
             "from": "bot",
-            "text": "Disposez-vous d'une webcam et d'un micro ?"
+            "text": "Disposez-vous d'une webcam et d'un micro ?",
+            "tickActionDefinition": {
+              "name": "APPOINTMENT_VISIO",
+              "description": "Disposez-vous d'une webcam et d'un micro ?",
+              "handler": null,
+              "answer": "Disposez-vous d'une webcam et d'un micro ?",
+              "inputContextNames": [
+                "CANAL_VISIO"
+              ],
+              "outputContextNames": [
+                "DONT_HAVE_WEBCAM_AND_MIC",
+                "HAVE_WEBCAM_AND_MIC"
+              ]
+            }
           },
           {
             "id": 9,
@@ -879,7 +1127,59 @@
               8
             ],
             "from": "client",
-            "text": "non"
+            "text": "non",
+            "intentDefinition": {
+              "label": "non",
+              "name": "non",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "non",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "non je n'en ai pas",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "J'ai une webcam mais pas de micro",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "j'ai un micro mais pas de webcam",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 10,
@@ -887,7 +1187,70 @@
               8
             ],
             "from": "client",
-            "text": "oui"
+            "text": "oui",
+            "intentDefinition": {
+              "label": "oui",
+              "name": "oui",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "oui",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "oui j'ai une wabcam et un micro",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "oui j'ai les deux",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "J'ai",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "yes",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 13,
@@ -895,7 +1258,17 @@
               10
             ],
             "from": "bot",
-            "text": "Indiquez deux créneaux de dispo aux horaires d'ouverture des caisses"
+            "text": "Indiquez deux créneaux de dispo aux horaires d'ouverture des caisses",
+            "tickActionDefinition": {
+              "name": "WEBCAM_ANSWER",
+              "description": "Indiquez deux créneaux de dispo aux horaires d'ouverture des caisses",
+              "handler": null,
+              "answer": "Indiquez deux créneaux de dispo aux horaires d'ouverture des caisses",
+              "inputContextNames": [
+                "HAVE_WEBCAM_AND_MIC"
+              ],
+              "outputContextNames": []
+            }
           },
           {
             "id": 14,
@@ -903,7 +1276,48 @@
               13
             ],
             "from": "client",
-            "text": "Quels sont les horaires d'ouverture des caisses ?"
+            "text": "Quels sont les horaires d'ouverture des caisses ?",
+            "intentDefinition": {
+              "label": "Quels sont les horaires d'ouverture des caisses ?",
+              "name": "quelsSontLesHorairesDOuvertureDesCaisses",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Quels sont les horaires d'ouverture des caisses ?",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Quels sont les créneaux horaire",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Pouvez vous m'indiquer les plages disponibles ?",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 15,
@@ -911,7 +1325,17 @@
               14
             ],
             "from": "bot",
-            "text": "Récupération des horaires caisse"
+            "text": "Récupération des horaires caisse",
+            "tickActionDefinition": {
+              "name": "RECOVERY_OF_CASHIERS_HOURS",
+              "description": "Récupération des horaires caisse",
+              "handler": "CashiersHours",
+              "answer": "Merci de patienter pendant que je récupère les plages horaires",
+              "inputContextNames": [],
+              "outputContextNames": [
+                "CASHIERS_HOURS"
+              ]
+            }
           },
           {
             "id": 16,
@@ -919,7 +1343,17 @@
               15
             ],
             "from": "bot",
-            "text": "Affichage des horaires d'ouverture caisses"
+            "text": "Affichage des horaires d'ouverture caisses",
+            "tickActionDefinition": {
+              "name": "DISPLAY_OF_CASHIERS_HOURS",
+              "description": "Affichage des horaires d'ouverture caisses",
+              "handler": null,
+              "answer": "Nos conseillers sont disponibles du lundi au vendredi de 8h à 20h",
+              "inputContextNames": [
+                "CASHIERS_HOURS"
+              ],
+              "outputContextNames": []
+            }
           },
           {
             "id": 17,
@@ -927,7 +1361,81 @@
               16
             ],
             "from": "client",
-            "text": "Je suis dispo le 05/03 à 14h ou le 07/03 à 15h"
+            "text": "Je suis dispo le 05/03 à 14h ou le 07/03 à 15h",
+            "intentDefinition": {
+              "label": "Je suis dispo le",
+              "name": "jesuisdispole",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Je suis dispo le 11/12 entre 18 et 20h",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "duckling:datetime",
+                        "role": "day",
+                        "start": 17,
+                        "end": 22,
+                        "entityColor": "#9e9461"
+                      },
+                      {
+                        "type": "duckling:duration",
+                        "role": "duration",
+                        "start": 23,
+                        "end": 38,
+                        "entityColor": "#7c82b4"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "le 20/01 de 9h à 12h ou le 27/01 de 13h à 18h",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": [
+                      {
+                        "type": "duckling:datetime",
+                        "role": "day",
+                        "start": 3,
+                        "end": 8,
+                        "entityColor": "#9e9461"
+                      },
+                      {
+                        "type": "duckling:duration",
+                        "role": "duration",
+                        "start": 12,
+                        "end": 20,
+                        "entityColor": "#7c82b4"
+                      },
+                      {
+                        "type": "duckling:datetime",
+                        "role": "day",
+                        "start": 27,
+                        "end": 32,
+                        "entityColor": "#9e9461"
+                      },
+                      {
+                        "type": "duckling:duration",
+                        "role": "duration",
+                        "start": 36,
+                        "end": 45,
+                        "entityColor": "#7c82b4"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 18,
@@ -936,7 +1444,85 @@
             ],
             "from": "bot",
             "text": "Redirection vers un conseiller",
+            "final": true,
+            "tickActionDefinition": {
+              "name": "REDIRECTION_TO_A_CONSULTANT",
+              "description": "Redirection vers un conseiller",
+              "handler": "RedirectionToConsultant",
+              "answer": "Je vous redirige vers un conseiller. Merci de patienter un instant",
+              "inputContextNames": [],
+              "outputContextNames": []
+            }
+          },
+          {
+            "id": 19,
+            "parentIds": [
+              3
+            ],
+            "from": "bot",
+            "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+            "final": true,
+            "tickActionDefinition": {
+              "name": "APPOINTMENT_PHONE",
+              "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+              "handler": null,
+              "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+              "inputContextNames": [
+                "CANAL_PHONE"
+              ],
+              "outputContextNames": []
+            }
+          },
+          {
+            "id": 20,
+            "parentIds": [
+              9
+            ],
+            "from": "bot",
+            "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+            "tickActionDefinition": {
+              "name": "NO_WEBCAM_ANSWER",
+              "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+              "handler": null,
+              "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
+              "inputContextNames": [
+                "DONT_HAVE_WEBCAM_AND_MIC"
+              ],
+              "outputContextNames": []
+            },
             "final": true
+          }
+        ],
+        "contexts": [
+          {
+            "name": "CANAL_COUNTER",
+            "type": "string",
+            "entityType": "app:canalcounter",
+            "entityRole": "canalcounter"
+          },
+          {
+            "name": "CANAL_PHONE",
+            "type": "string",
+            "entityType": "app:canalphone",
+            "entityRole": "canalphone"
+          },
+          {
+            "name": "CANAL_VISIO",
+            "type": "string",
+            "entityType": "app:canalvisio",
+            "entityRole": "canalvisio"
+          },
+          {
+            "name": "DONT_HAVE_WEBCAM_AND_MIC",
+            "type": "string"
+          },
+          {
+            "name": "HAVE_WEBCAM_AND_MIC",
+            "type": "string"
+          },
+          {
+            "name": "CASHIERS_HOURS",
+            "type": "string"
           }
         ]
       },

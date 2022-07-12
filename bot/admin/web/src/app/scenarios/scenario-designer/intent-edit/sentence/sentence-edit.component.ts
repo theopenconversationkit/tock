@@ -180,7 +180,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   }
 
   getTokenTooltip(token) {
-    if (!token.entity) return;
+    if (!token.entity) return 'Select a part of this sentence to associate an entity';
     const entity = new EntityDefinition(token.entity.type, token.entity.role);
     const ctx = this.getContextOfEntity(token);
     if (ctx) {

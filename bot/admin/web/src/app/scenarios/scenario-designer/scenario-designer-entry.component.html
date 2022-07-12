@@ -83,7 +83,7 @@
         ></textarea>
 
         <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()">
-          <strong>{{ item.text }}</strong>
+          <div class="ellipsis font-weight-bold">{{ item.intentDefinition.name }}</div>
 
           <div
             class="sentences mb-2"

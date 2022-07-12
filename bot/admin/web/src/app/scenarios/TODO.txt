@@ -1,0 +1,9 @@
+Scenario designer :
+
+        Action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
+
+        intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base
+
+        Adapter les css au mode nuit
+
+        Desactiver les drag&drop et raccourcis clavier en dehors du mode writing

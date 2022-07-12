@@ -36,9 +36,9 @@
     <div *ngIf="!loading">
       <nb-card *ngFor="let intent of groupedIntents">
         <nb-card-header>
-          {{ intent.intent.label }}
-          <span *ngIf="!intent.intent.label">
-            {{ intent.intent.name }}
+          {{ intent.intent?.label }}
+          <span *ngIf="!intent.intent?.label">
+            {{ intent.intent?.name }}
           </span>
 
           <button

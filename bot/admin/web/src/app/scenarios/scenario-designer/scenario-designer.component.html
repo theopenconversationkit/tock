@@ -41,6 +41,16 @@
         >{{ modeSwitchState.label }}</nb-toggle
       >
     </div>
+
+    <button
+      nbButton
+      size="small"
+      status="warning"
+      class="ml-2"
+      (click)="goToProduction()"
+    >
+      Producion
+    </button>
   </div>
 </div>
 
@@ -219,3 +229,14 @@
     </div>
   </div>
 </div>
+
+<ng-template
+  #tickStoryJsonTempModal
+  let-data
+>
+  <nb-card id="modal-wrapper">
+    <nb-card-body>
+      <pre style="max-height: 70vh; overflow: auto">{{ data }}</pre>
+    </nb-card-body>
+  </nb-card>
+</ng-template>

@@ -111,10 +111,12 @@ export class ActionEditComponent implements OnInit {
   }
 
   formatActionName(): void {
-    this.form.patchValue({
-      ...this.form.value,
-      name: normalizedSnakeCase(this.name.value)
-    });
+    if (this.name.value) {
+      this.form.patchValue({
+        ...this.form.value,
+        name: normalizedSnakeCase(this.name.value)
+      });
+    }
   }
 
   inputContextsAddError: any = {};

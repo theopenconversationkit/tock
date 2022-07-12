@@ -1,11 +1,23 @@
+export function normalize(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 export function normalizedSnakeCase(str: string): string {
-  return str
+  return normalize(str)
     .trim()
-    .toUpperCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, '_')
-    .replace(/[^A-Za-z0-9_]*/g, '');
+    .replace(/[^A-Za-z0-9_]*/g, '')
+    .toUpperCase();
+}
+
+export function normalizedCamelCase(str: string): string {
+  return normalize(str)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => {
+      return chr.toUpperCase();
+    })
+    .replace(/[^A-Za-z0-9]*/g, '');
 }
 
 export function getContrastYIQ(hexcolor) {

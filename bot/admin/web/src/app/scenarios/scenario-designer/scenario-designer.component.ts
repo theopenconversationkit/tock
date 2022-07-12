@@ -21,6 +21,7 @@ import {
   Injectable,
   OnDestroy,
   OnInit,
+  TemplateRef,
   ViewChild
 } from '@angular/core';
 import { Subject } from 'rxjs';
@@ -159,6 +160,30 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         labelPosition: 'left'
       };
     }
+  }
+
+  @ViewChild('tickStoryJsonTempModal') tickStoryJsonTempModal: TemplateRef<any>;
+  goToProduction() {
+    let tickStory = {
+      name: this.scenario.name,
+      sagaId: 321658,
+      stateMachine: 'Soon to come...',
+      primaryIntents: ['62bb118e49e78735af27aa98'],
+      secondaryIntents: ['65sd99ze1sd6ert6df21se89', 'df5d58ze54ds875q45sdf89'],
+      tickContexts: this.scenario.data.contexts,
+      tickActions: []
+    };
+
+    this.scenario.data.scenarioItems.forEach((item) => {
+      if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
+        tickStory.tickActions.push(item.tickActionDefinition);
+      }
+    });
+
+    console.log(tickStory);
+    const tickStoryJson = JSON.stringify(tickStory, null, 4);
+
+    this.dialogService.openDialog(this.tickStoryJsonTempModal, { context: tickStoryJson });
   }
 
   contextsPanelDisplayed: boolean = true;

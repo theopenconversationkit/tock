@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { of } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
+import { normalizedCamelCase } from '../../commons/utils';
 
 @Component({
   selector: 'scenario-intent-create',
@@ -57,12 +58,12 @@ export class IntentCreateComponent implements OnInit {
   }
 
   private formatName(name: string): string {
-    return name
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^A-Za-z_-]*/g, '')
-      .toLowerCase()
-      .trim();
+    return normalizedCamelCase(name);
+    // .normalize('NFD')
+    // .replace(/[\u0300-\u036f]/g, '')
+    // .replace(/[^A-Za-z_-]*/g, '')
+    // .toLowerCase()
+    // .trim();
   }
 
   get canSave(): boolean {
