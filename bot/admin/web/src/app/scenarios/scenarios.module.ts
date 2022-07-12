@@ -14,6 +14,7 @@ import {
   NbListModule,
   NbSelectModule,
   NbSpinnerModule,
+  NbStepperModule,
   NbTagModule,
   NbTooltipModule,
   NbTreeGridModule
@@ -31,6 +32,7 @@ import { IntentEditComponent } from './scenario-designer/intent-edit/intent-edit
 import { ActionEditComponent } from './scenario-designer/action-edit/action-edit.component';
 import { ContextCreateComponent } from './scenario-designer/context-create/context-create.component';
 import { SentenceEditComponent } from './scenario-designer/intent-edit/sentence/sentence-edit.component';
+import { ModeStepperComponent } from './scenario-designer/mode-stepper/mode-stepper.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -71,7 +73,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     NbTreeGridModule,
     NbAccordionModule,
     NbContextMenuModule,
-    NbAlertModule
+    NbAlertModule,
+    NbStepperModule
   ],
   declarations: [
     ScenariosListComponent,
@@ -86,7 +89,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     IntentEditComponent,
     ActionEditComponent,
     ContextCreateComponent,
-    SentenceEditComponent
+    SentenceEditComponent,
+    ModeStepperComponent
   ],
   exports: [],
   providers: [

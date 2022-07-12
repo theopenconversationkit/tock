@@ -1,4 +1,4 @@
-<div class="row mb-3">
+<div class="row mb-2">
   <div class="col">
     <h4 class="initial-capitalize">
       {{ this.scenario?.name }}
@@ -32,27 +32,14 @@
     >
       Save & exit
     </button>
-
-    <div class="mt-2 ml-3">
-      <nb-toggle
-        [(ngModel)]="modeSwitchState.modeBoolean"
-        (checkedChange)="modeSwitched($event)"
-        [labelPosition]="modeSwitchState.labelPosition"
-        >{{ modeSwitchState.label }}</nb-toggle
-      >
-    </div>
-
-    <button
-      nbButton
-      size="small"
-      status="warning"
-      class="ml-2"
-      (click)="goToProduction()"
-    >
-      Producion
-    </button>
   </div>
 </div>
+
+<scenario-mode-stepper
+  class="mb-3"
+  [mode]="scenario.mode"
+  (modeSwitch)="switchMode($event)"
+></scenario-mode-stepper>
 
 <div
   class="canvas-wrapper"
@@ -61,7 +48,7 @@
   (onMouseWheel)="mouseWheel($event)"
 >
   <div
-    *ngIf="scenario.mode == SCENARIO_MODE_PRODUCTION"
+    *ngIf="scenario.mode == SCENARIO_MODE.casting"
     class="contexts-panel pointer"
     [ngClass]="{ displayed: contextsPanelDisplayed }"
     appMouseWheelListner

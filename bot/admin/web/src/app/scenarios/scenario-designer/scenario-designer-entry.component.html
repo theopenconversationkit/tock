@@ -37,7 +37,7 @@
       />
       <img
         src="assets/images/scenario-client.svg"
-        *ngIf="item.from != SCENARIO_ITEM_FROM_CLIENT && mode == SCENARIO_MODE_WRITING"
+        *ngIf="item.from != SCENARIO_ITEM_FROM_CLIENT && mode == SCENARIO_MODE.writing"
       />
       <div
         class="duplication-count"
@@ -148,7 +148,7 @@
         <div class="d-flex justify-content-between mt-1">
           <div
             *ngIf="
-              mode == SCENARIO_MODE_WRITING &&
+              mode == SCENARIO_MODE.writing &&
               item.from == SCENARIO_ITEM_FROM_BOT &&
               itemHasNoChildren()
             "
@@ -174,7 +174,7 @@
             nbButton
             size="tiny"
             status="warning"
-            *ngIf="mode == SCENARIO_MODE_WRITING && item.id > 0 && itemHasNoChildren()"
+            *ngIf="mode == SCENARIO_MODE.writing && item.id > 0 && itemHasNoChildren()"
             (click)="delete()"
             nbTooltip="Remove this item"
           >
@@ -184,7 +184,7 @@
             nbButton
             size="tiny"
             status="info"
-            *ngIf="mode == SCENARIO_MODE_WRITING && itemCanHaveAnswer()"
+            *ngIf="mode == SCENARIO_MODE.writing && itemCanHaveAnswer()"
             (click)="answering()"
             nbTooltip="Add an answer to this item"
           >
@@ -196,7 +196,7 @@
             size="tiny"
             status="info"
             *ngIf="
-              mode == SCENARIO_MODE_PRODUCTION &&
+              mode == SCENARIO_MODE.casting &&
               item.from == SCENARIO_ITEM_FROM_CLIENT &&
               item.text?.length
             "
@@ -213,7 +213,7 @@
             size="tiny"
             status="info"
             *ngIf="
-              mode == SCENARIO_MODE_PRODUCTION &&
+              mode == SCENARIO_MODE.casting &&
               item.from == SCENARIO_ITEM_FROM_BOT &&
               item.text?.length
             "

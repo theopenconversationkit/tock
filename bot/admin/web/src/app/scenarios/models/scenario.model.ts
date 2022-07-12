@@ -1,10 +1,12 @@
 import { ParseQuery, Sentence } from '../../model/nlp';
 
-export const SCENARIO_MODE_WRITING = 'writing';
-export type scenario_mode_writing = typeof SCENARIO_MODE_WRITING;
-export const SCENARIO_MODE_PRODUCTION = 'production';
-export type scenario_mode_production = typeof SCENARIO_MODE_PRODUCTION;
-export type scenarioMode = scenario_mode_writing | scenario_mode_production;
+export enum SCENARIO_MODE {
+  writing = 'writing',
+  casting = 'casting',
+  production = 'production',
+  distribution = 'distribution'
+}
+
 export interface Scenario {
   id: number | null;
   name: string;
@@ -14,7 +16,7 @@ export interface Scenario {
   updateDate?: Date;
   description?: string;
   data?: ScenarioData;
-  mode: scenarioMode;
+  mode: SCENARIO_MODE;
 }
 export interface ScenarioData {
   scenarioItems: scenarioItem[];

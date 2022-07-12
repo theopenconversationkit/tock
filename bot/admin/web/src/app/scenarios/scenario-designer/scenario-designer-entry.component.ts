@@ -9,8 +9,7 @@ import {
   scenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE_PRODUCTION,
-  SCENARIO_MODE_WRITING,
+  SCENARIO_MODE,
   TickContext
 } from '../models/scenario.model';
 import { ActionEditComponent } from './action-edit/action-edit.component';
@@ -25,8 +24,7 @@ import { ScenarioDesignerService } from './scenario-designer-service.service';
   styleUrls: ['./scenario-designer-entry.component.scss']
 })
 export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
-  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
-  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
+  readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 

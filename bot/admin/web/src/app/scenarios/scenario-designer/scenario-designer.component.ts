@@ -33,8 +33,7 @@ import {
   scenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE_PRODUCTION,
-  SCENARIO_MODE_WRITING
+  SCENARIO_MODE
 } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
 import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
@@ -63,10 +62,9 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   scenario: Scenario;
   scenarioBackup: string;
 
+  readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
-  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
-  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
 
   qualifiedName = qualifiedName;
 
@@ -100,11 +98,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       .getScenario(this.scenarioId)
       .pipe(takeUntil(this.destroy))
       .subscribe((data) => {
-        if (typeof data.mode == 'undefined') data.mode = SCENARIO_MODE_WRITING;
+        if (typeof data.mode == 'undefined') data.mode = SCENARIO_MODE.writing;
         this.scenarioBackup = JSON.stringify(data);
         this.scenario = JSON.parse(JSON.stringify(data));
 
-        this.setMode(this.scenario.mode || 'writing');
+        this.switchMode(this.scenario.mode || SCENARIO_MODE.writing);
 
         if (!this.scenario.data) this.scenario.data = { scenarioItems: [], contexts: [] };
         if (!this.scenario.data.scenarioItems.length) {
@@ -130,36 +128,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
-  modeSwitchState = {
-    modeBoolean: false,
-    label: 'Writing',
-    labelPosition: 'left'
-  };
-
-  modeSwitched(event): void {
-    if (event) {
-      this.setMode(SCENARIO_MODE_PRODUCTION);
-    } else {
-      this.setMode(SCENARIO_MODE_WRITING);
-    }
-  }
-
-  setMode(mode): void {
-    if (mode == SCENARIO_MODE_PRODUCTION) {
-      this.scenario.mode = SCENARIO_MODE_PRODUCTION;
-      this.modeSwitchState = {
-        modeBoolean: true,
-        label: 'Production',
-        labelPosition: 'right'
-      };
-    } else {
-      this.scenario.mode = SCENARIO_MODE_WRITING;
-      this.modeSwitchState = {
-        modeBoolean: false,
-        label: 'Writing',
-        labelPosition: 'left'
-      };
-    }
+  switchMode(mode): void {
+    this.scenario.mode = mode;
   }
 
   @ViewChild('tickStoryJsonTempModal') tickStoryJsonTempModal: TemplateRef<any>;

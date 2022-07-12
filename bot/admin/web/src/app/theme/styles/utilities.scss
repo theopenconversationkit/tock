@@ -27,3 +27,9 @@
 .min-width-1em {
   min-width: 1em;
 }
+
+.nbStepper-without-content {
+  .step-content {
+    display: none;
+  }
+}
