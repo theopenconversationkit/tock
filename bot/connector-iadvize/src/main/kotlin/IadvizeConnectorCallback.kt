@@ -25,18 +25,26 @@ import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.loadProperties
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.time.LocalDateTime
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
+private const val UNSUPPORTED_MESSAGE_REQUEST = "tock_iadvize_unsupported_message_request"
+
 class IadvizeConnectorCallback(override val  applicationId: String,
+                               val controller: ConnectorController,
                                val context: RoutingContext,
                                val request: IadvizeRequest,
                                val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()) :
@@ -48,6 +56,13 @@ class IadvizeConnectorCallback(override val  applicationId: String,
 
     @Volatile
     private var answered: Boolean = false
+
+    @Volatile
+    private var locale: Locale = defaultLocale
+
+    private val translator: I18nTranslator = controller.botDefinition.i18nTranslator(locale, iadvizeConnectorType)
+
+    private val properties: Properties = loadProperties("/iadvize.properties")
 
     data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
 
@@ -81,30 +96,32 @@ class IadvizeConnectorCallback(override val  applicationId: String,
         }
     }
 
-    fun buildResponse(): MessageResponse {
+    private fun buildResponse(): MessageResponse {
         val response = MessageResponse(
             request.idConversation,
             request.idOperator,
             LocalDateTime.now(),
             LocalDateTime.now())
 
-       return when(request) {
-           is ConversationsRequest -> response
+        return when(request) {
+            is ConversationsRequest -> response
 
-           is MessageRequest -> {
-               response.replies.addAll(toListIadvizeReply(actions))
+            is MessageRequest -> {
+                response.replies.addAll(toListIadvizeReply(actions))
                return response
-           }
+            }
 
-           is UnsupportedRequest -> {
-               logger.error("Request type ${request.type} is not supported by connector")
-               //TODO: à replacer par un transfère vers un humain lorsque ce type de message sera pris en charge
-               response.replies.add(IadvizeMessage(TextPayload("Désolé, je ne sais pas répondre à cette demande")))
-               return response
-           }
+            is UnsupportedRequest -> {
+                logger.error("Request type ${request.type} is not supported by connector")
+                //TODO: to be replaced by a transfer to a human when this type of message is supported
+                val configuredMessage: String = properties.getProperty(UNSUPPORTED_MESSAGE_REQUEST, UNSUPPORTED_MESSAGE_REQUEST)
+                val message: String = translator.translate(configuredMessage).toString()
+                response.replies.add(IadvizeMessage(TextPayload(message)))
+                return response
+            }
 
-           else -> response
-       }
+            else -> response
+        }
     }
 
     private fun toListIadvizeReply(actions: List<ActionWithDelay>): List<IadvizeReply> {
@@ -113,7 +130,8 @@ class IadvizeConnectorCallback(override val  applicationId: String,
                 val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterIsInstance<IadvizeReply>()
                 if (it.action.text != null) {
                     //Extract text to a simple TextPayload
-                    val simpleTextPayload = IadvizeMessage(TextPayload(it.action.text.toString()))
+                    val message: String = translator.translate(it.action.text).toString()
+                    val simpleTextPayload = IadvizeMessage(TextPayload(message))
                     //Combine 1 TextPayload with messages IadvizeReply
                     listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
                 } else {
@@ -131,12 +149,12 @@ class IadvizeConnectorCallback(override val  applicationId: String,
         sendTechnicalError(throwable)
     }
 
-    fun sendTechnicalError(throwable: Throwable) {
+    private fun sendTechnicalError(throwable: Throwable) {
         logger.error(throwable)
         context.fail(throwable)
     }
 
-    fun <T> HttpServerResponse.endWithJson(response: T?) {
+    private fun <T> HttpServerResponse.endWithJson(response: T?) {
         if(response != null) {
             logger.debug { "iAdvize response : $response" }
 

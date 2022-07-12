@@ -42,6 +42,13 @@ import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
 import java.time.LocalDateTime
 
+private const val QUERY_ID_OPERATOR: String = "idOperator"
+private const val QUERY_ID_CONVERSATION: String = "idConversation"
+private const val TYPE_TEXT: String = "text"
+
+/**
+ *
+ */
 class IadvizeConnector internal constructor(
     val applicationId: String,
     val path: String,
@@ -53,12 +60,10 @@ class IadvizeConnector internal constructor(
         private val logger = KotlinLogging.logger {}
     }
 
-    val echo: MutableSet<String> = mutableSetOf()
-
-    private val QUERY_ID_OPERATOR: String = "idOperator"
-    private val QUERY_ID_CONVERSATION: String = "idConversation"
-
-    private val TYPE_TEXT: String = "text"
+    //TODO : solution non-scalable horizontally
+    //be careful, this solution makes the iadvize connector non-scalable horizontally.
+    // in case of deployment of several instances of BotAdmin: implement another solution.
+    private val echo: MutableSet<String> = mutableSetOf()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -86,8 +91,8 @@ class IadvizeConnector internal constructor(
     }
 
     /*
-     * when an exception is produced during the processing of the handler, it must be intercepted,
-     *  logged, then produce an error 500 without an explicit message to not expose vulnerabilities.
+     * when an exception is produced during the processing of the handler, it must be intercepted, logged,
+     *  then produce an error 500 without an explicit message to not expose vulnerabilities.
      *
      * iAdvizeHandler is wrapped in a FunctionalInterface Handler<RoutingContext>
      *  and provided to the Route.handler(...) method
@@ -104,19 +109,19 @@ class IadvizeConnector internal constructor(
     }
 
     internal var handlerGetBots: IadvizeHandler = { context, controller ->
-        logger.info { "request : GET /external-bots\nbody : ${context.getBodyAsString()}" }
+        logRequest("GET", "/external-bots")
         context.response().endWithJson(listOf(getBot(controller)))
     }
 
     internal var handlerGetBot: IadvizeHandler = { context, controller ->
         val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-        logger.info { "request : GET /bots/$idOperator\nbody : ${context.getBodyAsString()}" }
+        logRequest("GET", "/bots/$idOperator", context.getBodyAsString())
         context.response().endWithJson(getBotUpdate(idOperator, controller))
     }
 
     internal var handlerUpdateBot: IadvizeHandler = { context, controller ->
         val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-        logger.info { "request : PUT /bots/$idOperator\nbody : ${context.getBodyAsString()}" }
+        logRequest("PUT", "/bots/$idOperator", context.getBodyAsString())
         context.response().endWithJson(getBotUpdate(idOperator, controller))
     }
 
@@ -131,13 +136,13 @@ class IadvizeConnector internal constructor(
     }
 
     internal var handlerStrategies: IadvizeHandler = { context, controller ->
-        logger.info { "request : GET /availability-strategies\nbody : ${context.getBodyAsString()}" }
+        logRequest("GET", "/availability-strategies")
         context.response().endWithJson(AvailabilityStrategies(strategy = customAvailability, availability = true))
     }
 
     internal var handlerFirstMessage: IadvizeHandler = { context, controller ->
         val idOperator: String = context.pathParam(QUERY_ID_OPERATOR)
-        logger.info { "request : GET /bots/$idOperator/conversation-first-messages\nbody : ${context.getBodyAsString()}" }
+        logRequest("GET", "/bots/$idOperator/conversation-first-messages")
         context.response().endWithJson(RepliesResponse(IadvizeMessage(firstMessage)))
     }
 
@@ -145,7 +150,7 @@ class IadvizeConnector internal constructor(
         logger.info { "request : POST /conversations\nbody : ${context.getBodyAsString()}" }
         val conversationRequest: ConversationsRequest =
             mapper.readValue(context.getBodyAsString(), ConversationsRequest::class.java)
-        val callback = IadvizeConnectorCallback(applicationId, context, conversationRequest)
+        val callback = IadvizeConnectorCallback(applicationId, controller, context, conversationRequest)
         callback.sendResponse()
     }
 
@@ -153,6 +158,8 @@ class IadvizeConnector internal constructor(
         val idConversation: String = context.pathParam(QUERY_ID_CONVERSATION)
         if (!isEcho(idConversation)) {
             logger.info { "request : POST /conversations/$idConversation/messages\nbody : ${context.getBodyAsString()}" }
+
+            logger.info { context.normalisedPath() }
             val iadvizeRequest: IadvizeRequest = mapRequest(idConversation, context)
             logger.info { "body parsed : $iadvizeRequest" }
             // warn echo message from iadvize
@@ -208,14 +215,14 @@ class IadvizeConnector internal constructor(
         context: RoutingContext,
         iadvizeRequest: IadvizeRequest
     ) {
-        val callback = IadvizeConnectorCallback(applicationId, context, iadvizeRequest)
+        val callback = IadvizeConnectorCallback(applicationId, controller, context, iadvizeRequest)
         when (iadvizeRequest) {
             is MessageRequest -> {
                 val event = WebhookActionConverter.toEvent(iadvizeRequest, applicationId)
                 controller.handle(event, ConnectorData(callback))
             }
 
-            //Only MessageRequest are supported, other message are UnsupportedMessage
+            //Only MessageRequest are supported, other messages are UnsupportedMessage
             // and UnsupportedResponse can be send immediatly
             else -> callback.sendResponse()
         }
@@ -223,4 +230,13 @@ class IadvizeConnector internal constructor(
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
         MediaConverter.toConnectorMessage(message)
+
+    private fun logRequest(verb: String, uri: String) {
+        logger.info { "request : $verb $uri}" }
+    }
+
+    private fun logRequest(verb: String, uri: String, body: String) {
+        logRequest(verb, uri)
+        logger.info { "body : $body" }
+    }
 }

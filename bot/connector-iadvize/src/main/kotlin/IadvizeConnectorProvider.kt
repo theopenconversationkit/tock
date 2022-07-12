@@ -17,14 +17,16 @@ package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.*
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.shared.loadProperties
 import ai.tock.shared.resourceAsString
+import java.util.*
 import kotlin.reflect.KClass
 
 internal object IadvizeConnectorProvider : ConnectorProvider {
     override val connectorType: ConnectorType = iadvizeConnectorType
 
-    private const val EDITOR_URL = "editorUrl"
-    private const val FIRST_MESSAGE = "firstMessage"
+    private const val EDITOR_URL = "tock_iadvize_editor_url"
+    private const val FIRST_MESSAGE = "tock_iadvize_first_message"
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
@@ -37,23 +39,24 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
         }
     }
 
-    override fun configuration(): ConnectorTypeConfiguration =
-        ConnectorTypeConfiguration(
+    override fun configuration(): ConnectorTypeConfiguration {
+        val properties: Properties = loadProperties("/iadvize.properties")
+        val fieldEditorUrl = ConnectorTypeConfigurationField(
+            properties.getProperty(EDITOR_URL, EDITOR_URL),
+            EDITOR_URL,
+            true
+        )
+        val fieldFirstMessage = ConnectorTypeConfigurationField(
+            properties.getProperty(FIRST_MESSAGE, FIRST_MESSAGE),
+            FIRST_MESSAGE,
+            true
+        )
+        return ConnectorTypeConfiguration(
             connectorType,
-            listOf(
-                ConnectorTypeConfigurationField(
-                    "URL de l'éditeur",
-                    EDITOR_URL,
-                    true
-                ),
-                ConnectorTypeConfigurationField(
-                    "Premier message affiché par le bot avant le début de conversation",
-                    FIRST_MESSAGE,
-                    true
-                )
-            ),
+            listOf(fieldEditorUrl, fieldFirstMessage),
             resourceAsString("/iadvize.svg")
         )
+    }
 
     override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
         IadvizeReply::class

@@ -16,7 +16,6 @@
 
 package ai.tock.bot.connector.iadvize.model.response
 
-import ai.tock.bot.connector.iadvize.model.response.Bot
 import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 

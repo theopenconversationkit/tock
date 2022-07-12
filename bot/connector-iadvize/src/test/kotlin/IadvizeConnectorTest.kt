@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,23 @@
  */
 package ai.tock.bot.connector.iadvize
 
-import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.GenericCardPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
 import ai.tock.bot.engine.ConnectorController
+import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.loadProperties
 import ai.tock.shared.resource
+import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.raw
 import com.google.common.io.Resources
 import io.mockk.*
 import io.vertx.core.http.HttpServerResponse
@@ -37,6 +39,7 @@ import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+import java.util.*
 import kotlin.test.assertEquals
 
 /**
@@ -48,20 +51,28 @@ class IadvizeConnectorTest {
     val controller: ConnectorController = mockk(relaxed = true)
     val context: RoutingContext = mockk(relaxed = true)
     val response: HttpServerResponse = mockk(relaxed = true)
+    //val botDefinition: BotDefinition = mockk(relaxed = true)
+    val translator: I18nTranslator = mockk()
     val botName: String = "botName"
     val botId: String = "botId"
     val operateurId: String = "operateurId"
     val conversationId: String = "conversationId"
 
+    val marcus: String = "MARCUS"
+
     @BeforeEach
     fun before() {
         every { context.response() } returns response
         every { response.putHeader("Content-Type", "application/json") } returns response
-        every { controller.connector } returns connector
         every { controller.botConfiguration.name } returns botName
         every { controller.botDefinition.botId } returns botId
         every { context.pathParam("idOperator") } returns operateurId
         every { context.pathParam("idConversation") } returns conversationId
+
+        every { controller.botDefinition.i18nTranslator(any(), any(), any(), any()) } returns translator
+        val marcusAnswer = I18nLabelValue("", "", "", marcus)
+        every { translator.translate(marcus) } returns marcusAnswer.raw
+
         // Force date to expected date
         mockkStatic(LocalDateTime::class)
         every { LocalDateTime.now() } returns LocalDateTime.of(2022, 4, 8, 16, 52, 37)
@@ -216,7 +227,6 @@ class IadvizeConnectorTest {
         val request: String = Resources.toString(resource("/request_message_text.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
         every { context.getBodyAsString() } returns request
-        every { context.getBodyAsString() } returns request
 
         val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS")
         val connectorData = slot<ConnectorData>()
@@ -243,7 +253,11 @@ class IadvizeConnectorTest {
         val request: String = Resources.toString(resource("/request_message_unsupport.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_message_unsupport.json"), Charsets.UTF_8)
         every { context.getBodyAsString() } returns request
-        every { context.getBodyAsString() } returns request
+
+        val properties: Properties = loadProperties("/iadvize.properties")
+        val messageUnsupported: String = properties.getProperty("tock_iadvize_unsupported_message_request")
+        val unsupportedAnswer = I18nLabelValue("", "", "", messageUnsupported)
+        every { translator.translate(messageUnsupported) } returns unsupportedAnswer.raw
 
         connector.handlerConversation(context, controller)
 

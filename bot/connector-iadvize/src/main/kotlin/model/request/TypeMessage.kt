@@ -16,6 +16,9 @@
 
 package ai.tock.bot.connector.iadvize.model.request
 
+/**
+ *
+ */
 data class TypeMessage(val message: MessageType) {
     data class MessageType(val payload: PayloadType)
     data class PayloadType(val contentType: String)
