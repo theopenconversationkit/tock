@@ -2,15 +2,13 @@ import {
   Component,
   ElementRef,
   HostListener,
-  Injectable,
   Input,
   OnDestroy,
   OnInit,
-  TemplateRef,
   ViewChild
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { pluck, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ScenarioDesignerService } from './scenario-designer-service.service';
 import {
   Scenario,
@@ -20,11 +18,8 @@ import {
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE
 } from '../../models/scenario.model';
-import { ScenarioService } from '../../services/scenario.service';
-import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
-import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 import { getContrastYIQ } from '../../commons/utils';

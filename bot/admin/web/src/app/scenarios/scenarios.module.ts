@@ -34,6 +34,8 @@ import { ContextCreateComponent } from './scenario-designer/scenario-conception/
 import { SentenceEditComponent } from './scenario-designer/scenario-conception/intent-edit/sentence/sentence-edit.component';
 import { ModeStepperComponent } from './scenario-designer/mode-stepper/mode-stepper.component';
 import { ScenarioConceptionComponent } from './scenario-designer/scenario-conception/scenario-conception.component';
+import { ScenarioProductionComponent } from './scenario-designer/scenario-production/scenario-production.component';
+import { ScenarioPublishingComponent } from './scenario-designer/scenario-publishing/scenario-publishing.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -92,7 +94,9 @@ import { ScenariosResolver } from './scenarios.resolver';
     ContextCreateComponent,
     SentenceEditComponent,
     ModeStepperComponent,
-    ScenarioConceptionComponent
+    ScenarioConceptionComponent,
+    ScenarioProductionComponent,
+    ScenarioPublishingComponent
   ],
   exports: [],
   providers: [

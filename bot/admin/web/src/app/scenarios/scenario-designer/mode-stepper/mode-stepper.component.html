@@ -73,15 +73,15 @@
 <div
   class="step pointer"
   [ngClass]="{
-    selected: mode === SCENARIO_MODE.distribution,
-    passed: isStepPassed(SCENARIO_MODE.distribution)
+    selected: mode === SCENARIO_MODE.publishing,
+    passed: isStepPassed(SCENARIO_MODE.publishing)
   }"
-  (click)="switchMode(SCENARIO_MODE.distribution)"
+  (click)="switchMode(SCENARIO_MODE.publishing)"
 >
   <div class="label-index">
     <nb-icon icon="checkmark-circle-outline"></nb-icon>
   </div>
   <div class="label">
-    <span>Distribution</span>
+    <span>Publishing</span>
   </div>
 </div>

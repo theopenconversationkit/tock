@@ -4,7 +4,7 @@ export enum SCENARIO_MODE {
   writing = 'writing',
   casting = 'casting',
   production = 'production',
-  distribution = 'distribution'
+  publishing = 'publishing'
 }
 
 export interface Scenario {

@@ -46,6 +46,16 @@
   [scenario]="scenario"
 ></scenario-conception>
 
+<scenario-production
+  *ngIf="scenario.mode === SCENARIO_MODE.production"
+  [scenario]="scenario"
+></scenario-production>
+
+<scenario-publishing
+  *ngIf="scenario.mode === SCENARIO_MODE.publishing"
+  [scenario]="scenario"
+></scenario-publishing>
+
 <ng-template
   #tickStoryJsonTempModal
   let-data

@@ -14,7 +14,9 @@
     position: absolute;
     z-index: 5;
 
+    // comment récupérer la version dark-theme de la variable ?
     background-color: nb-theme(color-basic-300);
+
     box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1),
       2px 2px 5px rgba($color: #000000, $alpha: 0.1);
     width: 2rem;
