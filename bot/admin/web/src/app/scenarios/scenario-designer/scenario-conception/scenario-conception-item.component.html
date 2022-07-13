@@ -239,14 +239,14 @@
   <div class="card-row">
     <ng-container *ngFor="let childItem of getChildItems()">
       <div class="card-col">
-        <scenario-designer-entry
+        <scenario-conception-item
           [itemId]="childItem.id"
           [parentId]="item.id"
           [scenarioItems]="scenarioItems"
           [contexts]="contexts"
           [selectedItem]="selectedItem"
           [mode]="mode"
-        ></scenario-designer-entry>
+        ></scenario-conception-item>
       </div>
     </ng-container>
   </div>

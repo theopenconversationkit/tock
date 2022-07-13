@@ -11,7 +11,7 @@ import {
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
   TickContext
-} from '../models/scenario.model';
+} from '../../models/scenario.model';
 import { ActionEditComponent } from './action-edit/action-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
@@ -19,11 +19,11 @@ import { IntentsSearchComponent } from './intents-search/intents-search.componen
 import { ScenarioDesignerService } from './scenario-designer-service.service';
 
 @Component({
-  selector: 'scenario-designer-entry',
-  templateUrl: './scenario-designer-entry.component.html',
-  styleUrls: ['./scenario-designer-entry.component.scss']
+  selector: 'scenario-conception-item',
+  templateUrl: './scenario-conception-item.component.html',
+  styleUrls: ['./scenario-conception-item.component.scss']
 })
-export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
+export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;

@@ -18,14 +18,17 @@ import { FormArray, FormControl } from '@angular/forms';
 import { NbContextMenuDirective } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DialogService } from '../../../../core-nlp/dialog.service';
-import { StateService } from '../../../../core-nlp/state.service';
-import { EntityDefinition, qualifiedName, Sentence } from '../../../../model/nlp';
-import { CreateEntityDialogComponent } from '../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
-import { SelectedResult, Token } from '../../../../sentence-analysis/highlight/highlight.component';
-import { getContrastYIQ } from '../../../commons/utils';
-import { TickContext } from '../../../models';
-import { ContextCreateComponent } from '../../context-create/context-create.component';
+import { DialogService } from '../../../../../core-nlp/dialog.service';
+import { StateService } from '../../../../../core-nlp/state.service';
+import { EntityDefinition, qualifiedName, Sentence } from '../../../../../model/nlp';
+import { CreateEntityDialogComponent } from '../../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
+import {
+  SelectedResult,
+  Token
+} from '../../../../../sentence-analysis/highlight/highlight.component';
+import { getContrastYIQ } from '../../../../commons/utils';
+import { TickContext } from '../../../../models';
+import { ContextCreateComponent } from '../../../scenario-conception/context-create/context-create.component';
 import { SentenceExtended, TempSentenceExtended } from '../intent-edit.component';
 
 @Component({

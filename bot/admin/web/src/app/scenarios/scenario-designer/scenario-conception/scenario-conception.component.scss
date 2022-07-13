@@ -1,0 +1,191 @@
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
+.canvas-wrapper {
+  position: relative;
+  z-index: 10;
+  margin-left: -2.25rem;
+  margin-right: -2.25rem;
+  margin-bottom: -0.75rem;
+  height: 75vh;
+  overflow: hidden;
+
+  .contexts-panel {
+    position: absolute;
+    z-index: 5;
+
+    background-color: nb-theme(color-basic-300);
+    box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1),
+      2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+    width: 2rem;
+    border-bottom-right-radius: 0.5rem;
+    transition: width 0.2s;
+
+    .panel-header-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.5rem 0 0 0;
+      .panel-header {
+        width: 100%;
+        padding: 0.5rem;
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        margin-right: -0.2rem;
+        .chevron-left {
+          display: none;
+        }
+        .chevron-right {
+          display: block;
+          margin-right: 0.15rem;
+        }
+      }
+    }
+
+    .contexts-list {
+      display: none;
+      overflow-y: auto;
+      max-height: 30rem;
+
+      .context-name {
+        max-width: 12rem;
+      }
+
+      .entity {
+        border-radius: 0.45rem;
+        padding: 0rem 0.3rem 0rem 0.3rem;
+        font-size: 0.7rem;
+        display: inline-block;
+        line-height: 1.25rem;
+      }
+    }
+
+    .addContextButton {
+      display: none;
+    }
+
+    &.displayed {
+      width: 17rem;
+
+      .panel-header-wrapper {
+        justify-content: flex-start;
+        padding: 0.5rem;
+        .panel-header {
+          writing-mode: initial;
+          text-orientation: initial;
+          .chevron-left {
+            display: block;
+          }
+          .chevron-right {
+            display: none;
+          }
+        }
+      }
+
+      .contexts-list {
+        display: block;
+      }
+      .addContextButton {
+        display: inherit;
+        margin: 1rem;
+      }
+    }
+  }
+
+  .canvas {
+    z-index: 1;
+    padding: 1.5rem;
+    width: 100vw;
+    height: 100vh;
+    transition: transform 0.3s;
+    transform-origin: 0 0;
+    .initialItem {
+      width: 1px;
+      margin: auto;
+    }
+  }
+
+  .canvas-shader {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+  }
+}
+
+.chat-wrapper {
+  position: fixed;
+  overflow-y: auto;
+  z-index: 10000;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.chat-container {
+  width: 550px;
+}
+
+.chat-controls {
+  display: flex;
+  text-align: center;
+  background-color: white;
+  padding: 1rem;
+  box-shadow: 0 0.5rem 1rem 0 #0e0e0e24;
+
+  .from {
+    IMG {
+      width: 5rem;
+    }
+  }
+
+  .propositions {
+    flex-grow: 1;
+    .prop-button {
+      display: inline-block;
+      cursor: pointer;
+      padding: 0.5rem;
+      border: 1px solid gray;
+      border-radius: 0.3rem;
+      margin: 0.3rem;
+      background-color: rgba(238, 238, 238, 0.5);
+      &:hover {
+        background-color: rgba(238, 238, 238, 1);
+      }
+    }
+  }
+}
+
+.unselect {
+  user-select: none;
+}
+
+.font-2rem {
+  font-size: 2rem;
+}
+
+:host .contexts-list::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 0.15625rem;
+}
+
+.nb-theme-default :host .contexts-list::-webkit-scrollbar-thumb {
+  background: #e4e9f2;
+}
+.nb-theme-default :host .contexts-list::-webkit-scrollbar-track {
+  background: #f7f9fc;
+}
+
+.nb-theme-dark :host .contexts-list::-webkit-scrollbar-thumb {
+  background: #101426;
+}
+.nb-theme-dark :host .contexts-list::-webkit-scrollbar-track {
+  background: #192038;
+}

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { PaginatedQuery } from 'src/app/model/commons';
 import { SearchQuery } from 'src/app/model/nlp';
-import { scenarioItem } from '../models/scenario.model';
+import { scenarioItem } from '../../models/scenario.model';
 
 @Injectable({
   providedIn: 'root'

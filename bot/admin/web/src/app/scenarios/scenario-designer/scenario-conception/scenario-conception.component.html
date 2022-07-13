@@ -1,0 +1,175 @@
+<div
+  class="canvas-wrapper"
+  #canvasWrapperElem
+  appMouseWheelListner
+  (onMouseWheel)="mouseWheel($event)"
+>
+  <div
+    *ngIf="scenario.mode == SCENARIO_MODE.casting"
+    class="contexts-panel pointer"
+    [ngClass]="{ displayed: contextsPanelDisplayed }"
+    appMouseWheelListner
+    (onMouseWheel)="stopPropagation($event, false)"
+  >
+    <div class="panel-header-wrapper">
+      <div
+        class="panel-header d-flex justify-content-between"
+        (click)="contextsPanelDisplayed = !contextsPanelDisplayed"
+      >
+        <div class="font-weight-bold">Contexts</div>
+
+        <nb-icon
+          class="chevron-right"
+          icon="chevron-right-outline"
+        ></nb-icon>
+
+        <nb-icon
+          class="chevron-left"
+          icon="chevron-left-outline"
+        ></nb-icon>
+      </div>
+    </div>
+
+    <div class="contexts-list">
+      <nb-list>
+        <nb-list-item
+          *ngIf="!scenario.data.contexts.length"
+          class="d-block justify-content-between text-muted font-italic"
+        >
+          No context defined yet
+        </nb-list-item>
+
+        <nb-list-item
+          *ngFor="let context of scenario.data.contexts"
+          class="d-block py-2"
+        >
+          <div class="d-flex justify-content-between">
+            <div>
+              <div
+                class="ellipsis context-name"
+                [title]="context.name"
+              >
+                {{ context.name }}
+              </div>
+
+              <div
+                *ngIf="context.entityType"
+                nbTooltip="Entity associated with the context"
+              >
+                <span
+                  class="entity"
+                  [style.background]="getContextEntityColor(context)"
+                  [style.color]="getContextEntityContrast(context)"
+                >
+                  {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <nb-icon
+                icon="trash-2-outline"
+                status="danger"
+                (click)="confirmDeleteContext(context)"
+                class="pointer ml-2"
+                nbTooltip="Delete this context"
+              ></nb-icon>
+            </div>
+          </div>
+        </nb-list-item>
+      </nb-list>
+    </div>
+
+    <div class="addContextButton">
+      <button
+        *ngIf="contextsPanelDisplayed"
+        nbButton
+        size="tiny"
+        fullWidth
+        status="info"
+        nbTooltip="Add a new context to the scenario"
+        (click)="addContext()"
+      >
+        Add context
+      </button>
+    </div>
+  </div>
+  <div
+    class="canvas cursor-move"
+    #canvasElem
+  >
+    <div class="card-row">
+      <div class="card-col">
+        <scenario-conception-item
+          *ngIf="scenario?.data.scenarioItems.length"
+          [itemId]="0"
+          [scenarioItems]="scenario.data.scenarioItems"
+          [contexts]="scenario.data.contexts"
+          [selectedItem]="selectedItem"
+          [mode]="scenario.mode"
+        ></scenario-conception-item>
+      </div>
+    </div>
+  </div>
+  <div class="canvas-shader"></div>
+</div>
+
+<div
+  class="chat-wrapper"
+  (click)="closeChat()"
+  *ngIf="chatDisplayed"
+>
+  <div
+    class="chat-container"
+    (click)="stopPropagation($event)"
+  >
+    <nb-chat
+      title="Test story"
+      status="primary"
+      size="large"
+    >
+      <nb-chat-message
+        *ngFor="let msg of messages"
+        [type]="msg.type"
+        [message]="msg.text"
+        [reply]="msg.reply"
+        [sender]="msg.user.name"
+        [date]="msg.date"
+        [files]="msg.files"
+        [quote]="msg.quote"
+        [latitude]="msg.latitude"
+        [longitude]="msg.longitude"
+        [avatar]="msg.user.avatar"
+      >
+      </nb-chat-message>
+    </nb-chat>
+
+    <div
+      class="chat-controls"
+      *ngIf="chatControlsDisplay"
+    >
+      <div
+        class="from"
+        [ngSwitch]="chatControlsFrom"
+      >
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_CLIENT">
+          <img src="assets/images/scenario-client.svg" />
+        </ng-container>
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_BOT">
+          <img src="assets/images/scenario-bot.svg" />
+        </ng-container>
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_API">
+          <img src="assets/images/scenario-verification.svg" />
+        </ng-container>
+      </div>
+      <div class="propositions">
+        <span
+          class="prop-button"
+          *ngFor="let proposition of chatPropositions"
+          (click)="chooseProposition(proposition)"
+        >
+          {{ proposition.text }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
