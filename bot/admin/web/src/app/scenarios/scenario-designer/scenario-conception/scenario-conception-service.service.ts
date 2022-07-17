@@ -8,7 +8,7 @@ import { scenarioItem } from '../../models/scenario.model';
 @Injectable({
   providedIn: 'root'
 })
-export class ScenarioDesignerService {
+export class ScenarioConceptionService {
   public scenarioDesignerItemsCommunication = new Subject<any>();
   constructor(protected state: StateService) {}
 

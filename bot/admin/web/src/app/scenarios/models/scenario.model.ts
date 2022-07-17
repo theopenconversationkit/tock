@@ -21,6 +21,7 @@ export interface Scenario {
 export interface ScenarioData {
   scenarioItems: scenarioItem[];
   contexts?: TickContext[];
+  stateMachine?: {};
 }
 
 export type EntityTypeName = string;

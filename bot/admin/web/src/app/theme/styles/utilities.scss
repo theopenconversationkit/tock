@@ -28,8 +28,6 @@
   min-width: 1em;
 }
 
-.nbStepper-without-content {
-  .step-content {
-    display: none;
-  }
+.unselectable {
+  user-select: none;
 }

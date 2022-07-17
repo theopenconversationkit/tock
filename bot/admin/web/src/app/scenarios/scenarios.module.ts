@@ -35,6 +35,9 @@ import { SentenceEditComponent } from './scenario-designer/scenario-conception/i
 import { ModeStepperComponent } from './scenario-designer/mode-stepper/mode-stepper.component';
 import { ScenarioConceptionComponent } from './scenario-designer/scenario-conception/scenario-conception.component';
 import { ScenarioProductionComponent } from './scenario-designer/scenario-production/scenario-production.component';
+import { ScenarioStateGroupComponent } from './scenario-designer/scenario-production/state-group/state-group.component';
+import { ScenarioProductionStateGroupAddComponent } from './scenario-designer/scenario-production/state-group/state-group-add/state-group-add.component';
+import { ScenarioTransitionComponent } from './scenario-designer/scenario-production/state-group/transition/transition.component';
 import { ScenarioPublishingComponent } from './scenario-designer/scenario-publishing/scenario-publishing.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
@@ -96,7 +99,10 @@ import { ScenariosResolver } from './scenarios.resolver';
     ModeStepperComponent,
     ScenarioConceptionComponent,
     ScenarioProductionComponent,
-    ScenarioPublishingComponent
+    ScenarioPublishingComponent,
+    ScenarioStateGroupComponent,
+    ScenarioProductionStateGroupAddComponent,
+    ScenarioTransitionComponent
   ],
   exports: [],
   providers: [

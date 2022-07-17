@@ -5,16 +5,12 @@ import {
   Injectable,
   OnDestroy,
   OnInit,
-  TemplateRef,
   ViewChild
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { pluck, takeUntil } from 'rxjs/operators';
-import { ScenarioDesignerService } from './scenario-conception/scenario-designer-service.service';
 import {
   Scenario,
-  scenarioItem,
-  scenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE
@@ -25,16 +21,11 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { entityColor, qualifiedName, qualifiedRole } from '../../model/nlp';
-import { getContrastYIQ } from '../commons/utils';
-
-const CANVAS_TRANSITION_TIMING = 300;
 
 @Component({
   selector: 'scenario-designer',
   templateUrl: './scenario-designer.component.html',
-  styleUrls: ['./scenario-designer.component.scss'],
-  providers: [ScenarioDesignerService]
+  styleUrls: ['./scenario-designer.component.scss']
 })
 export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   destroy = new Subject();
@@ -49,16 +40,12 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
-  qualifiedName = qualifiedName;
-
   constructor(
     private scenarioService: ScenarioService,
-    private scenarioDesignerService: ScenarioDesignerService,
     route: ActivatedRoute,
     private router: Router,
     private toastrService: NbToastrService,
-    protected state: StateService,
-    private dialogService: DialogService
+    protected state: StateService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -96,30 +83,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   switchMode(mode): void {
     this.scenario.mode = mode;
-  }
-
-  @ViewChild('tickStoryJsonTempModal') tickStoryJsonTempModal: TemplateRef<any>;
-  goToProduction() {
-    let tickStory = {
-      name: this.scenario.name,
-      sagaId: 321658,
-      stateMachine: 'Soon to come...',
-      primaryIntents: ['62bb118e49e78735af27aa98'],
-      secondaryIntents: ['65sd99ze1sd6ert6df21se89', 'df5d58ze54ds875q45sdf89'],
-      tickContexts: this.scenario.data.contexts,
-      tickActions: []
-    };
-
-    this.scenario.data.scenarioItems.forEach((item) => {
-      if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
-        tickStory.tickActions.push(item.tickActionDefinition);
-      }
-    });
-
-    console.log(tickStory);
-    const tickStoryJson = JSON.stringify(tickStory, null, 4);
-
-    this.dialogService.openDialog(this.tickStoryJsonTempModal, { context: tickStoryJson });
   }
 
   stringifiedCleanScenario(): string {

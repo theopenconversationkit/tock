@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ScenarioDesignerService } from './scenario-designer-service.service';
+import { ScenarioConceptionService } from './scenario-conception-service.service';
 import {
   Scenario,
   scenarioItem,
@@ -31,7 +31,7 @@ const CANVAS_TRANSITION_TIMING = 300;
   selector: 'scenario-conception',
   templateUrl: './scenario-conception.component.html',
   styleUrls: ['./scenario-conception.component.scss'],
-  providers: [ScenarioDesignerService]
+  providers: [ScenarioConceptionService]
 })
 export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
@@ -46,13 +46,13 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   qualifiedName = qualifiedName;
 
   constructor(
-    private scenarioDesignerService: ScenarioDesignerService,
+    private scenarioConceptionService: ScenarioConceptionService,
     protected state: StateService,
     private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
-    this.scenarioDesignerService.scenarioDesignerItemsCommunication
+    this.scenarioConceptionService.scenarioDesignerItemsCommunication
       .pipe(takeUntil(this.destroy))
       .subscribe((evt) => {
         if (evt.type == 'addAnswer') this.addAnswer(evt.item);
@@ -167,7 +167,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.selectItem(newEntry);
-      this.scenarioDesignerService.requireItemPosition(newEntry);
+      this.scenarioConceptionService.requireItemPosition(newEntry);
     }, 0);
   }
 
@@ -270,7 +270,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
     if (setFocus) {
       setTimeout(() => {
-        this.scenarioDesignerService.focusItem(item);
+        this.scenarioConceptionService.focusItem(item);
       }, CANVAS_TRANSITION_TIMING);
     }
   }

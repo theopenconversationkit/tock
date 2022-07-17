@@ -1,0 +1,33 @@
+.stateGroup {
+  font-size: 0.8rem;
+  border: 2px solid #aaa;
+  min-width: 10rem;
+
+  margin: 20px;
+  border-radius: 0.25rem;
+
+  .stateGroup-header {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    background-color: #aaa;
+    padding: 0.3rem 0.5rem;
+  }
+  .stateGroup-body {
+    min-height: 3rem;
+    // .transition {
+    //   padding: 0.2rem 0.6rem;
+    //   background-color: #ccc;
+    //   border-radius: 1rem;
+    //   color: white;
+    //   margin: 0.2rem;
+    // }
+  }
+
+  &.dragHover {
+    border-color: #666;
+    > .stateGroup-header {
+      background-color: #666;
+    }
+  }
+}

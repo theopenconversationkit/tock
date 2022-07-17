@@ -55,14 +55,3 @@
   *ngIf="scenario.mode === SCENARIO_MODE.publishing"
   [scenario]="scenario"
 ></scenario-publishing>
-
-<ng-template
-  #tickStoryJsonTempModal
-  let-data
->
-  <nb-card id="modal-wrapper">
-    <nb-card-body>
-      <pre style="max-height: 70vh; overflow: auto">{{ data }}</pre>
-    </nb-card-body>
-  </nb-card>
-</ng-template>
