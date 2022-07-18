@@ -1,0 +1,87 @@
+<div
+  class="step pointer"
+  [ngClass]="{
+    selected: mode === SCENARIO_MODE.writing,
+    passed: isStepPassed(SCENARIO_MODE.writing)
+  }"
+  (click)="switchMode(SCENARIO_MODE.writing)"
+>
+  <div class="label-index">
+    <nb-icon icon="edit-outline"></nb-icon>
+  </div>
+  <div class="label">
+    <span>Writing</span>
+  </div>
+</div>
+
+<div
+  class="connector"
+  [class.connectorpassed]="isStepPassed(SCENARIO_MODE.writing)"
+>
+  <div class="line"></div>
+  <div class="arrow"></div>
+</div>
+
+<div
+  class="step pointer"
+  [ngClass]="{
+    selected: mode === SCENARIO_MODE.casting,
+    passed: isStepPassed(SCENARIO_MODE.casting)
+  }"
+  (click)="switchMode(SCENARIO_MODE.casting)"
+>
+  <div class="label-index">
+    <nb-icon icon="people-outline"></nb-icon>
+  </div>
+  <div class="label">
+    <span>Casting</span>
+  </div>
+</div>
+
+<div
+  class="connector"
+  [class.connectorpassed]="isStepPassed(SCENARIO_MODE.casting)"
+>
+  <div class="line"></div>
+  <div class="arrow"></div>
+</div>
+
+<div
+  class="step pointer"
+  [ngClass]="{
+    selected: mode === SCENARIO_MODE.production,
+    passed: isStepPassed(SCENARIO_MODE.production)
+  }"
+  (click)="switchMode(SCENARIO_MODE.production)"
+>
+  <div class="label-index">
+    <nb-icon icon="video-outline"></nb-icon>
+  </div>
+  <div class="label">
+    <span>Production</span>
+  </div>
+</div>
+
+<div
+  class="connector"
+  [class.connectorpassed]="isStepPassed(SCENARIO_MODE.production)"
+>
+  <div class="line"></div>
+  <div class="arrow"></div>
+</div>
+
+<div
+  class="step pointer"
+  [ngClass]="{
+    selected: mode === SCENARIO_MODE.publishing,
+    passed: isStepPassed(SCENARIO_MODE.publishing)
+  }"
+  (click)="switchMode(SCENARIO_MODE.publishing)"
+>
+  <div class="label-index">
+    <nb-icon icon="checkmark-circle-outline"></nb-icon>
+  </div>
+  <div class="label">
+    <span>Publishing</span>
+  </div>
+</div>

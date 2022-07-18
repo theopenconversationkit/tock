@@ -9,24 +9,22 @@ import {
   scenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE_PRODUCTION,
-  SCENARIO_MODE_WRITING,
+  SCENARIO_MODE,
   TickContext
-} from '../models/scenario.model';
+} from '../../models/scenario.model';
 import { ActionEditComponent } from './action-edit/action-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
 import { IntentsSearchComponent } from './intents-search/intents-search.component';
-import { ScenarioDesignerService } from './scenario-designer-service.service';
+import { ScenarioConceptionService } from './scenario-conception-service.service';
 
 @Component({
-  selector: 'scenario-designer-entry',
-  templateUrl: './scenario-designer-entry.component.html',
-  styleUrls: ['./scenario-designer-entry.component.scss']
+  selector: 'scenario-conception-item',
+  templateUrl: './scenario-conception-item.component.html',
+  styleUrls: ['./scenario-conception-item.component.scss']
 })
-export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
-  readonly SCENARIO_MODE_PRODUCTION = SCENARIO_MODE_PRODUCTION;
-  readonly SCENARIO_MODE_WRITING = SCENARIO_MODE_WRITING;
+export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
+  readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
@@ -44,12 +42,12 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   utterancesLoading = true;
 
   constructor(
-    private scenarioDesignerService: ScenarioDesignerService,
+    private scenarioConceptionService: ScenarioConceptionService,
     private dialogService: DialogService,
     protected state: StateService,
     private nlp: NlpService
   ) {
-    this.scenarioDesignerService.scenarioDesignerItemsCommunication
+    this.scenarioConceptionService.scenarioDesignerItemsCommunication
       .pipe(takeUntil(this.destroy))
       .subscribe((evt) => {
         if (evt.type == 'focusItem') this.focusItem(evt.item);
@@ -157,7 +155,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   collectIntentUtterances() {
-    const searchQuery: SearchQuery = this.scenarioDesignerService.createSearchIntentsQuery({
+    const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
       intentId: this.item.intentDefinition.intentId
     });
 
@@ -213,7 +211,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   selectItem(): void {
-    this.scenarioDesignerService.selectItem(this.item);
+    this.scenarioConceptionService.selectItem(this.item);
   }
 
   focusItem(item: scenarioItem): void {
@@ -224,7 +222,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
 
   requireItemPosition(item: scenarioItem): void {
     if (item == this.item) {
-      this.scenarioDesignerService.exposeItemPosition(this.item, {
+      this.scenarioConceptionService.exposeItemPosition(this.item, {
         left: this.itemCard.nativeElement.offsetLeft,
         top: this.itemCard.nativeElement.offsetTop,
         width: this.itemCard.nativeElement.offsetWidth,
@@ -234,7 +232,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   test(): void {
-    this.scenarioDesignerService.testItem(this.item);
+    this.scenarioConceptionService.testItem(this.item);
   }
 
   getParentItem(): scenarioItem {
@@ -255,11 +253,11 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
   }
 
   answering(): void {
-    this.scenarioDesignerService.addAnswer(this.item);
+    this.scenarioConceptionService.addAnswer(this.item);
   }
 
   delete(): void {
-    this.scenarioDesignerService.deleteAnswer(this.item, this.parentId);
+    this.scenarioConceptionService.deleteAnswer(this.item, this.parentId);
   }
 
   getItemCardCssClass(): string {
@@ -321,7 +319,7 @@ export class ScenarioDesignerEntryComponent implements OnInit, OnDestroy {
 
   onDrop($event): void {
     if (this.item.id == $event.data) return;
-    this.scenarioDesignerService.itemDropped(this.item.id, $event.data);
+    this.scenarioConceptionService.itemDropped(this.item.id, $event.data);
   }
 
   mouseWheel(event) {

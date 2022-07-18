@@ -147,7 +147,7 @@
         ],
         "contexts": []
       },
-      "mode": "production"
+      "mode": "casting"
     },
     {
       "id": 3,
@@ -378,7 +378,7 @@
           }
         ]
       },
-      "mode": "production"
+      "mode": "casting"
     },
     {
       "id": 4,
@@ -799,7 +799,7 @@
           }
         ]
       },
-      "mode": "production"
+      "mode": "casting"
     },
     {
       "id": 5,
@@ -1524,7 +1524,71 @@
             "name": "CASHIERS_HOURS",
             "type": "string"
           }
-        ]
+        ],
+        "stateMachine": {
+          "id": "root",
+          "type": "parallel",
+          "states": {
+            "Global": {
+              "id": "Global",
+              "states": {
+                "BOOK_MEETING": {
+                  "id": "BOOK_MEETING",
+                  "states": {
+                    "WICH_CANAL": {
+                      "id": "WICH_CANAL"
+                    },
+                    "APPOINTMENT_COUNTER": {
+                      "id": "APPOINTMENT_COUNTER"
+                    },
+                    "APPOINTMENT_PHONE": {
+                      "id": "APPOINTMENT_PHONE"
+                    },
+                    "BOOK_VISIO": {
+                      "id": "BOOK_VISIO",
+                      "states": {
+                        "APPOINTMENT_VISIO": {
+                          "id": "APPOINTMENT_VISIO"
+                        },
+                        "NO_WEBCAM_ANSWER": {
+                          "id": "NO_WEBCAM_ANSWER"
+                        },
+                        "WEBCAM_ANSWER": {
+                          "id": "WEBCAM_ANSWER"
+                        },
+                        "RECOVERY_OF_CASHIERS_HOURS": {
+                          "id": "RECOVERY_OF_CASHIERS_HOURS"
+                        },
+                        "DISPLAY_OF_CASHIERS_HOURS": {
+                          "id": "DISPLAY_OF_CASHIERS_HOURS"
+                        },
+                        "REDIRECTION_TO_A_CONSULTANT": {
+                          "id": "REDIRECTION_TO_A_CONSULTANT"
+                        }
+                      },
+                      "on": {
+                        "non": "NO_WEBCAM_ANSWER",
+                        "oui": "WEBCAM_ANSWER",
+                        "quelsSontLesHorairesDOuvertureDesCaisses": "RECOVERY_OF_CASHIERS_HOURS",
+                        "jesuisdispole": "REDIRECTION_TO_A_CONSULTANT"
+                      }
+                    }
+                  },
+                  "on": {
+                    "atCounter": "APPOINTMENT_COUNTER",
+                    "byPhone": "APPOINTMENT_PHONE",
+                    "byVisio": "BOOK_VISIO"
+                  }
+                }
+              },
+              "on": {
+                "bonjourJeSouhaitePrendreUnRdv": "BOOK_MEETING"
+              }
+            }
+          },
+          "initial": "Global",
+          "on": {}
+        }
       },
       "mode": "production"
     },
@@ -1536,7 +1600,7 @@
       "tags": [
         "stateMachines"
       ],
-      "mode": "production",
+      "mode": "casting",
       "data": {
         "scenarioItems": [
           {

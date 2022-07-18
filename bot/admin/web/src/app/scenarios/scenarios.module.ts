@@ -14,6 +14,7 @@ import {
   NbListModule,
   NbSelectModule,
   NbSpinnerModule,
+  NbStepperModule,
   NbTagModule,
   NbTooltipModule,
   NbTreeGridModule
@@ -24,13 +25,20 @@ import {
   ScenarioDesignerNavigationGuard,
   ScenarioDesignerComponent
 } from './scenario-designer/scenario-designer.component';
-import { ScenarioDesignerEntryComponent } from './scenario-designer/scenario-designer-entry.component';
-import { IntentsSearchComponent } from './scenario-designer/intents-search/intents-search.component';
-import { IntentCreateComponent } from './scenario-designer/intent-create/intent-create.component';
-import { IntentEditComponent } from './scenario-designer/intent-edit/intent-edit.component';
-import { ActionEditComponent } from './scenario-designer/action-edit/action-edit.component';
-import { ContextCreateComponent } from './scenario-designer/context-create/context-create.component';
-import { SentenceEditComponent } from './scenario-designer/intent-edit/sentence/sentence-edit.component';
+import { ScenarioConceptionItemComponent } from './scenario-designer/scenario-conception/scenario-conception-item.component';
+import { IntentsSearchComponent } from './scenario-designer/scenario-conception/intents-search/intents-search.component';
+import { IntentCreateComponent } from './scenario-designer/scenario-conception/intent-create/intent-create.component';
+import { IntentEditComponent } from './scenario-designer/scenario-conception/intent-edit/intent-edit.component';
+import { ActionEditComponent } from './scenario-designer/scenario-conception/action-edit/action-edit.component';
+import { ContextCreateComponent } from './scenario-designer/scenario-conception/context-create/context-create.component';
+import { SentenceEditComponent } from './scenario-designer/scenario-conception/intent-edit/sentence/sentence-edit.component';
+import { ModeStepperComponent } from './scenario-designer/mode-stepper/mode-stepper.component';
+import { ScenarioConceptionComponent } from './scenario-designer/scenario-conception/scenario-conception.component';
+import { ScenarioProductionComponent } from './scenario-designer/scenario-production/scenario-production.component';
+import { ScenarioStateGroupComponent } from './scenario-designer/scenario-production/state-group/state-group.component';
+import { ScenarioProductionStateGroupAddComponent } from './scenario-designer/scenario-production/state-group/state-group-add/state-group-add.component';
+import { ScenarioTransitionComponent } from './scenario-designer/scenario-production/state-group/transition/transition.component';
+import { ScenarioPublishingComponent } from './scenario-designer/scenario-publishing/scenario-publishing.component';
 import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
@@ -71,7 +79,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     NbTreeGridModule,
     NbAccordionModule,
     NbContextMenuModule,
-    NbAlertModule
+    NbAlertModule,
+    NbStepperModule
   ],
   declarations: [
     ScenariosListComponent,
@@ -79,14 +88,21 @@ import { ScenariosResolver } from './scenarios.resolver';
     ScenarioListSimpleComponent,
     ScenarioTreeComponent,
     ScenarioDesignerComponent,
-    ScenarioDesignerEntryComponent,
+    ScenarioConceptionItemComponent,
     ScenarioFiltersComponent,
     IntentsSearchComponent,
     IntentCreateComponent,
     IntentEditComponent,
     ActionEditComponent,
     ContextCreateComponent,
-    SentenceEditComponent
+    SentenceEditComponent,
+    ModeStepperComponent,
+    ScenarioConceptionComponent,
+    ScenarioProductionComponent,
+    ScenarioPublishingComponent,
+    ScenarioStateGroupComponent,
+    ScenarioProductionStateGroupAddComponent,
+    ScenarioTransitionComponent
   ],
   exports: [],
   providers: [

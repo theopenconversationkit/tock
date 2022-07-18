@@ -10,10 +10,10 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { scenarioItem, TickContext } from '../../models';
-import { getContrastYIQ, normalizedSnakeCase } from '../../commons/utils';
+import { scenarioItem, TickContext } from '../../../models';
+import { getContrastYIQ, normalizedSnakeCase } from '../../../commons/utils';
 import { Observable, of } from 'rxjs';
-import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
+import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
 const ENTITY_NAME_MINLENGTH = 5;
 

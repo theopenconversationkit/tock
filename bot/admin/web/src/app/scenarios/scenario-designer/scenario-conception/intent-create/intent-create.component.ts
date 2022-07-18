@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { of } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { normalizedCamelCase } from '../../commons/utils';
+import { normalizedCamelCase } from '../../../commons/utils';
 
 @Component({
   selector: 'scenario-intent-create',

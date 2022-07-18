@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
-import { normalizedSnakeCase } from '../../commons/utils';
+import { normalizedSnakeCase } from '../../../commons/utils';
 
 const ENTITY_NAME_MINLENGTH = 5;
 

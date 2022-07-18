@@ -27,3 +27,7 @@
 .min-width-1em {
   min-width: 1em;
 }
+
+.unselectable {
+  user-select: none;
+}
