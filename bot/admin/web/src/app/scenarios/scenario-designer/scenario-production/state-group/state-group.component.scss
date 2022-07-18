@@ -3,7 +3,8 @@
   border: 2px solid #aaa;
   min-width: 10rem;
 
-  margin: 20px;
+  // margin: 20px;
+  margin-bottom: 20px;
   border-radius: 0.25rem;
 
   .stateGroup-header {
@@ -12,16 +13,16 @@
     color: white;
     background-color: #aaa;
     padding: 0.3rem 0.5rem;
+    margin: -1px;
   }
   .stateGroup-body {
     min-height: 3rem;
-    // .transition {
-    //   padding: 0.2rem 0.6rem;
-    //   background-color: #ccc;
-    //   border-radius: 1rem;
-    //   color: white;
-    //   margin: 0.2rem;
-    // }
+    .transitions-wrapper {
+      position: relative;
+    }
+    .actions-wrapper {
+      padding: 20px 20px 0 20px;
+    }
   }
 
   &.dragHover {

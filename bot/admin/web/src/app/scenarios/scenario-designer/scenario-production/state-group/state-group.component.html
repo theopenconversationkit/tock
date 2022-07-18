@@ -31,36 +31,21 @@
     *ngIf="state.states"
   >
     <div
-      class="position-relative"
+      class="transitions-wrapper"
       [ngStyle]="{ 'width.px': transitionWrapperWidth }"
     >
-      <ng-container *ngFor="let transition of getTransitionsCache()">
+      <ng-container *ngFor="let transition of state.on | keyvalue">
         <scenario-transition
-          [transition]="transition"
+          [transition]="{ name: transition.key, target: transition.value }"
           (removeTransition)="removeTransition($event)"
         ></scenario-transition>
       </ng-container>
-
-      <!-- <div
-        class="transition d-flex justify-content-between position-absolute"
-        *ngFor="let transition of getTransitionsCache()"
-        [ngStyle]="{ 'top.px': getTransitionTop(transition) }"
-      >
-        {{ transition.name }}
-
-        <nb-icon
-          class="pointer ml-1"
-          icon="minus-circle-outline"
-          nbTooltip="Remove this transition"
-          (click)="removeTransition(transition)"
-        ></nb-icon>
-      </div> -->
     </div>
 
-    <div>
+    <div class="actions-wrapper">
       <scenario-state-group
-        *ngFor="let state of getStates()"
-        [state]="state"
+        *ngFor="let state of state.states | keyvalue"
+        [state]="state.value"
         [usedNames]="usedNames"
       ></scenario-state-group>
     </div>

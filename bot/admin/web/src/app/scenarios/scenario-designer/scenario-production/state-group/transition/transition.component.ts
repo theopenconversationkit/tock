@@ -16,7 +16,15 @@ export class ScenarioTransitionComponent implements OnDestroy {
   constructor(
     public elementRef: ElementRef,
     private scenarioProductionService: ScenarioProductionService
-  ) {}
+  ) {
+    this.scenarioProductionService.scenarioProductionItemsCommunication
+      .pipe(takeUntil(this.destroy))
+      .subscribe((evt) => {
+        if (evt.type == 'redrawIntents') {
+          this.setTransitionTop();
+        }
+      });
+  }
 
   ngAfterViewInit(): void {
     this.scenarioProductionService.registerTransitionComponent(this);
