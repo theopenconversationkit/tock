@@ -64,7 +64,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   ngAfterViewInit(): void {
     setTimeout(() => {
       this.drawPaths();
-    }, 100);
+    });
   }
 
   svgCanvas;
@@ -91,7 +91,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     for (let transitionName in transitions) {
       const transitionComponent =
         this.scenarioProductionService.scenarioProductionTransitionsComponents[transitionName];
-      if (!transitionComponent) return;
+      if (!transitionComponent) {
+        return;
+      }
 
       const transitionElem = transitionComponent.elementRef.nativeElement;
       const transitionElemPos = revertTransformMatrix(

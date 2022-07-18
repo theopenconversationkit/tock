@@ -46,8 +46,8 @@ export class ScenarioProductionService {
       this.redrawIntents();
       setTimeout(() => {
         this.redrawPaths();
-      }, 100);
-    }, 100);
+      });
+    });
   }
 
   itemDropped(stateId: string, dropped: object): void {
