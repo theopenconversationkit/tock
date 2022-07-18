@@ -67,7 +67,7 @@ export class ScenarioTransitionComponent implements OnDestroy {
       let margin = 0;
       if (siblings.length) {
         margin = 5;
-        totalHeight = (totalHeight + margin) * i;
+        totalHeight = totalHeight * i + margin * (i - 1);
       }
 
       return (
@@ -75,7 +75,7 @@ export class ScenarioTransitionComponent implements OnDestroy {
         stateElem.offsetHeight / 2 -
         totalHeight / 2 +
         averageHeight * index +
-        (index ? margin * index : 0)
+        margin * index
       );
     }
     return 0;

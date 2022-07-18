@@ -113,8 +113,19 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       const endLeft = stateElemPos.left - canvasLeft - 5;
       const endTop = stateElemPos.top + stateElemPos.height / 2 - canvasTop;
 
+      let path;
+      if (startTop === endTop) {
+        path = `M${startLeft} ${startTop} L${endLeft} ${endTop}`;
+      } else {
+        let padding = 5;
+        path = `M${startLeft} ${startTop} L${endLeft - padding * 2} ${startTop}  L${
+          endLeft - padding * 2
+        } ${endTop} L${endLeft} ${endTop}`;
+      }
+
       this.svgCanvasGroup
-        .path(`M${startLeft} ${startTop} L${endLeft} ${endTop}`)
+        .path(path)
+        .fill({ opacity: 0 })
         .stroke({ color: TRANSITION_COLOR, width: 3, linecap: 'round', linejoin: 'round' })
         .marker('end', this.svgCanvasArrowMarker);
     }
