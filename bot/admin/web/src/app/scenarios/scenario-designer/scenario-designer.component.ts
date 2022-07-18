@@ -45,6 +45,7 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../model/nlp';
 import { getContrastYIQ } from '../commons/utils';
 import { ContextCreateComponent } from './context-create/context-create.component';
+import { JsonPreviewerComponent } from 'src/app/shared/json-previewer/json-previewer.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -180,10 +181,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       }
     });
 
-    console.log(tickStory);
-    const tickStoryJson = JSON.stringify(tickStory, null, 4);
+    //console.log(tickStory);
+    //const tickStoryJson = JSON.stringify(tickStory, null, 4);
 
-    this.dialogService.openDialog(this.tickStoryJsonTempModal, { context: tickStoryJson });
+    //this.dialogService.openDialog(this.tickStoryJsonTempModal, { context: tickStoryJson });
+    this.dialogService.openDialog(JsonPreviewerComponent, { context: { jsonData: tickStory } });
   }
 
   contextsPanelDisplayed: boolean = true;
