@@ -47,7 +47,6 @@ export class ScenarioTransitionComponent implements OnDestroy {
       const transitionElem = transitionComponent.elementRef.nativeElement;
       return stateElem.offsetTop + stateElem.offsetHeight / 2 - transitionElem.offsetHeight / 2;
     }
-    console.log('failed to get transition top', stateComponent, transitionComponent);
     return 0;
   }
 

@@ -15,6 +15,7 @@ import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dial
 import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
+import { revertTransformMatrix } from '../../commons/utils';
 
 const CANVAS_TRANSITION_TIMING = 300;
 const TRANSITION_COLOR = '#ccc';
@@ -58,6 +59,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.scenario.data.stateMachine) this.initStateMachine();
+  }
+
+  ngAfterViewInit(): void {
     setTimeout(() => {
       this.drawPaths();
     }, 100);
@@ -65,20 +69,21 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   svgCanvas;
   svgCanvasArrowMarker;
+  svgCanvasGroup;
   initSvgCanvas() {
     this.svgCanvas = SVG().addTo(this.canvasElem.nativeElement).size('100%', '100%');
     this.svgCanvas.attr('style', 'position:absolute;top:0;left:0;pointer-events: none;');
+    this.svgCanvasArrowMarker = this.svgCanvas.marker(3.5, 3.5, function (add) {
+      add.polygon('0 0, 3.5 1.75, 0 3.5').fill(TRANSITION_COLOR);
+    });
+    this.svgCanvasGroup = this.svgCanvas.group();
   }
 
   drawPaths() {
     if (!this.svgCanvas) this.initSvgCanvas();
-    this.svgCanvas.clear();
-    this.svgCanvasArrowMarker = this.svgCanvas.marker(3.5, 3.5, function (add) {
-      add.polygon('0 0, 3.5 1.75, 0 3.5').fill(TRANSITION_COLOR);
-    });
+    this.svgCanvasGroup.clear();
 
-    // TODO : https://stackoverflow.com/questions/27745438/how-to-compute-getboundingclientrect-without-considering-transforms
-    const canvasPos = this.svgCanvas.node.getBoundingClientRect();
+    const canvasPos = revertTransformMatrix(this.svgCanvas.node, this.canvasElem.nativeElement);
     const canvasLeft = canvasPos.left;
     const canvasTop = canvasPos.top;
 
@@ -86,22 +91,26 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     for (let transitionName in transitions) {
       const transitionComponent =
         this.scenarioProductionService.scenarioProductionTransitionsComponents[transitionName];
+      if (!transitionComponent) return;
+
       const transitionElem = transitionComponent.elementRef.nativeElement;
-      const transitionElemPos = transitionElem.getBoundingClientRect();
+      const transitionElemPos = revertTransformMatrix(
+        transitionElem,
+        this.canvasElem.nativeElement
+      );
 
       const stateComponent =
         this.scenarioProductionService.scenarioProductionStateComponents[
           transitions[transitionName]
         ];
       const stateElem = stateComponent.elementRef.nativeElement;
-      const stateElemPos = stateElem.getBoundingClientRect();
-
+      const stateElemPos = revertTransformMatrix(stateElem, this.canvasElem.nativeElement);
       const startLeft = transitionElemPos.left + transitionElemPos.width - canvasLeft;
       const startTop = transitionElemPos.top + transitionElemPos.height / 2 - canvasTop;
-      const endLeft = stateElemPos.left - canvasLeft + 15;
+      const endLeft = stateElemPos.left - canvasLeft - 5;
       const endTop = stateElemPos.top + stateElemPos.height / 2 - canvasTop;
 
-      this.svgCanvas
+      this.svgCanvasGroup
         .path(`M${startLeft} ${startTop} L${endLeft} ${endTop}`)
         .stroke({ color: TRANSITION_COLOR, width: 3, linecap: 'round', linejoin: 'round' })
         .marker('end', this.svgCanvasArrowMarker);
@@ -372,7 +381,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
     this.canvasScale +=
       -1 * Math.max(-1, Math.min(1, event.deltaY)) * this.zoomSpeed * this.canvasScale;
-    const max_scale = 2;
+    const max_scale = 1;
     const min_scale = 0.2;
     this.canvasScale = Math.max(min_scale, Math.min(max_scale, this.canvasScale));
 

@@ -20,7 +20,7 @@ export function normalizedCamelCase(str: string): string {
     .replace(/[^A-Za-z0-9]*/g, '');
 }
 
-export function getContrastYIQ(hexcolor) {
+export function getContrastYIQ(hexcolor: string): string {
   if (!hexcolor) return '';
   hexcolor = hexcolor.replace('#', '');
   var r = parseInt(hexcolor.substr(0, 2), 16);
@@ -28,4 +28,40 @@ export function getContrastYIQ(hexcolor) {
   var b = parseInt(hexcolor.substr(4, 2), 16);
   var yiq = (r * 299 + g * 587 + b * 114) / 1000;
   return yiq >= 128 ? 'black' : 'white';
+}
+
+export function revertTransformMatrix(el: Element, transformedParent: Element): DOMRect {
+  var brect = el.getBoundingClientRect();
+  var style = getComputedStyle(transformedParent);
+  var transformation = style.transform;
+  if (transformation === 'none') return brect;
+
+  const matrix = new DOMMatrix(transformation).inverse();
+  const topleft = new DOMPoint(brect.x, brect.y).matrixTransform(matrix);
+  const bottomRight = new DOMPoint(brect.x + brect.width, brect.y + brect.height).matrixTransform(
+    matrix
+  );
+
+  let x = topleft.x;
+  let y = topleft.y;
+  let w = bottomRight.x - topleft.x;
+  let h = bottomRight.y - topleft.y;
+
+  let rect = {
+    x: x,
+    y: y,
+    width: w,
+    height: h,
+    top: y,
+    right: x + w,
+    bottom: y + h,
+    left: x
+  };
+  let json = JSON.stringify(rect);
+  return {
+    ...rect,
+    toJSON: function () {
+      return json;
+    }
+  };
 }
