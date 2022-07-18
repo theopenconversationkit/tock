@@ -87,9 +87,7 @@ object FaqAdminService {
      * Save the Frequently asked question into database
      */
     fun saveFAQ(
-        query: FaqDefinitionRequest,
-        userLogin: UserLogin,
-        application: ApplicationDefinition
+        query: FaqDefinitionRequest, userLogin: UserLogin, application: ApplicationDefinition
     ): FaqDefinitionRequest {
         val faqSettings = faqSettingsDAO.getFaqSettingsByApplicationId(application._id)?.toFaqSettingsQuery()
         val intent = createOrUpdateIntent(query, application)
@@ -102,22 +100,13 @@ object FaqAdminService {
             val i18nLabel: I18nLabel = manageI18nLabelUpdate(query, application.namespace, existingFaq)
 
             val faqDefinition: FaqDefinition = prepareCreationOrUpdatingFaqDefinition(
-                query,
-                application,
-                intent,
-                i18nLabel,
-                existingFaq
+                query, application, intent, i18nLabel, existingFaq
             )
             faqDefinitionDAO.save(faqDefinition)
 
             // create the story and intent
             createOrUpdateStory(
-                query,
-                intent,
-                userLogin,
-                i18nLabel,
-                application,
-                faqSettings
+                query, intent, userLogin, i18nLabel, application, faqSettings
             )
 
             return FaqDefinitionRequest(
@@ -162,7 +151,6 @@ object FaqAdminService {
                 creationDate = existingFaq.creationDate,
                 updateDate = Instant.now()
             )
-
         } else {
             logger.info { "Creating FAQ \"${intent.label}\"" }
             FaqDefinition(
@@ -189,25 +177,18 @@ object FaqAdminService {
         faqFaqSettingsQuery: FaqSettingsQuery?
     ) {
         val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
-            applicationDefinition.namespace,
-            applicationDefinition.name,
-            intent.name
+            applicationDefinition.namespace, applicationDefinition.name, intent.name
         )
 
-        val storyDefinitionConfiguration =
-            prepareStoryCreationOrUpdate(
-                query,
-                intent,
-                i18nLabel,
-                applicationDefinition,
-                existingStory,
-                faqFaqSettingsQuery
-            )
+        val storyDefinitionConfiguration = prepareStoryCreationOrUpdate(
+            query, intent, i18nLabel, applicationDefinition, existingStory, faqFaqSettingsQuery
+        )
 
         BotAdminService.saveStory(
             applicationDefinition.namespace,
             BotStoryDefinitionConfiguration(storyDefinitionConfiguration, i18nLabel.defaultLocale, false),
-            userLogin, intent
+            userLogin,
+            intent
 
         ).also {
             val enabledLog: String = if (query.enabled) "enabled" else "disabled"
@@ -219,22 +200,19 @@ object FaqAdminService {
      * Update FAQ story with the settings (Add or Remove the ending rule)
      */
     fun updateAllFaqStoryWithSettings(
-        applicationDefinition: ApplicationDefinition,
-        faqSettings: FaqSettings
+        applicationDefinition: ApplicationDefinition, faqSettings: FaqSettings
     ) {
 
         val listFaq = faqDefinitionDAO.getFaqDefinitionByApplicationId(applicationDefinition._id)
 
         listFaq.forEach {
-            val currentIntent = it.intentId?.let {
+            val currentIntent = it.intentId.let {
                 AdminService.front.getIntentById(it)
             }
 
             val existingStory = currentIntent?.let {
                 storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
-                    applicationDefinition.namespace,
-                    applicationDefinition.name,
-                    currentIntent.name
+                    applicationDefinition.namespace, applicationDefinition.name, currentIntent.name
                 )
             }
 
@@ -242,8 +220,7 @@ object FaqAdminService {
                 storyDefinitionDAO.save(
                     existingStory.copy(
                         features = prepareEndingFeatures(
-                            existingStory,
-                            faqSettings
+                            existingStory, faqSettings
                         )
                     )
                 )
@@ -252,8 +229,7 @@ object FaqAdminService {
     }
 
     private fun prepareEndingFeatures(
-        existingStory: StoryDefinitionConfiguration,
-        faqSettings: FaqSettings
+        existingStory: StoryDefinitionConfiguration, faqSettings: FaqSettings
     ): List<StoryDefinitionConfigurationFeature> {
         val features = mutableListOf<StoryDefinitionConfigurationFeature>()
         features.addAll(existingStory.features)
@@ -332,8 +308,7 @@ object FaqAdminService {
      * @param : faqFaqSettingsQuery : enable the feature concerning the ending rule feature
      */
     private fun prepareStoryFeatures(
-        enabled: Boolean,
-        faqFaqSettingsQuery: FaqSettingsQuery?
+        enabled: Boolean, faqFaqSettingsQuery: FaqSettingsQuery?
     ): MutableList<StoryDefinitionConfigurationFeature> {
         val features = mutableListOf<StoryDefinitionConfigurationFeature>()
         //activation rule feature
@@ -357,24 +332,16 @@ object FaqAdminService {
      * Create or updates questions uterrances for the specified intent
      */
     private fun createOrUpdateUtterances(
-        query: FaqDefinitionRequest,
-        intentId: Id<IntentDefinition>,
-        userLogin: UserLogin
+        query: FaqDefinitionRequest, intentId: Id<IntentDefinition>, userLogin: UserLogin
     ) {
         val sentences: Pair<List<String>, List<ClassifiedSentence>> =
             checkSentencesToAddOrDelete(query.utterances, query.language, query.applicationId, intentId)
 
         val notYetPresentSentences: List<String> = sentences.first
-        notYetPresentSentences.forEach {
+        notYetPresentSentences.forEach { utterance ->
             runBlocking {
-                saveFaqSentence(
-                    it,
-                    query.language,
-                    query.applicationId,
-                    intentId,
-                    ClassifiedSentenceStatus.validated,
-                    userLogin
-                )
+                BotAdminService.saveSentence(utterance, query.language, query.applicationId, intentId, userLogin)
+                    .also { logger.info { "Saving classified sentence $it" } }
             }
         }
 
@@ -428,56 +395,6 @@ object FaqAdminService {
         return Pair(notYetPresentSentences.toList(), noMorePresentSentences.toList())
     }
 
-    /**
-     * @param utterance : the utterance text
-     * @param locale : the language
-     * @param applicationId :
-     * @param intentId
-     * @param sentenceStatus
-     * Save sentences for classifiedSentences
-     * Add the sentencesStatus parameter in contrary of :
-     * @see BotAdminService.saveSentence
-     */
-    private fun saveFaqSentence(
-        utterance: String,
-        locale: Locale,
-        applicationId: Id<ApplicationDefinition>,
-        intentId: Id<IntentDefinition>,
-        sentenceStatus: ClassifiedSentenceStatus,
-        user: UserLogin
-    ) {
-        if (
-            classifiedSentenceDAO.search(
-                SentencesQuery(
-                    applicationId = applicationId,
-                    language = locale,
-                    search = utterance,
-                    onlyExactMatch = true,
-                    intentId = intentId,
-                    status = setOf(
-                        ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model
-                    )
-                )
-            ).total == 0L
-        ) {
-            classifiedSentenceDAO.save(
-                ClassifiedSentence(
-                    text = utterance,
-                    language = locale,
-                    applicationId = applicationId,
-                    creationDate = Instant.now(),
-                    updateDate = Instant.now(),
-                    status = sentenceStatus,
-                    classification = Classification(intentId, emptyList()),
-                    lastIntentProbability = 1.0,
-                    lastEntityProbability = 1.0,
-                    qualifier = user
-                ).also { logger.info { "Saving classified sentence $it" } }
-            )
-
-        }
-    }
-
     fun searchTags(applicationId: String): List<String> {
         return faqDefinitionDAO.getTags(applicationId)
     }
@@ -493,9 +410,7 @@ object FaqAdminService {
         //first is the List<FaqQueryResult>
         //second is the total count
         val faqDetailsWithCount = faqDefinitionDAO.getFaqDetailsWithCount(
-            query.toFaqQuery(),
-            applicationDefinition._id.toString(),
-            i18nIds
+            query.toFaqQuery(), applicationDefinition._id.toString(), i18nIds
         )
 
         //search from tock bot Db with labels if some are found
@@ -522,25 +437,19 @@ object FaqAdminService {
      * @param i18nLabels: list of found labels to check from search text
      */
     private fun searchFromTockBotDbWithFoundTextLabels(
-        faqQuery: List<FaqQueryResult>,
-        applicationDefinition: ApplicationDefinition,
-        i18nLabels: List<I18nLabel>
+        faqQuery: List<FaqQueryResult>, applicationDefinition: ApplicationDefinition, i18nLabels: List<I18nLabel>
     ): Set<FaqDefinitionRequest> {
         val faqDetailedResults = LinkedHashSet<FaqDefinitionRequest>()
         if (i18nLabels.isNotEmpty()) {
-            val fromTockBotDb = faqQuery
-                .map { faqQueryResult ->
-                    faqQueryResult.toFaqDefinitionDetailed(
-                        faqQueryResult,
-                        i18nLabels.firstOrNull { it._id == faqQueryResult.i18nId }
-                            ?: unknownI18n(applicationDefinition).also { logger.warn { WARN_CANNOT_FIND_LABEL } }
-                    )
-                }.toSet()
+            val fromTockBotDb = faqQuery.map { faqQueryResult ->
+                faqQueryResult.toFaqDefinitionDetailed(faqQueryResult,
+                    i18nLabels.firstOrNull { it._id == faqQueryResult.i18nId }
+                        ?: unknownI18n(applicationDefinition).also { logger.warn { WARN_CANNOT_FIND_LABEL } })
+            }.toSet()
 
             faqDetailedResults.addAll(
                 convertFaqDefinitionDetailedToFaqDefinitionRequest(
-                    fromTockBotDb,
-                    applicationDefinition
+                    fromTockBotDb, applicationDefinition
                 )
             )
         }
@@ -557,22 +466,18 @@ object FaqAdminService {
         faqQuery: List<FaqQueryResult>,
         applicationDefinition: ApplicationDefinition,
     ): Set<FaqDefinitionRequest> {
-        val fromTockFrontDbOnly =
-            faqQuery.map {
-                i18nDao.getLabelById(it.i18nId)
-                    .let { i18nLabel ->
-                        it.toFaqDefinitionDetailed(
-                            it,
-                            (i18nLabel
-                                ?: unknownI18n(applicationDefinition).also { logger.warn { WARN_CANNOT_FIND_LABEL } })
-                        )
-                    }
-            }.toSet()
+        val fromTockFrontDbOnly = faqQuery.map {
+            i18nDao.getLabelById(it.i18nId).let { i18nLabel ->
+                it.toFaqDefinitionDetailed(
+                    it,
+                    (i18nLabel ?: unknownI18n(applicationDefinition).also { logger.warn { WARN_CANNOT_FIND_LABEL } })
+                )
+            }
+        }.toSet()
 
         return LinkedHashSet(
             convertFaqDefinitionDetailedToFaqDefinitionRequest(
-                fromTockFrontDbOnly,
-                applicationDefinition
+                fromTockFrontDbOnly, applicationDefinition
             )
         )
     }
@@ -588,8 +493,7 @@ object FaqAdminService {
         return utterances.ifEmpty {
             listOf(
                 fakeMissingUtterance(
-                    applicationDefinition,
-                    intentId
+                    applicationDefinition, intentId
                 )
             ).also { logger.warn { WARN_CANNOT_FIND_UTTERANCE } }
         }
@@ -603,12 +507,7 @@ object FaqAdminService {
         val fakeLocalizedLabel = LinkedHashSet<I18nLocalizedLabel>()
         fakeLocalizedLabel.add(I18nLocalizedLabel(supportedLocale, UserInterfaceType.textChat, UNKNOWN_ANSWER))
         return I18nLabel(
-            newId(),
-            applicationDefinition.namespace,
-            FAQ_CATEGORY,
-            fakeLocalizedLabel,
-            UNKNOWN_ANSWER,
-            supportedLocale
+            newId(), applicationDefinition.namespace, FAQ_CATEGORY, fakeLocalizedLabel, UNKNOWN_ANSWER, supportedLocale
         )
     }
 
@@ -636,9 +535,7 @@ object FaqAdminService {
     }
 
     private fun toFaqDefinitionSearchResult(
-        start: Long,
-        faqSet: Set<FaqDefinitionRequest>,
-        count: Long
+        start: Long, faqSet: Set<FaqDefinitionRequest>, count: Long
     ): FaqDefinitionSearchResult {
         logger.debug { "FaqSet $faqSet" }
         return FaqDefinitionSearchResult(count, start, start + faqSet.toList().size, faqSet.toList())
@@ -657,9 +554,7 @@ object FaqAdminService {
             // map the FaqDefinition to the set
             .map { faqDefinition ->
                 val currentUtterance = checkAndInformAnyMissingUtterances(
-                    applicationDefinition,
-                    faqDefinition.intentId,
-                    faqDefinition.utterances
+                    applicationDefinition, faqDefinition.intentId, faqDefinition.utterances
                 )
                 val currentLanguage = currentUtterance.map { it.language }.first()
                 FaqDefinitionRequest(
@@ -674,10 +569,9 @@ object FaqAdminService {
                     currentUtterance.map { it.text },
                     faqDefinition.tags,
                     // find the label or replace it with a fake unknown answer
-                    faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty()
-                        .ifEmpty {
-                            unknownI18n(applicationDefinition).i18n.map { it.label }.first()
-                        },
+                    faqDefinition.i18nLabel.i18n.map { it.label }.firstOrNull().orEmpty().ifEmpty {
+                        unknownI18n(applicationDefinition).i18n.map { it.label }.first()
+                    },
                     faqDefinition.enabled,
                 )
             }.toSet()
@@ -689,14 +583,12 @@ object FaqAdminService {
         search: String,
     ): List<I18nLabel> {
         return i18nDao.getLabels(
-            applicationDefinition.namespace,
-            I18nLabelFilter(search, FAQ_CATEGORY, I18nLabelStateFilter.VALIDATED)
+            applicationDefinition.namespace, I18nLabelFilter(search, FAQ_CATEGORY, I18nLabelStateFilter.VALIDATED)
         )
     }
 
     private fun createOrUpdateIntent(
-        query: FaqDefinitionRequest,
-        applicationDefinition: ApplicationDefinition
+        query: FaqDefinitionRequest, applicationDefinition: ApplicationDefinition
     ): IntentDefinition? {
         val name: String =
             getIntentName(query) ?: badRequest("Trouble when creating/updating intent : Intent name is missing")
@@ -733,9 +625,7 @@ object FaqAdminService {
      * Create or update I18nLabelUpdate
      */
     private fun manageI18nLabelUpdate(
-        query: FaqDefinitionRequest,
-        namespace: String,
-        existingFaq: FaqDefinition?
+        query: FaqDefinitionRequest, namespace: String, existingFaq: FaqDefinition?
     ): I18nLabel {
         return if (existingFaq != null && existingFaq.i18nId.toString().isNotBlank()) {
             //update existing label
@@ -750,14 +640,9 @@ object FaqAdminService {
             i18nDao.save(listOf(i18nLabel)).also { logger.info { "Updating I18n label : ${i18nLabel.defaultLabel}" } }
             i18nLabel
         } else {
-            BotAdminService.createI18nRequest(
-                namespace,
-                CreateI18nLabelRequest(
-                    query.answer.trim(),
-                    query.language,
-                    FAQ_CATEGORY
-                ).also { logger.info { "Creating I18n label : ${it.label}" } }
-            )
+            BotAdminService.createI18nRequest(namespace, CreateI18nLabelRequest(
+                query.answer.trim(), query.language, FAQ_CATEGORY
+            ).also { logger.info { "Creating I18n label : ${it.label}" } })
         }
     }
 
@@ -767,29 +652,46 @@ object FaqAdminService {
             val intent = intentDAO.getIntentById(faqDefinition.intentId)
             if (intent != null) {
                 logger.info { "Deleting FAQ Definition \"${intent.label}\"" }
-
                 val applicationDefinitionIds = intent.applications.map { it }
                 if (applicationDefinitionIds.isNotEmpty() && applicationDefinitionIds.size == 1) {
-                    val applicationDefinition = applicationDAO.getApplicationById(applicationDefinitionIds.first())
-                    if (applicationDefinition != null) {
-                        front.removeIntentFromApplication(applicationDefinition, faqDefinition.intentId)
-                        faqDefinitionDAO.deleteFaqDefinitionById(faqDefinition._id)
-                        i18nDao.deleteByNamespaceAndId(namespace, faqDefinition.i18nId)
-
-                        val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
-                            applicationDefinition.namespace,
-                            applicationDefinition.name,
-                            intent.name
-                        )
-                        if (existingStory != null) {
-                            BotAdminService.deleteStory(existingStory.namespace, existingStory._id.toString())
-                        }
-                        return true
-                    }
+                    return deleteOneFaqDefinition(applicationDefinitionIds, faqDefinition, namespace, intent.name)
                 } else {
                     throw NotImplementedError("Multiple application definition found for intent not IMPLEMENTED")
                 }
             }
+        }
+        return false
+    }
+
+
+    /**
+     * Delete a FaqDefinition when associated with only on application without shared intents
+     * @param applicationDefinitionIds A list of applicationDefintion Ids : only first is used
+     * @param faqDefinition The FaqDefinition
+     * @param namespace The application namespace
+     * @param intentName Then intent name
+     *
+     */
+    private fun deleteOneFaqDefinition(
+        applicationDefinitionIds: List<Id<ApplicationDefinition>>,
+        faqDefinition: FaqDefinition,
+        namespace: String,
+        intentName: String
+    ): Boolean {
+        val applicationDefinition = applicationDAO.getApplicationById(applicationDefinitionIds.first())
+        if (applicationDefinition != null) {
+            front.removeIntentFromApplication(applicationDefinition, faqDefinition.intentId)
+            faqDefinitionDAO.deleteFaqDefinitionById(faqDefinition._id)
+            i18nDao.deleteByNamespaceAndId(namespace, faqDefinition.i18nId)
+
+            val existingStory = storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+                applicationDefinition.namespace, applicationDefinition.name, intentName
+            )
+
+            if (existingStory != null) {
+                BotAdminService.deleteStory(existingStory.namespace, existingStory._id.toString())
+            }
+            return true
         }
         return false
     }
@@ -799,20 +701,17 @@ object FaqAdminService {
     }
 
     fun saveSettings(
-        applicationDefinition: ApplicationDefinition,
-        faqSettingsQuery: FaqSettingsQuery
+        applicationDefinition: ApplicationDefinition, faqSettingsQuery: FaqSettingsQuery
     ): FaqSettingsQuery {
         val faqSettings = faqSettingsDAO.getFaqSettingsByApplicationId(applicationDefinition._id)
 
-        val faqSettingsUpdated = (
-                faqSettings ?: FaqSettings(
-                    applicationId = applicationDefinition._id, creationDate = Instant.now(), updateDate = Instant.now()
-                )
-                ).copy(
-                satisfactionEnabled = faqSettingsQuery.satisfactionEnabled,
-                satisfactionStoryId = faqSettingsQuery.satisfactionStoryId,
-                updateDate = Instant.now()
-            )
+        val faqSettingsUpdated = (faqSettings ?: FaqSettings(
+            applicationId = applicationDefinition._id, creationDate = Instant.now(), updateDate = Instant.now()
+        )).copy(
+            satisfactionEnabled = faqSettingsQuery.satisfactionEnabled,
+            satisfactionStoryId = faqSettingsQuery.satisfactionStoryId,
+            updateDate = Instant.now()
+        )
 
         faqSettingsDAO.save(faqSettingsUpdated)
         updateAllFaqStoryWithSettings(applicationDefinition, faqSettingsUpdated)
