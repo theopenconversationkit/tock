@@ -1,5 +1,15 @@
-import { Component, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { NbThemeService } from '@nebular/theme';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewEncapsulation
+} from '@angular/core';
+import { NbDialogRef, NbThemeService } from '@nebular/theme';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -8,19 +18,32 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./json-previewer.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class JsonPreviewerComponent implements OnInit, OnDestroy {
+export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() jsonData: string | object;
+  @Input() title: string = 'JSON Preview';
+  @Input() jsonPreviewerRef: NbDialogRef<JsonPreviewerComponent>;
 
+  @Output() onClose: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  data: string;
   subscription: Subscription = new Subscription();
-
   spacing: number = 2;
+  theme: string = 'default';
 
   constructor(private themeService: NbThemeService) {}
 
   ngOnInit(): void {
     this.subscription = this.themeService.onThemeChange().subscribe((theme: any) => {
-      this.jsonData = this.syntaxHighlight(this.jsonFormat(this.jsonData), theme.name);
+      this.theme = theme.name;
     });
+
+    this.data = this.syntaxHighlight(this.jsonFormat(this.jsonData));
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.jsonData.currentValue) {
+      this.data = this.syntaxHighlight(this.jsonFormat(this.jsonData));
+    }
   }
 
   ngOnDestroy(): void {
@@ -31,13 +54,13 @@ export class JsonPreviewerComponent implements OnInit, OnDestroy {
     return JSON.stringify(jsonData, undefined, this.spacing);
   }
 
-  private syntaxHighlight(jsonData: string, theme: string): string {
+  private syntaxHighlight(jsonData: string): string {
     const json = jsonData.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     return json.replace(
       /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|[{}\[\]]?)/g,
       (match) => {
-        let _class = 'number';
+        let _class: string | undefined;
 
         if (/^"/.test(match)) {
           if (/:$/.test(match)) {
@@ -51,10 +74,22 @@ export class JsonPreviewerComponent implements OnInit, OnDestroy {
           _class = 'null';
         } else if (/[{}\[\]]/.test(match)) {
           _class = 'delimiter';
+        } else if (/\d/.test(match)) {
+          _class = 'number';
+        } else {
+          return match;
         }
 
-        return `<span class="${theme}-${_class}">${match}</span>`;
+        return `<span ${_class && `class="${_class}"`}>${match}</span>`;
       }
     );
+  }
+
+  close(): void {
+    if (this.jsonPreviewerRef) {
+      this.jsonPreviewerRef.close();
+    }
+
+    this.onClose.emit(true);
   }
 }

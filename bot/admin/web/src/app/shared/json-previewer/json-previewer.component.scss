@@ -3,49 +3,47 @@ pre {
   padding: 0.5rem;
   margin: 0;
 
-  span.default {
-    &-key,
-    &-delimiter {
+  &.default span {
+    &.key,
+    &.comma,
+    &.delimiter {
       color: black;
     }
 
-    &-boolean {
+    &.boolean {
       color: firebrick;
     }
 
-    &-null {
+    &.null {
       color: gray;
     }
 
-    &-number {
+    &.number {
       color: blue;
     }
 
-    &-string {
+    &.string {
       color: green;
     }
   }
 
-  span.dark {
-    &-object-delimiter {
-      color: #dcd712;
-    }
-
-    &-key {
+  &.dark span {
+    &.key {
       color: #c792cc;
     }
 
-    &-delimiter,
-    &-boolean,
-    &-null {
+    &.delimiter,
+    &.comma,
+    &.boolean,
+    &.null {
       color: #6cddf0;
     }
 
-    &-number {
+    &.number {
       color: #e95f3c;
     }
 
-    &-string {
+    &.string {
       color: #c3e741;
     }
   }
