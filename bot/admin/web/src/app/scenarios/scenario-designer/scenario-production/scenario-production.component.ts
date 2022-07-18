@@ -60,7 +60,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     if (!this.scenario.data.stateMachine) this.initStateMachine();
     setTimeout(() => {
       this.drawPaths();
-    }, 500);
+    }, 100);
   }
 
   svgCanvas;
@@ -249,10 +249,39 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   }
 
   removeState(event) {
+    let targetingIntentParent = this.getIntentParentByTarget(
+      event.stateId,
+      this.scenario.data.stateMachine
+    );
+    if (targetingIntentParent) {
+      delete targetingIntentParent.parent.on[targetingIntentParent.intent];
+    }
+
     let parent = this.getActionParentById(event.stateId, this.scenario.data.stateMachine);
     if (parent) {
       delete parent.states[event.stateId];
     }
+  }
+
+  getIntentParentByTarget(targetName, group): { parent: { on: object }; intent: string } | null {
+    let result: { parent: { on: object }; intent: string } | null = null;
+    if (group.on) {
+      for (let transitionName in group.on) {
+        if (group.on[transitionName] === targetName) {
+          result = { parent: group, intent: transitionName };
+          break;
+        }
+      }
+
+      if (!result) {
+        for (let action in group.states) {
+          result = this.getIntentParentByTarget(targetName, group.states[action]);
+          if (result) break;
+        }
+      }
+    }
+
+    return result;
   }
 
   getIntentByName(name, group) {

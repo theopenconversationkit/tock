@@ -35,10 +35,18 @@ export class ScenarioProductionService {
       type: 'redrawActions'
     });
   }
+  redrawIntents() {
+    this.scenarioProductionItemsCommunication.next({
+      type: 'redrawIntents'
+    });
+  }
   updateLayout() {
     this.redrawActions();
     setTimeout(() => {
-      this.redrawPaths();
+      this.redrawIntents();
+      setTimeout(() => {
+        this.redrawPaths();
+      }, 100);
     }, 100);
   }
 

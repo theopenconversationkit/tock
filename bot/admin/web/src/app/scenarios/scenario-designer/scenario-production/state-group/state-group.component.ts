@@ -71,21 +71,6 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     return width;
   }
 
-  getStates() {
-    return Object.values(this.state.states);
-  }
-
-  transitionsCache;
-  getTransitionsCache() {
-    if (!this.transitionsCache) this.transitionsCache = this.getTransitions();
-    return this.transitionsCache;
-  }
-  getTransitions() {
-    return Object.entries(this.state.on).map((e) => {
-      return { name: e[0], target: e[1] };
-    });
-  }
-
   addStateGroup() {
     const modal = this.dialogService.openDialog(ScenarioProductionStateGroupAddComponent, {
       context: { usedNames: this.usedNames }
@@ -101,12 +86,13 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
 
   removeState() {
     this.scenarioProductionService.removeState(this.state.id);
+    // this.cd.detectChanges();
     this.scenarioProductionService.updateLayout();
   }
 
   removeTransition(transition) {
     delete this.state.on[transition.name];
-    this.transitionsCache = undefined;
+    // this.cd.detectChanges();
     this.scenarioProductionService.updateLayout();
   }
 

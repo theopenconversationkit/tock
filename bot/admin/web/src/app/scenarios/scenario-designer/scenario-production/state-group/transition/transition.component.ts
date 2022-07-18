@@ -16,7 +16,15 @@ export class ScenarioTransitionComponent implements OnDestroy {
   constructor(
     public elementRef: ElementRef,
     private scenarioProductionService: ScenarioProductionService
-  ) {}
+  ) {
+    this.scenarioProductionService.scenarioProductionItemsCommunication
+      .pipe(takeUntil(this.destroy))
+      .subscribe((evt) => {
+        if (evt.type == 'redrawIntents') {
+          this.setTransitionTop();
+        }
+      });
+  }
 
   ngAfterViewInit(): void {
     this.scenarioProductionService.registerTransitionComponent(this);
@@ -39,6 +47,7 @@ export class ScenarioTransitionComponent implements OnDestroy {
       const transitionElem = transitionComponent.elementRef.nativeElement;
       return stateElem.offsetTop + stateElem.offsetHeight / 2 - transitionElem.offsetHeight / 2;
     }
+    console.log('failed to get transition top', stateComponent, transitionComponent);
     return 0;
   }
 
