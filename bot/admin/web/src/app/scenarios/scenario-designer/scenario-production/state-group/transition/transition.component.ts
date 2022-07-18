@@ -12,6 +12,7 @@ export class ScenarioTransitionComponent implements OnDestroy {
   destroy = new Subject();
   @Output() removeTransition = new EventEmitter();
   @Input() transition;
+  @Input() parentState;
 
   constructor(
     public elementRef: ElementRef,
@@ -45,7 +46,37 @@ export class ScenarioTransitionComponent implements OnDestroy {
     if (stateComponent && transitionComponent) {
       const stateElem = stateComponent.elementRef.nativeElement;
       const transitionElem = transitionComponent.elementRef.nativeElement;
-      return stateElem.offsetTop + stateElem.offsetHeight / 2 - transitionElem.offsetHeight / 2;
+      let averageHeight = transitionElem.offsetHeight;
+
+      let siblings = [];
+      let i, index;
+      i = index = 0;
+
+      for (let sibling in this.parentState.on) {
+        if (this.parentState.on[sibling] === this.transition.target) {
+          if (sibling == this.transition.name) {
+            index = i;
+          } else {
+            siblings.push(sibling);
+          }
+          i++;
+        }
+      }
+
+      let totalHeight = averageHeight;
+      let margin = 0;
+      if (siblings.length) {
+        margin = 5;
+        totalHeight = (totalHeight + margin) * i;
+      }
+
+      return (
+        stateElem.offsetTop +
+        stateElem.offsetHeight / 2 -
+        totalHeight / 2 +
+        averageHeight * index +
+        (index ? margin * index : 0)
+      );
     }
     return 0;
   }

@@ -41,11 +41,13 @@ export class ScenarioProductionService {
     });
   }
   updateLayout() {
-    this.redrawActions();
     setTimeout(() => {
-      this.redrawIntents();
+      this.redrawActions();
       setTimeout(() => {
-        this.redrawPaths();
+        this.redrawIntents();
+        setTimeout(() => {
+          this.redrawPaths();
+        });
       });
     });
   }

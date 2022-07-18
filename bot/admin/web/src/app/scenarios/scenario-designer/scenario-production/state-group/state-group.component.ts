@@ -86,13 +86,11 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
 
   removeState() {
     this.scenarioProductionService.removeState(this.state.id);
-    // this.cd.detectChanges();
     this.scenarioProductionService.updateLayout();
   }
 
   removeTransition(transition) {
     delete this.state.on[transition.name];
-    // this.cd.detectChanges();
     this.scenarioProductionService.updateLayout();
   }
 

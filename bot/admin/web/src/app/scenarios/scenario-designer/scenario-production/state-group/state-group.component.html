@@ -37,6 +37,7 @@
       <ng-container *ngFor="let transition of state.on | keyvalue">
         <scenario-transition
           [transition]="{ name: transition.key, target: transition.value }"
+          [parentState]="state"
           (removeTransition)="removeTransition($event)"
         ></scenario-transition>
       </ng-container>

@@ -245,6 +245,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         parent.on[event.dropped.name] = event.stateId;
       }
     }
+
     this.scenarioProductionService.updateLayout();
   }
 
@@ -257,6 +258,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       }
       target.states[event.groupName] = { id: event.groupName, states: {}, on: {} };
     }
+    this.scenarioProductionService.updateLayout();
   }
 
   removeState(event) {

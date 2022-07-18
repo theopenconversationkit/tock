@@ -405,108 +405,7 @@
                   "namespace": "app",
                   "applicationName": "new_assistant",
                   "language": "fr",
-                  "query": "Sentence to create",
-                  "checkExistingQuery": false,
-                  "state": "",
-                  "classification": {
-                    "entities": [
-                      {
-                        "type": "app:event_occurence",
-                        "role": "event_occurence",
-                        "start": 12,
-                        "end": 18,
-                        "entityColor": "#b8ed86"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "namespace": "app",
-                  "applicationName": "new_assistant",
-                  "language": "fr",
-                  "query": "An other sentence to create",
-                  "checkExistingQuery": false,
-                  "state": "",
-                  "classification": {
-                    "entities": [
-                      {
-                        "type": "app:carte_max",
-                        "role": "carte_max",
-                        "start": 3,
-                        "end": 8,
-                        "entityColor": "#fdb397"
-                      },
-                      {
-                        "type": "app:opposition",
-                        "role": "opposition",
-                        "start": 9,
-                        "end": 17,
-                        "entityColor": "#8c7253"
-                      },
-                      {
-                        "type": "app:event_occurence",
-                        "role": "event_occurence",
-                        "start": 21,
-                        "end": 27,
-                        "entityColor": "#b8ed86"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "namespace": "app",
-                  "applicationName": "new_assistant",
-                  "language": "fr",
-                  "query": "Une phrase à ajouter",
-                  "checkExistingQuery": false,
-                  "state": "",
-                  "classification": {
-                    "entities": [
-                      {
-                        "type": "app:oeuvre",
-                        "role": "oeuvre",
-                        "start": 13,
-                        "end": 20,
-                        "entityColor": "#6e6a97"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "namespace": "app",
-                  "applicationName": "new_assistant",
-                  "language": "fr",
-                  "query": "Une autre phrase correspondant à l'intent",
-                  "checkExistingQuery": false,
-                  "state": "",
-                  "classification": {
-                    "entities": [
-                      {
-                        "type": "app:place",
-                        "role": "place",
-                        "start": 17,
-                        "end": 30,
-                        "entityColor": "#8de451"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "namespace": "app",
-                  "applicationName": "new_assistant",
-                  "language": "fr",
-                  "query": "Toujours plus de sentences",
-                  "checkExistingQuery": false,
-                  "state": "",
-                  "classification": {
-                    "entities": []
-                  }
-                },
-                {
-                  "namespace": "app",
-                  "applicationName": "new_assistant",
-                  "language": "fr",
-                  "query": "En veux tu en voilà",
+                  "query": "Comment activer ma carte ?",
                   "checkExistingQuery": false,
                   "state": "",
                   "classification": {
@@ -528,14 +427,9 @@
               "description": null,
               "handler": "getTopazeId",
               "answer": "Veuillez patienter pendant que je récupère votre identifiant...",
-              "inputContextNames": [
-                "FIRST_CONTEXT_EVER",
-                "SECOND_CONTEXT",
-                "THIRD_CONTEXT"
-              ],
+              "inputContextNames": [],
               "outputContextNames": [
-                "FOURTH_CONTEXT",
-                "SEVENTH_CONTEXT"
+                "IDENTIFIANT_TOPAZE"
               ]
             }
           },
@@ -552,13 +446,9 @@
               "handler": null,
               "answer": "Souhaitez-vous :\n- Activer une nouvelle carte max ?\n\n- Ou activer une carte bancaire externe que vous avez ajoutée dans l'application ?",
               "inputContextNames": [
-                "FIRST_CONTEXT_EVER",
-                "FIFTH_CONTEXT"
+                "IDENTIFIANT_TOPAZE"
               ],
-              "outputContextNames": [
-                "SECOND_CONTEXT",
-                "SIXTH_CONTEXT"
-              ]
+              "outputContextNames": []
             }
           },
           {
@@ -617,7 +507,15 @@
             ],
             "from": "bot",
             "text": "Lors de l'ajout de votre carte, un paiement d'authentification de 35€ est fait.\n\nRetrouvez-le sous 3 jours environ sur le relevé bancaire de la carte scannée avec le libellé MAX*XXXX ; les XXXX correspondent à un code chiffré aléatoire à saisir dans l'onglet \"carte max\".\n\nCe montant sera remboursé sous 72h sur votre compte externe.",
-            "final": true
+            "final": true,
+            "tickActionDefinition": {
+              "name": "OTHER_CARD_ANSWER",
+              "description": "Lors de l'ajout de votre carte, un paiement d'authentification de 35€ est fait.\n\nRetrouvez-le sous 3 jours environ sur le relevé bancaire de la carte scannée avec le libellé MAX*XXXX ; les XXXX correspondent à un code chiffré aléatoire à saisir dans l'onglet \"carte max\".\n\nCe montant sera remboursé sous 72h sur votre compte externe.",
+              "handler": null,
+              "answer": "Lors de l'ajout de votre carte, un paiement d'authentification de 35€ est fait.\n\nRetrouvez-le sous 3 jours environ sur le relevé bancaire de la carte scannée avec le libellé MAX*XXXX ; les XXXX correspondent à un code chiffré aléatoire à saisir dans l'onglet \"carte max\".\n\nCe montant sera remboursé sous 72h sur votre compte externe.",
+              "inputContextNames": [],
+              "outputContextNames": []
+            }
           },
           {
             "id": 6,
@@ -625,7 +523,22 @@
               4
             ],
             "from": "bot",
-            "text": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?"
+            "text": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?",
+            "tickActionDefinition": {
+              "name": "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL",
+              "description": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?",
+              "handler": null,
+              "answer": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?",
+              "inputContextNames": [
+                "IS_CART_MAX"
+              ],
+              "outputContextNames": [
+                "SUBSCRIPTION",
+                "OPPOSITION",
+                "UPGRADE",
+                "RENEWAL"
+              ]
+            }
           },
           {
             "id": 7,
@@ -764,42 +677,60 @@
         ],
         "contexts": [
           {
-            "name": "FIRST_CONTEXT_EVER",
+            "name": "IS_CART_MAX",
             "type": "string",
             "entityType": "app:carte_max",
             "entityRole": "carte_max"
           },
           {
-            "name": "SECOND_CONTEXT",
+            "name": "SUBSCRIPTION",
             "type": "string"
           },
           {
-            "name": "THIRD_CONTEXT",
-            "type": "string"
-          },
-          {
-            "name": "FOURTH_CONTEXT",
-            "type": "string"
-          },
-          {
-            "name": "FIFTH_CONTEXT",
+            "name": "OPPOSITION",
             "type": "string",
             "entityType": "app:opposition",
             "entityRole": "opposition"
           },
           {
-            "name": "SIXTH_CONTEXT",
+            "name": "UPGRADE",
             "type": "string"
           },
           {
-            "name": "SEVENTH_CONTEXT",
-            "type": "string",
-            "entityType": "app:event_occurence",
-            "entityRole": "event_occurence"
+            "name": "RENEWAL",
+            "type": "string"
+          },
+          {
+            "name": "IDENTIFIANT_TOPAZE",
+            "type": "string"
           }
-        ]
+        ],
+        "stateMachine": {
+          "id": "root",
+          "type": "parallel",
+          "states": {
+            "Global": {
+              "id": "Global",
+              "states": {
+                "RECUP_IDENTIFIANT_TOPAZE": {
+                  "id": "RECUP_IDENTIFIANT_TOPAZE"
+                },
+                "IS_MAX_OR_EXTERNAL_CART": {
+                  "id": "IS_MAX_OR_EXTERNAL_CART"
+                }
+              },
+              "on": {}
+            }
+          },
+          "initial": "Global",
+          "on": {
+            "comment_fa": "Global",
+            "activermacartemax": "Global",
+            "activercartebancaireexterne": "Global"
+          }
+        }
       },
-      "mode": "casting"
+      "mode": "production"
     },
     {
       "id": 5,
