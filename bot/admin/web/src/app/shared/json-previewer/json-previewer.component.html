@@ -1,0 +1,24 @@
+<nb-card class="m-0">
+  <nb-card-header>
+    <div class="d-flex justify-content-between align-items-start">
+      <h4>{{ title }}</h4>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Close"
+        type="button"
+        (click)="close()"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body>
+    <pre
+      [class]="theme"
+      [innerHTML]="data"
+    ></pre>
+  </nb-card-body>
+</nb-card>

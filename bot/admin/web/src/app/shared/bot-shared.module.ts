@@ -47,6 +47,7 @@ import { DelayDirective } from './directives/delay.directive';
 import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
 import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
 import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
+import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
 
 @NgModule({
   imports: [
@@ -80,7 +81,8 @@ import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
     DelayDirective,
     ChoiceDialogComponent,
     MouseWheelListnerDirective,
-    OrderByPipe
+    OrderByPipe,
+    JsonPreviewerComponent
   ],
   exports: [
     BotMessageComponent,
@@ -94,7 +96,8 @@ import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
     FormControlComponent,
     ChoiceDialogComponent,
     MouseWheelListnerDirective,
-    OrderByPipe
+    OrderByPipe,
+    JsonPreviewerComponent
   ],
   providers: [BotSharedService],
   entryComponents: []

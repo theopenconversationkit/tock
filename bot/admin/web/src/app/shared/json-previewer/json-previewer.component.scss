@@ -1,0 +1,50 @@
+pre {
+  outline: 1px solid #ccc;
+  padding: 0.5rem;
+  margin: 0;
+
+  &.default span {
+    &.key,
+    &.comma,
+    &.delimiter {
+      color: black;
+    }
+
+    &.boolean {
+      color: firebrick;
+    }
+
+    &.null {
+      color: gray;
+    }
+
+    &.number {
+      color: blue;
+    }
+
+    &.string {
+      color: green;
+    }
+  }
+
+  &.dark span {
+    &.key {
+      color: #c792cc;
+    }
+
+    &.delimiter,
+    &.comma,
+    &.boolean,
+    &.null {
+      color: #6cddf0;
+    }
+
+    &.number {
+      color: #e95f3c;
+    }
+
+    &.string {
+      color: #c3e741;
+    }
+  }
+}

@@ -16,6 +16,7 @@ import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT } from '../
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
 import { revertTransformMatrix } from '../../commons/utils';
+import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
 const TRANSITION_COLOR = '#ccc';
@@ -355,11 +356,12 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  @ViewChild('tickStoryJsonTempModal') tickStoryJsonTempModal: TemplateRef<any>;
-  displayStateMachineCode() {
-    const tickStoryJson = JSON.stringify(this.scenario.data.stateMachine, null, 4);
+  displayStateMachineCode(): void {
+    const jsonPreviewerRef = this.dialogService.openDialog(JsonPreviewerComponent, {
+      context: { jsonData: this.scenario.data.stateMachine }
+    });
 
-    this.dialogService.openDialog(this.tickStoryJsonTempModal, { context: tickStoryJson });
+    jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;
   }
 
   mouseWheel(event: WheelEvent): void {
