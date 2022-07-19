@@ -216,7 +216,10 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/analytics/messages/byStoryCategory", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+        blockingJsonPost(
+            "/analytics/messages/byStoryCategory",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByStoryCategory(request)
             }
@@ -240,7 +243,10 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/analytics/messages/byActionType", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+        blockingJsonPost(
+            "/analytics/messages/byActionType",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByActionType(request)
             }
@@ -806,7 +812,9 @@ open class BotAdminVerticle : AdminVerticle() {
                 front.getApplicationByNamespaceAndName(request.namespace, request.applicationName)
             if (context.organization == applicationDefinition?.namespace) {
                 try {
-                    FaqAdminService.searchFAQ(request, applicationDefinition)
+                    measureTimeMillis(context) {
+                        FaqAdminService.searchFAQ(request, applicationDefinition)
+                    }
                 } catch (t: NoEncryptionPassException) {
                     logger.error(t)
                     badRequest("Error obfuscating faq: ${t.message}")

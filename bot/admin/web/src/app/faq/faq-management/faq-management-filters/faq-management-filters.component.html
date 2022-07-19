@@ -23,14 +23,14 @@
         multiple
         placeholder="Tags"
         fullWidth
-        [optionsListClass]="'option-list--break-word'"
+        optionsListClass="option-list--break-word"
         formControlName="tags"
       >
         <nb-option
           *ngFor="let tag of tagsCache"
           value="{{ tag }}"
         >
-          {{ tag }}
+          <span class="initial-capitalize">{{ tag }}</span>
         </nb-option>
       </nb-select>
 

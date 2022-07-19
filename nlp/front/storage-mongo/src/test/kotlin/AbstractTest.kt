@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach
  */
 abstract class AbstractTest {
 
+    protected val TOCK_DOCUMENT_DB_ON_PROPERTY: String = "tock_document_db_on"
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()

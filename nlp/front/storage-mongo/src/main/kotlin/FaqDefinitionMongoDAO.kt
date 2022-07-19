@@ -26,6 +26,8 @@ import ai.tock.nlp.front.shared.config.FaqDefinitionTag
 import ai.tock.nlp.front.shared.config.FaqQuery
 import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.shared.ensureIndex
+import ai.tock.shared.isDocumentDB
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
@@ -37,7 +39,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.eq
 import org.litote.kmongo.MongoOperator.ne
-import org.litote.kmongo.`in`
+import org.litote.kmongo.addToSet
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.allPosOp
 import org.litote.kmongo.and
@@ -56,10 +58,12 @@ import org.litote.kmongo.first
 import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
+import org.litote.kmongo.`in`
 import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lookup
 import org.litote.kmongo.match
+import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.project
 import org.litote.kmongo.reactivestreams.getCollection
@@ -78,12 +82,13 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
         val c = MongoFrontConfiguration.database.getCollection<FaqDefinition>().apply {
             ensureUniqueIndex(
-                FaqDefinition::applicationId,
                 FaqDefinition::intentId,
                 FaqDefinition::i18nId,
                 FaqDefinition::tags,
                 FaqDefinition::updateDate
             )
+            ensureIndex(FaqDefinition::intentId, FaqDefinition::i18nId, FaqDefinition::applicationId)
+            ensureIndex(FaqDefinition::intentId, FaqDefinition::creationDate, FaqDefinition::applicationId)
         }
         c
     }
@@ -158,7 +163,12 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     ): Pair<List<FaqQueryResult>, Long> {
         with(query) {
             //prepare aggregation without skip and limit to know the total number of faq available
-            val baseAggregation = prepareFaqDetailBaseAggregation(query, applicationId, i18nIds)
+            val baseAggregation = if (isDocumentDB()) {
+                prepareFaqDetailBaseAggregationDocumentDb(query, applicationId, i18nIds)
+            } else {
+                prepareFaqDetailBaseAggregation(query, applicationId, i18nIds)
+            }
+
             logger.debug { baseAggregation.map { it.json } }
             //counting total
             val count = col.aggregate(baseAggregation, FaqQueryResult::class.java).count()
@@ -206,22 +216,71 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 // join FaqDefinition with IntentDefinition
                 joinOnIntentDefinition(),
                 // join FaqDefinition with ClassifiedSentence
-                joinOnClassifiedSentenceNotDeleted(),
+                joinOnClassifiedSentenceStatusNotDeleted(),
                 // unwind : to flat faq array into an object
                 FaqQueryResult::faq.unwind(),
                 match(
-                    orNotNull(
-                        filterTextSearchOnFaqName(),
-                        filterTextSearchOnFaqDescription(),
-                        filterTextSearchOnClassifiedSentence(),
-                        filterI18nIds(i18nIds)
-                    ),
                     andNotNull(
-                        filterOnApplicationId(applicationId),
-                        filterTags(),
-                        filterEnabled()
+                        orNotNull(
+                            filterTextSearchOnFaqName(),
+                            filterTextSearchOnFaqDescription(),
+                            filterTextSearchOnClassifiedSentence(),
+                            filterI18nIds(i18nIds)
+                        ),
+                        andNotNull(
+                            filterOnApplicationId(applicationId),
+                            filterTags(),
+                            filterEnabled(),
+                        )
                     )
                 ),
+                sortDescending(FaqQueryResult::creationDate)
+            )
+        }
+    }
+
+    /**
+     * Prepare the faq detail aggregation without skip and limit and without lookup let pipeline and two unwind
+     * to avoid unavailable aggregation let pipeline exp with documentDB
+     * @param : [FaqQuery] the query search
+     * @param : applicationId
+     * @param : i18nIds optional to request eventually on i18nIds
+     */
+    private fun prepareFaqDetailBaseAggregationDocumentDb(
+        query: FaqQuery,
+        applicationId: String,
+        i18nIds: List<Id<I18nLabel>>?
+    ): ArrayList<Bson> {
+        with(query) {
+            return arrayListOf(
+                // sort the i18n by ids
+                sortAscending(FaqDefinition::i18nId),
+                // join FaqDefinition with IntentDefinition
+                joinOnIntentDefinition(),
+                // join FaqDefinition with ClassifiedSentence, cannot use aggregation let pipeline with documentDB so won't filter here on not deleted status
+                joinOnClassifiedSentence(),
+                // unwind : to flat faq array into an object
+                FaqQueryResult::faq.unwind(),
+                // unwind : to flat utterrances array into an object
+                // Make it possible to filter directly on classified sentences per element ($elemMatch not available in Mongo 3.6.5)
+                FaqQueryResult::utterances.unwind(),
+                match(
+                    andNotNull(
+                        andNotNull(
+                            filterOnApplicationId(applicationId),
+                            filterTags(),
+                            filterEnabled(),
+                            filterNotDeletedClassifiedSentencesStatus()
+                        ),
+                        orNotNull(
+                            filterTextSearchOnFaqName(),
+                            filterTextSearchOnFaqDescription(),
+                            filterTextSearchOnClassifiedSentence(),
+                            filterI18nIds(i18nIds)
+                        ),
+                    )
+                ),
+                groupFaqDefinitionDetailedData(),
                 sortDescending(FaqQueryResult::creationDate)
             )
         }
@@ -235,6 +294,12 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
 
     private fun FaqQuery.filterTextSearchOnClassifiedSentence() =
         if (search == null) null else FaqQueryResult::utterances.allPosOp / ClassifiedSentence::text regex search!!
+
+    /**
+     *  add the filter on deleted Classified Sentences if cannot use aggegration pipeline with documentDB
+     */
+    private fun FaqQuery.filterNotDeletedClassifiedSentencesStatus() =
+        FaqQueryResult::utterances / ClassifiedSentence::status ne ClassifiedSentenceStatus.deleted
 
     /**
      * Filter on i18nIds
@@ -260,6 +325,26 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     private fun filterOnApplicationId(applicationId: String): Bson =
         FaqDefinition::applicationId `in` applicationId
 
+
+    /**
+     * Group aggregation pipeline to recompose and group data after multiple unwind especially due to utterances unwind
+     */
+    private fun FaqQuery.groupFaqDefinitionDetailedData(): Bson =
+        group(
+            FaqQueryResult::_id,
+            listOf(
+                FaqQueryResult::applicationId first FaqQueryResult::applicationId,
+                FaqQueryResult::intentId first FaqQueryResult::intentId,
+                FaqQueryResult::i18nId first FaqQueryResult::i18nId,
+                FaqQueryResult::tags first FaqQueryResult::tags,
+                FaqQueryResult::enabled first FaqQueryResult::enabled,
+                FaqQueryResult::creationDate first FaqQueryResult::creationDate,
+                FaqQueryResult::updateDate first FaqQueryResult::updateDate,
+                FaqQueryResult::utterances addToSet FaqQueryResult::utterances,
+                FaqQueryResult::faq first FaqQueryResult::faq
+            )
+        )
+
     /**
      * Perform a lookup join from the FaqDefinition.intentId on IntentDefinition._id
      */
@@ -273,7 +358,18 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     /**
      * Perform a lookup join from the FaqDefinition.intentId on ClassifiedSentence.classification.intentId and avoid returning deleted sentences
      */
-    private fun FaqQuery.joinOnClassifiedSentenceNotDeleted() =
+    private fun FaqQuery.joinOnClassifiedSentence() =
+        lookup(
+            CLASSIFIED_SENTENCE_COLLECTION,
+            FaqDefinition::intentId.name,
+            (ClassifiedSentence::classification / Classification::intentId).name,  //classification.intentId
+            FaqQueryResult::utterances.name,
+        )
+
+    /**
+     * Perform a lookup join from the FaqDefinition.intentId on ClassifiedSentence.classification.intentId and avoid returning deleted sentences
+     */
+    private fun FaqQuery.joinOnClassifiedSentenceStatusNotDeleted() =
         //inspired from https://github.com/Litote/kmongo/blob/master/kmongo-core-tests/src/main/kotlin/org/litote/kmongo/AggregateTypedTest.kt#L322
         lookup(
             CLASSIFIED_SENTENCE_COLLECTION,

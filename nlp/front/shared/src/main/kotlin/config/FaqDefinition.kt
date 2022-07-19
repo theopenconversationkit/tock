@@ -17,12 +17,10 @@
 package ai.tock.nlp.front.shared.config
 
 import ai.tock.translator.I18nLabel
-import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
 
-@JacksonData(internal = true)
 data class FaqDefinition(
 
     /**
