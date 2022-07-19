@@ -255,6 +255,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       let target = this.getActionById(event.stateId, this.scenario.data.stateMachine);
       if (target) {
         target.states[event.dropped.name] = { id: event.dropped.name };
+        if (!target.initial) target.initial = event.dropped.name;
       }
     }
     if (event.dropped.type === 'intent') {
@@ -275,8 +276,10 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         return;
       }
       target.states[event.groupName] = { id: event.groupName, states: {}, on: {} };
+      if (!target.initial) target.initial = event.groupName;
+
+      this.scenarioProductionService.updateLayout();
     }
-    this.scenarioProductionService.updateLayout();
   }
 
   removeState(event) {

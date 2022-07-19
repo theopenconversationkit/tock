@@ -806,14 +806,26 @@
                     },
                     "IS_MAX_OR_EXTERNAL_CART": {
                       "id": "IS_MAX_OR_EXTERNAL_CART"
+                    },
+                    "OTHER_CARD_ANSWER": {
+                      "id": "OTHER_CARD_ANSWER"
+                    },
+                    "ACTIVATE_MAX_CARD": {
+                      "id": "ACTIVATE_MAX_CARD",
+                      "states": {},
+                      "on": {}
                     }
                   },
-                  "on": {}
+                  "on": {
+                    "activercartebancaireexterne": "OTHER_CARD_ANSWER"
+                  },
+                  "initial": "RECUP_IDENTIFIANT_TOPAZE"
                 }
               },
               "on": {
                 "comment_fa": "ACTIVATE_CARD"
-              }
+              },
+              "initial": "ACTIVATE_CARD"
             }
           },
           "initial": "Global",

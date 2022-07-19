@@ -6,7 +6,25 @@
   (dndDrop)="onDrop($event)"
 >
   <div class="stateGroup-header">
-    {{ state.id }}
+    <span>
+      <nb-icon
+        *ngIf="isInitialParentState()"
+        icon="flash-outline"
+        status="primary"
+        class="valign-middle"
+        style="margin-left: -5px"
+      ></nb-icon>
+
+      <nb-icon
+        *ngIf="!isInitialParentState()"
+        icon="flash-outline"
+        status="default"
+        class="valign-middle pointer"
+        style="margin-left: -5px"
+        (click)="setActionInitial()"
+      ></nb-icon>
+      {{ state.id }}
+    </span>
 
     <div class="d-flex">
       <nb-icon

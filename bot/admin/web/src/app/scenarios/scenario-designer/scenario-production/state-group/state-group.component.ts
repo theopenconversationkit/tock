@@ -60,6 +60,19 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     });
   }
 
+  isInitialParentState(): boolean {
+    let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
+    if (parent?.initial === this.state.id) return true;
+    return false;
+  }
+
+  setActionInitial() {
+    let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
+    if (parent) {
+      parent.initial = this.state.id;
+    }
+  }
+
   transitionWrapperWidth = 0;
   updateTransitionWrapperWidth() {
     this.transitionWrapperWidth = this.getMaxTransitionWidth();
