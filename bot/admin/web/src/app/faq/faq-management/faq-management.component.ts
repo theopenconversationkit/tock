@@ -1,19 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NbToastrService } from '@nebular/theme';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {NbToastrService} from '@nebular/theme';
+import {Router} from '@angular/router';
+import {Subject} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
 
-import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { RestService } from '../../core-nlp/rest/rest.service';
-import { StateService } from '../../core-nlp/state.service';
-import { UserRole } from '../../model/auth';
-import { PaginatedQuery } from '../../model/commons';
-import { FaqDefinition, FaqFilter, FaqSearchQuery, PaginatedFaqResult } from '../models';
-import { FaqManagementEditComponent } from './faq-management-edit/faq-management-edit.component';
-import { FaqManagementSettingsComponent } from './faq-management-settings/faq-management-settings.component';
-import { Pagination } from '../../shared/pagination/pagination.component';
+import {BotApplicationConfiguration} from '../../core/model/configuration';
+import {BotConfigurationService} from '../../core/bot-configuration.service';
+import {RestService} from '../../core-nlp/rest/rest.service';
+import {StateService} from '../../core-nlp/state.service';
+import {UserRole} from '../../model/auth';
+import {PaginatedQuery} from '../../model/commons';
+import {FaqDefinition, FaqFilter, FaqSearchQuery, PaginatedFaqResult} from '../models';
+import {FaqManagementEditComponent} from './faq-management-edit/faq-management-edit.component';
+import {FaqManagementSettingsComponent} from './faq-management-settings/faq-management-settings.component';
+import {Pagination} from '../../shared/pagination/pagination.component';
 
 export type FaqDefinitionExtended = FaqDefinition & { _initUtterance?: string };
 
@@ -45,6 +45,19 @@ export class FaqManagementComponent implements OnInit {
   };
 
   initUtterance: string;
+  pagination: Pagination = {
+    start: 0,
+    end: undefined,
+    size: 10,
+    total: undefined
+  };
+  currentFilters: FaqFilter = {
+    search: null,
+    tags: [],
+    enabled: undefined,
+    sort: []
+  };
+  tagsCache: string[] = [];
 
   constructor(
     private botConfiguration: BotConfigurationService,
@@ -54,6 +67,10 @@ export class FaqManagementComponent implements OnInit {
     private router: Router
   ) {
     this.initUtterance = this.router.getCurrentNavigation().extras?.state?.question;
+  }
+
+  get isAuthorized(): boolean {
+    return this.stateService.hasRole(UserRole.faqBotUser);
   }
 
   ngOnInit(): void {
@@ -73,17 +90,6 @@ export class FaqManagementComponent implements OnInit {
     });
   }
 
-  get isAuthorized(): boolean {
-    return this.stateService.hasRole(UserRole.faqBotUser);
-  }
-
-  pagination: Pagination = {
-    start: 0,
-    end: undefined,
-    size: 10,
-    total: undefined
-  };
-
   paginationChange(pagination: Pagination): void {
     this.search(this.pagination.start, this.pagination.size);
   }
@@ -92,13 +98,6 @@ export class FaqManagementComponent implements OnInit {
     if (this.loading.list || this.pagination.end >= this.pagination.total) return;
     return this.search(this.pagination.end, this.pagination.size, true, false);
   }
-
-  currentFilters: FaqFilter = {
-    search: null,
-    tags: [],
-    enabled: undefined,
-    sort: []
-  };
 
   filterFaqs(filters: FaqFilter): void {
     this.currentFilters = filters;
@@ -119,8 +118,6 @@ export class FaqManagementComponent implements OnInit {
       this.currentFilters.enabled
     );
   }
-
-  tagsCache: string[] = [];
 
   updateTagsCache() {
     this.tagsCache = [
@@ -245,6 +242,8 @@ export class FaqManagementComponent implements OnInit {
               this.search(this.pagination.end - this.pagination.size);
             }
           }
+
+          this.stateService.resetConfiguration();
 
           this.toastrService.success(`Faq successfully deleted`, 'Success', {
             duration: 5000,
