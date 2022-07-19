@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import ai.tock.bot.admin.model.scenario.ScenarioResult
 import ai.tock.shared.exception.TockException
 import ai.tock.shared.injector
 import ai.tock.shared.security.TockUserRole.*
-import ai.tock.shared.vertx.InternalServerException
-import ai.tock.shared.vertx.NotFoundException
+import ai.tock.shared.exception.rest.InternalServerException
+import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.vertx.WebVerticle
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.RoutingContext
@@ -32,7 +32,7 @@ import mu.KotlinLogging
 /**
  * ScenarioVerticle contains all the routes and actions associated with the scenarios
  */
-class ScenarioVerticle {
+open class ScenarioVerticle {
 
     private val logger: KLogger = KotlinLogging.logger {}
 
@@ -40,11 +40,11 @@ class ScenarioVerticle {
 
     private val scenarioId = "scenarioID"
 
-    //scenarioBasePath is empty value is necessary so that the scenario URLs are not preceded by the default basePath
-    // of the WebVerticle on which the routes are added
+    //scenarioBasePath is empty value is necessary so that the scenario URLs are not preceded by
+    // the default basePath (/rest/admin) of the BotAdminVerticle on which the routes are added
     private val scenarioBasePath = ""
 
-    val scenariosPath = "/scenarios"
+    private val scenariosPath = "/scenarios"
 
     /**
      * Declaration of routes and association to the appropriate handler
@@ -52,15 +52,15 @@ class ScenarioVerticle {
     fun configureScenario(webVerticle: WebVerticle) {
         logger.info { "configure ScenarioVerticle" }
         with(webVerticle) {
-            blockingJsonGet(scenarioBasePath, setOf(botUser), basePath= scenariosPath,  handler= getAllScenarios)
+            blockingJsonGet(scenariosPath, setOf(botUser), handler = getAllScenarios)
 
-            blockingJsonGet("$scenarioBasePath/:$scenarioId", setOf(botUser), basePath= scenariosPath, handler= getOneScenario)
+            blockingJsonGet("$scenariosPath/:$scenarioId", setOf(botUser), handler = getOneScenario)
 
-            blockingJsonPost(scenarioBasePath, setOf(botUser), basePath= scenariosPath, handler= createScenario)
+            blockingJsonPost(scenariosPath, setOf(botUser), handler = createScenario)
 
-            blockingJsonPut("$scenarioBasePath/:$scenarioId", setOf(botUser), basePath= scenariosPath, handler= updateScenario)
+            blockingJsonPut("$scenariosPath/:$scenarioId", setOf(botUser), handler = updateScenario)
 
-            blockingDeleteEmptyResponse("$scenarioBasePath/:$scenarioId", setOf(botUser), basePath= scenariosPath, handler= deleteScenario)
+            blockingDeleteEmptyResponse("$scenariosPath/:$scenarioId", setOf(botUser), handler = deleteScenario)
         }
     }
 
@@ -114,7 +114,7 @@ class ScenarioVerticle {
     protected val updateScenario: (RoutingContext, ScenarioRequest) -> ScenarioResult = { context, request ->
         val scenarioId = extractScenarioId(context)
         logger.debug { "request to update scenario id $scenarioId" }
-        context.setResponseStatusCode(202)
+        context.setResponseStatusCode(200)
         //return
         catchExternalException {
             scenarioService

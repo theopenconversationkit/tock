@@ -19,6 +19,10 @@ package ai.tock.shared.vertx
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
+import ai.tock.shared.exception.rest.BadRequestException
+import ai.tock.shared.exception.rest.NotFoundException
+import ai.tock.shared.exception.rest.RestException
+import ai.tock.shared.exception.rest.UnauthorizedException
 import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty

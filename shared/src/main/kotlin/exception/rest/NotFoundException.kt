@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.vertx
+package ai.tock.shared.exception.rest
 
 /**
- * Http 401 exception.
+ * Http 404 exception.
  */
-class UnauthorizedException(message: String? = null, statusMessage: String = "Unauthorized") :
-    RestException(message, statusMessage, 401)
+class NotFoundException(message: String? = null, statusMessage: String = "Not Found") :
+    RestException(message, statusMessage, 404)

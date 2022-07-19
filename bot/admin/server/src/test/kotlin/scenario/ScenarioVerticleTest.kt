@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import ai.tock.bot.admin.model.scenario.ScenarioRequest
 import ai.tock.bot.admin.model.scenario.ScenarioResult
 import ai.tock.shared.exception.TockException
 import ai.tock.shared.tockInternalInjector
-import ai.tock.shared.vertx.InternalServerException
-import ai.tock.shared.vertx.NotFoundException
+import ai.tock.shared.exception.rest.InternalServerException
+import ai.tock.shared.exception.rest.NotFoundException
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind

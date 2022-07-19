@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.vertx
+package ai.tock.shared.exception
 
-/**
- * Http 404 exception.
- */
-class NotFoundException(message: String? = null, statusMessage: String = "Not Found") :
-    RestException(message, statusMessage, 404)
+class TockIllegalArgumentException(message: String) : TockException(message)

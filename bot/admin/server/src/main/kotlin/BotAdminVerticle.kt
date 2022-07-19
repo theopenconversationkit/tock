@@ -93,7 +93,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
-    override fun protectedPaths(): Set<String> = setOf(rootPath, scenarioVerticle.scenariosPath)
+    override fun protectedPaths(): Set<String> = setOf(rootPath)
 
     override fun configureServices() {
         initTranslator()

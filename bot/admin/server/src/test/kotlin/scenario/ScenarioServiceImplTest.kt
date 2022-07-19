@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package ai.tock.bot.admin.scenario
 
-import ai.tock.shared.exception.TockIllegaleArgumentException
+import ai.tock.shared.exception.TockIllegalArgumentException
 import ai.tock.shared.exception.TockNotFound
 import ai.tock.shared.tockInternalInjector
-import ai.tock.shared.vertx.ConflictException
-import ai.tock.shared.vertx.InternalServerException
-import ai.tock.shared.vertx.NotFoundException
+import ai.tock.shared.exception.rest.ConflictException
+import ai.tock.shared.exception.rest.InternalServerException
+import ai.tock.shared.exception.rest.NotFoundException
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
@@ -37,7 +37,7 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ScenarioServiceTest {
+class ScenarioServiceImplTest {
 
     private val ID1 = "id_test_1"
     private val ID2 = "id_test_2"
@@ -66,7 +66,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `findAll WHEN dao findAll return list of 1 valide scenario THEN return list of 1 Scenario`() {
+    fun `findAll WHEN dao findAll return list of 1 valid scenario THEN return a list with 1 Scenario`() {
         //GIVEN
         every { scenarioDAO.findAll() } returns listOf(createScenarioForId(ID1))
 
@@ -79,7 +79,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `findAll WHEN dao findAll return list of 1 invalide scenario THEN throw InternalServerException`() {
+    fun `findAll WHEN dao findAll return list of 1 invalid scenario THEN throw InternalServerException`() {
         //GIVEN
         every { scenarioDAO.findAll() } returns listOf(createScenarioForId(null))
 
@@ -88,7 +88,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `findById WHEN dao findById return a valide scenario THEN return Scenario`() {
+    fun `findById WHEN dao findById return a valid scenario THEN return Scenario`() {
         val id: String = ID1
 
         //GIVEN
@@ -102,7 +102,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `findById WHEN dao findAll return list of 1 invalide scenario THEN throw InternalServerException`() {
+    fun `findById WHEN dao findAll return list of 1 invalid scenario THEN throw InternalServerException`() {
         val id: String = ID1
 
         //GIVEN
@@ -124,7 +124,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `create WHEN dao create return a valide scenario THEN return Scenario`() {
+    fun `create WHEN dao create return a valid scenario THEN return Scenario`() {
         val id: String = ID1
 
         //GIVEN
@@ -140,7 +140,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `create WHEN dao create return invalide scenario THEN throw InternalServerException`() {
+    fun `create WHEN dao create return invalid scenario THEN throw InternalServerException`() {
         //GIVEN
         val scenario: Scenario = createScenarioForId(null)
         every { scenarioDAO.create(scenario) } returns scenario
@@ -155,14 +155,14 @@ class ScenarioServiceTest {
 
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(id)
-        every { scenarioDAO.create(scenarioRequest) } throws TockIllegaleArgumentException("test_illegale_argument")
+        every { scenarioDAO.create(scenarioRequest) } throws TockIllegalArgumentException("test_illegale_argument")
 
         //WHEN //THEN
         assertThrows<ConflictException> { scenarioService.create(scenarioRequest) }
     }
 
     @Test
-    fun `update WHEN dao update return a valide scenario THEN return Scenario`() {
+    fun `update WHEN dao update return a valid scenario THEN return Scenario`() {
         val id: String = ID1
 
         //GIVEN
@@ -190,7 +190,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `update WHEN dao update return invalide scenario THEN throw InternalServerException`() {
+    fun `update WHEN dao update return invalid scenario THEN throw InternalServerException`() {
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(ID1)
         val scenarioCreated: Scenario = createScenarioForId(null)
@@ -208,10 +208,10 @@ class ScenarioServiceTest {
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(id)
         every { scenarioDAO.findById(id) } returns scenarioRequest
-        every { scenarioDAO.update(scenarioRequest) } throws TockIllegaleArgumentException("test_illegale_argument")
+        every { scenarioDAO.update(scenarioRequest) } throws TockIllegalArgumentException("test_illegale_argument")
 
         //WHEN //THEN
-        assertThrows<TockIllegaleArgumentException> { scenarioService.update(id, scenarioRequest) }
+        assertThrows<TockIllegalArgumentException> { scenarioService.update(id, scenarioRequest) }
     }
 
     @Test
@@ -226,7 +226,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `delete GIVEN id of scenario existe THEN scenario is delete`() {
+    fun `delete GIVEN id of scenario exist THEN scenario is delete`() {
         val id: String = ID1
 
         //WHEN
@@ -237,7 +237,7 @@ class ScenarioServiceTest {
     }
 
     @Test
-    fun `delete GIVEN id of scenario don't existe THEN nothing`() {
+    fun `delete GIVEN id of scenario don't exist THEN nothing`() {
         val id: String = ID2
 
         //GIVEN

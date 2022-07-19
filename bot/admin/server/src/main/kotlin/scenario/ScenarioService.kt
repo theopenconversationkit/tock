@@ -16,9 +16,8 @@
 
 package ai.tock.bot.admin.scenario
 
-import ai.tock.shared.vertx.ConflictException
-import ai.tock.shared.vertx.InternalServerException
-import ai.tock.shared.vertx.NotFoundException
+import ai.tock.shared.exception.rest.InternalServerException
+import ai.tock.shared.exception.rest.NotFoundException
 
 interface ScenarioService {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package ai.tock.bot.admin.scenario
 
-import ai.tock.shared.vertx.ConflictException
-import ai.tock.shared.vertx.InternalServerException
-import ai.tock.shared.vertx.NotFoundException
+import ai.tock.shared.exception.rest.ConflictException
+import ai.tock.shared.exception.rest.InternalServerException
+import ai.tock.shared.exception.rest.NotFoundException
 
 /**
- * Throws RestException if scenario can't be create in database
+ * Throws RestException if scenario cannot be created in database
  */
 val checkToCreate: Scenario.() -> Scenario = {
     if(id != null && id!!.isNotBlank()) {
@@ -32,7 +32,7 @@ val checkToCreate: Scenario.() -> Scenario = {
 }
 
 /**
- * Throws RestException if scenario can't be update in database
+ * Throws RestException if scenario cannot be created in database
  */
 val checkToUpdate: Scenario.(String) -> Scenario = { scenarioId ->
     if(scenarioId != id) {
@@ -55,7 +55,7 @@ val checkIsNotNullForId: Scenario?.(String) -> Scenario = { id ->
 }
 
 /**
- * Throws RestException if scenario don't existe in database
+ * Throws RestException if scenario does not exist in database
  */
 val mustExist: Scenario.(Boolean) -> Scenario = { exist ->
     if(!exist) {

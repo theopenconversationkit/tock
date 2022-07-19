@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.scenario.Scenario
-import ai.tock.shared.exception.TockIllegaleArgumentException
+import ai.tock.shared.exception.TockIllegalArgumentException
 import ai.tock.shared.exception.TockNotFound
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,7 +28,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-//TODO: à finir
 class ScenarioDAOTest : AbstractTest() {
 
     private val ID1 = "id_test_1"
@@ -75,7 +74,7 @@ class ScenarioDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `findById WHEN id don't exist in database THEN return null`() {
+    fun `findById WHEN id does not exist in database THEN return null`() {
         //GIVEN
         val scenario = createScenarioForId(ID1)
         ScenarioMongoDAO.update(scenario)
@@ -106,7 +105,7 @@ class ScenarioDAOTest : AbstractTest() {
         val scenario = createScenarioForId(ID1)
 
         //WHEN //THEN
-        assertThrows<TockIllegaleArgumentException> {  ScenarioMongoDAO.create(scenario) }
+        assertThrows<TockIllegalArgumentException> {  ScenarioMongoDAO.create(scenario) }
     }
 
     @Test
@@ -123,12 +122,12 @@ class ScenarioDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `update GIVEN scenario with no id THEN throw TockIllegaleArgumentException`() {
+    fun `update GIVEN scenario with no id THEN throw TockIllegalArgumentException`() {
         //GIVEN
         val scenario = createScenarioForId(null)
 
         //WHEN //THEN
-        assertThrows<TockIllegaleArgumentException> {  ScenarioMongoDAO.update(scenario) }
+        assertThrows<TockIllegalArgumentException> {  ScenarioMongoDAO.update(scenario) }
     }
 
     @Test
@@ -141,7 +140,7 @@ class ScenarioDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `delete GIVEN scenario don't existe in database THEN throw TockNotFound`() {
+    fun `delete GIVEN scenario does not existe in database THEN throw TockNotFound`() {
         //GIVEN //WHEN //THEN
         assertThrows<TockNotFound> {  ScenarioMongoDAO.delete(ID1) }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package ai.tock.bot.admin.scenario
 
-import ai.tock.shared.vertx.ConflictException
-import ai.tock.shared.vertx.InternalServerException
-import ai.tock.shared.vertx.NotFoundException
+import ai.tock.shared.exception.rest.ConflictException
+import ai.tock.shared.exception.rest.InternalServerException
+import ai.tock.shared.exception.rest.NotFoundException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -29,73 +29,73 @@ class ScenarioPredicateTest {
     private val ID2 = "id_test_2"
 
     @Test
-    fun `GUIVEN scenario whith no id WHEN checkToCreate THEN no exception throw`() {
+    fun `GIVEN scenario whith no id WHEN checkToCreate THEN no exception thrown`() {
         val scenario = createScenarioForId(null)
         assertDoesNotThrow { scenario.checkToCreate() }
     }
 
     @Test
-    fun `GUIVEN scenario with id WHEN checkToCreate THEN exception is throw`() {
+    fun `GIVEN scenario with id WHEN checkToCreate THEN exception is thrown`() {
         val scenario = createScenarioForId(ID1)
         assertThrows<ConflictException> { scenario.checkToCreate() }
     }
 
     @Test
-    fun `GUIVEN scenario id same as uri WHEN checkToUpdate THEN no exception throw`() {
+    fun `GIVEN scenario id same as uri WHEN checkToUpdate THEN no exception thrown`() {
         val scenario = createScenarioForId(ID1)
         assertDoesNotThrow { scenario.checkToUpdate(ID1) }
     }
 
     @Test
-    fun `GUIVEN scenario id null WHEN checkToUpdate THEN exception is throw`() {
+    fun `GIVEN scenario id null WHEN checkToUpdate THEN exception is thrown`() {
         val scenario = createScenarioForId(null)
         assertThrows<ConflictException> { scenario.checkToUpdate(ID1) }
     }
 
     @Test
-    fun `GUIVEN scenario id different as uri WHEN checkToUpdate THEN exception is throw`() {
+    fun `GIVEN scenario id different as uri WHEN checkToUpdate THEN exception is thrown`() {
         val scenario = createScenarioForId(ID2)
         assertThrows<ConflictException> { scenario.checkToUpdate(ID1) }
     }
 
     @Test
-    fun `GUIVEN scenario is not null WHEN checkIsNotNullForId THEN no exception is throw`() {
+    fun `GIVEN scenario is not null WHEN checkIsNotNullForId THEN no exception is thrown`() {
         val scenario = createScenarioForId(null)
         assertDoesNotThrow { scenario.checkIsNotNullForId("marcus") }
     }
 
     @Test
-    fun `GUIVEN scenario is null WHEN checkIsNotNullForId THEN exception is throw`() {
+    fun `GIVEN scenario is null WHEN checkIsNotNullForId THEN exception is thrown`() {
         val scenario = null
         assertThrows<NotFoundException> { scenario.checkIsNotNullForId("marcus") }
     }
 
     @Test
-    fun `GUIVEN scenario is not null WHEN mustExist THEN no exception is throw`() {
+    fun `GIVEN scenario is not null WHEN mustExist THEN no exception is thrown`() {
         val scenario = createScenarioForId(ID1)
         assertDoesNotThrow { scenario.mustExist(true) }
     }
 
     @Test
-    fun `GUIVEN scenario is null WHEN mustExist THEN exception is throw`() {
+    fun `GIVEN scenario is null WHEN mustExist THEN exception is thrown`() {
         val scenario = createScenarioForId(ID1)
         assertThrows<NotFoundException> { scenario.mustExist(false) }
     }
 
     @Test
-    fun `GUIVEN scenario is not null with id null WHEN mustExist THEN exception is throw`() {
+    fun `GIVEN scenario is not null with id null WHEN mustExist THEN exception is thrown`() {
         val scenario = createScenarioForId(null)
         assertThrows<NotFoundException> { scenario.mustExist(false) }
     }
 
     @Test
-    fun `GUIVEN scenario id is not null WHEN checkScenarioFromDatabase THEN no exception is throw`() {
+    fun `GIVEN scenario id is not null WHEN checkScenarioFromDatabase THEN no exception is thrown`() {
         val scenario = createScenarioForId(ID1)
         assertDoesNotThrow { scenario.checkScenarioFromDatabase() }
     }
 
     @Test
-    fun `GUIVEN scenario id is null WHEN checkScenarioFromDatabase THEN exception is throw`() {
+    fun `GIVEN scenario id is null WHEN checkScenarioFromDatabase THEN exception is thrown`() {
         val scenario = createScenarioForId(null)
         assertThrows<InternalServerException> { scenario.checkScenarioFromDatabase() }
     }

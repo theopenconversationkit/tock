@@ -23,12 +23,12 @@ import com.github.salomonbrys.kodein.Kodein
 
 
 fun main() {
-    startAdminServer()
+    startAdminServer(botAdminServiceModule)
 }
 
 fun startAdminServer(vararg modules: Kodein.Module) {
     // setup ioc
-    FrontIoc.setup(BotIoc.coreModules + modules.toList() + botAdminServiceModule)
+    FrontIoc.setup(BotIoc.coreModules + modules.toList())
     // deploy verticle
     vertx.deployVerticle(BotAdminVerticle())
 }

@@ -18,7 +18,7 @@ package ai.tock.bot.admin.scenario
 
 import ai.tock.bot.admin.model.scenario.ScenarioRequest
 import ai.tock.bot.admin.model.scenario.ScenarioResult
-import ai.tock.shared.vertx.InternalServerException
+import ai.tock.shared.exception.rest.InternalServerException
 
 /**
  * Map a ScenarioRequest to a Scenario

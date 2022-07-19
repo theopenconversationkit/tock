@@ -57,7 +57,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n      \"id\": \"62c2de078af62438482f8cf\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"raw": "{\n    \"idOperator\": \"42\",\n    \"idConversation\": \"42\",\n    \"message\": {\n        \"payload\": {\n            \"value\": \"zerzer\",\n            \"contentType\": \"blob\"\n        }\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -65,13 +65,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/scenarios",
+					"raw": "http://localhost:7999/rest/admin/scenarios",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "7999",
 					"path": [
+						"rest",
+						"admin",
 						"scenarios"
 					],
 					"query": [
@@ -108,13 +110,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/scenarios/62c2de078af62438482f8cf2",
+					"raw": "http://localhost:7999/rest/admin/scenarios/62c2de078af62438482f8cf2",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "7999",
 					"path": [
+						"rest",
+						"admin",
 						"scenarios",
 						"62c2de078af62438482f8cf2"
 					],
@@ -149,13 +153,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/scenarios",
+					"raw": "http://localhost:7999/rest/admin/scenarios",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "7999",
 					"path": [
+						"rest",
+						"admin",
 						"scenarios"
 					],
 					"query": [
@@ -181,7 +187,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n        \"id\": \"62c3217b466d044ed40b03e9\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"raw": "  {\n        \"id\": \"62d681862d41f87c07d32f7b\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -189,15 +195,17 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/scenarios/62c3217b466d044ed40b03e9",
+					"raw": "http://localhost:7999/rest/admin/scenarios/62d681862d41f87c07d32f7b",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "7999",
 					"path": [
+						"rest",
+						"admin",
 						"scenarios",
-						"62c3217b466d044ed40b03e9"
+						"62d681862d41f87c07d32f7b"
 					],
 					"query": [
 						{
@@ -230,13 +238,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/scenarios/62c3217b466d044ed40b03e9",
+					"raw": "http://localhost:7999/rest/admin/scenarios/62c3217b466d044ed40b03e9",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "7999",
 					"path": [
+						"rest",
+						"admin",
 						"scenarios",
 						"62c3217b466d044ed40b03e9"
 					],

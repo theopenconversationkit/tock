@@ -18,9 +18,9 @@ package ai.tock.bot.admin.scenario
 
 import ai.tock.shared.exception.TockNotFound
 import ai.tock.shared.injector
-import ai.tock.shared.vertx.ConflictException
-import ai.tock.shared.vertx.InternalServerException
-import ai.tock.shared.vertx.NotFoundException
+import ai.tock.shared.exception.rest.ConflictException
+import ai.tock.shared.exception.rest.InternalServerException
+import ai.tock.shared.exception.rest.NotFoundException
 import com.github.salomonbrys.kodein.instance
 import mu.KLogger
 import mu.KotlinLogging
@@ -76,12 +76,12 @@ class ScenarioServiceImpl : ScenarioService {
      * @throws InternalServerException when scenario updated is invalid
      */
     override fun update(scenarioId: String, scenario: Scenario): Scenario {
-        scenario.mustExist(existe(scenarioId)).checkToUpdate(scenarioId)
+        scenario.mustExist(exist(scenarioId)).checkToUpdate(scenarioId)
         return scenarioDAO.update(scenario)
              .checkScenarioFromDatabase()
     }
 
-    private fun existe(scenarioId: String): Boolean {
+    private fun exist(scenarioId: String): Boolean {
         return scenarioDAO.findById(scenarioId)?.let { true } ?: false
     }
 
@@ -94,7 +94,7 @@ class ScenarioServiceImpl : ScenarioService {
         try {
             scenarioDAO.delete(scenarioId)
         } catch (notFoundException: TockNotFound) {
-            logger.debug { "scenario id $scenarioId already don't exist" }
+            logger.debug { "scenario id $scenarioId no longer exist and cannot be deleted" }
         }
     }
 }
