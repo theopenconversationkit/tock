@@ -51,7 +51,6 @@ class IadvizeConnectorTest {
     val controller: ConnectorController = mockk(relaxed = true)
     val context: RoutingContext = mockk(relaxed = true)
     val response: HttpServerResponse = mockk(relaxed = true)
-    //val botDefinition: BotDefinition = mockk(relaxed = true)
     val translator: I18nTranslator = mockk()
     val botName: String = "botName"
     val botId: String = "botId"
