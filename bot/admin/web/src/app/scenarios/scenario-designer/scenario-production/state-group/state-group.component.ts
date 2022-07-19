@@ -11,6 +11,8 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../../core-nlp/dialog.service';
+import { ChoiceDialogComponent } from '../../../../shared/choice-dialog/choice-dialog.component';
+import { getStateMachineActionParentById } from '../../../commons/utils';
 import { intentDefinition, TickActionDefinition } from '../../../models';
 import { ScenarioProductionService } from '../scenario-production.service';
 import { ScenarioProductionStateGroupAddComponent } from './state-group-add/state-group-add.component';
@@ -24,6 +26,7 @@ import { ScenarioTransitionComponent } from './transition/transition.component';
 export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() state;
+  @Input() stateMachine;
   @Input() usedNames: string[];
   @Input() intents: intentDefinition[];
   @Input() actions: TickActionDefinition[];
@@ -88,21 +91,67 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   }
 
   removeState() {
-    this.scenarioProductionService.removeState(this.state.id);
-    this.scenarioProductionService.updateLayout();
+    const cancelAction = 'cancel';
+    const confirmAction = 'delete';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: `Delete action`,
+        subtitle: 'Are you sure you want to delete this action?',
+        modalStatus: 'danger',
+        actions: [
+          { actionName: cancelAction, buttonStatus: 'default' },
+          { actionName: confirmAction, buttonStatus: 'danger' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result) {
+        if (result == confirmAction) {
+          this.scenarioProductionService.removeState(this.state.id);
+          this.scenarioProductionService.updateLayout();
+        }
+      }
+    });
   }
 
   removeTransition(transition) {
-    delete this.state.on[transition.name];
-    this.scenarioProductionService.updateLayout();
+    const cancelAction = 'cancel';
+    const confirmAction = 'delete';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: `Delete transition`,
+        subtitle: 'Are you sure you want to delete this transition?',
+        modalStatus: 'danger',
+        actions: [
+          { actionName: cancelAction, buttonStatus: 'default' },
+          { actionName: confirmAction, buttonStatus: 'danger' }
+        ]
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result) {
+        if (result == confirmAction) {
+          delete this.state.on[transition.name];
+          this.scenarioProductionService.updateLayout();
+        }
+      }
+    });
   }
 
   getDraggableTypes() {
-    if (this.state.states) return ['intent', 'action'];
-    else return ['intent'];
+    if (this.state.id.toLowerCase() == 'global') return ['action'];
+
+    let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
+    if (parent?.id.toLowerCase() === 'global') {
+      return ['primaryIntent', 'action'];
+    }
+    if (this.state.states) {
+      return ['intent', 'action'];
+    } else return ['intent'];
   }
 
   onDrop(event) {
+    console.log(event);
     this.scenarioProductionService.itemDropped(this.state.id, event.data);
   }
 

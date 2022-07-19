@@ -2,8 +2,8 @@
   class="stateGroup unselectable"
   [dndDropzone]="getDraggableTypes()"
   [dndDisableIf]="this.state.id === 'root'"
-  (dndDrop)="onDrop($event)"
   dndDragoverClass="dragHover"
+  (dndDrop)="onDrop($event)"
 >
   <div class="stateGroup-header">
     {{ state.id }}
@@ -49,6 +49,7 @@
       <scenario-state-group
         *ngFor="let state of state.states | keyvalue"
         [state]="state.value"
+        [stateMachine]="stateMachine"
         [usedNames]="usedNames"
         [intents]="intents"
         [actions]="actions"

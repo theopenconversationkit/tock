@@ -15,7 +15,7 @@ import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dial
 import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
-import { revertTransformMatrix } from '../../commons/utils';
+import { getStateMachineActionParentById, revertTransformMatrix } from '../../commons/utils';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
@@ -158,6 +158,11 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
+  getDraggableIntentType(intent) {
+    if (intent.primary) return 'primaryIntent';
+    return 'intent';
+  }
+
   getIntentTooltip(intent) {
     return intent.label ? intent.label : intent.name;
   }
@@ -253,7 +258,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       }
     }
     if (event.dropped.type === 'intent') {
-      let parent = this.getActionParentById(event.stateId, this.scenario.data.stateMachine);
+      let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
       if (parent) {
         parent.on[event.dropped.name] = event.stateId;
       }
@@ -283,7 +288,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       delete targetingIntentParent.parent.on[targetingIntentParent.intent];
     }
 
-    let parent = this.getActionParentById(event.stateId, this.scenario.data.stateMachine);
+    let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
     if (parent) {
       delete parent.states[event.stateId];
     }
@@ -339,27 +344,6 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       if (group.states) {
         for (let name in group.states) {
           result = this.getActionById(id, group.states[name]);
-          if (result) break;
-        }
-      }
-    }
-
-    return result;
-  }
-
-  getActionParentById(id, group) {
-    let result = null;
-    if (group.states) {
-      for (let name in group.states) {
-        if (group.states[name].id === id) {
-          result = group;
-          break;
-        }
-      }
-
-      if (!result) {
-        for (let name in group.states) {
-          result = this.getActionParentById(id, group.states[name]);
           if (result) break;
         }
       }

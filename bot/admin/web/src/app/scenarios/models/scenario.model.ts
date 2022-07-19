@@ -18,10 +18,18 @@ export interface Scenario {
   data?: ScenarioData;
   mode: SCENARIO_MODE;
 }
+
+export interface machineState {
+  id: string;
+  type?: string;
+  initial?: string;
+  states?: { [key: string]: machineState };
+  on?: { [key: string]: string };
+}
 export interface ScenarioData {
   scenarioItems: scenarioItem[];
   contexts?: TickContext[];
-  stateMachine?: {};
+  stateMachine?: machineState;
 }
 
 export type EntityTypeName = string;

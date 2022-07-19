@@ -9,8 +9,8 @@
           [ngClass]="{ disabled: isIntentInUse(intent) }"
           [nbTooltip]="getIntentTooltip(intent)"
           [dndDraggable]="{ type: 'intent', name: intent.name }"
+          [dndType]="getDraggableIntentType(intent)"
           dndHandle
-          dndType="intent"
           [dndDisableIf]="isIntentInUse(intent)"
         >
           <div class="ellipsis">
@@ -84,6 +84,7 @@
     >
       <scenario-state-group
         [state]="scenario.data.stateMachine"
+        [stateMachine]="scenario.data.stateMachine"
         [usedNames]="collectAllUsedeNames()"
         [intents]="getScenarioIntents()"
         [actions]="getScenarioActions()"

@@ -2,6 +2,8 @@ Scenario designer :
 
         Adapter les css au mode nuit
 
+        Regarder le prblm du bouton close de ChoiceDialogComponent quand le modalStatus n'est pas primary. Voir aussi l'espacement des boutons
+
         Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
 
         WRITING : 
