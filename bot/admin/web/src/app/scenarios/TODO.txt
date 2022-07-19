@@ -1,13 +1,24 @@
 Scenario designer :
 
-        action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
-
-        intent-create : vértifier les conflits de nom ?
-        
-        intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base
-
         Adapter les css au mode nuit
 
-        Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
+        Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
+
+        WRITING : 
+
+                Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
         
-        Permettre de flaguer une intent secondaire comme également primaire
+        CONCEPTION : 
+                action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
+
+                intent-create : vértifier les conflits de nom ?
+        
+                intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base
+
+                Permettre de flaguer une intent secondaire comme également primaire
+
+                Mettre à jours la state machine lorsqu'on renomme ou supprime un item qui était déjà présent dans la state machine
+
+                Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa
+
+        PRODUCTION : 

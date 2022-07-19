@@ -41,6 +41,7 @@ export interface intentDefinition {
   intentId?: string;
   sentences?: TempSentence[];
   _sentences?: Sentence[];
+  primary?: boolean;
 }
 export interface TickActionDefinition {
   name: string;
@@ -63,6 +64,7 @@ export interface scenarioItem {
   text: string;
   from: scenarioItemFrom;
   final?: boolean;
+  main?: boolean;
 
   intentDefinition?: intentDefinition;
   tickActionDefinition?: TickActionDefinition;

@@ -11,6 +11,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../../core-nlp/dialog.service';
+import { intentDefinition, TickActionDefinition } from '../../../models';
 import { ScenarioProductionService } from '../scenario-production.service';
 import { ScenarioProductionStateGroupAddComponent } from './state-group-add/state-group-add.component';
 import { ScenarioTransitionComponent } from './transition/transition.component';
@@ -24,6 +25,8 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() state;
   @Input() usedNames: string[];
+  @Input() intents: intentDefinition[];
+  @Input() actions: TickActionDefinition[];
 
   @ViewChildren(ScenarioTransitionComponent)
   childTransitionsComponents: QueryList<ScenarioTransitionComponent>;

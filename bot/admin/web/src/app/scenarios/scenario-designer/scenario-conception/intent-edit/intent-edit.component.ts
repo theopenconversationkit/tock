@@ -48,6 +48,8 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   _sentences: Sentence[] = [];
 
   ngOnInit(): void {
+    this.form.patchValue(this.item);
+
     if (this.item.intentDefinition?.sentences?.length) {
       this.item.intentDefinition?.sentences.forEach((sentence) => {
         const clone = JSON.parse(JSON.stringify(sentence));
@@ -86,7 +88,8 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   form: FormGroup = new FormGroup({
     sentences: new FormArray([]),
-    contextsEntities: new FormArray([])
+    contextsEntities: new FormArray([]),
+    primary: new FormControl(false)
   });
 
   get sentences(): FormArray {
@@ -94,6 +97,10 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   }
   get contextsEntities(): FormArray {
     return this.form.get('contextsEntities') as FormArray;
+  }
+
+  get primary(): FormControl {
+    return this.form.get('primary') as FormControl;
   }
 
   dissociateIntent() {

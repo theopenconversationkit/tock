@@ -148,6 +148,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         intents.push(item.intentDefinition);
       }
     });
+
     return intents.sort((a, b) => {
       const aIsUsed = this.isIntentInUse(a);
       if (aIsUsed) return 1;

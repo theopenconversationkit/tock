@@ -38,6 +38,8 @@
         <scenario-transition
           [transition]="{ name: transition.key, target: transition.value }"
           [parentState]="state"
+          [intents]="intents"
+          [actions]="actions"
           (removeTransition)="removeTransition($event)"
         ></scenario-transition>
       </ng-container>
@@ -48,6 +50,8 @@
         *ngFor="let state of state.states | keyvalue"
         [state]="state.value"
         [usedNames]="usedNames"
+        [intents]="intents"
+        [actions]="actions"
       ></scenario-state-group>
     </div>
   </div>

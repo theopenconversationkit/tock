@@ -1,3 +1,9 @@
+<nb-icon
+  *ngIf="intent.primary"
+  icon="award-outline"
+  class="valign-middle"
+  style="margin-left: -5px"
+></nb-icon>
 {{ transition.name }}
 
 <nb-icon
@@ -5,4 +11,5 @@
   icon="minus-circle-outline"
   nbTooltip="Remove this transition"
   (click)="remove(transition)"
+  style="margin-right: -5px"
 ></nb-icon>

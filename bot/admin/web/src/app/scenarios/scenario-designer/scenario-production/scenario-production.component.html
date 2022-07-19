@@ -13,7 +13,14 @@
           dndType="intent"
           [dndDisableIf]="isIntentInUse(intent)"
         >
-          <div class="ellipsis">{{ intent.name }}</div>
+          <div class="ellipsis">
+            <nb-icon
+              *ngIf="intent.primary"
+              icon="award-outline"
+              class="valign-middle"
+            ></nb-icon>
+            {{ intent.name }}
+          </div>
         </div>
       </div>
     </div>
@@ -78,6 +85,8 @@
       <scenario-state-group
         [state]="scenario.data.stateMachine"
         [usedNames]="collectAllUsedeNames()"
+        [intents]="getScenarioIntents()"
+        [actions]="getScenarioActions()"
       ></scenario-state-group>
     </div>
   </div>
