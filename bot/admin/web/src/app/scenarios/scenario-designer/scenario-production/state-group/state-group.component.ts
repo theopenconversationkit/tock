@@ -156,15 +156,19 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
 
     let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
     if (parent?.id.toLowerCase() === 'global') {
-      return ['primaryIntent', 'action'];
+      if (this.state.states) {
+        return ['primaryIntent', 'action'];
+      }
+      return ['primaryIntent'];
     }
+
     if (this.state.states) {
       return ['intent', 'action'];
-    } else return ['intent'];
+    }
+    return ['intent'];
   }
 
   onDrop(event) {
-    console.log(event);
     this.scenarioProductionService.itemDropped(this.state.id, event.data);
   }
 

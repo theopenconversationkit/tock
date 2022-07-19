@@ -120,7 +120,15 @@
               0
             ],
             "from": "bot",
-            "text": " sdf sdf dfg dfg dfg dfg"
+            "text": "an action",
+            "tickActionDefinition": {
+              "name": "AN_ACTION",
+              "description": "an action",
+              "handler": null,
+              "answer": null,
+              "inputContextNames": [],
+              "outputContextNames": []
+            }
           },
           {
             "id": 2,
@@ -128,7 +136,15 @@
               0
             ],
             "from": "bot",
-            "text": "Test sentence"
+            "text": "Another action",
+            "tickActionDefinition": {
+              "name": "ANOTHER_ACTION",
+              "description": "Another action",
+              "handler": null,
+              "answer": null,
+              "inputContextNames": [],
+              "outputContextNames": []
+            }
           },
           {
             "id": 3,
@@ -136,7 +152,15 @@
               2
             ],
             "from": "client",
-            "text": "Test sentence"
+            "text": "Other test sentence",
+            "intentDefinition": {
+              "label": "Other test sentence",
+              "name": "otherTestSentence",
+              "category": "scenarios",
+              "description": null,
+              "primary": false,
+              "sentences": []
+            }
           },
           {
             "id": 4,
@@ -144,7 +168,15 @@
               1
             ],
             "from": "client",
-            "text": "Test sentence"
+            "text": "A test sentence",
+            "intentDefinition": {
+              "label": "A test sentence",
+              "name": "aTestSentence",
+              "category": "scenarios",
+              "description": null,
+              "primary": false,
+              "sentences": []
+            }
           }
         ],
         "contexts": []
@@ -812,8 +844,19 @@
                     },
                     "ACTIVATE_MAX_CARD": {
                       "id": "ACTIVATE_MAX_CARD",
-                      "states": {},
-                      "on": {}
+                      "states": {
+                        "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL": {
+                          "id": "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL"
+                        },
+                        "HOW_TO_ACTIVATE_MAX_CARD": {
+                          "id": "HOW_TO_ACTIVATE_MAX_CARD"
+                        }
+                      },
+                      "on": {
+                        "renouvellement": "HOW_TO_ACTIVATE_MAX_CARD",
+                        "monteeEnGamme": "HOW_TO_ACTIVATE_MAX_CARD"
+                      },
+                      "initial": "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL"
                     }
                   },
                   "on": {
@@ -823,7 +866,8 @@
                 }
               },
               "on": {
-                "comment_fa": "ACTIVATE_CARD"
+                "comment_fa": "ACTIVATE_CARD",
+                "activermacartemax": "ACTIVATE_CARD"
               },
               "initial": "ACTIVATE_CARD"
             }

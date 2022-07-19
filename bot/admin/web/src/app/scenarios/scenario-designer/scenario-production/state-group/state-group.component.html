@@ -6,22 +6,22 @@
   (dndDrop)="onDrop($event)"
 >
   <div class="stateGroup-header">
-    <span>
+    <span class="text-nowrap">
       <nb-icon
-        *ngIf="isInitialParentState()"
+        *ngIf="state.id !== 'root' && isInitialParentState()"
         icon="flash-outline"
-        status="primary"
         class="valign-middle"
         style="margin-left: -5px"
+        nbTooltip="Initial action"
       ></nb-icon>
 
       <nb-icon
-        *ngIf="!isInitialParentState()"
+        *ngIf="state.id !== 'root' && !isInitialParentState()"
         icon="flash-outline"
-        status="default"
         class="valign-middle pointer"
-        style="margin-left: -5px"
+        style="margin-left: -5px; color: #bbb"
         (click)="setActionInitial()"
+        nbTooltip="Define this action as the initial action of its parent container"
       ></nb-icon>
       {{ state.id }}
     </span>
