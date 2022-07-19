@@ -18,33 +18,63 @@ package ai.tock.bot.admin.scenario
 
 import ai.tock.shared.exception.TockNotFound
 import ai.tock.shared.injector
+import ai.tock.shared.vertx.ConflictException
+import ai.tock.shared.vertx.InternalServerException
+import ai.tock.shared.vertx.NotFoundException
 import com.github.salomonbrys.kodein.instance
 import mu.KLogger
 import mu.KotlinLogging
 
+/**
+ * Implementation of ScenarioService
+ */
 class ScenarioServiceImpl : ScenarioService {
 
     private val logger: KLogger = KotlinLogging.logger {}
 
     private val scenarioDAO: ScenarioDAO by injector.instance()
 
+    /**
+     * Returns all scenarios know
+     */
     override fun findAll(): Collection<Scenario> {
         return scenarioDAO.findAll()
             .map(checkScenarioFromDatabase)
     }
 
+    /**
+     * Returns a specific scenario based on it's id
+     * @property scenarioId id of scenario to find
+     * @throws NotFoundException when no scenario found
+     * @throws InternalServerException when scenario found is invalid
+     */
     override fun findById(scenarioId: String): Scenario {
         return scenarioDAO.findById(scenarioId)
             .checkIsNotNullForId(scenarioId)
             .checkScenarioFromDatabase()
     }
 
+    /**
+     * Create a new scenario
+     * @property scenario to create
+     * @throws ConflictException when scenario id is not null
+     * @throws InternalServerException when scenario created is invalid
+     */
     override fun create(scenario: Scenario): Scenario {
         scenario.checkToCreate()
         return scenarioDAO.create(scenario)
             .checkScenarioFromDatabase()
     }
 
+    /**
+     * Update an existing scenario
+     * @property scenarioId id of URI to update scenario
+     * @property scenario to update
+     * @throws NotFoundException when scenarioId don't exist
+     * @throws ConflictException when scenario id is null
+     * @throws ConflictException when scenario id is not the same as scenarioId
+     * @throws InternalServerException when scenario updated is invalid
+     */
     override fun update(scenarioId: String, scenario: Scenario): Scenario {
         scenario.mustExist(existe(scenarioId)).checkToUpdate(scenarioId)
         return scenarioDAO.update(scenario)
@@ -55,6 +85,11 @@ class ScenarioServiceImpl : ScenarioService {
         return scenarioDAO.findById(scenarioId)?.let { true } ?: false
     }
 
+    /**
+     * Delete an existing scenario
+     * If the scenario does not already exist, it just logs that it does not exist
+     * @property scenarioId id of scenario to delete
+     */
     override fun delete(scenarioId: String) {
         try {
             scenarioDAO.delete(scenarioId)

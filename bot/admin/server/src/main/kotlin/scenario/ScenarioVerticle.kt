@@ -29,7 +29,10 @@ import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
 
-open class ScenarioVerticle() {
+/**
+ * ScenarioVerticle contains all the routes and actions associated with the scenarios
+ */
+class ScenarioVerticle {
 
     private val logger: KLogger = KotlinLogging.logger {}
 
@@ -37,10 +40,15 @@ open class ScenarioVerticle() {
 
     private val scenarioId = "scenarioID"
 
+    //scenarioBasePath is empty value is necessary so that the scenario URLs are not preceded by the default basePath
+    // of the WebVerticle on which the routes are added
     private val scenarioBasePath = ""
 
     val scenariosPath = "/scenarios"
 
+    /**
+     * Declaration of routes and association to the appropriate handler
+     */
     fun configureScenario(webVerticle: WebVerticle) {
         logger.info { "configure ScenarioVerticle" }
         with(webVerticle) {
@@ -56,6 +64,10 @@ open class ScenarioVerticle() {
         }
     }
 
+    /**
+     * Handler to retrieve Scenario, then format the response as a List of ScenarioResult.
+     * when success, return a 200 response.
+     */
     protected val getAllScenarios: (RoutingContext) -> List<ScenarioResult> = { context ->
         logger.debug { "request to get all scenario" }
         catchExternalException {
@@ -65,6 +77,10 @@ open class ScenarioVerticle() {
         }
     }
 
+    /**
+     * Handler to find and retrieve a Scenario based on it's ID, then format the response as a ScenarioResult.
+     * when success, return a 200 response.
+     */
     protected val getOneScenario: (RoutingContext) -> ScenarioResult = { context ->
         val scenarioId = extractScenarioId(context)
         logger.debug { "request to get scenario id $scenarioId" }
@@ -76,6 +92,10 @@ open class ScenarioVerticle() {
         }
     }
 
+    /**
+     * Handler to create and retrieve the Scenario created, then format the response as a ScenarioResult.
+     * when success, return a 201 response.
+     */
     protected val createScenario: (RoutingContext, ScenarioRequest) -> ScenarioResult = { context, request ->
         logger.debug { "request to create scenario name ${request.name}" }
         context.setResponseStatusCode(201)
@@ -87,6 +107,10 @@ open class ScenarioVerticle() {
         }
     }
 
+    /**
+     * Handler to update and retrieve the Scenario update, then format the response as a ScenarioResult.
+     * when success, produce a 202 response.
+     */
     protected val updateScenario: (RoutingContext, ScenarioRequest) -> ScenarioResult = { context, request ->
         val scenarioId = extractScenarioId(context)
         logger.debug { "request to update scenario id $scenarioId" }
@@ -103,6 +127,10 @@ open class ScenarioVerticle() {
         response().statusCode = statusCode
     }
 
+    /**
+     * Handler to delete a Scenario based on it's ID, then return nothing.
+     * when success, produce a 204 response.
+     */
     protected val deleteScenario: (RoutingContext) -> Unit = { context ->
         val scenarioId = extractScenarioId(context)
         logger.debug { "request to delete scenario id $scenarioId" }

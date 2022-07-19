@@ -28,6 +28,9 @@ internal object ScenarioMongoDAO : ScenarioDAO {
     internal val scenarioDatabase =
         MongoBotConfiguration.database.getCollection<ScenarioCol>("scenario")
 
+    /**
+     * Return a collection of all Scenario.
+     */
     override fun findAll(): List<Scenario> {
         return scenarioDatabase.find()
             .ascendingSort(Name)
@@ -35,10 +38,19 @@ internal object ScenarioMongoDAO : ScenarioDAO {
             .map(mapToScenario)
     }
 
+    /**
+     * Return Scenario find by id or null if not exist.
+     * @property id of scenario to find.
+     */
     override fun findById(id: String): Scenario? {
         return scenarioDatabase.findOneById(id.toId<Scenario>())?.mapToScenario()
     }
 
+    /**
+     * Create Scenario and return it.
+     * @property scenario to create.
+     * @throws TockIllegaleArgumentException when scenario have id.
+     */
     override fun create(scenario: Scenario): Scenario {
         if(isIdPresent(scenario)) {
             throw TockIllegaleArgumentException("scenario musn't have id")
@@ -46,6 +58,11 @@ internal object ScenarioMongoDAO : ScenarioDAO {
         return save(scenario.mapToScenarioCol()).mapToScenario()
     }
 
+    /**
+     * Update Scenario and return it.
+     * @property scenario to update.
+     * @throws TockIllegaleArgumentException when scenario have no id.
+     */
     override fun update(scenario: Scenario): Scenario {
         if(!isIdPresent(scenario)) {
             throw TockIllegaleArgumentException("scenario must have id")
@@ -62,6 +79,11 @@ internal object ScenarioMongoDAO : ScenarioDAO {
         return scenario
     }
 
+    /**
+     * Delete Scenario by id.
+     * @property id of scenario to delete
+     * @throws TockNotFound when no delete process of id
+     */
     override fun delete(id: String) {
         val result: DeleteResult = scenarioDatabase.deleteOneById(id.toId<Scenario>())
         if(result.deletedCount == 0L) {

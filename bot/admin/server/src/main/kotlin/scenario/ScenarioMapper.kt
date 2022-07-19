@@ -20,6 +20,9 @@ import ai.tock.bot.admin.model.scenario.ScenarioRequest
 import ai.tock.bot.admin.model.scenario.ScenarioResult
 import ai.tock.shared.vertx.InternalServerException
 
+/**
+ * Map a ScenarioRequest to a Scenario
+ */
 val mapToScenario: ScenarioRequest.() -> Scenario = {
     Scenario(
         id = id,
@@ -35,6 +38,9 @@ val mapToScenario: ScenarioRequest.() -> Scenario = {
     )
 }
 
+/**
+ * Map a Scenario to a ScenarioRequest
+ */
 val mapToScenarioResult: Scenario.() -> ScenarioResult = {
     ScenarioResult(
         id = id ?: throw InternalServerException("cannot create scenarioResult with id null"),

@@ -15,15 +15,37 @@
  */
 package ai.tock.bot.admin.scenario
 
+/**
+ *
+ */
 interface ScenarioDAO {
 
+    /**
+     * Return a collection of all Scenario.
+     */
     fun findAll(): Collection<Scenario>
 
+    /**
+     * Return Scenario find by id or null if not exist.
+     * @property id of scenario to find.
+     */
     fun findById(id: String): Scenario?
 
+    /**
+     * Create Scenario and return it.
+     * @property scenario to create.
+     */
     fun create(scenario: Scenario): Scenario
 
+    /**
+     * Update Scenario and return it.
+     * @property scenario to update.
+     */
     fun update(scenario: Scenario): Scenario
 
+    /**
+     * Delete Scenario by id.
+     * @property id of scenario to delete.
+     */
     fun delete(id: String)
 }

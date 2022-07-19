@@ -16,15 +16,41 @@
 
 package ai.tock.bot.admin.scenario
 
+import ai.tock.shared.vertx.ConflictException
+import ai.tock.shared.vertx.InternalServerException
+import ai.tock.shared.vertx.NotFoundException
+
 interface ScenarioService {
 
+    /**
+     * Returns all scenarios know
+     */
     fun findAll(): Collection<Scenario>
 
+    /**
+     * Returns a specific scenario based on its id
+     * @property scenarioId id of scenario to find
+     * @throws NotFoundException when no scenario found
+     * @throws InternalServerException when scenario found is invalid
+     */
     fun findById(scenarioId: String): Scenario
 
+    /**
+     * Create a new scenario
+     * @property scenario to create
+     */
     fun create(scenario: Scenario): Scenario
 
+    /**
+     * Update an existing scenario
+     * @property scenarioId id of URI to update scenario
+     * @property scenario to update
+     */
     fun update(scenarioId: String, scenario: Scenario): Scenario
 
+    /**
+     * Delete an existing scenario
+     * @property scenarioId id of scenario to delete
+     */
     fun delete(scenarioId: String)
 }

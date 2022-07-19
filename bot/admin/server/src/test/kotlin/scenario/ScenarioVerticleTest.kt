@@ -35,7 +35,7 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/*
+/**
  * ScenarioVerticleTest extends ScenarioVerticle to access and test protected lambdas
  */
 class ScenarioVerticleTest : ScenarioVerticle() {
