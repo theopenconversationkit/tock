@@ -62,6 +62,8 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val faqId4 = "faqDefId4".toId<FaqDefinition>()
 
     private val i18nId = "idI18n".toId<I18nLabel>()
+    private val i18nId2 = "idI18n2".toId<I18nLabel>()
+    private val i18nId3 = "idI18n3".toId<I18nLabel>()
     private val now = Instant.now().truncatedTo(ChronoUnit.MILLIS)
     private val tagList = listOf("TAG1", "TAG2")
 
@@ -70,8 +72,8 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val userLogin: UserLogin = "whateverLogin"
 
     private val faqDefinition = FaqDefinition(faqId, applicationId, intentId, i18nId, tagList, true, now, now)
-    private val faq2Definition = FaqDefinition(faqId2, applicationId, intentId2, i18nId, tagList, true, now, now)
-    private val faq3Definition = FaqDefinition(faqId3, applicationId2, intentId, i18nId, tagList, true, now, now)
+    private val faq2Definition = FaqDefinition(faqId2, applicationId, intentId2, i18nId2, tagList, true, now, now)
+    private val faq3Definition = FaqDefinition(faqId3, applicationId2, intentId3, i18nId3, tagList, true, now, now)
 
     private val col: MongoCollection<FaqDefinition> by lazy { FaqDefinitionMongoDAO.col }
 
@@ -94,7 +96,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         clearProperties()
     }
 
-    fun clearProperties(){
+    fun clearProperties() {
         System.clearProperty(TOCK_DOCUMENT_DB_ON_PROPERTY)
     }
 
@@ -348,9 +350,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             null
         )
 
-        assertEquals(expected = 1, actual= classifiedSentencesDao.getSentences(setOf(intentIdtoDel), Locale.FRENCH,
-            ClassifiedSentenceStatus.deleted
-        ).size,"There should be one classified sentences deleted")
+        assertEquals(
+            expected = 1, actual = classifiedSentencesDao.getSentences(
+                setOf(intentIdtoDel), Locale.FRENCH,
+                ClassifiedSentenceStatus.deleted
+            ).size, "There should be one classified sentences deleted"
+        )
 
         assertEquals(
             expected = 2,
@@ -362,9 +367,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             message = "There should be two classified sentences"
         )
 
-        assertEquals(expected = 1, actual= classifiedSentencesDao.getSentences(setOf(intentIdtoDel), Locale.FRENCH,
-            ClassifiedSentenceStatus.deleted
-        ).size,"There should be one classified sentences deleted")
+        assertEquals(
+            expected = 1, actual = classifiedSentencesDao.getSentences(
+                setOf(intentIdtoDel), Locale.FRENCH,
+                ClassifiedSentenceStatus.deleted
+            ).size, "There should be one classified sentences deleted"
+        )
 
         assertEquals(
             expected = 2,
@@ -436,9 +444,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             null
         )
 
-        assertEquals(expected = 1, actual= classifiedSentencesDao.getSentences(setOf(intentIdtoDel), Locale.FRENCH,
-            ClassifiedSentenceStatus.deleted
-        ).size,"There should be one classified sentences deleted")
+        assertEquals(
+            expected = 1, actual = classifiedSentencesDao.getSentences(
+                setOf(intentIdtoDel), Locale.FRENCH,
+                ClassifiedSentenceStatus.deleted
+            ).size, "There should be one classified sentences deleted"
+        )
 
         assertEquals(
             expected = 2,
@@ -450,9 +461,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             message = "There should be two classified sentences"
         )
 
-        assertEquals(expected = 1, actual= classifiedSentencesDao.getSentences(setOf(intentIdtoDel), Locale.FRENCH,
-            ClassifiedSentenceStatus.deleted
-        ).size,"There should be one classified sentences deleted")
+        assertEquals(
+            expected = 1, actual = classifiedSentencesDao.getSentences(
+                setOf(intentIdtoDel), Locale.FRENCH,
+                ClassifiedSentenceStatus.deleted
+            ).size, "There should be one classified sentences deleted"
+        )
 
         assertEquals(
             expected = 2,
@@ -550,19 +564,20 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `A faqDefinition search with deleted utterances with DocumentDb`(){
-        System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY,"true")
+    fun `A faqDefinition search with deleted utterances with DocumentDb`() {
+        System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY, "true")
         `A faqDefinition search with deleted utterances`()
     }
+
     @Test
-    fun `A faqDefinition search with name with deleted utterances with DocumentDb`(){
-        System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY,"true")
+    fun `A faqDefinition search with name with deleted utterances with DocumentDb`() {
+        System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY, "true")
         `A faqDefinition search with name with deleted utterances`()
     }
 
     @Test
-    fun `FaqDefinition search must be ordered by creationDate with DocumentDB`(){
-        System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY,"true")
+    fun `FaqDefinition search must be ordered by creationDate with DocumentDB`() {
+        System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY, "true")
         `FaqDefinition search must be ordered by creationDate`()
     }
 
