@@ -62,7 +62,7 @@
 
     <div
       class="d-flex justify-content-end mb-2"
-      *ngIf="!loading.list && scenarios?.length"
+      *ngIf="!loading.list && paginatedScenarios?.length"
     >
       <tock-pagination
         [pagination]="pagination"
@@ -90,7 +90,8 @@
       <tock-scenario-list-simple
         *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.LIST"
         [nbSpinner]="loading.delete"
-        [scenarios]="filteredScenarios"
+        [scenarios]="paginatedScenarios"
+        [selectedScenario]="scenarioEdit"
         (onEdit)="addOrEditScenario($event)"
         (onDelete)="delete($event)"
       ></tock-scenario-list-simple>

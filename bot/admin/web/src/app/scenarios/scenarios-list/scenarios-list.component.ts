@@ -26,6 +26,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   destroy$ = new Subject();
   scenarios: Scenario[] = [];
   filteredScenarios: Scenario[] = [];
+  paginatedScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
   categoriesCache: string[] = [];
   tagsCache: string[] = [];
@@ -43,9 +44,9 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   pagination: Pagination = {
     start: 0,
-    end: undefined,
+    end: 0,
     size: 10,
-    total: undefined
+    total: 0
   };
 
   private currentFilters: Filter = { search: '', tags: [] };
@@ -86,7 +87,9 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       .subscribe((data: Scenario[]) => {
         this.loading.list = false;
         this.scenarios = [...data];
+        this.pagination.total = data.length;
         this.filterScenarios(this.currentFilters);
+        this.paginateScenario(data);
       });
   }
 
@@ -259,7 +262,31 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
       return scenario;
     });
+
+    // reset pagination
+    this.pagination.start = 0;
+    this.pagination.end =
+      this.filteredScenarios.length < this.pagination.size
+        ? this.filteredScenarios.length
+        : this.pagination.size;
+    this.pagination.total = this.filteredScenarios.length;
+
+    this.paginateScenario(this.filteredScenarios);
   }
 
-  paginationChange(pagination: Pagination): void {}
+  paginateScenario(scenarios: Scenario[]): void {
+    if (!this.pagination.end) {
+      const pageEnd = this.pagination.end + this.pagination.size;
+      this.pagination.end = scenarios.length > pageEnd ? pageEnd : scenarios.length;
+    }
+
+    this.paginatedScenarios = this.filteredScenarios.slice(
+      this.pagination.start,
+      this.pagination.end
+    );
+  }
+
+  paginationChange(): void {
+    this.paginateScenario(this.scenarios);
+  }
 }
