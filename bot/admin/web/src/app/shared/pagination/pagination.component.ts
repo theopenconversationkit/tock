@@ -28,16 +28,10 @@ export class PaginationComponent implements OnInit {
 
   paginationPrevious(): void {
     let pageStart = this.pagination.start - this.pagination.size;
-    let pageEnd = 0;
-
     if (pageStart < 0) pageStart = 0;
 
-    pageEnd = pageStart + this.pagination.size;
-
-    if (pageEnd > this.pagination.total) pageEnd = this.pagination.total;
-
     this.pagination.start = pageStart;
-    this.pagination.end = pageEnd;
+    this.pagination.end = pageStart + this.pagination.size;
     this.onPaginationChange.emit();
   }
 

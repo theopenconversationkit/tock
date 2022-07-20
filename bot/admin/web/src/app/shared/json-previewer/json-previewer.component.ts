@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
   encapsulation: ViewEncapsulation.None
 })
 export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() jsonData: string | object;
+  @Input() jsonData!: string | object;
   @Input() title: string = 'JSON Preview';
   @Input() jsonPreviewerRef: NbDialogRef<JsonPreviewerComponent>;
 
