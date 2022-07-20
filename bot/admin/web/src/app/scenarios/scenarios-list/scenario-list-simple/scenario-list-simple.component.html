@@ -41,6 +41,7 @@
 <nb-accordion
   *ngFor="let scenario of scenarios | orderBy: orderBy:orderByReverse:'name'"
   class="mb-2"
+  [class.selected]="selectedScenario?.id === scenario.id"
 >
   <nb-accordion-item>
     <nb-accordion-item-header>

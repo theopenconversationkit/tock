@@ -9,6 +9,7 @@ import { Scenario } from '../../models';
 })
 export class ScenarioListSimpleComponent {
   @Input() scenarios!: Scenario[];
+  @Input() selectedScenario?: Scenario;
 
   @Output() onEdit = new EventEmitter<Scenario>();
   @Output() onDelete = new EventEmitter<Scenario>();
