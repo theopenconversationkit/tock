@@ -31,3 +31,10 @@
 .unselectable {
   user-select: none;
 }
+
+nb-accordion.selected {
+  border-left: 0.5rem solid var(--success);
+  nb-accordion-item {
+    padding-left: 1rem;
+  }
+}
