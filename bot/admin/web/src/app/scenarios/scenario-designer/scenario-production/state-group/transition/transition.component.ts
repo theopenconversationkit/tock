@@ -51,6 +51,10 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
     });
   }
 
+  getIntentTooltip() {
+    return this.intent.label ? this.intent.label : this.intent.name;
+  }
+
   setTransitionTop() {
     this.elementRef.nativeElement.style.top = this.getTransitionTop() + 'px';
   }

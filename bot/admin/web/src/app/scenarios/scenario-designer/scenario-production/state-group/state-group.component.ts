@@ -60,6 +60,18 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     });
   }
 
+  getActionTooltip() {
+    const action = this.actions.find((a) => {
+      return a.name === this.state.id;
+    });
+    if (action) {
+      if (action.description) return action.description;
+      if (action.answer) return action.answer;
+      return action.name;
+    }
+    return this.state.id;
+  }
+
   isInitialParentState(): boolean {
     let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
     if (parent?.initial === this.state.id) return true;

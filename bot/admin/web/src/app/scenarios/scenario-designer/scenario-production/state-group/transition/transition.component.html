@@ -3,8 +3,12 @@
   icon="award-outline"
   class="valign-middle mr-1"
   style="margin-left: -5px; width: 1.3em"
+  nbTooltip="Primary intent"
 ></nb-icon>
-<div class="ellipsis">
+<div
+  class="ellipsis"
+  [nbTooltip]="getIntentTooltip()"
+>
   {{ transition.name }}
 </div>
 

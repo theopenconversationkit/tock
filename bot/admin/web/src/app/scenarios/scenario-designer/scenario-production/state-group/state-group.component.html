@@ -5,7 +5,10 @@
   dndDragoverClass="dragHover"
   (dndDrop)="onDrop($event)"
 >
-  <div class="stateGroup-header">
+  <div
+    class="stateGroup-header"
+    [nbTooltip]="getActionTooltip()"
+  >
     <span class="text-nowrap">
       <nb-icon
         *ngIf="state.id !== 'root' && isInitialParentState()"
