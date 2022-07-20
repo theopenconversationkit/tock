@@ -13,6 +13,7 @@ import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { ScenarioEditComponent } from '../scenario-edit/scenario-edit.component';
 import { Pagination } from '../../shared/pagination/pagination.component';
+import { OrderBy, orderBy } from '../../shared/utils';
 
 @Component({
   selector: 'scenarios-list',
@@ -45,11 +46,16 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   pagination: Pagination = {
     start: 0,
     end: 0,
-    size: 10,
+    size: 3,
     total: 0
   };
 
   private currentFilters: Filter = { search: '', tags: [] };
+  private currentOrderByCriteria: OrderBy = {
+    criteria: 'name',
+    reverse: false,
+    secondField: 'name'
+  };
 
   constructor(
     private botConfigurationService: BotConfigurationService,
@@ -89,7 +95,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         this.scenarios = [...data];
         this.pagination.total = data.length;
         this.filterScenarios(this.currentFilters);
-        this.paginateScenario(data);
+        this.orderBy(this.currentOrderByCriteria);
       });
   }
 
@@ -271,7 +277,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         : this.pagination.size;
     this.pagination.total = this.filteredScenarios.length;
 
-    this.paginateScenario(this.filteredScenarios);
+    this.orderBy(this.currentOrderByCriteria);
   }
 
   paginateScenario(scenarios: Scenario[]): void {
@@ -288,5 +294,22 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   paginationChange(): void {
     this.paginateScenario(this.scenarios);
+  }
+
+  orderBy(event: OrderBy): void {
+    this.currentOrderByCriteria = {
+      ...this.currentOrderByCriteria,
+      criteria: event.criteria,
+      reverse: event.reverse
+    };
+
+    this.filteredScenarios = orderBy<Scenario>(
+      this.filteredScenarios,
+      this.currentOrderByCriteria.criteria,
+      this.currentOrderByCriteria.reverse,
+      this.currentOrderByCriteria.secondField
+    );
+
+    this.paginateScenario(this.filteredScenarios);
   }
 }

@@ -1,12 +1,10 @@
-import { OrderByPipe } from './orderBy.pipe';
+import { orderBy } from './utils';
 
-describe('OrderByPipe', () => {
-  const pipe = new OrderByPipe();
-
+describe('OrderBy', () => {
   it('should return type error if the argument is not an array', () => {
-    [undefined, null, '', 'a', 'aaaaaa', 0, 1, 15, true, false].forEach((arg) => {
+    [undefined, null, '', 'a', 'aaaaaa', 0, 1, 15, true, false].forEach((arg: any) => {
       expect(() => {
-        pipe.transform(arg, '');
+        orderBy(arg, '');
       }).toThrowError('Invalid array argument');
     });
   });
@@ -14,7 +12,7 @@ describe('OrderByPipe', () => {
   it('should return type error if the field is not empty', () => {
     [undefined, null, ''].forEach((arg) => {
       expect(() => {
-        pipe.transform([], arg);
+        orderBy([], arg);
       }).toThrowError('The field parameter cannot be empty');
     });
   });
@@ -64,7 +62,7 @@ describe('OrderByPipe', () => {
 
     arrayToSort.forEach((arr, i) => {
       expect(arr.length === expectedResult[i].length).toBeTrue();
-      expect(pipe.transform(arr, 'name')).toEqual(expectedResult[i]);
+      expect(orderBy(arr, 'name')).toEqual(expectedResult[i]);
     });
   });
 
@@ -113,7 +111,7 @@ describe('OrderByPipe', () => {
 
     arrayToSort.forEach((arr, i) => {
       expect(arr.length === expectedResult[i].length).toBeTrue();
-      expect(pipe.transform(arr, 'name', true)).toEqual(expectedResult[i]);
+      expect(orderBy(arr, 'name', true)).toEqual(expectedResult[i]);
     });
   });
 
@@ -182,7 +180,7 @@ describe('OrderByPipe', () => {
 
     arrayToSort.forEach((arr, i) => {
       expect(arr.length === expectedResult[i].length).toBeTrue();
-      expect(pipe.transform(arr, 'category', false, 'name')).toEqual(expectedResult[i]);
+      expect(orderBy(arr, 'category', false, 'name')).toEqual(expectedResult[i]);
     });
   });
 });

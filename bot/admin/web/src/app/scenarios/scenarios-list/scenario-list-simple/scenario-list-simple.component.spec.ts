@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
-import { OrderByPipe } from '../../../shared/pipes/orderBy/orderBy.pipe';
 
 describe('ScenarioListSimpleComponent', () => {
   let component: ScenarioListSimpleComponent;
@@ -10,7 +9,7 @@ describe('ScenarioListSimpleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScenarioListSimpleComponent, OrderByPipe],
+      declarations: [ScenarioListSimpleComponent],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });

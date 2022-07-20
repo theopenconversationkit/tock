@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+import { OrderBy } from '../../../shared/utils';
 import { Scenario } from '../../models';
 
 @Component({
@@ -13,6 +14,7 @@ export class ScenarioListSimpleComponent {
 
   @Output() onEdit = new EventEmitter<Scenario>();
   @Output() onDelete = new EventEmitter<Scenario>();
+  @Output() onOrderBy = new EventEmitter<OrderBy>();
 
   orderBy = 'name';
   orderByReverse = false;
@@ -24,6 +26,8 @@ export class ScenarioListSimpleComponent {
       this.orderBy = criteria;
       this.orderByReverse = false;
     }
+
+    this.onOrderBy.emit({ criteria: this.orderBy, reverse: this.orderByReverse });
   }
 
   edit(event: MouseEvent, scenario: Scenario): void {
