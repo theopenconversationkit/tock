@@ -58,6 +58,7 @@ export interface TickActionDefinition {
   outputContextNames?: TickContextName[];
   handler?: string;
   answer?: string;
+  answerId?: string;
 }
 
 export const SCENARIO_ITEM_FROM_CLIENT = 'client';

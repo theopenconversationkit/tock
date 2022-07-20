@@ -22,17 +22,18 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   compileTickStory(): string {
     let tickStory = {
       name: this.scenario.name,
-      sagaId: 321658,
+      sagaId: 0,
+      mainIntent: 'main intent name',
       primaryIntents: ['62bb118e49e78735af27aa98'],
       secondaryIntents: ['65sd99ze1sd6ert6df21se89', 'df5d58ze54ds875q45sdf89'],
-      tickContexts: this.scenario.data.contexts,
-      tickActions: [],
+      contexts: this.scenario.data.contexts,
+      actions: [],
       stateMachine: this.scenario.data.stateMachine
     };
 
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
-        tickStory.tickActions.push(item.tickActionDefinition);
+        tickStory.actions.push(item.tickActionDefinition);
       }
     });
 

@@ -48,7 +48,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   _sentences: Sentence[] = [];
 
   ngOnInit(): void {
-    this.form.patchValue(this.item);
+    this.form.patchValue({ primary: this.item.intentDefinition.primary });
 
     if (this.item.intentDefinition?.sentences?.length) {
       this.item.intentDefinition?.sentences.forEach((sentence) => {
