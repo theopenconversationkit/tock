@@ -46,7 +46,6 @@ import { FormControlComponent } from './form-control/form-control.component';
 import { DelayDirective } from './directives/delay.directive';
 import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
 import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
-import { OrderByPipe } from './pipes/orderBy/orderBy.pipe';
 import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
 
 @NgModule({
@@ -81,7 +80,6 @@ import { JsonPreviewerComponent } from './json-previewer/json-previewer.componen
     DelayDirective,
     ChoiceDialogComponent,
     MouseWheelListnerDirective,
-    OrderByPipe,
     JsonPreviewerComponent
   ],
   exports: [
@@ -96,7 +94,6 @@ import { JsonPreviewerComponent } from './json-previewer/json-previewer.componen
     FormControlComponent,
     ChoiceDialogComponent,
     MouseWheelListnerDirective,
-    OrderByPipe,
     JsonPreviewerComponent
   ],
   providers: [BotSharedService],

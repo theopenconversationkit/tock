@@ -25,3 +25,12 @@
     text-align: right;
   }
 }
+
+.truncate {
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  display: block;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
