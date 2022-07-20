@@ -137,7 +137,7 @@ class IadvizeConnector internal constructor(
 
     internal var handlerStrategies: IadvizeHandler = { context, controller ->
         logRequest("GET", "/availability-strategies")
-        context.response().endWithJson(AvailabilityStrategies(strategy = customAvailability, availability = true))
+        context.response().endWithJson(listOf(AvailabilityStrategies(strategy = customAvailability, availability = true)))
     }
 
     internal var handlerFirstMessage: IadvizeHandler = { context, controller ->
