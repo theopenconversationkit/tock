@@ -84,7 +84,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     if (this.childTransitionsComponents) {
       this.childTransitionsComponents.forEach((t) => {
         if (t.elementRef.nativeElement.offsetWidth > width)
-          width = t.elementRef.nativeElement.offsetWidth + 20;
+          width = t.elementRef.nativeElement.offsetWidth + 30;
       });
     }
     return width;
@@ -170,6 +170,19 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
 
   onDrop(event) {
     this.scenarioProductionService.itemDropped(this.state.id, event.data);
+  }
+
+  getNextActionError() {
+    if (this.state.states) {
+      let states = Object.keys(this.state.states);
+      if (!states.length) return 'An action group cannot be empty';
+    }
+
+    if (this.state.states && !this.state.initial) {
+      return 'This action group lacks an initial state';
+    }
+
+    return null;
   }
 
   ngOnDestroy(): void {

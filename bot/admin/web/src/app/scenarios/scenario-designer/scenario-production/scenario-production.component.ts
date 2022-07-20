@@ -117,7 +117,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       if (startTop === endTop) {
         path = `M${startLeft} ${startTop} L${endLeft} ${endTop}`;
       } else {
-        let padding = 5;
+        let padding = 10;
         path = `M${startLeft} ${startTop} L${endLeft - padding * 2} ${startTop}  L${
           endLeft - padding * 2
         } ${endTop} L${endLeft} ${endTop}`;
@@ -293,6 +293,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
     let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
     if (parent) {
+      if (parent.initial === event.stateId) {
+        parent.initial = '';
+      }
       delete parent.states[event.stateId];
     }
   }

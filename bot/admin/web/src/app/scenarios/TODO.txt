@@ -1,5 +1,7 @@
 Scenario designer :
 
+        Scenarios management => Scenarios Management
+
         Adapter les css au mode nuit
 
         Regarder le prblm du bouton close de ChoiceDialogComponent quand le modalStatus n'est pas primary. Voir aussi l'espacement des boutons

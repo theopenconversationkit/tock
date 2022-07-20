@@ -24,6 +24,14 @@
         nbTooltip="Define this action as the initial action of its parent container"
       ></nb-icon>
       {{ state.id }}
+
+      <nb-icon
+        *ngIf="getNextActionError()"
+        icon="alert-triangle-outline"
+        status="danger"
+        class="valign-middle mx-2"
+        [nbTooltip]="getNextActionError()"
+      ></nb-icon>
     </span>
 
     <div class="d-flex">

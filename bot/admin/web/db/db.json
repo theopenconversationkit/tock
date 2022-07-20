@@ -179,9 +179,32 @@
             }
           }
         ],
-        "contexts": []
+        "contexts": [],
+        "stateMachine": {
+          "id": "root",
+          "type": "parallel",
+          "states": {
+            "Global": {
+              "id": "Global",
+              "states": {
+                "AN_ACTION": {
+                  "id": "AN_ACTION"
+                },
+                "ANOTHER_ACTION": {
+                  "id": "ANOTHER_ACTION"
+                }
+              },
+              "on": {
+                "sentencewithentities": "AN_ACTION"
+              },
+              "initial": "AN_ACTION"
+            }
+          },
+          "initial": "Global",
+          "on": {}
+        }
       },
-      "mode": "casting"
+      "mode": "production"
     },
     {
       "id": 3,
@@ -1164,18 +1187,20 @@
           {
             "id": 5,
             "parentIds": [
-              2
+              2,
+              3
             ],
             "from": "bot",
             "final": true,
             "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
             "tickActionDefinition": {
-              "name": "APPOINTMENT_COUNTER",
+              "name": "APPOINTMENT_LINK",
               "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
               "handler": null,
               "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
               "inputContextNames": [
-                "CANAL_COUNTER"
+                "CANAL_COUNTER",
+                "CANAL_PHONE"
               ],
               "outputContextNames": []
             }
@@ -1535,25 +1560,6 @@
             }
           },
           {
-            "id": 19,
-            "parentIds": [
-              3
-            ],
-            "from": "bot",
-            "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-            "final": true,
-            "tickActionDefinition": {
-              "name": "APPOINTMENT_PHONE",
-              "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-              "handler": null,
-              "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-              "inputContextNames": [
-                "CANAL_PHONE"
-              ],
-              "outputContextNames": []
-            }
-          },
-          {
             "id": 20,
             "parentIds": [
               9
@@ -1612,65 +1618,57 @@
             "Global": {
               "id": "Global",
               "states": {
-                "BOOK_MEETING": {
-                  "id": "BOOK_MEETING",
+                "GROUP_1": {
+                  "id": "GROUP_1",
                   "states": {
                     "WICH_CANAL": {
                       "id": "WICH_CANAL"
                     },
-                    "APPOINTMENT_COUNTER": {
-                      "id": "APPOINTMENT_COUNTER"
+                    "APPOINTMENT_VISIO": {
+                      "id": "APPOINTMENT_VISIO"
                     },
-                    "APPOINTMENT_PHONE": {
-                      "id": "APPOINTMENT_PHONE"
+                    "WEBCAM_ANSWER": {
+                      "id": "WEBCAM_ANSWER"
                     },
-                    "BOOK_VISIO": {
-                      "id": "BOOK_VISIO",
-                      "states": {
-                        "APPOINTMENT_VISIO": {
-                          "id": "APPOINTMENT_VISIO"
-                        },
-                        "NO_WEBCAM_ANSWER": {
-                          "id": "NO_WEBCAM_ANSWER"
-                        },
-                        "WEBCAM_ANSWER": {
-                          "id": "WEBCAM_ANSWER"
-                        },
-                        "RECOVERY_OF_CASHIERS_HOURS": {
-                          "id": "RECOVERY_OF_CASHIERS_HOURS"
-                        },
-                        "DISPLAY_OF_CASHIERS_HOURS": {
-                          "id": "DISPLAY_OF_CASHIERS_HOURS"
-                        },
-                        "REDIRECTION_TO_A_CONSULTANT": {
-                          "id": "REDIRECTION_TO_A_CONSULTANT"
-                        }
-                      },
-                      "on": {
-                        "non": "NO_WEBCAM_ANSWER",
-                        "oui": "WEBCAM_ANSWER",
-                        "quelsSontLesHorairesDOuvertureDesCaisses": "RECOVERY_OF_CASHIERS_HOURS",
-                        "jesuisdispole": "REDIRECTION_TO_A_CONSULTANT"
-                      }
+                    "RECOVERY_OF_CASHIERS_HOURS": {
+                      "id": "RECOVERY_OF_CASHIERS_HOURS"
+                    },
+                    "DISPLAY_OF_CASHIERS_HOURS": {
+                      "id": "DISPLAY_OF_CASHIERS_HOURS"
+                    },
+                    "REDIRECTION_TO_A_CONSULTANT": {
+                      "id": "REDIRECTION_TO_A_CONSULTANT"
+                    },
+                    "NO_WEBCAM_ANSWER": {
+                      "id": "NO_WEBCAM_ANSWER"
+                    },
+                    "APPOINTMENT_LINK": {
+                      "id": "APPOINTMENT_LINK"
                     }
                   },
                   "on": {
-                    "atCounter": "APPOINTMENT_COUNTER",
-                    "byPhone": "APPOINTMENT_PHONE",
-                    "byVisio": "BOOK_VISIO"
-                  }
+                    "byVisio": "APPOINTMENT_VISIO",
+                    "oui": "WEBCAM_ANSWER",
+                    "non": "NO_WEBCAM_ANSWER",
+                    "quelsSontLesHorairesDOuvertureDesCaisses": "RECOVERY_OF_CASHIERS_HOURS",
+                    "jesuisdispole": "REDIRECTION_TO_A_CONSULTANT",
+                    "atCounter": "APPOINTMENT_LINK",
+                    "byPhone": "APPOINTMENT_LINK"
+                  },
+                  "initial": "WICH_CANAL"
                 }
               },
               "on": {
-                "bonjourJeSouhaitePrendreUnRdv": "BOOK_MEETING"
-              }
+                "bonjourJeSouhaitePrendreUnRdv": "GROUP_1"
+              },
+              "initial": "WICH_CANAL"
             }
           },
           "initial": "Global",
           "on": {}
         }
       },
-      "mode": "casting"
+      "mode": "production"
     },
     {
       "id": 11,

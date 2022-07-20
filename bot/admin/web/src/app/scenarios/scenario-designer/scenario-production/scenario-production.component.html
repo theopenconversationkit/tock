@@ -4,7 +4,7 @@
       <strong>Intents</strong>
       <div class="intents-list mt-2">
         <div
-          class="intent my-1 unselectable"
+          class="intent d-flex my-1 unselectable"
           *ngFor="let intent of getScenarioIntents()"
           [ngClass]="{ disabled: isIntentInUse(intent) }"
           [nbTooltip]="getIntentTooltip(intent)"
@@ -13,12 +13,13 @@
           dndHandle
           [dndDisableIf]="isIntentInUse(intent)"
         >
+          <nb-icon
+            *ngIf="intent.primary"
+            icon="award-outline"
+            class="valign-middle mr-1"
+            style="margin-left: -5px; height: 1em"
+          ></nb-icon>
           <div class="ellipsis">
-            <nb-icon
-              *ngIf="intent.primary"
-              icon="award-outline"
-              class="valign-middle"
-            ></nb-icon>
             {{ intent.name }}
           </div>
         </div>
@@ -83,7 +84,7 @@
       #canvasElem
     >
       <scenario-state-group
-        [state]="scenario.data.stateMachine"
+        [state]="scenario.data.stateMachine.states.Global"
         [stateMachine]="scenario.data.stateMachine"
         [usedNames]="collectAllUsedeNames()"
         [intents]="getScenarioIntents()"
