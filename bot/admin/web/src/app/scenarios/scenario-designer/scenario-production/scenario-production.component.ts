@@ -104,7 +104,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
       const stateComponent =
         this.scenarioProductionService.scenarioProductionStateComponents[
-          transitions[transitionName]
+          transitions[transitionName].replace(/^#/, '')
         ];
       const stateElem = stateComponent.elementRef.nativeElement;
       const stateElemPos = revertTransformMatrix(stateElem, this.canvasElem.nativeElement);
@@ -261,7 +261,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     if (event.dropped.type === 'intent') {
       let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
       if (parent) {
-        parent.on[event.dropped.name] = event.stateId;
+        parent.on[event.dropped.name] = `#${event.stateId}`;
       }
     }
 
@@ -288,7 +288,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       this.scenario.data.stateMachine
     );
     if (targetingIntentParent) {
-      delete targetingIntentParent.parent.on[targetingIntentParent.intent];
+      targetingIntentParent.intents.forEach((intent) => {
+        delete targetingIntentParent.parent.on[intent];
+      });
     }
 
     let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
@@ -300,13 +302,13 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
   }
 
-  getIntentParentByTarget(targetName, group): { parent: { on: object }; intent: string } | null {
-    let result: { parent: { on: object }; intent: string } | null = null;
+  getIntentParentByTarget(targetName, group): { parent: { on: object }; intents: string[] } | null {
+    let result: { parent: { on: object }; intents: string[] } | null = null;
     if (group.on) {
       for (let transitionName in group.on) {
-        if (group.on[transitionName] === targetName) {
-          result = { parent: group, intent: transitionName };
-          break;
+        if (group.on[transitionName] === `#${targetName}`) {
+          if (!result) result = { parent: group, intents: [transitionName] };
+          else result.intents.push(transitionName);
         }
       }
 

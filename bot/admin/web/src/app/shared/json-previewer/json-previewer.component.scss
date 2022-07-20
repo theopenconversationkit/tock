@@ -7,10 +7,12 @@ pre {
   margin: 0;
 
   &.default span {
-    &.key,
+    &.key {
+      color: #c792cc;
+    }
     &.comma,
     &.delimiter {
-      color: black;
+      color: gray;
     }
 
     &.boolean {

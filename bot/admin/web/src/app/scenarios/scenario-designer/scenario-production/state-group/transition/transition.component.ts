@@ -57,7 +57,9 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
 
   getTransitionTop() {
     const stateComponent =
-      this.scenarioProductionService.scenarioProductionStateComponents[this.transition.target];
+      this.scenarioProductionService.scenarioProductionStateComponents[
+        this.transition.target.replace(/^#/, '')
+      ];
     const transitionComponent =
       this.scenarioProductionService.scenarioProductionTransitionsComponents[this.transition.name];
 

@@ -5,10 +5,7 @@
       "name": "test Scenario 1",
       "description": "Description 1 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deserunt atque tenetur perspiciatis aliquam maxime quas? Inventore voluptatibus architecto nam ab autem nostrum, atque aliquam odio veniam animi tenetur consequatur aut?",
       "category": "default",
-      "tags": [
-        "tag1",
-        "tag2"
-      ],
+      "tags": ["tag1", "tag2"],
       "creationDate": "01/01/1970",
       "updateDate": "02/01/1970",
       "data": {
@@ -20,10 +17,7 @@
       "name": "test Scenario 1",
       "description": "Description 1",
       "category": "scenarios",
-      "tags": [
-        "tag1",
-        "tag2"
-      ],
+      "tags": ["tag1", "tag2"],
       "creationDate": "01/01/1970",
       "updateDate": "02/01/1970",
       "data": {
@@ -35,10 +29,7 @@
       "name": "a Scenario 2",
       "description": "Description 2",
       "category": "scenarios",
-      "tags": [
-        "tag1",
-        "tag2"
-      ],
+      "tags": ["tag1", "tag2"],
       "creationDate": "01/01/1970",
       "updateDate": "02/01/1970",
       "data": {
@@ -116,9 +107,7 @@
           },
           {
             "id": 1,
-            "parentIds": [
-              0
-            ],
+            "parentIds": [0],
             "from": "bot",
             "text": "an action",
             "tickActionDefinition": {
@@ -132,9 +121,7 @@
           },
           {
             "id": 2,
-            "parentIds": [
-              0
-            ],
+            "parentIds": [0],
             "from": "bot",
             "text": "Another action",
             "tickActionDefinition": {
@@ -148,9 +135,7 @@
           },
           {
             "id": 3,
-            "parentIds": [
-              2
-            ],
+            "parentIds": [2],
             "from": "client",
             "text": "Other test sentence",
             "intentDefinition": {
@@ -164,9 +149,7 @@
           },
           {
             "id": 4,
-            "parentIds": [
-              1
-            ],
+            "parentIds": [1],
             "from": "client",
             "text": "A test sentence",
             "intentDefinition": {
@@ -195,7 +178,7 @@
                 }
               },
               "on": {
-                "sentencewithentities": "AN_ACTION"
+                "sentencewithentities": "#AN_ACTION"
               },
               "initial": "AN_ACTION"
             }
@@ -233,9 +216,7 @@
           },
           {
             "id": 2,
-            "parentIds": [
-              0
-            ],
+            "parentIds": [0],
             "from": "bot",
             "text": "Vérifier si le service est disponible pour les clients",
             "tickActionDefinition": {
@@ -243,17 +224,13 @@
               "description": "sdf sdf sdf sdf ",
               "handler": " sdf sdf sdf ",
               "answer": " sdf sdf sdf sdf",
-              "inputContextNames": [
-                "AMOUNT"
-              ],
+              "inputContextNames": ["AMOUNT"],
               "outputContextNames": []
             }
           },
           {
             "id": 3,
-            "parentIds": [
-              2
-            ],
+            "parentIds": [2],
             "from": "bot",
             "text": "Réponse OK : Quel montant souhaitez-vous virer ?",
             "tickActionDefinition": {
@@ -261,168 +238,128 @@
               "description": null,
               "handler": null,
               "answer": "Quel montant souhaitez-vous virer ?",
-              "inputContextNames": [
-                "AMOUNT"
-              ],
+              "inputContextNames": ["AMOUNT"],
               "outputContextNames": []
             }
           },
           {
             "id": 4,
-            "parentIds": [
-              2
-            ],
+            "parentIds": [2],
             "from": "bot",
             "text": "Réponse KO : Message de service indisponible, il faut une intervention d'un conseiller.\nProposer au client:\n- Débranchement\n- Message conseiller pour rappel"
           },
           {
             "id": 5,
-            "parentIds": [
-              3
-            ],
+            "parentIds": [3],
             "from": "client",
             "text": "2000€"
           },
           {
             "id": 6,
-            "parentIds": [
-              5
-            ],
+            "parentIds": [5],
             "from": "bot",
             "text": "Virement en France ou à l'étranger?"
           },
           {
             "id": 7,
-            "parentIds": [
-              6
-            ],
+            "parentIds": [6],
             "from": "client",
             "text": "En France"
           },
           {
             "id": 8,
-            "parentIds": [
-              7
-            ],
+            "parentIds": [7],
             "from": "bot",
             "text": "Appel API :\nCalculer l'encours et comparer aux plafonds du client"
           },
           {
             "id": 9,
-            "parentIds": [
-              17
-            ],
+            "parentIds": [17],
             "from": "bot",
             "text": "Appel API :\nVérifier si possible de le faire en autonomie pour le client (vérifier si ça dépasse la limite ou pas)"
           },
           {
             "id": 12,
-            "parentIds": [
-              6
-            ],
+            "parentIds": [6],
             "from": "client",
             "text": "A l'étranger"
           },
           {
             "id": 13,
-            "parentIds": [
-              4
-            ],
+            "parentIds": [4],
             "from": "client",
             "text": "Je veux parler à un conseiller"
           },
           {
             "id": 14,
-            "parentIds": [
-              4
-            ],
+            "parentIds": [4],
             "from": "client",
             "text": "Laisser un message à mon conseiller"
           },
           {
             "id": 15,
-            "parentIds": [
-              14
-            ],
+            "parentIds": [14],
             "from": "bot",
             "text": "Appel API:\nEnvoyer message au conseiller"
           },
           {
             "id": 16,
-            "parentIds": [
-              15
-            ],
+            "parentIds": [15],
             "from": "bot",
             "text": "Confirmer l'envoi du message au conseiller",
             "final": true
           },
           {
             "id": 17,
-            "parentIds": [
-              8
-            ],
+            "parentIds": [8],
             "from": "bot",
             "text": "Donner l'information que le plafond dépassé"
           },
           {
             "id": 18,
-            "parentIds": [
-              9
-            ],
+            "parentIds": [9],
             "from": "bot",
             "text": "Eligible & Limite non dépassée : \nProposer de modifier lui-même ses plafonds (lien vers la page du site / lien sur l'applicaion)",
             "final": true
           },
           {
             "id": 19,
-            "parentIds": [
-              9
-            ],
+            "parentIds": [9],
             "from": "bot",
             "text": "Eligible & Limite dépassée et CDR ouvert : \nDébranchement vers un conseiller pour faire la modification",
             "final": true
           },
           {
             "id": 20,
-            "parentIds": [
-              9
-            ],
+            "parentIds": [9],
             "from": "bot",
             "text": "Eligible & Limite dépassée et HNO : \nMessage revenir demain",
             "final": true
           },
           {
             "id": 21,
-            "parentIds": [
-              9
-            ],
+            "parentIds": [9],
             "from": "bot",
             "text": "Non éligible : \nMessage revenir demain",
             "final": true
           },
           {
             "id": 22,
-            "parentIds": [
-              13
-            ],
+            "parentIds": [13],
             "from": "bot",
             "text": "CDR ouvert : \nDébranchement vers un conseiller pour faire la modification",
             "final": true
           },
           {
             "id": 23,
-            "parentIds": [
-              13
-            ],
+            "parentIds": [13],
             "from": "bot",
             "text": "HNO :\nMessage revenir demain",
             "final": true
           },
           {
             "id": 24,
-            "parentIds": [
-              15
-            ],
+            "parentIds": [15],
             "from": "bot",
             "text": "Echec envoi message",
             "final": true
@@ -478,9 +415,7 @@
           },
           {
             "id": 1,
-            "parentIds": [
-              0
-            ],
+            "parentIds": [0],
             "from": "bot",
             "text": "Recup identifiant Topaze.",
             "tickActionDefinition": {
@@ -489,16 +424,12 @@
               "handler": "getTopazeId",
               "answer": "Veuillez patienter pendant que je récupère votre identifiant...",
               "inputContextNames": [],
-              "outputContextNames": [
-                "IDENTIFIANT_TOPAZE"
-              ]
+              "outputContextNames": ["IDENTIFIANT_TOPAZE"]
             }
           },
           {
             "id": 2,
-            "parentIds": [
-              1
-            ],
+            "parentIds": [1],
             "from": "bot",
             "text": "Souhaitez-vous :\n- Activer une nouvelle carte max ?\n\n- Ou activer une carte bancaire externe que vous avez ajoutée dans l'application ?",
             "tickActionDefinition": {
@@ -506,17 +437,13 @@
               "description": null,
               "handler": null,
               "answer": "Souhaitez-vous :\n- Activer une nouvelle carte max ?\n\n- Ou activer une carte bancaire externe que vous avez ajoutée dans l'application ?",
-              "inputContextNames": [
-                "IDENTIFIANT_TOPAZE"
-              ],
+              "inputContextNames": ["IDENTIFIANT_TOPAZE"],
               "outputContextNames": []
             }
           },
           {
             "id": 3,
-            "parentIds": [
-              2
-            ],
+            "parentIds": [2],
             "from": "client",
             "text": "Activer carte bancaire externe",
             "intentDefinition": {
@@ -528,9 +455,7 @@
           },
           {
             "id": 4,
-            "parentIds": [
-              2
-            ],
+            "parentIds": [2],
             "from": "client",
             "text": "Activer ma carte max",
             "intentDefinition": {
@@ -567,9 +492,7 @@
           },
           {
             "id": 5,
-            "parentIds": [
-              3
-            ],
+            "parentIds": [3],
             "from": "bot",
             "text": "Lors de l'ajout de votre carte, un paiement d'authentification de 35€ est fait.\n\nRetrouvez-le sous 3 jours environ sur le relevé bancaire de la carte scannée avec le libellé MAX*XXXX ; les XXXX correspondent à un code chiffré aléatoire à saisir dans l'onglet \"carte max\".\n\nCe montant sera remboursé sous 72h sur votre compte externe.",
             "final": true,
@@ -584,9 +507,7 @@
           },
           {
             "id": 6,
-            "parentIds": [
-              4
-            ],
+            "parentIds": [4],
             "from": "bot",
             "text": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?",
             "tickActionDefinition": {
@@ -594,22 +515,13 @@
               "description": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?",
               "handler": null,
               "answer": "Est-ce :\n- Une première carte suite à votre souscription ?\n\n- Ou une nouvelle carte suite à une opposition ?\n\n- Ou une nouvelle carte suite à une montée en gamme ?\n\n- Ou une nouvelle carte suite à un renouvellement automatique/anticipé ?",
-              "inputContextNames": [
-                "IS_CART_MAX"
-              ],
-              "outputContextNames": [
-                "SUBSCRIPTION",
-                "OPPOSITION",
-                "UPGRADE",
-                "RENEWAL"
-              ]
+              "inputContextNames": ["IS_CART_MAX"],
+              "outputContextNames": ["SUBSCRIPTION", "OPPOSITION", "UPGRADE", "RENEWAL"]
             }
           },
           {
             "id": 7,
-            "parentIds": [
-              6
-            ],
+            "parentIds": [6],
             "from": "client",
             "text": "Souscription",
             "intentDefinition": {
@@ -634,9 +546,7 @@
           },
           {
             "id": 8,
-            "parentIds": [
-              6
-            ],
+            "parentIds": [6],
             "from": "client",
             "text": "Opposition",
             "intentDefinition": {
@@ -661,9 +571,7 @@
           },
           {
             "id": 9,
-            "parentIds": [
-              6
-            ],
+            "parentIds": [6],
             "from": "client",
             "text": "Renouvellement",
             "intentDefinition": {
@@ -688,9 +596,7 @@
           },
           {
             "id": 10,
-            "parentIds": [
-              6
-            ],
+            "parentIds": [6],
             "from": "client",
             "text": "Montée en gamme",
             "intentDefinition": {
@@ -715,94 +621,71 @@
           },
           {
             "id": 11,
-            "parentIds": [
-              7
-            ],
+            "parentIds": [7],
             "from": "bot",
             "text": "Lors de la commande, avez-vous scanné une carte bancaire ou avez-vous fait un selfie ?"
           },
           {
             "id": 12,
-            "parentIds": [
-              11
-            ],
+            "parentIds": [11],
             "from": "client",
             "text": "J'ai scanné une carte"
           },
           {
             "id": 13,
-            "parentIds": [
-              11
-            ],
+            "parentIds": [11],
             "from": "client",
             "text": "J'ai fait un selfie"
           },
           {
             "id": 14,
-            "parentIds": [
-              12
-            ],
+            "parentIds": [12],
             "from": "bot",
             "text": "Lors du scan de votre carte bancaire, un paiement d'authentification de 35€ a été fait.\n\nRetrouvez-le sous 3 jours environ sur le relevé bancaire de la carte scannée avec le libellé MAX*XXXX ; les XXXX correspondent à un code chiffré aléatoire à saisir dans l'onglet \"carte max\".\n\nCe montant sera remboursé sous 72h sur votre compte externe.",
             "final": true
           },
           {
             "id": 15,
-            "parentIds": [
-              13
-            ],
+            "parentIds": [13],
             "from": "bot",
             "text": "Pour activer la carte, il suffit de vous rendre dans la rubrique “carte max”, de saisir ses 16 chiffres et de vous laisser guider.",
             "final": true
           },
           {
             "id": 16,
-            "parentIds": [
-              8
-            ],
+            "parentIds": [8],
             "from": "bot",
             "text": "Pouvez-vous m'indiquer les 4 derniers chiffres de la nouvelle carte max ?"
           },
           {
             "id": 17,
-            "parentIds": [
-              16
-            ],
+            "parentIds": [16],
             "from": "client",
             "text": "1234"
           },
           {
             "id": 18,
-            "parentIds": [
-              17
-            ],
+            "parentIds": [17],
             "from": "bot",
             "text": "Activation auto"
           },
           {
             "id": 19,
-            "parentIds": [
-              18
-            ],
+            "parentIds": [18],
             "from": "bot",
             "text": "Réponse OK: Ok c'est activé",
             "final": true
           },
           {
             "id": 20,
-            "parentIds": [
-              18
-            ],
+            "parentIds": [18],
             "from": "bot",
             "text": "Réponse KO : Redirection vers un assistant",
             "final": true
           },
           {
             "id": 21,
-            "parentIds": [
-              9,
-              10
-            ],
+            "parentIds": [9, 10],
             "from": "bot",
             "text": "Pour activer la carte, il vous suffit de faire une opération avec le code PIN de la carte (retrait ou paiement) en France métropolitaine. Les opérations \"sans contact\" et par internet seront actives après cela.\n\nVotre code PIN n'a pas changé :)",
             "final": true,
@@ -876,21 +759,21 @@
                         }
                       },
                       "on": {
-                        "renouvellement": "HOW_TO_ACTIVATE_MAX_CARD",
-                        "monteeEnGamme": "HOW_TO_ACTIVATE_MAX_CARD"
+                        "renouvellement": "#HOW_TO_ACTIVATE_MAX_CARD",
+                        "monteeEnGamme": "#HOW_TO_ACTIVATE_MAX_CARD"
                       },
                       "initial": "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL"
                     }
                   },
                   "on": {
-                    "activercartebancaireexterne": "OTHER_CARD_ANSWER"
+                    "activercartebancaireexterne": "#OTHER_CARD_ANSWER"
                   },
                   "initial": "RECUP_IDENTIFIANT_TOPAZE"
                 }
               },
               "on": {
-                "comment_fa": "ACTIVATE_CARD",
-                "activermacartemax": "ACTIVATE_CARD"
+                "comment_fa": "#ACTIVATE_CARD",
+                "activermacartemax": "#ACTIVATE_CARD"
               },
               "initial": "ACTIVATE_CARD"
             }
@@ -1029,9 +912,7 @@
           },
           {
             "id": 1,
-            "parentIds": [
-              0
-            ],
+            "parentIds": [0],
             "from": "bot",
             "text": "Sur quel canal ? En caisse, par téléphone ou en visio ?",
             "tickActionDefinition": {
@@ -1040,18 +921,12 @@
               "handler": null,
               "answer": "Sur quel canal ? En caisse, par téléphone ou en visio ?",
               "inputContextNames": [],
-              "outputContextNames": [
-                "CANAL_COUNTER",
-                "CANAL_PHONE",
-                "CANAL_VISIO"
-              ]
+              "outputContextNames": ["CANAL_COUNTER", "CANAL_PHONE", "CANAL_VISIO"]
             }
           },
           {
             "id": 2,
-            "parentIds": [
-              1
-            ],
+            "parentIds": [1],
             "from": "client",
             "text": "En caisse",
             "intentDefinition": {
@@ -1098,9 +973,7 @@
           },
           {
             "id": 3,
-            "parentIds": [
-              1
-            ],
+            "parentIds": [1],
             "from": "client",
             "text": "Par téléphone",
             "intentDefinition": {
@@ -1136,9 +1009,7 @@
           },
           {
             "id": 4,
-            "parentIds": [
-              1
-            ],
+            "parentIds": [1],
             "from": "client",
             "text": "En visio",
             "intentDefinition": {
@@ -1186,10 +1057,7 @@
           },
           {
             "id": 5,
-            "parentIds": [
-              2,
-              3
-            ],
+            "parentIds": [2, 3],
             "from": "bot",
             "final": true,
             "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
@@ -1198,18 +1066,13 @@
               "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
               "handler": null,
               "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-              "inputContextNames": [
-                "CANAL_COUNTER",
-                "CANAL_PHONE"
-              ],
+              "inputContextNames": ["CANAL_COUNTER", "CANAL_PHONE"],
               "outputContextNames": []
             }
           },
           {
             "id": 8,
-            "parentIds": [
-              4
-            ],
+            "parentIds": [4],
             "from": "bot",
             "text": "Disposez-vous d'une webcam et d'un micro ?",
             "tickActionDefinition": {
@@ -1217,20 +1080,13 @@
               "description": "Disposez-vous d'une webcam et d'un micro ?",
               "handler": null,
               "answer": "Disposez-vous d'une webcam et d'un micro ?",
-              "inputContextNames": [
-                "CANAL_VISIO"
-              ],
-              "outputContextNames": [
-                "DONT_HAVE_WEBCAM_AND_MIC",
-                "HAVE_WEBCAM_AND_MIC"
-              ]
+              "inputContextNames": ["CANAL_VISIO"],
+              "outputContextNames": ["DONT_HAVE_WEBCAM_AND_MIC", "HAVE_WEBCAM_AND_MIC"]
             }
           },
           {
             "id": 9,
-            "parentIds": [
-              8
-            ],
+            "parentIds": [8],
             "from": "client",
             "text": "non",
             "intentDefinition": {
@@ -1288,9 +1144,7 @@
           },
           {
             "id": 10,
-            "parentIds": [
-              8
-            ],
+            "parentIds": [8],
             "from": "client",
             "text": "oui",
             "intentDefinition": {
@@ -1359,9 +1213,7 @@
           },
           {
             "id": 13,
-            "parentIds": [
-              10
-            ],
+            "parentIds": [10],
             "from": "bot",
             "text": "Indiquez deux créneaux de dispo aux horaires d'ouverture des caisses",
             "tickActionDefinition": {
@@ -1369,17 +1221,13 @@
               "description": "Indiquez deux créneaux de dispo aux horaires d'ouverture des caisses",
               "handler": null,
               "answer": "Indiquez deux créneaux de dispo aux horaires d'ouverture des caisses",
-              "inputContextNames": [
-                "HAVE_WEBCAM_AND_MIC"
-              ],
+              "inputContextNames": ["HAVE_WEBCAM_AND_MIC"],
               "outputContextNames": []
             }
           },
           {
             "id": 14,
-            "parentIds": [
-              13
-            ],
+            "parentIds": [13],
             "from": "client",
             "text": "Quels sont les horaires d'ouverture des caisses ?",
             "intentDefinition": {
@@ -1426,9 +1274,7 @@
           },
           {
             "id": 15,
-            "parentIds": [
-              14
-            ],
+            "parentIds": [14],
             "from": "bot",
             "text": "Récupération des horaires caisse",
             "tickActionDefinition": {
@@ -1437,16 +1283,12 @@
               "handler": "CashiersHours",
               "answer": "Merci de patienter pendant que je récupère les plages horaires",
               "inputContextNames": [],
-              "outputContextNames": [
-                "CASHIERS_HOURS"
-              ]
+              "outputContextNames": ["CASHIERS_HOURS"]
             }
           },
           {
             "id": 16,
-            "parentIds": [
-              15
-            ],
+            "parentIds": [15],
             "from": "bot",
             "text": "Affichage des horaires d'ouverture caisses",
             "tickActionDefinition": {
@@ -1454,17 +1296,13 @@
               "description": "Affichage des horaires d'ouverture caisses",
               "handler": null,
               "answer": "Nos conseillers sont disponibles du lundi au vendredi de 8h à 20h",
-              "inputContextNames": [
-                "CASHIERS_HOURS"
-              ],
+              "inputContextNames": ["CASHIERS_HOURS"],
               "outputContextNames": []
             }
           },
           {
             "id": 17,
-            "parentIds": [
-              16
-            ],
+            "parentIds": [16],
             "from": "client",
             "text": "Je suis dispo le 05/03 à 14h ou le 07/03 à 15h",
             "intentDefinition": {
@@ -1544,9 +1382,7 @@
           },
           {
             "id": 18,
-            "parentIds": [
-              17
-            ],
+            "parentIds": [17],
             "from": "bot",
             "text": "Redirection vers un conseiller",
             "final": true,
@@ -1561,9 +1397,7 @@
           },
           {
             "id": 20,
-            "parentIds": [
-              9
-            ],
+            "parentIds": [9],
             "from": "bot",
             "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
             "tickActionDefinition": {
@@ -1571,9 +1405,7 @@
               "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
               "handler": null,
               "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-              "inputContextNames": [
-                "DONT_HAVE_WEBCAM_AND_MIC"
-              ],
+              "inputContextNames": ["DONT_HAVE_WEBCAM_AND_MIC"],
               "outputContextNames": []
             },
             "final": true
@@ -1647,21 +1479,21 @@
                     }
                   },
                   "on": {
-                    "byVisio": "APPOINTMENT_VISIO",
-                    "oui": "WEBCAM_ANSWER",
-                    "non": "NO_WEBCAM_ANSWER",
-                    "quelsSontLesHorairesDOuvertureDesCaisses": "RECOVERY_OF_CASHIERS_HOURS",
-                    "jesuisdispole": "REDIRECTION_TO_A_CONSULTANT",
-                    "atCounter": "APPOINTMENT_LINK",
-                    "byPhone": "APPOINTMENT_LINK"
+                    "byVisio": "#APPOINTMENT_VISIO",
+                    "oui": "#WEBCAM_ANSWER",
+                    "non": "#NO_WEBCAM_ANSWER",
+                    "quelsSontLesHorairesDOuvertureDesCaisses": "#RECOVERY_OF_CASHIERS_HOURS",
+                    "jesuisdispole": "#REDIRECTION_TO_A_CONSULTANT",
+                    "atCounter": "#APPOINTMENT_LINK",
+                    "byPhone": "#APPOINTMENT_LINK"
                   },
                   "initial": "WICH_CANAL"
                 }
               },
               "on": {
-                "bonjourJeSouhaitePrendreUnRdv": "GROUP_1"
+                "bonjourJeSouhaitePrendreUnRdv": "#GROUP_1"
               },
-              "initial": "WICH_CANAL"
+              "initial": "GROUP_1"
             }
           },
           "initial": "Global",
@@ -1675,9 +1507,7 @@
       "category": "scenarios",
       "description": "https://stately.ai/viz/f6acaf2e-501d-4598-89e9-11a90672e269",
       "name": "StateMachine TRANSFER",
-      "tags": [
-        "stateMachines"
-      ],
+      "tags": ["stateMachines"],
       "mode": "casting",
       "data": {
         "scenarioItems": [
@@ -1689,25 +1519,19 @@
           },
           {
             "id": 1,
-            "parentIds": [
-              0
-            ],
+            "parentIds": [0],
             "from": "bot",
             "text": "STATE  => S_CHECK_SERVICE_AVAILABLE\nVérifier que le service modification de plafond en autonomie est dispo.\nINPUTS:\nnone\nOUTPUTS : \nCONTEXT.ServiceAvalaible\nCONTEXT.ServiceUnavalaible"
           },
           {
             "id": 2,
-            "parentIds": [
-              1
-            ],
+            "parentIds": [1],
             "from": "bot",
             "text": "STATE  => "
           },
           {
             "id": 3,
-            "parentIds": [
-              1
-            ],
+            "parentIds": [1],
             "from": "bot",
             "text": "\"Désolé le service est indisponible. Je vous redirige vers un opérateur\"\n\nSTATE  => S_SERVICE_UNAVAILABLE_REDIRECT\nOUTPUTS :\nCONTEXT.ServiceUnavalaible",
             "final": true
