@@ -5,7 +5,7 @@ import { NbButtonModule, NbIconModule, NbSelectModule, NbTooltipModule } from '@
 import { TestSharedModule } from '../test-shared.module';
 import { Pagination, PaginationComponent } from './pagination.component';
 
-describe('NoDataFoundComponent', () => {
+describe('PaginationComponent', () => {
   let component: PaginationComponent;
   let fixture: ComponentFixture<PaginationComponent>;
 
@@ -101,9 +101,9 @@ describe('NoDataFoundComponent', () => {
   it('should reduce page start count based on page size when back button is clicked', () => {
     spyOn(component.onPaginationChange, 'emit');
     const pagination: Pagination = {
-      end: 10,
+      end: 15,
       size: 5,
-      start: 9,
+      start: 10,
       total: 22
     };
     component.pagination = { ...pagination };
@@ -114,14 +114,14 @@ describe('NoDataFoundComponent', () => {
 
     previousButtonElement.click();
 
-    expect(component.pagination).toEqual({ ...pagination, start: 4 });
+    expect(component.pagination).toEqual({ ...pagination, start: 5, end: 10 });
     expect(component.onPaginationChange.emit).toHaveBeenCalled();
   });
 
   it('should reduce the page start count to 0 if the difference between page start and page size is below 0 when the previous button is clicked', () => {
     spyOn(component.onPaginationChange, 'emit');
     const pagination: Pagination = {
-      end: 10,
+      end: 7,
       size: 5,
       start: 2,
       total: 22
@@ -134,14 +134,14 @@ describe('NoDataFoundComponent', () => {
 
     previousButtonElement.click();
 
-    expect(component.pagination).toEqual({ ...pagination, start: 0 });
+    expect(component.pagination).toEqual({ ...pagination, start: 0, end: 5 });
     expect(component.onPaginationChange.emit).toHaveBeenCalled();
   });
 
   it('should increase page start count based on page size when next button is clicked', () => {
     spyOn(component.onPaginationChange, 'emit');
     const pagination: Pagination = {
-      end: 10,
+      end: 20,
       size: 10,
       start: 10,
       total: 22
@@ -154,7 +154,7 @@ describe('NoDataFoundComponent', () => {
 
     nextButtonElement.click();
 
-    expect(component.pagination).toEqual({ ...pagination, start: 20 });
+    expect(component.pagination).toEqual({ ...pagination, start: 20, end: 22 });
     expect(component.onPaginationChange.emit).toHaveBeenCalled();
   });
 });

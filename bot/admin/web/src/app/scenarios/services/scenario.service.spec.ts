@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 
-import { Scenario } from '../models';
+import { Scenario, SCENARIO_MODE } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 import { ScenarioService } from './scenario.service';
 
@@ -17,7 +17,7 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: 'writing'
+    mode: SCENARIO_MODE.writing
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: 'writing'
+    mode: SCENARIO_MODE.writing
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: 'writing'
+    mode: SCENARIO_MODE.writing
   },
   {
     id: 4,
@@ -54,7 +54,7 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: 'writing'
+    mode: SCENARIO_MODE.writing
   },
   {
     id: 5,
@@ -66,7 +66,7 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: 'writing'
+    mode: SCENARIO_MODE.writing
   }
 ];
 
@@ -81,7 +81,7 @@ const initialState = {
 const newScenario: Scenario = {
   id: null,
   creationDate: '12/01/1980' as unknown as Date,
-  mode: 'writing',
+  mode: SCENARIO_MODE.writing,
   name: 'New scenario'
 };
 

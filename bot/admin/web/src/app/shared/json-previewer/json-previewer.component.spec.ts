@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NbCardModule, NbIconModule } from '@nebular/theme';
 
+import { TestSharedModule } from '../test-shared.module';
 import { JsonPreviewerComponent } from './json-previewer.component';
 
 describe('JsonPreviewerComponent', () => {
@@ -8,14 +10,15 @@ describe('JsonPreviewerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ JsonPreviewerComponent ]
-    })
-    .compileComponents();
+      imports: [NbCardModule, NbIconModule, TestSharedModule],
+      declarations: [JsonPreviewerComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(JsonPreviewerComponent);
     component = fixture.componentInstance;
+    component.jsonData = {};
     fixture.detectChanges();
   });
 
