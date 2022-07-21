@@ -194,6 +194,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const saveModificationsSubscription = modal.componentRef.instance.saveModifications
       .pipe(takeUntil(this.destroy))
       .subscribe((intentDef) => {
+        this.item.intentDefinition.primary = intentDef.primary;
         this.item.intentDefinition.sentences = intentDef.sentences;
 
         intentDef.contextsEntities.forEach((ctxEntity) => {

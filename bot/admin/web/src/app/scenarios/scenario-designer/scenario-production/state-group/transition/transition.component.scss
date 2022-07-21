@@ -6,15 +6,16 @@
   background-color: #ccc;
   border-radius: 1rem;
   color: white;
-  margin-left: 20px;
+  margin-left: 15px;
+  max-width: 180px;
   :before {
     content: '';
     display: block;
     position: absolute;
-    left: -20px;
+    left: -15px;
     top: 12px;
     height: 3px;
-    width: 20px;
+    width: 15px;
     background-color: #ccc;
   }
 }

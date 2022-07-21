@@ -1,13 +1,18 @@
+.card-body {
+  max-height: 80vh;
+}
+
 pre {
-  outline: 1px solid #ccc;
   padding: 0.5rem;
   margin: 0;
 
   &.default span {
-    &.key,
+    &.key {
+      color: #c792cc;
+    }
     &.comma,
     &.delimiter {
-      color: black;
+      color: gray;
     }
 
     &.boolean {

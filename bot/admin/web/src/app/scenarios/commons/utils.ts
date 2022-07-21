@@ -1,3 +1,5 @@
+import { machineState } from '../models';
+
 export function normalize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -64,4 +66,25 @@ export function revertTransformMatrix(el: Element, transformedParent: Element): 
       return json;
     }
   };
+}
+
+export function getStateMachineActionParentById(id: string, group: machineState): machineState {
+  let result = null;
+  if (group.states) {
+    for (let name in group.states) {
+      if (group.states[name].id === id) {
+        result = group;
+        break;
+      }
+    }
+
+    if (!result) {
+      for (let name in group.states) {
+        result = getStateMachineActionParentById(id, group.states[name]);
+        if (result) break;
+      }
+    }
+  }
+
+  return result;
 }

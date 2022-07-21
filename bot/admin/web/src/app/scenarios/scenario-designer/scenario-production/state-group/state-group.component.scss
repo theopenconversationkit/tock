@@ -2,8 +2,8 @@
   font-size: 0.8rem;
   border: 2px solid #aaa;
   min-width: 10rem;
+  width: fit-content;
 
-  // margin: 20px;
   margin-bottom: 20px;
   border-radius: 0.25rem;
 
@@ -12,7 +12,7 @@
     justify-content: space-between;
     color: white;
     background-color: #aaa;
-    padding: 0.3rem 0.5rem;
+    padding: 0.3rem 0.7rem;
     margin: -1px;
   }
   .stateGroup-body {

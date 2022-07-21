@@ -15,7 +15,7 @@ import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dial
 import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
-import { revertTransformMatrix } from '../../commons/utils';
+import { getStateMachineActionParentById, revertTransformMatrix } from '../../commons/utils';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
@@ -104,7 +104,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
       const stateComponent =
         this.scenarioProductionService.scenarioProductionStateComponents[
-          transitions[transitionName]
+          transitions[transitionName].replace(/^#/, '')
         ];
       const stateElem = stateComponent.elementRef.nativeElement;
       const stateElemPos = revertTransformMatrix(stateElem, this.canvasElem.nativeElement);
@@ -117,7 +117,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       if (startTop === endTop) {
         path = `M${startLeft} ${startTop} L${endLeft} ${endTop}`;
       } else {
-        let padding = 5;
+        let padding = 10;
         path = `M${startLeft} ${startTop} L${endLeft - padding * 2} ${startTop}  L${
           endLeft - padding * 2
         } ${endTop} L${endLeft} ${endTop}`;
@@ -148,6 +148,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         intents.push(item.intentDefinition);
       }
     });
+
     return intents.sort((a, b) => {
       const aIsUsed = this.isIntentInUse(a);
       if (aIsUsed) return 1;
@@ -155,6 +156,11 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       if (bIsUsed) return -1;
       return 0;
     });
+  }
+
+  getDraggableIntentType(intent) {
+    if (intent.primary) return 'primaryIntent';
+    return 'intent';
   }
 
   getIntentTooltip(intent) {
@@ -249,12 +255,13 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       let target = this.getActionById(event.stateId, this.scenario.data.stateMachine);
       if (target) {
         target.states[event.dropped.name] = { id: event.dropped.name };
+        if (!target.initial) target.initial = event.dropped.name;
       }
     }
     if (event.dropped.type === 'intent') {
-      let parent = this.getActionParentById(event.stateId, this.scenario.data.stateMachine);
+      let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
       if (parent) {
-        parent.on[event.dropped.name] = event.stateId;
+        parent.on[event.dropped.name] = `#${event.stateId}`;
       }
     }
 
@@ -269,8 +276,10 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         return;
       }
       target.states[event.groupName] = { id: event.groupName, states: {}, on: {} };
+      if (!target.initial) target.initial = event.groupName;
+
+      this.scenarioProductionService.updateLayout();
     }
-    this.scenarioProductionService.updateLayout();
   }
 
   removeState(event) {
@@ -279,22 +288,27 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       this.scenario.data.stateMachine
     );
     if (targetingIntentParent) {
-      delete targetingIntentParent.parent.on[targetingIntentParent.intent];
+      targetingIntentParent.intents.forEach((intent) => {
+        delete targetingIntentParent.parent.on[intent];
+      });
     }
 
-    let parent = this.getActionParentById(event.stateId, this.scenario.data.stateMachine);
+    let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
     if (parent) {
+      if (parent.initial === event.stateId) {
+        parent.initial = '';
+      }
       delete parent.states[event.stateId];
     }
   }
 
-  getIntentParentByTarget(targetName, group): { parent: { on: object }; intent: string } | null {
-    let result: { parent: { on: object }; intent: string } | null = null;
+  getIntentParentByTarget(targetName, group): { parent: { on: object }; intents: string[] } | null {
+    let result: { parent: { on: object }; intents: string[] } | null = null;
     if (group.on) {
       for (let transitionName in group.on) {
-        if (group.on[transitionName] === targetName) {
-          result = { parent: group, intent: transitionName };
-          break;
+        if (group.on[transitionName] === `#${targetName}`) {
+          if (!result) result = { parent: group, intents: [transitionName] };
+          else result.intents.push(transitionName);
         }
       }
 
@@ -338,27 +352,6 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       if (group.states) {
         for (let name in group.states) {
           result = this.getActionById(id, group.states[name]);
-          if (result) break;
-        }
-      }
-    }
-
-    return result;
-  }
-
-  getActionParentById(id, group) {
-    let result = null;
-    if (group.states) {
-      for (let name in group.states) {
-        if (group.states[name].id === id) {
-          result = group;
-          break;
-        }
-      }
-
-      if (!result) {
-        for (let name in group.states) {
-          result = this.getActionParentById(id, group.states[name]);
           if (result) break;
         }
       }

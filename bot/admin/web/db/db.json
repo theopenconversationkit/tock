@@ -47,7 +47,9 @@
             "id": 0,
             "from": "client",
             "text": "A new sentence to test Subentities",
+            "main": true,
             "intentDefinition": {
+              "primary": true,
               "label": "Sentence with entities",
               "name": "sentencewithentities",
               "category": null,
@@ -118,7 +120,15 @@
               0
             ],
             "from": "bot",
-            "text": " sdf sdf dfg dfg dfg dfg"
+            "text": "an action",
+            "tickActionDefinition": {
+              "name": "AN_ACTION",
+              "description": "an action",
+              "handler": null,
+              "answer": null,
+              "inputContextNames": [],
+              "outputContextNames": []
+            }
           },
           {
             "id": 2,
@@ -126,7 +136,15 @@
               0
             ],
             "from": "bot",
-            "text": "Test sentence"
+            "text": "Another action",
+            "tickActionDefinition": {
+              "name": "ANOTHER_ACTION",
+              "description": "Another action",
+              "handler": null,
+              "answer": null,
+              "inputContextNames": [],
+              "outputContextNames": []
+            }
           },
           {
             "id": 3,
@@ -134,7 +152,15 @@
               2
             ],
             "from": "client",
-            "text": "Test sentence"
+            "text": "Other test sentence",
+            "intentDefinition": {
+              "label": "Other test sentence",
+              "name": "otherTestSentence",
+              "category": "scenarios",
+              "description": null,
+              "primary": false,
+              "sentences": []
+            }
           },
           {
             "id": 4,
@@ -142,12 +168,43 @@
               1
             ],
             "from": "client",
-            "text": "Test sentence"
+            "text": "A test sentence",
+            "intentDefinition": {
+              "label": "A test sentence",
+              "name": "aTestSentence",
+              "category": "scenarios",
+              "description": null,
+              "primary": false,
+              "sentences": []
+            }
           }
         ],
-        "contexts": []
+        "contexts": [],
+        "stateMachine": {
+          "id": "root",
+          "type": "parallel",
+          "states": {
+            "Global": {
+              "id": "Global",
+              "states": {
+                "AN_ACTION": {
+                  "id": "AN_ACTION"
+                },
+                "ANOTHER_ACTION": {
+                  "id": "ANOTHER_ACTION"
+                }
+              },
+              "on": {
+                "sentencewithentities": "#AN_ACTION"
+              },
+              "initial": "AN_ACTION"
+            }
+          },
+          "initial": "Global",
+          "on": {}
+        }
       },
-      "mode": "casting"
+      "mode": "production"
     },
     {
       "id": 3,
@@ -163,7 +220,9 @@
             "id": 0,
             "from": "client",
             "text": "Je n'arrive pas à virer 2000 €",
+            "main": true,
             "intentDefinition": {
+              "primary": true,
               "label": null,
               "name": "je_veux_fa",
               "category": "build",
@@ -394,7 +453,9 @@
             "id": 0,
             "from": "client",
             "text": "Comment faire pour activer ma carte Max suite à une opposition ?",
+            "main": true,
             "intentDefinition": {
+              "primary": true,
               "label": null,
               "name": "comment_fa",
               "category": "build",
@@ -475,6 +536,7 @@
             "intentDefinition": {
               "label": "Activer ma carte max",
               "name": "activermacartemax",
+              "primary": true,
               "category": "scenarios",
               "description": "Activer carte Aumax",
               "sentences": [
@@ -486,15 +548,18 @@
                   "checkExistingQuery": false,
                   "state": "",
                   "classification": {
-                    "entities": [
-                      {
-                        "type": "app:oeuvre",
-                        "role": "oeuvre",
-                        "start": 0,
-                        "end": 7,
-                        "entityColor": "#6e6a97"
-                      }
-                    ]
+                    "entities": []
+                  }
+                },
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "comment activer ma carte max ?",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
                   }
                 }
               ]
@@ -546,7 +611,26 @@
               6
             ],
             "from": "client",
-            "text": "Souscription"
+            "text": "Souscription",
+            "intentDefinition": {
+              "label": "Souscription",
+              "name": "souscription",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Souscription",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 8,
@@ -554,7 +638,26 @@
               6
             ],
             "from": "client",
-            "text": "Opposition"
+            "text": "Opposition",
+            "intentDefinition": {
+              "label": "Opposition",
+              "name": "opposition",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Opposition",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 9,
@@ -562,7 +665,26 @@
               6
             ],
             "from": "client",
-            "text": "Renouvellement"
+            "text": "Renouvellement",
+            "intentDefinition": {
+              "label": "Renouvellement",
+              "name": "renouvellement",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Renouvellement",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 10,
@@ -570,7 +692,26 @@
               6
             ],
             "from": "client",
-            "text": "Montée en gamme"
+            "text": "Montée en gamme",
+            "intentDefinition": {
+              "label": "Montée en gamme",
+              "name": "monteeEnGamme",
+              "category": "scenarios",
+              "description": null,
+              "sentences": [
+                {
+                  "namespace": "app",
+                  "applicationName": "new_assistant",
+                  "language": "fr",
+                  "query": "Montée en gamme",
+                  "checkExistingQuery": false,
+                  "state": "",
+                  "classification": {
+                    "entities": []
+                  }
+                }
+              ]
+            }
           },
           {
             "id": 11,
@@ -666,7 +807,7 @@
             "text": "Pour activer la carte, il vous suffit de faire une opération avec le code PIN de la carte (retrait ou paiement) en France métropolitaine. Les opérations \"sans contact\" et par internet seront actives après cela.\n\nVotre code PIN n'a pas changé :)",
             "final": true,
             "tickActionDefinition": {
-              "name": "HOW_TO_ACTIVATE_EXTERNAL_CARD",
+              "name": "HOW_TO_ACTIVATE_MAX_CARD",
               "description": "",
               "handler": null,
               "answer": "Pour activer la carte, il vous suffit de faire une opération avec le code PIN de la carte (retrait ou paiement) en France métropolitaine. Les opérations \"sans contact\" et par internet seront actives après cela.\n\nVotre code PIN n'a pas changé :)",
@@ -712,25 +853,53 @@
             "Global": {
               "id": "Global",
               "states": {
-                "RECUP_IDENTIFIANT_TOPAZE": {
-                  "id": "RECUP_IDENTIFIANT_TOPAZE"
-                },
-                "IS_MAX_OR_EXTERNAL_CART": {
-                  "id": "IS_MAX_OR_EXTERNAL_CART"
+                "ACTIVATE_CARD": {
+                  "id": "ACTIVATE_CARD",
+                  "states": {
+                    "RECUP_IDENTIFIANT_TOPAZE": {
+                      "id": "RECUP_IDENTIFIANT_TOPAZE"
+                    },
+                    "IS_MAX_OR_EXTERNAL_CART": {
+                      "id": "IS_MAX_OR_EXTERNAL_CART"
+                    },
+                    "OTHER_CARD_ANSWER": {
+                      "id": "OTHER_CARD_ANSWER"
+                    },
+                    "ACTIVATE_MAX_CARD": {
+                      "id": "ACTIVATE_MAX_CARD",
+                      "states": {
+                        "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL": {
+                          "id": "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL"
+                        },
+                        "HOW_TO_ACTIVATE_MAX_CARD": {
+                          "id": "HOW_TO_ACTIVATE_MAX_CARD"
+                        }
+                      },
+                      "on": {
+                        "renouvellement": "#HOW_TO_ACTIVATE_MAX_CARD",
+                        "monteeEnGamme": "#HOW_TO_ACTIVATE_MAX_CARD"
+                      },
+                      "initial": "IS_SUBSCRIPTION_OPPOSITION_UPGRADE_OR_RENEWAL"
+                    }
+                  },
+                  "on": {
+                    "activercartebancaireexterne": "#OTHER_CARD_ANSWER"
+                  },
+                  "initial": "RECUP_IDENTIFIANT_TOPAZE"
                 }
               },
-              "on": {}
+              "on": {
+                "comment_fa": "#ACTIVATE_CARD",
+                "activermacartemax": "#ACTIVATE_CARD"
+              },
+              "initial": "ACTIVATE_CARD"
             }
           },
           "initial": "Global",
-          "on": {
-            "comment_fa": "Global",
-            "activermacartemax": "Global",
-            "activercartebancaireexterne": "Global"
-          }
+          "on": {}
         }
       },
-      "mode": "production"
+      "mode": "casting"
     },
     {
       "id": 5,
@@ -746,7 +915,9 @@
             "id": 0,
             "from": "client",
             "text": "Bonjour, je souhaite prendre un rdv",
+            "main": true,
             "intentDefinition": {
+              "primary": true,
               "label": "Bonjour, je souhaite prendre un rdv",
               "name": "bonjourJeSouhaitePrendreUnRdv",
               "category": "scenarios",
@@ -973,6 +1144,7 @@
             "intentDefinition": {
               "label": "By visio",
               "name": "byVisio",
+              "primary": false,
               "category": "scenarios",
               "description": null,
               "sentences": [
@@ -1015,18 +1187,20 @@
           {
             "id": 5,
             "parentIds": [
-              2
+              2,
+              3
             ],
             "from": "bot",
             "final": true,
             "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
             "tickActionDefinition": {
-              "name": "APPOINTMENT_COUNTER",
+              "name": "APPOINTMENT_LINK",
               "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
               "handler": null,
               "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
               "inputContextNames": [
-                "CANAL_COUNTER"
+                "CANAL_COUNTER",
+                "CANAL_PHONE"
               ],
               "outputContextNames": []
             }
@@ -1386,25 +1560,6 @@
             }
           },
           {
-            "id": 19,
-            "parentIds": [
-              3
-            ],
-            "from": "bot",
-            "text": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-            "final": true,
-            "tickActionDefinition": {
-              "name": "APPOINTMENT_PHONE",
-              "description": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-              "handler": null,
-              "answer": "Pour prendre rdv vous pouvez vous rendre ici : Lien vers page de prise rdv",
-              "inputContextNames": [
-                "CANAL_PHONE"
-              ],
-              "outputContextNames": []
-            }
-          },
-          {
             "id": 20,
             "parentIds": [
               9
@@ -1463,58 +1618,50 @@
             "Global": {
               "id": "Global",
               "states": {
-                "BOOK_MEETING": {
-                  "id": "BOOK_MEETING",
+                "GROUP_1": {
+                  "id": "GROUP_1",
                   "states": {
                     "WICH_CANAL": {
                       "id": "WICH_CANAL"
                     },
-                    "APPOINTMENT_COUNTER": {
-                      "id": "APPOINTMENT_COUNTER"
+                    "APPOINTMENT_VISIO": {
+                      "id": "APPOINTMENT_VISIO"
                     },
-                    "APPOINTMENT_PHONE": {
-                      "id": "APPOINTMENT_PHONE"
+                    "WEBCAM_ANSWER": {
+                      "id": "WEBCAM_ANSWER"
                     },
-                    "BOOK_VISIO": {
-                      "id": "BOOK_VISIO",
-                      "states": {
-                        "APPOINTMENT_VISIO": {
-                          "id": "APPOINTMENT_VISIO"
-                        },
-                        "NO_WEBCAM_ANSWER": {
-                          "id": "NO_WEBCAM_ANSWER"
-                        },
-                        "WEBCAM_ANSWER": {
-                          "id": "WEBCAM_ANSWER"
-                        },
-                        "RECOVERY_OF_CASHIERS_HOURS": {
-                          "id": "RECOVERY_OF_CASHIERS_HOURS"
-                        },
-                        "DISPLAY_OF_CASHIERS_HOURS": {
-                          "id": "DISPLAY_OF_CASHIERS_HOURS"
-                        },
-                        "REDIRECTION_TO_A_CONSULTANT": {
-                          "id": "REDIRECTION_TO_A_CONSULTANT"
-                        }
-                      },
-                      "on": {
-                        "non": "NO_WEBCAM_ANSWER",
-                        "oui": "WEBCAM_ANSWER",
-                        "quelsSontLesHorairesDOuvertureDesCaisses": "RECOVERY_OF_CASHIERS_HOURS",
-                        "jesuisdispole": "REDIRECTION_TO_A_CONSULTANT"
-                      }
+                    "RECOVERY_OF_CASHIERS_HOURS": {
+                      "id": "RECOVERY_OF_CASHIERS_HOURS"
+                    },
+                    "DISPLAY_OF_CASHIERS_HOURS": {
+                      "id": "DISPLAY_OF_CASHIERS_HOURS"
+                    },
+                    "REDIRECTION_TO_A_CONSULTANT": {
+                      "id": "REDIRECTION_TO_A_CONSULTANT"
+                    },
+                    "NO_WEBCAM_ANSWER": {
+                      "id": "NO_WEBCAM_ANSWER"
+                    },
+                    "APPOINTMENT_LINK": {
+                      "id": "APPOINTMENT_LINK"
                     }
                   },
                   "on": {
-                    "atCounter": "APPOINTMENT_COUNTER",
-                    "byPhone": "APPOINTMENT_PHONE",
-                    "byVisio": "BOOK_VISIO"
-                  }
+                    "byVisio": "#APPOINTMENT_VISIO",
+                    "oui": "#WEBCAM_ANSWER",
+                    "non": "#NO_WEBCAM_ANSWER",
+                    "quelsSontLesHorairesDOuvertureDesCaisses": "#RECOVERY_OF_CASHIERS_HOURS",
+                    "jesuisdispole": "#REDIRECTION_TO_A_CONSULTANT",
+                    "atCounter": "#APPOINTMENT_LINK",
+                    "byPhone": "#APPOINTMENT_LINK"
+                  },
+                  "initial": "WICH_CANAL"
                 }
               },
               "on": {
-                "bonjourJeSouhaitePrendreUnRdv": "BOOK_MEETING"
-              }
+                "bonjourJeSouhaitePrendreUnRdv": "#GROUP_1"
+              },
+              "initial": "GROUP_1"
             }
           },
           "initial": "Global",
@@ -1537,7 +1684,8 @@
           {
             "id": 0,
             "from": "client",
-            "text": "Je n'arrive pas à faire mon virement"
+            "text": "Je n'arrive pas à faire mon virement",
+            "main": true
           },
           {
             "id": 1,
@@ -1566,6 +1714,13 @@
           }
         ]
       }
+    },
+    {
+      "id": 12,
+      "category": "scenarios",
+      "description": "",
+      "name": "dsfvdfsdfsedf",
+      "tags": []
     }
   ]
 }

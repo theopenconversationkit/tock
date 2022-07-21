@@ -20,10 +20,18 @@ export interface Scenario {
   applicationId: string;
   state: string;
 }
+
+export interface machineState {
+  id: string;
+  type?: string;
+  initial?: string;
+  states?: { [key: string]: machineState };
+  on?: { [key: string]: string };
+}
 export interface ScenarioData {
   scenarioItems: scenarioItem[];
   contexts?: TickContext[];
-  stateMachine?: {};
+  stateMachine?: machineState;
 }
 
 export type EntityTypeName = string;
@@ -43,6 +51,7 @@ export interface intentDefinition {
   intentId?: string;
   sentences?: TempSentence[];
   _sentences?: Sentence[];
+  primary?: boolean;
 }
 export interface TickActionDefinition {
   name: string;
@@ -51,6 +60,7 @@ export interface TickActionDefinition {
   outputContextNames?: TickContextName[];
   handler?: string;
   answer?: string;
+  answerId?: string;
 }
 
 export const SCENARIO_ITEM_FROM_CLIENT = 'client';
@@ -65,6 +75,7 @@ export interface scenarioItem {
   text: string;
   from: scenarioItemFrom;
   final?: boolean;
+  main?: boolean;
 
   intentDefinition?: intentDefinition;
   tickActionDefinition?: TickActionDefinition;

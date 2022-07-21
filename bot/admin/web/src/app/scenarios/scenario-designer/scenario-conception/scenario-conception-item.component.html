@@ -83,7 +83,14 @@
         ></textarea>
 
         <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()">
-          <div class="ellipsis font-weight-bold">{{ item.intentDefinition.name }}</div>
+          <div class="ellipsis font-weight-bold">
+            <nb-icon
+              *ngIf="item.intentDefinition.primary"
+              icon="award-outline"
+              class="valign-middle"
+            ></nb-icon>
+            {{ item.intentDefinition.name }}
+          </div>
 
           <div
             class="sentences mb-2"

@@ -16,6 +16,15 @@
   <nb-card-body>
     <div class="row">
       <div class="col-12">
+        <nb-toggle
+          [formControl]="primary"
+          [disabled]="item.main"
+          nbTooltip="Primary intentions are intentions that can be triggered outside the execution of a scenario. Be careful with this option."
+          >Primary intent</nb-toggle
+        >
+      </div>
+
+      <div class="col-12">
         <label class="font-weight-bold">Status :</label>
         <span *ngIf="item.intentDefinition.intentId">
           Already exists. Will be reassigned upon publication.
@@ -24,6 +33,7 @@
           Does not exist. Will be created upon publishing.
         </span>
       </div>
+
       <div
         *ngIf="item.intentDefinition.intentId"
         class="col-12"

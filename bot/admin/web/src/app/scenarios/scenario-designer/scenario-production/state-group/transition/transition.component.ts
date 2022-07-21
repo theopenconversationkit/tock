@@ -1,6 +1,15 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { intentDefinition, TickActionDefinition } from '../../../../models';
 import { ScenarioProductionService } from '../../scenario-production.service';
 
 @Component({
@@ -8,12 +17,13 @@ import { ScenarioProductionService } from '../../scenario-production.service';
   templateUrl: './transition.component.html',
   styleUrls: ['./transition.component.scss']
 })
-export class ScenarioTransitionComponent implements OnDestroy {
+export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Output() removeTransition = new EventEmitter();
-  @Input() transition;
+  @Input() transition: { name: string; target: string };
   @Input() parentState;
-
+  @Input() intents: intentDefinition[];
+  @Input() actions: TickActionDefinition[];
   constructor(
     public elementRef: ElementRef,
     private scenarioProductionService: ScenarioProductionService
@@ -27,11 +37,22 @@ export class ScenarioTransitionComponent implements OnDestroy {
       });
   }
 
+  intent;
+  ngOnInit(): void {
+    this.intent = this.intents.find((i) => {
+      return i.name === this.transition.name;
+    });
+  }
+
   ngAfterViewInit(): void {
     this.scenarioProductionService.registerTransitionComponent(this);
     setTimeout(() => {
       this.setTransitionTop();
     });
+  }
+
+  getIntentTooltip() {
+    return this.intent.label ? this.intent.label : this.intent.name;
   }
 
   setTransitionTop() {
@@ -40,9 +61,12 @@ export class ScenarioTransitionComponent implements OnDestroy {
 
   getTransitionTop() {
     const stateComponent =
-      this.scenarioProductionService.scenarioProductionStateComponents[this.transition.target];
+      this.scenarioProductionService.scenarioProductionStateComponents[
+        this.transition.target.replace(/^#/, '')
+      ];
     const transitionComponent =
       this.scenarioProductionService.scenarioProductionTransitionsComponents[this.transition.name];
+
     if (stateComponent && transitionComponent) {
       const stateElem = stateComponent.elementRef.nativeElement;
       const transitionElem = transitionComponent.elementRef.nativeElement;
