@@ -56,9 +56,9 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.scenarioService
       .getScenario(this.scenarioId)
       .pipe(takeUntil(this.destroy))
-      .subscribe((data) => {
-        this.scenarioBackup = JSON.stringify(data);
-        this.scenario = JSON.parse(JSON.stringify(data));
+      .subscribe((scenario) => {
+        this.scenarioBackup = JSON.stringify(scenario);
+        this.scenario = JSON.parse(JSON.stringify(scenario));
 
         if (!this.scenario.data)
           this.scenario.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
