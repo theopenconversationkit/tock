@@ -17,7 +17,9 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing
+    mode: SCENARIO_MODE.writing,
+    applicationId: '1',
+    state: ''
   },
   {
     id: 2,
@@ -30,7 +32,9 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing
+    mode: SCENARIO_MODE.writing,
+    applicationId: '1',
+    state: ''
   },
   {
     id: 3,
@@ -42,7 +46,9 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing
+    mode: SCENARIO_MODE.writing,
+    applicationId: '1',
+    state: ''
   },
   {
     id: 4,
@@ -54,7 +60,9 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing
+    mode: SCENARIO_MODE.writing,
+    applicationId: '1',
+    state: ''
   },
   {
     id: 5,
@@ -66,7 +74,9 @@ const mockScenarios: Scenario[] = [
     data: {
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing
+    mode: SCENARIO_MODE.writing,
+    applicationId: '1',
+    state: ''
   }
 ];
 
@@ -82,7 +92,9 @@ const newScenario: Scenario = {
   id: null,
   creationDate: '12/01/1980' as unknown as Date,
   mode: SCENARIO_MODE.writing,
-  name: 'New scenario'
+  name: 'New scenario',
+  applicationId: '1',
+  state: ''
 };
 
 const updatedScenario: Scenario = {
