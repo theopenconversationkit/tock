@@ -36,22 +36,25 @@
 </div>
 
 <scenario-mode-stepper
+  *ngIf="scenario?.data"
   class="mb-3"
-  [mode]="scenario.mode"
+  [mode]="scenario.data.mode"
   (modeSwitch)="switchMode($event)"
 ></scenario-mode-stepper>
 
 <scenario-conception
-  *ngIf="scenario.mode === SCENARIO_MODE.writing || scenario.mode === SCENARIO_MODE.casting"
+  *ngIf="
+    scenario?.data.mode === SCENARIO_MODE.writing || scenario?.data.mode === SCENARIO_MODE.casting
+  "
   [scenario]="scenario"
 ></scenario-conception>
 
 <scenario-production
-  *ngIf="scenario.mode === SCENARIO_MODE.production"
+  *ngIf="scenario?.data.mode === SCENARIO_MODE.production"
   [scenario]="scenario"
 ></scenario-production>
 
 <scenario-publishing
-  *ngIf="scenario.mode === SCENARIO_MODE.publishing"
+  *ngIf="scenario?.data.mode === SCENARIO_MODE.publishing"
   [scenario]="scenario"
 ></scenario-publishing>

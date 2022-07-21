@@ -16,7 +16,6 @@ export interface Scenario {
   updateDate?: Date;
   description?: string;
   data?: ScenarioData;
-  mode: SCENARIO_MODE;
   applicationId: string;
   state: string;
 }
@@ -32,6 +31,7 @@ export interface ScenarioData {
   scenarioItems: scenarioItem[];
   contexts?: TickContext[];
   stateMachine?: machineState;
+  mode: SCENARIO_MODE;
 }
 
 export type EntityTypeName = string;

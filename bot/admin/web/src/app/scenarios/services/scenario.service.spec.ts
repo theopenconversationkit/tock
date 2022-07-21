@@ -15,9 +15,9 @@ const mockScenarios: Scenario[] = [
     creationDate: '12/01/1980' as unknown as Date,
     updateDate: null,
     data: {
+      mode: SCENARIO_MODE.writing,
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing,
     applicationId: '1',
     state: ''
   },
@@ -30,9 +30,9 @@ const mockScenarios: Scenario[] = [
     creationDate: '01/01/1970' as unknown as Date,
     updateDate: '01/01/1970' as unknown as Date,
     data: {
+      mode: SCENARIO_MODE.writing,
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing,
     applicationId: '1',
     state: ''
   },
@@ -44,9 +44,9 @@ const mockScenarios: Scenario[] = [
     tags: ['tag1', 'tag2'],
     creationDate: '01/01/1970' as unknown as Date,
     data: {
+      mode: SCENARIO_MODE.writing,
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing,
     applicationId: '1',
     state: ''
   },
@@ -58,9 +58,9 @@ const mockScenarios: Scenario[] = [
     tags: [],
     creationDate: '12/01/1980' as unknown as Date,
     data: {
+      mode: SCENARIO_MODE.writing,
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing,
     applicationId: '1',
     state: ''
   },
@@ -72,9 +72,9 @@ const mockScenarios: Scenario[] = [
     tags: null,
     creationDate: '12/01/1980' as unknown as Date,
     data: {
+      mode: SCENARIO_MODE.writing,
       scenarioItems: []
     },
-    mode: SCENARIO_MODE.writing,
     applicationId: '1',
     state: ''
   }
@@ -91,7 +91,6 @@ const initialState = {
 const newScenario: Scenario = {
   id: null,
   creationDate: '12/01/1980' as unknown as Date,
-  mode: SCENARIO_MODE.writing,
   name: 'New scenario',
   applicationId: '1',
   state: ''

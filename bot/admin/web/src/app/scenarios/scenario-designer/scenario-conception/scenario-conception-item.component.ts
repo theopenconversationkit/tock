@@ -171,7 +171,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   createIntent(): void {
     const modal = this.dialogService.openDialog(IntentCreateComponent, {
       context: {
-        intentSentence: this.item.text
+        item: this.item
       }
     });
     const createIntentEvent = modal.componentRef.instance.createIntentEvent

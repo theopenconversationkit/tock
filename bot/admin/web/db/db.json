@@ -203,8 +203,7 @@
           "initial": "Global",
           "on": {}
         }
-      },
-      "mode": "production"
+      }
     },
     {
       "id": 3,
@@ -436,8 +435,7 @@
             "entityRole": "amount-of-money"
           }
         ]
-      },
-      "mode": "casting"
+      }
     },
     {
       "id": 4,
@@ -898,8 +896,7 @@
           "initial": "Global",
           "on": {}
         }
-      },
-      "mode": "casting"
+      }
     },
     {
       "id": 5,
@@ -1666,9 +1663,9 @@
           },
           "initial": "Global",
           "on": {}
-        }
-      },
-      "mode": "production"
+        },
+        "mode": "production"
+      }
     },
     {
       "id": 11,
@@ -1678,8 +1675,8 @@
       "tags": [
         "stateMachines"
       ],
-      "mode": "casting",
       "data": {
+        "mode": "casting",
         "scenarioItems": [
           {
             "id": 0,
