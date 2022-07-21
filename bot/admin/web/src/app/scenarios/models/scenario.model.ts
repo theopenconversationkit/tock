@@ -17,6 +17,8 @@ export interface Scenario {
   description?: string;
   data?: ScenarioData;
   mode: SCENARIO_MODE;
+  applicationId: string;
+  state: string;
 }
 export interface ScenarioData {
   scenarioItems: scenarioItem[];

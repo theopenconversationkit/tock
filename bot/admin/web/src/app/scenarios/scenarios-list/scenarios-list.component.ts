@@ -46,7 +46,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   pagination: Pagination = {
     start: 0,
     end: 0,
-    size: 3,
+    size: 10,
     total: 0
   };
 
@@ -63,7 +63,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     private scenarioService: ScenarioService,
     private toastrService: NbToastrService,
     private router: Router,
-    protected state: StateService
+    protected stateService: StateService
   ) {}
 
   ngOnInit() {
@@ -78,7 +78,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
     this.subscribeToScenarios();
 
-    this.state.configurationChange.pipe(takeUntil(this.destroy$)).subscribe((_) => {
+    this.stateService.configurationChange.pipe(takeUntil(this.destroy$)).subscribe((_) => {
       this.subscribeToScenarios(true);
     });
   }
@@ -94,7 +94,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         this.loading.list = false;
         this.scenarios = [...data];
         this.pagination.total = data.length;
-        this.filterScenarios(this.currentFilters);
+        this.filterScenarios(this.currentFilters, false);
         this.orderBy(this.currentOrderByCriteria);
       });
   }
@@ -128,7 +128,9 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       category: '',
       description: '',
       name: '',
-      tags: []
+      tags: [],
+      state: '',
+      applicationId: this.stateService.currentApplication._id
     } as Scenario;
     this.isSidePanelOpen = true;
   }
@@ -177,10 +179,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
           this.loading.delete = false;
         },
         error: () => {
-          this.toastrService.danger(`Failed to delete scenario`, 'Error', {
-            duration: 5000,
-            status: 'danger'
-          });
           this.loading.delete = false;
         }
       });
@@ -207,10 +205,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             }
           },
           error: () => {
-            this.toastrService.danger(`Failed to create scenario`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            });
             this.loading.edit = false;
           }
         });
@@ -232,10 +226,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             }
           },
           error: () => {
-            this.toastrService.danger(`Failed to update scenario`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            });
             this.loading.edit = false;
           }
         });
@@ -247,7 +237,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       this.currentViewMode === ViewMode.LIST ? this.viewMode.TREE : this.viewMode.LIST;
   }
 
-  filterScenarios(filters: Filter): void {
+  filterScenarios(filters: Filter, resetPaginationStart: boolean = true): void {
     const { search, tags } = filters;
     this.currentFilters = filters;
 
@@ -269,15 +259,24 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       return scenario;
     });
 
-    // reset pagination
-    this.pagination.start = 0;
-    this.pagination.end =
-      this.filteredScenarios.length < this.pagination.size
-        ? this.filteredScenarios.length
-        : this.pagination.size;
-    this.pagination.total = this.filteredScenarios.length;
+    this.resetPaginationAfterFiltering(resetPaginationStart);
 
     this.orderBy(this.currentOrderByCriteria);
+  }
+
+  resetPaginationAfterFiltering(resetPaginationStart: boolean): void {
+    if (resetPaginationStart) {
+      this.pagination.start = 0;
+    }
+    this.pagination.total = this.filteredScenarios.length;
+
+    const pageEnd = this.pagination.start + this.pagination.size;
+    this.pagination.end = pageEnd < this.pagination.total ? pageEnd : this.pagination.total;
+
+    if (this.pagination.start === this.pagination.end) {
+      const pageStart = this.pagination.start - this.pagination.size;
+      this.pagination.start = pageStart < 0 ? 0 : pageStart;
+    }
   }
 
   paginateScenario(scenarios: Scenario[]): void {
