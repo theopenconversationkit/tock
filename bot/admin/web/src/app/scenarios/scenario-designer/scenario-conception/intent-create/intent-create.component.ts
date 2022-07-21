@@ -4,6 +4,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { of } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { normalizedCamelCase } from '../../../commons/utils';
+import { scenarioItem } from '../../../models';
 
 @Component({
   selector: 'scenario-intent-create',
@@ -11,7 +12,7 @@ import { normalizedCamelCase } from '../../../commons/utils';
   styleUrls: ['./intent-create.component.scss']
 })
 export class IntentCreateComponent implements OnInit {
-  @Input() intentSentence: string;
+  @Input() item: scenarioItem;
   @Output() createIntentEvent = new EventEmitter();
   categories: string[] = [];
   categoryAutocompleteValues;
@@ -24,9 +25,13 @@ export class IntentCreateComponent implements OnInit {
       this.categoryAutocompleteValues = of(this.categories);
     });
 
-    if (this.intentSentence.trim()) {
-      this.form.patchValue({ label: this.intentSentence });
+    if (this.item.text.trim()) {
+      this.form.patchValue({ label: this.item.text });
       this.copyLabelToName();
+    }
+
+    if (this.item.main) {
+      this.form.patchValue({ primary: true });
     }
   }
 
@@ -34,7 +39,8 @@ export class IntentCreateComponent implements OnInit {
     label: new FormControl(undefined, Validators.required),
     name: new FormControl(undefined, Validators.required),
     category: new FormControl('scenarios'),
-    description: new FormControl()
+    description: new FormControl(),
+    primary: new FormControl(false)
   });
 
   get label(): FormControl {
