@@ -1,1 +1,58 @@
-<pre>{{ tickStoryJson }}</pre>
+<div *ngIf="dependencies">
+  <div *ngIf="dependencies.intentsToCreate.length">
+    <h4>The {{ dependencies.intentsToCreate.length }} following intents will be created</h4>
+    <div class="row">
+      <div
+        *ngFor="let intent of dependencies.intentsToCreate"
+        class="col-12 col-md-6 mb-2"
+      >
+        <strong>{{ intent.data.intentDefinition.name }}</strong>
+        <div>
+          label :
+          <span class="text-muted">
+            {{ intent.data.intentDefinition.label }}
+          </span>
+        </div>
+        <div>
+          category :
+          <span class="text-muted">
+            {{ intent.data.intentDefinition.category }}
+          </span>
+        </div>
+        <div *ngIf="intent.data.intentDefinition.description">
+          description :
+          <span class="text-muted">
+            {{ intent.data.intentDefinition.description }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="dependencies.answersToCreate.length"
+    class="mt-3"
+  >
+    <h4>The {{ dependencies.answersToCreate.length }} following answers will be created</h4>
+    <div class="row">
+      <div
+        *ngFor="let answer of dependencies.answersToCreate"
+        class="col-12 col-md-6 mb-2"
+      >
+        {{ answer.data.answer }}
+      </div>
+    </div>
+  </div>
+
+  <button
+    *ngIf="!processingDependencies"
+    nbButton
+    status="primary"
+    class="ml-2"
+    (click)="processDependencies()"
+  >
+    Publish scenario
+  </button>
+</div>
+
+<!-- <pre *ngIf="tickStoryJson">{{ tickStoryJson }}</pre> -->
