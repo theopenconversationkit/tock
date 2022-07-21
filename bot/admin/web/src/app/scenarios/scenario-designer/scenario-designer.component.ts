@@ -57,13 +57,15 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       .getScenario(this.scenarioId)
       .pipe(takeUntil(this.destroy))
       .subscribe((data) => {
-        if (typeof data.mode == 'undefined') data.mode = SCENARIO_MODE.writing;
         this.scenarioBackup = JSON.stringify(data);
         this.scenario = JSON.parse(JSON.stringify(data));
 
-        this.switchMode(this.scenario.mode || SCENARIO_MODE.writing);
+        if (!this.scenario.data)
+          this.scenario.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
+        if (typeof this.scenario.data.mode == 'undefined')
+          this.scenario.data.mode = SCENARIO_MODE.writing;
 
-        if (!this.scenario.data) this.scenario.data = { scenarioItems: [], contexts: [] };
+        this.switchMode(this.scenario.data.mode || SCENARIO_MODE.writing);
         if (!this.scenario.data.scenarioItems.length) {
           this.scenario.data.scenarioItems.push({
             id: 0,
@@ -83,7 +85,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   switchMode(mode): void {
-    this.scenario.mode = mode;
+    this.scenario.data.mode = mode;
   }
 
   stringifiedCleanScenario(): string {
