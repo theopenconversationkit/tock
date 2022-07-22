@@ -28,6 +28,7 @@ import { BotSharedService } from './bot-shared.service';
 import { DisplayDialogComponent } from './bot-dialog/display-dialog.component';
 import { MomentModule } from 'ngx-moment';
 import { SelectBotComponent } from './select-bot/select-bot.component';
+import { PaginationComponent } from './pagination/pagination.component';
 import {
   NbCalendarRangeModule,
   NbCardModule,
@@ -40,7 +41,13 @@ import {
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
-import {ErrorHelperComponent} from './error-helper/error-helper.component';
+import { ErrorHelperComponent } from './error-helper/error-helper.component';
+import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
+import { FormControlComponent } from './form-control/form-control.component';
+import { DelayDirective } from './directives/delay.directive';
+import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
+import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
+import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
 
 @NgModule({
   imports: [
@@ -67,7 +74,14 @@ import {ErrorHelperComponent} from './error-helper/error-helper.component';
     DateRangeCalendarComponent,
     InfoButtonComponent,
     ConfirmationDialogComponent,
-    ErrorHelperComponent
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    DelayDirective,
+    ChoiceDialogComponent,
+    MouseWheelListnerDirective,
+    JsonPreviewerComponent
   ],
   exports: [
     BotMessageComponent,
@@ -75,11 +89,15 @@ import {ErrorHelperComponent} from './error-helper/error-helper.component';
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,
-    ErrorHelperComponent
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChoiceDialogComponent,
+    MouseWheelListnerDirective,
+    JsonPreviewerComponent
   ],
   providers: [BotSharedService],
   entryComponents: []
 })
-export class BotSharedModule {
-
-}
+export class BotSharedModule {}

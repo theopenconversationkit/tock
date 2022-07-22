@@ -4,7 +4,7 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
 @Component({
   selector: 'tock-error-helper',
   templateUrl: './error-helper.component.html',
-  styleUrls: ['./error-helper.component.css']
+  styleUrls: ['./error-helper.component.scss']
 })
 export class ErrorHelperComponent {
   @Input()

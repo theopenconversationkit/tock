@@ -1,0 +1,260 @@
+<div
+  class="arrow-wrapper"
+  *ngIf="item.id > 0"
+>
+  <div
+    class="arrow-top-left"
+    *ngIf="shouldShowArrowTop('left')"
+  ></div>
+  <div
+    class="arrow-top-right"
+    *ngIf="shouldShowArrowTop('right')"
+  ></div>
+  <div class="arrow"></div>
+</div>
+
+<div [dndDraggable]="draggable.data">
+  <div
+    class="item-card"
+    #itemCard
+    [ngClass]="getItemCardCssClass()"
+    dndDropzone
+    (dndDrop)="onDrop($event)"
+    dndDragoverClass="dragHover"
+    (click)="selectItem()"
+    appMouseWheelListner
+    (onMouseWheel)="mouseWheel($event)"
+  >
+    <div
+      class="from-icon client"
+      (click)="switchItemType(SCENARIO_ITEM_FROM_CLIENT)"
+    >
+      <img
+        src="assets/images/scenario-client.svg"
+        class="cursor-move"
+        dndHandle
+        *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT"
+      />
+      <img
+        src="assets/images/scenario-client.svg"
+        *ngIf="item.from != SCENARIO_ITEM_FROM_CLIENT && mode == SCENARIO_MODE.writing"
+      />
+      <div
+        class="duplication-count"
+        dndHandle
+        *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && item.parentIds?.length > 1"
+      >
+        {{ item.parentIds?.length }}
+      </div>
+    </div>
+    <div
+      class="from-icon bot"
+      (click)="switchItemType(SCENARIO_ITEM_FROM_BOT)"
+      *ngIf="item.parentIds?.length && !item.intentDefinition"
+    >
+      <img
+        src="assets/images/scenario-bot.svg"
+        class="cursor-move"
+        dndHandle
+        *ngIf="item.from == SCENARIO_ITEM_FROM_BOT"
+      />
+      <img
+        src="assets/images/scenario-bot.svg"
+        *ngIf="item.from != SCENARIO_ITEM_FROM_BOT && mode == SCENARIO_MODE_WRITING"
+      />
+      <div
+        class="duplication-count"
+        dndHandle
+        *ngIf="item.from == SCENARIO_ITEM_FROM_BOT && item.parentIds?.length > 1"
+      >
+        {{ item.parentIds?.length }}
+      </div>
+    </div>
+
+    <div class="item-infos d-flex align-items-start flex-column">
+      <div class="align-self-stretch">
+        <textarea
+          *ngIf="!itemHasDefinition()"
+          #itemTextarea
+          fullWidth
+          rows="4"
+          placeholder="Question"
+          [(ngModel)]="item.text"
+        ></textarea>
+
+        <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()">
+          <div class="ellipsis font-weight-bold">
+            <nb-icon
+              *ngIf="item.intentDefinition.primary"
+              icon="award-outline"
+              class="valign-middle"
+            ></nb-icon>
+            {{ item.intentDefinition.name }}
+          </div>
+
+          <div
+            class="sentences mb-2"
+            [nbSpinner]="utterancesLoading"
+          >
+            <div class="questions">
+              <ul>
+                <li
+                  *ngFor="let sentence of item.intentDefinition.sentences"
+                  class="ellipsis"
+                  [title]="sentence"
+                >
+                  {{ sentence.query }}
+                </li>
+              </ul>
+              <ul>
+                <li
+                  *ngFor="let sentence of item.intentDefinition._sentences"
+                  class="ellipsis text-muted"
+                  [title]="sentence"
+                >
+                  {{ sentence.text }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_BOT && itemHasDefinition()">
+          <div class="ellipsis font-weight-bold">{{ item.tickActionDefinition.name }}</div>
+
+          <div
+            *ngIf="item.tickActionDefinition.inputContextNames?.length"
+            class="tiny-text ellipsis"
+          >
+            <strong>INPUT</strong>
+            <span *ngFor="let inputCtx of item.tickActionDefinition.inputContextNames">
+              {{ inputCtx }}
+            </span>
+          </div>
+          <div
+            *ngIf="item.tickActionDefinition.outputContextNames?.length"
+            class="tiny-text ellipsis"
+          >
+            <strong>OUTPUT</strong>
+            <span *ngFor="let inputCtx of item.tickActionDefinition.outputContextNames">
+              {{ inputCtx }}
+            </span>
+          </div>
+
+          <div
+            *ngIf="item.tickActionDefinition.answer"
+            class="tiny-text"
+          >
+            <strong>ANSWER</strong>
+            {{ item.tickActionDefinition.answer }}
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="mt-auto align-self-stretch">
+        <div class="d-flex justify-content-between mt-1">
+          <div
+            *ngIf="
+              mode == SCENARIO_MODE.writing &&
+              item.from == SCENARIO_ITEM_FROM_BOT &&
+              itemHasNoChildren()
+            "
+          >
+            <nb-checkbox
+              (checkedChange)="toggleFinal($event)"
+              [checked]="item.final"
+              nbTooltip="Define this item as ending the conversation"
+              >End of chat</nb-checkbox
+            >
+          </div>
+          <button
+            nbButton
+            size="tiny"
+            status="primary"
+            *ngIf="!itemHasNoChildren()"
+            (click)="test()"
+            nbTooltip="Test the conversation from this point"
+          >
+            Test
+          </button>
+          <button
+            nbButton
+            size="tiny"
+            status="warning"
+            *ngIf="mode == SCENARIO_MODE.writing && item.id > 0 && itemHasNoChildren()"
+            (click)="delete()"
+            nbTooltip="Remove this item"
+          >
+            Delete
+          </button>
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="mode == SCENARIO_MODE.writing && itemCanHaveAnswer()"
+            (click)="answering()"
+            nbTooltip="Add an answer to this item"
+          >
+            Add answer
+          </button>
+
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="
+              mode == SCENARIO_MODE.casting &&
+              item.from == SCENARIO_ITEM_FROM_CLIENT &&
+              item.text?.length
+            "
+            (click)="manageIntent()"
+            nbTooltip="Intent infos and edition"
+          >
+            <span *ngIf="!item.intentDefinition">Add</span>
+            <span *ngIf="item.intentDefinition">Manage</span>
+            &nbsp; intent
+          </button>
+
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="
+              mode == SCENARIO_MODE.casting &&
+              item.from == SCENARIO_ITEM_FROM_BOT &&
+              item.text?.length
+            "
+            (click)="manageAction()"
+            nbTooltip="Action infos and edition"
+          >
+            <span *ngIf="!item.tickActionDefinition">Add</span>
+            <span *ngIf="item.tickActionDefinition">Manage</span>
+            &nbsp; action
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="arrow-wrapper"
+    *ngIf="itemHasSeveralChildren()"
+  >
+    <div class="arrow"></div>
+  </div>
+
+  <div class="card-row">
+    <ng-container *ngFor="let childItem of getChildItems()">
+      <div class="card-col">
+        <scenario-conception-item
+          [itemId]="childItem.id"
+          [parentId]="item.id"
+          [scenarioItems]="scenarioItems"
+          [contexts]="contexts"
+          [selectedItem]="selectedItem"
+          [mode]="mode"
+        ></scenario-conception-item>
+      </div>
+    </ng-container>
+  </div>
+</div>

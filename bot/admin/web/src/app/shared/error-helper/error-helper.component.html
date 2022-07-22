@@ -1,5 +1,10 @@
-<div class="error">
-  <span *ngIf="field?.errors?.required">This field is required</span>
-  <span *ngIf="field?.errors?.minlength">This field must contain at least {{ field?.errors?.minlength.requiredLength }} characters</span>
-  <span *ngIf="field?.errors?.maxlength">This field is limited to {{ field?.errors?.maxlength.requiredLength }} characters</span>
+<div class="text-danger">
+  <small *ngIf="field?.errors?.required">This field is required</small>
+  <small *ngIf="field?.errors?.minlength">
+    This field must contain at least {{ field?.errors?.minlength.requiredLength }} characters
+  </small>
+  <small *ngIf="field?.errors?.maxlength">
+    This field is limited to {{ field?.errors?.maxlength.requiredLength }} characters
+  </small>
+  <small *ngIf="field?.errors?.custom">{{ field.errors.custom }}</small>
 </div>

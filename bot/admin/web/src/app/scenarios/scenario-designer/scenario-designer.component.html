@@ -1,0 +1,60 @@
+<div class="row mb-2">
+  <div class="col">
+    <h4 class="initial-capitalize">
+      {{ this.scenario?.name }}
+    </h4>
+  </div>
+
+  <div class="col-auto text-right d-flex">
+    <button
+      nbButton
+      size="small"
+      status="basic"
+      (click)="exit()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="ml-2"
+      (click)="save()"
+    >
+      Save
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="ml-2"
+      (click)="save(true)"
+    >
+      Save & exit
+    </button>
+  </div>
+</div>
+
+<scenario-mode-stepper
+  *ngIf="scenario?.data"
+  class="mb-3"
+  [mode]="scenario.data.mode"
+  (modeSwitch)="switchMode($event)"
+></scenario-mode-stepper>
+
+<scenario-conception
+  *ngIf="
+    scenario?.data.mode === SCENARIO_MODE.writing || scenario?.data.mode === SCENARIO_MODE.casting
+  "
+  [scenario]="scenario"
+></scenario-conception>
+
+<scenario-production
+  *ngIf="scenario?.data.mode === SCENARIO_MODE.production"
+  [scenario]="scenario"
+></scenario-production>
+
+<scenario-publishing
+  *ngIf="scenario?.data.mode === SCENARIO_MODE.publishing"
+  [scenario]="scenario"
+></scenario-publishing>

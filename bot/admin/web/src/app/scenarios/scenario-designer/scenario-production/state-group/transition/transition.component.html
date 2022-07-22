@@ -1,0 +1,21 @@
+<nb-icon
+  *ngIf="intent.primary"
+  icon="award-outline"
+  class="valign-middle mr-1"
+  style="margin-left: -5px; width: 1.3em"
+  nbTooltip="Primary intent"
+></nb-icon>
+<div
+  class="ellipsis"
+  [nbTooltip]="getIntentTooltip()"
+>
+  {{ transition.name }}
+</div>
+
+<nb-icon
+  class="pointer ml-2 min-width-1em"
+  icon="minus-circle-outline"
+  nbTooltip="Remove this transition"
+  (click)="remove(transition)"
+  style="margin-right: -5px"
+></nb-icon>

@@ -1,0 +1,110 @@
+<nb-card id="modal-wrapper">
+  <nb-card-header class="d-flex justify-content-between align-items-start">
+    <div>
+      <h4>Create a new intent</h4>
+      There is no existing intention corresponding to the label "{{ item.text }}". Please define one
+      below.
+    </div>
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Cancel"
+      (click)="cancel()"
+      class="ml-3"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <form
+      [formGroup]="form"
+      (submit)="save()"
+    >
+      <div class="d-flex flex-column mb-2">
+        <label for="label">Label <span class="text-muted">(*)</span></label>
+        <input
+          #labelInput
+          nbInput
+          formControlName="label"
+          fullWidth
+          id="label"
+          type="text"
+          placeholder="Enter label"
+          (keyup)="copyLabelToName()"
+        />
+      </div>
+
+      <div class="d-flex flex-column mb-2">
+        <label for="name">Name <span class="text-muted">(*)</span></label>
+        <input
+          #nameInput
+          nbInput
+          formControlName="name"
+          fullWidth
+          id="name"
+          type="text"
+          placeholder="Enter name"
+          (keyup)="formatNameInput()"
+        />
+      </div>
+
+      <div class="d-flex flex-column mb-2">
+        <label for="category">Category</label>
+        <input
+          nbInput
+          formControlName="category"
+          fullWidth
+          id="category"
+          type="text"
+          placeholder="Select category"
+          autocomplete="off"
+          [nbAutocomplete]="categoryAutocomplete"
+        />
+        <nb-autocomplete #categoryAutocomplete>
+          <nb-option
+            *ngFor="let option of categoryAutocompleteValues | async"
+            [value]="option"
+          >
+            {{ option }}
+          </nb-option>
+        </nb-autocomplete>
+      </div>
+
+      <div class="d-flex flex-column mb-2">
+        <label for="description">Description</label>
+        <textarea
+          nbInput
+          formControlName="description"
+          fullWidth
+          id="description"
+          type="text"
+          placeholder="Enter description"
+        ></textarea>
+      </div>
+
+      <div class="grid-button mt-4">
+        <button
+          nbButton
+          outline
+          status="primary"
+          size="small"
+          type="button"
+          (click)="cancel()"
+        >
+          Cancel
+        </button>
+        <button
+          nbButton
+          status="primary"
+          size="small"
+          type="submit"
+          [disabled]="!canSave"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>

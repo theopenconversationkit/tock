@@ -1,0 +1,95 @@
+<div class="production-wrapper d-flex align-items-stretch">
+  <div class="production-menu p-3">
+    <div class="intents-wrapper">
+      <strong>Intents</strong>
+      <div class="intents-list mt-2">
+        <div
+          class="intent d-flex my-1 unselectable"
+          *ngFor="let intent of getScenarioIntents()"
+          [ngClass]="{ disabled: isIntentInUse(intent) }"
+          [nbTooltip]="getIntentTooltip(intent)"
+          [dndDraggable]="{ type: 'intent', name: intent.name }"
+          [dndType]="getDraggableIntentType(intent)"
+          dndHandle
+          [dndDisableIf]="isIntentInUse(intent)"
+        >
+          <nb-icon
+            *ngIf="intent.primary"
+            icon="award-outline"
+            class="valign-middle mr-1"
+            style="margin-left: -5px; height: 1em"
+          ></nb-icon>
+          <div class="ellipsis">
+            {{ intent.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="menu-separator mb-2" />
+
+    <div class="actions-wrapper">
+      <strong>Actions</strong>
+      <div class="actions-list mt-2">
+        <div
+          class="action p-2 my-1 unselectable"
+          *ngFor="let action of getScenarioActions()"
+          [ngClass]="{ disabled: isActionInUse(action) }"
+          [nbTooltip]="getActionTooltip(action)"
+          [dndDraggable]="{ type: 'action', name: action.name }"
+          dndHandle
+          dndType="action"
+          [dndDisableIf]="isActionInUse(action)"
+        >
+          <div class="ellipsis">{{ action.name }}</div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="menu-separator mb-2" />
+
+    <button
+      (click)="displayStateMachineCode()"
+      fullWidth
+      nbButton
+      size="tiny"
+      status="primary"
+      class="mt-1"
+    >
+      Display state machine code
+    </button>
+    <button
+      (click)="resetStateMachine()"
+      fullWidth
+      nbButton
+      size="tiny"
+      status="warning"
+      class="mt-1"
+    >
+      Reset state machine
+    </button>
+  </div>
+
+  <div
+    class="production-canvas-wrapper flex-fill"
+    #canvasWrapperElem
+    appMouseWheelListner
+    (onMouseWheel)="mouseWheel($event)"
+    (mousedown)="onMouseDownCanvas($event)"
+    (mouseup)="onMouseUpCanvas($event)"
+    (mousemove)="onMouseMoveCanvas($event)"
+  >
+    <div
+      class="production-canvas"
+      #canvasElem
+    >
+      <scenario-state-group
+        [state]="scenario.data.stateMachine.states.Global"
+        [stateMachine]="scenario.data.stateMachine"
+        [usedNames]="collectAllUsedeNames()"
+        [intents]="getScenarioIntents()"
+        [actions]="getScenarioActions()"
+      ></scenario-state-group>
+    </div>
+  </div>
+</div>

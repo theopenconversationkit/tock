@@ -1,0 +1,119 @@
+<nb-card>
+  <nb-card-body>
+    <table [nbTreeGrid]="dataSource">
+      <tr
+        nbTreeGridHeaderRow
+        *nbTreeGridHeaderRowDef="allColumns"
+      ></tr>
+      <tr
+        nbTreeGridRow
+        *nbTreeGridRowDef="let row; columns: allColumns"
+      ></tr>
+
+      <ng-container [nbTreeGridColumnDef]="categoryColumn">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+        >
+          {{ categoryColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <nb-tree-grid-row-toggle
+            *ngIf="row.data.expandable"
+            [expanded]="row.expanded"
+          ></nb-tree-grid-row-toggle>
+          <span *ngIf="row.data.expandable">{{ row.data[categoryColumn] }}</span>
+        </td>
+      </ng-container>
+
+      <ng-container
+        *ngFor="let column of defaultColumns; let index = index"
+        [nbTreeGridColumnDef]="column"
+      >
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          [class.descriptionColumn]="column === 'description'"
+        >
+          {{ column }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          {{ row.data[column] }}
+        </td>
+      </ng-container>
+
+      <ng-container [nbTreeGridColumnDef]="tagsColumn">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+        >
+          {{ tagsColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <nb-tag-list>
+            <nb-tag
+              *ngFor="let tag of row.data.tags"
+              appearance="filled"
+              size="tiny"
+              status="basic"
+              [text]="tag"
+            ></nb-tag>
+          </nb-tag-list>
+        </td>
+      </ng-container>
+
+      <ng-container [nbTreeGridColumnDef]="actionsColumn">
+        <th
+          nbTreeGridHeaderCell
+          *nbTreeGridHeaderCellDef
+          class="actionColumn"
+        >
+          {{ actionsColumn }}
+        </th>
+        <td
+          nbTreeGridCell
+          *nbTreeGridCellDef="let row"
+        >
+          <div *ngIf="!row.data.expandable">
+            <button
+              nbButton
+              ghost
+              shape="round"
+              nbTooltip="Edit"
+              (click)="edit(row.data)"
+            >
+              <nb-icon icon="edit-outline"></nb-icon>
+            </button>
+            <a
+              nbButton
+              ghost
+              shape="round"
+              nbTooltip="Designer"
+              [routerLink]="'./' + row.data.id"
+            >
+              <nb-icon icon="color-palette-outline"></nb-icon>
+            </a>
+            <button
+              nbButton
+              ghost
+              shape="round"
+              nbTooltip="Delete"
+              (click)="delete(row.data)"
+            >
+              <nb-icon icon="trash-2-outline"></nb-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+    </table>
+  </nb-card-body>
+</nb-card>

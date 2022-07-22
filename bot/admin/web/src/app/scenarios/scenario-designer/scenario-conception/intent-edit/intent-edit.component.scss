@@ -1,0 +1,9 @@
+#modal-wrapper {
+  min-width: 60vw;
+  max-width: 90vw;
+
+  .questions {
+    overflow-y: auto;
+    max-height: 15rem;
+  }
+}
