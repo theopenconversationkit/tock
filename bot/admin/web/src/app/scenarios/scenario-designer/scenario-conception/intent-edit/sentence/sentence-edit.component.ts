@@ -20,7 +20,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../../../core-nlp/dialog.service';
 import { StateService } from '../../../../../core-nlp/state.service';
-import { EntityDefinition, qualifiedName, Sentence } from '../../../../../model/nlp';
+import { EntityDefinition, qualifiedName, qualifiedRole, Sentence } from '../../../../../model/nlp';
 import { CreateEntityDialogComponent } from '../../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
 import {
   SelectedResult,
@@ -343,7 +343,9 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
               role: entity.role,
               start: this.txtSelectionStart,
               end: this.txtSelectionEnd,
-              entityColor: entity.entityColor
+              entityColor: entity.entityColor,
+              qualifiedRole: qualifiedRole(entity.entityTypeName, entity.role),
+              subEntities: []
             });
           }
 

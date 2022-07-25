@@ -61,8 +61,9 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       data: this.item.id
     };
 
-    if (this.item.intentDefinition?.intentId) this.collectIntentUtterances();
-    else {
+    if (this.item.intentDefinition?.intentId) {
+      this.collectIntentUtterances();
+    } else {
       this.utterancesLoading = false;
     }
   }

@@ -1,4 +1,4 @@
-import { machineState } from '../models';
+import { machineState, Scenario } from '../models';
 
 export function normalize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -87,4 +87,11 @@ export function getStateMachineActionParentById(id: string, group: machineState)
   }
 
   return result;
+}
+
+export function stringifiedCleanScenario(scenario: Scenario): string {
+  return JSON.stringify(scenario, function (key, value) {
+    if (key.indexOf('_') == 0) return undefined;
+    return value;
+  });
 }

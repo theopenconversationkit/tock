@@ -1718,6 +1718,171 @@
       "description": "",
       "name": "dsfvdfsdfsedf",
       "tags": []
+    },
+    {
+      "id": 13,
+      "category": "scenarios",
+      "description": "",
+      "name": "intentCreation",
+      "tags": [],
+      "state": "",
+      "applicationId": "62558f21b318632c9200b567",
+      "data": {
+        "mode": "publishing",
+        "scenarioItems": [
+          {
+            "id": 0,
+            "from": "client",
+            "text": "aaa intent main",
+            "main": true,
+            "intentDefinition": {
+              "label": "aaa intent main",
+              "name": "aaaIntentMain",
+              "category": "scenarios",
+              "description": null,
+              "primary": true,
+              "sentences": [],
+              "intentId": "62da8e77f60fac52e7bd11dc"
+            }
+          },
+          {
+            "id": 1,
+            "parentIds": [
+              0
+            ],
+            "from": "bot",
+            "text": "aaa action 1 1",
+            "tickActionDefinition": {
+              "name": "AAA_ACTION_1_1",
+              "description": "aaa action 1 1",
+              "handler": null,
+              "answer": "aaa action 1 1 ansxer",
+              "inputContextNames": [],
+              "outputContextNames": [],
+              "answerId": "app_scenario_aaa action 1 1 ansxer_3"
+            }
+          },
+          {
+            "id": 2,
+            "parentIds": [
+              0
+            ],
+            "from": "bot",
+            "text": "aaa action 1 2",
+            "tickActionDefinition": {
+              "name": "AAA_ACTION_1_2",
+              "description": "aaa action 1 2",
+              "handler": null,
+              "answer": "aaa action 1 2 answer",
+              "inputContextNames": [],
+              "outputContextNames": [],
+              "answerId": "app_scenario_aaa action 1 2 answer_3"
+            }
+          },
+          {
+            "id": 3,
+            "parentIds": [
+              1
+            ],
+            "from": "client",
+            "text": "aaa intent 1 1",
+            "intentDefinition": {
+              "label": "aaa intent 1 1",
+              "name": "aaaIntent11",
+              "category": "scenarios",
+              "description": null,
+              "primary": false,
+              "sentences": [],
+              "intentId": "62da8e78f60fac52e7bd11e2"
+            }
+          },
+          {
+            "id": 4,
+            "parentIds": [
+              2
+            ],
+            "from": "client",
+            "text": "aaa intent 1 2",
+            "intentDefinition": {
+              "label": "aaa intent 1 2",
+              "name": "aaaIntent12",
+              "category": "scenarios",
+              "description": null,
+              "primary": false,
+              "sentences": [],
+              "intentId": "62da8e78f60fac52e7bd11e9"
+            }
+          },
+          {
+            "id": 5,
+            "parentIds": [
+              3
+            ],
+            "from": "bot",
+            "text": "aaa action 2 1",
+            "tickActionDefinition": {
+              "name": "AAA_ACTION_2_1",
+              "description": "aaa action 2 1",
+              "handler": null,
+              "answer": "aaa action 2 1 answer",
+              "inputContextNames": [],
+              "outputContextNames": [],
+              "answerId": "app_scenario_aaa action 2 1 answer_3"
+            }
+          },
+          {
+            "id": 6,
+            "parentIds": [
+              4
+            ],
+            "from": "bot",
+            "text": "aaa action 2 2",
+            "tickActionDefinition": {
+              "name": "AAA_ACTION_2_2",
+              "description": "aaa action 2 2",
+              "handler": null,
+              "answer": "aaa action 2 2 answer",
+              "inputContextNames": [],
+              "outputContextNames": [],
+              "answerId": "app_scenario_aaa action 2 2 answer_3"
+            }
+          }
+        ],
+        "contexts": [],
+        "stateMachine": {
+          "id": "root",
+          "type": "parallel",
+          "states": {
+            "Global": {
+              "id": "Global",
+              "states": {
+                "INIT_GROUP": {
+                  "id": "INIT_GROUP",
+                  "states": {
+                    "AAA_ACTION_1_1": {
+                      "id": "AAA_ACTION_1_1"
+                    },
+                    "AAA_ACTION_1_2": {
+                      "id": "AAA_ACTION_1_2"
+                    }
+                  },
+                  "on": {
+                    "aaaIntent11": "#AAA_ACTION_1_1",
+                    "aaaIntent12": "#AAA_ACTION_1_2"
+                  },
+                  "initial": "AAA_ACTION_1_1"
+                }
+              },
+              "on": {
+                "aaaIntentMain": "#INIT_GROUP"
+              },
+              "initial": "INIT_GROUP"
+            }
+          },
+          "initial": "Global",
+          "on": {}
+        }
+      }
     }
   ]
 }
