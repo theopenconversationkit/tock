@@ -351,13 +351,6 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         )
 
         assertEquals(
-            expected = 1, actual = classifiedSentencesDao.getSentences(
-                setOf(intentIdtoDel), Locale.FRENCH,
-                ClassifiedSentenceStatus.deleted
-            ).size, "There should be one classified sentences deleted"
-        )
-
-        assertEquals(
             expected = 2,
             actual = classifiedSentencesDao.getSentences(
                 setOf(intentId3, intentId2, intentIdtoDel),
@@ -442,13 +435,6 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             createFaqQuery(null, faqName2),
             applicationId.toString(),
             null
-        )
-
-        assertEquals(
-            expected = 1, actual = classifiedSentencesDao.getSentences(
-                setOf(intentIdtoDel), Locale.FRENCH,
-                ClassifiedSentenceStatus.deleted
-            ).size, "There should be one classified sentences deleted"
         )
 
         assertEquals(
@@ -563,14 +549,37 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         )
     }
 
+    fun `A faqDefinition search with empty utterance`() {
+        val createdFaq = createDataForFaqSearch(numberOfUtterances = 0)
+
+        // search the actual faq
+        val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
+            //no specific filtering
+            createFaqQuery(null, null),
+            applicationId.toString(),
+            null
+        )
+
+        assertEquals(searchFound.first.size, searchFound.second.toInt())
+        assertEquals(searchFound.first.size, 1)
+        assertEquals(searchFound.first.first()._id, createdFaq._id)
+        assertEquals(searchFound.first.first().utterances, emptyList())
+    }
+
     @Test
-    fun `A faqDefinition search with deleted utterances with DocumentDb`() {
+    fun `A faqDefinition search with empty utterance with DocumentDB`() {
+        System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY, "true")
+        `A faqDefinition search with empty utterance`()
+    }
+
+    @Test
+    fun `A faqDefinition search with deleted utterances with DocumentDB`() {
         System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY, "true")
         `A faqDefinition search with deleted utterances`()
     }
 
     @Test
-    fun `A faqDefinition search with name with deleted utterances with DocumentDb`() {
+    fun `A faqDefinition search with name with deleted utterances with DocumentDB`() {
         System.setProperty(TOCK_DOCUMENT_DB_ON_PROPERTY, "true")
         `A faqDefinition search with name with deleted utterances`()
     }

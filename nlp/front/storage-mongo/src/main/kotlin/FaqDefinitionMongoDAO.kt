@@ -32,6 +32,7 @@ import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.client.model.UnwindOptions
 import com.mongodb.client.model.Variable
 import mu.KotlinLogging
 import org.bson.conversions.Bson
@@ -263,7 +264,9 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 FaqQueryResult::faq.unwind(),
                 // unwind : to flat utterrances array into an object
                 // Make it possible to filter directly on classified sentences per element ($elemMatch not available in Mongo 3.6.5)
-                FaqQueryResult::utterances.unwind(),
+                FaqQueryResult::utterances.unwind(
+                    // keep faq search with orphans utterances
+                    UnwindOptions().preserveNullAndEmptyArrays(true)),
                 match(
                     andNotNull(
                         andNotNull(
