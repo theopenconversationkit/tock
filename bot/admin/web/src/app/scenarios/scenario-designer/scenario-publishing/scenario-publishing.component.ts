@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest } from '../../../bot/model/i18n';
 import { StateService } from '../../../core-nlp/state.service';
-import { ClassifiedEntity, Intent } from '../../../model/nlp';
+import { ClassifiedEntity, EntityDefinition, Intent } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import {
   Scenario,
@@ -69,7 +69,6 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
           data: intent
         });
       } else if (intent.intentDefinition.sentences?.length) {
-        console.log(intent.intentDefinition.sentences);
         this.dependencies.intentsToUpdate.push({
           type: 'update',
           done: false,
@@ -105,41 +104,16 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         if (nextAnswerCreation) {
           this.processAnswer(nextAnswerCreation);
         } else {
+          // save the scenario
           this.scenarioDesignerService
             .saveScenario(this.scenario.id, this.scenario)
             .subscribe((data) => {
-              console.log('Scenario saved');
-              console.log(data);
+              // // Finally, reload the app to update the application intents and other dependencies modifications
+              // this.state.resetConfiguration();
             });
         }
       }
     }
-  }
-
-  processAnswer(answerTask: dependencyUpdateJob) {
-    if (!answerTask.data.tickActionDefinition.answerId) {
-      return this.postNewAnswer(answerTask);
-    }
-
-    answerTask.done = true;
-    this.processDependencies();
-  }
-
-  postNewAnswer(answerTask: dependencyUpdateJob) {
-    let request = new CreateI18nLabelRequest(
-      'scenario',
-      answerTask.data.tickActionDefinition.answer,
-      this.state.currentLocale
-    );
-    this.botService.createI18nLabel(request).subscribe(
-      (answer) => {
-        answerTask.data.tickActionDefinition.answerId = answer._id;
-        this.processAnswer(answerTask);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
   }
 
   processIntent(intentTask: dependencyUpdateJob) {
@@ -150,8 +124,19 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       return this.postNewIntent(intentTask);
     }
 
-    const intent: Intent = this.state.findIntentById(intentTask.data.intentDefinition.intentId);
     if (intentTask.data.intentDefinition.sentences?.length) {
+      if (intentTask.data.intentDefinition.sentences[0].classification.entities.length) {
+        const entities = intentTask.data.intentDefinition.sentences[0].classification.entities;
+        for (let index = 0; index < entities.length; index++) {
+          let entity = entities[index];
+          const existingEntityType = this.state.findEntityTypeByName(entity.type);
+          if (!existingEntityType) {
+            return this.postNewEntity(intentTask, entity);
+          }
+        }
+      }
+
+      const intent: Intent = this.state.findIntentById(intentTask.data.intentDefinition.intentId);
       return this.postNewSentence(
         intentTask,
         intent,
@@ -161,6 +146,27 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
     intentTask.done = true;
     this.processDependencies();
+  }
+
+  postNewEntity(task, tempEntity) {
+    console.log(tempEntity);
+
+    this.nlp.createEntityType(tempEntity.type).subscribe(
+      (e) => {
+        if (e) {
+          const entity = new EntityDefinition(e.name, tempEntity.role);
+          const entities = this.state.entityTypes.getValue().slice(0);
+          entities.push(e);
+          this.state.entityTypes.next(entities);
+          this.processIntent(task);
+        } else {
+          console.log(`Error when creating Entity Type ${tempEntity.type}`);
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 
   postNewSentence(task: dependencyUpdateJob, intent: Intent, tempSentence: TempSentence) {
@@ -207,19 +213,39 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       .subscribe(
         (intent) => {
           intentTask.data.intentDefinition.intentId = intent._id;
-          // this.selectedValueLabel = intent.intentLabel();
-
           this.state.addIntent(intent);
-          // this.sentence.classification.intentId = intent._id;
-          // this.onIntentChange();
           this.processIntent(intentTask);
         },
         (error) => {
           console.log(error);
-          // this.sentence.classification.intentId = Intent.unknown;
-          // this.onIntentChange();
         }
       );
+  }
+
+  processAnswer(answerTask: dependencyUpdateJob) {
+    if (!answerTask.data.tickActionDefinition.answerId) {
+      return this.postNewAnswer(answerTask);
+    }
+
+    answerTask.done = true;
+    this.processDependencies();
+  }
+
+  postNewAnswer(answerTask: dependencyUpdateJob) {
+    let request = new CreateI18nLabelRequest(
+      'scenario',
+      answerTask.data.tickActionDefinition.answer,
+      this.state.currentLocale
+    );
+    this.botService.createI18nLabel(request).subscribe(
+      (answer) => {
+        answerTask.data.tickActionDefinition.answerId = answer._id;
+        this.processAnswer(answerTask);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 
   getScenarioIntents(): scenarioItem[] {
