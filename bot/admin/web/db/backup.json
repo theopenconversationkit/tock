@@ -1596,6 +1596,15 @@
                   "classification": {
                     "entities": [
                       {
+                        "type": "app:newwwwwwwwwww",
+                        "role": "newwwwwwwwwww",
+                        "start": 4,
+                        "end": 10,
+                        "entityColor": "#6b764c",
+                        "qualifiedRole": "newwwwwwwwwww",
+                        "subEntities": []
+                      },
+                      {
                         "type": "app:couleur",
                         "role": "couleur",
                         "start": 16,
@@ -1637,6 +1646,15 @@
                   "state": "",
                   "classification": {
                     "entities": [
+                      {
+                        "type": "app:century",
+                        "role": "century",
+                        "start": 0,
+                        "end": 15,
+                        "entityColor": "#c1fbe1",
+                        "qualifiedRole": "century",
+                        "subEntities": []
+                      },
                       {
                         "type": "app:newwwwwwwwwwwother",
                         "role": "newwwwwwwwwwwother",

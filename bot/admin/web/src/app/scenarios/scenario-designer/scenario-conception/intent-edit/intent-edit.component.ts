@@ -84,6 +84,31 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.collectAllEntities();
   }
 
+  sentenceModified(data) {
+    const originalSentenceClone = JSON.parse(JSON.stringify(data.sentence));
+    const app = this.state.currentApplication;
+    const language = this.state.currentLocale;
+    let sentenceCopy = new TempSentence(
+      app.namespace,
+      app.name,
+      language,
+      originalSentenceClone.text,
+      false,
+      ''
+    );
+
+    originalSentenceClone.classification.entities.forEach((e) => {
+      sentenceCopy.classification.entities.push(e);
+    });
+    sentenceCopy.classification.entities.push(data.tempEntity);
+    sentenceCopy.classification.entities.sort((e1, e2) => e1.start - e2.start);
+    this.sentences.push(new FormControl(sentenceCopy));
+  }
+
+  isSentenceModified(sentence) {
+    return this.sentences.value.find((s) => s.query === sentence.text);
+  }
+
   form: FormGroup = new FormGroup({
     sentences: new FormArray([]),
     contextsEntities: new FormArray([]),
@@ -112,7 +137,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     if (eventTarget.value.trim()) {
       const app = this.state.currentApplication;
       const language = this.state.currentLocale;
-      const MySentence = new TempSentence(
+      const newSentence = new TempSentence(
         app.namespace,
         app.name,
         language,
@@ -120,7 +145,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
         false,
         ''
       );
-      this.sentences.push(new FormControl(MySentence));
+      this.sentences.push(new FormControl(newSentence));
       eventTarget.value = '';
     }
   }

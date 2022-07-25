@@ -45,6 +45,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   @Input() allEntities: [];
   @Output() componentActivated = new EventEmitter();
   @Output() entityAdded = new EventEmitter();
+  @Output() storeModifiedSentence = new EventEmitter();
 
   @ViewChildren(NbContextMenuDirective) tokensButtons: QueryList<NbContextMenuDirective>;
 
@@ -334,22 +335,22 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
           }
         }
         if (this.txtSelectionStart < this.txtSelectionEnd) {
-          if (this.sentence instanceof Sentence) {
-            // TO DO
-            alert('TO DO : handle add of entity to real sentence');
-          } else {
-            this.sentence.classification.entities.push({
-              type: entity.entityTypeName,
-              role: entity.role,
-              start: this.txtSelectionStart,
-              end: this.txtSelectionEnd,
-              entityColor: entity.entityColor,
-              qualifiedRole: qualifiedRole(entity.entityTypeName, entity.role),
-              subEntities: []
-            });
-          }
+          const tempEntity = {
+            type: entity.entityTypeName,
+            role: entity.role,
+            start: this.txtSelectionStart,
+            end: this.txtSelectionEnd,
+            entityColor: entity.entityColor,
+            qualifiedRole: qualifiedRole(entity.entityTypeName, entity.role),
+            subEntities: []
+          };
 
-          this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
+          if (this.sentence instanceof Sentence) {
+            this.storeModifiedSentence.emit({ sentence: this.sentence, tempEntity: tempEntity });
+          } else {
+            this.sentence.classification.entities.push(tempEntity);
+            this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
+          }
         }
         this.initTokens();
       }

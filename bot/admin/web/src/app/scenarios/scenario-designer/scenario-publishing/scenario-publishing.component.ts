@@ -116,16 +116,12 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   }
 
   processIntent(intentTask: dependencyUpdateJob) {
-    if (
-      !intentTask.data.intentDefinition.intentId ||
-      !this.state.findIntentById(intentTask.data.intentDefinition.intentId)
-    ) {
-      return this.postNewIntent(intentTask);
-    }
+    const intentDefinition = intentTask.data.intentDefinition;
 
-    if (intentTask.data.intentDefinition.sentences?.length) {
-      if (intentTask.data.intentDefinition.sentences[0].classification.entities.length) {
-        const entities = intentTask.data.intentDefinition.sentences[0].classification.entities;
+    // Creation of non-existent entities
+    if (intentDefinition.sentences?.length) {
+      if (intentDefinition.sentences[0].classification.entities.length) {
+        const entities = intentDefinition.sentences[0].classification.entities;
         for (let index = 0; index < entities.length; index++) {
           let entity = entities[index];
           const existingEntityType = this.state.findEntityTypeByName(entity.type);
@@ -134,13 +130,25 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
           }
         }
       }
+    }
 
-      const intent: Intent = this.state.findIntentById(intentTask.data.intentDefinition.intentId);
-      return this.postNewSentence(
-        intentTask,
-        intent,
-        intentTask.data.intentDefinition.sentences[0]
-      );
+    // Creation of non-existent intents
+    if (!intentDefinition.intentId || !this.state.findIntentById(intentDefinition.intentId)) {
+      // List of all sentences entities
+      let intentEntities = [];
+      intentDefinition.sentences.forEach((stnce) => {
+        stnce.classification.entities.forEach((entt) => {
+          intentEntities.push(entt);
+        });
+      });
+
+      return this.postNewIntent(intentTask, intentEntities);
+    }
+
+    // Creation of non-existent or modified sentences
+    if (intentDefinition.sentences?.length) {
+      const intent: Intent = this.state.findIntentById(intentDefinition.intentId);
+      return this.postNewSentence(intentTask, intent, intentDefinition.sentences[0]);
     }
 
     intentTask.done = true;
@@ -148,12 +156,10 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   }
 
   postNewEntity(task, tempEntity) {
-    console.log(tempEntity);
-
     this.nlp.createEntityType(tempEntity.type).subscribe(
       (e) => {
         if (e) {
-          const entity = new EntityDefinition(e.name, tempEntity.role);
+          // update of application entities
           const entities = this.state.entityTypes.getValue().slice(0);
           entities.push(e);
           this.state.entityTypes.next(entities);
@@ -194,13 +200,23 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postNewIntent(intentTask) {
+  postNewIntent(intentTask, intentEntities) {
+    let entities = [];
+    intentEntities.forEach((ie) => {
+      entities.push({
+        entityColor: ie.entityColor,
+        entityTypeName: ie.type,
+        qualifiedRole: ie.qualifiedRole,
+        role: ie.role
+      });
+    });
+
     this.nlp
       .saveIntent(
         new Intent(
           intentTask.data.intentDefinition.name,
           this.state.user.organization,
-          [],
+          entities,
           [this.state.currentApplication._id],
           [],
           [],
