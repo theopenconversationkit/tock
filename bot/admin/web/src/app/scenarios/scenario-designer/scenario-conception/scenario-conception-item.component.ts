@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { SearchQuery } from 'src/app/model/nlp';
+import { Intent, SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import {
   scenarioItem,
@@ -72,6 +72,33 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     this.itemCard.nativeElement.addEventListener('mousedown', function (event) {
       event.stopPropagation();
     });
+  }
+
+  collectIntentUtterances() {
+    const existingIntent: Intent = this.state.findIntentById(this.item.intentDefinition.intentId);
+    if (!existingIntent) {
+      // It seems that the associated intention has been removed !
+      console.log(
+        'THE ASSOCIATED INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
+          this.item.intentDefinition.intentId
+      );
+      delete this.item.intentDefinition.intentId;
+      this.utterancesLoading = false;
+    } else {
+      const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
+        intentId: this.item.intentDefinition.intentId
+      });
+
+      const nlpSubscription = this.nlp
+        .searchSentences(searchQuery)
+        .subscribe((sentencesResearch) => {
+          this.item.intentDefinition._sentences = sentencesResearch.rows;
+          this.utterancesLoading = false;
+          nlpSubscription.unsubscribe();
+
+          // if (this.item.id === 0) this.manageIntent();
+        });
+    }
   }
 
   manageAction() {
@@ -153,20 +180,6 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     };
     this.utterancesLoading = true;
     this.collectIntentUtterances();
-  }
-
-  collectIntentUtterances() {
-    const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
-      intentId: this.item.intentDefinition.intentId
-    });
-
-    const nlpSubscription = this.nlp.searchSentences(searchQuery).subscribe((sentencesResearch) => {
-      this.item.intentDefinition._sentences = sentencesResearch.rows;
-      this.utterancesLoading = false;
-      nlpSubscription.unsubscribe();
-
-      // if (this.item.id === 0) this.manageIntent();
-    });
   }
 
   createIntent(): void {

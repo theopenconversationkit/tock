@@ -21,6 +21,8 @@ Scenario designer :
 
         Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
 
+        Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
+
         WRITING : 
 
                 Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
