@@ -108,8 +108,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
           this.scenarioDesignerService
             .saveScenario(this.scenario.id, this.scenario)
             .subscribe((data) => {
-              // // Finally, reload the app to update the application intents and other dependencies modifications
-              // this.state.resetConfiguration();
+              console.log(data);
             });
         }
       }

@@ -38,12 +38,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   @ViewChildren(SentenceEditComponent) sentencesComponents: QueryList<SentenceEditComponent>;
   @ViewChild('addSentenceInput') addSentenceInput: ElementRef;
 
-  constructor(
-    public dialogRef: NbDialogRef<IntentEditComponent>,
-    protected state: StateService,
-    private nbMenuService: NbMenuService,
-    private dialogService: DialogService
-  ) {}
+  constructor(public dialogRef: NbDialogRef<IntentEditComponent>, protected state: StateService) {}
 
   _sentences: Sentence[] = [];
 
@@ -92,7 +87,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   form: FormGroup = new FormGroup({
     sentences: new FormArray([]),
     contextsEntities: new FormArray([]),
-    primary: new FormControl({ value: false, disabled: false })
+    primary: new FormControl(false)
   });
 
   get sentences(): FormArray {
@@ -181,7 +176,8 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    this.saveModifications.emit(this.form.value);
+    // here we use getRawValue because we need the value of the potentially disabled primary field
+    this.saveModifications.emit(this.form.getRawValue());
   }
 
   cancel(): void {

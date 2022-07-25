@@ -97,17 +97,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.scenario.data.mode = mode;
   }
 
-  // stringifiedCleanScenario(): string {
-  //   return JSON.stringify(this.scenario, function (key, value) {
-  //     if (key.indexOf('_') == 0) return undefined;
-  //     return value;
-  //   });
-  // }
-
-  // getCleanScenario(): Scenario {
-  //   return JSON.parse(this.stringifiedCleanScenario());
-  // }
-
   save(exit: boolean = false, silent: boolean = false): void {
     this.scenarioDesignerService.saveScenario(this.scenarioId, this.scenario).subscribe((data) => {
       if (!silent) {
@@ -119,16 +108,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
       if (exit) this.exit();
     });
-    // this.scenarioService.putScenario(this.scenarioId, this.getCleanScenario()).subscribe((data) => {
-    //   if (!silent) {
-    //     this.toastrService.success(`Scenario successfully saved`, 'Success', {
-    //       duration: 5000,
-    //       status: 'success'
-    //     });
-    //   }
-    //   this.scenarioBackup = JSON.stringify(data);
-    //   if (exit) this.exit();
-    // });
   }
 
   updateScenarioBackup(scenario) {

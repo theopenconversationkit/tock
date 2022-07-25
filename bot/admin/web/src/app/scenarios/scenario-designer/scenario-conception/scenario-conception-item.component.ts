@@ -176,7 +176,8 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       name: intentDef.name,
       category: intentDef.category,
       description: intentDef.description,
-      intentId: intentDef._id
+      intentId: intentDef._id,
+      primary: this.item.main
     };
     this.utterancesLoading = true;
     this.collectIntentUtterances();
@@ -191,6 +192,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const createIntentEvent = modal.componentRef.instance.createIntentEvent
       .pipe(takeUntil(this.destroy))
       .subscribe((res) => {
+        if (this.item.main) res.primary = true;
         this.item.intentDefinition = res;
         this.editIntent();
         createIntentEvent.unsubscribe();
