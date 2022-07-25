@@ -49,6 +49,9 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form.patchValue({ primary: this.item.intentDefinition.primary });
+    if (this.item.main) {
+      this.form.get('primary').disable();
+    }
 
     if (this.item.intentDefinition?.sentences?.length) {
       this.item.intentDefinition?.sentences.forEach((sentence) => {
@@ -89,7 +92,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   form: FormGroup = new FormGroup({
     sentences: new FormArray([]),
     contextsEntities: new FormArray([]),
-    primary: new FormControl(false)
+    primary: new FormControl({ value: false, disabled: false })
   });
 
   get sentences(): FormArray {
