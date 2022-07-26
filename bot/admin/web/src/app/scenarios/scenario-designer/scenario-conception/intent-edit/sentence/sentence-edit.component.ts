@@ -42,6 +42,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   @Input() sentence: SentenceExtended | TempSentenceExtended;
   @Input() contexts: TickContext[];
   @Input() contextsEntities: FormArray;
+
   @Input() allEntities: [];
   @Output() componentActivated = new EventEmitter();
   @Output() entityAdded = new EventEmitter();
@@ -63,11 +64,11 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     this.initTokens();
   }
 
-  setActive() {
+  setActive(): void {
     this.componentActivated.emit(this);
   }
 
-  outsideClick() {
+  outsideClick(): void {
     this.txtSelection = false;
     this.hideTokenMenu();
   }
@@ -75,11 +76,11 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   overlayRef: OverlayRef | null;
   @ViewChild('userMenu') userMenu: TemplateRef<any>;
 
-  hideTokenMenu() {
+  hideTokenMenu(): void {
     if (this.overlayRef) this.overlayRef.detach();
   }
 
-  displayTokenMenu(event, token) {
+  displayTokenMenu(event, token): void {
     event.stopPropagation();
     this.hideTokenMenu();
     if (!token.entity) return;
@@ -156,7 +157,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     this.hideTokenMenu();
   }
 
-  dissociateContextFromEntity(token) {
+  dissociateContextFromEntity(token): void {
     let index = this.getContextIndexOfEntity(token);
     let context = JSON.parse(JSON.stringify(this.getContextOfEntity(token)));
     delete context.entityType;
@@ -165,7 +166,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     this.hideTokenMenu();
   }
 
-  getContextIndexOfEntity(token) {
+  getContextIndexOfEntity(token): number {
     return this.contextsEntities.value.findIndex((ctx) => {
       return (
         token.entity?.type &&
@@ -174,7 +175,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
       );
     });
   }
-  getContextOfEntity(token) {
+  getContextOfEntity(token): TickContext {
     return this.contextsEntities.value.find((ctx) => {
       return (
         token.entity?.type &&
@@ -184,7 +185,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  getTokenTooltip(token) {
+  getTokenTooltip(token): string {
     if (!token.entity) return 'Select a part of this sentence to associate an entity';
     const entity = new EntityDefinition(token.entity.type, token.entity.role);
     const ctx = this.getContextOfEntity(token);
@@ -196,7 +197,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     return `Entity "${entity.qualifiedName(this.state.user)}" (click to edit)`;
   }
 
-  initTokens() {
+  initTokens(): void {
     let i = 0;
     let entityIndex = 0;
     let text;
@@ -241,9 +242,9 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
     const windowsSelection = window.getSelection();
     if (windowsSelection.rangeCount > 0) {
-      const selection = windowsSelection.getRangeAt(0);
-      let start = selection.startOffset;
-      let end = selection.endOffset;
+      const selection: Range = windowsSelection.getRangeAt(0);
+      let start: number = selection.startOffset;
+      let end: number = selection.endOffset;
 
       if (selection.startContainer !== selection.endContainer) {
         if (!selection.startContainer.childNodes[0]) {
@@ -261,14 +262,14 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
         return;
       }
 
-      const span = selection.startContainer.parentElement;
+      const span: HTMLElement = selection.startContainer.parentElement;
       this.txtSelectionStart = -1;
       this.txtSelectionEnd = -1;
       this.findSelected(span.parentNode, new SelectedResult(span, start, end));
     }
   }
 
-  private findSelected(node, result) {
+  private findSelected(node, result): void {
     if (this.txtSelectionStart == -1) {
       if (node.nodeType === Node.TEXT_NODE) {
         const content = node.textContent;
@@ -289,10 +290,19 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  removeEntityFromSentence(token) {
+  removeEntityFromSentence(token): void {
     if (this.sentence instanceof Sentence) {
-      // TO DO
-      alert('TO DO : handle removal of entity on real sentence');
+      const entitiesCopy = JSON.parse(JSON.stringify(this.sentence.classification.entities)).filter(
+        (e) => {
+          return !(
+            token.entity.type === e.type &&
+            token.entity.role === e.role &&
+            token.start === e.start &&
+            token.end === e.end
+          );
+        }
+      );
+      this.storeModifiedSentence.emit({ sentence: this.sentence, entities: entitiesCopy });
     } else {
       this.sentence.classification.entities = this.sentence.classification.entities.filter((e) => {
         return !(
@@ -307,7 +317,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  addEntityToSentence(entity: EntityDefinition) {
+  addEntityToSentence(entity: EntityDefinition): void {
     if (this.txtSelectionStart < this.txtSelectionEnd) {
       this.txtSelection = false;
 
@@ -346,7 +356,10 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
           };
 
           if (this.sentence instanceof Sentence) {
-            this.storeModifiedSentence.emit({ sentence: this.sentence, tempEntity: tempEntity });
+            let entitiesCopy = JSON.parse(JSON.stringify(this.sentence.classification.entities));
+            entitiesCopy.push(tempEntity);
+            entitiesCopy.sort((e1, e2) => e1.start - e2.start);
+            this.storeModifiedSentence.emit({ sentence: this.sentence, entities: entitiesCopy });
           } else {
             this.sentence.classification.entities.push(tempEntity);
             this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
@@ -359,11 +372,11 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  getEntityTooltip(entity: EntityDefinition) {
+  getEntityTooltip(entity: EntityDefinition): string {
     return `Assign the entity "${entity.qualifiedName(this.state.user)}" to the selected text`;
   }
 
-  callEntitiesModal(event: MouseEvent) {
+  callEntitiesModal(event: MouseEvent): void {
     event.stopPropagation();
     const modal = this.dialogService.openDialog(CreateEntityDialogComponent, {
       context: {}
@@ -375,40 +388,6 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
         this.entityAdded.emit();
       }
     });
-    // const dialogRef = this.dialogService.open(CreateEntityDialogComponent, {
-    //   context: {
-    //     entityProvider: this.entityProvider
-    //   }
-    // });
-    // dialogRef.onClose.subscribe((result) => {
-    //   if (result && result !== 'cancel') {
-    //     const name = result.name;
-    //     const role = result.role;
-    //     const existingEntityType = this.state.findEntityTypeByName(name);
-    //     if (existingEntityType) {
-    //       const entity = new EntityDefinition(name, role);
-    //       const result = this.entityProvider.addEntity(entity, this);
-    //       if (result) {
-    //         this.dialog.notify(result);
-    //       }
-    //     } else {
-    //       this.nlp.createEntityType(name).subscribe((e) => {
-    //         if (e) {
-    //           const entity = new EntityDefinition(e.name, role);
-    //           const entities = this.state.entityTypes.getValue().slice(0);
-    //           entities.push(e);
-    //           this.state.entityTypes.next(entities);
-    //           const result = this.entityProvider.addEntity(entity, this);
-    //           if (result) {
-    //             this.dialog.notify(result);
-    //           }
-    //         } else {
-    //           this.dialog.notify(`Error when creating Entity Type ${name}`);
-    //         }
-    //       });
-    //     }
-    //   }
-    // });
   }
 
   ngOnDestroy(): void {

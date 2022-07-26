@@ -84,24 +84,18 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.collectAllEntities();
   }
 
-  sentenceModified(data) {
-    const originalSentenceClone = JSON.parse(JSON.stringify(data.sentence));
+  storeModifiedSentence(data) {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
     let sentenceCopy = new TempSentence(
       app.namespace,
       app.name,
       language,
-      originalSentenceClone.text,
+      data.sentence.text,
       false,
       ''
     );
-
-    originalSentenceClone.classification.entities.forEach((e) => {
-      sentenceCopy.classification.entities.push(e);
-    });
-    sentenceCopy.classification.entities.push(data.tempEntity);
-    sentenceCopy.classification.entities.sort((e1, e2) => e1.start - e2.start);
+    sentenceCopy.classification.entities = data.entities;
     this.sentences.push(new FormControl(sentenceCopy));
   }
 
