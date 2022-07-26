@@ -70,7 +70,7 @@ class ScenarioServiceImpl : ScenarioService {
 
     private fun Scenario.prepareForCreate(): Scenario {
         return this
-            .cloneWithOverrideDates(ZonedDateTime.now(), null)
+            .cloneWithOverridenDates(ZonedDateTime.now(), null)
             .checkToCreate()
     }
 
@@ -94,7 +94,7 @@ class ScenarioServiceImpl : ScenarioService {
         val scenarioInDatabase: Scenario? = scenarioDAO.findById(scenarioId)
         return this
             .mustExist(scenarioInDatabase)
-            .cloneWithOverrideDates(scenarioInDatabase?.createDate, ZonedDateTime.now())
+            .cloneWithOverridenDates(scenarioInDatabase?.createDate, ZonedDateTime.now())
             .checkToUpdate(scenarioId)
     }
 

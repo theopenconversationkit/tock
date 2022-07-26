@@ -153,7 +153,7 @@ class ScenarioServiceImplTest {
     @Test
     fun `create WHEN dao create return invalid scenario THEN throw InternalServerException`() {
         //GIVEN
-        val scenarioRequest: Scenario = createScenarioForId(null, null, )
+        val scenarioRequest: Scenario = createScenarioForId(null, null)
         val scenarioCreated: Scenario = createScenarioForId(null, dateNow)
         every { scenarioDAO.create(scenarioCreated) } returns scenarioCreated
 
@@ -164,7 +164,7 @@ class ScenarioServiceImplTest {
     @Test
     fun `create WHEN dao create return null THEN throw InternalServerException`() {
         //GIVEN
-        val scenarioRequest: Scenario = createScenarioForId(null, null, )
+        val scenarioRequest: Scenario = createScenarioForId(null, null)
         val scenarioCreated: Scenario = createScenarioForId(null, dateNow)
         every { scenarioDAO.create(scenarioCreated) } returns null
 
@@ -178,7 +178,7 @@ class ScenarioServiceImplTest {
 
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(id)
-        every { scenarioDAO.create(scenarioRequest) } throws TockIllegalArgumentException("test_illegale_argument")
+        every { scenarioDAO.create(scenarioRequest) } throws TockIllegalArgumentException("test_illegal_argument")
 
         //WHEN //THEN
         assertThrows<ConflictException> { scenarioService.create(scenarioRequest) }
@@ -241,7 +241,7 @@ class ScenarioServiceImplTest {
     }
 
     @Test
-    fun `update WHEN dao update throw exception THEN throw TockIllegaleArgumentException`() {
+    fun `update WHEN dao update throw exception THEN throw TockIllegalArgumentException`() {
         val id: String = ID1
 
         //GIVEN
@@ -249,7 +249,7 @@ class ScenarioServiceImplTest {
         val scenarioFind: Scenario = createScenarioForId(id, datePrevious)
         val scenarioUpdated: Scenario = createScenarioForId(id, datePrevious, dateNow)
         every { scenarioDAO.findById(id) } returns scenarioFind
-        every { scenarioDAO.update(scenarioUpdated) } throws TockIllegalArgumentException("test_illegale_argument")
+        every { scenarioDAO.update(scenarioUpdated) } throws TockIllegalArgumentException("test_illegal_argument")
 
         //WHEN //THEN
         assertThrows<TockIllegalArgumentException> { scenarioService.update(id, scenarioRequest) }

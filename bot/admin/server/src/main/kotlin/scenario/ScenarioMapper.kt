@@ -63,7 +63,7 @@ val mapToScenarioResult: Scenario.() -> ScenarioResult = {
 /**
  * Create a new scenario form this, with dates passed in parameters
  */
-val cloneWithOverrideDates: Scenario.(ZonedDateTime?, ZonedDateTime?) -> Scenario = { createDate, updateDate ->
+val cloneWithOverridenDates: Scenario.(ZonedDateTime?, ZonedDateTime?) -> Scenario = { createDate, updateDate ->
     Scenario(
         id = this.id,
         name = this.name,
