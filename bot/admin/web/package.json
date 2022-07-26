@@ -5,7 +5,6 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "server": "node db/server.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -82,7 +81,6 @@
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
-    "json-server": "^0.17.0",
     "karma": "~6.1.1",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage-istanbul-reporter": "~3.0.2",
