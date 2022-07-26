@@ -95,8 +95,8 @@ class ScenarioDAOTest : AbstractTest() {
         val scenarioCreated = ScenarioMongoDAO.create(scenario)
 
         //THEN
-        assertTrue(scenarioCreated.id != null)
-        assertNotNull(ScenarioMongoDAO.findById(scenarioCreated.id.toString()))
+        assertTrue(scenarioCreated?.id != null)
+        assertNotNull(ScenarioMongoDAO.findById(scenarioCreated?.id.toString()))
     }
 
     @Test
@@ -117,7 +117,7 @@ class ScenarioDAOTest : AbstractTest() {
         val scenarioCreated = ScenarioMongoDAO.update(scenario)
 
         //THEN
-        assertEquals(ID1, scenarioCreated.id)
+        assertEquals(ID1, scenarioCreated?.id)
         assertNotNull(ScenarioMongoDAO.findById(ID1))
     }
 

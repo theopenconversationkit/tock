@@ -20,10 +20,13 @@ import ai.tock.bot.admin.scenario.ScenarioDAO
 import ai.tock.bot.mongo.ScenarioCol_.Companion.Name
 import ai.tock.shared.exception.TockIllegalArgumentException
 import ai.tock.shared.exception.TockNotFound
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.mongodb.client.result.DeleteResult
 import org.litote.kmongo.*
 
 internal object ScenarioMongoDAO : ScenarioDAO {
+
+    private val objectMapper = ObjectMapper()
 
     internal val scenarioDatabase =
         MongoBotConfiguration.database.getCollection<ScenarioCol>("scenario")
@@ -51,11 +54,11 @@ internal object ScenarioMongoDAO : ScenarioDAO {
      * @property scenario to create.
      * @throws TockIllegalArgumentException when scenario have id.
      */
-    override fun create(scenario: Scenario): Scenario {
+    override fun create(scenario: Scenario): Scenario? {
         if(isIdPresent(scenario)) {
             throw TockIllegalArgumentException("scenario musn't have id")
         }
-        return save(scenario.mapToScenarioCol()).mapToScenario()
+        return save(scenario.mapToScenarioCol())?.mapToScenario()
     }
 
     /**
@@ -63,20 +66,20 @@ internal object ScenarioMongoDAO : ScenarioDAO {
      * @property scenario to update.
      * @throws TockIllegalArgumentException when scenario have no id.
      */
-    override fun update(scenario: Scenario): Scenario {
+    override fun update(scenario: Scenario): Scenario? {
         if(!isIdPresent(scenario)) {
             throw TockIllegalArgumentException("scenario must have id")
         }
-        return save(scenario.mapToScenarioCol()).mapToScenario()
+        return save(scenario.mapToScenarioCol())?.mapToScenario()
     }
 
     private fun isIdPresent(scenario: Scenario): Boolean {
         return scenario.id?.isNotBlank() ?: false
     }
 
-    private fun save(scenario: ScenarioCol): ScenarioCol {
+    private fun save(scenario: ScenarioCol): ScenarioCol? {
         scenarioDatabase.save(scenario)
-        return scenario
+        return scenarioDatabase.findOneById(scenario._id)
     }
 
     /**
@@ -118,4 +121,5 @@ internal object ScenarioMongoDAO : ScenarioDAO {
             data = data,
             state = state )
     }
+
 }

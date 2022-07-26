@@ -46,9 +46,11 @@ val checkToUpdate: Scenario.(String) -> Scenario = { scenarioId ->
  * Check if the Scenario is not null, and return it
  * else throws RestException scenario not found
  */
-val checkIsNotNullForId: Scenario?.(String) -> Scenario = { id ->
+val checkIsNotNullForId: Scenario?.(String?) -> Scenario = { id ->
     if(this == null) {
-        throw NotFoundException("scenario $id not found")
+        //if id not null, add space after id to correctly display id in exception
+        val displayId: String = id?.let { "$id " } ?: ""
+        throw NotFoundException("scenario {$displayId}not found")
     } else {
         this
     }
@@ -56,9 +58,10 @@ val checkIsNotNullForId: Scenario?.(String) -> Scenario = { id ->
 
 /**
  * Throws RestException if scenario does not exist in database
+ * @properties scenario from database (null if does not exist)
  */
-val mustExist: Scenario.(Boolean) -> Scenario = { exist ->
-    if(!exist) {
+val mustExist: Scenario.(Scenario?) -> Scenario = { exist ->
+    if(exist == null) {
         throw NotFoundException("scenario id ${this.id} not found")
     } else {
         this
@@ -70,7 +73,7 @@ val mustExist: Scenario.(Boolean) -> Scenario = { exist ->
  */
 val checkScenarioFromDatabase: Scenario.() -> Scenario = {
     if (this.id == null) {
-        throw InternalServerException("Scenario id from database cannot be null")
+        throw InternalServerException("scenario id from database cannot be null")
     } else {
         this
     }

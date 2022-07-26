@@ -19,13 +19,13 @@ package ai.tock.bot.admin.scenario
 import java.time.ZonedDateTime
 
 data class Scenario(
-    val id: String?,
+    val id: String? = null,
     val name: String,
     val category: String? = null,
     val tags: List<String> = emptyList(),
     val applicationId: String,
-    val createDate: ZonedDateTime? = null,
-    val updateDate: ZonedDateTime? = null,
+    var createDate: ZonedDateTime? = null,
+    var updateDate: ZonedDateTime? = null,
     val description: String? = null,
     val data: String? = null,
     val state: String

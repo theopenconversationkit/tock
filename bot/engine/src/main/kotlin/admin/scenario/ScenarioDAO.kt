@@ -35,13 +35,13 @@ interface ScenarioDAO {
      * Create Scenario and return it.
      * @property scenario to create.
      */
-    fun create(scenario: Scenario): Scenario
+    fun create(scenario: Scenario): Scenario?
 
     /**
      * Update Scenario and return it.
      * @property scenario to update.
      */
-    fun update(scenario: Scenario): Scenario
+    fun update(scenario: Scenario): Scenario?
 
     /**
      * Delete Scenario by id.
