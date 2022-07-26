@@ -17,7 +17,10 @@
 package ai.tock.bot.admin.model.scenario
 
 import java.time.ZonedDateTime
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.JsonNode
 
+@JsonInclude(JsonInclude.Include.ALWAYS)
 data class ScenarioResult(
     val id: String,
     val name: String,
@@ -27,6 +30,6 @@ data class ScenarioResult(
     val createDate: ZonedDateTime? = null,
     val updateDate: ZonedDateTime? = null,
     val description: String? = null,
-    val data: String? = null,
+    val data: JsonNode? = null,
     val state: String
 )

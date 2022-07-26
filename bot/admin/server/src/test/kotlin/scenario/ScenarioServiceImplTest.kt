@@ -26,14 +26,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -42,9 +41,13 @@ class ScenarioServiceImplTest {
     private val ID1 = "id_test_1"
     private val ID2 = "id_test_2"
 
+    private val datePrevious = ZonedDateTime.parse("2021-01-01T00:00:00+01:00")
+    private val dateNow = ZonedDateTime.parse("2022-01-01T00:00:00+01:00")
+
     val scenarioService = ScenarioServiceImpl()
 
     companion object {
+
         val scenarioDAO: ScenarioDAO = mockk(relaxed = true)
 
         init {
@@ -58,6 +61,13 @@ class ScenarioServiceImplTest {
                 }
             )
         }
+    }
+
+
+    @BeforeEach
+    fun prepareMockk() {
+        mockkStatic(ZonedDateTime::class)
+        every { ZonedDateTime.now() } returns dateNow
     }
 
     @AfterEach
@@ -95,10 +105,10 @@ class ScenarioServiceImplTest {
         every { scenarioDAO.findById(id) } returns createScenarioForId(id)
 
         //WHEN
-        val scenariosFind =  scenarioService.findById(id)
+        val scenarioFind = scenarioService.findById(id)
 
         //THEN
-        assertEquals(createScenarioForId(id), scenariosFind)
+        assertEquals(createScenarioForId(id), scenarioFind)
     }
 
     @Test
@@ -128,25 +138,38 @@ class ScenarioServiceImplTest {
         val id: String = ID1
 
         //GIVEN
-        val scenarioRequest: Scenario = createScenarioForId(null)
-        val scenarioCreated: Scenario = createScenarioForId(id)
-        every { scenarioDAO.create(scenarioRequest) } returns scenarioCreated
+        val scenarioRequest: Scenario = createScenarioForId(null, null)
+        val scenarioToCreate: Scenario = createScenarioForId(null, dateNow)
+        val scenarioCreated: Scenario = createScenarioForId(id, dateNow)
+        every { scenarioDAO.create(scenarioToCreate) } returns scenarioCreated
 
         //WHEN
-        val scenariosCreated =  scenarioService.create(scenarioRequest)
+        val scenario =  scenarioService.create(scenarioRequest)
 
         //THEN
-        assertEquals(createScenarioForId(id), scenariosCreated)
+        assertEquals(createScenarioForId(id, dateNow), scenario)
     }
 
     @Test
     fun `create WHEN dao create return invalid scenario THEN throw InternalServerException`() {
         //GIVEN
-        val scenario: Scenario = createScenarioForId(null)
-        every { scenarioDAO.create(scenario) } returns scenario
+        val scenarioRequest: Scenario = createScenarioForId(null, null)
+        val scenarioCreated: Scenario = createScenarioForId(null, dateNow)
+        every { scenarioDAO.create(scenarioCreated) } returns scenarioCreated
 
         //WHEN //THEN
-        assertThrows<InternalServerException> { scenarioService.create(scenario) }
+        assertThrows<InternalServerException> { scenarioService.create(scenarioRequest) }
+    }
+
+    @Test
+    fun `create WHEN dao create return null THEN throw InternalServerException`() {
+        //GIVEN
+        val scenarioRequest: Scenario = createScenarioForId(null, null)
+        val scenarioCreated: Scenario = createScenarioForId(null, dateNow)
+        every { scenarioDAO.create(scenarioCreated) } returns null
+
+        //WHEN //THEN
+        assertThrows<NotFoundException> { scenarioService.create(scenarioRequest) }
     }
 
     @Test
@@ -155,7 +178,7 @@ class ScenarioServiceImplTest {
 
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(id)
-        every { scenarioDAO.create(scenarioRequest) } throws TockIllegalArgumentException("test_illegale_argument")
+        every { scenarioDAO.create(scenarioRequest) } throws TockIllegalArgumentException("test_illegal_argument")
 
         //WHEN //THEN
         assertThrows<ConflictException> { scenarioService.create(scenarioRequest) }
@@ -166,24 +189,25 @@ class ScenarioServiceImplTest {
         val id: String = ID1
 
         //GIVEN
-        val scenario: Scenario = createScenarioForId(id)
-        every { scenarioDAO.findById(id) } returns scenario
-        every { scenarioDAO.update(scenario) } returns scenario
+        val scenarioRequest: Scenario = createScenarioForId(id)
+        val scenarioFind: Scenario = createScenarioForId(id, datePrevious, null)
+        val scenarioUpdated: Scenario = createScenarioForId(id, datePrevious, dateNow)
+        every { scenarioDAO.findById(id) } returns scenarioFind
+        every { scenarioDAO.update(scenarioUpdated) } returns scenarioUpdated
 
         //WHEN
-        val scenariosCreated =  scenarioService.update(id, scenario)
+        val scenario =  scenarioService.update(id, scenarioRequest)
 
         //THEN
-        assertEquals(scenario, scenariosCreated)
+        assertEquals(createScenarioForId(id, datePrevious, dateNow), scenario)
     }
 
     @Test
     fun `update GIVEN scenario with id different than id on url THEN throw InternalServerException`() {
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(ID1)
-        val scenarioToUpdate: Scenario = createScenarioForId(ID2)
-        every { scenarioDAO.findById(ID2) } returns scenarioToUpdate
-        every { scenarioDAO.update(scenarioToUpdate) } returns scenarioToUpdate
+        val scenarioFind: Scenario = createScenarioForId(ID2)
+        every { scenarioDAO.findById(ID2) } returns scenarioFind
 
         //WHEN //THEN
         assertThrows<ConflictException> { scenarioService.update(ID2, scenarioRequest) }
@@ -193,22 +217,39 @@ class ScenarioServiceImplTest {
     fun `update WHEN dao update return invalid scenario THEN throw InternalServerException`() {
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(ID1)
-        val scenarioCreated: Scenario = createScenarioForId(null)
-        every { scenarioDAO.findById(ID1) } returns scenarioRequest
-        every { scenarioDAO.update(scenarioRequest) } returns scenarioCreated
+        val scenarioFind: Scenario = createScenarioForId(ID1, datePrevious)
+        val scenarioToUpdate: Scenario = createScenarioForId(ID1, datePrevious, dateNow)
+        val scenarioUpdated: Scenario = createScenarioForId(null, datePrevious, dateNow)
+        every { scenarioDAO.findById(ID1) } returns scenarioFind
+        every { scenarioDAO.update(scenarioToUpdate) } returns scenarioUpdated
 
         //WHEN //THEN
         assertThrows<InternalServerException> { scenarioService.update(ID1, scenarioRequest) }
     }
 
     @Test
-    fun `update WHEN dao update throw exception THEN throw TockIllegaleArgumentException`() {
+    fun `update WHEN dao update return null THEN throw NotFoundException`() {
+        //GIVEN
+        val scenarioRequest: Scenario = createScenarioForId(ID1)
+        val scenarioFind: Scenario = createScenarioForId(ID1, datePrevious)
+        val scenarioToUpdate: Scenario = createScenarioForId(ID1, datePrevious, dateNow)
+        every { scenarioDAO.findById(ID1) } returns scenarioFind
+        every { scenarioDAO.update(scenarioToUpdate) } returns null
+
+        //WHEN //THEN
+        assertThrows<NotFoundException> { scenarioService.update(ID1, scenarioRequest) }
+    }
+
+    @Test
+    fun `update WHEN dao update throw exception THEN throw TockIllegalArgumentException`() {
         val id: String = ID1
 
         //GIVEN
         val scenarioRequest: Scenario = createScenarioForId(id)
-        every { scenarioDAO.findById(id) } returns scenarioRequest
-        every { scenarioDAO.update(scenarioRequest) } throws TockIllegalArgumentException("test_illegale_argument")
+        val scenarioFind: Scenario = createScenarioForId(id, datePrevious)
+        val scenarioUpdated: Scenario = createScenarioForId(id, datePrevious, dateNow)
+        every { scenarioDAO.findById(id) } returns scenarioFind
+        every { scenarioDAO.update(scenarioUpdated) } throws TockIllegalArgumentException("test_illegal_argument")
 
         //WHEN //THEN
         assertThrows<TockIllegalArgumentException> { scenarioService.update(id, scenarioRequest) }
@@ -250,7 +291,15 @@ class ScenarioServiceImplTest {
         verify(exactly = 1) { scenarioDAO.delete(any()) }
     }
 
-    private fun createScenarioForId(id: String?): Scenario {
-        return Scenario(id = id, name = "test", applicationId = "test", state = "test")
+    private fun createScenarioForId(id: String?,
+                                    createDate: ZonedDateTime? = null,
+                                    updateDate: ZonedDateTime? = null): Scenario {
+        return Scenario(
+            id = id,
+            name = "test",
+            applicationId = "test",
+            createDate = createDate,
+            updateDate = updateDate,
+            state = "test")
     }
 }

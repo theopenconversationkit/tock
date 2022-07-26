@@ -24,6 +24,7 @@ import ai.tock.shared.exception.rest.NotFoundException
 import com.github.salomonbrys.kodein.instance
 import mu.KLogger
 import mu.KotlinLogging
+import java.time.ZonedDateTime
 
 /**
  * Implementation of ScenarioService
@@ -61,9 +62,16 @@ class ScenarioServiceImpl : ScenarioService {
      * @throws InternalServerException when scenario created is invalid
      */
     override fun create(scenario: Scenario): Scenario {
-        scenario.checkToCreate()
-        return scenarioDAO.create(scenario)
+        val scenarioToCreate: Scenario = scenario.prepareForCreate()
+        return scenarioDAO.create(scenarioToCreate)
+            .checkIsNotNullForId(scenario.id)
             .checkScenarioFromDatabase()
+    }
+
+    private fun Scenario.prepareForCreate(): Scenario {
+        return this
+            .cloneWithOverridenDates(ZonedDateTime.now(), null)
+            .checkToCreate()
     }
 
     /**
@@ -76,13 +84,18 @@ class ScenarioServiceImpl : ScenarioService {
      * @throws InternalServerException when scenario updated is invalid
      */
     override fun update(scenarioId: String, scenario: Scenario): Scenario {
-        scenario.mustExist(exist(scenarioId)).checkToUpdate(scenarioId)
-        return scenarioDAO.update(scenario)
-             .checkScenarioFromDatabase()
+        val scenarioToUpdate: Scenario = scenario.prepareForUpdate(scenarioId)
+        return scenarioDAO.update(scenarioToUpdate)
+            .checkIsNotNullForId(scenario.id)
+            .checkScenarioFromDatabase()
     }
 
-    private fun exist(scenarioId: String): Boolean {
-        return scenarioDAO.findById(scenarioId)?.let { true } ?: false
+    private fun Scenario.prepareForUpdate(scenarioId: String): Scenario {
+        val scenarioInDatabase: Scenario? = scenarioDAO.findById(scenarioId)
+        return this
+            .mustExist(scenarioInDatabase)
+            .cloneWithOverridenDates(scenarioInDatabase?.createDate, ZonedDateTime.now())
+            .checkToUpdate(scenarioId)
     }
 
     /**

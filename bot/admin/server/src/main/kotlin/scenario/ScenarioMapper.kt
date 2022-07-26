@@ -19,6 +19,10 @@ package ai.tock.bot.admin.scenario
 import ai.tock.bot.admin.model.scenario.ScenarioRequest
 import ai.tock.bot.admin.model.scenario.ScenarioResult
 import ai.tock.shared.exception.rest.InternalServerException
+import com.fasterxml.jackson.databind.ObjectMapper
+import java.time.ZonedDateTime
+
+val scenarioObjectMapper = ObjectMapper()
 
 /**
  * Map a ScenarioRequest to a Scenario
@@ -33,7 +37,7 @@ val mapToScenario: ScenarioRequest.() -> Scenario = {
         createDate = createDate,
         updateDate = updateDate,
         description = description,
-        data = data,
+        data =  data?.let { scenarioObjectMapper.writeValueAsString(it) },
         state = state
     )
 }
@@ -51,7 +55,25 @@ val mapToScenarioResult: Scenario.() -> ScenarioResult = {
         createDate = createDate,
         updateDate = updateDate,
         description = description,
-        data = data,
+        data = data?.let { scenarioObjectMapper.readTree(it) },
         state = state
+    )
+}
+
+/**
+ * Create a new scenario form this, with dates passed in parameters
+ */
+val cloneWithOverridenDates: Scenario.(ZonedDateTime?, ZonedDateTime?) -> Scenario = { createDate, updateDate ->
+    Scenario(
+        id = this.id,
+        name = this.name,
+        category = this.category,
+        tags = this.tags,
+        applicationId = this.applicationId,
+        createDate = createDate,
+        updateDate = updateDate,
+        description = this.description,
+        data = this.data,
+        state = this.state
     )
 }

@@ -73,19 +73,19 @@ class ScenarioPredicateTest {
     @Test
     fun `GIVEN scenario is not null WHEN mustExist THEN no exception is thrown`() {
         val scenario = createScenarioForId(ID1)
-        assertDoesNotThrow { scenario.mustExist(true) }
+        assertDoesNotThrow { scenario.mustExist(createScenarioForId(ID1)) }
     }
 
     @Test
     fun `GIVEN scenario is null WHEN mustExist THEN exception is thrown`() {
         val scenario = createScenarioForId(ID1)
-        assertThrows<NotFoundException> { scenario.mustExist(false) }
+        assertThrows<NotFoundException> { scenario.mustExist(null) }
     }
 
     @Test
     fun `GIVEN scenario is not null with id null WHEN mustExist THEN exception is thrown`() {
         val scenario = createScenarioForId(null)
-        assertThrows<NotFoundException> { scenario.mustExist(false) }
+        assertThrows<NotFoundException> { scenario.mustExist(null) }
     }
 
     @Test
