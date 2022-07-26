@@ -32,7 +32,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
-  scenarioId: number;
+  scenarioId: string;
   scenario: Scenario;
   scenarioBackup: string;
 
@@ -49,7 +49,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
-      .subscribe((id) => (this.scenarioId = +id));
+      .subscribe((id) => (this.scenarioId = id));
   }
 
   ngOnInit(): void {

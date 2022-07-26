@@ -164,7 +164,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     this.scenarioEdit = undefined;
   }
 
-  deleteScenario(id: number): void {
+  deleteScenario(id: string): void {
     this.loading.delete = true;
 
     this.scenarioService

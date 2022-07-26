@@ -92,7 +92,7 @@ export class ScenarioService {
     return merge(notLoaded, loaded);
   }
 
-  getScenario(id: number): Observable<Scenario> {
+  getScenario(id: string): Observable<Scenario> {
     return this.getScenarios().pipe(
       switchMap(() => this.state$),
       mergeMap((state) => state.scenarios),
@@ -112,7 +112,7 @@ export class ScenarioService {
     );
   }
 
-  putScenario(id: number, scenario: Scenario): Observable<Scenario> {
+  putScenario(id: string, scenario: Scenario): Observable<Scenario> {
     return this.scenarioApiService.putScenario(id, scenario).pipe(
       tap((modifiedScenario) => {
         let state = this.getState();
@@ -128,7 +128,7 @@ export class ScenarioService {
     );
   }
 
-  deleteScenario(id: number): Observable<any> {
+  deleteScenario(id: string): Observable<any> {
     return this.scenarioApiService.deleteScenario(id).pipe(
       tap(() => {
         let state = this.getState();

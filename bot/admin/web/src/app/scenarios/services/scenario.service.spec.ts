@@ -7,7 +7,7 @@ import { ScenarioService } from './scenario.service';
 
 const mockScenarios: Scenario[] = [
   {
-    id: 1,
+    id: '1',
     name: 'Scenario 1',
     description: 'Description 1',
     category: '',
@@ -22,7 +22,7 @@ const mockScenarios: Scenario[] = [
     state: ''
   },
   {
-    id: 2,
+    id: '2',
     name: 'Scenario 2',
     description: 'Description 2',
     category: 'default',
@@ -37,7 +37,7 @@ const mockScenarios: Scenario[] = [
     state: ''
   },
   {
-    id: 3,
+    id: '3',
     name: 'Scenario 3',
     description: 'Description 3',
     category: null,
@@ -51,7 +51,7 @@ const mockScenarios: Scenario[] = [
     state: ''
   },
   {
-    id: 4,
+    id: '4',
     name: 'Scenario 4',
     description: 'Description 4',
     category: 'scenario',
@@ -65,7 +65,7 @@ const mockScenarios: Scenario[] = [
     state: ''
   },
   {
-    id: 5,
+    id: '5',
     name: 'Scenario 5',
     description: 'Description 5',
     category: 'scenario',
@@ -167,7 +167,7 @@ describe('ScenarioService', () => {
   });
 
   it('should add a new scenario in the state and update tags and categories cache when published successfully', (done) => {
-    mockedScenarioApiService.postScenario.and.returnValue(of({ ...newScenario, id: 1 }));
+    mockedScenarioApiService.postScenario.and.returnValue(of({ ...newScenario, id: '1' }));
 
     expect(service.getState()).toEqual(initialState);
     service.setScenariosData(mockScenarios);
@@ -176,7 +176,7 @@ describe('ScenarioService', () => {
       const state = service.getState();
       expect(mockedScenarioApiService.postScenario).toHaveBeenCalledOnceWith(newScenario);
       expect(state.scenarios).toHaveSize(mockScenarios.length + 1);
-      expect(state.scenarios).toEqual([...mockScenarios, { ...newScenario, id: 1 }]);
+      expect(state.scenarios).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
       expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
       expect(state.categories).toEqual(['default', 'scenario']);
       done();
@@ -216,14 +216,14 @@ describe('ScenarioService', () => {
     const state = service.getState();
 
     expect(state.scenarios).toHaveSize(mockScenariosCopy.length);
-    expect(state.scenarios.find((s) => s.id === 2)).not.toEqual(updatedScenario);
+    expect(state.scenarios.find((s) => s.id === '2')).not.toEqual(updatedScenario);
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.putScenario(2, updatedScenario).subscribe(() => {
+    service.putScenario('2', updatedScenario).subscribe(() => {
       expect(mockedScenarioApiService.putScenario).toHaveBeenCalled();
       expect(state.scenarios).toHaveSize(mockScenariosCopy.length);
-      expect(state.scenarios.find((s) => s.id === 2)).toEqual(updatedScenario);
+      expect(state.scenarios.find((s) => s.id === '2')).toEqual(updatedScenario);
       expect(state.tags).toEqual(['JCVD forever', 'new tag', 'tag1', 'tag2', 'test']);
       expect(state.categories).toEqual(['new category', 'scenario']);
       done();
@@ -242,11 +242,11 @@ describe('ScenarioService', () => {
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.putScenario(2, updatedScenario).subscribe({
+    service.putScenario('2', updatedScenario).subscribe({
       error: () => {
         expect(mockedScenarioApiService.putScenario).toHaveBeenCalled();
         expect(state.scenarios).toHaveSize(mockScenariosCopy.length);
-        expect(state.scenarios.find((s) => s.id === 2)).not.toEqual(updatedScenario);
+        expect(state.scenarios.find((s) => s.id === '2')).not.toEqual(updatedScenario);
         expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
         expect(state.categories).toEqual(['default', 'scenario']);
         done();
@@ -264,10 +264,10 @@ describe('ScenarioService', () => {
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.deleteScenario(2).subscribe(() => {
+    service.deleteScenario('2').subscribe(() => {
       expect(mockedScenarioApiService.deleteScenario).toHaveBeenCalled();
       expect(state.scenarios.length).toBe(--mockScenariosCopy.length);
-      expect(state.scenarios.find((s) => s.id === 2)).toBe(undefined);
+      expect(state.scenarios.find((s) => s.id === '2')).toBe(undefined);
       expect(state.tags).toEqual(['tag1', 'tag2']);
       expect(state.categories).toEqual(['scenario']);
       done();
@@ -284,7 +284,7 @@ describe('ScenarioService', () => {
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.deleteScenario(2).subscribe({
+    service.deleteScenario('2').subscribe({
       error: () => {
         expect(mockedScenarioApiService.deleteScenario).toHaveBeenCalled();
         expect(state.scenarios.length).toBe(mockScenariosCopy.length);

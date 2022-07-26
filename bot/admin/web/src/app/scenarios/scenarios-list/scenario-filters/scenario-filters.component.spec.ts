@@ -18,17 +18,6 @@ import { Scenario } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioFiltersComponent } from './scenario-filters.component';
 
-const mockScenarios = [
-  {
-    id: 1,
-    tags: ['tag', 'tag', 'tag 1', 'tag 2']
-  },
-  {
-    id: 2,
-    tags: ['test', 'tag', 'tag 1']
-  }
-] as Scenario[];
-
 describe('ScenarioFiltersComponent', () => {
   let component: ScenarioFiltersComponent;
   let fixture: ComponentFixture<ScenarioFiltersComponent>;

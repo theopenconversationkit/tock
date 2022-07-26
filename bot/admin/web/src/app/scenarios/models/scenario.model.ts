@@ -8,7 +8,7 @@ export enum SCENARIO_MODE {
 }
 
 export interface Scenario {
-  id: number | null;
+  id: string | null;
   name: string;
   category?: string;
   tags?: Array<string>;
