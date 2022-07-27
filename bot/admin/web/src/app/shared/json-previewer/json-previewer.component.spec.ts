@@ -1,7 +1,7 @@
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NbCardModule, NbIconModule, NbInputModule, NbToastrModule } from '@nebular/theme';
+import { NbCardModule, NbIconModule, NbSelectModule, NbToastrModule } from '@nebular/theme';
 
 import { TestSharedModule } from '../test-shared.module';
 import { JsonPreviewerComponent } from './json-previewer.component';
@@ -15,7 +15,7 @@ describe('JsonPreviewerComponent', () => {
       imports: [
         NbCardModule,
         NbIconModule,
-        NbInputModule,
+        NbSelectModule,
         NbToastrModule.forRoot({}),
         TestSharedModule
       ],
