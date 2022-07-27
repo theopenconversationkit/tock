@@ -5,7 +5,7 @@
       <div class="intents-list mt-2">
         <div
           class="intent d-flex my-1 unselectable"
-          *ngFor="let intent of getScenarioIntents()"
+          *ngFor="let intent of getScenarioIntentDefinitions()"
           [ngClass]="{ disabled: isIntentInUse(intent) }"
           [nbTooltip]="getIntentTooltip(intent)"
           [dndDraggable]="{ type: 'intent', name: intent.name }"
@@ -33,7 +33,7 @@
       <div class="actions-list mt-2">
         <div
           class="action p-2 my-1 unselectable"
-          *ngFor="let action of getScenarioActions()"
+          *ngFor="let action of getScenarioActionDefinitions()"
           [ngClass]="{ disabled: isActionInUse(action) }"
           [nbTooltip]="getActionTooltip(action)"
           [dndDraggable]="{ type: 'action', name: action.name }"
@@ -86,9 +86,9 @@
       <scenario-state-group
         [state]="scenario.data.stateMachine.states.Global"
         [stateMachine]="scenario.data.stateMachine"
-        [usedNames]="collectAllUsedeNames()"
-        [intents]="getScenarioIntents()"
-        [actions]="getScenarioActions()"
+        [usedNames]="collectAllUsedNames()"
+        [intents]="getScenarioIntentDefinitions()"
+        [actions]="getScenarioActionDefinitions()"
       ></scenario-state-group>
     </div>
   </div>

@@ -21,6 +21,8 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
+import { ScenarioDesignerService } from './scenario-designer.service';
+import { stringifiedCleanScenario } from '../commons/utils';
 
 @Component({
   selector: 'scenario-designer',
@@ -45,11 +47,18 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     route: ActivatedRoute,
     private router: Router,
     private toastrService: NbToastrService,
-    protected state: StateService
+    protected state: StateService,
+    private scenarioDesignerService: ScenarioDesignerService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
       .subscribe((id) => (this.scenarioId = id));
+
+    this.scenarioDesignerService.scenarioDesignerCommunication
+      .pipe(takeUntil(this.destroy))
+      .subscribe((evt) => {
+        if (evt.type == 'updateScenarioBackup') this.updateScenarioBackup(evt.data);
+      });
   }
 
   ngOnInit(): void {
@@ -88,26 +97,21 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.scenario.data.mode = mode;
   }
 
-  stringifiedCleanScenario(): string {
-    return JSON.stringify(this.scenario, function (key, value) {
-      if (key.indexOf('_') == 0) return undefined;
-      return value;
-    });
-  }
+  save(exit: boolean = false, silent: boolean = false): void {
+    this.scenarioDesignerService.saveScenario(this.scenarioId, this.scenario).subscribe((data) => {
+      if (!silent) {
+        this.toastrService.success(`Scenario successfully saved`, 'Success', {
+          duration: 5000,
+          status: 'success'
+        });
+      }
 
-  getCleanScenario(): Scenario {
-    return JSON.parse(this.stringifiedCleanScenario());
-  }
-
-  save(exit: boolean = false): void {
-    this.scenarioService.putScenario(this.scenarioId, this.getCleanScenario()).subscribe((data) => {
-      this.toastrService.success(`Scenario successfully saved`, 'Success', {
-        duration: 5000,
-        status: 'success'
-      });
-      this.scenarioBackup = JSON.stringify(data);
       if (exit) this.exit();
     });
+  }
+
+  updateScenarioBackup(scenario) {
+    this.scenarioBackup = JSON.stringify(scenario);
   }
 
   exit(): void {
@@ -127,7 +131,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   canDeactivate(): boolean {
-    return this.scenarioBackup == this.stringifiedCleanScenario();
+    return this.scenarioBackup == stringifiedCleanScenario(this.scenario);
   }
 }
 

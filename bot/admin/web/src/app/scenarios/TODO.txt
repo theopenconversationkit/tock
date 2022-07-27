@@ -4,7 +4,14 @@ shared
 
 Scenarios
 
-        Scenarios management => Scenarios Management
+        Tock studio menu et titre de la vue scenarios-list : Scenarios management => Scenarios Management
+
+        Peut-on supprimer tout un scenario est ses différentes versions ?
+
+        La suppression d'un scenario "current" implique-t-elle la suppression de sa tickStory ?
+
+        scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. Plusieurs scenario peuvent-ils être draft en même temps ?
+
 
 Scenario designer :
 
@@ -14,6 +21,8 @@ Scenario designer :
 
         Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
 
+        Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
+
         WRITING : 
 
                 Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
@@ -21,14 +30,21 @@ Scenario designer :
         CONCEPTION : 
                 action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
 
-                intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario
+                intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario.
+                Interdire les sharedIntents ?
+                L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
         
                 intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base. Implications sur le fonctionnement de l'étape publishing
 
-                Permettre de flaguer une intent secondaire comme également primaire
-
-                Mettre à jours la state machine lorsqu'on renomme ou supprime un item qui était déjà présent dans la state machine
+                Mettre à jours la state machine lorsqu'on renomme ou supprime un item qui était déjà référencé dans la state machine
 
                 Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa
 
+                #DONE Permettre de flaguer une intent secondaire comme également primaire
+
         PRODUCTION : 
+
+        PUBLISHING : 
+                Comment le front fait-il pour créer une secondary intent ?
+
+                Intent : c'est quoi les mandatoryStates ?

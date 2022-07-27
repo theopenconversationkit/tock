@@ -52,6 +52,7 @@ import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-t
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
 import { ScenariosResolver } from './scenarios.resolver';
+import { ScenarioDesignerService } from './scenario-designer/scenario-designer.service';
 
 @NgModule({
   imports: [
@@ -110,7 +111,8 @@ import { ScenariosResolver } from './scenarios.resolver';
     ScenarioApiService,
     ScenarioDesignerNavigationGuard,
     ScenariosResolver,
-    NlpService
+    NlpService,
+    ScenarioDesignerService
   ],
   entryComponents: []
 })

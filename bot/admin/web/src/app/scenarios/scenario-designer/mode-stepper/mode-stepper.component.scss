@@ -5,7 +5,7 @@
   .step {
     display: flex;
     align-items: center;
-
+    cursor: pointer;
     .label-index {
       display: flex;
       justify-content: center;
@@ -30,7 +30,7 @@
       line-height: 1rem;
     }
 
-    &.passed {
+    &.valid {
       .label-index {
         border-color: #274bdb;
         color: #274bdb;

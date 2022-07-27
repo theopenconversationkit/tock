@@ -38,17 +38,15 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   @ViewChildren(SentenceEditComponent) sentencesComponents: QueryList<SentenceEditComponent>;
   @ViewChild('addSentenceInput') addSentenceInput: ElementRef;
 
-  constructor(
-    public dialogRef: NbDialogRef<IntentEditComponent>,
-    protected state: StateService,
-    private nbMenuService: NbMenuService,
-    private dialogService: DialogService
-  ) {}
+  constructor(public dialogRef: NbDialogRef<IntentEditComponent>, protected state: StateService) {}
 
   _sentences: Sentence[] = [];
 
   ngOnInit(): void {
     this.form.patchValue({ primary: this.item.intentDefinition.primary });
+    if (this.item.main) {
+      this.form.get('primary').disable();
+    }
 
     if (this.item.intentDefinition?.sentences?.length) {
       this.item.intentDefinition?.sentences.forEach((sentence) => {
@@ -86,6 +84,25 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.collectAllEntities();
   }
 
+  storeModifiedSentence(data) {
+    const app = this.state.currentApplication;
+    const language = this.state.currentLocale;
+    let sentenceCopy = new TempSentence(
+      app.namespace,
+      app.name,
+      language,
+      data.sentence.text,
+      false,
+      ''
+    );
+    sentenceCopy.classification.entities = data.entities;
+    this.sentences.push(new FormControl(sentenceCopy));
+  }
+
+  isSentenceModified(sentence) {
+    return this.sentences.value.find((s) => s.query === sentence.text);
+  }
+
   form: FormGroup = new FormGroup({
     sentences: new FormArray([]),
     contextsEntities: new FormArray([]),
@@ -114,7 +131,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     if (eventTarget.value.trim()) {
       const app = this.state.currentApplication;
       const language = this.state.currentLocale;
-      const MySentence = new TempSentence(
+      const newSentence = new TempSentence(
         app.namespace,
         app.name,
         language,
@@ -122,7 +139,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
         false,
         ''
       );
-      this.sentences.push(new FormControl(MySentence));
+      this.sentences.push(new FormControl(newSentence));
       eventTarget.value = '';
     }
   }
@@ -178,7 +195,8 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    this.saveModifications.emit(this.form.value);
+    // here we use getRawValue because we need the value of the potentially disabled primary field
+    this.saveModifications.emit(this.form.getRawValue());
   }
 
   cancel(): void {

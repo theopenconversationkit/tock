@@ -18,7 +18,6 @@
       <div class="col-12">
         <nb-toggle
           [formControl]="primary"
-          [disabled]="item.main"
           nbTooltip="Primary intentions are intentions that can be triggered outside the execution of a scenario. Be careful with this option."
           >Primary intent</nb-toggle
         >
@@ -82,11 +81,11 @@
     <hr class="my-2" />
 
     <strong> Questions matching this Intent :</strong>
-    <div class="questions">
-      <nb-list>
-        <nb-list-item
+    <div class="questions mt-1">
+      <ul class="sentences-list">
+        <li
           *ngFor="let sentence of sentences.value"
-          class="p-0 d-flex justify-content-between align-items-start"
+          class="sentences-list-item p-0 d-flex justify-content-between align-items-start"
         >
           <scenario-sentence-edit
             [sentence]="sentence"
@@ -104,24 +103,27 @@
             class="pointer mx-2 mt-2 min-width-1em"
             nbTooltip="Remove this formulation"
           ></nb-icon>
-        </nb-list-item>
-      </nb-list>
+        </li>
+      </ul>
 
-      <nb-list>
-        <nb-list-item
-          *ngFor="let sentence of _sentences"
-          class="p-0 d-flex justify-content-between text-muted"
-        >
-          <scenario-sentence-edit
-            [sentence]="sentence"
-            [contexts]="contexts"
-            [contextsEntities]="contextsEntities"
-            [allEntities]="entitiesCache"
-            (componentActivated)="componentActivated($event)"
-            (entityAdded)="entityAdded()"
-          ></scenario-sentence-edit>
-        </nb-list-item>
-      </nb-list>
+      <ul class="sentences-list">
+        <ng-container *ngFor="let sentence of _sentences">
+          <li
+            *ngIf="!isSentenceModified(sentence)"
+            class="sentences-list-item p-0 d-flex justify-content-between text-muted"
+          >
+            <scenario-sentence-edit
+              [sentence]="sentence"
+              [contexts]="contexts"
+              [contextsEntities]="contextsEntities"
+              [allEntities]="entitiesCache"
+              (componentActivated)="componentActivated($event)"
+              (entityAdded)="entityAdded()"
+              (storeModifiedSentence)="storeModifiedSentence($event)"
+            ></scenario-sentence-edit>
+          </li>
+        </ng-container>
+      </ul>
     </div>
 
     <div class="d-flex mt-2">

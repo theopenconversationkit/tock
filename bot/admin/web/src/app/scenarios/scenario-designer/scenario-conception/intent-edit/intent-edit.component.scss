@@ -5,5 +5,13 @@
   .questions {
     overflow-y: auto;
     max-height: 15rem;
+
+    .sentences-list {
+      padding: 0;
+      margin-bottom: 0;
+      .sentences-list-item {
+        border-bottom: 1px solid #edf1f7;
+      }
+    }
   }
 }

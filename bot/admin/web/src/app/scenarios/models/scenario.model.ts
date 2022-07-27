@@ -1,12 +1,4 @@
 import { ParseQuery, Sentence } from '../../model/nlp';
-
-export enum SCENARIO_MODE {
-  writing = 'writing',
-  casting = 'casting',
-  production = 'production',
-  publishing = 'publishing'
-}
-
 export interface Scenario {
   id: string | null;
   name: string;
@@ -20,47 +12,17 @@ export interface Scenario {
   state: string;
 }
 
-export interface machineState {
-  id: string;
-  type?: string;
-  initial?: string;
-  states?: { [key: string]: machineState };
-  on?: { [key: string]: string };
+export enum SCENARIO_MODE {
+  writing = 'writing',
+  casting = 'casting',
+  production = 'production',
+  publishing = 'publishing'
 }
 export interface ScenarioData {
   scenarioItems: scenarioItem[];
   contexts?: TickContext[];
   stateMachine?: machineState;
   mode: SCENARIO_MODE;
-}
-
-export type EntityTypeName = string;
-export type EntityRole = string;
-export type TickContextName = string;
-export interface TickContext {
-  name: TickContextName;
-  entityType?: EntityTypeName;
-  entityRole?: EntityRole;
-  type: 'string';
-}
-export interface intentDefinition {
-  label: string;
-  name: string;
-  category?: string;
-  description?: string;
-  intentId?: string;
-  sentences?: TempSentence[];
-  _sentences?: Sentence[];
-  primary?: boolean;
-}
-export interface TickActionDefinition {
-  name: string;
-  description?: string;
-  inputContextNames?: TickContextName[];
-  outputContextNames?: TickContextName[];
-  handler?: string;
-  answer?: string;
-  answerId?: string;
 }
 
 export const SCENARIO_ITEM_FROM_CLIENT = 'client';
@@ -81,23 +43,43 @@ export interface scenarioItem {
   tickActionDefinition?: TickActionDefinition;
 }
 
-export interface Filter {
-  search: string;
-  tags: Array<string>;
+export interface intentDefinition {
+  label: string;
+  name: string;
+  category?: string;
+  description?: string;
+  intentId?: string;
+  sentences?: TempSentence[];
+  _sentences?: Sentence[];
+  primary?: boolean;
 }
 
-export interface TempClassification {
-  entities: TempEntity[];
+export interface TickActionDefinition {
+  name: string;
+  description?: string;
+  inputContextNames?: TickContextName[];
+  outputContextNames?: TickContextName[];
+  handler?: string;
+  answer?: string;
+  answerId?: string;
 }
 
-export interface TempEntity {
-  type: string;
-  role: string;
-  start: number;
-  end: number;
-  entityColor: string;
+export type EntityTypeName = string;
+export type EntityRole = string;
+export type TickContextName = string;
+export interface TickContext {
+  name: TickContextName;
+  entityType?: EntityTypeName;
+  entityRole?: EntityRole;
+  type: 'string';
 }
-
+export interface machineState {
+  id: string;
+  type?: string;
+  initial?: string;
+  states?: { [key: string]: machineState };
+  on?: { [key: string]: string };
+}
 export class TempSentence extends ParseQuery {
   public classification: TempClassification;
 
@@ -112,4 +94,27 @@ export class TempSentence extends ParseQuery {
     super(namespace, applicationName, language, query, checkExistingQuery);
     this.classification = { entities: [] };
   }
+}
+export interface TempEntity {
+  type: string;
+  role: string;
+  start: number;
+  end: number;
+  entityColor: string;
+  qualifiedRole?: string;
+  subEntities: any;
+}
+export interface TempClassification {
+  entities: TempEntity[];
+  intentId?: string;
+}
+
+export interface dependencyUpdateJob {
+  type: 'creation' | 'update';
+  done: boolean;
+  data: scenarioItem;
+}
+export interface Filter {
+  search: string;
+  tags: Array<string>;
 }
