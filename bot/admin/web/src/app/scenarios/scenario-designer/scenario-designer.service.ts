@@ -26,7 +26,7 @@ export class ScenarioDesignerService {
 
   public scenarioDesignerCommunication = new Subject<any>();
 
-  saveScenario(scenarioId: number, scenario: Scenario): Observable<Scenario> {
+  saveScenario(scenarioId: string, scenario: Scenario): Observable<Scenario> {
     const cleanScenario = JSON.parse(stringifiedCleanScenario(scenario));
     return this.scenarioService
       .putScenario(scenarioId, cleanScenario)
