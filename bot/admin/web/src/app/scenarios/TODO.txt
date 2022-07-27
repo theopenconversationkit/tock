@@ -34,7 +34,7 @@ Scenario designer :
                 Interdire les sharedIntents ?
                 L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
         
-                intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base. Implications sur le fonctionnement de l'étape publishing
+                #DONE intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base. Implications sur le fonctionnement de l'étape publishing
 
                 Mettre à jours la state machine lorsqu'on renomme ou supprime un item qui était déjà référencé dans la state machine
 
@@ -45,6 +45,6 @@ Scenario designer :
         PRODUCTION : 
 
         PUBLISHING : 
-                Comment le front fait-il pour créer une secondary intent ?
+                #DONE Comment le front fait-il pour créer une secondary intent ?
 
                 Intent : c'est quoi les mandatoryStates ?

@@ -3,11 +3,8 @@ import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
   getAllSmTransitionNames,
-  getScenarioActionDefinitions,
   getScenarioIntentDefinitions,
-  getSmStateById,
   getSmTransitionByName,
-  getSmStateParentById,
   stringifiedCleanScenario
 } from '../commons/utils';
 import {
