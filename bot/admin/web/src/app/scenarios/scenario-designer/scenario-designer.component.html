@@ -39,6 +39,7 @@
   *ngIf="scenario?.data"
   class="mb-3"
   [mode]="scenario.data.mode"
+  [scenario]="scenario"
   (modeSwitch)="switchMode($event)"
 ></scenario-mode-stepper>
 

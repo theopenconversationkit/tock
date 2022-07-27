@@ -2,9 +2,12 @@ import { Component, Injectable, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest } from '../../../bot/model/i18n';
+import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { ClassifiedEntity, EntityDefinition, Intent } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
+import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
+import { getScenarioActions, getScenarioIntents } from '../../commons/utils';
 import {
   Scenario,
   scenarioItem,
@@ -31,7 +34,8 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     public state: StateService,
     private nlp: NlpService,
     private scenarioDesignerService: ScenarioDesignerService,
-    private botService: BotService
+    private botService: BotService,
+    private dialogService: DialogService
   ) {}
 
   tickStoryJson: string;
@@ -61,7 +65,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       answersToUpdate: []
     };
 
-    this.getScenarioIntents().forEach((intent) => {
+    getScenarioIntents(this.scenario).forEach((intent) => {
       if (!intent.intentDefinition.intentId) {
         this.dependencies.intentsToCreate.push({
           type: 'creation',
@@ -77,7 +81,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.getScenarioActions().forEach((action) => {
+    getScenarioActions(this.scenario).forEach((action) => {
       if (!action.tickActionDefinition.answerId) {
         this.dependencies.answersToCreate.push({
           type: 'creation',
@@ -108,7 +112,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
           this.scenarioDesignerService
             .saveScenario(this.scenario.id, this.scenario)
             .subscribe((data) => {
-              console.log(data);
+              this.postTickStory();
             });
         }
       }
@@ -263,37 +267,41 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  getScenarioIntents(): scenarioItem[] {
-    let intents: scenarioItem[] = [];
-    this.scenario.data.scenarioItems.forEach((item) => {
-      if (item.from == SCENARIO_ITEM_FROM_CLIENT) {
-        intents.push(item);
-      }
-    });
+  postTickStory(): void {
+    const story = this.compileTickStory();
 
-    return intents;
+    const jsonPreviewerRef = this.dialogService.openDialog(JsonPreviewerComponent, {
+      context: { jsonData: story }
+    });
+    jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;
   }
 
-  getScenarioActions(): scenarioItem[] {
-    let actions: scenarioItem[] = [];
-    this.scenario.data.scenarioItems.forEach((item) => {
-      if (item.from == SCENARIO_ITEM_FROM_BOT) {
-        actions.push(item);
+  compileTickStory(): object {
+    const intents: scenarioItem[] = getScenarioIntents(this.scenario);
+    let mainIntent;
+    let primaryIntents = [];
+    let secondaryIntents = [];
+    intents.forEach((intent) => {
+      if (intent.main) {
+        mainIntent = intent.intentDefinition.name;
+      } else if (intent.intentDefinition.primary) {
+        primaryIntents.push(intent.intentDefinition.name);
+      } else {
+        secondaryIntents.push(intent.intentDefinition.name);
       }
     });
-    return actions;
-  }
+    const app = this.state.currentApplication;
+    let botId = app.name;
 
-  compileTickStory(): string {
     let tickStory = {
       name: this.scenario.name,
-      botId: 'new_assistant',
+      botId: botId,
       storyId: 'tickStory id',
-      description: 'Story description',
+      description: this.scenario.description,
       sagaId: 0,
-      mainIntent: 'main intent name',
-      primaryIntents: ['primary intent name'],
-      secondaryIntents: ['secondary intent name', 'secondary intent name'],
+      mainIntent: mainIntent,
+      primaryIntents: primaryIntents,
+      secondaryIntents: secondaryIntents,
       contexts: this.scenario.data.contexts,
       actions: [],
       stateMachine: this.scenario.data.stateMachine
@@ -305,7 +313,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       }
     });
 
-    return JSON.stringify(tickStory, null, 4);
+    return tickStory;
   }
 
   ngOnDestroy(): void {

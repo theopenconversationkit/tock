@@ -101,8 +101,6 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   confirmDeleteContext(context) {
     const deleteAction = 'delete';
-
-    const dialogResponseVerb = 'Exit';
     const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
         title: `You're about to delete a context`,

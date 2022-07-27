@@ -15,7 +15,15 @@ import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dial
 import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
-import { getStateMachineActionParentById, revertTransformMatrix } from '../../commons/utils';
+import {
+  getSmTransitionByName,
+  getScenarioActionDefinitions,
+  getScenarioIntentDefinitions,
+  getSmStateParentById,
+  revertTransformMatrix,
+  getAllSmTransitions,
+  getSmStateById
+} from '../../commons/utils';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
@@ -88,7 +96,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     const canvasLeft = canvasPos.left;
     const canvasTop = canvasPos.top;
 
-    let transitions = this.getAllTransitions(this.scenario.data.stateMachine);
+    let transitions = getAllSmTransitions(this.scenario.data.stateMachine);
     for (let transitionName in transitions) {
       const transitionComponent =
         this.scenarioProductionService.scenarioProductionTransitionsComponents[transitionName];
@@ -131,25 +139,8 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
   }
 
-  getAllTransitions(group, result = {}) {
-    if (group.on) Object.assign(result, group.on);
-    if (group.states) {
-      for (let name in group.states) {
-        this.getAllTransitions(group.states[name], result);
-      }
-    }
-    return result;
-  }
-
-  getScenarioIntents() {
-    let intents = [];
-    this.scenario.data.scenarioItems.forEach((item) => {
-      if (item.from == SCENARIO_ITEM_FROM_CLIENT && item.intentDefinition) {
-        intents.push(item.intentDefinition);
-      }
-    });
-
-    return intents.sort((a, b) => {
+  getScenarioIntentDefinitions() {
+    return getScenarioIntentDefinitions(this.scenario).sort((a, b) => {
       const aIsUsed = this.isIntentInUse(a);
       if (aIsUsed) return 1;
       const bIsUsed = this.isIntentInUse(b);
@@ -167,14 +158,8 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     return intent.label ? intent.label : intent.name;
   }
 
-  getScenarioActions() {
-    let actions = [];
-    this.scenario.data.scenarioItems.forEach((item) => {
-      if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
-        actions.push(item.tickActionDefinition);
-      }
-    });
-    return actions.sort((a, b) => {
+  getScenarioActionDefinitions() {
+    return getScenarioActionDefinitions(this.scenario).sort((a, b) => {
       const aIsUsed = this.isActionInUse(a);
       if (aIsUsed) return 1;
       const bIsUsed = this.isActionInUse(b);
@@ -183,10 +168,10 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  collectAllUsedeNames() {
+  collectAllUsedNames() {
     let names = new Set();
-    this.getScenarioActions().forEach((a) => names.add(a.name));
-    this.getScenarioIntents().forEach((a) => names.add(a.name));
+    getScenarioActionDefinitions(this.scenario).forEach((a) => names.add(a.name));
+    getScenarioIntentDefinitions(this.scenario).forEach((a) => names.add(a.name));
     this.getAllActionGroupNames(this.scenario.data.stateMachine).forEach((n) => names.add(n));
     return [...names];
   }
@@ -202,11 +187,11 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   }
 
   isActionInUse(action) {
-    return this.getActionById(action.name, this.scenario.data.stateMachine);
+    return getSmStateById(action.name, this.scenario.data.stateMachine);
   }
 
   isIntentInUse(intent) {
-    return this.getIntentByName(intent.name, this.scenario.data.stateMachine);
+    return getSmTransitionByName(intent.name, this.scenario.data.stateMachine);
   }
 
   getActionTooltip(action) {
@@ -252,14 +237,14 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   itemDropped(event) {
     if (event.dropped.type === 'action') {
-      let target = this.getActionById(event.stateId, this.scenario.data.stateMachine);
+      let target = getSmStateById(event.stateId, this.scenario.data.stateMachine);
       if (target) {
         target.states[event.dropped.name] = { id: event.dropped.name };
         if (!target.initial) target.initial = event.dropped.name;
       }
     }
     if (event.dropped.type === 'intent') {
-      let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
+      let parent = getSmStateParentById(event.stateId, this.scenario.data.stateMachine);
       if (parent) {
         parent.on[event.dropped.name] = `#${event.stateId}`;
       }
@@ -269,9 +254,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   }
 
   addStateGroup(event) {
-    let target = this.getActionById(event.stateId, this.scenario.data.stateMachine);
+    let target = getSmStateById(event.stateId, this.scenario.data.stateMachine);
     if (target) {
-      const alreadyExists = this.getActionById(event.groupName, this.scenario.data.stateMachine);
+      const alreadyExists = getSmStateById(event.groupName, this.scenario.data.stateMachine);
       if (alreadyExists) {
         return;
       }
@@ -293,7 +278,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       });
     }
 
-    let parent = getStateMachineActionParentById(event.stateId, this.scenario.data.stateMachine);
+    let parent = getSmStateParentById(event.stateId, this.scenario.data.stateMachine);
     if (parent) {
       if (parent.initial === event.stateId) {
         parent.initial = '';
@@ -315,43 +300,6 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       if (!result) {
         for (let action in group.states) {
           result = this.getIntentParentByTarget(targetName, group.states[action]);
-          if (result) break;
-        }
-      }
-    }
-
-    return result;
-  }
-
-  getIntentByName(name, group) {
-    let result = null;
-    if (group.on) {
-      for (let transitionName in group.on) {
-        if (transitionName === name) {
-          result = group.on[transitionName];
-          break;
-        }
-      }
-
-      if (!result) {
-        for (let action in group.states) {
-          result = this.getIntentByName(name, group.states[action]);
-          if (result) break;
-        }
-      }
-    }
-
-    return result;
-  }
-
-  getActionById(id, group) {
-    let result = null;
-
-    if (group.id === id) return group;
-    else {
-      if (group.states) {
-        for (let name in group.states) {
-          result = this.getActionById(id, group.states[name]);
           if (result) break;
         }
       }

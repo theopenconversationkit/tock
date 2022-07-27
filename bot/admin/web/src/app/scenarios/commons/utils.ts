@@ -1,4 +1,12 @@
-import { machineState, Scenario } from '../models';
+import {
+  intentDefinition,
+  machineState,
+  Scenario,
+  scenarioItem,
+  SCENARIO_ITEM_FROM_BOT,
+  SCENARIO_ITEM_FROM_CLIENT,
+  TickActionDefinition
+} from '../models';
 
 export function normalize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -20,6 +28,13 @@ export function normalizedCamelCase(str: string): string {
       return chr.toUpperCase();
     })
     .replace(/[^A-Za-z0-9]*/g, '');
+}
+
+export function stringifiedCleanScenario(scenario: Scenario): string {
+  return JSON.stringify(scenario, function (key, value) {
+    if (key.indexOf('_') == 0) return undefined;
+    return value;
+  });
 }
 
 export function getContrastYIQ(hexcolor: string): string {
@@ -68,7 +83,84 @@ export function revertTransformMatrix(el: Element, transformedParent: Element): 
   };
 }
 
-export function getStateMachineActionParentById(id: string, group: machineState): machineState {
+export function getScenarioIntents(scenario: Scenario): scenarioItem[] {
+  return scenario.data.scenarioItems.filter((item) => item.from === SCENARIO_ITEM_FROM_CLIENT);
+}
+
+export function getScenarioIntentDefinitions(scenario: Scenario): intentDefinition[] {
+  return getScenarioIntents(scenario)
+    .filter((item) => item.intentDefinition)
+    .map((item) => item.intentDefinition);
+}
+
+export function getScenarioActions(scenario: Scenario): scenarioItem[] {
+  return scenario.data.scenarioItems.filter((item) => item.from === SCENARIO_ITEM_FROM_BOT);
+}
+
+export function getScenarioActionDefinitions(scenario: Scenario): TickActionDefinition[] {
+  return getScenarioActions(scenario)
+    .filter((item) => item.tickActionDefinition)
+    .map((item) => item.tickActionDefinition);
+}
+
+export function getSmTransitionByName(name: string, group: machineState): string {
+  let result = null;
+  if (group.on) {
+    for (let transitionName in group.on) {
+      if (transitionName === name) {
+        result = group.on[transitionName];
+        break;
+      }
+    }
+
+    if (!result) {
+      for (let action in group.states) {
+        result = getSmTransitionByName(name, group.states[action]);
+        if (result) break;
+      }
+    }
+  }
+
+  return result;
+}
+
+export function getAllSmTransitions(group: machineState, result = {}): object {
+  if (group.on) Object.assign(result, group.on);
+  if (group.states) {
+    for (let name in group.states) {
+      getAllSmTransitions(group.states[name], result);
+    }
+  }
+
+  return result;
+}
+
+export function getAllSmTransitionNames(group: machineState, result = []): string[] {
+  let results = [];
+  const transitions = getAllSmTransitions(group);
+  for (let name in transitions) {
+    results.push(name);
+  }
+
+  return results;
+}
+
+export function getSmStateById(id: string, group: machineState): machineState | null {
+  let result = null;
+  if (group.id === id) return group;
+  else {
+    if (group.states) {
+      for (let name in group.states) {
+        result = getSmStateById(id, group.states[name]);
+        if (result) break;
+      }
+    }
+  }
+
+  return result;
+}
+
+export function getSmStateParentById(id: string, group: machineState): machineState | null {
   let result = null;
   if (group.states) {
     for (let name in group.states) {
@@ -80,18 +172,11 @@ export function getStateMachineActionParentById(id: string, group: machineState)
 
     if (!result) {
       for (let name in group.states) {
-        result = getStateMachineActionParentById(id, group.states[name]);
+        result = getSmStateParentById(id, group.states[name]);
         if (result) break;
       }
     }
   }
 
   return result;
-}
-
-export function stringifiedCleanScenario(scenario: Scenario): string {
-  return JSON.stringify(scenario, function (key, value) {
-    if (key.indexOf('_') == 0) return undefined;
-    return value;
-  });
 }

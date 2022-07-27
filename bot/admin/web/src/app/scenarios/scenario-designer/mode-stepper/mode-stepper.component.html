@@ -1,8 +1,7 @@
 <div
-  class="step pointer"
+  class="step valid"
   [ngClass]="{
-    selected: mode === SCENARIO_MODE.writing,
-    passed: isStepPassed(SCENARIO_MODE.writing)
+    selected: mode === SCENARIO_MODE.writing
   }"
   (click)="switchMode(SCENARIO_MODE.writing)"
 >
@@ -23,10 +22,10 @@
 </div>
 
 <div
-  class="step pointer"
+  class="step"
   [ngClass]="{
-    selected: mode === SCENARIO_MODE.casting,
-    passed: isStepPassed(SCENARIO_MODE.casting)
+    valid: isStepSequenceValid(SCENARIO_MODE.casting),
+    selected: mode === SCENARIO_MODE.casting
   }"
   (click)="switchMode(SCENARIO_MODE.casting)"
 >
@@ -47,10 +46,10 @@
 </div>
 
 <div
-  class="step pointer"
+  class="step"
   [ngClass]="{
-    selected: mode === SCENARIO_MODE.production,
-    passed: isStepPassed(SCENARIO_MODE.production)
+    valid: isStepSequenceValid(SCENARIO_MODE.production),
+    selected: mode === SCENARIO_MODE.production
   }"
   (click)="switchMode(SCENARIO_MODE.production)"
 >
@@ -71,10 +70,10 @@
 </div>
 
 <div
-  class="step pointer"
+  class="step"
   [ngClass]="{
-    selected: mode === SCENARIO_MODE.publishing,
-    passed: isStepPassed(SCENARIO_MODE.publishing)
+    valid: isStepSequenceValid(SCENARIO_MODE.publishing),
+    selected: mode === SCENARIO_MODE.publishing
   }"
   (click)="switchMode(SCENARIO_MODE.publishing)"
 >

@@ -12,7 +12,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../../shared/choice-dialog/choice-dialog.component';
-import { getStateMachineActionParentById } from '../../../commons/utils';
+import { getSmStateParentById } from '../../../commons/utils';
 import { intentDefinition, TickActionDefinition } from '../../../models';
 import { ScenarioProductionService } from '../scenario-production.service';
 import { ScenarioProductionStateGroupAddComponent } from './state-group-add/state-group-add.component';
@@ -73,13 +73,13 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   }
 
   isInitialParentState(): boolean {
-    let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
+    let parent = getSmStateParentById(this.state.id, this.stateMachine);
     if (parent?.initial === this.state.id) return true;
     return false;
   }
 
   setActionInitial() {
-    let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
+    let parent = getSmStateParentById(this.state.id, this.stateMachine);
     if (parent) {
       parent.initial = this.state.id;
     }
@@ -166,7 +166,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   getDraggableTypes() {
     if (this.state.id.toLowerCase() == 'global') return ['action'];
 
-    let parent = getStateMachineActionParentById(this.state.id, this.stateMachine);
+    let parent = getSmStateParentById(this.state.id, this.stateMachine);
     if (parent?.id.toLowerCase() === 'global') {
       if (this.state.states) {
         return ['primaryIntent', 'action'];

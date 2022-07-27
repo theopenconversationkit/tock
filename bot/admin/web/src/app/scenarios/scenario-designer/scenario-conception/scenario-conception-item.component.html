@@ -153,20 +153,75 @@
 
       <div class="mt-auto align-self-stretch">
         <div class="d-flex justify-content-between mt-1">
-          <div
+          <button
+            nbButton
+            size="tiny"
+            status="info"
             *ngIf="
               mode == SCENARIO_MODE.writing &&
-              item.from == SCENARIO_ITEM_FROM_BOT &&
-              itemHasNoChildren()
+              itemCanHaveAnswer() &&
+              item.from == SCENARIO_ITEM_FROM_CLIENT
             "
+            (click)="answering()"
+            nbTooltip="Add a client intervention"
+            style="padding-left: 5px"
           >
-            <nb-checkbox
-              (checkedChange)="toggleFinal($event)"
-              [checked]="item.final"
-              nbTooltip="Define this item as ending the conversation"
-              >End of chat</nb-checkbox
-            >
-          </div>
+            <nb-icon
+              icon="plus-outline"
+              class="mr-1"
+            ></nb-icon>
+            Client intervention
+          </button>
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="
+              mode == SCENARIO_MODE.writing &&
+              itemCanHaveAnswer() &&
+              item.from == SCENARIO_ITEM_FROM_BOT
+            "
+            (click)="answering()"
+            nbTooltip="Add a bot intervention"
+            style="padding-left: 5px"
+          >
+            <nb-icon
+              icon="plus-outline"
+              class="mr-1"
+            ></nb-icon>
+            Bot intervention
+          </button>
+
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="
+              mode == SCENARIO_MODE.casting &&
+              item.from == SCENARIO_ITEM_FROM_CLIENT &&
+              item.text?.length
+            "
+            (click)="manageIntent()"
+            nbTooltip="Intent infos and edition"
+          >
+            Define intent
+          </button>
+
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="
+              mode == SCENARIO_MODE.casting &&
+              item.from == SCENARIO_ITEM_FROM_BOT &&
+              item.text?.length
+            "
+            (click)="manageAction()"
+            nbTooltip="Action infos and edition"
+          >
+            Define action
+          </button>
+
           <button
             nbButton
             size="tiny"
@@ -187,50 +242,22 @@
           >
             Delete
           </button>
-          <button
-            nbButton
-            size="tiny"
-            status="info"
-            *ngIf="mode == SCENARIO_MODE.writing && itemCanHaveAnswer()"
-            (click)="answering()"
-            nbTooltip="Add an answer to this item"
-          >
-            Add answer
-          </button>
+        </div>
 
-          <button
-            nbButton
-            size="tiny"
-            status="info"
-            *ngIf="
-              mode == SCENARIO_MODE.casting &&
-              item.from == SCENARIO_ITEM_FROM_CLIENT &&
-              item.text?.length
-            "
-            (click)="manageIntent()"
-            nbTooltip="Intent infos and edition"
+        <div
+          *ngIf="
+            mode == SCENARIO_MODE.writing &&
+            item.from == SCENARIO_ITEM_FROM_BOT &&
+            itemHasNoChildren()
+          "
+          class="mt-2"
+        >
+          <nb-checkbox
+            (checkedChange)="toggleFinal($event)"
+            [checked]="item.final"
+            nbTooltip="Define this item as ending the conversation"
+            >End of chat</nb-checkbox
           >
-            <span *ngIf="!item.intentDefinition">Add</span>
-            <span *ngIf="item.intentDefinition">Manage</span>
-            &nbsp; intent
-          </button>
-
-          <button
-            nbButton
-            size="tiny"
-            status="info"
-            *ngIf="
-              mode == SCENARIO_MODE.casting &&
-              item.from == SCENARIO_ITEM_FROM_BOT &&
-              item.text?.length
-            "
-            (click)="manageAction()"
-            nbTooltip="Action infos and edition"
-          >
-            <span *ngIf="!item.tickActionDefinition">Add</span>
-            <span *ngIf="item.tickActionDefinition">Manage</span>
-            &nbsp; action
-          </button>
         </div>
       </div>
     </div>

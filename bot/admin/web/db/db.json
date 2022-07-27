@@ -1713,13 +1713,6 @@
       }
     },
     {
-      "id": 12,
-      "category": "scenarios",
-      "description": "",
-      "name": "dsfvdfsdfsedf",
-      "tags": []
-    },
-    {
       "id": 13,
       "category": "scenarios",
       "description": "",
@@ -1728,7 +1721,7 @@
       "state": "",
       "applicationId": "62558f21b318632c9200b567",
       "data": {
-        "mode": "publishing",
+        "mode": "writing",
         "scenarioItems": [
           {
             "id": 0,
