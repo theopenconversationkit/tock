@@ -1,0 +1,188 @@
+<nb-card id="modal-wrapper">
+  <nb-card-header class="d-flex justify-content-between align-items-start">
+    <h4>Intent definition</h4>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Cancel"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div class="row">
+      <div class="col-12">
+        <nb-toggle
+          [formControl]="primary"
+          nbTooltip="Primary intentions are intentions that can be triggered outside the execution of a scenario. Be careful with this option."
+          >Primary intent</nb-toggle
+        >
+      </div>
+
+      <div class="col-12">
+        <label class="font-weight-bold">Status :</label>
+        <span *ngIf="item.intentDefinition.intentId">
+          Already exists. Will be reassigned upon publication.
+        </span>
+        <span *ngIf="!item.intentDefinition.intentId">
+          Does not exist. Will be created upon publishing.
+        </span>
+      </div>
+
+      <div
+        *ngIf="item.intentDefinition.intentId"
+        class="col-12"
+      >
+        <label class="font-weight-bold">Id :</label>
+        <span>
+          {{ item.intentDefinition.intentId }}
+        </span>
+      </div>
+      <div class="col-md-4">
+        <label class="font-weight-bold">Name :</label>
+        <span>
+          {{ item.intentDefinition.name }}
+        </span>
+      </div>
+      <div
+        *ngIf="item.intentDefinition.label"
+        class="col-md-4"
+      >
+        <label class="font-weight-bold">Label :</label>
+        <span>
+          {{ item.intentDefinition.label }}
+        </span>
+      </div>
+      <div
+        *ngIf="item.intentDefinition.category"
+        class="col-md-4"
+      >
+        <label class="font-weight-bold">Category :</label>
+        <span>
+          {{ item.intentDefinition.category }}
+        </span>
+      </div>
+
+      <div
+        *ngIf="item.intentDefinition.description"
+        class="col-12"
+      >
+        <label class="font-weight-bold">Description :</label>
+        <span>
+          {{ item.intentDefinition.description }}
+        </span>
+      </div>
+    </div>
+
+    <hr class="my-2" />
+
+    <strong> Questions matching this Intent :</strong>
+    <div class="questions mt-1">
+      <ul class="sentences-list">
+        <li
+          *ngFor="let sentence of sentences.value"
+          class="sentences-list-item p-0 d-flex justify-content-between align-items-start"
+        >
+          <scenario-sentence-edit
+            [sentence]="sentence"
+            [contexts]="contexts"
+            [contextsEntities]="contextsEntities"
+            [allEntities]="entitiesCache"
+            (componentActivated)="componentActivated($event)"
+            (entityAdded)="entityAdded()"
+          ></scenario-sentence-edit>
+
+          <nb-icon
+            icon="trash-2-outline"
+            status="danger"
+            (click)="removeSentence(sentence)"
+            class="pointer mx-2 mt-2 min-width-1em"
+            nbTooltip="Remove this formulation"
+          ></nb-icon>
+        </li>
+      </ul>
+
+      <ul class="sentences-list">
+        <ng-container *ngFor="let sentence of _sentences">
+          <li
+            *ngIf="!isSentenceModified(sentence)"
+            class="sentences-list-item p-0 d-flex justify-content-between text-muted"
+          >
+            <scenario-sentence-edit
+              [sentence]="sentence"
+              [contexts]="contexts"
+              [contextsEntities]="contextsEntities"
+              [allEntities]="entitiesCache"
+              (componentActivated)="componentActivated($event)"
+              (entityAdded)="entityAdded()"
+              (storeModifiedSentence)="storeModifiedSentence($event)"
+            ></scenario-sentence-edit>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+
+    <div class="d-flex mt-2">
+      <input
+        #addSentenceInput
+        nbInput
+        fullWidth
+        id="newQuestion"
+        type="text"
+        placeholder="Add a new question formulation and press enter"
+        (keyup.enter)="addSentence()"
+      />
+
+      <button
+        type="button"
+        nbButton
+        ghost
+        size="small"
+        class="ml-1"
+        [disabled]="!addSentenceInput.value.length"
+        (click)="addSentence()"
+      >
+        Add
+      </button>
+    </div>
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex justify-content-between">
+    <button
+      nbButton
+      size="small"
+      status="basic"
+      class="m-1"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+
+    <button
+      nbButton
+      size="small"
+      status="danger"
+      class="m-1"
+      (click)="dissociateIntent()"
+    >
+      <nb-icon icon="slash-outline"></nb-icon>
+      <span *ngIf="item.intentDefinition.intentId"> Dissociate intent </span>
+      <span *ngIf="!item.intentDefinition.intentId"> Delete intent </span>
+    </button>
+
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      class="m-1"
+      (click)="save()"
+    >
+      <nb-icon icon="save-outline"></nb-icon>
+      Save
+    </button>
+  </nb-card-footer>
+</nb-card>

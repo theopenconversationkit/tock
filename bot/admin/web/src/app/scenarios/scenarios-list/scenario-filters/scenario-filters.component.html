@@ -1,0 +1,51 @@
+<nb-card class="mb-0">
+  <nb-card-body>
+    <form
+      class="grid"
+      [formGroup]="form"
+    >
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="search-outline"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          placeholder="Search"
+          type="text"
+          formControlName="search"
+        />
+      </nb-form-field>
+
+      <nb-select
+        multiple
+        placeholder="Tags"
+        fullWidth
+        optionsListClass="option-list--break-word"
+        formControlName="tags"
+      >
+        <nb-option
+          *ngFor="let tag of tagsCache"
+          value="{{ tag }}"
+        >
+          <span class="initial-capitalize">{{ tag }}</span>
+        </nb-option>
+      </nb-select>
+
+      <div class="actions">
+        <button
+          *ngIf="isFiltered"
+          nbButton
+          nbTooltip="Clear all filters"
+          ghost
+          shape="round"
+          (click)="clearFilters()"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>

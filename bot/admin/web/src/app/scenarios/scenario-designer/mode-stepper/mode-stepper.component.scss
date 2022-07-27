@@ -1,0 +1,82 @@
+:host {
+  display: flex;
+  justify-content: space-between;
+
+  .step {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    .label-index {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      margin-right: 10px;
+      color: #8f9bb3;
+      border-radius: 50%;
+      border-color: #ddd;
+      border-style: solid;
+      border-width: 1px;
+      min-width: 2rem;
+      width: 2rem;
+      height: 2rem;
+    }
+    .label {
+      width: max-content;
+      color: #8f9bb3;
+      font-family: Open Sans, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1rem;
+    }
+
+    &.valid {
+      .label-index {
+        border-color: #274bdb;
+        color: #274bdb;
+      }
+      .label {
+        color: #274bdb;
+      }
+    }
+
+    &.selected {
+      .label-index {
+        border-color: #274bdb;
+        background-color: #274bdb;
+        color: white;
+      }
+      .label {
+        color: #274bdb;
+      }
+    }
+  }
+  .connector {
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    flex: auto;
+    .line {
+      height: 1px;
+      background-color: #ddd;
+      flex: auto;
+    }
+    .arrow {
+      display: inline-block;
+      border: solid #ddd;
+      border-width: 0 1px 1px 0;
+      padding: 3px;
+      margin-left: -6px;
+      transform: rotate(-45deg);
+      -webkit-transform: rotate(-45deg);
+    }
+  }
+  .connectorpassed {
+    .line {
+      background-color: #3366ff;
+    }
+    .arrow {
+      border-color: #3366ff;
+    }
+  }
+}

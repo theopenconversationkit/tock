@@ -1,0 +1,79 @@
+:host {
+  display: block;
+  margin-left: -2.25rem;
+  margin-right: -2.25rem;
+  margin-bottom: -0.75rem;
+  height: 75vh;
+  overflow: hidden;
+  box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+}
+
+.production-wrapper {
+  height: 100%;
+  width: 100%;
+
+  .production-menu {
+    height: auto;
+    width: 17rem;
+    box-shadow: 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+
+    .intents-wrapper {
+      height: 42%;
+      .intents-list {
+        height: 92%;
+        max-height: 92%;
+        overflow: auto;
+        font-size: 0.8rem;
+        .intent {
+          padding: 0.2rem 0.6rem;
+          background-color: #ccc;
+          border-radius: 1rem;
+          color: white;
+          cursor: move;
+
+          &.disabled {
+            background-color: #ddd;
+            cursor: default;
+          }
+        }
+      }
+    }
+    .menu-separator {
+      margin-left: -1rem;
+      margin-right: -1rem;
+    }
+    .actions-wrapper {
+      height: 42%;
+      .actions-list {
+        height: 92%;
+        max-height: 92%;
+        overflow: auto;
+        font-size: 0.8rem;
+        .action {
+          color: white;
+          background-color: #aaa;
+          border-radius: 0.25rem;
+          cursor: move;
+
+          &.disabled {
+            background-color: #ddd;
+            cursor: default;
+          }
+        }
+      }
+    }
+  }
+
+  .production-canvas-wrapper {
+    width: fit-content;
+    padding: 0.5rem;
+    overflow: hidden;
+    .production-canvas {
+      position: relative;
+      width: fit-content;
+      transition: transform 0.3s;
+      transform-origin: 0 0;
+      padding: 20px;
+    }
+  }
+}

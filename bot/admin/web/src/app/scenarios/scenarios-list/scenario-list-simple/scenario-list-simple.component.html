@@ -1,0 +1,158 @@
+<div class="grid-columns grid-columns-header mb-1">
+  <div>
+    <span
+      (click)="setOrderBy('name')"
+      class="pointer"
+    >
+      Name
+      <nb-icon
+        icon="chevron-down-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'name' && !orderByReverse"
+      ></nb-icon>
+      <nb-icon
+        icon="chevron-up-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'name' && orderByReverse"
+      ></nb-icon>
+    </span>
+  </div>
+  <div>
+    <span
+      (click)="setOrderBy('category')"
+      class="pointer"
+    >
+      Category
+      <nb-icon
+        icon="chevron-down-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'category' && !orderByReverse"
+      ></nb-icon>
+      <nb-icon
+        icon="chevron-up-outline"
+        class="valign-middle"
+        *ngIf="orderBy == 'category' && orderByReverse"
+      ></nb-icon>
+    </span>
+  </div>
+  <div>Tags</div>
+</div>
+
+<nb-accordion
+  *ngFor="let scenario of scenarios"
+  class="mb-2"
+  [class.selected]="selectedScenario?.id === scenario.id"
+>
+  <nb-accordion-item>
+    <nb-accordion-item-header>
+      <div class="grid-columns">
+        <div>
+          <div class="font-weight-bold initial-capitalize">
+            {{ scenario.name }}
+          </div>
+          <span class="text-muted truncate">
+            {{ scenario.description }}
+          </span>
+        </div>
+
+        <div class="initial-capitalize">
+          {{ scenario.category }}
+        </div>
+
+        <div>
+          <nb-tag-list>
+            <nb-tag
+              appearance="filled"
+              *ngFor="let tag of scenario.tags"
+              [text]="tag"
+              status="basic"
+              size="tiny"
+            ></nb-tag>
+          </nb-tag-list>
+        </div>
+
+        <div class="actions">
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Edit"
+            (click)="edit($event, scenario)"
+          >
+            <nb-icon icon="edit-outline"></nb-icon>
+          </button>
+          <a
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Designer"
+            [routerLink]="'./' + scenario.id"
+          >
+            <nb-icon icon="color-palette-outline"></nb-icon>
+          </a>
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Delete"
+            (click)="delete($event, scenario)"
+          >
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <div
+        class="d-flex justify-content-between"
+        *ngFor="let version of versions"
+      >
+        <div
+          class="row"
+          style="width: 100%"
+        >
+          <div class="col-2">
+            <span [ngClass]="{ 'font-weight-bold': version.current }"> {{ version.date }} </span>
+            <nb-icon
+              *ngIf="version.current"
+              status="success"
+              icon="checkmark-outline"
+            ></nb-icon>
+          </div>
+          <div class="text-muted font-italic col">
+            {{ version.description }}
+          </div>
+        </div>
+        <div class="d-flex">
+          <button
+            *ngIf="version.freezed"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="View"
+          >
+            <nb-icon icon="eye-outline"></nb-icon>
+          </button>
+          <button
+            *ngIf="version.freezed"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Copy and edit a new version"
+          >
+            <nb-icon icon="copy-outline"></nb-icon>
+          </button>
+          <button
+            *ngIf="!version.freezed"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Edit"
+          >
+            <nb-icon icon="color-palette-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+</nb-accordion>

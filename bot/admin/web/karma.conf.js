@@ -1,6 +1,6 @@
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     basePath: '',
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
@@ -21,10 +21,7 @@ module.exports = function(config) {
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage/web'),
       subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
-      ]
+      reporters: [{ type: 'html' }, { type: 'text-summary' }]
     },
     reporters: ['progress', 'kjhtml'],
     port: 9876,
@@ -34,5 +31,5 @@ module.exports = function(config) {
     browsers: ['Chrome'],
     singleRun: false,
     restartOnFileChange: true
-  })
-}
+  });
+};

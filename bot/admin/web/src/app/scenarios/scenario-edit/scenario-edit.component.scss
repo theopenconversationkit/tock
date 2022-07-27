@@ -1,0 +1,21 @@
+.side-panel {
+  height: min-content;
+  position: sticky;
+  top: 5.75rem;
+}
+
+.grid-button {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-gap: 0.5rem;
+}
+
+@media screen and (min-width: 400px) {
+  .grid-button {
+    grid-template-columns: 1fr auto auto;
+
+    button {
+      width: fit-content;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  padding: 0.2rem 0.6rem;
+  background-color: #ccc;
+  border-radius: 1rem;
+  color: white;
+  margin-left: 15px;
+  max-width: 180px;
+  :before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -15px;
+    top: 12px;
+    height: 3px;
+    width: 15px;
+    background-color: #ccc;
+  }
+}

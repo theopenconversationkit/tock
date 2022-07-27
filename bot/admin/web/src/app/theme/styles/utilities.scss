@@ -1,0 +1,40 @@
+.text-muted {
+  color: #8f959b;
+}
+
+.valign-middle {
+  vertical-align: middle;
+}
+.pointer {
+  cursor: pointer;
+}
+.cursor-move {
+  cursor: move;
+}
+.cursor-default {
+  cursor: default !important;
+}
+.initial-capitalize::first-letter {
+  text-transform: uppercase;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.min-width-1em {
+  min-width: 1em;
+}
+
+.unselectable {
+  user-select: none;
+}
+
+nb-accordion.selected {
+  border-left: 0.5rem solid var(--success);
+  nb-accordion-item {
+    padding-left: 1rem;
+  }
+}
