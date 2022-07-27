@@ -47,7 +47,7 @@
         <div *ngFor="let item of [].constructor(data.length); let i = index">{{ i + 1 }}</div>
       </div>
 
-      <div class="lines-container d-flex flex-column">
+      <div class="lines-container">
         <div class="d-flex" *ngFor="let d of data">
           <span [innerHtml]="syntaxHighlight(d)"></span>
         </div>
