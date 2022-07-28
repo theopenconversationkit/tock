@@ -1,5 +1,7 @@
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NbCardModule, NbIconModule, NbToastrModule } from '@nebular/theme';
+import { By } from '@angular/platform-browser';
+import { NbCardModule, NbIconModule, NbSelectModule, NbToastrModule } from '@nebular/theme';
 
 import { TestSharedModule } from '../test-shared.module';
 import { JsonPreviewerComponent } from './json-previewer.component';
@@ -10,7 +12,13 @@ describe('JsonPreviewerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NbCardModule, NbIconModule, NbToastrModule.forRoot({}), TestSharedModule],
+      imports: [
+        NbCardModule,
+        NbIconModule,
+        NbSelectModule,
+        NbToastrModule.forRoot({}),
+        TestSharedModule
+      ],
       declarations: [JsonPreviewerComponent]
     }).compileComponents();
   });
@@ -101,6 +109,69 @@ describe('JsonPreviewerComponent', () => {
     stringsToTest.forEach((s, i) => {
       const result = component.syntaxHighlight(s);
       expect(result).toBe(expectedResult[i]);
+    });
+  });
+
+  describe('test template', () => {
+    const mockJson = {
+      id: 'root',
+      type: 'parallel',
+      states: {
+        Global: {
+          id: 'Global'
+        }
+      },
+      initial: 'Global',
+      on: {}
+    };
+
+    it('should render as many index row as existing row in the json', () => {
+      component.jsonData = mockJson;
+      component.ngOnChanges({
+        jsonData: new SimpleChange({}, component.jsonData, true)
+      });
+      fixture.detectChanges();
+      const linesNumberContainer: HTMLElement = fixture.debugElement.query(
+        By.css('.lines-number')
+      ).nativeElement;
+
+      expect(linesNumberContainer.children.length).toBe(11);
+      Array.from(linesNumberContainer.children).forEach((child, i) => {
+        expect(child.textContent.trim()).toBe((i + 1).toString());
+      });
+    });
+
+    it('should render as many lines with syntax highlighting as existing lines in the json', () => {
+      component.jsonData = mockJson;
+      component.ngOnChanges({
+        jsonData: new SimpleChange({}, component.jsonData, true)
+      });
+      fixture.detectChanges();
+      const linesContainer: HTMLElement = fixture.debugElement.query(
+        By.css('.lines-container')
+      ).nativeElement;
+      const expectedResult = [
+        '<span class="delimiter">{</span>',
+        '<span class="space">&nbsp;&nbsp;</span><span class="key">"id":</span><span class="space">&nbsp;</span><span class="string">"root"</span><span class="comma">,</span>',
+        '<span class="space">&nbsp;&nbsp;</span><span class="key">"type":</span><span class="space">&nbsp;</span><span class="string">"parallel"</span><span class="comma">,</span>',
+        '<span class="space">&nbsp;&nbsp;</span><span class="key">"states":</span><span class="space">&nbsp;</span><span class="delimiter">{</span>',
+        '<span class="space">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="key">"Global":</span><span class="space">&nbsp;</span><span class="delimiter">{</span>',
+        '<span class="space">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="key">"id":</span><span class="space">&nbsp;</span><span class="string">"Global"</span>',
+        '<span class="space">&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="delimiter">}</span>',
+        '<span class="space">&nbsp;&nbsp;</span><span class="delimiter">}</span><span class="comma">,</span>',
+        '<span class="space">&nbsp;&nbsp;</span><span class="key">"initial":</span><span class="space">&nbsp;</span><span class="string">"Global"</span><span class="comma">,</span>',
+        '<span class="space">&nbsp;&nbsp;</span><span class="key">"on":</span><span class="space">&nbsp;</span><span class="delimiter">{</span><span class="delimiter">}</span>',
+        '<span class="delimiter">}</span>'
+      ];
+
+      expect(linesContainer.children.length).toBe(expectedResult.length);
+      Array.from(linesContainer.children).forEach((child, i) => {
+        const line = Array.from(child.firstElementChild.children)
+          .map((e) => e.outerHTML)
+          .join('');
+
+        expect(line).toBe(expectedResult[i]);
+      });
     });
   });
 });

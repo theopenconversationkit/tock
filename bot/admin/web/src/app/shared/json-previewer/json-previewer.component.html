@@ -17,18 +17,18 @@
 
   <nb-card-body class="card-body">
     <header class="d-flex flex-wrap justify-content-end gap-1 mb-2">
-      <input
-        nbInput
-        id="spacing"
-        type="number"
-        min="2"
-        max="10"
-        step="2"
+      <nb-select
         placeholder="Change spacing"
         nbTooltip="Change indent"
         [(ngModel)]="spacing"
         (ngModelChange)="spacingChange()"
-      />
+      >
+        <nb-option
+          *ngFor="let i of [].constructor(2, 4, 6, 8)"
+          [value]="i"
+          >{{ i }}</nb-option
+        >
+      </nb-select>
       <button
         nbButton
         ghost
@@ -47,7 +47,7 @@
         <div *ngFor="let item of [].constructor(data.length); let i = index">{{ i + 1 }}</div>
       </div>
 
-      <div class="lines-container d-flex flex-column">
+      <div class="lines-container">
         <div class="d-flex" *ngFor="let d of data">
           <span [innerHtml]="syntaxHighlight(d)"></span>
         </div>
