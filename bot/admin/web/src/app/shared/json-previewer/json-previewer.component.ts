@@ -105,13 +105,14 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private jsonFormat(jsonData: string | object): string {
+    if (typeof jsonData === 'string') {
+      return JSON.stringify(JSON.parse(jsonData), undefined, this.spacing);
+    }
     return JSON.stringify(jsonData, undefined, this.spacing);
   }
 
   lineBreak(jsonData: string | object): string[] {
-    if (typeof jsonData !== 'string') {
-      jsonData = this.jsonFormat(jsonData);
-    }
+    jsonData = this.jsonFormat(jsonData);
 
     const lineBreak = /\r\n?|\n/g;
     return jsonData.split(lineBreak);
