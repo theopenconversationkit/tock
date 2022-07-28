@@ -20,7 +20,7 @@ export class ModeStepperComponent {
     private dialogService: DialogService
   ) {}
 
-  switchMode(mode) {
+  switchMode(mode: SCENARIO_MODE) {
     if (!this.isStepSequenceValid(mode)) {
       let reason = this.getStepSequenceValidity(mode, true);
 
@@ -37,12 +37,12 @@ export class ModeStepperComponent {
     }
   }
 
-  isStepPassed(mode) {
+  isStepPassed(mode: SCENARIO_MODE): boolean {
     const keys = Object.keys(SCENARIO_MODE);
     return keys.indexOf(mode) < keys.indexOf(this.mode);
   }
 
-  getStepSequenceValidity(mode, isSwitchAction: boolean = false) {
+  getStepSequenceValidity(mode: SCENARIO_MODE, isSwitchAction: boolean = false): string {
     if (mode === SCENARIO_MODE.casting) {
       return this.scenarioDesignerService.isStepValid(
         this.scenario,
@@ -86,7 +86,7 @@ export class ModeStepperComponent {
     }
   }
 
-  isStepSequenceValid(mode) {
+  isStepSequenceValid(mode: SCENARIO_MODE): boolean {
     if (mode === SCENARIO_MODE.writing) return true;
 
     if (mode === SCENARIO_MODE.casting) {

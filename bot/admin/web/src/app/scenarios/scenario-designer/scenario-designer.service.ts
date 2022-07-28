@@ -3,7 +3,6 @@ import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
   getAllSmNonGroupStatesNames,
-  getAllSmStatesNames,
   getAllSmTransitionNames,
   getScenarioActionDefinitions,
   getScenarioIntentDefinitions,
@@ -12,6 +11,7 @@ import {
   stringifiedCleanScenario
 } from '../commons/utils';
 import {
+  IntegrityCheckResult,
   Scenario,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
@@ -34,7 +34,7 @@ export class ScenarioDesignerService {
       .pipe(tap((data) => this.updateScenarioBackup(data)));
   }
 
-  updateScenarioBackup(data) {
+  updateScenarioBackup(data: Scenario): void {
     this.scenarioDesignerCommunication.next({
       type: 'updateScenarioBackup',
       data: data
@@ -45,7 +45,7 @@ export class ScenarioDesignerService {
     scenario: Scenario,
     step: SCENARIO_MODE,
     isSwitchAction: boolean = false
-  ): { valid: boolean; reason?: string } {
+  ): IntegrityCheckResult {
     const scenarioItems = scenario.data.scenarioItems;
 
     if (step === SCENARIO_MODE.casting) {
@@ -110,7 +110,7 @@ export class ScenarioDesignerService {
     return { valid: true };
   }
 
-  checkStoryIntegrity(scenario: Scenario): { valid: boolean; reason?: string } {
+  checkStoryIntegrity(scenario: Scenario): IntegrityCheckResult {
     const actionsDefinitions = getScenarioActionDefinitions(scenario);
 
     for (let index = 0; index < actionsDefinitions.length; index++) {
@@ -148,7 +148,7 @@ export class ScenarioDesignerService {
     return { valid: true };
   }
 
-  checkStateMachineIntegrity(scenario: Scenario): { valid: boolean; reason?: string } {
+  checkStateMachineIntegrity(scenario: Scenario): IntegrityCheckResult {
     const stateMachine = scenario.data.stateMachine;
 
     const intentDefinitions = getScenarioIntentDefinitions(scenario);
