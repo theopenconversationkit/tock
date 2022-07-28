@@ -124,7 +124,7 @@ export function getSmTransitionByName(name: string, group: machineState): string
   return result;
 }
 
-export function getAllSmTransitions(group: machineState, result = {}): object {
+export function getAllSmTransitions(group: machineState, result = {}): { [key: string]: string } {
   if (group.on) Object.assign(result, group.on);
   if (group.states) {
     for (let name in group.states) {
@@ -181,7 +181,7 @@ export function getSmStateParentById(id: string, group: machineState): machineSt
   return result;
 }
 
-export function getAllSmStatesNames(group, result = []) {
+export function getAllSmStatesNames(group: machineState, result: string[] = []): string[] {
   if (group.id) result.push(group.id);
   if (group.states) {
     for (let name in group.states) {
@@ -191,7 +191,7 @@ export function getAllSmStatesNames(group, result = []) {
   return result;
 }
 
-export function getAllSmNonGroupStatesNames(group, result = []) {
+export function getAllSmNonGroupStatesNames(group: machineState, result: string[] = []): string[] {
   if (group.id && !group.states) result.push(group.id);
   if (group.states) {
     for (let name in group.states) {

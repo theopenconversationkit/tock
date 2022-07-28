@@ -6,12 +6,12 @@
         <div
           class="intent d-flex my-1 unselectable"
           *ngFor="let intent of getScenarioIntentDefinitions()"
-          [ngClass]="{ disabled: isIntentInUse(intent) }"
+          [ngClass]="{ disabled: !isIntentDraggable(intent) }"
           [nbTooltip]="getIntentTooltip(intent)"
           [dndDraggable]="{ type: 'intent', name: intent.name }"
           [dndType]="getDraggableIntentType(intent)"
           dndHandle
-          [dndDisableIf]="isIntentInUse(intent)"
+          [dndDisableIf]="!isIntentDraggable(intent)"
         >
           <nb-icon
             *ngIf="intent.primary"

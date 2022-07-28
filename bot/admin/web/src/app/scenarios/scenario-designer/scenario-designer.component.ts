@@ -110,7 +110,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateScenarioBackup(scenario) {
+  updateScenarioBackup(scenario: Scenario): void {
     this.scenarioBackup = JSON.stringify(scenario);
   }
 

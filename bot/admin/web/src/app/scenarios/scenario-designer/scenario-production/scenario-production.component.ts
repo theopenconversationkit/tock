@@ -12,7 +12,14 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
-import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT } from '../../models';
+import {
+  intentDefinition,
+  machineState,
+  Scenario,
+  SCENARIO_ITEM_FROM_BOT,
+  SCENARIO_ITEM_FROM_CLIENT,
+  TickActionDefinition
+} from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
 import {
@@ -150,16 +157,16 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getDraggableIntentType(intent) {
+  getDraggableIntentType(intent: intentDefinition) {
     if (intent.primary) return 'primaryIntent';
     return 'intent';
   }
 
-  getIntentTooltip(intent) {
+  getIntentTooltip(intent: intentDefinition) {
     return intent.label ? intent.label : intent.name;
   }
 
-  getScenarioActionDefinitions() {
+  getScenarioActionDefinitions(): TickActionDefinition[] {
     return getScenarioActionDefinitions(this.scenario).sort((a, b) => {
       const aIsUsed = this.isActionInUse(a);
       if (aIsUsed) return 1;
@@ -169,20 +176,26 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  collectAllUsedNames() {
-    let names = new Set();
+  collectAllUsedNames(): string[] {
+    let names = new Set<string>();
     getScenarioActionDefinitions(this.scenario).forEach((a) => names.add(a.name));
     getScenarioIntentDefinitions(this.scenario).forEach((a) => names.add(a.name));
     getAllSmStatesNames(this.scenario.data.stateMachine).forEach((n) => names.add(n));
     return [...names];
   }
 
-  isActionInUse(action) {
+  isActionInUse(action: TickActionDefinition): machineState {
     return getSmStateById(action.name, this.scenario.data.stateMachine);
   }
 
-  isIntentInUse(intent) {
+  isIntentInUse(intent: intentDefinition): string {
     return getSmTransitionByName(intent.name, this.scenario.data.stateMachine);
+  }
+
+  isIntentDraggable(intent: intentDefinition): boolean {
+    const item = this.scenario.data.scenarioItems.find((item) => item.intentDefinition === intent);
+    if (item.main) return false;
+    return true;
   }
 
   getActionTooltip(action) {
