@@ -180,3 +180,23 @@ export function getSmStateParentById(id: string, group: machineState): machineSt
 
   return result;
 }
+
+export function getAllSmStatesNames(group, result = []) {
+  if (group.id) result.push(group.id);
+  if (group.states) {
+    for (let name in group.states) {
+      getAllSmStatesNames(group.states[name], result);
+    }
+  }
+  return result;
+}
+
+export function getAllSmNonGroupStatesNames(group, result = []) {
+  if (group.id && !group.states) result.push(group.id);
+  if (group.states) {
+    for (let name in group.states) {
+      getAllSmNonGroupStatesNames(group.states[name], result);
+    }
+  }
+  return result;
+}

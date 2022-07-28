@@ -22,7 +22,8 @@ import {
   getSmStateParentById,
   revertTransformMatrix,
   getAllSmTransitions,
-  getSmStateById
+  getSmStateById,
+  getAllSmStatesNames
 } from '../../commons/utils';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 
@@ -172,18 +173,8 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     let names = new Set();
     getScenarioActionDefinitions(this.scenario).forEach((a) => names.add(a.name));
     getScenarioIntentDefinitions(this.scenario).forEach((a) => names.add(a.name));
-    this.getAllActionGroupNames(this.scenario.data.stateMachine).forEach((n) => names.add(n));
+    getAllSmStatesNames(this.scenario.data.stateMachine).forEach((n) => names.add(n));
     return [...names];
-  }
-
-  getAllActionGroupNames(group, result = []) {
-    if (group.id) result.push(group.id);
-    if (group.states) {
-      for (let name in group.states) {
-        this.getAllActionGroupNames(group.states[name], result);
-      }
-    }
-    return result;
   }
 
   isActionInUse(action) {
