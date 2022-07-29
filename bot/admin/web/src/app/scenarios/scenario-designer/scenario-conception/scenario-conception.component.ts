@@ -22,7 +22,11 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
-import { getContrastYIQ } from '../../commons/utils';
+import {
+  getContrastYIQ,
+  getSmTransitionParentsByname,
+  removeSmStateById
+} from '../../commons/utils';
 import { ContextCreateComponent } from './context-create/context-create.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
@@ -55,12 +59,14 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     this.scenarioConceptionService.scenarioDesignerItemsCommunication
       .pipe(takeUntil(this.destroy))
       .subscribe((evt) => {
-        if (evt.type == 'addAnswer') this.addAnswer(evt.item);
-        if (evt.type == 'deleteAnswer') this.deleteAnswer(evt.item, evt.parentItemId);
+        if (evt.type == 'addAnswer') this.addItem(evt.item);
+        if (evt.type == 'deleteAnswer') this.deleteItem(evt.item, evt.parentItemId);
         if (evt.type == 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
         if (evt.type == 'itemSelected') this.selectItem(evt.item);
         if (evt.type == 'testItem') this.testStory(evt.item);
         if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
+        if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
+        if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
       });
   }
 
@@ -134,21 +140,11 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteAnswer(itemRef: scenarioItem, parentItemId: number): void {
-    if (itemRef.parentIds.length > 1) {
-      itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
-    } else {
-      this.scenario.data.scenarioItems = this.scenario.data.scenarioItems.filter(
-        (item) => item.id != itemRef.id
-      );
-    }
-  }
-
   getNextItemId(): number {
     return Math.max(...this.scenario.data.scenarioItems.map((i) => i.id)) + 1;
   }
 
-  addAnswer(itemRef: scenarioItem, from?: scenarioItemFrom): void {
+  addItem(itemRef: scenarioItem, from?: scenarioItemFrom): void {
     let fromType = from || SCENARIO_ITEM_FROM_CLIENT;
     if (from == undefined && itemRef.from == SCENARIO_ITEM_FROM_CLIENT) {
       fromType = SCENARIO_ITEM_FROM_BOT;
@@ -169,6 +165,55 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
+  deleteItem(itemRef: scenarioItem, parentItemId: number): void {
+    if (itemRef.parentIds.length > 1) {
+      itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
+    } else {
+      this.removeItemDefinition(itemRef);
+      this.scenario.data.scenarioItems = this.scenario.data.scenarioItems.filter(
+        (item) => item.id != itemRef.id
+      );
+    }
+  }
+
+  changeItemType(item: scenarioItem, targetType: scenarioItemFrom) {
+    if (targetType === SCENARIO_ITEM_FROM_BOT && item.intentDefinition) {
+      if (this.scenario.data.stateMachine) {
+        this.removeItemDefinition(item);
+      }
+    }
+
+    if (targetType === SCENARIO_ITEM_FROM_CLIENT && item.tickActionDefinition) {
+      if (this.scenario.data.stateMachine) {
+        this.removeItemDefinition(item);
+      }
+    }
+
+    item.from = targetType;
+  }
+
+  removeItemDefinition(item: scenarioItem) {
+    if (item.intentDefinition) {
+      if (this.scenario.data.stateMachine) {
+        const intentTransitionsParents = getSmTransitionParentsByname(
+          item.intentDefinition.name,
+          this.scenario.data.stateMachine
+        );
+        intentTransitionsParents.forEach((parent) => {
+          delete parent.on[item.intentDefinition.name];
+        });
+      }
+
+      delete item.intentDefinition;
+    }
+
+    if (item.tickActionDefinition) {
+      removeSmStateById(item.tickActionDefinition.name, this.scenario.data.stateMachine);
+
+      delete item.tickActionDefinition;
+    }
+  }
+
   selectedItem: scenarioItem;
 
   selectItem(item?: scenarioItem): void {
@@ -180,13 +225,13 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     if (this.selectedItem) {
       if (event.altKey) {
         if (event.key == 'c') {
-          this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_CLIENT);
+          this.addItem(this.selectedItem, SCENARIO_ITEM_FROM_CLIENT);
         }
         if (event.key == 'b') {
-          this.addAnswer(this.selectedItem, SCENARIO_ITEM_FROM_BOT);
+          this.addItem(this.selectedItem, SCENARIO_ITEM_FROM_BOT);
         }
         if (event.key == 'n') {
-          this.addAnswer(this.selectedItem);
+          this.addItem(this.selectedItem);
         }
       }
     }

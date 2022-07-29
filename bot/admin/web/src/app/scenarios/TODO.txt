@@ -29,30 +29,37 @@ Scenario designer :
                 Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
 
                 Enchainement de deux actions bot
+
+                #DONE Au changement de from d'un scenarioItem, supprimer les eventuelles intentDefinition et tickActionDefinition existantes
+
+                #DONE Mettre à jours la state machine lorsqu'on supprime ou change le type de from d'un item qui était déjà référencé dans la state machine
         
         CONCEPTION : 
 
                 action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
 
                 intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario.
-                Interdire les sharedIntents ?
                 L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
+                
+                Quid des sharedIntents ?
 
-                Intent avec intnetdefinition manquante mais affichage pas en accord
+                Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
                 intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
         
                 #DONE intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base. Implications sur le fonctionnement de l'étape publishing
 
-                Au changement de from d'un scenarioItem, supprimer les eventuelles intentDefinition et tickActionDefinition existantes
-
-                Mettre à jours la state machine lorsqu'on renomme, supprime ou change le type de from d'un item qui était déjà référencé dans la state machine
+                Mettre à jours la state machine lorsqu'on renomme un item qui était déjà référencé
+                
+                #DONE Mettre à jours la state machine lorsqu'on supprime la definition d'un item qui était déjà référencé
 
                 Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa
 
                 #DONE Permettre de flaguer une intent secondaire comme également primaire
 
         PRODUCTION : 
+
+                Revoir getAllSmTransitions (utilisé par drawPaths) puisque qu'une intent peut donner lieu à plusieurs transitions
 
         PUBLISHING : 
                 #DONE Comment le front fait-il pour créer une secondary intent ?

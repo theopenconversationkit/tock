@@ -81,6 +81,21 @@ export class ScenarioConceptionService {
     });
   }
 
+  changeItemType(item, targetType) {
+    this.scenarioDesignerItemsCommunication.next({
+      type: 'changeItemType',
+      item: item,
+      targetType: targetType
+    });
+  }
+
+  removeItemDefinition(item) {
+    this.scenarioDesignerItemsCommunication.next({
+      type: 'removeItemDefinition',
+      item: item
+    });
+  }
+
   // Designer to child components communication
   focusItem(item: scenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
