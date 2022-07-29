@@ -13,6 +13,7 @@
       <nb-icon
         *ngIf="state.id !== 'root' && isInitialParentState()"
         icon="flash-outline"
+        status="basic"
         class="valign-middle"
         style="margin-left: -5px"
         nbTooltip="Initial action"
@@ -21,6 +22,7 @@
       <nb-icon
         *ngIf="state.id !== 'root' && !isInitialParentState()"
         icon="flash-outline"
+        status="basic"
         class="valign-middle pointer"
         style="margin-left: -5px; color: #bbb"
         (click)="setActionInitial()"

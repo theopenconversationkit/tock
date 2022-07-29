@@ -107,7 +107,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         hidden: !this.state.hasRole(UserRole.faqBotUser)
       },
       {
-        title: 'Scenarios management',
+        title: 'Scenarios Management',
         icon: 'film-outline',
         link: '/scenarios',
         hidden: !this.state.hasRole(UserRole.botUser)
