@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorMessage
@@ -30,6 +29,7 @@ import ai.tock.bot.connector.media.MediaFile
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
+import java.util.Collections
 
 internal object MediaConverter {
 
@@ -40,27 +40,14 @@ internal object MediaConverter {
         }
     }
 
-    private fun BotBus.toQuickReplies(actions: List<MediaAction>): List<QuickReply> {
-        return actions.filter { it.url == null }
-                      .map {
-                          QuickReply(translate(it.title).toString())
-                      }
-    }
+    fun toSimpleMessage(
+        message: CharSequence,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
+        val payload: Payload = TextPayload(translate(message).toString())
+        val quickReply: MutableList<QuickReply> = suggestionToQuickReplies(suggestions)
 
-    private fun BotBus.toActions(actions: List<MediaAction>): List<Action> {
-        return actions.filter { it.url != null }
-                      .map {
-                          Action(translate(it.title).toString(), it.url!!)
-                      }
-    }
-
-    private fun BotBus.toImage(file: MediaFile?): Image? {
-        return if(image.equals(file?.type)) {
-            //if equals true, file cannot be null
-            Image(file!!.url, file.name)
-        } else {
-            null
-        }
+        IadvizeMessage(payload, quickReply)
     }
 
     private fun BotBus.fromMediaCard(message: MediaCard): List<ConnectorMessage> {
@@ -71,7 +58,7 @@ internal object MediaConverter {
         val image: Image? = toImage(file)
 
         val actions = message.actions
-        val quickReply: List<QuickReply> = toQuickReplies(actions)
+        val quickReply: MutableList<QuickReply> = actionToQuickReplies(actions)
         val payloadActions: List<Action> = toActions(actions)
 
         val payload: Payload = getPayload(title, text, image, payloadActions)
@@ -79,6 +66,44 @@ internal object MediaConverter {
         val iadvizeMessage = IadvizeMessage(payload, quickReply)
 
         return listOf(iadvizeMessage)
+    }
+
+    private fun BotBus.actionToQuickReplies(actions: List<MediaAction>): MutableList<QuickReply> {
+        return actions.filter { isQuickReply(it) }
+                      .map { toQuickReplies(it) }
+                      .toMutableList()
+    }
+
+    private fun BotBus.suggestionToQuickReplies(suggestions: List<CharSequence>): MutableList<QuickReply> {
+        return suggestions.map { toQuickReplies(it) }
+                          .toMutableList()
+    }
+
+    private fun isQuickReply(action: MediaAction): Boolean {
+       return action.url == null
+    }
+
+    private fun BotBus.toQuickReplies(action: MediaAction): QuickReply {
+        return QuickReply(translate(action.title).toString())
+    }
+
+    private fun BotBus.toQuickReplies(suggestion: CharSequence): QuickReply {
+        return QuickReply(translate(suggestion).toString())
+    }
+
+    private fun BotBus.toActions(actions: List<MediaAction>): List<Action> {
+        return actions.filter { it.url != null }
+                      .map {
+                          Action(translate(it.title).toString(), it.url!!)
+                      }
+    }
+    private fun BotBus.toImage(file: MediaFile?): Image? {
+        return if(image.equals(file?.type)) {
+            //if equals true, file cannot be null
+            Image(file!!.url, file.name)
+        } else {
+            null
+        }
     }
 
     private fun getPayload(title: String, text: String, image: Image?, actions: List<Action>): Payload {

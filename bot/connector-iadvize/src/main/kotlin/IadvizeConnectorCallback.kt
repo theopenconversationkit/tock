@@ -108,7 +108,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
 
             is MessageRequest -> {
                 response.replies.addAll(toListIadvizeReply(actions))
-               return response
+                return response
             }
 
             is UnsupportedRequest -> {

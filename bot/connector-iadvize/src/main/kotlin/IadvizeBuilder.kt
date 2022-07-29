@@ -55,5 +55,5 @@ internal fun <T : Bus<T>> T.iadvizeMessage(
  */
 internal fun <T : Bus<T>> T.iadvizeMessage(
     title: CharSequence,
-    quickReplies: List<QuickReply>
+    quickReplies: MutableList<QuickReply>
 ): IadvizeReply = IadvizeMessage(TextPayload(translate(title).toString()), quickReplies)

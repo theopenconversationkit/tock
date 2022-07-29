@@ -109,7 +109,7 @@ class IadvizeConnectorTest {
         val iAdvizeRequest: IadvizeRequest = getIadvizeRequestMessage("/request_message_text.json", conversationId)
         val expectedResponse: String = Resources.toString(resource("/response_message_quickreply.json"), Charsets.UTF_8)
 
-        val iadvizeReply: IadvizeReply = IadvizeMessage(TextPayload("MARCUS"), listOf(QuickReply("MARCUS_YES"), QuickReply("MARCUS_NO")))
+        val iadvizeReply: IadvizeReply = IadvizeMessage(TextPayload("MARCUS"), mutableListOf(QuickReply("MARCUS_YES"), QuickReply("MARCUS_NO")))
 
         val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeReply))
         val connectorData = slot<ConnectorData>()

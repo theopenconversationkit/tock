@@ -31,6 +31,7 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.shared.error
 import mu.KotlinLogging
 import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies.Strategy.customAvailability
+import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.RepliesResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.media.MediaMessage
@@ -226,6 +227,22 @@ class IadvizeConnector internal constructor(
             // and UnsupportedResponse can be send immediatly
             else -> callback.sendResponse()
         }
+    }
+
+    override fun addSuggestions(
+        text: CharSequence,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? =
+        MediaConverter.toSimpleMessage(text, suggestions)
+
+    override fun addSuggestions(
+        message: ConnectorMessage,
+        suggestions: List<CharSequence>
+    ): BotBus.() -> ConnectorMessage? = {
+        (message as? IadvizeMessage)?.let {
+            message.quickReplies.addAll( suggestions.map{ QuickReply(translate(it).toString())} )
+        }
+        message
     }
 
     override fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> =
