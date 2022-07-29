@@ -114,6 +114,11 @@ export interface dependencyUpdateJob {
   done: boolean;
   data: scenarioItem;
 }
+
+export interface IntegrityCheckResult {
+  valid: boolean;
+  reason?: string;
+}
 export interface Filter {
   search: string;
   tags: Array<string>;

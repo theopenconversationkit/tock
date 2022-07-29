@@ -20,9 +20,9 @@ export class ModeStepperComponent {
     private dialogService: DialogService
   ) {}
 
-  switchMode(mode) {
+  switchMode(mode: SCENARIO_MODE) {
     if (!this.isStepSequenceValid(mode)) {
-      let reason = this.getStepSequenceValidity(mode);
+      let reason = this.getStepSequenceValidity(mode, true);
 
       this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
@@ -37,46 +37,56 @@ export class ModeStepperComponent {
     }
   }
 
-  isStepPassed(mode) {
+  isStepPassed(mode: SCENARIO_MODE): boolean {
     const keys = Object.keys(SCENARIO_MODE);
     return keys.indexOf(mode) < keys.indexOf(this.mode);
   }
 
-  getStepSequenceValidity(mode) {
+  getStepSequenceValidity(mode: SCENARIO_MODE, isSwitchAction: boolean = false): string {
     if (mode === SCENARIO_MODE.casting) {
-      return this.scenarioDesignerService.isStepValid(this.scenario, SCENARIO_MODE.casting).reason;
+      return this.scenarioDesignerService.isStepValid(
+        this.scenario,
+        SCENARIO_MODE.casting,
+        isSwitchAction
+      ).reason;
     }
     if (mode === SCENARIO_MODE.production) {
       let castingValidity = this.scenarioDesignerService.isStepValid(
         this.scenario,
-        SCENARIO_MODE.casting
+        SCENARIO_MODE.casting,
+        isSwitchAction
       );
       if (!castingValidity.valid) return castingValidity.reason;
       let productionValidity = this.scenarioDesignerService.isStepValid(
         this.scenario,
-        SCENARIO_MODE.production
+        SCENARIO_MODE.production,
+        isSwitchAction
       );
       if (!productionValidity.valid) return productionValidity.reason;
     }
     if (mode === SCENARIO_MODE.publishing) {
       let castingValidity = this.scenarioDesignerService.isStepValid(
         this.scenario,
-        SCENARIO_MODE.casting
+        SCENARIO_MODE.casting,
+        isSwitchAction
       );
       if (!castingValidity.valid) return castingValidity.reason;
       let productionValidity = this.scenarioDesignerService.isStepValid(
         this.scenario,
-        SCENARIO_MODE.production
+        SCENARIO_MODE.production,
+        isSwitchAction
       );
       if (!productionValidity.valid) return productionValidity.reason;
       let publishingValidity = this.scenarioDesignerService.isStepValid(
         this.scenario,
-        SCENARIO_MODE.publishing
+        SCENARIO_MODE.publishing,
+        isSwitchAction
       );
       if (!publishingValidity.valid) return publishingValidity.reason;
     }
   }
-  isStepSequenceValid(mode) {
+
+  isStepSequenceValid(mode: SCENARIO_MODE): boolean {
     if (mode === SCENARIO_MODE.writing) return true;
 
     if (mode === SCENARIO_MODE.casting) {

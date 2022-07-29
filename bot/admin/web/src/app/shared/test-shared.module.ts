@@ -12,6 +12,7 @@ import { NbThemeModule } from '@nebular/theme';
 
     NbThemeModule.forRoot({ name: 'default' }),
     NbEvaIconsModule
-  ]
+  ],
+  exports: [CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class TestSharedModule {}
