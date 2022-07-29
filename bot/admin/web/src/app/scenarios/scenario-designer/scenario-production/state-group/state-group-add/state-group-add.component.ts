@@ -1,23 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  ValidationErrors,
-  ValidatorFn,
-  Validators
-} from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { normalizedSnakeCase } from '../../../../commons/utils';
-
-function forbiddenNamesValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    console.log(this);
-    let names = this.usedNames;
-    const forbidden = names.includes(control.value);
-    return forbidden ? { forbiddenName: { value: control.value } } : null;
-  };
-}
 
 const ENTITY_NAME_MINLENGTH = 5;
 

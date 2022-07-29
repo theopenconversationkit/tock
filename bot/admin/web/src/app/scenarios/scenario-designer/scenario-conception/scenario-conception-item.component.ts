@@ -8,6 +8,7 @@ import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
 import { getSmTransitionParentsByname } from '../../commons/utils';
 import {
+  Scenario,
   scenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
@@ -37,6 +38,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   @Input() contexts: TickContext[];
   @Input() selectedItem: scenarioItem;
   @Input() mode: string;
+  @Input() scenario: Scenario;
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
@@ -107,7 +109,8 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const modal = this.dialogService.openDialog(ActionEditComponent, {
       context: {
         item: this.item,
-        contexts: this.contexts
+        contexts: this.contexts,
+        scenario: this.scenario
       }
     });
     const saveModifications = modal.componentRef.instance.saveModifications
