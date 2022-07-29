@@ -24,6 +24,9 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 import {
   getContrastYIQ,
+  getSmStateById,
+  getSmStateParentById,
+  getSmTransitionParentByTarget,
   getSmTransitionParentsByname,
   removeSmStateById
 } from '../../commons/utils';
@@ -67,6 +70,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
         if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
         if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
         if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
+        if (evt.type == 'renameItem') this.renameItem(evt.item, evt.newName);
       });
   }
 
@@ -211,6 +215,35 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       removeSmStateById(item.tickActionDefinition.name, this.scenario.data.stateMachine);
 
       delete item.tickActionDefinition;
+    }
+  }
+
+  renameItem(item: scenarioItem, newName: string) {
+    if (item.tickActionDefinition) {
+      let oldName = item.tickActionDefinition.name;
+      const stateParent = getSmStateParentById(oldName, this.scenario.data.stateMachine);
+      if (stateParent) {
+        if (stateParent.initial === oldName) {
+          stateParent.initial = newName;
+        }
+        stateParent.states[newName] = stateParent.states[oldName];
+        delete stateParent.states[oldName];
+      }
+
+      const matchingTransitionsParent = getSmTransitionParentByTarget(
+        oldName,
+        this.scenario.data.stateMachine
+      );
+      if (matchingTransitionsParent) {
+        matchingTransitionsParent.intents.forEach((transName) => {
+          matchingTransitionsParent.parent.on[transName] = newName;
+        });
+      }
+
+      const state = getSmStateById(oldName, this.scenario.data.stateMachine);
+      if (state) {
+        state.id = newName;
+      }
     }
   }
 

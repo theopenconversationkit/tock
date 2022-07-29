@@ -49,7 +49,9 @@ Scenario designer :
         
                 #DONE intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base. Implications sur le fonctionnement de l'étape publishing
 
-                Mettre à jours la state machine lorsqu'on renomme un item qui était déjà référencé
+                Quand on veux renommer une definition, vérifier les conflits de nom
+
+                #DONE Mettre à jours la state machine lorsqu'on renomme un item qui était déjà référencé
                 
                 #DONE Mettre à jours la state machine lorsqu'on supprime la definition d'un item qui était déjà référencé
 

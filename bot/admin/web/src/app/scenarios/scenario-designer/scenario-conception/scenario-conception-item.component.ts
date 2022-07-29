@@ -115,6 +115,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       .subscribe((actionDef) => {
         this.checkAndAddNewContexts(actionDef.inputContextNames);
         this.checkAndAddNewContexts(actionDef.outputContextNames);
+        if (
+          this.item.tickActionDefinition &&
+          this.item.tickActionDefinition.name !== actionDef.name
+        ) {
+          this.scenarioConceptionService.renameItem(this.item, actionDef.name);
+        }
+
         this.item.tickActionDefinition = actionDef;
 
         saveModifications.unsubscribe();

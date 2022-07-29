@@ -96,6 +96,14 @@ export class ScenarioConceptionService {
     });
   }
 
+  renameItem(item, newName) {
+    this.scenarioDesignerItemsCommunication.next({
+      type: 'renameItem',
+      item: item,
+      newName: newName
+    });
+  }
+
   // Designer to child components communication
   focusItem(item: scenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
