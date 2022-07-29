@@ -41,6 +41,7 @@ $bot-final-color: #43abf5;
 $client-color: white;
 
 .item-card {
+  color: #000;
   background-color: white;
   padding: 0.5rem;
   margin: auto;
@@ -83,6 +84,7 @@ $client-color: white;
         margin: 0;
         list-style-type: none;
         LI {
+          color: #000;
           font-size: 0.6rem;
           line-height: 1.4;
           padding: 0.2rem;
