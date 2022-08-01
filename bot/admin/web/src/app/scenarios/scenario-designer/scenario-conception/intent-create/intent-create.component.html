@@ -31,8 +31,8 @@
           [showError]="isSubmitted"
         >
           <input
-            #labelInput
             nbInput
+            autofocusElement
             formControlName="label"
             fullWidth
             id="label"
@@ -52,7 +52,6 @@
           [showError]="isSubmitted"
         >
           <input
-            #nameInput
             nbInput
             formControlName="name"
             fullWidth
@@ -65,37 +64,49 @@
       </div>
 
       <div class="d-flex flex-column mb-2">
-        <label for="category">Category</label>
-        <input
-          nbInput
-          formControlName="category"
-          fullWidth
-          id="category"
-          type="text"
-          placeholder="Select category"
-          autocomplete="off"
-          [nbAutocomplete]="categoryAutocomplete"
-        />
-        <nb-autocomplete #categoryAutocomplete>
-          <nb-option
-            *ngFor="let option of categoryAutocompleteValues | async"
-            [value]="option"
-          >
-            {{ option }}
-          </nb-option>
-        </nb-autocomplete>
+        <tock-form-control
+          label="Category"
+          name="category"
+          [controls]="category"
+          [showError]="isSubmitted"
+        >
+          <input
+            nbInput
+            formControlName="category"
+            fullWidth
+            id="category"
+            type="text"
+            placeholder="Select category"
+            autocomplete="off"
+            [nbAutocomplete]="categoryAutocomplete"
+          />
+          <nb-autocomplete #categoryAutocomplete>
+            <nb-option
+              *ngFor="let option of categoryAutocompleteValues | async"
+              [value]="option"
+            >
+              {{ option }}
+            </nb-option>
+          </nb-autocomplete>
+        </tock-form-control>
       </div>
 
       <div class="d-flex flex-column mb-2">
-        <label for="description">Description</label>
-        <textarea
-          nbInput
-          formControlName="description"
-          fullWidth
-          id="description"
-          type="text"
-          placeholder="Enter description"
-        ></textarea>
+        <tock-form-control
+          label="Description"
+          name="description"
+          [controls]="description"
+          [showError]="isSubmitted"
+        >
+          <textarea
+            nbInput
+            formControlName="description"
+            fullWidth
+            id="description"
+            type="text"
+            placeholder="Enter description"
+          ></textarea>
+        </tock-form-control>
       </div>
 
       <div class="grid-button mt-4">

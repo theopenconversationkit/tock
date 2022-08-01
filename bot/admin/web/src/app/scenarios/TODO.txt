@@ -20,7 +20,7 @@ Scenario designer :
 
         Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
 
-        A l'ouverture des modals positionner mettre le focus sur le 1er champ à renseigner
+        #DONE A l'ouverture des modals positionner mettre le focus sur le 1er champ à renseigner
 
         #DONE Adapter les css au mode nuit
 
@@ -31,7 +31,7 @@ Scenario designer :
                 #DONE Au changement de from d'un scenarioItem, supprimer les eventuelles intentDefinition et tickActionDefinition existantes
 
                 #DONE Mettre à jours la state machine lorsqu'on supprime ou change le type de from d'un item qui était déjà référencé dans la state machine
-        
+
         CONCEPTION :
 
                 intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
@@ -51,7 +51,7 @@ Scenario designer :
                 #DONE Quand on veux renommer une actionDefinition, vérifier les conflits de nom
 
                 #DONE Mettre à jours la state machine lorsqu'on renomme un item qui était déjà référencé
-                
+
                 #DONE Mettre à jours la state machine lorsqu'on supprime la definition d'un item qui était déjà référencé
 
                 #DONE Permettre de flaguer une intent secondaire comme également primaire
