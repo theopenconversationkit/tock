@@ -6,7 +6,7 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent, SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
-import { getSmTransitionParentsByname } from '../../commons/utils';
+import { renameSmStateById } from '../../commons/utils';
 import {
   Scenario,
   scenarioItem,
@@ -119,10 +119,15 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         this.checkAndAddNewContexts(actionDef.inputContextNames);
         this.checkAndAddNewContexts(actionDef.outputContextNames);
         if (
+          this.scenario.data.stateMachine &&
           this.item.tickActionDefinition &&
           this.item.tickActionDefinition.name !== actionDef.name
         ) {
-          this.scenarioConceptionService.renameItem(this.item, actionDef.name);
+          renameSmStateById(
+            this.item.tickActionDefinition.name,
+            actionDef.name,
+            this.scenario.data.stateMachine
+          );
         }
 
         this.item.tickActionDefinition = actionDef;

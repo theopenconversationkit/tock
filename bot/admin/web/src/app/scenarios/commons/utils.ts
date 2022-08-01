@@ -189,6 +189,33 @@ export function getSmTransitionParentByTarget(
   return result;
 }
 
+export function renameSmStateById(
+  currentStateId: string,
+  newStateId: string,
+  group: machineState
+): void {
+  const stateParent = getSmStateParentById(currentStateId, group);
+  if (stateParent) {
+    if (stateParent.initial === currentStateId) {
+      stateParent.initial = newStateId;
+    }
+    stateParent.states[newStateId] = stateParent.states[currentStateId];
+    delete stateParent.states[currentStateId];
+  }
+
+  const matchingTransitionsParent = getSmTransitionParentByTarget(currentStateId, group);
+  if (matchingTransitionsParent) {
+    matchingTransitionsParent.intents.forEach((transName) => {
+      matchingTransitionsParent.parent.on[transName] = newStateId;
+    });
+  }
+
+  const state = getSmStateById(currentStateId, group);
+  if (state) {
+    state.id = newStateId;
+  }
+}
+
 export function removeSmStateById(stateId: string, group: machineState): void {
   if (!group) return;
 

@@ -277,23 +277,6 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   removeState(event) {
     removeSmStateById(event.stateId, this.scenario.data.stateMachine);
-    // let targetingIntentParent = getSmTransitionParentByTarget(
-    //   event.stateId,
-    //   this.scenario.data.stateMachine
-    // );
-    // if (targetingIntentParent) {
-    //   targetingIntentParent.intents.forEach((intent) => {
-    //     delete targetingIntentParent.parent.on[intent];
-    //   });
-    // }
-
-    // let parent = getSmStateParentById(event.stateId, this.scenario.data.stateMachine);
-    // if (parent) {
-    //   if (parent.initial === event.stateId) {
-    //     parent.initial = '';
-    //   }
-    //   delete parent.states[event.stateId];
-    // }
   }
 
   displayStateMachineCode(): void {
