@@ -6,7 +6,7 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent, SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
-import { renameSmStateById } from '../../commons/utils';
+import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
 import {
   Scenario,
   scenarioItem,
@@ -203,7 +203,8 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   createIntent(): void {
     const modal = this.dialogService.openDialog(IntentCreateComponent, {
       context: {
-        item: this.item
+        item: this.item,
+        scenario: this.scenario
       }
     });
     const createIntentEvent = modal.componentRef.instance.createIntentEvent
@@ -227,6 +228,23 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const saveModificationsSubscription = modal.componentRef.instance.saveModifications
       .pipe(takeUntil(this.destroy))
       .subscribe((intentDef) => {
+        // If an intent is not primary anymore, it should not be a transition of ther global state
+        if (
+          this.scenario.data.stateMachine &&
+          this.item.intentDefinition.primary &&
+          !intentDef.primary
+        ) {
+          const parents = getSmTransitionParentsByname(
+            this.item.intentDefinition.name,
+            this.scenario.data.stateMachine
+          );
+          parents.forEach((parent) => {
+            if (parent?.id.toLowerCase() === 'global') {
+              delete parent.on[this.item.intentDefinition.name];
+            }
+          });
+        }
+
         this.item.intentDefinition.primary = intentDef.primary;
         this.item.intentDefinition.sentences = intentDef.sentences;
 
