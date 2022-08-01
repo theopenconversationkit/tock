@@ -94,7 +94,7 @@
   .intents-list::-webkit-scrollbar-thumb {
     background: nb-theme(scrollbar-color);
     cursor: pointer;
-    border-radius: nb-theme(scrollbar-width / 2);
+    border-radius: calc(nb-theme(scrollbar-width) / 2);
   }
   .actions-list::-webkit-scrollbar-track,
   .intents-list::-webkit-scrollbar-track {

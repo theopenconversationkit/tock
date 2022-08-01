@@ -181,7 +181,7 @@
   .contexts-list::-webkit-scrollbar-thumb {
     background: nb-theme(scrollbar-color);
     cursor: pointer;
-    border-radius: nb-theme(scrollbar-width / 2);
+    border-radius: calc(nb-theme(scrollbar-width) / 2);
   }
   .contexts-list::-webkit-scrollbar-track {
     background: nb-theme(scrollbar-background-color);
