@@ -3,8 +3,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { of } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { normalizedCamelCase } from '../../../commons/utils';
-import { scenarioItem } from '../../../models';
+import { Intent, nameFromQualifiedName } from '../../../../model/nlp';
+import { getScenarioIntentDefinitions, normalizedCamelCase } from '../../../commons/utils';
+import { Scenario, scenarioItem } from '../../../models';
 
 @Component({
   selector: 'scenario-intent-create',
@@ -13,6 +14,7 @@ import { scenarioItem } from '../../../models';
 })
 export class IntentCreateComponent implements OnInit {
   @Input() item: scenarioItem;
+  @Input() scenario: Scenario;
   @Output() createIntentEvent = new EventEmitter();
   categories: string[] = [];
   categoryAutocompleteValues;
@@ -33,15 +35,46 @@ export class IntentCreateComponent implements OnInit {
     if (this.item.main) {
       this.form.patchValue({ primary: true });
     }
+
+    this.form.markAsDirty();
   }
 
   form: FormGroup = new FormGroup({
     label: new FormControl(undefined, Validators.required),
-    name: new FormControl(undefined, Validators.required),
+    name: new FormControl(undefined, [Validators.required, this.isIntentNameUnic.bind(this)]),
     category: new FormControl('scenarios'),
     description: new FormControl(),
     primary: new FormControl(false)
   });
+
+  isIntentNameUnic(c: FormControl) {
+    if (!this.scenario) return null;
+
+    let isNotUnic;
+    let errorString;
+    if (c.value === nameFromQualifiedName(Intent.unknown)) {
+      isNotUnic = true;
+      errorString = `The string "${nameFromQualifiedName(
+        Intent.unknown
+      )}" is not allowed as an intent name`;
+    } else {
+      const allIntentDefs = getScenarioIntentDefinitions(this.scenario);
+      const nameExistInScenario = allIntentDefs.find((intentDef) => intentDef.name === c.value);
+      if (nameExistInScenario) {
+        isNotUnic = true;
+        errorString = 'This name is already used by another intent of this scenario';
+      } else {
+        const intentAlreadyExist = this.state.intentExists(c.value);
+        if (intentAlreadyExist) {
+          isNotUnic = true;
+          errorString =
+            'This name is already used by an existing intent of this or another application';
+        }
+      }
+    }
+
+    return isNotUnic ? { custom: errorString } : null;
+  }
 
   get label(): FormControl {
     return this.form.get('label') as FormControl;
@@ -65,22 +98,18 @@ export class IntentCreateComponent implements OnInit {
 
   private formatName(name: string): string {
     return normalizedCamelCase(name);
-    // .normalize('NFD')
-    // .replace(/[\u0300-\u036f]/g, '')
-    // .replace(/[^A-Za-z_-]*/g, '')
-    // .toLowerCase()
-    // .trim();
   }
 
   get canSave(): boolean {
-    return this.form.valid;
+    return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
   cancel(): void {
     this.dialogRef.close();
   }
-
+  isSubmitted: boolean = false;
   save() {
-    this.createIntentEvent.emit(this.form.value);
+    this.isSubmitted = true;
+    if (this.canSave) this.createIntentEvent.emit(this.form.value);
   }
 }

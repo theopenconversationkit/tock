@@ -33,17 +33,16 @@ Scenario designer :
                 #DONE Mettre à jours la state machine lorsqu'on supprime ou change le type de from d'un item qui était déjà référencé dans la state machine
         
         CONCEPTION :
-                
-                Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa
-
-                intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario.
-                L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
-
-                Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
                 intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
 
+                Intent avec intnetdefinition manquante mais affichage pas en accord ???
+
                 Quid des sharedIntents ?
+                
+                #DONE intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario. L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
+
+                #DONE Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa (nb passer de non primary à primary n'a à priori pas d'impact sur la SM)
 
                 #DONE action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
 

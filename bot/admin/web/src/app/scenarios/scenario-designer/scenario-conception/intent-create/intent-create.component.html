@@ -23,31 +23,45 @@
       (submit)="save()"
     >
       <div class="d-flex flex-column mb-2">
-        <label for="label">Label <span class="text-muted">(*)</span></label>
-        <input
-          #labelInput
-          nbInput
-          formControlName="label"
-          fullWidth
-          id="label"
-          type="text"
-          placeholder="Enter label"
-          (keyup)="copyLabelToName()"
-        />
+        <tock-form-control
+          label="Label"
+          name="label"
+          required="true"
+          [controls]="label"
+          [showError]="isSubmitted"
+        >
+          <input
+            #labelInput
+            nbInput
+            formControlName="label"
+            fullWidth
+            id="label"
+            type="text"
+            placeholder="Enter label"
+            (keyup)="copyLabelToName()"
+          />
+        </tock-form-control>
       </div>
 
       <div class="d-flex flex-column mb-2">
-        <label for="name">Name <span class="text-muted">(*)</span></label>
-        <input
-          #nameInput
-          nbInput
-          formControlName="name"
-          fullWidth
-          id="name"
-          type="text"
-          placeholder="Enter name"
-          (keyup)="formatNameInput()"
-        />
+        <tock-form-control
+          label="Name"
+          name="name"
+          required="true"
+          [controls]="name"
+          [showError]="isSubmitted"
+        >
+          <input
+            #nameInput
+            nbInput
+            formControlName="name"
+            fullWidth
+            id="name"
+            type="text"
+            placeholder="Enter name"
+            (keyup)="formatNameInput()"
+          />
+        </tock-form-control>
       </div>
 
       <div class="d-flex flex-column mb-2">
