@@ -135,7 +135,7 @@ export function getAllSmTransitions(group: machineState, result = {}): { [key: s
   return result;
 }
 
-export function getAllSmTransitionNames(group: machineState, result = []): string[] {
+export function getAllSmTransitionNames(group: machineState): string[] {
   let results = [];
   const transitions = getAllSmTransitions(group);
   for (let name in transitions) {
@@ -143,6 +143,69 @@ export function getAllSmTransitionNames(group: machineState, result = []): strin
   }
 
   return results;
+}
+
+export function getSmTransitionParentsByname(
+  transitionName: string,
+  group: machineState,
+  result: machineState[] = []
+): machineState[] {
+  if (group.on) {
+    for (let transName in group.on) {
+      if (transName === transitionName) {
+        result.push(group);
+      }
+    }
+
+    for (let action in group.states) {
+      getSmTransitionParentsByname(transitionName, group.states[action], result);
+    }
+  }
+
+  return result;
+}
+
+export function getSmTransitionParentByTarget(
+  targetName: string,
+  group: machineState
+): { parent: machineState; intents: string[] } | null {
+  let result;
+  if (group.on) {
+    for (let transitionName in group.on) {
+      if (group.on[transitionName] === `#${targetName}`) {
+        if (!result) result = { parent: group, intents: [transitionName] };
+        else result.intents.push(transitionName);
+      }
+    }
+
+    if (!result) {
+      for (let action in group.states) {
+        result = getSmTransitionParentByTarget(targetName, group.states[action]);
+        if (result) break;
+      }
+    }
+  }
+
+  return result;
+}
+
+export function removeSmStateById(stateId: string, group: machineState): void {
+  if (!group) return;
+
+  const targetingTransitionParent = getSmTransitionParentByTarget(stateId, group);
+  if (targetingTransitionParent) {
+    targetingTransitionParent.intents.forEach((intent) => {
+      delete targetingTransitionParent.parent.on[intent];
+    });
+  }
+
+  const actionStateParent = getSmStateParentById(stateId, group);
+  if (actionStateParent.initial === stateId) {
+    actionStateParent.initial = null;
+  }
+  if (actionStateParent.states[stateId]) {
+    delete actionStateParent.states[stateId];
+  }
 }
 
 export function getSmStateById(id: string, group: machineState): machineState | null {

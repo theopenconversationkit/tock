@@ -30,7 +30,8 @@ import {
   revertTransformMatrix,
   getAllSmTransitions,
   getSmStateById,
-  getAllSmStatesNames
+  getAllSmStatesNames,
+  removeSmStateById
 } from '../../commons/utils';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 
@@ -194,7 +195,10 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   isIntentDraggable(intent: intentDefinition): boolean {
     const item = this.scenario.data.scenarioItems.find((item) => item.intentDefinition === intent);
-    if (item.main) return false;
+    if (item.main) {
+      let exists = this.isIntentInUse(intent);
+      return exists ? false : true;
+    }
     return true;
   }
 
@@ -272,44 +276,24 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   }
 
   removeState(event) {
-    let targetingIntentParent = this.getIntentParentByTarget(
-      event.stateId,
-      this.scenario.data.stateMachine
-    );
-    if (targetingIntentParent) {
-      targetingIntentParent.intents.forEach((intent) => {
-        delete targetingIntentParent.parent.on[intent];
-      });
-    }
+    removeSmStateById(event.stateId, this.scenario.data.stateMachine);
+    // let targetingIntentParent = getSmTransitionParentByTarget(
+    //   event.stateId,
+    //   this.scenario.data.stateMachine
+    // );
+    // if (targetingIntentParent) {
+    //   targetingIntentParent.intents.forEach((intent) => {
+    //     delete targetingIntentParent.parent.on[intent];
+    //   });
+    // }
 
-    let parent = getSmStateParentById(event.stateId, this.scenario.data.stateMachine);
-    if (parent) {
-      if (parent.initial === event.stateId) {
-        parent.initial = '';
-      }
-      delete parent.states[event.stateId];
-    }
-  }
-
-  getIntentParentByTarget(targetName, group): { parent: { on: object }; intents: string[] } | null {
-    let result: { parent: { on: object }; intents: string[] } | null = null;
-    if (group.on) {
-      for (let transitionName in group.on) {
-        if (group.on[transitionName] === `#${targetName}`) {
-          if (!result) result = { parent: group, intents: [transitionName] };
-          else result.intents.push(transitionName);
-        }
-      }
-
-      if (!result) {
-        for (let action in group.states) {
-          result = this.getIntentParentByTarget(targetName, group.states[action]);
-          if (result) break;
-        }
-      }
-    }
-
-    return result;
+    // let parent = getSmStateParentById(event.stateId, this.scenario.data.stateMachine);
+    // if (parent) {
+    //   if (parent.initial === event.stateId) {
+    //     parent.initial = '';
+    //   }
+    //   delete parent.states[event.stateId];
+    // }
   }
 
   displayStateMachineCode(): void {

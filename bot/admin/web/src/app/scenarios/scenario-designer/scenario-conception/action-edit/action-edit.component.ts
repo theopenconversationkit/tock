@@ -10,8 +10,8 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { scenarioItem, TickContext } from '../../../models';
-import { getContrastYIQ, normalizedSnakeCase } from '../../../commons/utils';
+import { Scenario, scenarioItem, TickContext } from '../../../models';
+import { getContrastYIQ, getScenarioActions, normalizedSnakeCase } from '../../../commons/utils';
 import { Observable, of } from 'rxjs';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
@@ -25,6 +25,7 @@ const ENTITY_NAME_MINLENGTH = 5;
 export class ActionEditComponent implements OnInit {
   @Input() item: scenarioItem;
   @Input() contexts: TickContext[];
+  @Input() scenario: Scenario;
   @Output() saveModifications = new EventEmitter();
   @Output() deleteDefinition = new EventEmitter();
   @ViewChild('inputContextsInput') inputContextsInput: ElementRef;
@@ -59,7 +60,8 @@ export class ActionEditComponent implements OnInit {
   form: FormGroup = new FormGroup({
     name: new FormControl(undefined, [
       Validators.required,
-      Validators.minLength(ENTITY_NAME_MINLENGTH)
+      Validators.minLength(ENTITY_NAME_MINLENGTH),
+      this.notUsedName.bind(this)
     ]),
     description: new FormControl(),
     handler: new FormControl(),
@@ -67,6 +69,21 @@ export class ActionEditComponent implements OnInit {
     inputContextNames: new FormArray([]),
     outputContextNames: new FormArray([])
   });
+
+  notUsedName(c: FormControl) {
+    if (!this.scenario) return null;
+
+    const allOtherActionDefinitionNames = getScenarioActions(this.scenario)
+      .filter((action) => action !== this.item)
+      .filter((item) => item.tickActionDefinition)
+      .map((action) => action.tickActionDefinition.name);
+
+    return allOtherActionDefinitionNames.includes(c.value)
+      ? {
+          custom: 'This name is already used by another action'
+        }
+      : null;
+  }
 
   get canSave(): boolean {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
