@@ -5,7 +5,10 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent, SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
+import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
+import { getSmTransitionParentsByname } from '../../commons/utils';
 import {
+  Scenario,
   scenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
@@ -35,6 +38,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   @Input() contexts: TickContext[];
   @Input() selectedItem: scenarioItem;
   @Input() mode: string;
+  @Input() scenario: Scenario;
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
@@ -105,7 +109,8 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const modal = this.dialogService.openDialog(ActionEditComponent, {
       context: {
         item: this.item,
-        contexts: this.contexts
+        contexts: this.contexts,
+        scenario: this.scenario
       }
     });
     const saveModifications = modal.componentRef.instance.saveModifications
@@ -113,6 +118,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       .subscribe((actionDef) => {
         this.checkAndAddNewContexts(actionDef.inputContextNames);
         this.checkAndAddNewContexts(actionDef.outputContextNames);
+        if (
+          this.item.tickActionDefinition &&
+          this.item.tickActionDefinition.name !== actionDef.name
+        ) {
+          this.scenarioConceptionService.renameItem(this.item, actionDef.name);
+        }
+
         this.item.tickActionDefinition = actionDef;
 
         saveModifications.unsubscribe();
@@ -122,7 +134,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const deleteDefinition = modal.componentRef.instance.deleteDefinition
       .pipe(takeUntil(this.destroy))
       .subscribe(() => {
-        delete this.item.tickActionDefinition;
+        this.scenarioConceptionService.removeItemDefinition(this.item);
 
         deleteDefinition.unsubscribe();
         modal.close();
@@ -288,11 +300,50 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   switchItemType(which): void {
-    if (which == SCENARIO_ITEM_FROM_CLIENT) {
-      this.item.from = SCENARIO_ITEM_FROM_CLIENT;
+    if (which === this.item.from) return;
+
+    let alertMessage;
+    if (this.item.intentDefinition) {
+      if (this.item.from === SCENARIO_ITEM_FROM_CLIENT) {
+        alertMessage =
+          'This client intervention already has an intent definition. By changing the type of the intervention, this definition will be removed. Are you sure you want to continue?';
+      } else {
+        // to ensure backward compatibility with the early stages of the project
+        delete this.item.intentDefinition;
+      }
+    } else if (this.item.tickActionDefinition) {
+      if (this.item.from === SCENARIO_ITEM_FROM_BOT) {
+        alertMessage =
+          'This bot intervention already has an action definition. By changing the type of the intervention, this definition will be removed. Are you sure you want to continue?';
+      } else {
+        // to ensure backward compatibility with the early stages of the project
+        delete this.item.tickActionDefinition;
+      }
     }
-    if (which == SCENARIO_ITEM_FROM_BOT) {
-      this.item.from = SCENARIO_ITEM_FROM_BOT;
+
+    if (alertMessage) {
+      const cancelAction = 'cancel';
+      const confirmAction = 'change';
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+        context: {
+          title: `Change of intervention type`,
+          subtitle: alertMessage,
+          modalStatus: 'danger',
+          actions: [
+            { actionName: cancelAction, buttonStatus: 'default' },
+            { actionName: confirmAction }
+          ]
+        }
+      });
+      dialogRef.onClose.subscribe((result) => {
+        if (result) {
+          if (result == confirmAction) {
+            this.scenarioConceptionService.changeItemType(this.item, which);
+          }
+        }
+      });
+    } else {
+      this.scenarioConceptionService.changeItemType(this.item, which);
     }
   }
 

@@ -50,7 +50,7 @@
     <div
       class="from-icon bot"
       (click)="switchItemType(SCENARIO_ITEM_FROM_BOT)"
-      *ngIf="item.parentIds?.length && !item.intentDefinition"
+      *ngIf="item.parentIds?.length"
     >
       <img
         src="assets/images/scenario-bot.svg"
@@ -60,7 +60,7 @@
       />
       <img
         src="assets/images/scenario-bot.svg"
-        *ngIf="item.from != SCENARIO_ITEM_FROM_BOT && mode == SCENARIO_MODE_WRITING"
+        *ngIf="item.from != SCENARIO_ITEM_FROM_BOT && mode == SCENARIO_MODE.writing"
       />
       <div
         class="duplication-count"
@@ -280,6 +280,7 @@
           [contexts]="contexts"
           [selectedItem]="selectedItem"
           [mode]="mode"
+          [scenario]="scenario"
         ></scenario-conception-item>
       </div>
     </ng-container>
