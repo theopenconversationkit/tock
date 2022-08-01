@@ -1,13 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
@@ -37,8 +28,6 @@ export class ScenarioEditComponent implements OnChanges {
 
   @Output()
   onSave = new EventEmitter();
-
-  @ViewChild('nameInput') nameInput: ElementRef;
 
   isSubmitted: boolean = false;
 
@@ -95,10 +84,6 @@ export class ScenarioEditComponent implements OnChanges {
 
     this.categoriesAutocompleteValues = of([...this.scenarioService.getState().categories]);
     this.tagsAutocompleteValues = of([...this.scenarioService.getState().tags]);
-
-    setTimeout(() => {
-      this.nameInput.nativeElement.focus();
-    }, 100);
   }
 
   updateCategoriesAutocompleteValues(event: any) {

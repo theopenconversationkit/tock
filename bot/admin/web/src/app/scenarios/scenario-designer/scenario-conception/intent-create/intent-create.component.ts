@@ -16,6 +16,7 @@ export class IntentCreateComponent implements OnInit {
   @Output() createIntentEvent = new EventEmitter();
   categories: string[] = [];
   categoryAutocompleteValues;
+  isSubmitted: boolean = false;
 
   constructor(public dialogRef: NbDialogRef<IntentCreateComponent>, private state: StateService) {}
 
@@ -51,6 +52,14 @@ export class IntentCreateComponent implements OnInit {
     return this.form.get('name') as FormControl;
   }
 
+  get category(): FormControl {
+    return this.form.get('category') as FormControl;
+  }
+
+  get description(): FormControl {
+    return this.form.get('description') as FormControl;
+  }
+
   copyLabelToName(): void {
     if (!this.nameInitialized) {
       this.form.patchValue({ name: this.formatName(this.label.value) });
@@ -73,7 +82,7 @@ export class IntentCreateComponent implements OnInit {
   }
 
   get canSave(): boolean {
-    return this.form.valid;
+    return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
   cancel(): void {
@@ -81,6 +90,10 @@ export class IntentCreateComponent implements OnInit {
   }
 
   save() {
-    this.createIntentEvent.emit(this.form.value);
+    this.isSubmitted = true;
+
+    if (this.canSave) {
+      this.createIntentEvent.emit(this.form.value);
+    }
   }
 }
