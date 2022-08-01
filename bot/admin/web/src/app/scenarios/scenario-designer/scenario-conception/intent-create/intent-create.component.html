@@ -23,65 +23,90 @@
       (submit)="save()"
     >
       <div class="d-flex flex-column mb-2">
-        <label for="label">Label <span class="text-muted">(*)</span></label>
-        <input
-          #labelInput
-          nbInput
-          formControlName="label"
-          fullWidth
-          id="label"
-          type="text"
-          placeholder="Enter label"
-          (keyup)="copyLabelToName()"
-        />
+        <tock-form-control
+          label="Label"
+          name="label"
+          required="true"
+          [controls]="label"
+          [showError]="isSubmitted"
+        >
+          <input
+            nbInput
+            autofocusElement
+            formControlName="label"
+            fullWidth
+            id="label"
+            type="text"
+            placeholder="Enter label"
+            (keyup)="copyLabelToName()"
+          />
+        </tock-form-control>
       </div>
 
       <div class="d-flex flex-column mb-2">
-        <label for="name">Name <span class="text-muted">(*)</span></label>
-        <input
-          #nameInput
-          nbInput
-          formControlName="name"
-          fullWidth
-          id="name"
-          type="text"
-          placeholder="Enter name"
-          (keyup)="formatNameInput()"
-        />
+        <tock-form-control
+          label="Name"
+          name="name"
+          required="true"
+          [controls]="name"
+          [showError]="isSubmitted"
+        >
+          <input
+            nbInput
+            formControlName="name"
+            fullWidth
+            id="name"
+            type="text"
+            placeholder="Enter name"
+            (keyup)="formatNameInput()"
+          />
+        </tock-form-control>
       </div>
 
       <div class="d-flex flex-column mb-2">
-        <label for="category">Category</label>
-        <input
-          nbInput
-          formControlName="category"
-          fullWidth
-          id="category"
-          type="text"
-          placeholder="Select category"
-          autocomplete="off"
-          [nbAutocomplete]="categoryAutocomplete"
-        />
-        <nb-autocomplete #categoryAutocomplete>
-          <nb-option
-            *ngFor="let option of categoryAutocompleteValues | async"
-            [value]="option"
-          >
-            {{ option }}
-          </nb-option>
-        </nb-autocomplete>
+        <tock-form-control
+          label="Category"
+          name="category"
+          [controls]="category"
+          [showError]="isSubmitted"
+        >
+          <input
+            nbInput
+            formControlName="category"
+            fullWidth
+            id="category"
+            type="text"
+            placeholder="Select category"
+            autocomplete="off"
+            [nbAutocomplete]="categoryAutocomplete"
+          />
+          <nb-autocomplete #categoryAutocomplete>
+            <nb-option
+              *ngFor="let option of categoryAutocompleteValues | async"
+              [value]="option"
+            >
+              {{ option }}
+            </nb-option>
+          </nb-autocomplete>
+        </tock-form-control>
       </div>
 
       <div class="d-flex flex-column mb-2">
-        <label for="description">Description</label>
-        <textarea
-          nbInput
-          formControlName="description"
-          fullWidth
-          id="description"
-          type="text"
-          placeholder="Enter description"
-        ></textarea>
+        <tock-form-control
+          label="Description"
+          name="description"
+          [controls]="description"
+          [showError]="isSubmitted"
+        >
+          <textarea
+            nbInput
+            formControlName="description"
+            fullWidth
+            id="description"
+            type="text"
+            placeholder="Enter description"
+          ></textarea>
+        </tock-form-control>
       </div>
 
       <div class="grid-button mt-4">
