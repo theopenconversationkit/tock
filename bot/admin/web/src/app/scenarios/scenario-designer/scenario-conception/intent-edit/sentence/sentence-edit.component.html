@@ -69,7 +69,7 @@
     </button>
 
     <div
-      *ngIf="!getContextOfEntity(token)"
+      *ngIf="!getContextOfEntity(token) && contexts.length"
       class="px-3 pb-3"
     >
       <hr class="mt-0 mb-2" />

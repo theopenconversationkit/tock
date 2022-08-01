@@ -34,11 +34,11 @@ Scenario designer :
 
         CONCEPTION :
 
-                intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
-
                 Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
                 Quid des sharedIntents ?
+
+                #DONE intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
                 
                 #DONE intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario. L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
 

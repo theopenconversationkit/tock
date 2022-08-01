@@ -136,6 +136,11 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
             entityRole: token.entity.role
           })
         );
+        this.contexts.push({
+          name: contextDef.name,
+          type: 'string'
+        });
+
         validate.unsubscribe();
         modal.close();
         this.hideTokenMenu();
