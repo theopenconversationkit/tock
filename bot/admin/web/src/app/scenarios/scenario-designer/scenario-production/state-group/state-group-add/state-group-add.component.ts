@@ -44,10 +44,12 @@ export class ScenarioProductionStateGroupAddComponent {
   }
 
   formatContextName() {
-    this.form.patchValue({
-      ...this.form.value,
-      name: normalizedSnakeCase(this.name.value)
-    });
+    if (this.name.value) {
+      this.form.patchValue({
+        ...this.form.value,
+        name: normalizedSnakeCase(this.name.value)
+      });
+    }
   }
 
   save(): void {
