@@ -36,18 +36,16 @@ import {
   NbSelectModule,
   NbTooltipModule,
   NbPopoverModule,
-  NbButtonModule,
-  NbIconLibraries
+  NbButtonModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { ErrorHelperComponent } from './error-helper/error-helper.component';
 import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
 import { FormControlComponent } from './form-control/form-control.component';
-import { DelayDirective } from './directives/delay.directive';
 import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
-import { MouseWheelListnerDirective } from './directives/mouse-wheel-listner/mouse-wheel-listner.directive';
 import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
+import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
 
 @NgModule({
   imports: [
@@ -78,10 +76,12 @@ import { JsonPreviewerComponent } from './json-previewer/json-previewer.componen
     PaginationComponent,
     NoDataFoundComponent,
     FormControlComponent,
-    DelayDirective,
     ChoiceDialogComponent,
-    MouseWheelListnerDirective,
-    JsonPreviewerComponent
+    JsonPreviewerComponent,
+
+    AutofocusDirective,
+    DelayDirective,
+    MouseWheelListnerDirective
   ],
   exports: [
     BotMessageComponent,
@@ -94,8 +94,11 @@ import { JsonPreviewerComponent } from './json-previewer/json-previewer.componen
     NoDataFoundComponent,
     FormControlComponent,
     ChoiceDialogComponent,
-    MouseWheelListnerDirective,
-    JsonPreviewerComponent
+    JsonPreviewerComponent,
+
+    AutofocusDirective,
+    DelayDirective,
+    MouseWheelListnerDirective
   ],
   providers: [BotSharedService],
   entryComponents: []
