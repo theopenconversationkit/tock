@@ -4,17 +4,15 @@ shared
 
 Scenarios
 
-        #DONE Tock studio menu et titre de la vue scenarios-list : Scenarios management => Scenarios Management
-
         scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. Plusieurs scenario peuvent-ils être draft en même temps ?
 
         Peut-on supprimer tout un scenario est ses différentes versions ?
 
         La suppression d'un scenario "current" implique-t-elle la suppression de sa tickStory ?
 
-Scenario designer :
+        #DONE Tock studio menu et titre de la vue scenarios-list : Scenarios management => Scenarios Management
 
-        #DONE Adapter les css au mode nuit
+Scenario designer :
 
         Gérer l'init du designer quand l'id du scenario demandé n'existe pas. Actuellement l'appel à scenarioService.getScenario ne répond jamais et la page reste vide sans alerter l'utilisateur et sans re-router vers scenarios-list
 
@@ -24,11 +22,11 @@ Scenario designer :
 
         #DONE A l'ouverture des modals positionner mettre le focus sur le 1er champ à renseigner
 
+        #DONE Adapter les css au mode nuit
+
         WRITING :
 
                 Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
-
-                Enchainement de deux actions bot
 
                 #DONE Au changement de from d'un scenarioItem, supprimer les eventuelles intentDefinition et tickActionDefinition existantes
 
@@ -36,16 +34,17 @@ Scenario designer :
 
         CONCEPTION :
 
-                action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
-
-                intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario.
-                L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
+                Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
                 Quid des sharedIntents ?
 
-                Intent avec intnetdefinition manquante mais affichage pas en accord ???
+                #DONE intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
+                
+                #DONE intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario. L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
 
-                intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
+                #DONE Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa (nb passer de non primary à primary n'a à priori pas d'impact sur la SM)
+
+                #DONE action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
 
                 #DONE intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base. Implications sur le fonctionnement de l'étape publishing
 
@@ -55,18 +54,18 @@ Scenario designer :
 
                 #DONE Mettre à jours la state machine lorsqu'on supprime la definition d'un item qui était déjà référencé
 
-                Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa
-
                 #DONE Permettre de flaguer une intent secondaire comme également primaire
 
         PRODUCTION :
 
                 Revoir getAllSmTransitions (utilisé par drawPaths) puisque qu'une intent peut donner lieu à plusieurs transitions
 
+                Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
+
         PUBLISHING :
-
-                #DONE Comment le front fait-il pour créer une secondary intent ?
-
+        
                 Intent : c'est quoi les mandatoryStates ?
 
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
+
+                #DONE Comment le front fait-il pour créer une secondary intent ?
