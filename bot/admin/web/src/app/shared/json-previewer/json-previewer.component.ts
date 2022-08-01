@@ -48,12 +48,15 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
     this.subscription = this.themeService.onThemeChange().subscribe((theme: any) => {
       this.theme = theme.name;
     });
-    this.data = this.lineBreak(this.jsonData);
+
+    const jsonData = this.jsonFormat(this.jsonData);
+    this.data = this.lineBreak(jsonData);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.jsonData.currentValue) {
-      this.data = this.lineBreak(this.jsonData);
+      const jsonData = this.jsonFormat(changes.jsonData.currentValue);
+      this.data = this.lineBreak(jsonData);
     }
   }
 
@@ -111,9 +114,7 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
     return JSON.stringify(jsonData, undefined, this.spacing);
   }
 
-  lineBreak(jsonData: string | object): string[] {
-    jsonData = this.jsonFormat(jsonData);
-
+  lineBreak(jsonData: string): string[] {
     const lineBreak = /\r\n?|\n/g;
     return jsonData.split(lineBreak);
   }
@@ -136,7 +137,8 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   spacingChange(): void {
-    this.data = this.lineBreak(this.jsonData);
+    const jsonData = this.jsonFormat(this.jsonData);
+    this.data = this.lineBreak(jsonData);
   }
 
   close(): void {
