@@ -1,5 +1,5 @@
-<div class="production-wrapper d-flex align-items-stretch">
-  <div class="production-menu p-3">
+<div class="production-wrapper">
+  <div class="production-menu">
     <div class="intents-wrapper">
       <strong>Intents</strong>
       <div class="intents-list mt-2">
@@ -26,7 +26,7 @@
       </div>
     </div>
 
-    <hr class="menu-separator mb-2" />
+    <hr class="m-0" />
 
     <div class="actions-wrapper">
       <strong>Actions</strong>
@@ -46,28 +46,30 @@
       </div>
     </div>
 
-    <hr class="menu-separator mb-2" />
+    <hr class="m-0" />
 
-    <button
-      (click)="displayStateMachineCode()"
-      fullWidth
-      nbButton
-      size="tiny"
-      status="primary"
-      class="mt-1"
-    >
-      Display state machine code
-    </button>
-    <button
-      (click)="resetStateMachine()"
-      fullWidth
-      nbButton
-      size="tiny"
-      status="warning"
-      class="mt-1"
-    >
-      Reset state machine
-    </button>
+    <div class="user-actions-wrapper">
+      <button
+        (click)="displayStateMachineCode()"
+        fullWidth
+        nbButton
+        size="tiny"
+        status="primary"
+        class="mt-1"
+      >
+        Display state machine code
+      </button>
+      <button
+        (click)="resetStateMachine()"
+        fullWidth
+        nbButton
+        size="tiny"
+        status="warning"
+        class="mt-1"
+      >
+        Reset state machine
+      </button>
+    </div>
   </div>
 
   <div
