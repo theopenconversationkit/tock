@@ -23,6 +23,7 @@ import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
 import { stringifiedCleanScenario } from '../commons/utils';
+import { ChoiceDialogComponent } from '../../shared/choice-dialog/choice-dialog.component';
 
 @Component({
   selector: 'scenario-designer',
@@ -48,7 +49,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastrService: NbToastrService,
     protected state: StateService,
-    private scenarioDesignerService: ScenarioDesignerService
+    private scenarioDesignerService: ScenarioDesignerService,
+    private dialogService: DialogService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -66,6 +68,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       .getScenario(this.scenarioId)
       .pipe(takeUntil(this.destroy))
       .subscribe((scenario) => {
+        if (scenario === null) {
+          return this.informNoScenarioFound();
+        }
+
         this.scenarioBackup = JSON.stringify(scenario);
         this.scenario = JSON.parse(JSON.stringify(scenario));
 
@@ -89,6 +95,19 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       });
 
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
+      this.exit();
+    });
+  }
+
+  informNoScenarioFound() {
+    const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: `No scenario found`,
+        subtitle: 'No scenario with this identifier was found',
+        actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
+      }
+    });
+    modal.onClose.subscribe((res) => {
       this.exit();
     });
   }

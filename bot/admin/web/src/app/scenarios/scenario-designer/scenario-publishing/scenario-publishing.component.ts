@@ -183,6 +183,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       (sentence) => {
         // sentence = sentence.withIntent(this.state, intentId);
         sentence.classification.intentId = intent._id;
+        tempSentence.classification.entities.forEach((entity) => (entity.subEntities = []));
         sentence.classification.entities = tempSentence.classification
           .entities as ClassifiedEntity[];
 

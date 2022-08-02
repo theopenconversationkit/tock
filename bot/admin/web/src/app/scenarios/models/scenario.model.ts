@@ -102,7 +102,7 @@ export interface TempEntity {
   end: number;
   entityColor: string;
   qualifiedRole?: string;
-  subEntities: any;
+  subEntities: any[];
 }
 export interface TempClassification {
   entities: TempEntity[];

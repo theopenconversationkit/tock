@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, merge, Observable } from 'rxjs';
-import { map, tap, switchMap, filter, mergeMap } from 'rxjs/operators';
+import { BehaviorSubject, merge, Observable, of } from 'rxjs';
+import { map, tap, switchMap, filter } from 'rxjs/operators';
 
 import { Scenario } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
@@ -92,11 +92,22 @@ export class ScenarioService {
     return merge(notLoaded, loaded);
   }
 
-  getScenario(id: string): Observable<Scenario> {
+  // getScenario(id: string): Observable<Scenario> {
+  //   return this.getScenarios().pipe(
+  //     switchMap(() => this.state$),
+  //     mergeMap((state) => state.scenarios),
+  //     filter((scenario) => scenario.id === id)
+  //   );
+  // }
+
+  getScenario(id: string): Observable<Scenario | never> {
     return this.getScenarios().pipe(
       switchMap(() => this.state$),
-      mergeMap((state) => state.scenarios),
-      filter((scenario) => scenario.id === id)
+      switchMap((state: ScenarioState) => {
+        let res: Scenario = state.scenarios.find((s) => s.id === id);
+        if (res) return of(res);
+        else return of(null);
+      })
     );
   }
 
