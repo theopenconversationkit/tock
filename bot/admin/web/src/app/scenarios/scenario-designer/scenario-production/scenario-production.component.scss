@@ -1,31 +1,82 @@
+@import '~@nebular/theme/styles/global/_breakpoints.scss';
 @import '~@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/themes';
 
 :host {
+  --panel-with: 15rem;
+  --panel-padding: 1rem;
+  --panel-side-margin: -2.25rem;
   display: block;
-  margin-left: -2.25rem;
-  margin-right: -2.25rem;
+  margin-left: var(--panel-side-margin);
+  margin-right: var(--panel-side-margin);
   margin-bottom: -0.75rem;
   height: 75vh;
   overflow: hidden;
   box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
 }
 
-@include nb-install-component {
+@include media-breakpoint-down(md) {
+  :host {
+    --panel-side-margin: -1.5rem;
+    margin-bottom: -0.5rem;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  :host {
+    --panel-side-margin: -1rem;
+    margin-bottom: -0rem;
+  }
+}
+
+.production-wrapper {
+  height: inherit;
+  display: grid;
+  grid-template-columns: 1fr;
+
+  .production-menu {
+    height: auto;
+    overflow: auto;
+    padding: var(--panel-padding);
+    display: grid;
+    grid-template-columns: minmax(var(--panel-with), 1fr) auto minmax(var(--panel-with), 1fr) auto var(
+        --panel-with
+      );
+    grid-template-rows: var(--panel-with);
+    grid-gap: 0.5rem;
+    box-shadow: 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+  }
+}
+
+@include media-breakpoint-up(lg) {
   .production-wrapper {
-    height: 100%;
-    width: 100%;
+    grid-template-columns: var(--panel-with) 1fr;
 
     .production-menu {
       height: auto;
-      width: 17rem;
-      box-shadow: 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+      grid-template-columns: minmax(calc(var(--panel-with) - var(--panel-padding)));
+      grid-template-rows: minmax(auto, 1fr) auto minmax(auto, 1fr) auto auto;
+      padding: var(--panel-padding) 0;
+    }
+  }
+}
+
+@include nb-install-component {
+  .production-wrapper {
+    .production-menu {
+      & .intents-wrapper strong,
+      .intents-list,
+      .actions-wrapper strong,
+      .actions-list,
+      .user-actions-wrapper {
+        padding: 0 var(--panel-padding);
+      }
 
       .intents-wrapper {
-        height: 42%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
         .intents-list {
-          height: 92%;
-          max-height: 92%;
           overflow: auto;
           font-size: 0.8rem;
           .intent {
@@ -43,15 +94,12 @@
           }
         }
       }
-      .menu-separator {
-        margin-left: -1rem;
-        margin-right: -1rem;
-      }
+
       .actions-wrapper {
-        height: 42%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
         .actions-list {
-          height: 92%;
-          max-height: 92%;
           overflow: auto;
           font-size: 0.8rem;
           .action {
@@ -71,8 +119,6 @@
     }
 
     .production-canvas-wrapper {
-      width: fit-content;
-      padding: 0.5rem;
       overflow: hidden;
       .production-canvas {
         position: relative;
@@ -84,18 +130,22 @@
     }
   }
 
+  .production-menu::-webkit-scrollbar,
   .actions-list::-webkit-scrollbar,
   .intents-list::-webkit-scrollbar {
     width: nb-theme(scrollbar-width);
     height: nb-theme(scrollbar-width);
   }
 
+  .production-menu::-webkit-scrollbar-thumb,
   .actions-list::-webkit-scrollbar-thumb,
   .intents-list::-webkit-scrollbar-thumb {
     background: nb-theme(scrollbar-color);
     cursor: pointer;
     border-radius: calc(nb-theme(scrollbar-width) / 2);
   }
+
+  .production-menu::-webkit-scrollbar-track,
   .actions-list::-webkit-scrollbar-track,
   .intents-list::-webkit-scrollbar-track {
     background: nb-theme(scrollbar-background-color);
