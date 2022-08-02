@@ -106,12 +106,15 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     const canvasTop = canvasPos.top;
 
     let transitions = getAllSmTransitions(this.scenario.data.stateMachine);
-    for (let transitionName in transitions) {
+    transitions.forEach((entry) => {
+      const transitionName = entry[0];
+      const transitionTarget = entry[1];
       const transitionComponent =
-        this.scenarioProductionService.scenarioProductionTransitionsComponents[transitionName];
-      if (!transitionComponent) {
-        return;
-      }
+        this.scenarioProductionService.scenarioProductionTransitionsComponents.find(
+          (comp) =>
+            comp.transition.name === transitionName && comp.transition.target === transitionTarget
+        );
+      if (!transitionComponent) return;
 
       const transitionElem = transitionComponent.elementRef.nativeElement;
       const transitionElemPos = revertTransformMatrix(
@@ -121,7 +124,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
       const stateComponent =
         this.scenarioProductionService.scenarioProductionStateComponents[
-          transitions[transitionName].replace(/^#/, '')
+          transitionTarget.replace(/^#/, '')
         ];
       const stateElem = stateComponent.elementRef.nativeElement;
       const stateElemPos = revertTransformMatrix(stateElem, this.canvasElem.nativeElement);
@@ -145,7 +148,45 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         .fill({ opacity: 0 })
         .stroke({ color: TRANSITION_COLOR, width: 3, linecap: 'round', linejoin: 'round' })
         .marker('end', this.svgCanvasArrowMarker);
-    }
+    });
+    // for (let transitionName in transitions) {
+    //   const transitionComponent =
+    //     this.scenarioProductionService.scenarioProductionTransitionsComponents[transitionName];
+    //   if (!transitionComponent)return;
+
+    //   const transitionElem = transitionComponent.elementRef.nativeElement;
+    //   const transitionElemPos = revertTransformMatrix(
+    //     transitionElem,
+    //     this.canvasElem.nativeElement
+    //   );
+
+    //   const stateComponent =
+    //     this.scenarioProductionService.scenarioProductionStateComponents[
+    //       transitions[transitionName].replace(/^#/, '')
+    //     ];
+    //   const stateElem = stateComponent.elementRef.nativeElement;
+    //   const stateElemPos = revertTransformMatrix(stateElem, this.canvasElem.nativeElement);
+    //   const startLeft = transitionElemPos.left + transitionElemPos.width - canvasLeft;
+    //   const startTop = transitionElemPos.top + transitionElemPos.height / 2 - canvasTop;
+    //   const endLeft = stateElemPos.left - canvasLeft - 5;
+    //   const endTop = stateElemPos.top + stateElemPos.height / 2 - canvasTop;
+
+    //   let path;
+    //   if (startTop === endTop) {
+    //     path = `M${startLeft} ${startTop} L${endLeft} ${endTop}`;
+    //   } else {
+    //     let padding = 10;
+    //     path = `M${startLeft} ${startTop} L${endLeft - padding * 2} ${startTop}  L${
+    //       endLeft - padding * 2
+    //     } ${endTop} L${endLeft} ${endTop}`;
+    //   }
+
+    //   this.svgCanvasGroup
+    //     .path(path)
+    //     .fill({ opacity: 0 })
+    //     .stroke({ color: TRANSITION_COLOR, width: 3, linecap: 'round', linejoin: 'round' })
+    //     .marker('end', this.svgCanvasArrowMarker);
+    // }
   }
 
   getScenarioIntentDefinitions() {

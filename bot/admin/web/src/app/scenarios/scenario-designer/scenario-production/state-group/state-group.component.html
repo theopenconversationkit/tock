@@ -13,7 +13,7 @@
       <nb-icon
         *ngIf="state.id !== 'root' && isInitialParentState()"
         icon="flash-outline"
-        status="basic"
+        status="primary"
         class="valign-middle"
         style="margin-left: -5px"
         nbTooltip="Initial action"
@@ -24,7 +24,7 @@
         icon="flash-outline"
         status="basic"
         class="valign-middle pointer"
-        style="margin-left: -5px; color: #bbb"
+        style="margin-left: -5px"
         (click)="setActionInitial()"
         nbTooltip="Define this action as the initial action of its parent container"
       ></nb-icon>

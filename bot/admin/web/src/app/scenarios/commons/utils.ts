@@ -124,8 +124,11 @@ export function getSmTransitionByName(name: string, group: machineState): string
   return result;
 }
 
-export function getAllSmTransitions(group: machineState, result = {}): { [key: string]: string } {
-  if (group.on) Object.assign(result, group.on);
+export function getAllSmTransitions(group: machineState, result = []): [string, string][] {
+  if (group.on) {
+    Object.entries(group.on).forEach((entry) => result.push(entry));
+  }
+
   if (group.states) {
     for (let name in group.states) {
       getAllSmTransitions(group.states[name], result);
@@ -136,13 +139,11 @@ export function getAllSmTransitions(group: machineState, result = {}): { [key: s
 }
 
 export function getAllSmTransitionNames(group: machineState): string[] {
-  let results = [];
+  let results = new Set<string>();
   const transitions = getAllSmTransitions(group);
-  for (let name in transitions) {
-    results.push(name);
-  }
+  transitions.forEach((entry) => results.add(entry[0]));
 
-  return results;
+  return [...results];
 }
 
 export function getSmTransitionParentsByname(

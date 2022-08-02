@@ -64,12 +64,10 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
       this.scenarioProductionService.scenarioProductionStateComponents[
         this.transition.target.replace(/^#/, '')
       ];
-    const transitionComponent =
-      this.scenarioProductionService.scenarioProductionTransitionsComponents[this.transition.name];
 
-    if (stateComponent && transitionComponent) {
+    if (stateComponent) {
       const stateElem = stateComponent.elementRef.nativeElement;
-      const transitionElem = transitionComponent.elementRef.nativeElement;
+      const transitionElem = this.elementRef.nativeElement;
       let averageHeight = transitionElem.offsetHeight;
 
       let siblings = [];
