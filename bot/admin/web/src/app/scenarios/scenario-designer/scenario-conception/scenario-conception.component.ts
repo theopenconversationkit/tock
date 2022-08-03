@@ -222,7 +222,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onKeyPress(event: KeyboardEvent): void {
-    if (this.selectedItem) {
+    if (this.scenario.data.mode === this.SCENARIO_MODE.writing && this.selectedItem) {
       if (event.altKey) {
         if (event.key == 'c') {
           this.addItem(this.selectedItem, SCENARIO_ITEM_FROM_CLIENT);
