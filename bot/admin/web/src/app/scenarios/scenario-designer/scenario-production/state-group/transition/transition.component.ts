@@ -65,40 +65,44 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
         this.transition.target.replace(/^#/, '')
       ];
 
-    if (stateComponent?.state.states) {
-      const stateElem = stateComponent.elementRef.nativeElement;
-      const transitionElem = this.elementRef.nativeElement;
-      let averageHeight = transitionElem.offsetHeight;
+    if (stateComponent) {
+      if (this.parentState.states) {
+        const stateElem = stateComponent.stateWrapper.nativeElement;
+        const transitionElem = this.elementRef.nativeElement;
+        let averageHeight = transitionElem.offsetHeight;
 
-      let siblings = [];
-      let i, index;
-      i = index = 0;
+        let siblings = [];
+        let i, index;
+        i = index = 0;
 
-      for (let sibling in this.parentState.on) {
-        if (this.parentState.on[sibling] === this.transition.target) {
-          if (sibling == this.transition.name) {
-            index = i;
-          } else {
-            siblings.push(sibling);
+        for (let sibling in this.parentState.on) {
+          if (this.parentState.on[sibling] === this.transition.target) {
+            if (sibling == this.transition.name) {
+              index = i;
+            } else {
+              siblings.push(sibling);
+            }
+            i++;
           }
-          i++;
         }
-      }
 
-      let totalHeight = averageHeight;
-      let margin = 0;
-      if (siblings.length) {
-        margin = 5;
-        totalHeight = totalHeight * i + margin * (i - 1);
-      }
+        let totalHeight = averageHeight;
+        let margin = 0;
+        if (siblings.length) {
+          margin = 5;
+          totalHeight = totalHeight * i + margin * (i - 1);
+        }
 
-      return (
-        stateElem.offsetTop +
-        stateElem.offsetHeight / 2 -
-        totalHeight / 2 +
-        averageHeight * index +
-        margin * index
-      );
+        return (
+          stateElem.offsetTop +
+          stateElem.offsetHeight / 2 -
+          totalHeight / 2 +
+          averageHeight * index +
+          margin * index
+        );
+      } else {
+        return 12;
+      }
     }
     return 0;
   }
