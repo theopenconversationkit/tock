@@ -16,7 +16,24 @@
   </nb-card-header>
 
   <nb-card-body class="card-body">
-    <header class="d-flex flex-wrap justify-content-end gap-1 mb-2">
+    <pre
+      class="previewer"
+      [class]="theme"
+    >
+      <div class="lines-number">
+        <div *ngFor="let item of [].constructor(data.length); let i = index">{{ i + 1 }}</div>
+      </div>
+
+      <div class="lines-container">
+        <div class="d-flex" *ngFor="let d of data">
+          <span [innerHtml]="syntaxHighlight(d)"></span>
+        </div>
+
+      </div>
+    </pre>
+  </nb-card-body>
+  <nb-card-footer>
+    <footer class="d-flex flex-wrap justify-content-end gap-1 mb-2">
       <nb-select
         placeholder="Change spacing"
         nbTooltip="Change indent"
@@ -38,21 +55,6 @@
       >
         <nb-icon icon="copy-outline"></nb-icon>
       </button>
-    </header>
-    <pre
-      class="previewer"
-      [class]="theme"
-    >
-      <div class="lines-number">
-        <div *ngFor="let item of [].constructor(data.length); let i = index">{{ i + 1 }}</div>
-      </div>
-
-      <div class="lines-container">
-        <div class="d-flex" *ngFor="let d of data">
-          <span [innerHtml]="syntaxHighlight(d)"></span>
-        </div>
-
-      </div>
-    </pre>
-  </nb-card-body>
+    </footer>
+  </nb-card-footer>
 </nb-card>
