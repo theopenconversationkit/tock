@@ -39,7 +39,7 @@ Scenario designer :
                 Quid des sharedIntents ?
 
                 #DONE intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
-                
+
                 #DONE intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario. L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
 
                 #DONE Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa (nb passer de non primary à primary n'a à priori pas d'impact sur la SM)
@@ -60,10 +60,10 @@ Scenario designer :
 
                 Revoir getAllSmTransitions (utilisé par drawPaths) puisque qu'une intent peut donner lieu à plusieurs transitions
 
-                Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
+                #DONE Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
 
         PUBLISHING :
-        
+
                 Intent : c'est quoi les mandatoryStates ?
 
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
