@@ -8,14 +8,17 @@ import { ScenarioTransitionComponent } from './state-group/transition/transition
 })
 export class ScenarioProductionService {
   public scenarioProductionItemsCommunication = new Subject<any>();
-  public scenarioProductionTransitionsComponents = {};
+  public scenarioProductionTransitionsComponents = [];
   public scenarioProductionStateComponents = {};
 
   unRegisterTransitionComponent(name: string) {
-    delete this.scenarioProductionTransitionsComponents[name];
+    this.scenarioProductionTransitionsComponents =
+      this.scenarioProductionTransitionsComponents.filter(
+        (entry) => entry.transition.name !== name
+      );
   }
   registerTransitionComponent(component: ScenarioTransitionComponent) {
-    this.scenarioProductionTransitionsComponents[component.transition.name] = component;
+    this.scenarioProductionTransitionsComponents.push(component);
   }
 
   unRegisterStateComponent(name: string) {

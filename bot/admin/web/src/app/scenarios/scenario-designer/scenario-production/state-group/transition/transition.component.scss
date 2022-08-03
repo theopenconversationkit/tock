@@ -12,16 +12,16 @@
   position: absolute;
   padding: 0.2rem 0.6rem;
   border-radius: 1rem;
-  margin-left: 15px;
   max-width: 180px;
-  :before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: -15px;
-    top: 12px;
-    height: 3px;
-    width: 15px;
-    background-color: #ccc;
-  }
+  margin-left: 25px;
+  // :before {
+  //   content: '';
+  //   display: block;
+  //   position: absolute;
+  //   left: -15px;
+  //   top: 12px;
+  //   height: 3px;
+  //   width: 15px;
+  //   background-color: #ccc;
+  // }
 }

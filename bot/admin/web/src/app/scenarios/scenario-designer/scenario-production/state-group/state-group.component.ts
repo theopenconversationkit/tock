@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
   QueryList,
+  ViewChild,
   ViewChildren
 } from '@angular/core';
 import { Subject } from 'rxjs';
@@ -31,13 +32,14 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   @Input() intents: intentDefinition[];
   @Input() actions: TickActionDefinition[];
 
+  @ViewChild('stateWrapper') stateWrapper: ElementRef;
+
   @ViewChildren(ScenarioTransitionComponent)
   childTransitionsComponents: QueryList<ScenarioTransitionComponent>;
 
   constructor(
     private scenarioProductionService: ScenarioProductionService,
     private dialogService: DialogService,
-    public elementRef: ElementRef,
     private cd: ChangeDetectorRef
   ) {
     this.scenarioProductionService.scenarioProductionItemsCommunication
@@ -83,6 +85,10 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     if (parent) {
       parent.initial = this.state.id;
     }
+  }
+
+  hasOutgoingTransitions() {
+    return this.state.on && Object.keys(this.state.on).length > 0;
   }
 
   transitionWrapperWidth = 0;

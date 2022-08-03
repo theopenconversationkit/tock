@@ -92,6 +92,35 @@
         [intents]="getScenarioIntentDefinitions()"
         [actions]="getScenarioActionDefinitions()"
       ></scenario-state-group>
+
+      <ng-container *ngFor="let handler of pathHandlers">
+        <div
+          class="pathHandler"
+          [ngStyle]="{ 'top.px': handler.transStartTop, 'left.px': handler.transStartLeft }"
+          [dndDraggable]="{
+            type: 'transitionSource',
+            source: handler.transitionSource,
+            name: handler.transitionName
+          }"
+          (mousedown)="preventDefault($event)"
+          nbTooltip="Drag to the state to which this transition should be attached"
+        >
+          <nb-icon icon="arrow-circle-left-outline"></nb-icon>
+        </div>
+        <div
+          class="pathHandler"
+          [ngStyle]="{ 'top.px': handler.transEndTop, 'left.px': handler.transEndLeft }"
+          [dndDraggable]="{
+            type: 'transitionTarget',
+            source: handler.transitionSource,
+            name: handler.transitionName
+          }"
+          (mousedown)="preventDefault($event)"
+          nbTooltip="Drag to the state to which you want to direct this transition"
+        >
+          <nb-icon icon="arrow-circle-right-outline"></nb-icon>
+        </div>
+      </ng-container>
     </div>
   </div>
 </div>

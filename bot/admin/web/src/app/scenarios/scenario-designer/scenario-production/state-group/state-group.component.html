@@ -1,4 +1,5 @@
 <div
+  #stateWrapper
   class="stateGroup unselectable"
   [dndDropzone]="getDraggableTypes()"
   [dndDisableIf]="this.state.id === 'root'"
@@ -13,7 +14,7 @@
       <nb-icon
         *ngIf="state.id !== 'root' && isInitialParentState()"
         icon="flash-outline"
-        status="basic"
+        status="primary"
         class="valign-middle"
         style="margin-left: -5px"
         nbTooltip="Initial action"
@@ -24,7 +25,7 @@
         icon="flash-outline"
         status="basic"
         class="valign-middle pointer"
-        style="margin-left: -5px; color: #bbb"
+        style="margin-left: -5px"
         (click)="setActionInitial()"
         nbTooltip="Define this action as the initial action of its parent container"
       ></nb-icon>
@@ -86,5 +87,20 @@
         [actions]="actions"
       ></scenario-state-group>
     </div>
+  </div>
+</div>
+
+<div *ngIf="!state.states && hasOutgoingTransitions()">
+  <div
+    class="outgoing-transitions-wrapper"
+    *ngFor="let transition of state.on | keyvalue"
+  >
+    <scenario-transition
+      [transition]="{ name: transition.key, target: transition.value }"
+      [parentState]="state"
+      [intents]="intents"
+      [actions]="actions"
+      (removeTransition)="removeTransition($event)"
+    ></scenario-transition>
   </div>
 </div>
