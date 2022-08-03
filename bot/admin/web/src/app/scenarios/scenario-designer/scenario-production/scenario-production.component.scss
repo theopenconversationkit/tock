@@ -6,10 +6,9 @@
   --panel-with: 15rem;
   --panel-padding: 1rem;
   --panel-side-margin: -2.25rem;
+  --panel-bottom-margin: -0.75rem;
   display: block;
-  margin-left: var(--panel-side-margin);
-  margin-right: var(--panel-side-margin);
-  margin-bottom: -0.75rem;
+  margin: 0 var(--panel-side-margin) var(--panel-bottom-margin);
   height: 75vh;
   overflow: hidden;
   box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
@@ -18,14 +17,14 @@
 @include media-breakpoint-down(md) {
   :host {
     --panel-side-margin: -1.5rem;
-    margin-bottom: -0.5rem;
+    --panel-bottom-margin: -0.5rem;
   }
 }
 
 @include media-breakpoint-down(sm) {
   :host {
     --panel-side-margin: -1rem;
-    margin-bottom: -0rem;
+    --panel-bottom-margin: -0rem;
   }
 }
 
@@ -53,10 +52,9 @@
     grid-template-columns: var(--panel-with) 1fr;
 
     .production-menu {
-      height: auto;
+      padding: var(--panel-padding) 0;
       grid-template-columns: minmax(calc(var(--panel-with) - var(--panel-padding)));
       grid-template-rows: minmax(auto, 1fr) auto minmax(auto, 1fr) auto auto;
-      padding: var(--panel-padding) 0;
     }
   }
 }
@@ -64,7 +62,7 @@
 @include nb-install-component {
   .production-wrapper {
     .production-menu {
-      & .intents-wrapper strong,
+      .intents-wrapper strong,
       .intents-list,
       .actions-wrapper strong,
       .actions-list,
@@ -72,48 +70,49 @@
         padding: 0 var(--panel-padding);
       }
 
-      .intents-wrapper {
+      .intents-wrapper,
+      .actions-wrapper {
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        .intents-list {
+
+        .intents-list,
+        .actions-list {
           overflow: auto;
           font-size: 0.8rem;
-          .intent {
+          scrollbar-gutter: stable;
+
+          .intent,
+          .action {
             padding: 0.2rem 0.6rem;
-            background-color: nb-theme(color-info-active);
-            border-radius: 1rem;
-            color: nb-theme(text-control-color);
             cursor: move;
 
             &.disabled {
-              background-color: nb-theme(color-info-disabled);
-              color: nb-theme(text-basic-color);
               cursor: not-allowed;
             }
           }
         }
       }
 
-      .actions-wrapper {
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        .actions-list {
-          overflow: auto;
-          font-size: 0.8rem;
-          .action {
-            background-color: nb-theme(color-basic-700);
-            color: nb-theme(text-control-color);
-            border-radius: 0.25rem;
-            cursor: move;
+      .intents-wrapper .intents-list .intent {
+        background-color: nb-theme(color-info-active);
+        color: nb-theme(text-control-color);
+        border-radius: 1rem;
 
-            &.disabled {
-              background-color: nb-theme(color-basic-transparent-600);
-              color: nb-theme(text-basic-color);
-              cursor: not-allowed;
-            }
-          }
+        &.disabled {
+          background-color: nb-theme(color-info-disabled);
+          color: nb-theme(text-basic-color);
+        }
+      }
+
+      .actions-wrapper .actions-list .action {
+        background-color: nb-theme(color-basic-700);
+        color: nb-theme(text-control-color);
+        border-radius: 0.25rem;
+
+        &.disabled {
+          background-color: nb-theme(color-basic-transparent-600);
+          color: nb-theme(text-basic-color);
         }
       }
     }
