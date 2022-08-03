@@ -102,7 +102,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     if (this.childTransitionsComponents) {
       this.childTransitionsComponents.forEach((t) => {
         if (t.elementRef.nativeElement.offsetWidth > width)
-          width = t.elementRef.nativeElement.offsetWidth + 30;
+          width = t.elementRef.nativeElement.offsetWidth + 50;
       });
     }
     return width;
