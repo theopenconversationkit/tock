@@ -16,29 +16,6 @@
   </nb-card-header>
 
   <nb-card-body class="card-body">
-    <header class="d-flex flex-wrap justify-content-end gap-1 mb-2">
-      <nb-select
-        placeholder="Change spacing"
-        nbTooltip="Change indent"
-        [(ngModel)]="spacing"
-        (ngModelChange)="spacingChange()"
-      >
-        <nb-option
-          *ngFor="let i of [].constructor(2, 4, 6, 8)"
-          [value]="i"
-          >{{ i }}</nb-option
-        >
-      </nb-select>
-      <button
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Copy to clipboard"
-        (click)="copyToClipboard()"
-      >
-        <nb-icon icon="copy-outline"></nb-icon>
-      </button>
-    </header>
     <pre
       class="previewer"
       [class]="theme"
@@ -55,4 +32,27 @@
       </div>
     </pre>
   </nb-card-body>
+  <nb-card-footer class="d-flex flex-wrap justify-content-end gap-1">
+    <nb-select
+      placeholder="Change spacing"
+      nbTooltip="Change indent"
+      [(ngModel)]="spacing"
+      (ngModelChange)="spacingChange()"
+    >
+      <nb-option
+        *ngFor="let i of [].constructor(2, 4, 6, 8)"
+        [value]="i"
+        >{{ i }}</nb-option
+      >
+    </nb-select>
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Copy to clipboard"
+      (click)="copyToClipboard()"
+    >
+      <nb-icon icon="copy-outline"></nb-icon>
+    </button>
+  </nb-card-footer>
 </nb-card>
