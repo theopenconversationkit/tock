@@ -13,7 +13,10 @@
   <div class="arrow"></div>
 </div>
 
-<div [dndDraggable]="draggable.data">
+<div
+  [dndDisableIf]="!(scenario.data.mode === SCENARIO_MODE.writing)"
+  [dndDraggable]="draggable.data"
+>
   <div
     class="item-card"
     #itemCard
@@ -31,7 +34,7 @@
     >
       <img
         src="assets/images/scenario-client.svg"
-        class="cursor-move"
+        [class.cursor-move]="scenario.data.mode === SCENARIO_MODE.writing"
         dndHandle
         *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT"
       />
@@ -54,7 +57,7 @@
     >
       <img
         src="assets/images/scenario-bot.svg"
-        class="cursor-move"
+        [class.cursor-move]="scenario.data.mode === SCENARIO_MODE.writing"
         dndHandle
         *ngIf="item.from == SCENARIO_ITEM_FROM_BOT"
       />
