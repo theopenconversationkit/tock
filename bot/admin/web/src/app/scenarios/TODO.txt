@@ -26,7 +26,7 @@ Scenario designer :
 
         WRITING :
 
-                Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
+                #DONE Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
 
                 #DONE Au changement de from d'un scenarioItem, supprimer les eventuelles intentDefinition et tickActionDefinition existantes
 
