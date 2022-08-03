@@ -85,13 +85,15 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
+  pathHandlers = [];
+
   svgCanvas;
-  svgCanvasArrowMarker;
+  svgCanvasEndArrowMarker;
   svgCanvasGroup;
   initSvgCanvas() {
     this.svgCanvas = SVG().addTo(this.canvasElem.nativeElement).size('100%', '100%');
     this.svgCanvas.attr('style', 'position:absolute;top:0;left:0;pointer-events: none;');
-    this.svgCanvasArrowMarker = this.svgCanvas.marker(3.5, 3.5, function (add) {
+    this.svgCanvasEndArrowMarker = this.svgCanvas.marker(3.5, 3.5, function (add) {
       add.polygon('0 0, 3.5 1.75, 0 3.5').fill(TRANSITION_COLOR);
     });
     this.svgCanvasGroup = this.svgCanvas.group();
@@ -106,6 +108,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     const canvasTop = canvasPos.top;
 
     let transitions = getAllSmTransitions(this.scenario.data.stateMachine);
+    this.pathHandlers = [];
     transitions.forEach((entry) => {
       const transitionName = entry[0];
       const transitionTarget = entry[1];
@@ -133,6 +136,16 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       const endLeft = stateElemPos.left - canvasLeft - 5;
       const endTop = stateElemPos.top + stateElemPos.height / 2 - canvasTop;
 
+      this.pathHandlers.push({
+        transitionName: transitionName,
+        transitionSource: transitionComponent.parentState.id,
+        transitionTarget: transitionTarget,
+        transStartLeft: transitionElemPos.left - canvasLeft - 20,
+        transStartTop: transitionElemPos.top - canvasTop + 5,
+        endLeft: endLeft - 10,
+        endTop: endTop - 10
+      });
+
       let path;
       if (startTop === endTop) {
         path = `M${startLeft} ${startTop} L${endLeft} ${endTop}`;
@@ -146,47 +159,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       this.svgCanvasGroup
         .path(path)
         .fill({ opacity: 0 })
-        .stroke({ color: TRANSITION_COLOR, width: 3, linecap: 'round', linejoin: 'round' })
-        .marker('end', this.svgCanvasArrowMarker);
+        .stroke({ color: TRANSITION_COLOR, width: 4, linecap: 'round', linejoin: 'round' })
+        .marker('end', this.svgCanvasEndArrowMarker);
     });
-    // for (let transitionName in transitions) {
-    //   const transitionComponent =
-    //     this.scenarioProductionService.scenarioProductionTransitionsComponents[transitionName];
-    //   if (!transitionComponent)return;
-
-    //   const transitionElem = transitionComponent.elementRef.nativeElement;
-    //   const transitionElemPos = revertTransformMatrix(
-    //     transitionElem,
-    //     this.canvasElem.nativeElement
-    //   );
-
-    //   const stateComponent =
-    //     this.scenarioProductionService.scenarioProductionStateComponents[
-    //       transitions[transitionName].replace(/^#/, '')
-    //     ];
-    //   const stateElem = stateComponent.elementRef.nativeElement;
-    //   const stateElemPos = revertTransformMatrix(stateElem, this.canvasElem.nativeElement);
-    //   const startLeft = transitionElemPos.left + transitionElemPos.width - canvasLeft;
-    //   const startTop = transitionElemPos.top + transitionElemPos.height / 2 - canvasTop;
-    //   const endLeft = stateElemPos.left - canvasLeft - 5;
-    //   const endTop = stateElemPos.top + stateElemPos.height / 2 - canvasTop;
-
-    //   let path;
-    //   if (startTop === endTop) {
-    //     path = `M${startLeft} ${startTop} L${endLeft} ${endTop}`;
-    //   } else {
-    //     let padding = 10;
-    //     path = `M${startLeft} ${startTop} L${endLeft - padding * 2} ${startTop}  L${
-    //       endLeft - padding * 2
-    //     } ${endTop} L${endLeft} ${endTop}`;
-    //   }
-
-    //   this.svgCanvasGroup
-    //     .path(path)
-    //     .fill({ opacity: 0 })
-    //     .stroke({ color: TRANSITION_COLOR, width: 3, linecap: 'round', linejoin: 'round' })
-    //     .marker('end', this.svgCanvasArrowMarker);
-    // }
   }
 
   getScenarioIntentDefinitions() {
@@ -298,8 +273,25 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         parent.on[event.dropped.name] = `#${event.stateId}`;
       }
     }
+    if (event.dropped.type === 'transitionTarget') {
+      let sourceState = getSmStateById(event.dropped.source, this.scenario.data.stateMachine);
+      sourceState.on[event.dropped.name] = event.stateId;
+    }
+
+    if (event.dropped.type === 'transitionSource') {
+      const initialSourceState = getSmStateById(
+        event.dropped.source,
+        this.scenario.data.stateMachine
+      );
+      const target = initialSourceState.on[event.dropped.name];
+      delete initialSourceState.on[event.dropped.name];
+      const newSourceState = getSmStateById(event.stateId, this.scenario.data.stateMachine);
+      if (!newSourceState.on) newSourceState.on = {};
+      newSourceState.on[event.dropped.name] = target;
+    }
 
     this.scenarioProductionService.updateLayout();
+    setTimeout(() => this.scenarioProductionService.updateLayout(), 300);
   }
 
   addStateGroup(event) {
@@ -326,6 +318,10 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
 
     jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;
+  }
+
+  preventDefault(event) {
+    event.stopPropagation();
   }
 
   mouseWheel(event: WheelEvent): void {

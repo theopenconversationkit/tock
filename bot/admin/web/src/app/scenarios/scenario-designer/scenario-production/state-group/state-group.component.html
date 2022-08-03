@@ -88,3 +88,19 @@
     </div>
   </div>
 </div>
+
+<div *ngIf="!state.states && hasOutgoingTransitions()">
+  <div
+    style="height: 30px; border: 1px solid red"
+    class="position-relative"
+    *ngFor="let transition of state.on | keyvalue"
+  >
+    <scenario-transition
+      [transition]="{ name: transition.key, target: transition.value }"
+      [parentState]="state"
+      [intents]="intents"
+      [actions]="actions"
+      (removeTransition)="removeTransition($event)"
+    ></scenario-transition>
+  </div>
+</div>

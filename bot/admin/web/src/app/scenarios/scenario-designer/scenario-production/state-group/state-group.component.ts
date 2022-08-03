@@ -85,6 +85,10 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     }
   }
 
+  hasOutgoingTransitions() {
+    return this.state.on && Object.keys(this.state.on).length > 0;
+  }
+
   transitionWrapperWidth = 0;
   updateTransitionWrapperWidth() {
     this.transitionWrapperWidth = this.getMaxTransitionWidth();

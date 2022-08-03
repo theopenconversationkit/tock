@@ -65,7 +65,7 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
         this.transition.target.replace(/^#/, '')
       ];
 
-    if (stateComponent) {
+    if (stateComponent?.state.states) {
       const stateElem = stateComponent.elementRef.nativeElement;
       const transitionElem = this.elementRef.nativeElement;
       let averageHeight = transitionElem.offsetHeight;

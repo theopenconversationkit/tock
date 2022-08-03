@@ -80,6 +80,25 @@
         transition: transform 0.3s;
         transform-origin: 0 0;
         padding: 20px;
+
+        .pathHandler {
+          position: absolute;
+          z-index: 1;
+          border-radius: 100%;
+          width: 20px;
+          height: 20px;
+          background-color: none;
+          nb-icon {
+            display: none;
+          }
+          &:hover {
+            background-color: nb-theme(color-info-active);
+            color: white;
+            nb-icon {
+              display: inline;
+            }
+          }
+        }
       }
     }
   }
