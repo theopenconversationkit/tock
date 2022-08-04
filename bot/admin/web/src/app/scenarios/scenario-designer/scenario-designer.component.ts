@@ -134,7 +134,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   exit(): void {
-    this.router.navigateByUrl('/scenarios');
+    this.scenarioDesignerService.exitDesigner();
   }
 
   ngOnDestroy(): void {
