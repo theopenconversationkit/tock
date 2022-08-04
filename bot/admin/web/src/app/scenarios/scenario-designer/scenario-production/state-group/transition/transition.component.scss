@@ -24,4 +24,7 @@
   //   width: 15px;
   //   background-color: #ccc;
   // }
+  &.hovered {
+    background-color: nb-theme(color-info-hover);
+  }
 }

@@ -2,6 +2,8 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostBinding,
+  HostListener,
   Input,
   OnDestroy,
   OnInit,
@@ -35,6 +37,17 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
           this.setTransitionTop();
         }
       });
+  }
+
+  @HostBinding('class.hovered') isHovered: boolean = false;
+
+  @HostListener('mouseenter') onMouseenter() {
+    this.isHovered = true;
+    this.scenarioProductionService.redrawPaths();
+  }
+  @HostListener('mouseleave') onMouseleave() {
+    this.isHovered = false;
+    this.scenarioProductionService.redrawPaths();
   }
 
   intent;
