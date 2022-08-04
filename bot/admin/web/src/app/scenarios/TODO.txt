@@ -64,6 +64,8 @@ Scenario designer :
 
         PUBLISHING :
 
+                A la modification d'une answer existante, faire un update plutot qu'un post
+
                 Intent : c'est quoi les mandatoryStates ?
 
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
