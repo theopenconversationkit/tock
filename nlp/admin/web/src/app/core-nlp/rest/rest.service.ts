@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NEVER, Observable, throwError as observableThrowError } from 'rxjs';
+import { NEVER, Observable, of, throwError as observableThrowError } from 'rxjs';
 
 import { catchError, map } from 'rxjs/operators';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
@@ -55,8 +55,8 @@ export class RestService {
     return this.ssologin || document.cookie.indexOf('tock-sso=') !== -1;
   }
 
-  isCas():boolean{
-    return this.isSSO() && document.cookie.indexOf("pac4jCsrfToken=") !== -1;
+  isCas(): boolean {
+    return this.isSSO() && document.cookie.indexOf('pac4jCsrfToken=') !== -1;
   }
 
   private headers(): HttpHeaders {
@@ -108,7 +108,8 @@ export class RestService {
     path: string,
     value?: I,
     parseFunction?: (value: any) => O,
-    baseUrl?: string
+    baseUrl?: string,
+    returnErrorOn400 = false
   ): Observable<O> {
     return this.http
       .post(`${baseUrl ? baseUrl : this.url}${path}`, JsonUtils.stringify(value), {
@@ -117,7 +118,7 @@ export class RestService {
       })
       .pipe(
         map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
-        catchError((e) => this.handleError(this, e))
+        catchError((e) => this.handleError(this, e, returnErrorOn400))
       );
   }
 
@@ -179,7 +180,7 @@ export class RestService {
     return uploader;
   }
 
-  private handleError(rest: RestService, error: Response | any) {
+  private handleError(rest: RestService, error: Response | any, returnErrorOn400 = false) {
     console.log(error);
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
@@ -194,6 +195,11 @@ export class RestService {
           ? e.statusText || ''
           : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
+      // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side
+      if (returnErrorOn400 && e.status === 400) {
+        return observableThrowError(error);
+      }
+
       //strange things happen
       if (e && e.status === 0 && this.isSSO()) {
         console.error('invalid token - refresh');

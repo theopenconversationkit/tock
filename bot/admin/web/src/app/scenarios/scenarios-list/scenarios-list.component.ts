@@ -129,7 +129,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       description: '',
       name: '',
       tags: [],
-      state: '',
+      state: 'draft',
       applicationId: this.stateService.currentApplication._id
     } as Scenario;
     this.isSidePanelOpen = true;

@@ -1,10 +1,10 @@
-import { Component, Injectable, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest } from '../../../bot/model/i18n';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
-import { ClassifiedEntity, EntityDefinition, Intent } from '../../../model/nlp';
+import { ClassifiedEntity, Intent } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 import { getScenarioActions, getScenarioIntents } from '../../commons/utils';
@@ -14,8 +14,10 @@ import {
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   TempSentence,
-  dependencyUpdateJob
+  dependencyUpdateJob,
+  SCENARIO_STATE
 } from '../../models';
+import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 
 @Component({
@@ -35,29 +37,22 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     private nlp: NlpService,
     private scenarioDesignerService: ScenarioDesignerService,
     private botService: BotService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private scenarioService: ScenarioService
   ) {}
 
   tickStoryJson: string;
   ngOnInit(): void {
-    this.checkScenarioConformity();
-  }
-
-  checkScenarioConformity() {
-    let problems = [];
-
-    if (!problems.length) {
-      this.checkDependencies();
-    }
+    this.checkDependencies();
   }
 
   dependencies: { [key: string]: dependencyUpdateJob[] };
 
-  getJobsType(jobs: dependencyUpdateJob[]) {
+  getJobsType(jobs: dependencyUpdateJob[]): string {
     return jobs[0].type;
   }
 
-  checkDependencies() {
+  checkDependencies(): void {
     this.dependencies = {
       intentsToCreate: [],
       intentsToUpdate: [],
@@ -92,8 +87,9 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     });
   }
 
-  processingDependencies;
-  processDependencies() {
+  processingDependencies: boolean;
+
+  processDependencies(): void {
     this.processingDependencies = true;
 
     let nextIntentCreation = this.dependencies.intentsToCreate.find((i) => !i.done);
@@ -119,7 +115,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     }
   }
 
-  processIntent(intentTask: dependencyUpdateJob) {
+  processIntent(intentTask: dependencyUpdateJob): void {
     const intentDefinition = intentTask.data.intentDefinition;
 
     // Creation of non-existent entities
@@ -159,7 +155,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     this.processDependencies();
   }
 
-  postNewEntity(task, tempEntity) {
+  postNewEntity(task: dependencyUpdateJob, tempEntity): void {
     this.nlp.createEntityType(tempEntity.type).subscribe(
       (e) => {
         if (e) {
@@ -178,7 +174,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postNewSentence(task: dependencyUpdateJob, intent: Intent, tempSentence: TempSentence) {
+  postNewSentence(task: dependencyUpdateJob, intent: Intent, tempSentence: TempSentence): void {
     this.nlp.parse(tempSentence).subscribe(
       (sentence) => {
         // sentence = sentence.withIntent(this.state, intentId);
@@ -205,7 +201,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postNewIntent(intentTask, intentEntities) {
+  postNewIntent(intentTask: dependencyUpdateJob, intentEntities): void {
     let entities = [];
     intentEntities.forEach((ie) => {
       entities.push({
@@ -242,7 +238,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       );
   }
 
-  processAnswer(answerTask: dependencyUpdateJob) {
+  processAnswer(answerTask: dependencyUpdateJob): void {
     if (!answerTask.data.tickActionDefinition.answerId) {
       return this.postNewAnswer(answerTask);
     }
@@ -251,7 +247,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     this.processDependencies();
   }
 
-  postNewAnswer(answerTask: dependencyUpdateJob) {
+  postNewAnswer(answerTask: dependencyUpdateJob): void {
     let request = new CreateI18nLabelRequest(
       'scenario',
       answerTask.data.tickActionDefinition.answer,
@@ -268,13 +264,38 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postTickStory(): void {
+  previewTickStory(): void {
     const story = this.compileTickStory();
 
     const jsonPreviewerRef = this.dialogService.openDialog(JsonPreviewerComponent, {
       context: { jsonData: story }
     });
     jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;
+  }
+
+  tickStoryPostSuccessfull: boolean = false;
+  tickStoryErrors: string[];
+
+  postTickStory(): void {
+    this.tickStoryErrors = undefined;
+    const story = this.compileTickStory();
+    this.scenarioService.postTickStory(story).subscribe(
+      (res) => {
+        // Successful save. We pass the scenario state to "current" and save it
+        this.scenario.state = SCENARIO_STATE.current;
+        this.scenarioDesignerService
+          .saveScenario(this.scenario.id, this.scenario)
+          .subscribe((data) => {
+            // Scenario saved. Redirect the user to scenario list view
+            this.tickStoryPostSuccessfull = true;
+            setTimeout(() => this.scenarioDesignerService.exitDesigner(), 3000);
+          });
+      },
+      (error) => {
+        // Errors have occurred, let's inform the user.
+        this.tickStoryErrors = error.error;
+      }
+    );
   }
 
   compileTickStory(): object {
@@ -297,7 +318,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     let tickStory = {
       name: this.scenario.name,
       botId: botId,
-      storyId: 'tickStory id',
+      storyId: `${this.scenario.name}_${this.scenario.id}`, //A préciser
       description: this.scenario.description,
       sagaId: 0,
       mainIntent: mainIntent,

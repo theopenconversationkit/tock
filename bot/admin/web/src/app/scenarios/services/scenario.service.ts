@@ -167,4 +167,8 @@ export class ScenarioService {
       .sort()
       .filter((t) => t);
   }
+
+  postTickStory(tickStory) {
+    return this.scenarioApiService.postTickStory(tickStory);
+  }
 }
