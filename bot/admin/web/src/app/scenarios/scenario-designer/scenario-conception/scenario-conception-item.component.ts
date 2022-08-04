@@ -309,7 +309,49 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   delete(): void {
-    this.scenarioConceptionService.deleteAnswer(this.item, this.parentId);
+    let alertMessage;
+    if (this.item.intentDefinition) {
+      if (this.item.from === SCENARIO_ITEM_FROM_CLIENT) {
+        alertMessage =
+          'This client intervention already has an intent definition. By deleting the intervention, this definition will be lost. Are you sure you want to continue?';
+      } else {
+        // to ensure backward compatibility with the early stages of the project
+        delete this.item.intentDefinition;
+      }
+    } else if (this.item.tickActionDefinition) {
+      if (this.item.from === SCENARIO_ITEM_FROM_BOT) {
+        alertMessage =
+          'This bot intervention already has an action definition. By deleting the intervention, this definition will be lost. Are you sure you want to continue?';
+      } else {
+        // to ensure backward compatibility with the early stages of the project
+        delete this.item.tickActionDefinition;
+      }
+    }
+
+    if (alertMessage) {
+      const cancelAction = 'cancel';
+      const confirmAction = 'delete';
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+        context: {
+          title: `Deletion of an intervention`,
+          subtitle: alertMessage,
+          modalStatus: 'danger',
+          actions: [
+            { actionName: cancelAction, buttonStatus: 'default' },
+            { actionName: confirmAction }
+          ]
+        }
+      });
+      dialogRef.onClose.subscribe((result) => {
+        if (result) {
+          if (result == confirmAction) {
+            this.scenarioConceptionService.deleteAnswer(this.item, this.parentId);
+          }
+        }
+      });
+    } else {
+      this.scenarioConceptionService.deleteAnswer(this.item, this.parentId);
+    }
   }
 
   getItemCardCssClass(): string {

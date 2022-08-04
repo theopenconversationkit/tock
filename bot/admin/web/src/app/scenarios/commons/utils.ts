@@ -228,11 +228,13 @@ export function removeSmStateById(stateId: string, group: machineState): void {
   }
 
   const actionStateParent = getSmStateParentById(stateId, group);
-  if (actionStateParent.initial === stateId) {
-    actionStateParent.initial = null;
-  }
-  if (actionStateParent.states[stateId]) {
-    delete actionStateParent.states[stateId];
+  if (actionStateParent) {
+    if (actionStateParent.initial === stateId) {
+      actionStateParent.initial = null;
+    }
+    if (actionStateParent.states[stateId]) {
+      delete actionStateParent.states[stateId];
+    }
   }
 }
 

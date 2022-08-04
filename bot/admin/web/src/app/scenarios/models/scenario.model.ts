@@ -62,6 +62,7 @@ export interface TickActionDefinition {
   handler?: string;
   answer?: string;
   answerId?: string;
+  final?: boolean;
 }
 
 export type EntityTypeName = string;
