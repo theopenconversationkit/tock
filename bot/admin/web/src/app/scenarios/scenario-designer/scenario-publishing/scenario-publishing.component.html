@@ -68,9 +68,11 @@
         </div>
       </div>
 
-      <div class="text-center mt-3">
+      <div
+        *ngIf="!processingDependencies"
+        class="text-center mt-3"
+      >
         <button
-          *ngIf="!processingDependencies"
           nbButton
           status="danger"
           class="ml-2"
@@ -79,6 +81,24 @@
           Publish scenario
         </button>
       </div>
+    </div>
+
+    <div *ngIf="tickStoryErrors">
+      <h5>Some errors occured :</h5>
+
+      <ul>
+        <li
+          *ngFor="let error of tickStoryErrors"
+          class="text-danger"
+        >
+          {{ error }}
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="tickStoryPostSuccessfull">
+      <h5>The story has been successfully saved</h5>
+      You will be redirected in a few seconds...
     </div>
   </nb-card-body>
 </nb-card>

@@ -28,6 +28,7 @@ import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-prev
 
 const CANVAS_TRANSITION_TIMING = 300;
 const TRANSITION_COLOR = '#006fd6';
+const TRANSITION_COLOR_HOVERED = '#42aaff';
 @Component({
   selector: 'scenario-production',
   templateUrl: './scenario-production.component.html',
@@ -79,17 +80,27 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   pathHandlers = [];
 
   svgCanvas;
-  svgCanvasStartArrowMarker;
-  svgCanvasEndArrowMarker;
   svgCanvasGroup;
+
+  svgCanvasStartMarker;
+  svgCanvasStartMarkerHovered;
+  svgCanvasEndMarker;
+  svgCanvasEndMarkerHovered;
+
   initSvgCanvas() {
     this.svgCanvas = SVG().addTo(this.canvasElem.nativeElement).size('150%', '150%');
     this.svgCanvas.attr('style', 'position:absolute;top:0;left:0;pointer-events: none;');
-    this.svgCanvasStartArrowMarker = this.svgCanvas.marker(2, 2, function (add) {
+    this.svgCanvasStartMarker = this.svgCanvas.marker(2, 2, function (add) {
       add.circle(2).fill(TRANSITION_COLOR);
     });
-    this.svgCanvasEndArrowMarker = this.svgCanvas.marker(3.5, 3.5, function (add) {
+    this.svgCanvasStartMarkerHovered = this.svgCanvas.marker(2, 2, function (add) {
+      add.circle(2).fill(TRANSITION_COLOR_HOVERED);
+    });
+    this.svgCanvasEndMarker = this.svgCanvas.marker(3.5, 3.5, function (add) {
       add.polygon('0 0, 3.5 1.75, 0 3.5').fill(TRANSITION_COLOR);
+    });
+    this.svgCanvasEndMarkerHovered = this.svgCanvas.marker(3.5, 3.5, function (add) {
+      add.polygon('0 0, 3.5 1.75, 0 3.5').fill(TRANSITION_COLOR_HOVERED);
     });
     this.svgCanvasGroup = this.svgCanvas.group();
   }
@@ -97,13 +108,14 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   drawPaths() {
     if (!this.svgCanvas) this.initSvgCanvas();
     this.svgCanvasGroup.clear();
+    this.pathHandlers = [];
 
     const canvasPos = revertTransformMatrix(this.svgCanvas.node, this.canvasElem.nativeElement);
     const canvasLeft = canvasPos.left;
     const canvasTop = canvasPos.top;
 
-    let transitions = getAllSmTransitions(this.scenario.data.stateMachine);
-    this.pathHandlers = [];
+    const transitions = getAllSmTransitions(this.scenario.data.stateMachine);
+    const sortedTransitions = [];
     transitions.forEach((entry) => {
       const transitionName = entry[0];
       const transitionTarget = entry[1];
@@ -112,9 +124,31 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
           (comp) =>
             comp.transition.name === transitionName && comp.transition.target === transitionTarget
         );
-      if (!transitionComponent) return;
+      if (transitionComponent) {
+        sortedTransitions.push({
+          name: entry[0],
+          target: entry[1],
+          component: transitionComponent,
+          hovered: transitionComponent.isHovered
+        });
+      }
+    });
 
-      const transitionElem = transitionComponent.elementRef.nativeElement;
+    sortedTransitions.sort((a, b) => {
+      if (a.hovered && b.hovered) return 0;
+      if (a.hovered) return 1;
+      if (b.hovered) return -1;
+    });
+
+    sortedTransitions.forEach((transition) => {
+      let color = transition.hovered ? TRANSITION_COLOR_HOVERED : TRANSITION_COLOR;
+      let pathWidth = transition.hovered ? 4.3 : 3;
+      let startMarker = transition.hovered
+        ? this.svgCanvasStartMarkerHovered
+        : this.svgCanvasStartMarker;
+      let endMarker = transition.hovered ? this.svgCanvasEndMarkerHovered : this.svgCanvasEndMarker;
+
+      const transitionElem = transition.component.elementRef.nativeElement;
       const transitionElemPos = revertTransformMatrix(
         transitionElem,
         this.canvasElem.nativeElement
@@ -122,7 +156,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
       const sourceStateComponent =
         this.scenarioProductionService.scenarioProductionStateComponents[
-          transitionComponent.parentState.id
+          transition.component.parentState.id
         ];
       const sourceStateElem = sourceStateComponent.stateWrapper.nativeElement;
       const sourceStateElemPos = revertTransformMatrix(
@@ -132,7 +166,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
       const targetStateComponent =
         this.scenarioProductionService.scenarioProductionStateComponents[
-          transitionTarget.replace(/^#/, '')
+          transition.target.replace(/^#/, '')
         ];
       const targetStateElem = targetStateComponent.stateWrapper.nativeElement;
       const targetStateElemPos = revertTransformMatrix(
@@ -178,8 +212,8 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       this.svgCanvasGroup
         .path(inPath)
         .fill({ opacity: 0 })
-        .stroke({ color: TRANSITION_COLOR, width: 4, linecap: 'round', linejoin: 'round' })
-        .marker('start', this.svgCanvasStartArrowMarker);
+        .stroke({ color: color, width: pathWidth, linecap: 'round', linejoin: 'round' })
+        .marker('start', startMarker);
 
       let outPath;
       let outStartLeft;
@@ -206,13 +240,13 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       this.svgCanvasGroup
         .path(outPath)
         .fill({ opacity: 0 })
-        .stroke({ color: TRANSITION_COLOR, width: 4, linecap: 'round', linejoin: 'round' })
-        .marker('end', this.svgCanvasEndArrowMarker);
+        .stroke({ color: color, width: pathWidth, linecap: 'round', linejoin: 'round' })
+        .marker('end', endMarker);
 
       this.pathHandlers.push({
-        transitionName: transitionName,
-        transitionSource: transitionComponent.parentState.id,
-        transitionTarget: transitionTarget,
+        transitionName: transition.name,
+        transitionSource: transition.component.parentState.id,
+        transitionTarget: transition.target,
         transStartLeft: inStartLeft - 2,
         transStartTop: inStartTop - 10,
         transEndLeft: outEndLeft - 15,

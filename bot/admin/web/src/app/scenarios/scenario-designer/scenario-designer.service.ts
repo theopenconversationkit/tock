@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
@@ -23,7 +24,7 @@ import { ScenarioService } from '../services/scenario.service';
   providedIn: 'root'
 })
 export class ScenarioDesignerService {
-  constructor(private scenarioService: ScenarioService) {}
+  constructor(private scenarioService: ScenarioService, private router: Router) {}
 
   public scenarioDesignerCommunication = new Subject<any>();
 
@@ -32,6 +33,10 @@ export class ScenarioDesignerService {
     return this.scenarioService
       .putScenario(scenarioId, cleanScenario)
       .pipe(tap((data) => this.updateScenarioBackup(data)));
+  }
+
+  exitDesigner(): void {
+    this.router.navigateByUrl('/scenarios');
   }
 
   updateScenarioBackup(data: Scenario): void {

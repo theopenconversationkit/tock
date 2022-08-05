@@ -49,6 +49,13 @@ export class ActionEditComponent implements OnInit {
       });
     }
 
+    if (this.item.final) {
+      this.form.patchValue({
+        ...this.form.value,
+        final: true
+      });
+    }
+
     if (!this.name.value) {
       this.form.patchValue({
         ...this.form.value,
@@ -67,7 +74,8 @@ export class ActionEditComponent implements OnInit {
     handler: new FormControl(),
     answer: new FormControl(),
     inputContextNames: new FormArray([]),
-    outputContextNames: new FormArray([])
+    outputContextNames: new FormArray([]),
+    final: new FormControl(false)
   });
 
   notUsedName(c: FormControl) {

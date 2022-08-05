@@ -251,7 +251,8 @@
           *ngIf="
             mode == SCENARIO_MODE.writing &&
             item.from == SCENARIO_ITEM_FROM_BOT &&
-            itemHasNoChildren()
+            itemHasNoChildren() &&
+            !itemHasDefinition()
           "
           class="mt-2"
         >

@@ -9,7 +9,13 @@ export interface Scenario {
   description?: string;
   data?: ScenarioData;
   applicationId: string;
-  state: string;
+  state: SCENARIO_STATE;
+}
+
+export enum SCENARIO_STATE {
+  draft = 'draft',
+  current = 'current',
+  archive = 'archive'
 }
 
 export enum SCENARIO_MODE {
@@ -62,6 +68,7 @@ export interface TickActionDefinition {
   handler?: string;
   answer?: string;
   answerId?: string;
+  final?: boolean;
 }
 
 export type EntityTypeName = string;

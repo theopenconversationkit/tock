@@ -23,4 +23,8 @@ export class ScenarioApiService {
   deleteScenario(id: string): Observable<any> {
     return this.rest.delete<Scenario>(`/scenarios/${id}`);
   }
+
+  postTickStory(tickStory): Observable<any> {
+    return this.rest.post('/bot/story/tick', tickStory, null, null, true);
+  }
 }
