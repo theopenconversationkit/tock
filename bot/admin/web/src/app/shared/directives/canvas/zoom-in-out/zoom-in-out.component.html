@@ -1,0 +1,18 @@
+<nb-button-group size="small">
+  <button
+    nbButton
+    nbTooltip="Zoom out"
+    status="basic"
+    (click)="zoom(zoomValue.OUT)"
+  >
+    <nb-icon icon="minus-outline"></nb-icon>
+  </button>
+  <button
+    nbButton
+    nbTooltip="Zoom in"
+    status="basic"
+    (click)="zoom(zoomValue.IN)"
+  >
+    <nb-icon icon="plus-outline"></nb-icon>
+  </button>
+</nb-button-group>

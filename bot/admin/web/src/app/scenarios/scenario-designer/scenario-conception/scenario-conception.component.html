@@ -1,8 +1,9 @@
 <div
   class="canvas-wrapper"
   #canvasWrapperElem
+  canvas
+  [position]="elementPosition"
   appMouseWheelListner
-  (onMouseWheel)="mouseWheel($event)"
 >
   <div
     *ngIf="scenario.data.mode == SCENARIO_MODE.casting"
@@ -96,6 +97,7 @@
   <div
     class="canvas cursor-move"
     #canvasElem
+    id="canvas"
   >
     <div class="card-row">
       <div class="card-col">
@@ -107,6 +109,7 @@
           [selectedItem]="selectedItem"
           [mode]="scenario.data.mode"
           [scenario]="scenario"
+          (onSelectElement)="handleSeletedElement($event)"
         ></scenario-conception-item>
       </div>
     </div>

@@ -36,7 +36,8 @@ import {
   NbSelectModule,
   NbTooltipModule,
   NbPopoverModule,
-  NbButtonModule
+  NbButtonModule,
+  NbButtonGroupModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -45,7 +46,12 @@ import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
 import { FormControlComponent } from './form-control/form-control.component';
 import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
 import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
-import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
+import {
+  AutofocusDirective,
+  DelayDirective,
+  MouseWheelListnerDirective,
+  CanvasModule
+} from './directives';
 
 @NgModule({
   imports: [
@@ -58,7 +64,9 @@ import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from '
     NbTooltipModule,
     NbIconModule,
     NbPopoverModule,
-    NbButtonModule
+    NbButtonModule,
+    NbButtonGroupModule,
+    CanvasModule
   ],
   declarations: [
     BotMessageComponent,
@@ -98,7 +106,9 @@ import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from '
 
     AutofocusDirective,
     DelayDirective,
-    MouseWheelListnerDirective
+    MouseWheelListnerDirective,
+
+    CanvasModule
   ],
   providers: [BotSharedService],
   entryComponents: []

@@ -275,10 +275,10 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   requireItemPosition(item: scenarioItem): void {
     if (item == this.item) {
       this.scenarioConceptionService.exposeItemPosition(this.item, {
-        left: this.itemCard.nativeElement.offsetLeft,
-        top: this.itemCard.nativeElement.offsetTop,
-        width: this.itemCard.nativeElement.offsetWidth,
-        height: this.itemCard.nativeElement.offsetHeight
+        offsetLeft: this.itemCard.nativeElement.offsetLeft,
+        offsetTop: this.itemCard.nativeElement.offsetTop,
+        offsetWidth: this.itemCard.nativeElement.offsetWidth,
+        offsetHeight: this.itemCard.nativeElement.offsetHeight
       });
     }
   }

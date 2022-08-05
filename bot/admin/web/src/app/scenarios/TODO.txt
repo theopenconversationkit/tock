@@ -14,9 +14,9 @@ Scenarios
 
 Scenario designer :
 
-        Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
-
         Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
+
+        #DONE Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
 
         #DONE Gérer l'init du designer quand l'id du scenario demandé n'existe pas. Actuellement l'appel à scenarioService.getScenario ne répond jamais et la page reste vide sans alerter l'utilisateur et sans re-router vers scenarios-list
 

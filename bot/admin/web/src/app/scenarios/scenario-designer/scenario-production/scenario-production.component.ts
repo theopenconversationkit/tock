@@ -1,13 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  TemplateRef,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -388,71 +379,6 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   preventDefault(event) {
     event.stopPropagation();
-  }
-
-  mouseWheel(event: WheelEvent): void {
-    event.preventDefault();
-    this.zoomCanvas(event);
-  }
-
-  canvasPos = { x: 0, y: 0 };
-  canvasPosOffset = { x: 0, y: 0 };
-  pointer = { x: 0, y: 0 };
-  canvasScale: number = 1;
-  zoomSpeed: number = 0.5;
-  isDragingCanvas;
-
-  zoomCanvas(event: WheelEvent): void {
-    let wrapper = this.canvasWrapperElem.nativeElement;
-    let canvas = this.canvasElem.nativeElement;
-
-    this.pointer.x = event.clientX - wrapper.offsetLeft;
-    this.pointer.y = event.clientY - wrapper.offsetTop;
-    this.canvasPosOffset.x = (this.pointer.x - this.canvasPos.x) / this.canvasScale;
-    this.canvasPosOffset.y = (this.pointer.y - this.canvasPos.y) / this.canvasScale;
-
-    this.canvasScale +=
-      -1 * Math.max(-1, Math.min(1, event.deltaY)) * this.zoomSpeed * this.canvasScale;
-    const max_scale = 1;
-    const min_scale = 0.2;
-    this.canvasScale = Math.max(min_scale, Math.min(max_scale, this.canvasScale));
-
-    this.canvasPos.x = -this.canvasPosOffset.x * this.canvasScale + this.pointer.x;
-    this.canvasPos.y = -this.canvasPosOffset.y * this.canvasScale + this.pointer.y;
-
-    canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
-  }
-
-  onMouseDownCanvas(event: MouseEvent): void {
-    if (event.button == 0) {
-      this.isDragingCanvas = {
-        left: this.canvasPos.x,
-        top: this.canvasPos.y,
-        x: event.clientX,
-        y: event.clientY
-      };
-      let canvas = this.canvasElem.nativeElement;
-      canvas.style.transition = 'unset';
-    }
-  }
-
-  onMouseUpCanvas(event: MouseEvent): void {
-    if (event.button == 0) {
-      this.isDragingCanvas = undefined;
-      let canvas = this.canvasElem.nativeElement;
-      canvas.style.transition = `transform .${CANVAS_TRANSITION_TIMING}s`;
-    }
-  }
-
-  onMouseMoveCanvas(event: MouseEvent): void {
-    if (this.isDragingCanvas && event.button == 0) {
-      let canvas = this.canvasElem.nativeElement;
-      const dx = event.clientX - this.isDragingCanvas.x;
-      const dy = event.clientY - this.isDragingCanvas.y;
-      this.canvasPos.x = this.isDragingCanvas.left + dx;
-      this.canvasPos.y = this.isDragingCanvas.top + dy;
-      canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
-    }
   }
 
   ngOnDestroy(): void {

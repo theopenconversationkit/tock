@@ -75,11 +75,8 @@
   <div
     class="production-canvas-wrapper flex-fill"
     #canvasWrapperElem
-    appMouseWheelListner
-    (onMouseWheel)="mouseWheel($event)"
-    (mousedown)="onMouseDownCanvas($event)"
-    (mouseup)="onMouseUpCanvas($event)"
-    (mousemove)="onMouseMoveCanvas($event)"
+    canvas
+    [centerCanvasAtInitialisation]="false"
   >
     <div
       class="production-canvas"
