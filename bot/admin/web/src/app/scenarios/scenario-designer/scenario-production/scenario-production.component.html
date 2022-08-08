@@ -6,12 +6,12 @@
         <div
           class="intent d-flex my-1 unselectable"
           *ngFor="let intent of getScenarioIntentDefinitions()"
-          [ngClass]="{ disabled: !isIntentDraggable(intent), isReadOnly: isReadOnly }"
+          [ngClass]="{ disabled: !isIntentDraggable(intent), isReadonly: isReadonly }"
           [nbTooltip]="getIntentTooltip(intent)"
           [dndDraggable]="{ type: 'intent', name: intent.name }"
           [dndType]="getDraggableIntentType(intent)"
           dndHandle
-          [dndDisableIf]="!isIntentDraggable(intent) || isReadOnly"
+          [dndDisableIf]="!isIntentDraggable(intent) || isReadonly"
         >
           <nb-icon
             *ngIf="intent.primary"
@@ -85,6 +85,7 @@
       #canvasElem
     >
       <scenario-state-group
+        [isReadonly]="isReadonly"
         [state]="scenario.data.stateMachine.states.Global"
         [stateMachine]="scenario.data.stateMachine"
         [usedNames]="collectAllUsedNames()"

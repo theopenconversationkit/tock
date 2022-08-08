@@ -16,7 +16,8 @@ import {
   scenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE
+  SCENARIO_MODE,
+  SCENARIO_STATE
 } from '../../models/scenario.model';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -47,6 +48,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
+  isReadonly: boolean = false;
   qualifiedName = qualifiedName;
 
   constructor(
@@ -68,6 +70,8 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
         if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
         if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
       });
+
+    this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
   }
 
   contextsPanelDisplayed: boolean = true;

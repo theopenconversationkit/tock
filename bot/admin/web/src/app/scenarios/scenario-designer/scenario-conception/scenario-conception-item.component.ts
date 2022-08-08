@@ -39,6 +39,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   @Input() selectedItem: scenarioItem;
   @Input() mode: string;
   @Input() scenario: Scenario;
+  @Input() isReadonly: boolean = false;
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 

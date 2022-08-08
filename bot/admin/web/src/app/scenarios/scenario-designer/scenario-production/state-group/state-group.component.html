@@ -82,6 +82,7 @@
     <div class="actions-wrapper">
       <scenario-state-group
         *ngFor="let state of state.states | keyvalue"
+        [isReadonly]="isReadonly"
         [state]="state.value"
         [stateMachine]="stateMachine"
         [usedNames]="usedNames"
