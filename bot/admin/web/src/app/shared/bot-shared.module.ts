@@ -46,12 +46,8 @@ import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
 import { FormControlComponent } from './form-control/form-control.component';
 import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
 import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
-import {
-  AutofocusDirective,
-  DelayDirective,
-  MouseWheelListnerDirective,
-  CanvasModule
-} from './directives';
+import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
+import { CanvasModule } from './canvas/canvas.module';
 
 @NgModule({
   imports: [
