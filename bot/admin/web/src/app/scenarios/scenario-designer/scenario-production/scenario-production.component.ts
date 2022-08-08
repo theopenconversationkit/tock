@@ -9,6 +9,7 @@ import {
   Scenario,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
+  SCENARIO_STATE,
   TickActionDefinition
 } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
@@ -26,7 +27,6 @@ import {
 } from '../../commons/utils';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 
-const CANVAS_TRANSITION_TIMING = 300;
 const TRANSITION_COLOR = '#006fd6';
 const TRANSITION_COLOR_HOVERED = '#42aaff';
 @Component({
@@ -44,6 +44,8 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
+
+  isReadonly: boolean = false;
 
   constructor(
     private scenarioProductionService: ScenarioProductionService,
@@ -69,6 +71,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.scenario.data.stateMachine) this.initStateMachine();
+    this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
   }
 
   ngAfterViewInit(): void {

@@ -6,12 +6,12 @@
         <div
           class="intent d-flex my-1 unselectable"
           *ngFor="let intent of getScenarioIntentDefinitions()"
-          [ngClass]="{ disabled: !isIntentDraggable(intent) }"
+          [ngClass]="{ disabled: !isIntentDraggable(intent), isReadOnly: isReadOnly }"
           [nbTooltip]="getIntentTooltip(intent)"
           [dndDraggable]="{ type: 'intent', name: intent.name }"
           [dndType]="getDraggableIntentType(intent)"
           dndHandle
-          [dndDisableIf]="!isIntentDraggable(intent)"
+          [dndDisableIf]="!isIntentDraggable(intent) || isReadOnly"
         >
           <nb-icon
             *ngIf="intent.primary"
@@ -34,12 +34,12 @@
         <div
           class="action p-2 my-1 unselectable"
           *ngFor="let action of getScenarioActionDefinitions()"
-          [ngClass]="{ disabled: isActionInUse(action) }"
+          [ngClass]="{ disabled: isActionInUse(action), isReadonly: isReadonly }"
           [nbTooltip]="getActionTooltip(action)"
           [dndDraggable]="{ type: 'action', name: action.name }"
           dndHandle
           dndType="action"
-          [dndDisableIf]="isActionInUse(action)"
+          [dndDisableIf]="isActionInUse(action) || isReadonly"
         >
           <div class="ellipsis">{{ action.name }}</div>
         </div>
@@ -60,6 +60,7 @@
         Display state machine code
       </button>
       <button
+        *ngIf="!isReadonly"
         (click)="resetStateMachine()"
         fullWidth
         nbButton
@@ -76,6 +77,7 @@
     class="production-canvas-wrapper flex-fill"
     #canvasWrapperElem
     canvas
+    fullscreenWrapper="parent"
     [centerCanvasAtInitialisation]="false"
   >
     <div
@@ -92,7 +94,8 @@
 
       <ng-container *ngFor="let handler of pathHandlers">
         <div
-          class="pathHandler"
+          *ngIf="!isReadonly"
+          class="pathHandler pointer"
           [ngStyle]="{ 'top.px': handler.transStartTop, 'left.px': handler.transStartLeft }"
           [dndDraggable]="{
             type: 'transitionSource',
@@ -105,7 +108,8 @@
           <nb-icon icon="arrow-circle-left-outline"></nb-icon>
         </div>
         <div
-          class="pathHandler"
+          *ngIf="!isReadonly"
+          class="pathHandler pointer"
           [ngStyle]="{ 'top.px': handler.transEndTop, 'left.px': handler.transEndLeft }"
           [dndDraggable]="{
             type: 'transitionTarget',

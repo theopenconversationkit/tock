@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { SearchQuery } from '../../../model/nlp';
-import { OffsetPosition } from '../../../shared/directives/canvas/models';
+import { OffsetPosition } from '../../../shared/canvas/models';
 import { scenarioItem } from '../../models/scenario.model';
 
 @Injectable({
