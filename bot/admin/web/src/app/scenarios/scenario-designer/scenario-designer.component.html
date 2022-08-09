@@ -15,6 +15,7 @@
       Cancel
     </button>
     <button
+      *ngIf="!isReadonly"
       nbButton
       size="small"
       status="primary"
@@ -24,6 +25,7 @@
       Save
     </button>
     <button
+      *ngIf="!isReadonly"
       nbButton
       size="small"
       status="primary"
@@ -48,14 +50,17 @@
     scenario?.data.mode === SCENARIO_MODE.writing || scenario?.data.mode === SCENARIO_MODE.casting
   "
   [scenario]="scenario"
+  [isReadonly]="isReadonly"
 ></scenario-conception>
 
 <scenario-production
   *ngIf="scenario?.data.mode === SCENARIO_MODE.production"
   [scenario]="scenario"
+  [isReadonly]="isReadonly"
 ></scenario-production>
 
 <scenario-publishing
   *ngIf="scenario?.data.mode === SCENARIO_MODE.publishing"
   [scenario]="scenario"
+  [isReadonly]="isReadonly"
 ></scenario-publishing>

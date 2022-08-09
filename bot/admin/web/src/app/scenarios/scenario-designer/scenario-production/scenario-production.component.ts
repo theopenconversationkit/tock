@@ -38,14 +38,13 @@ const TRANSITION_COLOR_HOVERED = '#42aaff';
 export class ScenarioProductionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() scenario: Scenario;
+  @Input() isReadonly: boolean;
 
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
-
-  isReadonly: boolean = false;
 
   constructor(
     private scenarioProductionService: ScenarioProductionService,
@@ -71,7 +70,6 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.scenario.data.stateMachine) this.initStateMachine();
-    this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
   }
 
   ngAfterViewInit(): void {

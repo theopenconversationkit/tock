@@ -28,6 +28,7 @@ import { ScenarioDesignerService } from '../scenario-designer.service';
 export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() scenario: Scenario;
+  @Input() isReadonly: boolean;
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
@@ -43,7 +44,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
   tickStoryJson: string;
   ngOnInit(): void {
-    this.checkDependencies();
+    if (!this.isReadonly) this.checkDependencies();
   }
 
   dependencies: { [key: string]: dependencyUpdateJob[] };

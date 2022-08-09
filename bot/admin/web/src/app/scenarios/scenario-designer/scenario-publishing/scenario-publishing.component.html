@@ -100,6 +100,12 @@
       <h5>The story has been successfully saved</h5>
       You will be redirected in a few seconds...
     </div>
+
+    <div *ngIf="isReadonly">
+      This scenario is read-only. No changes can be made to it and it cannot be published.
+      <br />
+      If you wish to modify it, please make a copy first.
+    </div>
   </nb-card-body>
 </nb-card>
 

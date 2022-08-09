@@ -13,7 +13,8 @@ import {
   Scenario,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE
+  SCENARIO_MODE,
+  SCENARIO_STATE
 } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
 import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
@@ -38,6 +39,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   scenarioId: string;
   scenario: Scenario;
   scenarioBackup: string;
+  isReadonly: boolean = false;
 
   readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
@@ -74,6 +76,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
         this.scenarioBackup = JSON.stringify(scenario);
         this.scenario = JSON.parse(JSON.stringify(scenario));
+
+        this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
 
         if (!this.scenario.data)
           this.scenario.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
@@ -117,6 +121,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   save(exit: boolean = false, silent: boolean = false): void {
+    if (this.isReadonly) return;
+
     this.scenarioDesignerService.saveScenario(this.scenarioId, this.scenario).subscribe((data) => {
       if (!silent) {
         this.toastrService.success(`Scenario successfully saved`, 'Success', {

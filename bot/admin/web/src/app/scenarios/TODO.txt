@@ -4,7 +4,7 @@ shared
 
 Scenarios
 
-        scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. Plusieurs scenario peuvent-ils être draft en même temps ?
+        scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. 
 
         Peut-on supprimer tout un scenario est ses différentes versions ?
 

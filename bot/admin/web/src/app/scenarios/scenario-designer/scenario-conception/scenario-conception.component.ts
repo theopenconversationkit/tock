@@ -41,6 +41,7 @@ const CANVAS_TRANSITION_TIMING = 300;
 export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() scenario: Scenario;
+  @Input() isReadonly: boolean;
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
@@ -48,7 +49,6 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
-  isReadonly: boolean = false;
   qualifiedName = qualifiedName;
 
   constructor(
@@ -70,8 +70,6 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
         if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
         if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
       });
-
-    this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
   }
 
   contextsPanelDisplayed: boolean = true;
@@ -233,6 +231,8 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   @HostListener('window:keydown', ['$event'])
   onKeyPress(event: KeyboardEvent): void {
+    if (this.isReadonly) return;
+
     if (this.scenario.data.mode === this.SCENARIO_MODE.writing && this.selectedItem) {
       if (event.altKey) {
         if (event.key == 'c') {
