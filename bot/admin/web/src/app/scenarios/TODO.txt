@@ -14,7 +14,7 @@ Scenarios
 
 Scenario designer :
 
-        Faire fonctionner le designer en mode read-only si scenario.state n'est pas "draft"
+        Faire fonctionner le designer en mode read-only si scenario.state n'est pas "draft". Désactiver les shortcuts. En publishing afficher un message expliquant la situation selon qui'on est en current ou en archive
 
         Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
 
@@ -64,7 +64,7 @@ Scenario designer :
 
         PRODUCTION :
 
-                Revoir getAllSmTransitions (utilisé par drawPaths) puisque qu'une intent peut donner lieu à plusieurs transitions
+                #DONE Revoir getAllSmTransitions (utilisé par drawPaths) puisque qu'une intent peut donner lieu à plusieurs transitions
 
                 #DONE Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
 

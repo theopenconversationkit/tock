@@ -44,7 +44,7 @@
       );
     grid-template-rows: var(--panel-with);
     grid-gap: 0.5rem;
-    box-shadow: 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+    box-shadow: inset 2px 2px 5px rgb(0 0 0 / 10%);
   }
 }
 
@@ -125,6 +125,7 @@
 
     .production-canvas-wrapper {
       overflow: hidden;
+      box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
       .production-canvas {
         position: relative;
         width: fit-content;
