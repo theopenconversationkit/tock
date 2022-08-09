@@ -1,8 +1,9 @@
 <div
   class="canvas-wrapper"
   #canvasWrapperElem
+  canvas
+  [position]="elementPosition"
   appMouseWheelListner
-  (onMouseWheel)="mouseWheel($event)"
 >
   <div
     *ngIf="scenario.data.mode == SCENARIO_MODE.casting"
@@ -65,15 +66,14 @@
                 </span>
               </div>
             </div>
-            <div>
-              <nb-icon
-                icon="trash-2-outline"
-                status="danger"
-                (click)="confirmDeleteContext(context)"
-                class="pointer ml-2"
-                nbTooltip="Delete this context"
-              ></nb-icon>
-            </div>
+            <nb-icon
+              *ngIf="!isReadonly"
+              icon="trash-2-outline"
+              status="danger"
+              (click)="confirmDeleteContext(context)"
+              class="pointer ml-2"
+              nbTooltip="Delete this context"
+            ></nb-icon>
           </div>
         </nb-list-item>
       </nb-list>
@@ -81,7 +81,7 @@
 
     <div class="addContextButton">
       <button
-        *ngIf="contextsPanelDisplayed"
+        *ngIf="!isReadonly && contextsPanelDisplayed"
         nbButton
         size="tiny"
         fullWidth
@@ -96,17 +96,20 @@
   <div
     class="canvas cursor-move"
     #canvasElem
+    id="canvas"
   >
     <div class="card-row">
       <div class="card-col">
         <scenario-conception-item
           *ngIf="scenario?.data.scenarioItems.length"
+          [isReadonly]="isReadonly"
           [itemId]="0"
           [scenarioItems]="scenario.data.scenarioItems"
           [contexts]="scenario.data.contexts"
           [selectedItem]="selectedItem"
           [mode]="scenario.data.mode"
           [scenario]="scenario"
+          (onSelectElement)="handleSeletedElement($event)"
         ></scenario-conception-item>
       </div>
     </div>

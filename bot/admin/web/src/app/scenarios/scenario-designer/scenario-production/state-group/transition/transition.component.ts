@@ -26,6 +26,8 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   @Input() parentState;
   @Input() intents: intentDefinition[];
   @Input() actions: TickActionDefinition[];
+  @Input() isReadonly: boolean = false;
+
   constructor(
     public elementRef: ElementRef,
     private scenarioProductionService: ScenarioProductionService

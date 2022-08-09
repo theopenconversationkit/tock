@@ -16,7 +16,8 @@ import {
   scenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE
+  SCENARIO_MODE,
+  SCENARIO_STATE
 } from '../../models/scenario.model';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -47,6 +48,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
+  isReadonly: boolean = false;
   qualifiedName = qualifiedName;
 
   constructor(
@@ -68,12 +70,8 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
         if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
         if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
       });
-  }
 
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.centerCanvas();
-    }, 0);
+    this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
   }
 
   contextsPanelDisplayed: boolean = true;
@@ -215,9 +213,22 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   }
 
   selectedItem: scenarioItem;
+  selectedElement: HTMLElement;
 
-  selectItem(item?: scenarioItem): void {
+  selectItem(item?: scenarioItem, element?: HTMLElement): void {
     this.selectedItem = item ? item : undefined;
+    this.selectedElement = element;
+  }
+
+  elementPosition: any;
+  centerOnItem(item: scenarioItem, position, setFocus: boolean = true): void {
+    this.elementPosition = position;
+
+    if (setFocus) {
+      setTimeout(() => {
+        this.scenarioConceptionService.focusItem(item);
+      }, CANVAS_TRANSITION_TIMING);
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -256,98 +267,6 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       current = this.findItemById(current.parentIds[0]);
       if (!current) return false;
       if (current.id == child.id) return true;
-    }
-  }
-
-  mouseWheel(event: WheelEvent): void {
-    event.preventDefault();
-    this.zoomCanvas(event);
-  }
-
-  canvasPos = { x: 0, y: 0 };
-  canvasPosOffset = { x: 0, y: 0 };
-  pointer = { x: 0, y: 0 };
-  canvasScale: number = 1;
-  zoomSpeed: number = 0.5;
-  isDragingCanvas;
-
-  zoomCanvas(event: WheelEvent): void {
-    let wrapper = this.canvasWrapperElem.nativeElement;
-    let canvas = this.canvasElem.nativeElement;
-
-    this.pointer.x = event.clientX - wrapper.offsetLeft;
-    this.pointer.y = event.clientY - wrapper.offsetTop;
-    this.canvasPosOffset.x = (this.pointer.x - this.canvasPos.x) / this.canvasScale;
-    this.canvasPosOffset.y = (this.pointer.y - this.canvasPos.y) / this.canvasScale;
-
-    this.canvasScale +=
-      -1 * Math.max(-1, Math.min(1, event.deltaY)) * this.zoomSpeed * this.canvasScale;
-    const max_scale = 1;
-    const min_scale = 0.2;
-    this.canvasScale = Math.max(min_scale, Math.min(max_scale, this.canvasScale));
-
-    this.canvasPos.x = -this.canvasPosOffset.x * this.canvasScale + this.pointer.x;
-    this.canvasPos.y = -this.canvasPosOffset.y * this.canvasScale + this.pointer.y;
-
-    canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
-  }
-
-  centerCanvas(): void {
-    let wrapper = this.canvasWrapperElem.nativeElement;
-    let canvas = this.canvasElem.nativeElement;
-    this.canvasPos.x = ((canvas.offsetWidth * this.canvasScale - wrapper.offsetWidth) / 2) * -1;
-    this.canvasPos.y = 0;
-
-    canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
-  }
-
-  centerOnItem(item: scenarioItem, position, setFocus: boolean = true): void {
-    let wrapper = this.canvasWrapperElem.nativeElement;
-    let canvas = this.canvasElem.nativeElement;
-    this.canvasPos.x =
-      position.left * this.canvasScale * -1 + (wrapper.offsetWidth - position.width) / 2;
-    this.canvasPos.y =
-      position.top * this.canvasScale * -1 + (wrapper.offsetHeight - position.height) / 2;
-
-    canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
-
-    if (setFocus) {
-      setTimeout(() => {
-        this.scenarioConceptionService.focusItem(item);
-      }, CANVAS_TRANSITION_TIMING);
-    }
-  }
-
-  @HostListener('mousedown', ['$event'])
-  onMouseDownCanvas(event: MouseEvent): void {
-    if (event.button == 0) {
-      this.isDragingCanvas = {
-        left: this.canvasPos.x,
-        top: this.canvasPos.y,
-        x: event.clientX,
-        y: event.clientY
-      };
-      let canvas = this.canvasElem.nativeElement;
-      canvas.style.transition = 'unset';
-    }
-  }
-  @HostListener('mouseup', ['$event'])
-  onMouseUpCanvas(event: MouseEvent): void {
-    if (event.button == 0) {
-      this.isDragingCanvas = undefined;
-      let canvas = this.canvasElem.nativeElement;
-      canvas.style.transition = `transform .${CANVAS_TRANSITION_TIMING}s`;
-    }
-  }
-  @HostListener('mousemove', ['$event'])
-  onMouseMoveCanvas(event: MouseEvent): void {
-    if (this.isDragingCanvas && event.button == 0) {
-      let canvas = this.canvasElem.nativeElement;
-      const dx = event.clientX - this.isDragingCanvas.x;
-      const dy = event.clientY - this.isDragingCanvas.y;
-      this.canvasPos.x = this.isDragingCanvas.left + dx;
-      this.canvasPos.y = this.isDragingCanvas.top + dy;
-      canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
     }
   }
 

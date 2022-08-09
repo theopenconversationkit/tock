@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { StateService } from 'src/app/core-nlp/state.service';
-import { PaginatedQuery } from 'src/app/model/commons';
-import { SearchQuery } from 'src/app/model/nlp';
+
+import { StateService } from '../../../core-nlp/state.service';
+import { PaginatedQuery } from '../../../model/commons';
+import { SearchQuery } from '../../../model/nlp';
+import { OffsetPosition } from '../../../shared/canvas/models';
 import { scenarioItem } from '../../models/scenario.model';
 
 @Injectable({
@@ -70,14 +72,11 @@ export class ScenarioConceptionService {
     });
   }
 
-  exposeItemPosition(
-    item: scenarioItem,
-    position: { left: number; top: number; width: number; height: number }
-  ) {
+  exposeItemPosition(item: scenarioItem, position: OffsetPosition) {
     this.scenarioDesignerItemsCommunication.next({
       type: 'exposeItemPosition',
-      item: item,
-      position: position
+      item,
+      position
     });
   }
 

@@ -1,0 +1,26 @@
+<nb-button-group
+  size="small"
+  status="basic"
+>
+  <button
+    nbButton
+    [nbTooltip]="isFullscreen ? 'Leave fullscreen' : 'Fullscreen'"
+    (click)="fullscreen(!isFullscreen)"
+  >
+    <nb-icon [icon]="isFullscreen ? 'collapse-outline' : 'expand-outline'"></nb-icon>
+  </button>
+  <button
+    nbButton
+    nbTooltip="Zoom out"
+    (click)="zoom(zoomValue.OUT)"
+  >
+    <nb-icon icon="minus-outline"></nb-icon>
+  </button>
+  <button
+    nbButton
+    nbTooltip="Zoom in"
+    (click)="zoom(zoomValue.IN)"
+  >
+    <nb-icon icon="plus-outline"></nb-icon>
+  </button>
+</nb-button-group>

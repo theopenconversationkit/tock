@@ -31,6 +31,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   @Input() usedNames: string[];
   @Input() intents: intentDefinition[];
   @Input() actions: TickActionDefinition[];
+  @Input() isReadonly: boolean = false;
 
   @ViewChild('stateWrapper') stateWrapper: ElementRef;
 

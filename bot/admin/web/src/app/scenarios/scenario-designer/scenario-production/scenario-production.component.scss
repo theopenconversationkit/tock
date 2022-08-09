@@ -32,6 +32,7 @@
   height: inherit;
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
 
   .production-menu {
     height: auto;
@@ -50,6 +51,7 @@
 @include media-breakpoint-up(lg) {
   .production-wrapper {
     grid-template-columns: var(--panel-with) 1fr;
+    grid-template-rows: 1fr;
 
     .production-menu {
       padding: var(--panel-padding) 0;
@@ -89,6 +91,10 @@
 
             &.disabled {
               cursor: not-allowed;
+            }
+
+            &.isReadonly {
+              cursor: default;
             }
           }
         }

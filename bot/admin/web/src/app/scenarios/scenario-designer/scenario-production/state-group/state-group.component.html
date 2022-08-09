@@ -2,12 +2,12 @@
   #stateWrapper
   class="stateGroup unselectable"
   [dndDropzone]="getDraggableTypes()"
-  [dndDisableIf]="this.state.id === 'root'"
+  [dndDisableIf]="this.state.id === 'root' || isReadonly"
   dndDragoverClass="dragHover"
   (dndDrop)="onDrop($event)"
 >
   <div
-    class="stateGroup-header"
+    class="stateGroup-header cursor-default"
     [nbTooltip]="getActionTooltip()"
   >
     <span class="text-nowrap">
@@ -42,14 +42,14 @@
 
     <div class="d-flex">
       <nb-icon
-        *ngIf="state.states && state.id !== 'root'"
+        *ngIf="!isReadonly && state.states && state.id !== 'root'"
         class="pointer ml-1"
         icon="plus-circle-outline"
         nbTooltip="Add a state group"
         (click)="addStateGroup()"
       ></nb-icon>
       <nb-icon
-        *ngIf="state.id !== 'root' && state.id !== 'Global'"
+        *ngIf="!isReadonly && state.id !== 'root' && state.id !== 'Global'"
         class="pointer ml-1"
         icon="minus-circle-outline"
         nbTooltip="Remove this state"
@@ -68,6 +68,8 @@
     >
       <ng-container *ngFor="let transition of state.on | keyvalue">
         <scenario-transition
+          class="cursor-default"
+          [isReadonly]="isReadonly"
           [transition]="{ name: transition.key, target: transition.value }"
           [parentState]="state"
           [intents]="intents"
@@ -80,6 +82,7 @@
     <div class="actions-wrapper">
       <scenario-state-group
         *ngFor="let state of state.states | keyvalue"
+        [isReadonly]="isReadonly"
         [state]="state.value"
         [stateMachine]="stateMachine"
         [usedNames]="usedNames"
@@ -96,6 +99,8 @@
     *ngFor="let transition of state.on | keyvalue"
   >
     <scenario-transition
+      class="cursor-default"
+      [isReadonly]="isReadonly"
       [transition]="{ name: transition.key, target: transition.value }"
       [parentState]="state"
       [intents]="intents"
