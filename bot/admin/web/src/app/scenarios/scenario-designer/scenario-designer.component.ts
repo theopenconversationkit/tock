@@ -25,6 +25,7 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
 import { stringifiedCleanScenario } from '../commons/utils';
 import { ChoiceDialogComponent } from '../../shared/choice-dialog/choice-dialog.component';
+import { Intent } from '../../model/nlp';
 
 @Component({
   selector: 'scenario-designer',
@@ -48,7 +49,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   constructor(
     private scenarioService: ScenarioService,
     route: ActivatedRoute,
-    private router: Router,
     private toastrService: NbToastrService,
     protected state: StateService,
     private scenarioDesignerService: ScenarioDesignerService,
@@ -96,11 +96,46 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         if (!this.scenario.data.contexts) {
           this.scenario.data.contexts = [];
         }
+
+        this.checkDependencies();
       });
 
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
       this.exit();
     });
+  }
+
+  checkDependencies() {
+    let deletedIntents = [];
+    this.scenario.data.scenarioItems.forEach((item) => {
+      if (item.intentDefinition?.intentId) {
+        const existingIntent: Intent = this.state.findIntentById(item.intentDefinition.intentId);
+        if (!existingIntent) {
+          console.log(
+            'THE ASSOCIATED INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
+              item.intentDefinition.intentId
+          );
+          delete item.intentDefinition.intentId;
+          deletedIntents.push(item.intentDefinition.label || item.intentDefinition.name);
+        }
+      }
+    });
+
+    if (deletedIntents.length) {
+      let title = 'The following intents have been removed';
+      let subtitle = '';
+      deletedIntents.forEach((intent) => {
+        subtitle += `• ${intent} `;
+      });
+      const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+        context: {
+          modalStatus: 'warning',
+          title: title,
+          subtitle: subtitle,
+          actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
+        }
+      });
+    }
   }
 
   informNoScenarioFound() {
@@ -156,6 +191,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   canDeactivate(): boolean {
+    if (this.isReadonly) return true;
     return this.scenarioBackup == stringifiedCleanScenario(this.scenario);
   }
 }

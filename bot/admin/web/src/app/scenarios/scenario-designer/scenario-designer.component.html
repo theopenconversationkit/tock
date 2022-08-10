@@ -12,7 +12,8 @@
       status="basic"
       (click)="exit()"
     >
-      Cancel
+      <span *ngIf="!isReadonly">Cancel</span>
+      <span *ngIf="isReadonly">Exit</span>
     </button>
     <button
       *ngIf="!isReadonly"

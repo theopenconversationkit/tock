@@ -14,13 +14,13 @@ Scenarios
 
 Scenario designer :
 
-        Faire fonctionner le designer en mode read-only si scenario.state n'est pas "draft". Désactiver les shortcuts. En publishing afficher un message expliquant la situation selon qui'on est en current ou en archive
-
         Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
 
         Au chargement checker l'existence des answersId référencées. Pour celles qui n'existent plus, supprimer le answerId pour permettre à nouveau le post à la publication
 
-        Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
+        #DONE Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
+
+        #DONE Faire fonctionner le designer en mode read-only si scenario.state n'est pas "draft". Désactiver les shortcuts. En publishing afficher un message expliquant la situation selon qui'on est en current ou en archive
 
         #DONE Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
 
@@ -72,8 +72,8 @@ Scenario designer :
 
                 A la modification d'une answer existante, faire un update plutot qu'un post
 
-                Intent : c'est quoi les mandatoryStates ?
-
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
+
+                Intent : c'est quoi les mandatoryStates ?
 
                 #DONE Comment le front fait-il pour créer une secondary intent ?
