@@ -116,6 +116,20 @@ export class ActionEditComponent implements OnInit {
     return this.form.get('outputContextNames') as FormArray;
   }
 
+  copyDescToAnswer() {
+    this.form.patchValue({
+      ...this.form.value,
+      answer: this.description.value
+    });
+  }
+  copyDescToName() {
+    this.form.patchValue({
+      ...this.form.value,
+      name: this.description.value
+    });
+    this.formatActionName();
+  }
+
   contextsAutocompleteValues: Observable<string[]>;
 
   updateContextsAutocompleteValues(event?: KeyboardEvent): void {

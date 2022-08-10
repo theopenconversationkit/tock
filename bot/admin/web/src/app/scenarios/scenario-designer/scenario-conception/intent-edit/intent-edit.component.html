@@ -56,6 +56,15 @@
         <span>
           {{ item.intentDefinition.label }}
         </span>
+
+        <nb-icon
+          *ngIf="!isLabelASentence()"
+          icon="arrowhead-down-outline"
+          status="basic"
+          nbTooltip="Use label as a question"
+          class="pointer valign-middle"
+          (click)="copyLabelToSentences()"
+        ></nb-icon>
       </div>
       <div
         *ngIf="item.intentDefinition.category"

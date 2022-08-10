@@ -4,11 +4,11 @@ shared
 
 Scenarios
 
-        scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. 
+        ??? Peut-on supprimer tout un scenario est ses différentes versions ?
 
-        Peut-on supprimer tout un scenario est ses différentes versions ?
+        ??? La suppression d'un scenario "current" implique-t-elle la suppression de sa tickStory ?
 
-        La suppression d'un scenario "current" implique-t-elle la suppression de sa tickStory ?
+        #DONE scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. 
 
         #DONE Tock studio menu et titre de la vue scenarios-list : Scenarios management => Scenarios Management
 
@@ -31,6 +31,8 @@ Scenario designer :
         #DONE Adapter les css au mode nuit
 
         WRITING :
+                
+                ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ?
 
                 #DONE Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
 
@@ -42,7 +44,7 @@ Scenario designer :
 
                 Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
-                Quid des sharedIntents ?
+                ??? Quid des sharedIntents ?
 
                 #DONE intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
 
@@ -74,6 +76,6 @@ Scenario designer :
 
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
 
-                Intent : c'est quoi les mandatoryStates ?
+                ??? Intent : c'est quoi les mandatoryStates ?
 
                 #DONE Comment le front fait-il pour créer une secondary intent ?
