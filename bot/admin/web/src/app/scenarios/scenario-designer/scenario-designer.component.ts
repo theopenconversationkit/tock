@@ -26,6 +26,8 @@ import { ScenarioDesignerService } from './scenario-designer.service';
 import { stringifiedCleanScenario } from '../commons/utils';
 import { ChoiceDialogComponent } from '../../shared/choice-dialog/choice-dialog.component';
 import { Intent } from '../../model/nlp';
+import { BotService } from '../../bot/bot-service';
+import { I18nLabels } from '../../bot/model/i18n';
 
 @Component({
   selector: 'scenario-designer',
@@ -41,6 +43,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   scenario: Scenario;
   scenarioBackup: string;
   isReadonly: boolean = false;
+  i18n: I18nLabels;
+  i18nLoading: boolean = true;
 
   readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
@@ -52,7 +56,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     protected state: StateService,
     private scenarioDesignerService: ScenarioDesignerService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private botService: BotService
   ) {
     route.params
       .pipe(takeUntil(this.destroy), pluck('id'))
@@ -100,23 +105,47 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         this.checkDependencies();
       });
 
+    this.botService.i18nLabels().subscribe((results) => {
+      this.i18n = results;
+      this.i18nLoading = false;
+    });
+
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
       this.exit();
     });
   }
 
   checkDependencies() {
+    if (this.i18nLoading) {
+      return setTimeout(() => this.checkDependencies(), 100);
+    }
+
     let deletedIntents = [];
+    let deletedAnswers = [];
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.intentDefinition?.intentId) {
         const existingIntent: Intent = this.state.findIntentById(item.intentDefinition.intentId);
         if (!existingIntent) {
-          console.log(
-            'THE ASSOCIATED INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
-              item.intentDefinition.intentId
-          );
+          // console.log(
+          //   'AN INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
+          //     item.intentDefinition.intentId
+          // );
           delete item.intentDefinition.intentId;
           deletedIntents.push(item.intentDefinition.label || item.intentDefinition.name);
+        }
+      }
+
+      if (item.tickActionDefinition?.answerId) {
+        let existingAnswer = this.i18n.labels.find((ans) => {
+          return ans._id === item.tickActionDefinition.answerId;
+        });
+        if (!existingAnswer) {
+          // console.log(
+          //   'AN ANSWER HAS BEEN REMOVED !!! Deleting the lapsed answerId : ' +
+          //     item.tickActionDefinition.answerId
+          // );
+          delete item.tickActionDefinition.answerId;
+          deletedAnswers.push(item.tickActionDefinition.answer);
         }
       }
     });
@@ -126,6 +155,22 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       let subtitle = '';
       deletedIntents.forEach((intent) => {
         subtitle += `• ${intent} `;
+      });
+      const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+        context: {
+          modalStatus: 'warning',
+          title: title,
+          subtitle: subtitle,
+          actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
+        }
+      });
+    }
+
+    if (deletedAnswers.length) {
+      let title = 'The following answers have been removed';
+      let subtitle = '';
+      deletedAnswers.forEach((answer) => {
+        subtitle += `• ${answer} `;
       });
       const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {

@@ -16,7 +16,7 @@ Scenario designer :
 
         Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
 
-        Au chargement checker l'existence des answersId référencées. Pour celles qui n'existent plus, supprimer le answerId pour permettre à nouveau le post à la publication
+        #DONE Au chargement checker l'existence des answersId référencées. Pour celles qui n'existent plus, supprimer le answerId pour permettre à nouveau le post à la publication
 
         #DONE Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
 
