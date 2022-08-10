@@ -56,7 +56,7 @@
     <div class="d-flex flex-wrap align-items-center justify-content-center">
       <nb-toggle
         id="faqToggle"
-        nbTooltip="Disable"
+        [nbTooltip]="faq.enabled ? 'Disable' : 'Enable'"
         class="mx-2"
         [ngModel]="faq.enabled"
         (mousedown)="toggleEnabled(faq)"
