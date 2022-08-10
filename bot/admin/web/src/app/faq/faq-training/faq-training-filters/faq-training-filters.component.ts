@@ -16,11 +16,16 @@ export class FaqTrainingFiltersComponent implements OnInit, OnDestroy {
   private _subscription = new Subscription();
 
   form = new FormGroup({
-    search: new FormControl()
+    search: new FormControl(),
+    showUnknown: new FormControl(false)
   });
 
   get search(): FormControl {
     return this.form.get('search') as FormControl;
+  }
+
+  get showUnknown(): FormControl {
+    return this.form.get('showUnknown') as FormControl;
   }
 
   ngOnInit(): void {

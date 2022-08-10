@@ -1,3 +1,4 @@
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -6,6 +7,7 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbToggleModule,
   NbTooltipModule
 } from '@nebular/theme';
 
@@ -20,12 +22,14 @@ describe('FaqTrainingFiltersComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqTrainingFiltersComponent],
       imports: [
+        BrowserAnimationsModule,
         TestSharedModule,
         NbButtonModule,
         NbCardModule,
         NbFormFieldModule,
         NbIconModule,
         NbInputModule,
+        NbToggleModule,
         NbTooltipModule
       ]
     }).compileComponents();
@@ -53,7 +57,7 @@ describe('FaqTrainingFiltersComponent', () => {
     expect(onFilterSpy).not.toHaveBeenCalled();
 
     tick(500);
-    expect(onFilterSpy).toHaveBeenCalledOnceWith({ search: 'test' });
+    expect(onFilterSpy).toHaveBeenCalledOnceWith({ search: 'test', showUnknown: false });
   }));
 
   it('should show clear button of search input if the search value is defined', () => {
@@ -72,9 +76,7 @@ describe('FaqTrainingFiltersComponent', () => {
     spyOn(component, 'clearSearch');
     component.form.patchValue({ search: 'test' });
     fixture.detectChanges();
-    const clearButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[nbTooltip="Clear"]')
-    ).nativeElement;
+    const clearButtonElement: HTMLElement = fixture.debugElement.query(By.css('[nbTooltip="Clear"]')).nativeElement;
 
     clearButtonElement.click();
     fixture.detectChanges();

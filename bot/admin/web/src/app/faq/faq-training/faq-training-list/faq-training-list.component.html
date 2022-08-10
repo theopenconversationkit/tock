@@ -11,15 +11,34 @@
       class="d-flex gap-1"
     >
       <button
-        *ngFor="let option of selectionOption"
         nbButton
-        nbTooltip="{{ option.label }}"
-        [class]="option.class"
+        nbTooltip="Validate all selected sentences"
+        class="text-success"
         ghost
         shape="round"
-        (click)="handleBatchAction(option.action)"
+        (click)="handleBatchAction(Action.VALIDATE)"
       >
-        <nb-icon [icon]="option.icon"></nb-icon>
+        <nb-icon icon="checkmark-circle-2"></nb-icon>
+      </button>
+      <button
+        *ngIf="!isFilteredUnknown"
+        nbButton
+        nbTooltip="Set all selected sentences as unknown"
+        class="text-danger"
+        ghost
+        shape="round"
+        (click)="handleBatchAction(Action.UNKNOWN)"
+      >
+        <nb-icon icon="close-circle-outline"></nb-icon>
+      </button>
+      <button
+        nbButton
+        nbTooltip="Delete all selected sentences"
+        ghost
+        shape="round"
+        (click)="handleBatchAction(Action.DELETE)"
+      >
+        <nb-icon icon="trash-2-outline"></nb-icon>
       </button>
     </div>
   </div>
@@ -130,6 +149,7 @@
       </button>
 
       <button
+        *ngIf="!isFilteredUnknown"
         nbButton
         nbTooltip="Unknown"
         class="text-danger"

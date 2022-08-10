@@ -42,14 +42,11 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
   };
 
   loading: boolean = false;
+  isFilteredUnknown: boolean = false;
 
   sentences: SentenceExtended[] = [];
 
-  constructor(
-    private nlp: NlpService,
-    private state: StateService,
-    private toastrService: NbToastrService
-  ) {}
+  constructor(private nlp: NlpService, private state: StateService, private toastrService: NbToastrService) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -66,7 +63,12 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
 
   filterFaqTraining(filters: FaqTrainingFilter): void {
     this.selection.clear();
-    this.filters = { ...this.filters, ...filters };
+
+    this.isFilteredUnknown = filters.showUnknown;
+    const intentId = filters.showUnknown ? Intent.unknown : null;
+    const status = filters.showUnknown ? [1, 2] : [0];
+
+    this.filters = { ...this.filters, ...filters, intentId, status };
     this.loadData();
   }
 
@@ -102,10 +104,7 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
   ): Observable<PaginatedResult<SentenceExtended>> {
     if (showLoadingSpinner) this.loading = true;
 
-    let search = this.search(this.state.createPaginatedQuery(start, size)).pipe(
-      takeUntil(this.destroy$),
-      share()
-    );
+    let search = this.search(this.state.createPaginatedQuery(start, size)).pipe(takeUntil(this.destroy$), share());
 
     search.subscribe({
       next: (data: PaginatedResult<SentenceExtended>) => {
@@ -238,28 +237,20 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
     );
 
     if (this.pagination.end <= this.pagination.total) {
-      const start =
-        this.pagination.end - actionPerformed >= 0 ? this.pagination.end - actionPerformed : 0;
+      const start = this.pagination.end - actionPerformed >= 0 ? this.pagination.end - actionPerformed : 0;
       this.loadData(start, actionPerformed, true, true, true);
     } else {
       this.pagination.end = this.pagination.end - actionPerformed;
-      const start =
-        this.pagination.end - this.pagination.size >= this.pagination.size
-          ? this.pagination.end - this.pagination.size
-          : 0;
+      const start = this.pagination.end - this.pagination.size >= this.pagination.size ? this.pagination.end - this.pagination.size : 0;
       if (this.pagination.start > 0 && this.pagination.start === this.pagination.total) {
         this.loadData(start);
       }
     }
 
-    this.toastrService.success(
-      `${actionTitle} ${this.selection.selected.length} sentences`,
-      actionTitle,
-      {
-        duration: 2000,
-        status: 'basic'
-      }
-    );
+    this.toastrService.success(`${actionTitle} ${this.selection.selected.length} sentences`, actionTitle, {
+      duration: 2000,
+      status: 'basic'
+    });
 
     this.selection.clear();
   }
@@ -326,7 +317,8 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
       }
 
       this.faqTrainingFilter.updateFilter({
-        search: sentence.text
+        search: sentence.text,
+        showUnknown: false
       });
     }
   }

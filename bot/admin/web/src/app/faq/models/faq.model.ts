@@ -24,4 +24,5 @@ export interface FaqFilter {
 
 export interface FaqTrainingFilter {
   search: string;
+  showUnknown: boolean;
 }

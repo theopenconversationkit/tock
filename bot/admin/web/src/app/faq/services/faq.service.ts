@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
-import { map, switchMap, takeUntil, tap, filter } from 'rxjs/operators';
+import { map, switchMap, tap, filter } from 'rxjs/operators';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { Settings } from '../models';

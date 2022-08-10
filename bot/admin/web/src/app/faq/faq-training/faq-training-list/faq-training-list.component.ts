@@ -1,18 +1,10 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { IntentsCategory, Sentence } from '../../../model/nlp';
+import { IntentsCategory } from '../../../model/nlp';
 import { StateService } from '../../../core-nlp/state.service';
 import { UserRole } from '../../../model/auth';
 import { Action } from '../../models';
@@ -25,6 +17,7 @@ import { SentenceExtended } from '../faq-training.component';
   styleUrls: ['./faq-training-list.component.scss']
 })
 export class FaqTrainingListComponent implements OnInit, OnDestroy {
+  @Input() isFilteredUnknown!: boolean;
   @Input() pagination!: Pagination;
   @Input() sentences: SentenceExtended[] = [];
   @Input() selection!: SelectionModel<SentenceExtended>;
@@ -43,32 +36,7 @@ export class FaqTrainingListComponent implements OnInit, OnDestroy {
   Action: typeof Action = Action;
   sort: boolean = false;
 
-  selectionOption = [
-    {
-      action: Action.VALIDATE,
-      class: 'text-success',
-      icon: 'checkmark-circle-2',
-      label: 'Validate all selected sentences'
-    },
-    {
-      action: Action.UNKNOWN,
-      class: 'text-danger',
-      icon: 'close-circle-outline',
-      label: 'Set all selected sentences as unknown'
-    },
-    {
-      action: Action.DELETE,
-      class: null,
-      icon: 'trash-2-outline',
-      label: 'Delete all selected sentences'
-    }
-  ];
-
-  constructor(
-    public readonly state: StateService,
-    private router: Router,
-    private readonly elementRef: ElementRef
-  ) {}
+  constructor(public readonly state: StateService, private router: Router, private readonly elementRef: ElementRef) {}
 
   ngOnInit(): void {
     this.state.currentIntentsCategories.pipe(takeUntil(this._destroy$)).subscribe((groups) => {
@@ -91,10 +59,7 @@ export class FaqTrainingListComponent implements OnInit, OnDestroy {
     this.router.navigate(['faq/management'], { state: { question: sentence.text } });
   }
 
-  selectIntent(
-    sentence: SentenceExtended,
-    category: 'placeholder' | 'probability'
-  ): string | number {
+  selectIntent(sentence: SentenceExtended, category: 'placeholder' | 'probability'): string | number {
     switch (category) {
       case 'placeholder':
         return sentence.getIntentLabel(this.state);
@@ -104,9 +69,15 @@ export class FaqTrainingListComponent implements OnInit, OnDestroy {
   }
 
   addIntentToSentence(intentId: string, sentence: SentenceExtended): void {
+    const isSelected = this.selection.isSelected(sentence);
+    this.selection.deselect(sentence);
+
     let originalIndex = this.sentences.findIndex((s) => s === sentence);
-    sentence = sentence.withIntent(this.state, intentId);
-    this.sentences.splice(originalIndex, 1, sentence);
+    const newSentence = sentence.withIntent(this.state, intentId);
+
+    if (isSelected) this.selection.select(newSentence);
+
+    this.sentences.splice(originalIndex, 1, newSentence);
     this.resetIntentsListFilter();
   }
 

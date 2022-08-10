@@ -25,6 +25,7 @@
       <tock-faq-training-list
         #faqTrainingList
         *ngIf="sentences?.length"
+        [isFilteredUnknown]="isFilteredUnknown"
         [sentences]="sentences"
         [selection]="selection"
         (onDetails)="showDetails($event)"
