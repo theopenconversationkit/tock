@@ -9,6 +9,7 @@
     <div
       *ngIf="selection.selected.length"
       class="d-flex gap-1"
+      data-testid="batch-action"
     >
       <button
         nbButton
@@ -17,6 +18,7 @@
         ghost
         shape="round"
         (click)="handleBatchAction(Action.VALIDATE)"
+        data-testid="batch-action-validate"
       >
         <nb-icon icon="checkmark-circle-2"></nb-icon>
       </button>
@@ -28,6 +30,7 @@
         ghost
         shape="round"
         (click)="handleBatchAction(Action.UNKNOWN)"
+        data-testid="batch-action-unknown"
       >
         <nb-icon icon="close-circle-outline"></nb-icon>
       </button>
@@ -37,6 +40,7 @@
         ghost
         shape="round"
         (click)="handleBatchAction(Action.DELETE)"
+        data-testid="batch-action-delete"
       >
         <nb-icon icon="trash-2-outline"></nb-icon>
       </button>
@@ -47,15 +51,16 @@
     <span
       class="pointer"
       (click)="toggleSort()"
+      data-testid="sort"
     >
       Sort by creation date
       <nb-icon
-        *ngIf="!sort"
+        *ngIf="!isSorted"
         icon="chevron-down-outline"
         class="valign-middle"
       ></nb-icon>
       <nb-icon
-        *ngIf="sort"
+        *ngIf="isSorted"
         icon="chevron-up-outline"
         class="valign-middle"
       ></nb-icon>
@@ -72,6 +77,7 @@
   *ngFor="let sentence of sentences"
   [ngClass]="{ 'my-2': true, selected: sentence._selected }"
   [id]="getSentenceId(sentence)"
+  data-testid="list"
 >
   <nb-card-body class="grid-columns">
     <nb-checkbox
@@ -80,13 +86,13 @@
     ></nb-checkbox>
 
     <div
-      (click)="toggle(sentence)"
       class="pointer"
+      (click)="toggle(sentence)"
     >
       <small class="d-block text-muted">
         <time>{{ sentence.creationDate | date: 'MM/dd HH:mm' }}</time>
       </small>
-      <span>
+      <span data-testid="text">
         {{ sentence.text }}
       </span>
     </div>
@@ -131,6 +137,7 @@
         shape="round"
         class="ml-2"
         (click)="redirectToFaqManagement(sentence)"
+        data-testid="redirectToFaqManagement"
       >
         <nb-icon icon="plus-circle-outline"></nb-icon>
       </button>
@@ -144,6 +151,7 @@
         ghost
         shape="round"
         (click)="handleAction(Action.VALIDATE, sentence)"
+        data-testid="validate"
       >
         <nb-icon icon="checkmark-circle-2"></nb-icon>
       </button>
@@ -156,6 +164,7 @@
         ghost
         shape="round"
         (click)="handleAction(Action.UNKNOWN, sentence)"
+        data-testid="unknown"
       >
         <nb-icon icon="close-circle-outline"></nb-icon>
       </button>
@@ -166,6 +175,7 @@
         ghost
         shape="round"
         (click)="handleAction(Action.DELETE, sentence)"
+        data-testid="delete"
       >
         <nb-icon icon="trash-2-outline"></nb-icon>
       </button>
@@ -176,6 +186,7 @@
         ghost
         shape="round"
         (click)="showDetails(sentence)"
+        data-testid="details"
       >
         <nb-icon icon="message-circle-outline"></nb-icon>
       </button>

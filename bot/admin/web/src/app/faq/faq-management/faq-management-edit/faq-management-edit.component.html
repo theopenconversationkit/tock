@@ -57,6 +57,7 @@
           [controls]="title"
           [showError]="isSubmitted"
           [required]="true"
+          data-testid="name"
         >
           <input
             #nameInput
@@ -81,6 +82,7 @@
           name="description"
           [controls]="description"
           [showError]="isSubmitted"
+          data-testid="description"
         >
           <textarea
             nbInput
@@ -92,8 +94,7 @@
             placeholder="Enter description"
           ></textarea>
           <small [ngClass]="getControlLengthIndicatorClass('description')">
-            {{ form.controls.description.value.length }} characters out of
-            {{ controlsMaxLength.description }} max
+            {{ form.controls.description.value.length }} characters out of {{ controlsMaxLength.description }} max
           </small>
         </tock-form-control>
 
@@ -102,6 +103,7 @@
           name="tags"
           [controls]="tags"
           [showError]="isSubmitted"
+          data-testid="tags"
         >
           <nb-tag-list
             tock-delay
@@ -147,6 +149,7 @@
           [controls]="utterances"
           [showError]="isSubmitted"
           [required]="true"
+          data-testid="question"
         >
           <div class="d-flex">
             <input
@@ -177,6 +180,7 @@
           status="danger"
           *ngIf="existingUterranceInOtherintent"
           class="closable mt-2"
+          data-testid="existing-uterrance-in-other-intent"
         >
           <button
             type="button"
@@ -186,9 +190,10 @@
           >
             <span>×</span>
           </button>
-
-          Addition cancelled. This Sentence is already associated with the intent :
-          <strong> "{{ existingUterranceInOtherintent }}" </strong>
+          <span data-testid="alert-message">
+            Addition cancelled. This Sentence is already associated with the intent :
+            <strong>"{{ existingUterranceInOtherintent }}" </strong>
+          </span>
         </nb-alert>
 
         <div
@@ -284,6 +289,7 @@
           [controls]="answer"
           [showError]="isSubmitted"
           [required]="true"
+          data-testid="answer"
         >
           <textarea
             #answerInput
@@ -296,8 +302,7 @@
             placeholder="Enter answer"
           ></textarea>
           <small [ngClass]="getControlLengthIndicatorClass('answer')">
-            {{ form.controls.answer.value.length }} characters out of
-            {{ controlsMaxLength.answer }} max
+            {{ form.controls.answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
           </small>
         </tock-form-control>
       </div>

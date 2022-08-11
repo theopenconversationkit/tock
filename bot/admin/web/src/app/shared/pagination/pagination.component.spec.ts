@@ -34,9 +34,7 @@ describe('NoDataFoundComponent', () => {
 
   it('should disable the back button if the beginning of the page is strictly less than 1', () => {
     spyOn(component.onPaginationChange, 'emit');
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="back-button"]')).nativeElement;
 
     previousButtonElement.click();
 
@@ -49,9 +47,7 @@ describe('NoDataFoundComponent', () => {
     component.pagination.start = 1;
     component.pagination.size = 10;
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="back-button"]')).nativeElement;
 
     previousButtonElement.click();
 
@@ -65,9 +61,7 @@ describe('NoDataFoundComponent', () => {
     component.pagination.total = 22;
     fixture.detectChanges();
 
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="next-button"]')).nativeElement;
 
     nextButtonElement.click();
 
@@ -88,9 +82,7 @@ describe('NoDataFoundComponent', () => {
     component.pagination.end = 13;
     component.pagination.total = 22;
     fixture.detectChanges();
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="next-button"]')).nativeElement;
 
     nextButtonElement.click();
 
@@ -108,9 +100,7 @@ describe('NoDataFoundComponent', () => {
     };
     component.pagination = { ...pagination };
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="back-button"]')).nativeElement;
 
     previousButtonElement.click();
 
@@ -128,9 +118,7 @@ describe('NoDataFoundComponent', () => {
     };
     component.pagination = { ...pagination };
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="back-button"]')).nativeElement;
 
     previousButtonElement.click();
 
@@ -148,9 +136,7 @@ describe('NoDataFoundComponent', () => {
     };
     component.pagination = { ...pagination };
     fixture.detectChanges();
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="next-button"]')).nativeElement;
 
     nextButtonElement.click();
 

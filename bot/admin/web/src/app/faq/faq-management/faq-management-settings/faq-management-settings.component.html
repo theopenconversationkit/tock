@@ -13,6 +13,7 @@
           shape="round"
           nbTooltip="Close"
           (click)="close()"
+          data-testid="close-button"
         >
           <nb-icon icon="close-outline"></nb-icon>
         </button>
@@ -23,9 +24,7 @@
       <p>Parameters are shared by all FAQ of this bot</p>
 
       <div class="mb-2">
-        <nb-checkbox formControlName="satisfactionEnabled">
-          Ask for satisfaction after answering on FAQ question
-        </nb-checkbox>
+        <nb-checkbox formControlName="satisfactionEnabled"> Ask for satisfaction after answering on FAQ question </nb-checkbox>
       </div>
 
       <tock-form-control
@@ -60,6 +59,7 @@
           status="primary"
           size="small"
           (click)="close()"
+          data-testid="cancel-button"
         >
           Cancel
         </button>

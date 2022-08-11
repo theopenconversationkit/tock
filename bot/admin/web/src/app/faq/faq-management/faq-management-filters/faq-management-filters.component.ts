@@ -20,7 +20,7 @@ export class FaqManagementFiltersComponent implements OnInit, OnDestroy {
   subscription = new Subscription();
 
   form = new FormGroup({
-    search: new FormControl(''),
+    search: new FormControl(),
     tags: new FormControl([]),
     enabled: new FormControl(null)
   });
@@ -62,7 +62,7 @@ export class FaqManagementFiltersComponent implements OnInit, OnDestroy {
   }
 
   clearFilters(): void {
-    this.search.reset('');
+    this.search.reset();
     this.tags.reset([]);
     this.enabled.reset(null);
   }

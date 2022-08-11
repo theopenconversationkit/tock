@@ -34,7 +34,7 @@ export class FaqTrainingListComponent implements OnInit, OnDestroy {
   filteredIntentGroups: Observable<IntentsCategory[]>;
   UserRole: typeof UserRole = UserRole;
   Action: typeof Action = Action;
-  sort: boolean = false;
+  isSorted: boolean = false;
 
   constructor(public readonly state: StateService, private router: Router, private readonly elementRef: ElementRef) {}
 
@@ -141,8 +141,8 @@ export class FaqTrainingListComponent implements OnInit, OnDestroy {
   }
 
   toggleSort(): void {
-    this.sort = !this.sort;
-    this.onSort.emit(this.sort);
+    this.isSorted = !this.isSorted;
+    this.onSort.emit(this.isSorted);
   }
 
   normalizeString(str: string): string {

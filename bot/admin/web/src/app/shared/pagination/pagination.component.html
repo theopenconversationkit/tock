@@ -19,22 +19,24 @@
 
   <div class="d-flex">
     <button
+      *ngIf="showPrevious()"
       nbButton
       nbTooltip="Previous page"
       ghost
       shape="round"
       (click)="paginationPrevious()"
-      *ngIf="showPrevious()"
+      data-testid="back-button"
     >
       <nb-icon icon="arrow-ios-back-outline"></nb-icon>
     </button>
     <!-- Workaround because tooltip is not hiding if button is disabled programmatically. -->
     <button
+      *ngIf="!showPrevious()"
       nbButton
       ghost
       shape="round"
-      *ngIf="!showPrevious()"
       disabled
+      data-testid="back-button"
     >
       <nb-icon icon="arrow-ios-back-outline"></nb-icon>
     </button>
@@ -46,6 +48,7 @@
       ghost
       shape="round"
       (click)="paginationNext()"
+      data-testid="next-button"
     >
       <nb-icon icon="arrow-ios-forward-outline"></nb-icon>
     </button>
@@ -56,6 +59,7 @@
       ghost
       shape="round"
       disabled
+      data-testid="next-button"
     >
       <nb-icon icon="arrow-ios-forward-outline"></nb-icon>
     </button>

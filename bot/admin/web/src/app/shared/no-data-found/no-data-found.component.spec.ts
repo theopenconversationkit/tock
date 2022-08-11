@@ -27,37 +27,37 @@ describe('NoDataFoundComponent', () => {
   });
 
   it('should display default title if the title input is not change', () => {
-    const titleElement: HTMLElement = fixture.debugElement.query(By.css('h2')).nativeElement;
+    const titleElement: HTMLTitleElement = fixture.debugElement.query(By.css('[data-testid="title"]')).nativeElement;
 
-    expect(titleElement.textContent.toLowerCase()).toBe('no data found');
+    expect(titleElement.textContent.toLowerCase().trim()).toBe('no data found');
   });
 
   it('should display custom title if the title input is change', () => {
     const title = 'custom title';
-    const titleElement: HTMLElement = fixture.debugElement.query(By.css('h2')).nativeElement;
+    const titleElement: HTMLTitleElement = fixture.debugElement.query(By.css('[data-testid="title"]')).nativeElement;
     component.title = title;
     fixture.detectChanges();
 
-    expect(titleElement.textContent.toLowerCase()).toBe(title);
+    expect(titleElement.textContent.toLowerCase().trim()).toBe(title);
   });
 
   it('should display message if the input is inform', () => {
     const message = 'message to display';
     component.message = undefined;
     fixture.detectChanges();
-    let messageElement = fixture.debugElement.query(By.css('p'));
+    let messageElement = fixture.debugElement.query(By.css('[data-testid="message"]'));
 
     expect(messageElement).toBeFalsy();
 
     component.message = message;
     fixture.detectChanges();
-    messageElement = fixture.debugElement.query(By.css('p'));
+    messageElement = fixture.debugElement.query(By.css('[data-testid="message"]'));
 
-    expect(messageElement.nativeElement.textContent.toLowerCase()).toBe(message);
+    expect(messageElement.nativeElement.textContent.toLowerCase().trim()).toBe(message);
   });
 
   it('should display logo of robot', () => {
-    const imageElement: HTMLElement = fixture.debugElement.query(By.css('img')).nativeElement;
+    const imageElement: HTMLImageElement = fixture.debugElement.query(By.css('[data-testid="logo"]')).nativeElement;
 
     expect(imageElement).toBeTruthy();
     expect(imageElement).toHaveClass('tock-robot');

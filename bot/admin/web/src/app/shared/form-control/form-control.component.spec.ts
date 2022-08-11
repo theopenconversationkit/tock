@@ -33,13 +33,13 @@ describe('FormControlComponent', () => {
   it('should display label if is defined', () => {
     component.label = undefined;
     fixture.detectChanges();
-    let labelElement = fixture.debugElement.query(By.css('label'));
+    let labelElement = fixture.debugElement.query(By.css('[data-testid="label"]'));
 
     expect(labelElement).toBeFalsy();
 
     component.label = 'Title';
     fixture.detectChanges();
-    labelElement = fixture.debugElement.query(By.css('label'));
+    labelElement = fixture.debugElement.query(By.css('[data-testid="label"]'));
 
     expect(labelElement).toBeTruthy();
     expect(labelElement.nativeElement.textContent.trim()).toBe(component.label);
@@ -48,7 +48,7 @@ describe('FormControlComponent', () => {
   it('should display asterisk and the label must have the "required" class if the control is required', () => {
     component.label = 'Title';
     fixture.detectChanges();
-    const labelElement: HTMLElement = fixture.debugElement.query(By.css('label')).nativeElement;
+    const labelElement: HTMLLabelElement = fixture.debugElement.query(By.css('[data-testid="label"]')).nativeElement;
 
     component.required = false;
     fixture.detectChanges();
@@ -81,7 +81,7 @@ describe('FormControlComponent', () => {
   });
 
   it('should display form control in column', () => {
-    const element: HTMLElement = fixture.debugElement.query(By.css('div')).nativeElement;
+    const element: HTMLDivElement = fixture.debugElement.query(By.css('[data-testid="form-control"]')).nativeElement;
 
     expect(element).toHaveClass('flex-column');
   });

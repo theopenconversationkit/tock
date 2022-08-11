@@ -13,7 +13,7 @@ import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confi
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
 import { FaqDefinitionExtended } from '../faq-management.component';
 
-enum FaqTabs {
+export enum FaqTabs {
   INFO = 'info',
   QUESTION = 'question',
   ANSWER = 'answer'
@@ -87,10 +87,7 @@ export class FaqManagementEditComponent implements OnChanges {
   });
 
   getControlLengthIndicatorClass(controlName: string): string {
-    if (this.form.controls[controlName].value.length > this.controlsMaxLength[controlName]) {
-      return 'text-danger';
-    }
-    return 'text-muted';
+    return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-muted';
   }
 
   get answer(): FormControl {
@@ -350,22 +347,22 @@ export class FaqManagementEditComponent implements OnChanges {
     this.resetAlerts();
 
     if (this.canSave) {
-      let faqDFata = {
+      let faqData = {
         ...this.faq,
         ...this.form.value
       };
 
       if (!this.faq.id) {
-        faqDFata.intentName = this.getFormatedIntentName();
+        faqData.intentName = this.getFormatedIntentName();
 
-        let existsInApp = StateService.intentExistsInApp(this.state.currentApplication, faqDFata.intentName);
+        let existsInApp = StateService.intentExistsInApp(this.state.currentApplication, faqData.intentName);
 
         if (existsInApp) {
           this.intentNameExistInApp = true;
           return;
         }
 
-        let existsInOtherApp = this.state.intentExistsInOtherApplication(faqDFata.intentName);
+        let existsInOtherApp = this.state.intentExistsInOtherApplication(faqData.intentName);
 
         if (existsInOtherApp) {
           const shareAction = 'Share the intent';
@@ -380,16 +377,16 @@ export class FaqManagementEditComponent implements OnChanges {
           dialogRef.onClose.subscribe((result) => {
             if (result) {
               if (result == createNewAction) {
-                faqDFata.intentName = this.generateIntentName(faqDFata);
+                faqData.intentName = this.generateIntentName(faqData);
               }
-              this.save(faqDFata);
+              this.save(faqData);
             }
           });
           return;
         }
       }
 
-      this.save(faqDFata);
+      this.save(faqData);
     }
   }
 

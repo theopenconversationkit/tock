@@ -1,4 +1,3 @@
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -22,7 +21,6 @@ describe('FaqTrainingFiltersComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqTrainingFiltersComponent],
       imports: [
-        BrowserAnimationsModule,
         TestSharedModule,
         NbButtonModule,
         NbCardModule,
@@ -61,26 +59,34 @@ describe('FaqTrainingFiltersComponent', () => {
   }));
 
   it('should show clear button of search input if the search value is defined', () => {
-    let clearButtonElement = fixture.debugElement.query(By.css('[nbTooltip="Clear"]'));
+    let clearButtonElement = fixture.debugElement.query(By.css('[data-testid="clear-button"]'));
 
     expect(clearButtonElement).toBeFalsy();
 
     component.form.patchValue({ search: 'test' });
     fixture.detectChanges();
-    clearButtonElement = fixture.debugElement.query(By.css('[nbTooltip="Clear"]')).nativeElement;
+    clearButtonElement = fixture.debugElement.query(By.css('[data-testid="clear-button"]')).nativeElement;
 
     expect(clearButtonElement).toBeTruthy();
   });
 
-  it('should clear search filter when click on clear search button', () => {
+  it('should call the method to clear search filter when click on clear search button', () => {
     spyOn(component, 'clearSearch');
     component.form.patchValue({ search: 'test' });
     fixture.detectChanges();
-    const clearButtonElement: HTMLElement = fixture.debugElement.query(By.css('[nbTooltip="Clear"]')).nativeElement;
+    const clearButtonElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="clear-button"]')).nativeElement;
 
     clearButtonElement.click();
     fixture.detectChanges();
 
     expect(component.clearSearch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should clear search when the method is called', () => {
+    component.form.patchValue({ search: 'test' });
+
+    component.clearSearch();
+
+    expect(component.search.value).toBeNull();
   });
 });

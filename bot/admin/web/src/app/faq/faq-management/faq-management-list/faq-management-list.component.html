@@ -4,7 +4,10 @@
 >
   <nb-card-body class="grid-columns">
     <div>
-      <div class="font-weight-bold initial-capitalize">
+      <div
+        class="font-weight-bold initial-capitalize"
+        data-testid="title"
+      >
         {{ faq.title }}
         <span
           *ngIf="state.intentIdExistsInOtherApplication(faq.intentId)"
@@ -21,13 +24,15 @@
             <small
               class="d-block"
               *ngIf="faq.utterances.length == 1"
-              >Question</small
             >
+              Question
+            </small>
             <small
               class="d-block"
               *ngIf="faq.utterances.length > 1"
-              >First question (out of {{ faq.utterances.length }})</small
             >
+              First question (out of {{ faq.utterances.length }})
+            </small>
             {{ faq.utterances[0] }}
           </div>
         </div>
@@ -44,22 +49,22 @@
     <div>
       <nb-tag-list>
         <nb-tag
-          appearance="filled"
           *ngFor="let tag of faq.tags"
-          [text]="tag"
+          appearance="filled"
           status="basic"
           size="tiny"
+          [text]="tag"
         ></nb-tag>
       </nb-tag-list>
     </div>
 
-    <div class="d-flex flex-wrap align-items-center justify-content-center">
+    <div class="d-flex flex-wrap align-items-center justify-content-end">
       <nb-toggle
-        id="faqToggle"
-        [nbTooltip]="faq.enabled ? 'Disable' : 'Enable'"
         class="mx-2"
+        [nbTooltip]="faq.enabled ? 'Disable' : 'Enable'"
         [ngModel]="faq.enabled"
         (mousedown)="toggleEnabled(faq)"
+        data-testid="toggle"
       ></nb-toggle>
 
       <div class="d-flex flex-wrap align-items-center justify-content-between">
@@ -70,6 +75,7 @@
           nbTooltip="Edit"
           class="mb-2"
           (click)="editFaq(faq)"
+          data-testid="edit"
         >
           <nb-icon icon="edit-outline"></nb-icon>
         </button>
@@ -80,6 +86,7 @@
           nbTooltip="Download"
           class="mb-2"
           (click)="download(faq)"
+          data-testid="download"
         >
           <nb-icon icon="download-outline"></nb-icon>
         </button>
@@ -90,6 +97,7 @@
           nbTooltip="Delete"
           class="mb-2"
           (click)="delete(faq)"
+          data-testid="delete"
         >
           <nb-icon icon="trash-2-outline"></nb-icon>
         </button>

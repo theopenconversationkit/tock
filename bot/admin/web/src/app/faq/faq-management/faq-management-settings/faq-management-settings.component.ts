@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
+import { NbToastrService } from '@nebular/theme';
 
 import { BotService } from '../../../bot/bot-service';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -10,7 +11,6 @@ import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../../
 import { StateService } from '../../../core-nlp/state.service';
 import { Settings } from '../../models';
 import { FaqService } from '../../services/faq.service';
-import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-faq-management-settings',
@@ -23,10 +23,9 @@ export class FaqManagementSettingsComponent implements OnInit {
 
   private readonly destroy$: Subject<boolean> = new Subject();
   loading: boolean = false;
+  isSubmitted: boolean = false;
 
   availableStories: StoryDefinitionConfigurationSummary[] = [];
-
-  isSubmitted: boolean = false;
 
   form = new FormGroup({
     satisfactionEnabled: new FormControl(false),

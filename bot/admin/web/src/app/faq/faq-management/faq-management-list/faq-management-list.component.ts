@@ -66,14 +66,6 @@ export class FaqManagementListComponent {
       type: 'application/json'
     });
 
-    saveAs(
-      jsonBlob,
-      this.state.currentApplication.name +
-        '_' +
-        this.state.currentLocale +
-        '_faq_' +
-        faq.title +
-        '.json'
-    );
+    saveAs(jsonBlob, `${this.state.currentApplication.name}_${this.state.currentLocale}_faq_${faq.title}.json`);
   }
 }
