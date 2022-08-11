@@ -65,6 +65,10 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     return jobs[0].type;
   }
 
+  areAllJobsTypeDone(jobs: dependencyUpdateJob[]) {
+    return jobs.every((job) => job.done);
+  }
+
   checkDependencies(): void {
     this.dependencies = {
       intentsToCreate: [],

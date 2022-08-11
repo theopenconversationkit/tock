@@ -8,7 +8,10 @@
           <h5>
             The <span *ngIf="intentJobsType.length > 1">{{ intentJobsType.length }}</span> following
             intent<span *ngIf="intentJobsType.length > 1">s</span>
-            will be
+
+            <span *ngIf="!areAllJobsTypeDone(intentJobsType)"> will be </span>
+            <span *ngIf="areAllJobsTypeDone(intentJobsType)"> have been </span>
+
             <span *ngIf="getJobsType(intentJobsType) == 'creation'"> created </span>
             <span *ngIf="getJobsType(intentJobsType) == 'update'"> updated </span>
           </h5>
@@ -58,7 +61,10 @@
           <h5>
             The <span *ngIf="answerJobsType.length > 1">{{ answerJobsType.length }}</span> following
             answer<span *ngIf="answerJobsType.length > 1">s</span>
-            will be
+
+            <span *ngIf="!areAllJobsTypeDone(answerJobsType)"> will be </span>
+            <span *ngIf="areAllJobsTypeDone(answerJobsType)"> have been </span>
+
             <span *ngIf="getJobsType(answerJobsType) == 'creation'"> created </span>
             <span *ngIf="getJobsType(answerJobsType) == 'update'"> updated </span>
           </h5>
