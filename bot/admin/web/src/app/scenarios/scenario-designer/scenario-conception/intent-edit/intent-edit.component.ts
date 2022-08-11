@@ -99,8 +99,29 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.sentences.push(new FormControl(sentenceCopy));
   }
 
-  isSentenceModified(sentence) {
-    return this.sentences.value.find((s) => s.query === sentence.text);
+  isSentenceModified(sentence): boolean {
+    return this.sentences.value.find((s) => s.query === sentence.text) ? true : false;
+  }
+
+  copyLabelToSentences(): void {
+    this.addSentence(this.item.intentDefinition.label);
+  }
+
+  isLabelASentence(): boolean {
+    return this.isStringAlreadyASentence(this.item.intentDefinition.label);
+  }
+
+  isStringAlreadyASentence(string: string): boolean {
+    let isInSentences = this.sentences.value.find((s) => {
+      return s.query === string;
+    });
+    if (isInSentences) return true;
+
+    let isIn_Sentences = this._sentences.find((stnc) => {
+      return stnc.text === string;
+    });
+
+    return isIn_Sentences ? true : false;
   }
 
   form: FormGroup = new FormGroup({
@@ -125,22 +146,28 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.cancel();
   }
 
-  addSentence() {
-    const eventTarget = this.addSentenceInput.nativeElement as HTMLInputElement;
+  addSentence(sentenceString?) {
+    let eventTarget;
+    if (!sentenceString) {
+      eventTarget = this.addSentenceInput.nativeElement as HTMLInputElement;
+      sentenceString = eventTarget.value.trim();
+    }
 
-    if (eventTarget.value.trim()) {
-      const app = this.state.currentApplication;
-      const language = this.state.currentLocale;
-      const newSentence = new TempSentence(
-        app.namespace,
-        app.name,
-        language,
-        eventTarget.value.trim(),
-        false,
-        ''
-      );
-      this.sentences.push(new FormControl(newSentence));
-      eventTarget.value = '';
+    if (sentenceString) {
+      if (!this.isStringAlreadyASentence(sentenceString)) {
+        const app = this.state.currentApplication;
+        const language = this.state.currentLocale;
+        const newSentence = new TempSentence(
+          app.namespace,
+          app.name,
+          language,
+          sentenceString,
+          false,
+          ''
+        );
+        this.sentences.push(new FormControl(newSentence));
+      }
+      if (eventTarget) eventTarget.value = '';
     }
   }
 

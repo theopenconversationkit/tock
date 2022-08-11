@@ -20,7 +20,7 @@
       (submit)="save()"
     >
       <div class="row main-row">
-        <div class="col-6">
+        <div class="col pr-1">
           <div class="mb-4">
             <tock-form-control
               label="Name"
@@ -42,7 +42,19 @@
             </tock-form-control>
           </div>
 
-          <div class="mb-4">
+          <div class="mb-4 position-relative">
+            <div
+              class="position-absolute"
+              style="left: 50%"
+            >
+              <nb-icon
+                icon="arrowhead-up-outline"
+                status="basic"
+                nbTooltip="Use description as action name"
+                class="pointer"
+                (click)="copyDescToName()"
+              ></nb-icon>
+            </div>
             <tock-form-control
               label="Description"
               name="description"
@@ -142,7 +154,26 @@
           </div>
         </div>
 
-        <div class="col-6">
+        <div>
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+          <br />
+
+          <nb-icon
+            icon="arrowhead-right-outline"
+            status="basic"
+            nbTooltip="Use description as answer"
+            class="pointer"
+            (click)="copyDescToAnswer()"
+          ></nb-icon>
+        </div>
+
+        <div class="col pl-1">
           <div class="mb-4">
             <tock-form-control
               label="Api handler"

@@ -8,7 +8,10 @@
           <h5>
             The <span *ngIf="intentJobsType.length > 1">{{ intentJobsType.length }}</span> following
             intent<span *ngIf="intentJobsType.length > 1">s</span>
-            will be
+
+            <span *ngIf="!areAllJobsTypeDone(intentJobsType)"> will be </span>
+            <span *ngIf="areAllJobsTypeDone(intentJobsType)"> have been </span>
+
             <span *ngIf="getJobsType(intentJobsType) == 'creation'"> created </span>
             <span *ngIf="getJobsType(intentJobsType) == 'update'"> updated </span>
           </h5>
@@ -48,25 +51,39 @@
         </div>
       </ng-container>
 
-      <div
-        *ngIf="dependencies.answersToCreate.length"
-        class="mt-3"
+      <ng-container
+        *ngFor="let answerJobsType of [dependencies.answersToCreate, dependencies.answersToUpdate]"
       >
-        <h5>The {{ dependencies.answersToCreate.length }} following answers will be created</h5>
-        <div class="row">
-          <div
-            *ngFor="let answer of dependencies.answersToCreate"
-            class="col-12 col-md-6 mb-2 d-flex break-word"
-          >
-            <nb-icon
-              icon="checkmark-outline"
-              status="success"
-              *ngIf="answer.done"
-            ></nb-icon>
-            {{ answer.data.tickActionDefinition.answer }}
+        <div
+          *ngIf="answerJobsType.length"
+          class="mt-3"
+        >
+          <h5>
+            The <span *ngIf="answerJobsType.length > 1">{{ answerJobsType.length }}</span> following
+            answer<span *ngIf="answerJobsType.length > 1">s</span>
+
+            <span *ngIf="!areAllJobsTypeDone(answerJobsType)"> will be </span>
+            <span *ngIf="areAllJobsTypeDone(answerJobsType)"> have been </span>
+
+            <span *ngIf="getJobsType(answerJobsType) == 'creation'"> created </span>
+            <span *ngIf="getJobsType(answerJobsType) == 'update'"> updated </span>
+          </h5>
+
+          <div class="row">
+            <div
+              *ngFor="let answer of answerJobsType"
+              class="col-12 col-md-6 mb-2 d-flex break-word"
+            >
+              <nb-icon
+                icon="checkmark-outline"
+                status="success"
+                *ngIf="answer.done"
+              ></nb-icon>
+              {{ answer.data.tickActionDefinition.answer }}
+            </div>
           </div>
         </div>
-      </div>
+      </ng-container>
 
       <div
         *ngIf="!processingDependencies"
@@ -100,7 +117,11 @@
       <h5>The story has been successfully saved</h5>
       You will be redirected in a few seconds...
     </div>
+
+    <div *ngIf="isReadonly">
+      This scenario is read-only. No changes can be made to it and it cannot be published.
+      <br />
+      If you wish to modify it, please make a copy first.
+    </div>
   </nb-card-body>
 </nb-card>
-
-<!-- <pre *ngIf="tickStoryJson">{{ tickStoryJson }}</pre> -->

@@ -41,7 +41,7 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   private canvasPos = { x: 0, y: 0 };
   private canvasPosOffset = { x: 0, y: 0 };
   private pointer = { x: 0, y: 0 };
-  private canvasScale: number = MAX_SCALE;
+  private canvasScale: number = 1;
   private isDragingCanvas: Position;
   isFullscreen: boolean = false;
 

@@ -1,9 +1,11 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { BotService } from '../../../bot/bot-service';
-import { CreateI18nLabelRequest } from '../../../bot/model/i18n';
+import { CreateI18nLabelRequest, I18nLabel, I18nLabels } from '../../../bot/model/i18n';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
+import { UserInterfaceType } from '../../../core/model/configuration';
 import { ClassifiedEntity, Intent } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
@@ -28,6 +30,9 @@ import { ScenarioDesignerService } from '../scenario-designer.service';
 export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() scenario: Scenario;
+  @Input() isReadonly: boolean;
+
+  i18n: I18nLabels;
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
@@ -43,13 +48,25 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
   tickStoryJson: string;
   ngOnInit(): void {
-    this.checkDependencies();
+    if (!this.isReadonly) {
+      this.botService
+        .i18nLabels()
+        .pipe(take(1))
+        .subscribe((results) => {
+          this.i18n = results;
+          this.checkDependencies();
+        });
+    }
   }
 
   dependencies: { [key: string]: dependencyUpdateJob[] };
 
   getJobsType(jobs: dependencyUpdateJob[]): string {
     return jobs[0].type;
+  }
+
+  areAllJobsTypeDone(jobs: dependencyUpdateJob[]) {
+    return jobs.every((job) => job.done);
   }
 
   checkDependencies(): void {
@@ -83,6 +100,12 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
           done: false,
           data: action
         });
+      } else if (action.tickActionDefinition.answerUpdate) {
+        this.dependencies.answersToUpdate.push({
+          type: 'update',
+          done: false,
+          data: action
+        });
       }
     });
   }
@@ -104,12 +127,17 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         if (nextAnswerCreation) {
           this.processAnswer(nextAnswerCreation);
         } else {
-          // save the scenario
-          this.scenarioDesignerService
-            .saveScenario(this.scenario.id, this.scenario)
-            .subscribe((data) => {
-              this.postTickStory();
-            });
+          let nextAnswerUpdate = this.dependencies.answersToUpdate.find((i) => !i.done);
+          if (nextAnswerUpdate) {
+            this.processAnswer(nextAnswerUpdate);
+          } else {
+            // save the scenario
+            this.scenarioDesignerService
+              .saveScenario(this.scenario.id, this.scenario)
+              .subscribe((data) => {
+                this.postTickStory();
+              });
+          }
         }
       }
     }
@@ -243,8 +271,35 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       return this.postNewAnswer(answerTask);
     }
 
+    if (answerTask.data.tickActionDefinition.answerUpdate) {
+      return this.patchAnswer(answerTask);
+    }
+
     answerTask.done = true;
     this.processDependencies();
+  }
+
+  patchAnswer(answerTask: dependencyUpdateJob): void {
+    let i18nLabel: I18nLabel = this.i18n.labels.find((i) => {
+      return i._id === answerTask.data.tickActionDefinition.answerId;
+    });
+
+    let i18n = i18nLabel.i18n.find((i) => {
+      return (
+        i.interfaceType === UserInterfaceType.textChat && i.locale === this.state.currentLocale
+      );
+    });
+    i18n.label = answerTask.data.tickActionDefinition.answer;
+
+    this.botService.saveI18nLabel(i18nLabel).subscribe(
+      (result) => {
+        delete answerTask.data.tickActionDefinition.answerUpdate;
+        this.processAnswer(answerTask);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   }
 
   postNewAnswer(answerTask: dependencyUpdateJob): void {

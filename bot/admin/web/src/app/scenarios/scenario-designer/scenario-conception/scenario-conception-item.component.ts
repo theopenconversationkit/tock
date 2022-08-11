@@ -80,30 +80,27 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   collectIntentUtterances() {
-    const existingIntent: Intent = this.state.findIntentById(this.item.intentDefinition.intentId);
-    if (!existingIntent) {
-      // It seems that the associated intention has been removed !
-      console.log(
-        'THE ASSOCIATED INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
-          this.item.intentDefinition.intentId
-      );
-      delete this.item.intentDefinition.intentId;
+    // const existingIntent: Intent = this.state.findIntentById(this.item.intentDefinition.intentId);
+    // if (!existingIntent) {
+    //   console.log(
+    //     'THE ASSOCIATED INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
+    //       this.item.intentDefinition.intentId
+    //   );
+    //   delete this.item.intentDefinition.intentId;
+    //   this.utterancesLoading = false;
+    // } else {
+    const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
+      intentId: this.item.intentDefinition.intentId
+    });
+
+    const nlpSubscription = this.nlp.searchSentences(searchQuery).subscribe((sentencesResearch) => {
+      this.item.intentDefinition._sentences = sentencesResearch.rows;
       this.utterancesLoading = false;
-    } else {
-      const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
-        intentId: this.item.intentDefinition.intentId
-      });
+      nlpSubscription.unsubscribe();
 
-      const nlpSubscription = this.nlp
-        .searchSentences(searchQuery)
-        .subscribe((sentencesResearch) => {
-          this.item.intentDefinition._sentences = sentencesResearch.rows;
-          this.utterancesLoading = false;
-          nlpSubscription.unsubscribe();
-
-          // if (this.item.id === 0) this.manageIntent();
-        });
-    }
+      // if (this.item.id === 0) this.manageIntent();
+    });
+    // }
   }
 
   manageAction() {
@@ -129,6 +126,12 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
             actionDef.name,
             this.scenario.data.stateMachine
           );
+        }
+
+        if (this.item.tickActionDefinition?.answerId) {
+          if (this.item.tickActionDefinition.answer !== actionDef.answer) {
+            actionDef.answerUpdate = true;
+          }
         }
 
         this.item.tickActionDefinition = actionDef;
