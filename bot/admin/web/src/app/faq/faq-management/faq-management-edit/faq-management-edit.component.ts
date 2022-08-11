@@ -1,13 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
@@ -55,11 +46,7 @@ export class FaqManagementEditComponent implements OnChanges {
   @ViewChild('addUtteranceInput') addUtteranceInput: ElementRef;
   @ViewChild('utterancesListWrapper') utterancesListWrapper: ElementRef;
 
-  constructor(
-    private dialogService: DialogService,
-    private nlp: NlpService,
-    private readonly state: StateService
-  ) {}
+  constructor(private dialogService: DialogService, private nlp: NlpService, private readonly state: StateService) {}
 
   faqTabs: typeof FaqTabs = FaqTabs;
 
@@ -92,18 +79,11 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   form = new FormGroup({
-    title: new FormControl(undefined, [
-      Validators.required,
-      Validators.minLength(6),
-      Validators.maxLength(40)
-    ]),
+    title: new FormControl(undefined, [Validators.required, Validators.minLength(6), Validators.maxLength(40)]),
     description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
     tags: new FormArray([]),
     utterances: new FormArray([], Validators.required),
-    answer: new FormControl('', [
-      Validators.required,
-      Validators.maxLength(this.controlsMaxLength.answer)
-    ])
+    answer: new FormControl('', [Validators.required, Validators.maxLength(this.controlsMaxLength.answer)])
   });
 
   getControlLengthIndicatorClass(controlName: string): string {
@@ -184,9 +164,7 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   updateTagsAutocompleteValues(event: any) {
-    this.tagsAutocompleteValues = of(
-      this.tagsCache.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase()))
-    );
+    this.tagsAutocompleteValues = of(this.tagsCache.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase())));
   }
 
   tagSelected(value: string) {
@@ -194,11 +172,8 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   onTagAdd({ value, input }: NbTagInputAddEvent): void {
-    let deduplicatedSpaces = value.replace(/\s\s+/g, ' ').toLowerCase();
-    if (
-      deduplicatedSpaces &&
-      !this.tags.value.find((v: string) => v.toUpperCase() === deduplicatedSpaces.toUpperCase())
-    ) {
+    let deduplicatedSpaces = value.replace(/\s\s+/g, ' ').toLowerCase().trim();
+    if (deduplicatedSpaces && !this.tags.value.find((v: string) => v.toUpperCase() === deduplicatedSpaces.toUpperCase())) {
       this.tags.push(new FormControl(deduplicatedSpaces));
       this.form.markAsDirty();
       this.form.markAsTouched();
@@ -282,8 +257,7 @@ export class FaqManagementEditComponent implements OnChanges {
                 this.form.markAsDirty();
                 setTimeout(() => {
                   this.addUtteranceInput?.nativeElement.focus();
-                  this.utterancesListWrapper.nativeElement.scrollTop =
-                    this.utterancesListWrapper.nativeElement.scrollHeight;
+                  this.utterancesListWrapper.nativeElement.scrollTop = this.utterancesListWrapper.nativeElement.scrollHeight;
                 });
               }
               this.lookingForSameUterranceInOtherInent = false;
@@ -384,10 +358,7 @@ export class FaqManagementEditComponent implements OnChanges {
       if (!this.faq.id) {
         faqDFata.intentName = this.getFormatedIntentName();
 
-        let existsInApp = StateService.intentExistsInApp(
-          this.state.currentApplication,
-          faqDFata.intentName
-        );
+        let existsInApp = StateService.intentExistsInApp(this.state.currentApplication, faqDFata.intentName);
 
         if (existsInApp) {
           this.intentNameExistInApp = true;
@@ -402,8 +373,7 @@ export class FaqManagementEditComponent implements OnChanges {
           const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
             context: {
               title: `This intent is already used in an other application`,
-              subtitle:
-                'Do you want to share the intent between the two applications or create a new one ?',
+              subtitle: 'Do you want to share the intent between the two applications or create a new one ?',
               actions: [{ actionName: shareAction }, { actionName: createNewAction }]
             }
           });
