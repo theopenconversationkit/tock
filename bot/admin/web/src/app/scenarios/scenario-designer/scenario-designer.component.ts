@@ -8,7 +8,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { Subject } from 'rxjs';
-import { pluck, takeUntil } from 'rxjs/operators';
+import { pluck, takeUntil, take } from 'rxjs/operators';
 import {
   Scenario,
   SCENARIO_ITEM_FROM_BOT,
@@ -102,13 +102,16 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           this.scenario.data.contexts = [];
         }
 
+        this.i18nLoading = true;
+        this.botService
+          .i18nLabels()
+          .pipe(take(1))
+          .subscribe((results) => {
+            this.i18n = results;
+            this.i18nLoading = false;
+          });
         this.checkDependencies();
       });
-
-    this.botService.i18nLabels().subscribe((results) => {
-      this.i18n = results;
-      this.i18nLoading = false;
-    });
 
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
       this.exit();

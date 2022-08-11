@@ -68,6 +68,7 @@ export interface TickActionDefinition {
   handler?: string;
   answer?: string;
   answerId?: string;
+  answerUpdate?: true;
   final?: boolean;
 }
 

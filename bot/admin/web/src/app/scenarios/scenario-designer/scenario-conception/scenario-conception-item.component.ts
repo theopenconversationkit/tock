@@ -128,6 +128,12 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
           );
         }
 
+        if (this.item.tickActionDefinition?.answerId) {
+          if (this.item.tickActionDefinition.answer !== actionDef.answer) {
+            actionDef.answerUpdate = true;
+          }
+        }
+
         this.item.tickActionDefinition = actionDef;
 
         saveModifications.unsubscribe();

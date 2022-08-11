@@ -31,7 +31,7 @@ export class ActionEditComponent implements OnInit {
   @ViewChild('inputContextsInput') inputContextsInput: ElementRef;
   @ViewChild('outputContextsInput') outputContextsInput: ElementRef;
 
-  qualifiedName = qualifiedName;
+  private qualifiedName = qualifiedName;
 
   constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {}
 
@@ -73,12 +73,13 @@ export class ActionEditComponent implements OnInit {
     description: new FormControl(),
     handler: new FormControl(),
     answer: new FormControl(),
+    answerId: new FormControl(),
     inputContextNames: new FormArray([]),
     outputContextNames: new FormArray([]),
     final: new FormControl(false)
   });
 
-  notUsedName(c: FormControl) {
+  notUsedName(c: FormControl): { custom: string } | null {
     if (!this.scenario) return null;
 
     const allOtherActionDefinitionNames = getScenarioActions(this.scenario)
@@ -116,13 +117,13 @@ export class ActionEditComponent implements OnInit {
     return this.form.get('outputContextNames') as FormArray;
   }
 
-  copyDescToAnswer() {
+  copyDescToAnswer(): void {
     this.form.patchValue({
       ...this.form.value,
       answer: this.description.value
     });
   }
-  copyDescToName() {
+  copyDescToName(): void {
     this.form.patchValue({
       ...this.form.value,
       name: this.description.value
@@ -215,7 +216,7 @@ export class ActionEditComponent implements OnInit {
     this.deleteDefinition.emit();
   }
 
-  getContextByName(outputContext) {
+  getContextByName(outputContext): TickContext[] {
     return [
       this.contexts.find((ctx) => {
         return ctx.name == outputContext;
@@ -223,12 +224,12 @@ export class ActionEditComponent implements OnInit {
     ];
   }
 
-  getContextEntityColor(context) {
+  getContextEntityColor(context): string | undefined {
     if (context.entityType)
       return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
-  getContextEntityContrast(context) {
+  getContextEntityContrast(context): string | undefined {
     if (context.entityType)
       return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }

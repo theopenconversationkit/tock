@@ -4,6 +4,8 @@ shared
 
 Scenarios
 
+        ??? Pour plus de clareté la catégorie des tickStories ne devrait-il pas être scenario ?
+
         ??? Peut-on supprimer tout un scenario est ses différentes versions ?
 
         ??? La suppression d'un scenario "current" implique-t-elle la suppression de sa tickStory ?
@@ -41,6 +43,8 @@ Scenario designer :
                 #DONE Mettre à jours la state machine lorsqu'on supprime ou change le type de from d'un item qui était déjà référencé dans la state machine
 
         CONCEPTION :
+
+                Internationalisation des answers. Pour le moment seul la i18n d'interfaceType textChat et de locale currentLocale est définie
 
                 Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
