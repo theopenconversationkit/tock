@@ -122,6 +122,7 @@ export class ActionEditComponent implements OnInit {
       ...this.form.value,
       answer: this.description.value
     });
+    this.form.markAsDirty();
   }
   copyDescToName(): void {
     this.form.patchValue({
@@ -129,6 +130,7 @@ export class ActionEditComponent implements OnInit {
       name: this.description.value
     });
     this.formatActionName();
+    this.form.markAsDirty();
   }
 
   contextsAutocompleteValues: Observable<string[]>;

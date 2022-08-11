@@ -17,7 +17,7 @@ import {
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
-  SCENARIO_STATE
+  TickContext
 } from '../../models/scenario.model';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -25,6 +25,7 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 import {
   getContrastYIQ,
+  getScenarioActionDefinitions,
   getSmTransitionParentsByname,
   removeSmStateById
 } from '../../commons/utils';
@@ -49,7 +50,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
-  qualifiedName = qualifiedName;
+  private qualifiedName = qualifiedName;
 
   constructor(
     private scenarioConceptionService: ScenarioConceptionService,
@@ -74,12 +75,12 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   contextsPanelDisplayed: boolean = true;
 
-  getContextEntityColor(context): string {
+  getContextEntityColor(context: TickContext): string {
     if (context.entityType)
       return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
-  getContextEntityContrast(context): string {
+  getContextEntityContrast(context: TickContext): string {
     if (context.entityType)
       return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
@@ -101,7 +102,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       });
   }
 
-  confirmDeleteContext(context) {
+  confirmDeleteContext(context: TickContext): void {
     const deleteAction = 'delete';
     const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
@@ -117,7 +118,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteContext(context) {
+  deleteContext(context: TickContext): void {
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
         item.tickActionDefinition.inputContextNames =
@@ -127,6 +128,21 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       }
     });
     this.scenario.data.contexts = this.scenario.data.contexts.filter((ctx) => ctx !== context);
+  }
+
+  isContextUsed(context: TickContext): boolean {
+    let isInput;
+    let isOutput;
+    const actionsDefinitions = getScenarioActionDefinitions(this.scenario);
+    actionsDefinitions.forEach((actionDef) => {
+      if (actionDef.inputContextNames.find((ctxName) => ctxName === context.name)) {
+        isInput = true;
+      }
+      if (actionDef.outputContextNames.find((ctxName) => ctxName === context.name)) {
+        isOutput = true;
+      }
+    });
+    return isInput && isOutput;
   }
 
   stringifiedCleanScenario(): string {
@@ -172,7 +188,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeItemType(item: scenarioItem, targetType: scenarioItemFrom) {
+  changeItemType(item: scenarioItem, targetType: scenarioItemFrom): void {
     if (targetType === SCENARIO_ITEM_FROM_BOT && item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         this.removeItemDefinition(item);
@@ -188,7 +204,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     item.from = targetType;
   }
 
-  removeItemDefinition(item: scenarioItem) {
+  removeItemDefinition(item: scenarioItem): void {
     if (item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         const intentTransitionsParents = getSmTransitionParentsByname(

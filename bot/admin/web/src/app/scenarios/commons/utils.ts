@@ -14,9 +14,11 @@ export function normalize(str: string): string {
 
 export function normalizedSnakeCase(str: string): string {
   return normalize(str)
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/[^A-Za-z0-9_\s]*/g, '')
     .trim()
     .replace(/\s+/g, '_')
-    .replace(/[^A-Za-z0-9_]*/g, '')
     .toUpperCase();
 }
 
