@@ -1,8 +1,8 @@
 import {
-  intentDefinition,
-  machineState,
+  IntentDefinition,
+  MachineState,
   Scenario,
-  scenarioItem,
+  ScenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   TickActionDefinition
@@ -85,17 +85,17 @@ export function revertTransformMatrix(el: Element, transformedParent: Element): 
   };
 }
 
-export function getScenarioIntents(scenario: Scenario): scenarioItem[] {
+export function getScenarioIntents(scenario: Scenario): ScenarioItem[] {
   return scenario.data.scenarioItems.filter((item) => item.from === SCENARIO_ITEM_FROM_CLIENT);
 }
 
-export function getScenarioIntentDefinitions(scenario: Scenario): intentDefinition[] {
+export function getScenarioIntentDefinitions(scenario: Scenario): IntentDefinition[] {
   return getScenarioIntents(scenario)
     .filter((item) => item.intentDefinition)
     .map((item) => item.intentDefinition);
 }
 
-export function getScenarioActions(scenario: Scenario): scenarioItem[] {
+export function getScenarioActions(scenario: Scenario): ScenarioItem[] {
   return scenario.data.scenarioItems.filter((item) => item.from === SCENARIO_ITEM_FROM_BOT);
 }
 
@@ -105,7 +105,7 @@ export function getScenarioActionDefinitions(scenario: Scenario): TickActionDefi
     .map((item) => item.tickActionDefinition);
 }
 
-export function getSmTransitionByName(name: string, group: machineState): string {
+export function getSmTransitionByName(name: string, group: MachineState): string {
   let result = null;
   if (group.on) {
     for (let transitionName in group.on) {
@@ -126,7 +126,7 @@ export function getSmTransitionByName(name: string, group: machineState): string
   return result;
 }
 
-export function getAllSmTransitions(group: machineState, result = []): [string, string][] {
+export function getAllSmTransitions(group: MachineState, result = []): [string, string][] {
   if (group.on) {
     Object.entries(group.on).forEach((entry) => result.push(entry));
   }
@@ -140,7 +140,7 @@ export function getAllSmTransitions(group: machineState, result = []): [string, 
   return result;
 }
 
-export function getAllSmTransitionNames(group: machineState): string[] {
+export function getAllSmTransitionNames(group: MachineState): string[] {
   let results = new Set<string>();
   const transitions = getAllSmTransitions(group);
   transitions.forEach((entry) => results.add(entry[0]));
@@ -150,9 +150,9 @@ export function getAllSmTransitionNames(group: machineState): string[] {
 
 export function getSmTransitionParentsByname(
   transitionName: string,
-  group: machineState,
-  result: machineState[] = []
-): machineState[] {
+  group: MachineState,
+  result: MachineState[] = []
+): MachineState[] {
   if (group.on) {
     for (let transName in group.on) {
       if (transName === transitionName) {
@@ -170,8 +170,8 @@ export function getSmTransitionParentsByname(
 
 export function getSmTransitionParentByTarget(
   targetName: string,
-  group: machineState
-): { parent: machineState; intents: string[] } | null {
+  group: MachineState
+): { parent: MachineState; intents: string[] } | null {
   let result;
   if (group.on) {
     for (let transitionName in group.on) {
@@ -195,7 +195,7 @@ export function getSmTransitionParentByTarget(
 export function renameSmStateById(
   currentStateId: string,
   newStateId: string,
-  group: machineState
+  group: MachineState
 ): void {
   const stateParent = getSmStateParentById(currentStateId, group);
   if (stateParent) {
@@ -219,7 +219,7 @@ export function renameSmStateById(
   }
 }
 
-export function removeSmStateById(stateId: string, group: machineState): void {
+export function removeSmStateById(stateId: string, group: MachineState): void {
   if (!group) return;
 
   const targetingTransitionParent = getSmTransitionParentByTarget(stateId, group);
@@ -240,7 +240,7 @@ export function removeSmStateById(stateId: string, group: machineState): void {
   }
 }
 
-export function getSmStateById(id: string, group: machineState): machineState | null {
+export function getSmStateById(id: string, group: MachineState): MachineState | null {
   let result = null;
   if (group.id === id) return group;
   else {
@@ -255,7 +255,7 @@ export function getSmStateById(id: string, group: machineState): machineState | 
   return result;
 }
 
-export function getSmStateParentById(id: string, group: machineState): machineState | null {
+export function getSmStateParentById(id: string, group: MachineState): MachineState | null {
   let result = null;
   if (group.states) {
     for (let name in group.states) {
@@ -276,7 +276,7 @@ export function getSmStateParentById(id: string, group: machineState): machineSt
   return result;
 }
 
-export function getAllSmStatesNames(group: machineState, result: string[] = []): string[] {
+export function getAllSmStatesNames(group: MachineState, result: string[] = []): string[] {
   if (group.id) result.push(group.id);
   if (group.states) {
     for (let name in group.states) {
@@ -286,7 +286,7 @@ export function getAllSmStatesNames(group: machineState, result: string[] = []):
   return result;
 }
 
-export function getAllSmNonGroupStatesNames(group: machineState, result: string[] = []): string[] {
+export function getAllSmNonGroupStatesNames(group: MachineState, result: string[] = []): string[] {
   if (group.id && !group.states) result.push(group.id);
   if (group.states) {
     for (let name in group.states) {

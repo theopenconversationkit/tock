@@ -14,7 +14,7 @@ import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../../shared/choice-dialog/choice-dialog.component';
 import { getSmStateParentById } from '../../../commons/utils';
-import { intentDefinition, TickActionDefinition } from '../../../models';
+import { IntentDefinition, MachineState, TickActionDefinition, Transition } from '../../../models';
 import { ScenarioProductionService } from '../scenario-production.service';
 import { ScenarioProductionStateGroupAddComponent } from './state-group-add/state-group-add.component';
 import { ScenarioTransitionComponent } from './transition/transition.component';
@@ -26,10 +26,10 @@ import { ScenarioTransitionComponent } from './transition/transition.component';
 })
 export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   destroy = new Subject();
-  @Input() state;
-  @Input() stateMachine;
+  @Input() state: MachineState;
+  @Input() stateMachine: MachineState;
   @Input() usedNames: string[];
-  @Input() intents: intentDefinition[];
+  @Input() intents: IntentDefinition[];
   @Input() actions: TickActionDefinition[];
   @Input() isReadonly: boolean = false;
 
@@ -54,7 +54,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {}
 
-  viewInited = false;
+  viewInited: boolean = false;
   ngAfterViewInit(): void {
     this.viewInited = true;
     this.scenarioProductionService.registerStateComponent(this);
@@ -63,7 +63,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     });
   }
 
-  getActionTooltip() {
+  getActionTooltip(): string {
     const action = this.actions.find((a) => {
       return a.name === this.state.id;
     });
@@ -81,24 +81,24 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  setActionInitial() {
+  setActionInitial(): void {
     let parent = getSmStateParentById(this.state.id, this.stateMachine);
     if (parent) {
       parent.initial = this.state.id;
     }
   }
 
-  hasOutgoingTransitions() {
+  hasOutgoingTransitions(): boolean {
     return this.state.on && Object.keys(this.state.on).length > 0;
   }
 
-  transitionWrapperWidth = 0;
-  updateTransitionWrapperWidth() {
+  transitionWrapperWidth: number = 0;
+  updateTransitionWrapperWidth(): void {
     this.transitionWrapperWidth = this.getMaxTransitionWidth();
     this.cd.detectChanges();
   }
 
-  getMaxTransitionWidth() {
+  getMaxTransitionWidth(): number {
     let width = 0;
     if (this.childTransitionsComponents) {
       this.childTransitionsComponents.forEach((t) => {
@@ -109,7 +109,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     return width;
   }
 
-  addStateGroup() {
+  addStateGroup(): void {
     const modal = this.dialogService.openDialog(ScenarioProductionStateGroupAddComponent, {
       context: { usedNames: this.usedNames }
     });
@@ -122,7 +122,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
       });
   }
 
-  removeState() {
+  removeState(): void {
     const cancelAction = 'cancel';
     const confirmAction = 'delete';
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
@@ -146,7 +146,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     });
   }
 
-  removeTransition(transition) {
+  removeTransition(transition: Transition): void {
     const cancelAction = 'cancel';
     const confirmAction = 'delete';
     const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
@@ -170,7 +170,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     });
   }
 
-  getDraggableTypes() {
+  getDraggableTypes(): string[] {
     if (this.state.id.toLowerCase() == 'global') return ['action'];
 
     let parent = getSmStateParentById(this.state.id, this.stateMachine);
@@ -187,11 +187,13 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     return ['intent'];
   }
 
-  onDrop(event) {
+  onDrop(event): void {
+    if (event.data.source === this.state.id) return;
+
     this.scenarioProductionService.itemDropped(this.state.id, event.data);
   }
 
-  getNextActionError() {
+  getNextActionError(): string | null {
     if (this.state.states) {
       let states = Object.keys(this.state.states);
       if (!states.length) return 'An action group cannot be empty';

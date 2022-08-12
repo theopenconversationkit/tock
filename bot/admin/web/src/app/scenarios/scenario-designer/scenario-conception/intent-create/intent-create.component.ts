@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent, nameFromQualifiedName } from '../../../../model/nlp';
 import { getScenarioIntentDefinitions, normalizedCamelCase } from '../../../commons/utils';
-import { Scenario, scenarioItem } from '../../../models';
+import { Scenario, ScenarioItem } from '../../../models';
 
 @Component({
   selector: 'scenario-intent-create',
@@ -13,7 +13,7 @@ import { Scenario, scenarioItem } from '../../../models';
   styleUrls: ['./intent-create.component.scss']
 })
 export class IntentCreateComponent implements OnInit {
-  @Input() item: scenarioItem;
+  @Input() item: ScenarioItem;
   @Input() scenario: Scenario;
   @Output() createIntentEvent = new EventEmitter();
   categories: string[] = [];

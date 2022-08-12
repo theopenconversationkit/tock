@@ -9,7 +9,7 @@ import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dial
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
 import {
   Scenario,
-  scenarioItem,
+  ScenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
@@ -34,16 +34,16 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() itemId: number;
   @Input() parentId: number;
-  @Input() scenarioItems: scenarioItem[];
+  @Input() scenarioItems: ScenarioItem[];
   @Input() contexts: TickContext[];
-  @Input() selectedItem: scenarioItem;
+  @Input() selectedItem: ScenarioItem;
   @Input() mode: string;
   @Input() scenario: Scenario;
   @Input() isReadonly: boolean = false;
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
-  item: scenarioItem;
+  item: ScenarioItem;
   utterancesLoading = true;
 
   constructor(
@@ -270,13 +270,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     this.scenarioConceptionService.selectItem(this.item);
   }
 
-  focusItem(item: scenarioItem): void {
+  focusItem(item: ScenarioItem): void {
     if (item == this.item) {
       this.itemTextarea.nativeElement.focus();
     }
   }
 
-  requireItemPosition(item: scenarioItem): void {
+  requireItemPosition(item: ScenarioItem): void {
     if (item == this.item) {
       this.scenarioConceptionService.exposeItemPosition(this.item, {
         offsetLeft: this.itemCard.nativeElement.offsetLeft,
@@ -291,11 +291,11 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     this.scenarioConceptionService.testItem(this.item);
   }
 
-  getParentItem(): scenarioItem {
+  getParentItem(): ScenarioItem {
     return this.scenarioItems.find((item) => item.id == this.parentId);
   }
 
-  getChildItems(): scenarioItem[] {
+  getChildItems(): ScenarioItem[] {
     return this.scenarioItems.filter((item) => item.parentIds?.includes(this.item.id));
   }
 
@@ -421,7 +421,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     else delete this.item.final;
   }
 
-  getItemBrothers(): scenarioItem[] {
+  getItemBrothers(): ScenarioItem[] {
     return this.scenarioItems.filter((item) => {
       return (
         item.id != this.item.id &&

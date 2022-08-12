@@ -12,8 +12,8 @@ import { takeUntil } from 'rxjs/operators';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
 import {
   Scenario,
-  scenarioItem,
-  scenarioItemFrom,
+  ScenarioItem,
+  ScenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
@@ -156,13 +156,13 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     return Math.max(...this.scenario.data.scenarioItems.map((i) => i.id)) + 1;
   }
 
-  addItem(itemRef: scenarioItem, from?: scenarioItemFrom): void {
+  addItem(itemRef: ScenarioItem, from?: ScenarioItemFrom): void {
     let fromType = from || SCENARIO_ITEM_FROM_CLIENT;
     if (from == undefined && itemRef.from == SCENARIO_ITEM_FROM_CLIENT) {
       fromType = SCENARIO_ITEM_FROM_BOT;
     }
 
-    let newEntry: scenarioItem = {
+    let newEntry: ScenarioItem = {
       id: this.getNextItemId(),
       parentIds: [itemRef.id],
       from: fromType,
@@ -177,7 +177,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
-  deleteItem(itemRef: scenarioItem, parentItemId: number): void {
+  deleteItem(itemRef: ScenarioItem, parentItemId: number): void {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
@@ -188,7 +188,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeItemType(item: scenarioItem, targetType: scenarioItemFrom): void {
+  changeItemType(item: ScenarioItem, targetType: ScenarioItemFrom): void {
     if (targetType === SCENARIO_ITEM_FROM_BOT && item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         this.removeItemDefinition(item);
@@ -204,7 +204,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     item.from = targetType;
   }
 
-  removeItemDefinition(item: scenarioItem): void {
+  removeItemDefinition(item: ScenarioItem): void {
     if (item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         const intentTransitionsParents = getSmTransitionParentsByname(
@@ -226,16 +226,16 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectedItem: scenarioItem;
+  selectedItem: ScenarioItem;
   selectedElement: HTMLElement;
 
-  selectItem(item?: scenarioItem, element?: HTMLElement): void {
+  selectItem(item?: ScenarioItem, element?: HTMLElement): void {
     this.selectedItem = item ? item : undefined;
     this.selectedElement = element;
   }
 
   elementPosition: any;
-  centerOnItem(item: scenarioItem, position, setFocus: boolean = true): void {
+  centerOnItem(item: ScenarioItem, position, setFocus: boolean = true): void {
     this.elementPosition = position;
 
     if (setFocus) {
@@ -276,7 +276,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     else dropped.parentIds.push(targetId);
   }
 
-  isInFiliation(parent: scenarioItem, child: scenarioItem): boolean {
+  isInFiliation(parent: ScenarioItem, child: ScenarioItem): boolean {
     let current = parent;
     while (true) {
       if (!current.parentIds) return false;
@@ -319,7 +319,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   chatResponsesTimeout: number = 1000;
 
-  processChatEntry(item: scenarioItem): void {
+  processChatEntry(item: ScenarioItem): void {
     if (item) {
       this.addChatMessage(item.from, item.text);
 
@@ -336,14 +336,14 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  makePropositions(item: scenarioItem): void {
+  makePropositions(item: ScenarioItem): void {
     this.chatPropositions = this.getBrotherhood(item);
     let from = item.from;
     this.chatControlsFrom = from;
     this.chatControlsDisplay = true;
   }
 
-  chooseProposition(item: scenarioItem): void {
+  chooseProposition(item: ScenarioItem): void {
     this.chatPropositions = undefined;
     this.chatControlsFrom = undefined;
     this.chatControlsDisplay = false;
@@ -356,29 +356,29 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  findItemChild(item: scenarioItem): scenarioItem {
+  findItemChild(item: ScenarioItem): ScenarioItem {
     return this.scenario.data.scenarioItems.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  findItemById(id: number): scenarioItem {
+  findItemById(id: number): ScenarioItem {
     return this.scenario.data.scenarioItems.find((oitem) => oitem.id == id);
   }
 
-  getChildren(item: scenarioItem): scenarioItem[] {
+  getChildren(item: ScenarioItem): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  getBrotherhood(item: scenarioItem): scenarioItem[] {
+  getBrotherhood(item: ScenarioItem): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((oitem) =>
       oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
     );
   }
 
-  getItemBrothers(item: scenarioItem): scenarioItem[] {
+  getItemBrothers(item: ScenarioItem): ScenarioItem[] {
     return this.getBrotherhood(item).filter((oitem) => oitem.id !== item.id);
   }
 
-  isItemOnlyChild(item: scenarioItem): boolean {
+  isItemOnlyChild(item: ScenarioItem): boolean {
     if (!this.getItemBrothers(item).length) return true;
     return false;
   }

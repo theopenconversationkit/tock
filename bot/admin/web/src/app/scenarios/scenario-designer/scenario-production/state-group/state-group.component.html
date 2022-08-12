@@ -93,10 +93,11 @@
   </div>
 </div>
 
-<div *ngIf="!state.states && hasOutgoingTransitions()">
+<ng-container *ngIf="!state.states && hasOutgoingTransitions()">
   <div
     class="outgoing-transitions-wrapper"
     *ngFor="let transition of state.on | keyvalue"
+    [ngStyle]="{ 'width.px': transitionWrapperWidth }"
   >
     <scenario-transition
       class="cursor-default"
@@ -108,4 +109,4 @@
       (removeTransition)="removeTransition($event)"
     ></scenario-transition>
   </div>
-</div>
+</ng-container>
