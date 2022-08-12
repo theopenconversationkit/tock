@@ -74,5 +74,10 @@ data class FaqDefinitionDetailed(
     /**
      * The [I18nLabel] answer associated to the faq
      */
-    val i18nLabel: I18nLabel
+    val i18nLabel: I18nLabel,
+
+    /**
+     * The [StoryDefinitionBase] name of the faq
+     */
+    val storyName: String?=null,
 )

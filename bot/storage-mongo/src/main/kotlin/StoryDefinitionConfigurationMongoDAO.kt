@@ -57,6 +57,7 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
+import org.litote.kmongo.`in`
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.projection
@@ -135,6 +136,19 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             CurrentType ne AnswerConfigurationType.builtin,
             Intent.name_ eq intent
         )
+    }
+
+    override fun getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
+        namespace: String,
+        botId: String,
+        intentNames: List<String>
+    ): List<StoryDefinitionConfiguration> {
+        return col.find(
+            Namespace eq namespace,
+            BotId eq botId,
+            CurrentType ne AnswerConfigurationType.builtin,
+            Intent.name_ `in` (intentNames.asIterable())
+        ).toList()
     }
 
     override fun getStoryDefinitionByNamespaceAndBotIdAndIntent(

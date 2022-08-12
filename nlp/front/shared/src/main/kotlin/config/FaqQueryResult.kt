@@ -69,6 +69,11 @@ data class FaqQueryResult(
      * The [IntentDefinition] identity of the faq
      */
     val faq: IntentDefinition,
+
+    /**
+     * The [StoryDefinitionBase] name of the faq
+     */
+    val storyName: String?=null,
 ) {
     /**
      * Convert [FaqQueryResult] to [FaqDefinitionDetailed] with [I18nLabel]
@@ -88,7 +93,8 @@ data class FaqQueryResult(
             faqQueryResult.updateDate,
             faqQueryResult.utterances,
             faqQueryResult.faq,
-            i18nLabel
+            i18nLabel,
+            faqQueryResult.storyName
         )
     }
 
