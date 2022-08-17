@@ -18,7 +18,7 @@ const testScenario: Scenario = {
   description: 'Description 5',
   category: 'scenario',
   tags: null,
-  creationDate: '12/01/1980' as unknown as Date,
+  createDate: '12/01/1980',
   data: {
     mode: SCENARIO_MODE.writing,
     scenarioItems: [

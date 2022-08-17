@@ -4,8 +4,8 @@ export interface Scenario {
   name: string;
   category?: string;
   tags?: Array<string>;
-  creationDate: Date;
-  updateDate?: Date;
+  createDate: string;
+  updateDate?: string;
   description?: string;
   data?: ScenarioData;
   applicationId: string;

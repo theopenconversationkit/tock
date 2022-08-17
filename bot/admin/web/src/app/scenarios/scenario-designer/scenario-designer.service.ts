@@ -20,6 +20,30 @@ import {
 } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 
+export const SCENARIO_STEPS_ERRORS = {
+  one_intervention_at_least: () =>
+    'The scenario must contain at least one customer intervention and one bot response',
+  interventions_text_must_be_filled: () =>
+    'The texts of the customer and bot interventions must be filled in',
+  client_intervention_should_have_intent: (txt) =>
+    `An intent must be defined for each client intervention. The "${txt}" client intervention does not have an intent defined.`,
+  bot_intervention_should_have_action: (txt) =>
+    `An action must be defined for each bot intervention. The "${txt}" bot intervention does not have an action defined.`,
+  input_context_should_exist_as_output: (txt) =>
+    `For each context declared as input to an action, there must be at least one other action producing the same context as output. The context "${txt}" was not found as an output of any other action.`,
+  output_context_should_exist_as_input: (txt) =>
+    `For each context declared as output to an action, there must be at least one other action requiring the same context as input. The context "${txt}" was not found as an input of any other action.`,
+  statemachine_should_be_defined: () => 'A valid state machine must be defined',
+  intents_should_be_transitions: (txt) =>
+    `For each defined intent there must be a transition with the same name in the state machine. No transition found for the intent "${txt}".`,
+  transitions_should_be_intents: (txt) =>
+    `For each transition in the state machine there must be a defined intent with the same name. No intent found for the transition "${txt}".`,
+  actions_should_be_states: (txt) =>
+    `For each defined action there must be a state with the same name in the state machine. No state found for the action "${txt}".`,
+  states_should_be_actions: (txt) =>
+    `For each state in the state machine there must be a defined action with the same name. No action found for the state "${txt}".`
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,15 +81,14 @@ export class ScenarioDesignerService {
       if (scenarioItems.length < 2)
         return {
           valid: false,
-          reason:
-            'The scenario must contain at least one customer intervention and one bot response'
+          reason: SCENARIO_STEPS_ERRORS.one_intervention_at_least()
         };
       for (let index = 0; index < scenarioItems.length; index++) {
         const item = scenarioItems[index];
         if (item.text.trim().length < 1)
           return {
             valid: false,
-            reason: 'The texts of the customer and bot interventions must be filled in'
+            reason: SCENARIO_STEPS_ERRORS.interventions_text_must_be_filled()
           };
       }
     }
@@ -80,7 +103,7 @@ export class ScenarioDesignerService {
           }
           return {
             valid: false,
-            reason: `An intent must be defined for each client intervention. The "${item.text}" client intervention does not have an intent defined.`
+            reason: SCENARIO_STEPS_ERRORS.client_intervention_should_have_intent(item.text)
           };
         }
         if (item.from === SCENARIO_ITEM_FROM_BOT && !item.tickActionDefinition) {
@@ -92,7 +115,7 @@ export class ScenarioDesignerService {
           }
           return {
             valid: false,
-            reason: `An action must be defined for each bot intervention. The "${item.text}" bot intervention does not have an action defined.`
+            reason: SCENARIO_STEPS_ERRORS.bot_intervention_should_have_action(item.text)
           };
         }
       }
@@ -105,7 +128,7 @@ export class ScenarioDesignerService {
       if (!scenario.data.stateMachine) {
         return {
           valid: false,
-          reason: 'A valid state machine must be defined'
+          reason: SCENARIO_STEPS_ERRORS.statemachine_should_be_defined()
         };
       }
       const SmValidity = this.checkStateMachineIntegrity(scenario);
@@ -130,7 +153,7 @@ export class ScenarioDesignerService {
         if (!outputContext) {
           return {
             valid: false,
-            reason: `For each context declared as input to an action, there must be at least one other action producing the same context as output. The context "${inputContext}" was not found as an output of any other action.`
+            reason: SCENARIO_STEPS_ERRORS.input_context_should_exist_as_output(inputContext)
           };
         }
       }
@@ -144,7 +167,7 @@ export class ScenarioDesignerService {
         if (!inputContext) {
           return {
             valid: false,
-            reason: `For each context declared as output to an action, there must be at least one other action requiring the same context as input. The context "${outputContext}" was not found as an input of any other action.`
+            reason: SCENARIO_STEPS_ERRORS.output_context_should_exist_as_input(outputContext)
           };
         }
       }
@@ -160,11 +183,12 @@ export class ScenarioDesignerService {
     // Pour chaque intention (primaire et secondaire) déclarée dans la TickStory on doit trouver une transition portant le même nom dans la state machine
     for (let index = 0; index < intentDefinitions.length; index++) {
       const intentDef = intentDefinitions[index];
+      console.log(intentDef);
       const transition = getSmTransitionByName(intentDef.name, scenario.data.stateMachine);
       if (!transition) {
         return {
           valid: false,
-          reason: `For each defined intent there must be a transition with the same name in the state machine. No transition found for the intent "${intentDef.name}".`
+          reason: SCENARIO_STEPS_ERRORS.intents_should_be_transitions(intentDef.name)
         };
       }
     }
@@ -176,7 +200,7 @@ export class ScenarioDesignerService {
       if (!intentDefinitions.find((intDef) => intDef.name === transName)) {
         return {
           valid: false,
-          reason: `For each transition in the state machine there must be a defined intent with the same name. No intent found for the transition "${transName}".`
+          reason: SCENARIO_STEPS_ERRORS.transitions_should_be_intents(transName)
         };
       }
     }
@@ -189,7 +213,7 @@ export class ScenarioDesignerService {
       if (!state) {
         return {
           valid: false,
-          reason: `For each defined action there must be a state with the same name in the state machine. No state found for the action "${actionDef.name}".`
+          reason: SCENARIO_STEPS_ERRORS.actions_should_be_states(actionDef.name)
         };
       }
     }
@@ -201,7 +225,7 @@ export class ScenarioDesignerService {
       if (!actionsDefinitions.find((actDef) => actDef.name === stateName)) {
         return {
           valid: false,
-          reason: `For each state in the state machine there must be a defined action with the same name. No action found for the state "${stateName}".`
+          reason: SCENARIO_STEPS_ERRORS.states_should_be_actions(stateName)
         };
       }
     }

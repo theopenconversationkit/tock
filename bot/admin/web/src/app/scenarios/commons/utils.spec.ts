@@ -1,4 +1,4 @@
-import { Scenario, ScenarioData, ScenarioItem, SCENARIO_STATE } from '../models';
+import { Scenario, ScenarioItem } from '../models';
 import {
   getAllSmNonGroupStatesNames,
   getAllSmStatesNames,
