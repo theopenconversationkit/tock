@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { BotService } from '../../../bot/bot-service';
@@ -43,7 +44,8 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     private scenarioDesignerService: ScenarioDesignerService,
     private botService: BotService,
     private dialogService: DialogService,
-    private scenarioService: ScenarioService
+    private scenarioService: ScenarioService,
+    private toastrService: NbToastrService
   ) {}
 
   tickStoryJson: string;
@@ -341,6 +343,10 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         this.scenarioDesignerService
           .saveScenario(this.scenario.id, this.scenario)
           .subscribe((data) => {
+            this.toastrService.success(`Tick story successfully saved`, 'Success', {
+              duration: 5000,
+              status: 'success'
+            });
             // Scenario saved. Redirect the user to scenario list view
             this.tickStoryPostSuccessfull = true;
             setTimeout(() => this.scenarioDesignerService.exitDesigner(), 3000);
