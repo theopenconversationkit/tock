@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 
-import { Scenario, SCENARIO_MODE } from '../models';
+import { Scenario, SCENARIO_MODE, SCENARIO_STATE } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 import { ScenarioService } from './scenario.service';
 
@@ -19,7 +19,7 @@ const mockScenarios: Scenario[] = [
       scenarioItems: []
     },
     applicationId: '1',
-    state: ''
+    state: SCENARIO_STATE.draft
   },
   {
     id: '2',
@@ -34,7 +34,7 @@ const mockScenarios: Scenario[] = [
       scenarioItems: []
     },
     applicationId: '1',
-    state: ''
+    state: SCENARIO_STATE.draft
   },
   {
     id: '3',
@@ -48,7 +48,7 @@ const mockScenarios: Scenario[] = [
       scenarioItems: []
     },
     applicationId: '1',
-    state: ''
+    state: SCENARIO_STATE.draft
   },
   {
     id: '4',
@@ -62,7 +62,7 @@ const mockScenarios: Scenario[] = [
       scenarioItems: []
     },
     applicationId: '1',
-    state: ''
+    state: SCENARIO_STATE.draft
   },
   {
     id: '5',
@@ -76,7 +76,7 @@ const mockScenarios: Scenario[] = [
       scenarioItems: []
     },
     applicationId: '1',
-    state: ''
+    state: SCENARIO_STATE.draft
   }
 ];
 
@@ -93,7 +93,7 @@ const newScenario: Scenario = {
   creationDate: '12/01/1980' as unknown as Date,
   name: 'New scenario',
   applicationId: '1',
-  state: ''
+  state: SCENARIO_STATE.draft
 };
 
 const updatedScenario: Scenario = {

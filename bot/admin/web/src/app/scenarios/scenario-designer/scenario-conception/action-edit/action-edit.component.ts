@@ -10,7 +10,7 @@ import {
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { Scenario, scenarioItem, TickContext } from '../../../models';
+import { Scenario, ScenarioItem, TickContext } from '../../../models';
 import { getContrastYIQ, getScenarioActions, normalizedSnakeCase } from '../../../commons/utils';
 import { Observable, of } from 'rxjs';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
@@ -23,7 +23,7 @@ const ENTITY_NAME_MINLENGTH = 5;
   styleUrls: ['./action-edit.component.scss']
 })
 export class ActionEditComponent implements OnInit {
-  @Input() item: scenarioItem;
+  @Input() item: ScenarioItem;
   @Input() contexts: TickContext[];
   @Input() scenario: Scenario;
   @Output() saveModifications = new EventEmitter();
@@ -122,6 +122,7 @@ export class ActionEditComponent implements OnInit {
       ...this.form.value,
       answer: this.description.value
     });
+    this.form.markAsDirty();
   }
   copyDescToName(): void {
     this.form.patchValue({
@@ -129,6 +130,7 @@ export class ActionEditComponent implements OnInit {
       name: this.description.value
     });
     this.formatActionName();
+    this.form.markAsDirty();
   }
 
   contextsAutocompleteValues: Observable<string[]>;

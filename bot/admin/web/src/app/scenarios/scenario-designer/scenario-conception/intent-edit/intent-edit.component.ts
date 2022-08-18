@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { NbDialogRef, NbMenuService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { scenarioItem, TempSentence, TickContext } from '../../../models';
+import { ScenarioItem, TempSentence, TickContext } from '../../../models';
 import { Token } from '../../../../sentence-analysis/highlight/highlight.component';
 import { EntityDefinition, Intent, Sentence } from '../../../../model/nlp';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
@@ -32,7 +32,7 @@ export type TempSentenceExtended = TempSentence & { _tokens?: Token[] };
 export class IntentEditComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
-  @Input() item: scenarioItem;
+  @Input() item: ScenarioItem;
   @Input() contexts: TickContext[];
   @Output() saveModifications = new EventEmitter();
   @ViewChildren(SentenceEditComponent) sentencesComponents: QueryList<SentenceEditComponent>;

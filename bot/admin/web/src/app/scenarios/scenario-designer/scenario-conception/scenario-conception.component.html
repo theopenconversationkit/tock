@@ -50,6 +50,11 @@
                 class="ellipsis context-name"
                 [title]="context.name"
               >
+                <nb-icon
+                  icon="checkmark-outline"
+                  status="success"
+                  *ngIf="isContextUsed(context)"
+                ></nb-icon>
                 {{ context.name }}
               </div>
 

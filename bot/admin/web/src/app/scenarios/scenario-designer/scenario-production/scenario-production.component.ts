@@ -4,8 +4,8 @@ import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
 import {
-  intentDefinition,
-  machineState,
+  IntentDefinition,
+  MachineState,
   Scenario,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
@@ -182,18 +182,27 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       let inEndTop;
 
       if (targetStateElemPos.left - canvasLeft > transitionElemPos.left - canvasLeft) {
-        inStartLeft = sourceStateElemPos.left + 2 - canvasLeft;
-        inStartTop = transitionElemPos.top + transitionElemPos.height / 2 - canvasTop;
-        inEndLeft = transitionElemPos.left - canvasLeft;
-        inEndTop = transitionElemPos.top + transitionElemPos.height / 2 - canvasTop;
+        if (sourceStateComponent.state.states) {
+          inStartLeft = sourceStateElemPos.left + 2 - canvasLeft;
+          inStartTop = transitionElemPos.top + transitionElemPos.height / 2 - canvasTop;
+          inEndLeft = transitionElemPos.left - canvasLeft;
+          inEndTop = transitionElemPos.top + transitionElemPos.height / 2 - canvasTop;
 
-        if (Math.round(inStartTop) === Math.round(inEndTop)) {
-          inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft} ${inEndTop}`;
+          if (Math.round(inStartTop) === Math.round(inEndTop)) {
+            inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft} ${inEndTop}`;
+          } else {
+            let offset = 15;
+            inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft - offset} ${inStartTop}  L${
+              inEndLeft - offset
+            } ${inEndTop} L${inEndLeft} ${inEndTop}`;
+          }
         } else {
-          let offset = 15;
-          inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft - offset} ${inStartTop}  L${
-            inEndLeft - offset
-          } ${inEndTop} L${inEndLeft} ${inEndTop}`;
+          inStartLeft = sourceStateElemPos.left + sourceStateElemPos.width / 2 - canvasLeft;
+          inStartTop = sourceStateElemPos.top + sourceStateElemPos.height - canvasTop;
+          inEndLeft = transitionElemPos.left + transitionElemPos.width / 2 - canvasLeft;
+          inEndTop = transitionElemPos.top - canvasTop;
+
+          inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft} ${inEndTop}`;
         }
       } else {
         inStartLeft = sourceStateElemPos.left + sourceStateElemPos.width - canvasLeft;
@@ -204,6 +213,11 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
           inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft} ${inEndTop}`;
         } else {
           let offset = 10;
+
+          if (inEndLeft > inStartLeft) {
+            offset = inEndLeft - inStartLeft + 10;
+          }
+
           inPath = `M${inStartLeft} ${inStartTop} L${inStartLeft + offset} ${inStartTop}  L${
             inStartLeft + offset
           } ${inEndTop} L${inEndLeft} ${inEndTop}`;
@@ -266,12 +280,12 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getDraggableIntentType(intent: intentDefinition) {
+  getDraggableIntentType(intent: IntentDefinition) {
     if (intent.primary) return 'primaryIntent';
     return 'intent';
   }
 
-  getIntentTooltip(intent: intentDefinition) {
+  getIntentTooltip(intent: IntentDefinition) {
     return intent.label ? intent.label : intent.name;
   }
 
@@ -293,15 +307,15 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     return [...names];
   }
 
-  isActionInUse(action: TickActionDefinition): machineState {
+  isActionInUse(action: TickActionDefinition): MachineState {
     return getSmStateById(action.name, this.scenario.data.stateMachine);
   }
 
-  isIntentInUse(intent: intentDefinition): string {
+  isIntentInUse(intent: IntentDefinition): string {
     return getSmTransitionByName(intent.name, this.scenario.data.stateMachine);
   }
 
-  isIntentDraggable(intent: intentDefinition): boolean {
+  isIntentDraggable(intent: IntentDefinition): boolean {
     const item = this.scenario.data.scenarioItems.find((item) => item.intentDefinition === intent);
     if (item.main) {
       let exists = this.isIntentInUse(intent);
@@ -383,7 +397,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
 
     this.scenarioProductionService.updateLayout();
-    setTimeout(() => this.scenarioProductionService.updateLayout(), 300);
+    // setTimeout(() => this.scenarioProductionService.updateLayout(), 300);
   }
 
   addStateGroup(event) {

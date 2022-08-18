@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { BotService } from '../../../bot/bot-service';
@@ -12,11 +13,11 @@ import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-prev
 import { getScenarioActions, getScenarioIntents } from '../../commons/utils';
 import {
   Scenario,
-  scenarioItem,
+  ScenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   TempSentence,
-  dependencyUpdateJob,
+  DependencyUpdateJob,
   SCENARIO_STATE
 } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
@@ -43,7 +44,8 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     private scenarioDesignerService: ScenarioDesignerService,
     private botService: BotService,
     private dialogService: DialogService,
-    private scenarioService: ScenarioService
+    private scenarioService: ScenarioService,
+    private toastrService: NbToastrService
   ) {}
 
   tickStoryJson: string;
@@ -59,13 +61,13 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     }
   }
 
-  dependencies: { [key: string]: dependencyUpdateJob[] };
+  dependencies: { [key: string]: DependencyUpdateJob[] };
 
-  getJobsType(jobs: dependencyUpdateJob[]): string {
+  getJobsType(jobs: DependencyUpdateJob[]): string {
     return jobs[0].type;
   }
 
-  areAllJobsTypeDone(jobs: dependencyUpdateJob[]) {
+  areAllJobsTypeDone(jobs: DependencyUpdateJob[]) {
     return jobs.every((job) => job.done);
   }
 
@@ -143,7 +145,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     }
   }
 
-  processIntent(intentTask: dependencyUpdateJob): void {
+  processIntent(intentTask: DependencyUpdateJob): void {
     const intentDefinition = intentTask.data.intentDefinition;
 
     // Creation of non-existent entities
@@ -183,7 +185,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     this.processDependencies();
   }
 
-  postNewEntity(task: dependencyUpdateJob, tempEntity): void {
+  postNewEntity(task: DependencyUpdateJob, tempEntity): void {
     this.nlp.createEntityType(tempEntity.type).subscribe(
       (e) => {
         if (e) {
@@ -202,7 +204,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postNewSentence(task: dependencyUpdateJob, intent: Intent, tempSentence: TempSentence): void {
+  postNewSentence(task: DependencyUpdateJob, intent: Intent, tempSentence: TempSentence): void {
     this.nlp.parse(tempSentence).subscribe(
       (sentence) => {
         // sentence = sentence.withIntent(this.state, intentId);
@@ -229,7 +231,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postNewIntent(intentTask: dependencyUpdateJob, intentEntities): void {
+  postNewIntent(intentTask: DependencyUpdateJob, intentEntities): void {
     let entities = [];
     intentEntities.forEach((ie) => {
       entities.push({
@@ -266,7 +268,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       );
   }
 
-  processAnswer(answerTask: dependencyUpdateJob): void {
+  processAnswer(answerTask: DependencyUpdateJob): void {
     if (!answerTask.data.tickActionDefinition.answerId) {
       return this.postNewAnswer(answerTask);
     }
@@ -279,7 +281,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     this.processDependencies();
   }
 
-  patchAnswer(answerTask: dependencyUpdateJob): void {
+  patchAnswer(answerTask: DependencyUpdateJob): void {
     let i18nLabel: I18nLabel = this.i18n.labels.find((i) => {
       return i._id === answerTask.data.tickActionDefinition.answerId;
     });
@@ -302,7 +304,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postNewAnswer(answerTask: dependencyUpdateJob): void {
+  postNewAnswer(answerTask: DependencyUpdateJob): void {
     let request = new CreateI18nLabelRequest(
       'scenario',
       answerTask.data.tickActionDefinition.answer,
@@ -341,6 +343,10 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         this.scenarioDesignerService
           .saveScenario(this.scenario.id, this.scenario)
           .subscribe((data) => {
+            this.toastrService.success(`Tick story successfully saved`, 'Success', {
+              duration: 5000,
+              status: 'success'
+            });
             // Scenario saved. Redirect the user to scenario list view
             this.tickStoryPostSuccessfull = true;
             setTimeout(() => this.scenarioDesignerService.exitDesigner(), 3000);
@@ -354,7 +360,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   }
 
   compileTickStory(): object {
-    const intents: scenarioItem[] = getScenarioIntents(this.scenario);
+    const intents: ScenarioItem[] = getScenarioIntents(this.scenario);
     let mainIntent;
     let primaryIntents = [];
     let secondaryIntents = [];

@@ -11,6 +11,7 @@
       size="small"
       status="basic"
       (click)="exit()"
+      data-testid="exit-button"
     >
       <span *ngIf="!isReadonly">Cancel</span>
       <span *ngIf="isReadonly">Exit</span>
@@ -22,6 +23,7 @@
       status="primary"
       class="ml-2"
       (click)="save()"
+      data-testid="save-button"
     >
       Save
     </button>
@@ -32,6 +34,7 @@
       status="primary"
       class="ml-2"
       (click)="save(true)"
+      data-testid="save-and-exit-button"
     >
       Save & exit
     </button>

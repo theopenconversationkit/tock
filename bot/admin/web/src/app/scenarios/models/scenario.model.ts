@@ -25,31 +25,31 @@ export enum SCENARIO_MODE {
   publishing = 'publishing'
 }
 export interface ScenarioData {
-  scenarioItems: scenarioItem[];
+  scenarioItems: ScenarioItem[];
   contexts?: TickContext[];
-  stateMachine?: machineState;
+  stateMachine?: MachineState;
   mode: SCENARIO_MODE;
 }
 
 export const SCENARIO_ITEM_FROM_CLIENT = 'client';
-export type scenario_item_from_client = typeof SCENARIO_ITEM_FROM_CLIENT;
+export type Scenario_item_from_client = typeof SCENARIO_ITEM_FROM_CLIENT;
 export const SCENARIO_ITEM_FROM_BOT = 'bot';
-export type scenario_item_from_bot = typeof SCENARIO_ITEM_FROM_BOT;
-export type scenarioItemFrom = scenario_item_from_client | scenario_item_from_bot;
+export type Scenario_item_from_bot = typeof SCENARIO_ITEM_FROM_BOT;
+export type ScenarioItemFrom = Scenario_item_from_client | Scenario_item_from_bot;
 
-export interface scenarioItem {
+export interface ScenarioItem {
   id: number;
   parentIds?: number[];
   text: string;
-  from: scenarioItemFrom;
+  from: ScenarioItemFrom;
   final?: boolean;
   main?: boolean;
 
-  intentDefinition?: intentDefinition;
+  intentDefinition?: IntentDefinition;
   tickActionDefinition?: TickActionDefinition;
 }
 
-export interface intentDefinition {
+export interface IntentDefinition {
   label: string;
   name: string;
   category?: string;
@@ -81,13 +81,19 @@ export interface TickContext {
   entityRole?: EntityRole;
   type: 'string';
 }
-export interface machineState {
+export interface MachineState {
   id: string;
   type?: string;
   initial?: string;
-  states?: { [key: string]: machineState };
+  states?: { [key: string]: MachineState };
   on?: { [key: string]: string };
 }
+
+export interface Transition {
+  name: string;
+  target: string;
+}
+
 export class TempSentence extends ParseQuery {
   public classification: TempClassification;
 
@@ -117,10 +123,10 @@ export interface TempClassification {
   intentId?: string;
 }
 
-export interface dependencyUpdateJob {
+export interface DependencyUpdateJob {
   type: 'creation' | 'update';
   done: boolean;
-  data: scenarioItem;
+  data: ScenarioItem;
 }
 
 export interface IntegrityCheckResult {

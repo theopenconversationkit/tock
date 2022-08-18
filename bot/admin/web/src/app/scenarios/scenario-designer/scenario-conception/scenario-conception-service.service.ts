@@ -5,7 +5,7 @@ import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { SearchQuery } from '../../../model/nlp';
 import { OffsetPosition } from '../../../shared/canvas/models';
-import { scenarioItem } from '../../models/scenario.model';
+import { ScenarioItem } from '../../models/scenario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -35,14 +35,14 @@ export class ScenarioConceptionService {
     COMMUNICATION BETWEEN MAIN COMPONENT AND ITEMS COMPONENT
   */
   // Child components to designer communication
-  addAnswer(item: scenarioItem): void {
+  addAnswer(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'addAnswer',
       item: item
     });
   }
 
-  deleteAnswer(item: scenarioItem, parentItemId: number): void {
+  deleteAnswer(item: ScenarioItem, parentItemId: number): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'deleteAnswer',
       item: item,
@@ -58,21 +58,21 @@ export class ScenarioConceptionService {
     });
   }
 
-  selectItem(item: scenarioItem): void {
+  selectItem(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'itemSelected',
       item: item
     });
   }
 
-  testItem(item: scenarioItem): void {
+  testItem(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'testItem',
       item: item
     });
   }
 
-  exposeItemPosition(item: scenarioItem, position: OffsetPosition) {
+  exposeItemPosition(item: ScenarioItem, position: OffsetPosition) {
     this.scenarioDesignerItemsCommunication.next({
       type: 'exposeItemPosition',
       item,
@@ -96,14 +96,14 @@ export class ScenarioConceptionService {
   }
 
   // Designer to child components communication
-  focusItem(item: scenarioItem): void {
+  focusItem(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'focusItem',
       item: item
     });
   }
 
-  requireItemPosition(item: scenarioItem): void {
+  requireItemPosition(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'requireItemPosition',
       item: item

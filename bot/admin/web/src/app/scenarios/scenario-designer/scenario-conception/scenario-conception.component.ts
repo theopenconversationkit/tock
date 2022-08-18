@@ -12,12 +12,12 @@ import { takeUntil } from 'rxjs/operators';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
 import {
   Scenario,
-  scenarioItem,
-  scenarioItemFrom,
+  ScenarioItem,
+  ScenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
-  SCENARIO_STATE
+  TickContext
 } from '../../models/scenario.model';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -25,6 +25,7 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 import {
   getContrastYIQ,
+  getScenarioActionDefinitions,
   getSmTransitionParentsByname,
   removeSmStateById
 } from '../../commons/utils';
@@ -49,7 +50,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
-  qualifiedName = qualifiedName;
+  private qualifiedName = qualifiedName;
 
   constructor(
     private scenarioConceptionService: ScenarioConceptionService,
@@ -74,12 +75,12 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   contextsPanelDisplayed: boolean = true;
 
-  getContextEntityColor(context): string {
+  getContextEntityColor(context: TickContext): string {
     if (context.entityType)
       return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
-  getContextEntityContrast(context): string {
+  getContextEntityContrast(context: TickContext): string {
     if (context.entityType)
       return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
@@ -101,7 +102,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       });
   }
 
-  confirmDeleteContext(context) {
+  confirmDeleteContext(context: TickContext): void {
     const deleteAction = 'delete';
     const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
@@ -117,7 +118,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteContext(context) {
+  deleteContext(context: TickContext): void {
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
         item.tickActionDefinition.inputContextNames =
@@ -127,6 +128,21 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       }
     });
     this.scenario.data.contexts = this.scenario.data.contexts.filter((ctx) => ctx !== context);
+  }
+
+  isContextUsed(context: TickContext): boolean {
+    let isInput;
+    let isOutput;
+    const actionsDefinitions = getScenarioActionDefinitions(this.scenario);
+    actionsDefinitions.forEach((actionDef) => {
+      if (actionDef.inputContextNames.find((ctxName) => ctxName === context.name)) {
+        isInput = true;
+      }
+      if (actionDef.outputContextNames.find((ctxName) => ctxName === context.name)) {
+        isOutput = true;
+      }
+    });
+    return isInput && isOutput;
   }
 
   stringifiedCleanScenario(): string {
@@ -140,13 +156,13 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     return Math.max(...this.scenario.data.scenarioItems.map((i) => i.id)) + 1;
   }
 
-  addItem(itemRef: scenarioItem, from?: scenarioItemFrom): void {
+  addItem(itemRef: ScenarioItem, from?: ScenarioItemFrom): void {
     let fromType = from || SCENARIO_ITEM_FROM_CLIENT;
     if (from == undefined && itemRef.from == SCENARIO_ITEM_FROM_CLIENT) {
       fromType = SCENARIO_ITEM_FROM_BOT;
     }
 
-    let newEntry: scenarioItem = {
+    let newEntry: ScenarioItem = {
       id: this.getNextItemId(),
       parentIds: [itemRef.id],
       from: fromType,
@@ -161,7 +177,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
-  deleteItem(itemRef: scenarioItem, parentItemId: number): void {
+  deleteItem(itemRef: ScenarioItem, parentItemId: number): void {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
@@ -172,7 +188,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeItemType(item: scenarioItem, targetType: scenarioItemFrom) {
+  changeItemType(item: ScenarioItem, targetType: ScenarioItemFrom): void {
     if (targetType === SCENARIO_ITEM_FROM_BOT && item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         this.removeItemDefinition(item);
@@ -188,7 +204,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     item.from = targetType;
   }
 
-  removeItemDefinition(item: scenarioItem) {
+  removeItemDefinition(item: ScenarioItem): void {
     if (item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         const intentTransitionsParents = getSmTransitionParentsByname(
@@ -210,16 +226,16 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectedItem: scenarioItem;
+  selectedItem: ScenarioItem;
   selectedElement: HTMLElement;
 
-  selectItem(item?: scenarioItem, element?: HTMLElement): void {
+  selectItem(item?: ScenarioItem, element?: HTMLElement): void {
     this.selectedItem = item ? item : undefined;
     this.selectedElement = element;
   }
 
   elementPosition: any;
-  centerOnItem(item: scenarioItem, position, setFocus: boolean = true): void {
+  centerOnItem(item: ScenarioItem, position, setFocus: boolean = true): void {
     this.elementPosition = position;
 
     if (setFocus) {
@@ -260,7 +276,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     else dropped.parentIds.push(targetId);
   }
 
-  isInFiliation(parent: scenarioItem, child: scenarioItem): boolean {
+  isInFiliation(parent: ScenarioItem, child: ScenarioItem): boolean {
     let current = parent;
     while (true) {
       if (!current.parentIds) return false;
@@ -303,7 +319,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   chatResponsesTimeout: number = 1000;
 
-  processChatEntry(item: scenarioItem): void {
+  processChatEntry(item: ScenarioItem): void {
     if (item) {
       this.addChatMessage(item.from, item.text);
 
@@ -320,14 +336,14 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  makePropositions(item: scenarioItem): void {
+  makePropositions(item: ScenarioItem): void {
     this.chatPropositions = this.getBrotherhood(item);
     let from = item.from;
     this.chatControlsFrom = from;
     this.chatControlsDisplay = true;
   }
 
-  chooseProposition(item: scenarioItem): void {
+  chooseProposition(item: ScenarioItem): void {
     this.chatPropositions = undefined;
     this.chatControlsFrom = undefined;
     this.chatControlsDisplay = false;
@@ -340,29 +356,29 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  findItemChild(item: scenarioItem): scenarioItem {
+  findItemChild(item: ScenarioItem): ScenarioItem {
     return this.scenario.data.scenarioItems.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  findItemById(id: number): scenarioItem {
+  findItemById(id: number): ScenarioItem {
     return this.scenario.data.scenarioItems.find((oitem) => oitem.id == id);
   }
 
-  getChildren(item: scenarioItem): scenarioItem[] {
+  getChildren(item: ScenarioItem): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  getBrotherhood(item: scenarioItem): scenarioItem[] {
+  getBrotherhood(item: ScenarioItem): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((oitem) =>
       oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
     );
   }
 
-  getItemBrothers(item: scenarioItem): scenarioItem[] {
+  getItemBrothers(item: ScenarioItem): ScenarioItem[] {
     return this.getBrotherhood(item).filter((oitem) => oitem.id !== item.id);
   }
 
-  isItemOnlyChild(item: scenarioItem): boolean {
+  isItemOnlyChild(item: ScenarioItem): boolean {
     if (!this.getItemBrothers(item).length) return true;
     return false;
   }

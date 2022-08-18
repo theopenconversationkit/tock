@@ -8,8 +8,8 @@ import { ScenarioTransitionComponent } from './state-group/transition/transition
 })
 export class ScenarioProductionService {
   public scenarioProductionItemsCommunication = new Subject<any>();
-  public scenarioProductionTransitionsComponents = [];
-  public scenarioProductionStateComponents = {};
+  public scenarioProductionTransitionsComponents: ScenarioTransitionComponent[] = [];
+  public scenarioProductionStateComponents: { [key: string]: ScenarioStateGroupComponent } = {};
 
   unRegisterTransitionComponent(name: string) {
     this.scenarioProductionTransitionsComponents =

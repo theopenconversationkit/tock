@@ -44,7 +44,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   scenarioBackup: string;
   isReadonly: boolean = false;
   i18n: I18nLabels;
-  i18nLoading: boolean = true;
 
   readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
@@ -79,7 +78,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           return this.informNoScenarioFound();
         }
 
-        this.scenarioBackup = JSON.stringify(scenario);
+        this.updateScenarioBackup(scenario);
+
         this.scenario = JSON.parse(JSON.stringify(scenario));
 
         this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
@@ -102,15 +102,13 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           this.scenario.data.contexts = [];
         }
 
-        this.i18nLoading = true;
         this.botService
           .i18nLabels()
           .pipe(take(1))
           .subscribe((results) => {
             this.i18n = results;
-            this.i18nLoading = false;
+            this.checkDependencies();
           });
-        this.checkDependencies();
       });
 
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
@@ -119,10 +117,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   checkDependencies() {
-    if (this.i18nLoading) {
-      return setTimeout(() => this.checkDependencies(), 100);
-    }
-
     let deletedIntents = [];
     let deletedAnswers = [];
     this.scenario.data.scenarioItems.forEach((item) => {
@@ -159,7 +153,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       deletedIntents.forEach((intent) => {
         subtitle += `• ${intent} `;
       });
-      const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+      this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
           title: title,
@@ -175,7 +169,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       deletedAnswers.forEach((answer) => {
         subtitle += `• ${answer} `;
       });
-      const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+      this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
           title: title,

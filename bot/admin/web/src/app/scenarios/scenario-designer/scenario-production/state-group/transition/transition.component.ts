@@ -11,7 +11,12 @@ import {
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { intentDefinition, TickActionDefinition } from '../../../../models';
+import {
+  IntentDefinition,
+  MachineState,
+  TickActionDefinition,
+  Transition
+} from '../../../../models';
 import { ScenarioProductionService } from '../../scenario-production.service';
 
 @Component({
@@ -22,9 +27,9 @@ import { ScenarioProductionService } from '../../scenario-production.service';
 export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Output() removeTransition = new EventEmitter();
-  @Input() transition: { name: string; target: string };
-  @Input() parentState;
-  @Input() intents: intentDefinition[];
+  @Input() transition: Transition;
+  @Input() parentState: MachineState;
+  @Input() intents: IntentDefinition[];
   @Input() actions: TickActionDefinition[];
   @Input() isReadonly: boolean = false;
 
@@ -66,15 +71,15 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getIntentTooltip() {
+  getIntentTooltip(): string {
     return this.intent.label ? this.intent.label : this.intent.name;
   }
 
-  setTransitionTop() {
+  setTransitionTop(): void {
     this.elementRef.nativeElement.style.top = this.getTransitionTop() + 'px';
   }
 
-  getTransitionTop() {
+  getTransitionTop(): number {
     const stateComponent =
       this.scenarioProductionService.scenarioProductionStateComponents[
         this.transition.target.replace(/^#/, '')
@@ -122,7 +127,7 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
     return 0;
   }
 
-  remove(transition) {
+  remove(transition): void {
     this.removeTransition.emit(transition);
   }
 
