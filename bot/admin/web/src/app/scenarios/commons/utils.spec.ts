@@ -24,25 +24,25 @@ import {
 } from './utils';
 
 describe('Scenarios Utils', () => {
-  it('normalize', () => {
+  it('Should normalize a string', () => {
     const before = 'é&"(-è_çà)=æɛß,@ـسحـ \u0300 \u0301 \u0310 êôïö°';
     const after = 'e&"(-e_ca)=æɛß,@ـسحـ    eoio°';
     expect(normalize(before)).toEqual(after);
   });
 
-  it('normalizedSnakeCase', () => {
+  it('Should normalize and convert a string to snake case', () => {
     const before = ' test IF sNake-Case   FUNCTION \u0300 wörks°  ';
     const after = 'TEST_IF_SNAKE_CASE_FUNCTION_WORKS';
     expect(normalizedSnakeCase(before)).toEqual(after);
   });
 
-  it('normalizedCamelCase', () => {
+  it('Should normalize and convert a string to camel case', () => {
     const before = ' test IF CamEl-case    function \u0300 WÔRKS°  ';
     const after = 'testIfCamelCaseFunctionWorks';
     expect(normalizedCamelCase(before)).toEqual(after);
   });
 
-  it('stringifiedCleanScenario', () => {
+  it('Should remove expandos begining by an underscore and stringify an object', () => {
     const before = JSON.parse(
       '{"data":{"scenarioItems":[{"intentDefinition":{"_sentences":"test"}}]},"__expando":"test"}'
     );
@@ -50,7 +50,7 @@ describe('Scenarios Utils', () => {
     expect(stringifiedCleanScenario(before as Scenario)).toEqual(after);
   });
 
-  it('getContrastYIQ', () => {
+  it('Should find the correct contrast shade for a given hex color', () => {
     let before = '#ff6600';
     let after = 'black';
     expect(getContrastYIQ(before)).toEqual(after);
@@ -62,7 +62,7 @@ describe('Scenarios Utils', () => {
     expect(getContrastYIQ(before)).toEqual(after);
   });
 
-  it('revertTransformMatrix', () => {
+  it('Should return the inverse transformation matrix of an element whose parent has a transformation', () => {
     const parent = document.createElement('div');
     parent.style.width = '20px';
     parent.style.height = '20px';
@@ -80,7 +80,7 @@ describe('Scenarios Utils', () => {
     expect(JSON.stringify(res)).toEqual(JSON.stringify(expected));
   });
 
-  it('getScenarioIntents', () => {
+  it('Should return the items of a scenario that are of type intent', () => {
     const scenario = {
       data: {
         scenarioItems: [
@@ -99,7 +99,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected as ScenarioItem[]);
   });
 
-  it('getScenarioIntentDefinitions', () => {
+  it('Should return the items definitions of a scenario that are of type intent and have intentDefinition', () => {
     const scenario = {
       data: {
         scenarioItems: [
@@ -120,7 +120,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected as any);
   });
 
-  it('getScenarioActions', () => {
+  it('Should return the items of a scenario that are of type action', () => {
     const scenario = {
       data: {
         scenarioItems: [
@@ -139,7 +139,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected as ScenarioItem[]);
   });
 
-  it('getScenarioActionDefinitions', () => {
+  it('Should return the items definitions of a scenario that are of type action and have actionDefinition', () => {
     const scenario = {
       data: {
         scenarioItems: [
@@ -160,7 +160,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected as any);
   });
 
-  it('getSmTransitionByName', () => {
+  it('Should return a SM transition target by name', () => {
     const machine = {
       id: 'root',
       states: {
@@ -182,7 +182,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected as any);
   });
 
-  it('getAllSmTransitions', () => {
+  it('Should return all SM transitions', () => {
     const machine = {
       id: 'root',
       states: {
@@ -206,7 +206,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected as any);
   });
 
-  it('getAllSmTransitionNames', () => {
+  it('Should return all SM transitions names', () => {
     const machine = {
       id: 'root',
       states: {
@@ -227,7 +227,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected);
   });
 
-  it('getSmTransitionParentsByname', () => {
+  it('Should return all parent states of a given transition name', () => {
     const machine = {
       id: 'root',
       states: {
@@ -264,7 +264,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected);
   });
 
-  it('getSmTransitionParentByTarget', () => {
+  it('Should return the name of all transitions pointing to a given state id as well as its parent state.', () => {
     const machine = {
       id: 'root',
       states: {
@@ -293,7 +293,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected);
   });
 
-  it('renameSmStateById', () => {
+  it('Should rename a state and update its referencies', () => {
     const machine = {
       id: 'root',
       states: {
@@ -337,7 +337,7 @@ describe('Scenarios Utils', () => {
     expect(machine).toEqual(expected as any);
   });
 
-  it('removeSmStateById', () => {
+  it('Should remove a state and its referencies', () => {
     const machine = {
       id: 'root',
       states: {
@@ -374,7 +374,7 @@ describe('Scenarios Utils', () => {
     expect(machine).toEqual(expected as any);
   });
 
-  it('getSmStateById', () => {
+  it('Should return a state by its id', () => {
     const machine = {
       id: 'root',
       states: {
@@ -396,7 +396,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected);
   });
 
-  it('getSmStateParentById', () => {
+  it('Should return the parent of a state by its id', () => {
     const machine = {
       id: 'root',
       states: {
@@ -425,7 +425,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected);
   });
 
-  it('getAllSmStatesNames', () => {
+  it('Should return the name of all states of a SM ', () => {
     const machine = {
       id: 'root',
       states: {
@@ -447,7 +447,7 @@ describe('Scenarios Utils', () => {
     expect(res).toEqual(expected);
   });
 
-  it('getAllSmNonGroupStatesNames', () => {
+  it('Should return the name of all states in a SM that are not group states', () => {
     const machine = {
       id: 'root',
       states: {

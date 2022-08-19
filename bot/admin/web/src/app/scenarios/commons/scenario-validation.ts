@@ -152,7 +152,6 @@ function checkStateMachineIntegrity(scenario: Scenario): IntegrityCheckResult {
   // Pour chaque intention (primaire et secondaire) déclarée dans la TickStory on doit trouver une transition portant le même nom dans la state machine
   for (let index = 0; index < intentDefinitions.length; index++) {
     const intentDef = intentDefinitions[index];
-    console.log(intentDef);
     const transition = getSmTransitionByName(intentDef.name, scenario.data!.stateMachine!);
     if (!transition) {
       return {

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Subject } from 'rxjs';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
 import { isStepValid } from '../../commons/scenario-validation';
@@ -10,6 +11,8 @@ import { Scenario, SCENARIO_MODE } from '../../models';
   styleUrls: ['./mode-stepper.component.scss']
 })
 export class ModeStepperComponent {
+  destroy = new Subject();
+
   readonly SCENARIO_MODE = SCENARIO_MODE;
   @Input() mode: SCENARIO_MODE;
   @Input() scenario!: Scenario;
@@ -78,5 +81,10 @@ export class ModeStepperComponent {
         isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
       );
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

@@ -80,6 +80,13 @@ describe('ScenarioDesignerComponent', () => {
     expect(component).toBeDefined();
   });
 
+  it('Should destroy', () => {
+    expect(component.ngOnDestroy).toBeDefined();
+    expect(component.destroy.isStopped).toBeFalsy();
+    component.ngOnDestroy();
+    expect(component.destroy.isStopped).toBeTruthy();
+  });
+
   it("should init scenario.data when it doesn't exists", () => {
     const scenarioCopy = JSON.parse(JSON.stringify(testScenario));
     delete scenarioCopy.data;
