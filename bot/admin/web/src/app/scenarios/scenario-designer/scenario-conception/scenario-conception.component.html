@@ -54,6 +54,7 @@
                   icon="checkmark-outline"
                   status="success"
                   *ngIf="isContextUsed(context)"
+                  nbTooltip="This context is correctly defined as the output context of at least one action and the input context of at least one other action"
                 ></nb-icon>
                 {{ context.name }}
               </div>
@@ -109,7 +110,6 @@
           *ngIf="scenario?.data.scenarioItems.length"
           [isReadonly]="isReadonly"
           [itemId]="0"
-          [scenarioItems]="scenario.data.scenarioItems"
           [contexts]="scenario.data.contexts"
           [selectedItem]="selectedItem"
           [mode]="scenario.data.mode"

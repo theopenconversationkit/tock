@@ -1,0 +1,553 @@
+import { ScenarioConceptionItemComponent } from './scenario-conception-item.component';
+import { ScenarioConceptionService } from './scenario-conception-service.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DialogService } from '../../../core-nlp/dialog.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { StateService } from '../../../core-nlp/state.service';
+import {
+  IntentDefinition,
+  Scenario,
+  ScenarioItemFrom,
+  SCENARIO_ITEM_FROM_CLIENT,
+  SCENARIO_MODE,
+  SCENARIO_STATE,
+  TempSentence,
+  TickContext
+} from '../../models';
+import { NlpService } from '../../../nlp-tabs/nlp.service';
+import { EMPTY, of } from 'rxjs';
+import { NbDialogRef } from '@nebular/theme';
+import { By } from '@angular/platform-browser';
+
+const scenarioMock = {
+  id: '62fcbb7ae4d25c16a44071a1',
+  name: 'testing scenario',
+  category: 'scenarios',
+  tags: ['testing'],
+  applicationId: '62558f21b318632c9200b567',
+  createDate: '2022-08-17T09:57:14.428Z',
+  updateDate: '2022-08-17T09:57:33.053Z',
+  description: '',
+  data: {
+    mode: 'writing' as SCENARIO_MODE,
+    scenarioItems: [
+      {
+        id: 0,
+        from: 'client' as ScenarioItemFrom,
+        text: 'Main intent',
+        main: true,
+        intentDefinition: { name: 'intent1', label: 'intent1', primary: true }
+      },
+      {
+        id: 1,
+        text: 'action1',
+        from: 'bot' as ScenarioItemFrom,
+        parentIds: [0],
+        tickActionDefinition: {
+          name: 'action1',
+          inputContextNames: [],
+          outputContextNames: ['test']
+        }
+      },
+      {
+        id: 2,
+        text: 'action2',
+        from: 'bot' as ScenarioItemFrom,
+        parentIds: [0, 1],
+        tickActionDefinition: {
+          name: 'action2',
+          inputContextNames: ['test'],
+          outputContextNames: [],
+          answerId: '456',
+          answer: 'action2 answer'
+        }
+      },
+      {
+        id: 3,
+        from: 'client' as ScenarioItemFrom,
+        text: 'Second intent',
+        intentDefinition: { name: 'intent2', label: 'intent2', intentId: '123' }
+      },
+      {
+        id: 4,
+        text: 'action3',
+        from: 'bot' as ScenarioItemFrom,
+        parentIds: [3]
+      },
+      {
+        id: 5,
+        from: 'client' as ScenarioItemFrom,
+        text: 'Third intent'
+      }
+    ],
+    contexts: [{ name: 'test', type: 'string' }],
+    stateMachine: {
+      id: 'root',
+      type: 'parallel',
+      states: {
+        Global: {
+          id: 'Global',
+          states: {
+            action1: { id: 'action1' },
+            action2: { id: 'action2' }
+          },
+          on: { intent1: '#action1' }
+        }
+      },
+      initial: 'Global',
+      on: {}
+    }
+  },
+  state: 'draft' as SCENARIO_STATE
+};
+
+function getScenarioMock() {
+  return JSON.parse(JSON.stringify(scenarioMock)) as Scenario;
+}
+
+describe('ScenarioConceptionItemComponent', () => {
+  let component: ScenarioConceptionItemComponent;
+  let fixture: ComponentFixture<ScenarioConceptionItemComponent>;
+  let scenarioConceptionService: ScenarioConceptionService;
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ScenarioConceptionItemComponent],
+      providers: [
+        ScenarioConceptionService,
+        {
+          provide: DialogService,
+          useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) }
+        },
+        { provide: StateService, useValue: {} },
+        { provide: NlpService, useValue: {} }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
+
+    scenarioConceptionService = TestBed.inject(ScenarioConceptionService);
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ScenarioConceptionItemComponent);
+    component = fixture.componentInstance;
+    component.scenario = getScenarioMock();
+    component.mode = component.scenario.data.mode;
+    component.itemId = 2;
+    component.parentId = 0;
+    component.contexts = [];
+    component.selectedItem = getScenarioMock().data.scenarioItems[2];
+
+    fixture.detectChanges();
+  });
+
+  it('Should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('Should destroy', () => {
+    expect(component.ngOnDestroy).toBeDefined();
+    expect(component.destroy.isStopped).toBeFalsy();
+    component.ngOnDestroy();
+    expect(component.destroy.isStopped).toBeTruthy();
+  });
+
+  it('Should respond to scenarioDesignerItemsCommunication events', () => {
+    const item = scenarioMock.data.scenarioItems[2];
+
+    spyOn(component, 'focusItem');
+    component['scenarioConceptionService'].focusItem(item);
+    expect(component.focusItem).toHaveBeenCalledWith(item);
+
+    spyOn(component, 'requireItemPosition');
+    component['scenarioConceptionService'].requireItemPosition(item);
+    expect(component.requireItemPosition).toHaveBeenCalledWith(item);
+  });
+
+  it('Should set the current item on init', () => {
+    const item = scenarioMock.data.scenarioItems[2];
+    expect(component.item).toEqual(item);
+
+    expect(component.draggable.data).toEqual(2);
+  });
+
+  it('Should not collect existing utterances on init if item is not an intent', () => {
+    spyOn(component, 'collectIntentUtterances');
+    // item is not an intent => should not collect
+    expect(component.collectIntentUtterances).not.toHaveBeenCalled();
+  });
+
+  it('Should not collect existing utterances on init if item has no intenId defined', () => {
+    spyOn(component, 'collectIntentUtterances');
+    // item is an intent but has no intentId defined => should not collect
+    component.itemId = 0;
+    component.ngOnInit();
+    expect(component.collectIntentUtterances).not.toHaveBeenCalled();
+  });
+
+  it('Should collect existing utterances on init if item has intenId defined', () => {
+    spyOn(component, 'collectIntentUtterances');
+    // item is an intent and has an intentId defined => should collect
+    component.itemId = 3;
+    component.ngOnInit();
+    expect(component.collectIntentUtterances).toHaveBeenCalled();
+  });
+
+  it('Should handle correctly ActionEditComponent.saveModifications return', () => {
+    const modifications = {
+      name: 'RenamedAction',
+      answer: 'Modified answer',
+      inputContextNames: ['context1'],
+      outputContextNames: ['context1', 'context2']
+    };
+    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      close: () => {},
+      componentRef: { instance: { saveModifications: of(modifications), deleteDefinition: of() } }
+    } as NbDialogRef<any>);
+
+    component.manageAction();
+
+    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component.contexts).toEqual([
+      {
+        name: 'context1',
+        type: 'string'
+      },
+      {
+        name: 'context2',
+        type: 'string'
+      }
+    ]);
+
+    expect(component.scenario.data.stateMachine.states.Global.states.RenamedAction).toBeTruthy();
+    expect(component.item.tickActionDefinition.answerUpdate).toBeTruthy();
+  });
+
+  it('Should handle correctly ActionEditComponent.deleteDefinition return', () => {
+    spyOn(scenarioConceptionService, 'removeItemDefinition');
+    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      close: () => {},
+      componentRef: { instance: { saveModifications: EMPTY, deleteDefinition: of(true) } }
+    } as NbDialogRef<any>);
+
+    component.manageAction();
+    fixture.detectChanges();
+    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(scenarioConceptionService.removeItemDefinition).toHaveBeenCalled();
+  });
+
+  it('Should handle correctly manageIntent call', () => {
+    let editSpy = spyOn(component, 'editIntent');
+    let searchSpy = spyOn(component, 'searchIntent');
+
+    component.itemId = 0;
+    component.ngOnInit();
+    component.manageIntent();
+    expect(component.editIntent).toHaveBeenCalled();
+    expect(component.searchIntent).not.toHaveBeenCalled();
+
+    editSpy.calls.reset();
+    searchSpy.calls.reset();
+
+    delete component.item.intentDefinition;
+
+    component.manageIntent();
+    expect(component.editIntent).not.toHaveBeenCalled();
+    expect(component.searchIntent).toHaveBeenCalled();
+  });
+
+  it('Should handle correctly searchIntent => createNewIntentEvent call', () => {
+    spyOn(component, 'createIntent');
+    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      close: () => {},
+      componentRef: { instance: { useIntentEvent: EMPTY, createNewIntentEvent: of(true) } }
+    } as NbDialogRef<any>);
+
+    component.searchIntent();
+
+    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component.createIntent).toHaveBeenCalled();
+  });
+
+  it('Should handle correctly searchIntent => useIntentEvent call', () => {
+    const intentDef = {
+      label: 'test',
+      name: 'name',
+      category: 'category',
+      description: 'category',
+      _id: 'id'
+    };
+    spyOn(component, 'setItemIntentDefinition');
+    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      close: () => {},
+      componentRef: { instance: { useIntentEvent: of(intentDef), createNewIntentEvent: EMPTY } }
+    } as NbDialogRef<any>);
+
+    component.searchIntent();
+
+    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component.setItemIntentDefinition).toHaveBeenCalledWith(intentDef);
+  });
+
+  describe('setItemIntentDefinition', () => {
+    it('Should collect intent utterances after beeing called', () => {
+      spyOn(component, 'collectIntentUtterances');
+      const intentDef = {
+        label: 'test',
+        name: 'name',
+        category: 'category',
+        description: 'category',
+        _id: 'id'
+      };
+
+      component.setItemIntentDefinition(intentDef);
+      expect(component.collectIntentUtterances).toHaveBeenCalled();
+    });
+  });
+
+  it('Should handle correctly createIntent => createIntentEvent call', () => {
+    const intentDef = {
+      label: 'test',
+      name: 'name',
+      category: 'category',
+      description: 'category',
+      primary: false
+    } as IntentDefinition;
+
+    spyOn(component, 'editIntent');
+    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      close: () => {},
+      componentRef: { instance: { createIntentEvent: of(intentDef) } }
+    } as NbDialogRef<any>);
+
+    component.createIntent();
+
+    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component.item.intentDefinition).toEqual(intentDef);
+    expect(component.editIntent).toHaveBeenCalled();
+  });
+
+  it('Should handle correctly editIntent => saveModifications call', () => {
+    const intentDef = {
+      sentences: [
+        {
+          namespace: 'abc',
+          applicationName: 'def',
+          language: 'fr-fr',
+          query: 'Test new sentence',
+          checkExistingQuery: false,
+          state: ''
+        } as TempSentence
+      ],
+      contextsEntities: [
+        {
+          name: 'testContext',
+          type: 'string'
+        } as TickContext
+      ],
+      primary: false
+    };
+
+    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      close: () => {},
+      componentRef: { instance: { saveModifications: of(intentDef) } }
+    } as NbDialogRef<any>);
+
+    component.itemId = 0;
+    component.ngOnInit();
+
+    component.editIntent();
+
+    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component.item.intentDefinition.sentences).toEqual(intentDef.sentences);
+    expect(component.item.intentDefinition.primary).toEqual(intentDef.primary);
+    expect(component.scenario.data.stateMachine.states.Global.on).toEqual({});
+    expect(component.contexts).toEqual(intentDef.contextsEntities);
+  });
+
+  describe('getParentItem', () => {
+    it('Should return parent item', () => {
+      expect(component.getParentItem()).toEqual(component.scenario.data.scenarioItems[0]);
+    });
+  });
+
+  describe('getChildItems | itemHasNoChildren | itemHasSeveralChildren', () => {
+    it('Should return child items', () => {
+      component.itemId = 0;
+      component.ngOnInit();
+      expect(component.getChildItems()).toEqual([
+        component.scenario.data.scenarioItems[1],
+        component.scenario.data.scenarioItems[2]
+      ]);
+
+      expect(component.itemHasNoChildren()).toEqual(false);
+      expect(component.itemHasSeveralChildren()).toEqual(true);
+    });
+  });
+
+  describe('answering', () => {
+    it('Should call scenarioConceptionService.addAnswer', () => {
+      spyOn(scenarioConceptionService, 'addAnswer');
+      component.answering();
+      expect(scenarioConceptionService.addAnswer).toHaveBeenCalled();
+    });
+  });
+
+  describe('delete', () => {
+    it('Should confirm before deleting if item has definition', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+        close: () => {},
+        onClose: of('delete')
+      } as NbDialogRef<any>);
+
+      component.delete();
+
+      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    });
+
+    it('Should not confirm before deleting if item has no definition', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+        close: () => {},
+        onClose: of('delete')
+      } as NbDialogRef<any>);
+      delete component.item.tickActionDefinition;
+      component.delete();
+      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+    });
+  });
+
+  it('Should set correct classes on item', () => {
+    const classes = component.getItemCardCssClass();
+    expect(classes).toEqual('cursor-default bot duplicate selected');
+  });
+
+  describe('switchItemType', () => {
+    it('Should confirm before changing type of an item if it has definition', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+        close: () => {},
+        onClose: of('delete')
+      } as NbDialogRef<any>);
+
+      component.switchItemType(SCENARIO_ITEM_FROM_CLIENT);
+
+      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    });
+
+    it('Should not confirm before changing type of an item if it has no definition', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+        close: () => {},
+        onClose: of('delete')
+      } as NbDialogRef<any>);
+      delete component.item.tickActionDefinition;
+      component.switchItemType(SCENARIO_ITEM_FROM_CLIENT);
+      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getItemBrothers', () => {
+    it('Should return the items brothers', () => {
+      const brothers = component.getItemBrothers();
+      expect(brothers).toEqual([component.scenario.data.scenarioItems[1]]);
+    });
+  });
+
+  it('Should show item.text textarea if has no definition', () => {
+    let textarea = fixture.debugElement.query(By.css('[data-testid="item-text-textarea"]'));
+    expect(textarea).toBeNull();
+
+    component.itemId = 4;
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    textarea = fixture.debugElement.query(By.css('[data-testid="item-text-textarea"]'));
+    expect(textarea).not.toBeNull();
+  });
+
+  it('Should show intent item definition details if it has definition', () => {
+    component.itemId = 0;
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    let details = fixture.debugElement.query(
+      By.css('[data-testid="item-intent-definition-details"]')
+    );
+    expect(details).not.toBeNull();
+    expect(details.nativeElement.textContent.trim()).toEqual(
+      scenarioMock.data.scenarioItems[0].intentDefinition.name
+    );
+    let primary = fixture.debugElement.query(
+      By.css('[data-testid="item-intent-definition-primary"]')
+    );
+    expect(primary).not.toBeNull();
+
+    component.itemId = 5;
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    details = fixture.debugElement.query(By.css('[data-testid="item-intent-definition-details"]'));
+    expect(details).toBeNull();
+
+    primary = fixture.debugElement.query(By.css('[data-testid="item-intent-definition-primary"]'));
+    expect(primary).toBeNull();
+  });
+
+  it('Should show action item definition details if it has definition', () => {
+    component.itemId = 1;
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    let details = fixture.debugElement.query(
+      By.css('[data-testid="item-action-definition-details"]')
+    );
+    expect(details).not.toBeNull();
+    expect(details.nativeElement.textContent.trim()).toEqual(
+      scenarioMock.data.scenarioItems[1].tickActionDefinition.name
+    );
+
+    component.itemId = 4;
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    details = fixture.debugElement.query(By.css('[data-testid="item-action-definition-details"]'));
+    expect(details).toBeNull();
+  });
+
+  it('Should show add intervention buttons', () => {
+    let actionBtn = fixture.debugElement.query(By.css('[data-testid="item-action-answer"]'));
+    expect(actionBtn).not.toBeNull();
+
+    component.itemId = 0;
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    let intentBtn = fixture.debugElement.query(By.css('[data-testid="item-intent-answer"]'));
+    expect(intentBtn).not.toBeNull();
+  });
+
+  it('Should show define definitions buttons', () => {
+    component.mode = SCENARIO_MODE.casting;
+    fixture.detectChanges();
+
+    let actionBtn = fixture.debugElement.query(By.css('[data-testid="item-define-action"]'));
+    expect(actionBtn).not.toBeNull();
+
+    component.itemId = 0;
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    let intentBtn = fixture.debugElement.query(By.css('[data-testid="item-define-intent"]'));
+    expect(intentBtn).not.toBeNull();
+  });
+
+  it('Should show delete button', () => {
+    let deleteBtn = fixture.debugElement.query(By.css('[data-testid="item-delete"]'));
+    expect(deleteBtn).not.toBeNull();
+  });
+
+  it('Should not show delete button', () => {
+    component.mode = SCENARIO_MODE.casting;
+    fixture.detectChanges();
+
+    let deleteBtn = fixture.debugElement.query(By.css('[data-testid="item-delete"]'));
+    expect(deleteBtn).toBeNull();
+  });
+});

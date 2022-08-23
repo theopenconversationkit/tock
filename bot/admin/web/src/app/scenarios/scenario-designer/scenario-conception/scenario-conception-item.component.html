@@ -85,14 +85,19 @@
           rows="4"
           placeholder="Question"
           [(ngModel)]="item.text"
+          data-testid="item-text-textarea"
         ></textarea>
 
         <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()">
-          <div class="ellipsis font-weight-bold">
+          <div
+            class="ellipsis font-weight-bold"
+            data-testid="item-intent-definition-details"
+          >
             <nb-icon
               *ngIf="item.intentDefinition.primary"
               icon="award-outline"
               class="valign-middle"
+              data-testid="item-intent-definition-primary"
             ></nb-icon>
             {{ item.intentDefinition.name }}
           </div>
@@ -125,7 +130,12 @@
         </ng-container>
 
         <ng-container *ngIf="item.from == SCENARIO_ITEM_FROM_BOT && itemHasDefinition()">
-          <div class="ellipsis font-weight-bold">{{ item.tickActionDefinition.name }}</div>
+          <div
+            class="ellipsis font-weight-bold"
+            data-testid="item-action-definition-details"
+          >
+            {{ item.tickActionDefinition.name }}
+          </div>
 
           <div
             *ngIf="item.tickActionDefinition.inputContextNames?.length"
@@ -165,12 +175,13 @@
             *ngIf="
               mode == SCENARIO_MODE.writing &&
               itemCanHaveAnswer() &&
-              item.from == SCENARIO_ITEM_FROM_CLIENT &&
+              item.from === SCENARIO_ITEM_FROM_CLIENT &&
               !isReadonly
             "
             (click)="answering()"
-            nbTooltip="Add a client intervention"
+            nbTooltip="Add a bot intervention"
             style="padding-left: 5px"
+            data-testid="item-intent-answer"
           >
             <nb-icon
               icon="plus-outline"
@@ -178,6 +189,7 @@
             ></nb-icon>
             Bot intervention
           </button>
+
           <button
             nbButton
             size="tiny"
@@ -185,12 +197,13 @@
             *ngIf="
               mode == SCENARIO_MODE.writing &&
               itemCanHaveAnswer() &&
-              item.from == SCENARIO_ITEM_FROM_BOT &&
+              item.from === SCENARIO_ITEM_FROM_BOT &&
               !isReadonly
             "
             (click)="answering()"
-            nbTooltip="Add a bot intervention"
+            nbTooltip="Add a client intervention"
             style="padding-left: 5px"
+            data-testid="item-action-answer"
           >
             <nb-icon
               icon="plus-outline"
@@ -211,6 +224,7 @@
             "
             (click)="manageIntent()"
             nbTooltip="Intent infos and edition"
+            data-testid="item-define-intent"
           >
             Define intent
           </button>
@@ -227,6 +241,7 @@
             "
             (click)="manageAction()"
             nbTooltip="Action infos and edition"
+            data-testid="item-define-action"
           >
             Define action
           </button>
@@ -241,6 +256,7 @@
           >
             Test
           </button>
+
           <button
             nbButton
             size="tiny"
@@ -250,6 +266,7 @@
             "
             (click)="delete()"
             nbTooltip="Remove this item"
+            data-testid="item-delete"
           >
             Delete
           </button>
@@ -290,7 +307,6 @@
           [isReadonly]="isReadonly"
           [itemId]="childItem.id"
           [parentId]="item.id"
-          [scenarioItems]="scenarioItems"
           [contexts]="contexts"
           [selectedItem]="selectedItem"
           [mode]="mode"
