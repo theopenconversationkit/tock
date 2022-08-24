@@ -113,7 +113,7 @@ function checkStoryIntegrity(scenario: Scenario): IntegrityCheckResult {
   for (let index = 0; index < actionsDefinitions.length; index++) {
     const actionDef = actionsDefinitions[index];
 
-    // Pour chaque contexte déclaré en entrée d'une action, il doit exister au moins une action produisant ce même contexte en sortie d'une autre action
+    // For each context declared as input to an action, there must be at least one action producing this same context as output from another action
     for (let index = 0; index < actionDef.inputContextNames!.length; index++) {
       const inputContext = actionDef.inputContextNames![index];
       let outputContext = actionsDefinitions.find((actDef) => {
@@ -127,7 +127,7 @@ function checkStoryIntegrity(scenario: Scenario): IntegrityCheckResult {
       }
     }
 
-    // Pour chaque contexte déclaré en sortie d'une action, il doit exister au moins une action nécessitant ce même contexte en entrée d'une autre action
+    // For each context declared at the output of an action, there must be at least one action requiring this same context at the input of another action
     for (let index = 0; index < actionDef.outputContextNames!.length; index++) {
       const outputContext = actionDef.outputContextNames![index];
       let inputContext = actionsDefinitions.find((actDef) => {
@@ -149,7 +149,7 @@ function checkStateMachineIntegrity(scenario: Scenario): IntegrityCheckResult {
   const stateMachine = scenario.data!.stateMachine;
 
   const intentDefinitions = getScenarioIntentDefinitions(scenario);
-  // Pour chaque intention (primaire et secondaire) déclarée dans la TickStory on doit trouver une transition portant le même nom dans la state machine
+  // For each intention (primary and secondary) declared in the TickStory we must find a transition with the same name in the state machine
   for (let index = 0; index < intentDefinitions.length; index++) {
     const intentDef = intentDefinitions[index];
     const transition = getSmTransitionByName(intentDef.name, scenario.data!.stateMachine!);
@@ -162,7 +162,7 @@ function checkStateMachineIntegrity(scenario: Scenario): IntegrityCheckResult {
   }
 
   const transitionsNames = getAllSmTransitionNames(scenario.data!.stateMachine!);
-  // Pour chaque transition dans la state machine on doit trouver une intention du même nom dans la TickStory
+  // For each transition in the state machine we must find an intention of the same name in the TickStory
   for (let index = 0; index < transitionsNames.length; index++) {
     const transName = transitionsNames[index];
     if (!intentDefinitions.find((intDef) => intDef.name === transName)) {
@@ -174,7 +174,7 @@ function checkStateMachineIntegrity(scenario: Scenario): IntegrityCheckResult {
   }
 
   const actionsDefinitions = getScenarioActionDefinitions(scenario);
-  // Pour chaque action déclarée dans la TickStory on doit trouver un état portant le même nom dans la state machine
+  // For each action declared in the TickStory we must find a state with the same name in the state machine
   for (let index = 0; index < actionsDefinitions.length; index++) {
     const actionDef = actionsDefinitions[index];
     const state = getSmStateById(actionDef.name, scenario.data!.stateMachine!);
@@ -187,7 +187,7 @@ function checkStateMachineIntegrity(scenario: Scenario): IntegrityCheckResult {
   }
 
   const nonGroupStatesNames = getAllSmNonGroupStatesNames(scenario.data!.stateMachine!);
-  // Pour chaque état de la state machine qui n'est pas un état de regroupement on doit trouver une action du même nom dans la TickStory
+  // For each state of the state machine that is not a grouping state, an action with the same name must be found in the TickStory
   for (let index = 0; index < nonGroupStatesNames.length; index++) {
     const stateName = nonGroupStatesNames[index];
     if (!actionsDefinitions.find((actDef) => actDef.name === stateName)) {

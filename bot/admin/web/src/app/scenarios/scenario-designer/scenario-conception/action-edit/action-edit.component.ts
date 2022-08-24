@@ -12,7 +12,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Scenario, ScenarioItem, TickContext } from '../../../models';
 import { getContrastYIQ, getScenarioActions, normalizedSnakeCase } from '../../../commons/utils';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
 const ENTITY_NAME_MINLENGTH = 5;
@@ -23,6 +23,8 @@ const ENTITY_NAME_MINLENGTH = 5;
   styleUrls: ['./action-edit.component.scss']
 })
 export class ActionEditComponent implements OnInit {
+  destroy = new Subject();
+
   @Input() item: ScenarioItem;
   @Input() contexts: TickContext[];
   @Input() scenario: Scenario;
@@ -244,5 +246,10 @@ export class ActionEditComponent implements OnInit {
 
   cancel(): void {
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }
