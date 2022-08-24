@@ -74,7 +74,11 @@ const scenarioMock = {
         text: 'Third intent'
       }
     ],
-    contexts: [{ name: 'test', type: 'string' }],
+    contexts: [
+      { name: 'test', type: 'string' },
+      { name: 'context2', type: 'string' },
+      { name: 'context3', type: 'string' }
+    ],
     stateMachine: {
       id: 'root',
       type: 'parallel',
@@ -99,7 +103,7 @@ function getScenarioMock() {
   return JSON.parse(JSON.stringify(scenarioMock)) as Scenario;
 }
 
-describe('ActionEditComponent', () => {
+fdescribe('ActionEditComponent', () => {
   let component: ActionEditComponent;
   let fixture: ComponentFixture<ActionEditComponent>;
   beforeEach(async () => {
@@ -159,5 +163,34 @@ describe('ActionEditComponent', () => {
     nameinput.nativeElement.dispatchEvent(new Event('blur'));
     fixture.detectChanges();
     expect(component.name.value).toEqual('ACTION2');
+  });
+
+  it('Should list contexts for autocomplete', () => {
+    component.updateContextsAutocompleteValues();
+    component.contextsAutocompleteValues.subscribe((result) =>
+      expect(result).toEqual(['context2', 'context3'])
+    );
+  });
+
+  it('Should list contexts for autocomplete matching typed string', () => {
+    component.updateContextsAutocompleteValues({
+      target: { value: '3' }
+    } as unknown as KeyboardEvent);
+    component.contextsAutocompleteValues.subscribe((result) =>
+      expect(result).toEqual(['context3'])
+    );
+  });
+
+  it('Should add context', () => {
+    component.inputContextsInput.nativeElement.value = 'test add context';
+    component.addContext('input');
+    expect(component.inputContextNames.value).toEqual(['test', 'TEST_ADD_CONTEXT']);
+  });
+
+  it('Should not add context if string is too short', () => {
+    component.inputContextsInput.nativeElement.value = 'abc';
+    component.addContext('input');
+    console.log(component.inputContextNames.value);
+    expect(component.inputContextNames.value).toEqual(['test']);
   });
 });

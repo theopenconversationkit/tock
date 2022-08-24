@@ -72,7 +72,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.scenarioService
       .getScenario(this.scenarioId)
-      .pipe(takeUntil(this.destroy))
+      .pipe(take(1))
       .subscribe((scenario) => {
         if (scenario === null) {
           return this.informNoScenarioFound();

@@ -187,15 +187,15 @@ export class ActionEditComponent implements OnInit {
     }
 
     const currentContextNamesArray = this[`${wich}ContextNames`];
-    const otherWich = wich == 'input' ? 'output' : 'input';
-    const otherContextNamesArray = this[`${otherWich}ContextNames`];
-
     if (currentContextNamesArray.value.find((ctx) => ctx == ctxName)) {
       this[`${wich}ContextsAddError`] = {
         errors: { custom: `This ${wich} context is already associated with this action` }
       };
       return;
     }
+
+    const otherWich = wich == 'input' ? 'output' : 'input';
+    const otherContextNamesArray = this[`${otherWich}ContextNames`];
     if (otherContextNamesArray.value.find((ctx) => ctx == ctxName)) {
       this[`${wich}ContextsAddError`] = {
         errors: {
