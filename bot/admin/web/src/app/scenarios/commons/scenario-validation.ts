@@ -39,11 +39,7 @@ export const SCENARIO_STEPS_ERRORS = {
     `For each state in the state machine there must be a defined action with the same name. No action found for the state "${txt}".`
 };
 
-export function isStepValid(
-  scenario: Scenario,
-  step: SCENARIO_MODE,
-  isSwitchAction: boolean = false
-): IntegrityCheckResult {
+export function isStepValid(scenario: Scenario, step: SCENARIO_MODE): IntegrityCheckResult {
   const scenarioItems = scenario.data!.scenarioItems;
 
   if (step === SCENARIO_MODE.casting) {
@@ -66,22 +62,12 @@ export function isStepValid(
     for (let index = 0; index < scenarioItems.length; index++) {
       const item = scenarioItems[index];
       if (item.from === SCENARIO_ITEM_FROM_CLIENT && !item.intentDefinition) {
-        if (isSwitchAction) {
-          console.log(`BUG LOG POUR RODOLPHE : no intentDefinition for the item "${item.text}"`);
-          console.log(item);
-        }
         return {
           valid: false,
           reason: SCENARIO_STEPS_ERRORS.client_intervention_should_have_intent(item.text)
         };
       }
       if (item.from === SCENARIO_ITEM_FROM_BOT && !item.tickActionDefinition) {
-        if (isSwitchAction) {
-          console.log(
-            `BUG LOG POUR RODOLPHE : no tickActionDefinition for the item "${item.text}"`
-          );
-          console.log(item);
-        }
         return {
           valid: false,
           reason: SCENARIO_STEPS_ERRORS.bot_intervention_should_have_action(item.text)
