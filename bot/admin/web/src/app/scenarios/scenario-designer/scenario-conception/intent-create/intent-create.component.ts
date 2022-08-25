@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent, nameFromQualifiedName } from '../../../../model/nlp';
 import { getScenarioIntentDefinitions, normalizedCamelCase } from '../../../commons/utils';
@@ -13,6 +13,8 @@ import { Scenario, ScenarioItem } from '../../../models';
   styleUrls: ['./intent-create.component.scss']
 })
 export class IntentCreateComponent implements OnInit {
+  destroy = new Subject();
+
   @Input() item: ScenarioItem;
   @Input() scenario: Scenario;
   @Output() createIntentEvent = new EventEmitter();
@@ -120,5 +122,10 @@ export class IntentCreateComponent implements OnInit {
   save() {
     this.isSubmitted = true;
     if (this.canSave) this.createIntentEvent.emit(this.form.value);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

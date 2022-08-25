@@ -145,13 +145,6 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     return isInput && isOutput;
   }
 
-  stringifiedCleanScenario(): string {
-    return JSON.stringify(this.scenario, function (key, value) {
-      if (key.indexOf('_') == 0) return undefined;
-      return value;
-    });
-  }
-
   getNextItemId(): number {
     return Math.max(...this.scenario.data.scenarioItems.map((i) => i.id)) + 1;
   }
@@ -227,11 +220,9 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   }
 
   selectedItem: ScenarioItem;
-  selectedElement: HTMLElement;
 
-  selectItem(item?: ScenarioItem, element?: HTMLElement): void {
+  selectItem(item?: ScenarioItem): void {
     this.selectedItem = item ? item : undefined;
-    this.selectedElement = element;
   }
 
   elementPosition: any;
@@ -286,15 +277,15 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  chatDisplayed: boolean = false;
-  chatControlsDisplay: boolean = false;
-  chatControlsFrom;
-  chatPropositions;
-
   stopPropagation(event: MouseEvent, preventDefault = true): void {
     if (preventDefault) event.preventDefault();
     event.stopPropagation();
   }
+
+  chatDisplayed: boolean = false;
+  chatControlsDisplay: boolean = false;
+  chatControlsFrom;
+  chatPropositions;
 
   closeChat(): void {
     this.chatDisplayed = false;
@@ -356,33 +347,6 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  findItemChild(item: ScenarioItem): ScenarioItem {
-    return this.scenario.data.scenarioItems.find((oitem) => oitem.parentIds?.includes(item.id));
-  }
-
-  findItemById(id: number): ScenarioItem {
-    return this.scenario.data.scenarioItems.find((oitem) => oitem.id == id);
-  }
-
-  getChildren(item: ScenarioItem): ScenarioItem[] {
-    return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.includes(item.id));
-  }
-
-  getBrotherhood(item: ScenarioItem): ScenarioItem[] {
-    return this.scenario.data.scenarioItems.filter((oitem) =>
-      oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
-    );
-  }
-
-  getItemBrothers(item: ScenarioItem): ScenarioItem[] {
-    return this.getBrotherhood(item).filter((oitem) => oitem.id !== item.id);
-  }
-
-  isItemOnlyChild(item: ScenarioItem): boolean {
-    if (!this.getItemBrothers(item).length) return true;
-    return false;
-  }
-
   userIdentities = {
     client: { name: 'Pierre Martin', avatar: 'assets/images/scenario-client.svg' },
     bot: { name: 'Bot', avatar: 'assets/images/scenario-bot.svg' },
@@ -410,6 +374,33 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   }
 
   messages: any[] = [];
+
+  findItemChild(item: ScenarioItem): ScenarioItem {
+    return this.scenario.data.scenarioItems.find((oitem) => oitem.parentIds?.includes(item.id));
+  }
+
+  findItemById(id: number): ScenarioItem {
+    return this.scenario.data.scenarioItems.find((oitem) => oitem.id == id);
+  }
+
+  getChildren(item: ScenarioItem): ScenarioItem[] {
+    return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.includes(item.id));
+  }
+
+  getBrotherhood(item: ScenarioItem): ScenarioItem[] {
+    return this.scenario.data.scenarioItems.filter((oitem) =>
+      oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
+    );
+  }
+
+  getItemBrothers(item: ScenarioItem): ScenarioItem[] {
+    return this.getBrotherhood(item).filter((oitem) => oitem.id !== item.id);
+  }
+
+  isItemOnlyChild(item: ScenarioItem): boolean {
+    if (!this.getItemBrothers(item).length) return true;
+    return false;
+  }
 
   ngOnDestroy(): void {
     this.destroy.next();

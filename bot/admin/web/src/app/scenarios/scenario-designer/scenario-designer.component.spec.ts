@@ -18,7 +18,7 @@ const testScenario: Scenario = {
   description: 'Description 5',
   category: 'scenario',
   tags: null,
-  creationDate: '12/01/1980' as unknown as Date,
+  createDate: '12/01/1980',
   data: {
     mode: SCENARIO_MODE.writing,
     scenarioItems: [
@@ -78,6 +78,13 @@ describe('ScenarioDesignerComponent', () => {
 
   it('should create', () => {
     expect(component).toBeDefined();
+  });
+
+  it('Should destroy', () => {
+    expect(component.ngOnDestroy).toBeDefined();
+    expect(component.destroy.isStopped).toBeFalsy();
+    component.ngOnDestroy();
+    expect(component.destroy.isStopped).toBeTruthy();
   });
 
   it("should init scenario.data when it doesn't exists", () => {

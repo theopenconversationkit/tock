@@ -89,6 +89,7 @@ describe('ScenarioFiltersComponent', () => {
 
   it('should clear form when the clear button is clicked', fakeAsync(() => {
     fixture.whenStable().then(() => {
+      tick(100);
       const clearFiltersSpy = spyOn(component, 'clearFilters');
       component.form.patchValue({ search: 'test' });
       fixture.detectChanges();

@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Subject } from 'rxjs';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
+import { isStepValid } from '../../commons/scenario-validation';
 import { Scenario, SCENARIO_MODE } from '../../models';
-import { ScenarioDesignerService } from '../scenario-designer.service';
 
 @Component({
   selector: 'scenario-mode-stepper',
@@ -10,19 +11,18 @@ import { ScenarioDesignerService } from '../scenario-designer.service';
   styleUrls: ['./mode-stepper.component.scss']
 })
 export class ModeStepperComponent {
+  destroy = new Subject();
+
   readonly SCENARIO_MODE = SCENARIO_MODE;
   @Input() mode: SCENARIO_MODE;
   @Input() scenario!: Scenario;
   @Output() modeSwitch = new EventEmitter();
 
-  constructor(
-    private scenarioDesignerService: ScenarioDesignerService,
-    private dialogService: DialogService
-  ) {}
+  constructor(private dialogService: DialogService) {}
 
   switchMode(mode: SCENARIO_MODE) {
     if (!this.isStepSequenceValid(mode)) {
-      let reason = this.getStepSequenceValidity(mode, true);
+      let reason = this.getStepSequenceValidity(mode);
 
       this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
@@ -42,46 +42,22 @@ export class ModeStepperComponent {
     return keys.indexOf(mode) < keys.indexOf(this.mode);
   }
 
-  getStepSequenceValidity(mode: SCENARIO_MODE, isSwitchAction: boolean = false): string {
+  getStepSequenceValidity(mode: SCENARIO_MODE): string {
     if (mode === SCENARIO_MODE.casting) {
-      return this.scenarioDesignerService.isStepValid(
-        this.scenario,
-        SCENARIO_MODE.casting,
-        isSwitchAction
-      ).reason;
+      return isStepValid(this.scenario, SCENARIO_MODE.casting).reason;
     }
     if (mode === SCENARIO_MODE.production) {
-      let castingValidity = this.scenarioDesignerService.isStepValid(
-        this.scenario,
-        SCENARIO_MODE.casting,
-        isSwitchAction
-      );
+      let castingValidity = isStepValid(this.scenario, SCENARIO_MODE.casting);
       if (!castingValidity.valid) return castingValidity.reason;
-      let productionValidity = this.scenarioDesignerService.isStepValid(
-        this.scenario,
-        SCENARIO_MODE.production,
-        isSwitchAction
-      );
+      let productionValidity = isStepValid(this.scenario, SCENARIO_MODE.production);
       if (!productionValidity.valid) return productionValidity.reason;
     }
     if (mode === SCENARIO_MODE.publishing) {
-      let castingValidity = this.scenarioDesignerService.isStepValid(
-        this.scenario,
-        SCENARIO_MODE.casting,
-        isSwitchAction
-      );
+      let castingValidity = isStepValid(this.scenario, SCENARIO_MODE.casting);
       if (!castingValidity.valid) return castingValidity.reason;
-      let productionValidity = this.scenarioDesignerService.isStepValid(
-        this.scenario,
-        SCENARIO_MODE.production,
-        isSwitchAction
-      );
+      let productionValidity = isStepValid(this.scenario, SCENARIO_MODE.production);
       if (!productionValidity.valid) return productionValidity.reason;
-      let publishingValidity = this.scenarioDesignerService.isStepValid(
-        this.scenario,
-        SCENARIO_MODE.publishing,
-        isSwitchAction
-      );
+      let publishingValidity = isStepValid(this.scenario, SCENARIO_MODE.publishing);
       if (!publishingValidity.valid) return publishingValidity.reason;
     }
   }
@@ -90,20 +66,25 @@ export class ModeStepperComponent {
     if (mode === SCENARIO_MODE.writing) return true;
 
     if (mode === SCENARIO_MODE.casting) {
-      return this.scenarioDesignerService.isStepValid(this.scenario, SCENARIO_MODE.casting).valid;
+      return isStepValid(this.scenario, SCENARIO_MODE.casting).valid;
     }
     if (mode === SCENARIO_MODE.production) {
       return (
-        this.scenarioDesignerService.isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
-        this.scenarioDesignerService.isStepValid(this.scenario, SCENARIO_MODE.production).valid
+        isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
+        isStepValid(this.scenario, SCENARIO_MODE.production).valid
       );
     }
     if (mode === SCENARIO_MODE.publishing) {
       return (
-        this.scenarioDesignerService.isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
-        this.scenarioDesignerService.isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
-        this.scenarioDesignerService.isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
+        isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
+        isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
+        isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
       );
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

@@ -4,6 +4,7 @@
     selected: mode === SCENARIO_MODE.writing
   }"
   (click)="switchMode(SCENARIO_MODE.writing)"
+  data-testid="step-ctrl-writing"
 >
   <div class="label-index">
     <nb-icon icon="edit-outline"></nb-icon>
@@ -28,6 +29,7 @@
     selected: mode === SCENARIO_MODE.casting
   }"
   (click)="switchMode(SCENARIO_MODE.casting)"
+  data-testid="step-ctrl-casting"
 >
   <div class="label-index">
     <nb-icon icon="people-outline"></nb-icon>
@@ -52,6 +54,7 @@
     selected: mode === SCENARIO_MODE.production
   }"
   (click)="switchMode(SCENARIO_MODE.production)"
+  data-testid="step-ctrl-production"
 >
   <div class="label-index">
     <nb-icon icon="video-outline"></nb-icon>
@@ -76,6 +79,7 @@
     selected: mode === SCENARIO_MODE.publishing
   }"
   (click)="switchMode(SCENARIO_MODE.publishing)"
+  data-testid="step-ctrl-publishing"
 >
   <div class="label-index">
     <nb-icon icon="film-outline"></nb-icon>

@@ -11,13 +11,12 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { NbDialogRef, NbMenuService } from '@nebular/theme';
+import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { ScenarioItem, TempSentence, TickContext } from '../../../models';
 import { Token } from '../../../../sentence-analysis/highlight/highlight.component';
 import { EntityDefinition, Intent, Sentence } from '../../../../model/nlp';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { DialogService } from '../../../../core-nlp/dialog.service';
 import { Subject } from 'rxjs';
 import { SentenceEditComponent } from './sentence/sentence-edit.component';
 

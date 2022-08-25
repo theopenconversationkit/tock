@@ -12,7 +12,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Scenario, ScenarioItem, TickContext } from '../../../models';
 import { getContrastYIQ, getScenarioActions, normalizedSnakeCase } from '../../../commons/utils';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
 const ENTITY_NAME_MINLENGTH = 5;
@@ -23,6 +23,8 @@ const ENTITY_NAME_MINLENGTH = 5;
   styleUrls: ['./action-edit.component.scss']
 })
 export class ActionEditComponent implements OnInit {
+  destroy = new Subject();
+
   @Input() item: ScenarioItem;
   @Input() contexts: TickContext[];
   @Input() scenario: Scenario;
@@ -185,15 +187,15 @@ export class ActionEditComponent implements OnInit {
     }
 
     const currentContextNamesArray = this[`${wich}ContextNames`];
-    const otherWich = wich == 'input' ? 'output' : 'input';
-    const otherContextNamesArray = this[`${otherWich}ContextNames`];
-
     if (currentContextNamesArray.value.find((ctx) => ctx == ctxName)) {
       this[`${wich}ContextsAddError`] = {
         errors: { custom: `This ${wich} context is already associated with this action` }
       };
       return;
     }
+
+    const otherWich = wich == 'input' ? 'output' : 'input';
+    const otherContextNamesArray = this[`${otherWich}ContextNames`];
     if (otherContextNamesArray.value.find((ctx) => ctx == ctxName)) {
       this[`${wich}ContextsAddError`] = {
         errors: {
@@ -218,20 +220,20 @@ export class ActionEditComponent implements OnInit {
     this.deleteDefinition.emit();
   }
 
-  getContextByName(outputContext): TickContext[] {
+  getContextByName(context: string): TickContext[] {
     return [
       this.contexts.find((ctx) => {
-        return ctx.name == outputContext;
+        return ctx.name == context;
       })
     ];
   }
 
-  getContextEntityColor(context): string | undefined {
+  getContextEntityColor(context: TickContext): string | undefined {
     if (context.entityType)
       return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
-  getContextEntityContrast(context): string | undefined {
+  getContextEntityContrast(context: TickContext): string | undefined {
     if (context.entityType)
       return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
@@ -244,5 +246,10 @@ export class ActionEditComponent implements OnInit {
 
   cancel(): void {
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

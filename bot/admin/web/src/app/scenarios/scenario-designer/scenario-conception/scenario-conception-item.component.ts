@@ -10,6 +10,7 @@ import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/u
 import {
   Scenario,
   ScenarioItem,
+  ScenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
@@ -34,7 +35,6 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() itemId: number;
   @Input() parentId: number;
-  @Input() scenarioItems: ScenarioItem[];
   @Input() contexts: TickContext[];
   @Input() selectedItem: ScenarioItem;
   @Input() mode: string;
@@ -61,7 +61,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.item = this.scenarioItems.find((item) => item.id === this.itemId);
+    this.item = this.scenario.data.scenarioItems.find((item) => item.id === this.itemId);
     this.draggable = {
       data: this.item.id
     };
@@ -80,15 +80,6 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   collectIntentUtterances() {
-    // const existingIntent: Intent = this.state.findIntentById(this.item.intentDefinition.intentId);
-    // if (!existingIntent) {
-    //   console.log(
-    //     'THE ASSOCIATED INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
-    //       this.item.intentDefinition.intentId
-    //   );
-    //   delete this.item.intentDefinition.intentId;
-    //   this.utterancesLoading = false;
-    // } else {
     const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
       intentId: this.item.intentDefinition.intentId
     });
@@ -97,10 +88,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       this.item.intentDefinition._sentences = sentencesResearch.rows;
       this.utterancesLoading = false;
       nlpSubscription.unsubscribe();
-
-      // if (this.item.id === 0) this.manageIntent();
     });
-    // }
   }
 
   manageAction() {
@@ -135,8 +123,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         }
 
         this.item.tickActionDefinition = actionDef;
-
-        saveModifications.unsubscribe();
+        // saveModifications.unsubscribe();
         modal.close();
       });
 
@@ -145,7 +132,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.scenarioConceptionService.removeItemDefinition(this.item);
 
-        deleteDefinition.unsubscribe();
+        // deleteDefinition.unsubscribe();
         modal.close();
       });
   }
@@ -177,16 +164,16 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     });
     const createNewIntentEvent = modal.componentRef.instance.createNewIntentEvent
       .pipe(takeUntil(this.destroy))
-      .subscribe((res) => {
+      .subscribe(() => {
         this.createIntent();
-        createNewIntentEvent.unsubscribe();
+        // createNewIntentEvent.unsubscribe();
         modal.close();
       });
     const useIntentEvent = modal.componentRef.instance.useIntentEvent
       .pipe(takeUntil(this.destroy))
       .subscribe((intent) => {
         this.setItemIntentDefinition(intent);
-        useIntentEvent.unsubscribe();
+        // useIntentEvent.unsubscribe();
         modal.close();
       });
   }
@@ -217,7 +204,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         if (this.item.main) res.primary = true;
         this.item.intentDefinition = res;
         this.editIntent();
-        createIntentEvent.unsubscribe();
+        // createIntentEvent.unsubscribe();
         modal.close();
       });
   }
@@ -232,7 +219,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const saveModificationsSubscription = modal.componentRef.instance.saveModifications
       .pipe(takeUntil(this.destroy))
       .subscribe((intentDef) => {
-        // If an intent is not primary anymore, it should not be a transition of ther global state
+        // If an intent is not primary anymore, it should not be a transition of the global state
         if (
           this.scenario.data.stateMachine &&
           this.item.intentDefinition.primary &&
@@ -257,7 +244,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
           if (ctxIndex >= 0) this.contexts.splice(ctxIndex, 1, ctxEntity);
           else this.contexts.push(ctxEntity);
         });
-        saveModificationsSubscription.unsubscribe();
+        // saveModificationsSubscription.unsubscribe();
         modal.close();
       });
   }
@@ -292,11 +279,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   getParentItem(): ScenarioItem {
-    return this.scenarioItems.find((item) => item.id == this.parentId);
+    return this.scenario.data.scenarioItems.find((item) => item.id == this.parentId);
   }
 
   getChildItems(): ScenarioItem[] {
-    return this.scenarioItems.filter((item) => item.parentIds?.includes(this.item.id));
+    return this.scenario.data.scenarioItems.filter((item) =>
+      item.parentIds?.includes(this.item.id)
+    );
   }
 
   itemHasNoChildren(): boolean {
@@ -368,7 +357,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     return classes;
   }
 
-  switchItemType(which): void {
+  switchItemType(which: ScenarioItemFrom): void {
     if (which === this.item.from) return;
 
     let alertMessage;
@@ -421,11 +410,14 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     else delete this.item.final;
   }
 
+  itemCanHaveAnswer(): boolean {
+    return !this.item.final;
+  }
+
   getItemBrothers(): ScenarioItem[] {
-    return this.scenarioItems.filter((item) => {
+    return this.scenario.data.scenarioItems.filter((item) => {
       return (
-        item.id != this.item.id &&
-        item.parentIds?.some((id) => this.item.parentIds && this.item.parentIds.includes(id))
+        item.id != this.item.id && item.parentIds?.some((id) => this.item.parentIds?.includes(id))
       );
     });
   }
@@ -446,10 +438,6 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       if (this.item.id > max) return false;
     }
     return true;
-  }
-
-  itemCanHaveAnswer(): boolean {
-    return !this.item.final;
   }
 
   draggable;
