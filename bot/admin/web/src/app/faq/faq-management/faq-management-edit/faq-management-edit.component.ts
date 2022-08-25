@@ -40,8 +40,6 @@ export class FaqManagementEditComponent implements OnChanges {
   @Output()
   onSave = new EventEmitter();
 
-  @ViewChild('nameInput') nameInput: ElementRef;
-  @ViewChild('answerInput') answerInput: ElementRef;
   @ViewChild('tagInput') tagInput: ElementRef;
   @ViewChild('addUtteranceInput') addUtteranceInput: ElementRef;
   @ViewChild('utterancesListWrapper') utterancesListWrapper: ElementRef;
@@ -49,9 +47,7 @@ export class FaqManagementEditComponent implements OnChanges {
   constructor(private dialogService: DialogService, private nlp: NlpService, private readonly state: StateService) {}
 
   faqTabs: typeof FaqTabs = FaqTabs;
-
   isSubmitted: boolean = false;
-
   currentTab = FaqTabs.INFO;
 
   controlsMaxLength = {
@@ -61,21 +57,6 @@ export class FaqManagementEditComponent implements OnChanges {
 
   setCurrentTab(tab: NbTabComponent): void {
     this.currentTab = tab.tabTitle as FaqTabs;
-    if (tab.tabTitle == FaqTabs.INFO) {
-      setTimeout(() => {
-        this.nameInput?.nativeElement.focus();
-      });
-    }
-    if (tab.tabTitle == FaqTabs.QUESTION) {
-      setTimeout(() => {
-        this.addUtteranceInput?.nativeElement.focus();
-      });
-    }
-    if (tab.tabTitle == FaqTabs.ANSWER) {
-      setTimeout(() => {
-        this.answerInput?.nativeElement.focus();
-      });
-    }
   }
 
   form = new FormGroup({
