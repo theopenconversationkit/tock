@@ -314,8 +314,8 @@ export class FaqManagementEditComponent implements OnChanges {
     }
   }
 
-  getFormatedIntentName(): string {
-    return this.title.value
+  getFormatedIntentName(value: string): string {
+    return value
       .replace(/[^A-Za-z_-]*/g, '')
       .toLowerCase()
       .trim();
@@ -334,10 +334,9 @@ export class FaqManagementEditComponent implements OnChanges {
       };
 
       if (!this.faq.id) {
-        faqData.intentName = this.getFormatedIntentName();
+        faqData.intentName = this.getFormatedIntentName(this.title.value);
 
         let existsInApp = StateService.intentExistsInApp(this.state.currentApplication, faqData.intentName);
-
         if (existsInApp) {
           this.intentNameExistInApp = true;
           return;
@@ -350,7 +349,7 @@ export class FaqManagementEditComponent implements OnChanges {
           const createNewAction = 'Create a new intent';
           const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
             context: {
-              title: `This intent is already used in an other application`,
+              title: `This intent is already used in another application`,
               subtitle: 'Do you want to share the intent between the two applications or create a new one ?',
               actions: [{ actionName: shareAction }, { actionName: createNewAction }]
             }

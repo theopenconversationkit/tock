@@ -130,89 +130,93 @@ describe('FaqManagementSettingsComponent', () => {
     expect(component.satisfactionStoryId.errors).toBeFalsy();
   });
 
-  it('should call the close method when the close button in header is clicked', () => {
-    spyOn(component, 'close');
-    const closeElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="close-button"]')).nativeElement;
+  describe('#close', () => {
+    it('should call the method when the close button in header is clicked', () => {
+      spyOn(component, 'close');
+      const closeElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="close-button"]')).nativeElement;
 
-    closeElement.click();
+      closeElement.click();
 
-    expect(component.close).toHaveBeenCalledTimes(1);
+      expect(component.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call the method when the cancel button in footer is clicked', () => {
+      spyOn(component, 'close');
+      const cancelElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="cancel-button"]')).nativeElement;
+
+      cancelElement.click();
+
+      expect(component.close).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call the onClose method without displaying a confirmation request message when the form is not dirty', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component.onClose, 'emit');
+
+      component.close();
+
+      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('should call the onClose method after displaying a confirmation request message and confirm when the form is dirty', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component.onClose, 'emit');
+
+      // To display the confirmation message, the form must have been modified
+      component.form.markAsDirty();
+      component.close();
+
+      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('should not call the onClose method after displaying a confirmation request message and cancel when the form is dirty', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component.onClose, 'emit');
+
+      // To display the confirmation message, the form must have been modified
+      component.form.markAsDirty();
+      component.close();
+
+      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component.onClose.emit).not.toHaveBeenCalled();
+    });
   });
 
-  it('should call the close method when the cancel button in footer is clicked', () => {
-    spyOn(component, 'close');
-    const cancelElement: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="cancel-button"]')).nativeElement;
+  describe('#save', () => {
+    it('should call the method to save settings after displaying a confirmation request message and confirm if the satisfaction enabled field is false', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component, 'saveSettings');
 
-    cancelElement.click();
+      component.satisfactionEnabled.setValue(false);
+      component.save();
 
-    expect(component.close).toHaveBeenCalledTimes(1);
-  });
+      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value);
+    });
 
-  it('should call the onClose method without displaying a confirmation request message when the form is not dirty', () => {
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
-    spyOn(component.onClose, 'emit');
+    it('should not call the method to save settings after displaying a confirmation request message and cancel if the satisfaction enabled field is false', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component, 'saveSettings');
 
-    component.close();
+      component.satisfactionEnabled.setValue(false);
+      component.save();
 
-    expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
-    expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
-  });
+      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component.saveSettings).not.toHaveBeenCalled();
+    });
 
-  it('should call the onClose method after displaying a confirmation request message and confirm when the form is dirty', () => {
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
-    spyOn(component.onClose, 'emit');
+    it('should call the method to save settings if the satisfaction enabled field is true', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component, 'saveSettings');
 
-    // To display the confirmation message, the form must have been modified
-    component.form.markAsDirty();
-    component.close();
+      component.satisfactionEnabled.setValue(true);
+      component.satisfactionStoryId.setValue('1');
+      component.save();
 
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
-    expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
-  });
-
-  it('should not call the onClose method after displaying a confirmation request message and cancel when the form is dirty', () => {
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
-    spyOn(component.onClose, 'emit');
-
-    // To display the confirmation message, the form must have been modified
-    component.form.markAsDirty();
-    component.close();
-
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
-    expect(component.onClose.emit).not.toHaveBeenCalled();
-  });
-
-  it('should call the save method after displaying a confirmation request message and confirm if the satisfaction enabled field is false', () => {
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
-    spyOn(component, 'saveSettings');
-
-    component.satisfactionEnabled.setValue(false);
-    component.save();
-
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
-    expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value);
-  });
-
-  it('should not call the save method after displaying a confirmation request message and cancel if the satisfaction enabled field is false', () => {
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
-    spyOn(component, 'saveSettings');
-
-    component.satisfactionEnabled.setValue(false);
-    component.save();
-
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
-    expect(component.saveSettings).not.toHaveBeenCalled();
-  });
-
-  it('should call the save method if the satisfaction enabled field is true', () => {
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
-    spyOn(component, 'saveSettings');
-
-    component.satisfactionEnabled.setValue(true);
-    component.satisfactionStoryId.setValue('1');
-    component.save();
-
-    expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
-    expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value);
+      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value);
+    });
   });
 });

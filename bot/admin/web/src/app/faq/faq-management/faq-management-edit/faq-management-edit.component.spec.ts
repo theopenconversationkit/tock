@@ -89,7 +89,7 @@ const mockFaq: FaqDefinitionExtended = {
   applicationId: '1',
   enabled: true,
   language: 'fr',
-  title: 'title',
+  title: 'title faq',
   description: 'description',
   tags: ['tag 1'],
   utterances: ['question 1', 'question 2'],
@@ -120,11 +120,17 @@ class MockState {
     };
   }
 
-  findIntentById() {
+  findIntentById(): Intent {
     return {
       name: 'intentAssociate'
     } as Intent;
   }
+
+  intentExists(val: string): boolean {
+    return val === 'titlefaq';
+  }
+
+  intentExistsInOtherApplication() {}
 }
 
 describe('FaqManagementEditComponent', () => {
@@ -262,9 +268,8 @@ describe('FaqManagementEditComponent', () => {
     it('should initialize a form with the correct value', () => {
       component.ngOnChanges({ faq: new SimpleChange(null, mockFaq, true) });
       fixture.detectChanges();
-      expect(component.form.valid).toBeFalse();
       expect(component.form.value).toEqual({
-        title: 'title',
+        title: 'title faq',
         description: 'description',
         tags: ['tag 1'],
         utterances: ['question 1', 'question 2'],
@@ -478,6 +483,118 @@ describe('FaqManagementEditComponent', () => {
 
       expect(component['dialogService'].openDialog).toHaveBeenCalled();
       expect(component.onClose.emit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('#getFormatedIntentName', () => {
+    [
+      { value: 'test', expected: 'test' },
+      { value: 'testFaq', expected: 'testfaq' },
+      { value: 'test Faq', expected: 'testfaq' },
+      { value: '   test    Faq  ', expected: 'testfaq' },
+      { value: 'test-Faq', expected: 'test-faq' },
+      { value: 'test_Faq', expected: 'test_faq' },
+      { value: 'ABCD', expected: 'abcd' },
+      { value: 'test123456789&é"\'(èçà)=~#{[|`\\^@]}°+$£ê*µù%!:;,?./§€', expected: 'test' }
+    ].forEach((test) => {
+      it(`Should format ${test.value} to ${test.expected}`, () => {
+        const res = component.getFormatedIntentName(test.value);
+
+        expect(res).toBe(test.expected);
+      });
+    });
+  });
+
+  describe('#checkIntentNameAndSave', () => {
+    it('should call save method without change the intent name when is defined', () => {
+      spyOn(component, 'save');
+      const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
+      faq.intentName = 'test';
+      component.faq = faq;
+      component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
+      fixture.detectChanges();
+
+      component.checkIntentNameAndSave();
+
+      expect(component.save).toHaveBeenCalledOnceWith(faq);
+    });
+
+    it('should call save method when creating a new faq if the intent does not exists in the current or another application', () => {
+      spyOn(StateService, 'intentExistsInApp').and.returnValue(false);
+      spyOn(component['state'], 'intentExistsInOtherApplication').and.returnValue(false);
+      spyOn(component, 'save');
+      const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
+      faq.id = undefined;
+      component.faq = faq;
+      component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
+      fixture.detectChanges();
+
+      component.checkIntentNameAndSave();
+
+      expect(component.save).toHaveBeenCalledOnceWith({ ...faq, intentName: 'titlefaq' } as FaqDefinitionExtended);
+    });
+
+    it('should not call save method when creating a new faq if the intent is already exists in the current application', () => {
+      spyOn(StateService, 'intentExistsInApp').and.returnValue(true);
+      spyOn(component, 'save');
+      const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
+      faq.id = undefined;
+      component.faq = faq;
+      component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
+      fixture.detectChanges();
+
+      component.checkIntentNameAndSave();
+
+      expect(component.save).not.toHaveBeenCalled();
+    });
+
+    it('should not call the save method when creating a new faq if the intent already exists in another application after displaying an info message and canceling', () => {
+      spyOn(StateService, 'intentExistsInApp').and.returnValue(false);
+      spyOn(component['state'], 'intentExistsInOtherApplication').and.returnValue(true);
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of(undefined) } as NbDialogRef<any>);
+      spyOn(component, 'save');
+      const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
+      faq.id = undefined;
+      faq.intentName = 'test';
+      component.faq = faq;
+      component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
+      fixture.detectChanges();
+
+      component.checkIntentNameAndSave();
+
+      expect(component.save).not.toHaveBeenCalled();
+    });
+
+    it('should call the save method when creating a new faq if the intent already exists in another application after displaying an info message and share intent', () => {
+      spyOn(StateService, 'intentExistsInApp').and.returnValue(false);
+      spyOn(component['state'], 'intentExistsInOtherApplication').and.returnValue(true);
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('Share the intent') } as NbDialogRef<any>);
+      spyOn(component, 'save');
+      const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
+      faq.id = undefined;
+      component.faq = faq;
+      component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
+      fixture.detectChanges();
+
+      component.checkIntentNameAndSave();
+
+      expect(component.save).toHaveBeenCalledOnceWith({ ...faq, intentName: 'titlefaq' } as FaqDefinitionExtended);
+    });
+
+    it('should call the save method when creating a new faq if the intent already exists in another application after displaying an info message and create new intent', () => {
+      spyOn(StateService, 'intentExistsInApp').and.returnValue(false);
+      spyOn(component['state'], 'intentExistsInOtherApplication').and.returnValue(true);
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('Create a new intent') } as NbDialogRef<any>);
+      spyOn(component, 'save');
+      const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
+      faq.id = undefined;
+      component.faq = faq;
+      component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
+      fixture.detectChanges();
+
+      component.checkIntentNameAndSave();
+
+      expect(component.save).toHaveBeenCalledOnceWith({ ...faq, intentName: 'titlefaq1' } as FaqDefinitionExtended);
     });
   });
 });
