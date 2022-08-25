@@ -169,81 +169,94 @@ describe('ModeStepperComponent', () => {
     expect(component.destroy.isStopped).toBeTruthy();
   });
 
-  it('should respect steps order', () => {
-    const buttonWriting = fixture.debugElement.query(By.css('[data-testid="step-ctrl-writing"]'));
-    const buttonCasting = fixture.debugElement.query(By.css('[data-testid="step-ctrl-casting"]'));
-    const buttonProduction = fixture.debugElement.query(
-      By.css('[data-testid="step-ctrl-production"]')
-    );
-    const buttonPublishing = fixture.debugElement.query(
-      By.css('[data-testid="step-ctrl-publishing"]')
-    );
+  describe('should respect steps order', () => {
+    [
+      {
+        description: 'scenario mode writing',
+        mode: SCENARIO_MODE.writing,
+        stepPassed: { writing: false, casting: false, production: false, publishing: false },
+        buttonClass: {
+          writing: 'step valid selected',
+          casting: 'step',
+          production: 'step',
+          publishing: 'step'
+        }
+      },
+      {
+        description: 'scenario mode casting',
+        mode: SCENARIO_MODE.casting,
+        stepPassed: { writing: true, casting: false, production: false, publishing: false },
+        buttonClass: {
+          writing: 'step valid',
+          casting: 'step selected',
+          production: 'step',
+          publishing: 'step'
+        }
+      },
+      {
+        description: 'scenario mode production',
+        scenario: scenarioCasting as Scenario,
+        mode: SCENARIO_MODE.production,
+        stepPassed: { writing: true, casting: true, production: false, publishing: false },
+        buttonClass: {
+          writing: 'step valid',
+          casting: 'step valid',
+          production: 'step selected',
+          publishing: 'step'
+        }
+      },
+      {
+        description: 'scenario mode publishing',
+        scenario: scenarioProduction as Scenario,
+        mode: SCENARIO_MODE.publishing,
+        stepPassed: { writing: true, casting: true, production: true, publishing: false },
+        buttonClass: {
+          writing: 'step valid',
+          casting: 'step valid',
+          production: 'step valid',
+          publishing: 'step selected'
+        }
+      },
+      {
+        description: 'scenario mode publishing valid',
+        scenario: scenarioPublishing as Scenario,
+        mode: SCENARIO_MODE.publishing,
+        stepPassed: { writing: true, casting: true, production: true, publishing: false },
+        buttonClass: {
+          writing: 'step valid',
+          casting: 'step valid',
+          production: 'step valid',
+          publishing: 'step valid selected'
+        }
+      }
+    ].forEach((test) => {
+      it(test.description, () => {
+        const buttonWriting = fixture.debugElement.query(
+          By.css('[data-testid="step-ctrl-writing"]')
+        );
+        const buttonCasting = fixture.debugElement.query(
+          By.css('[data-testid="step-ctrl-casting"]')
+        );
+        const buttonProduction = fixture.debugElement.query(
+          By.css('[data-testid="step-ctrl-production"]')
+        );
+        const buttonPublishing = fixture.debugElement.query(
+          By.css('[data-testid="step-ctrl-publishing"]')
+        );
 
-    component.mode = SCENARIO_MODE.writing;
-    fixture.detectChanges();
-    expect(component.isStepPassed(SCENARIO_MODE.writing)).toBeFalsy();
-    expect(component.isStepPassed(SCENARIO_MODE.casting)).toBeFalsy();
-    expect(component.isStepPassed(SCENARIO_MODE.production)).toBeFalsy();
-    expect(component.isStepPassed(SCENARIO_MODE.publishing)).toBeFalsy();
-    expect(buttonWriting.nativeElement).toHaveClass('valid');
-    expect(buttonWriting.nativeElement).toHaveClass('selected');
-    expect(buttonCasting.nativeElement).not.toHaveClass('valid');
-    expect(buttonCasting.nativeElement).not.toHaveClass('selected');
-    expect(buttonProduction.nativeElement).not.toHaveClass('valid');
-    expect(buttonProduction.nativeElement).not.toHaveClass('selected');
-    expect(buttonPublishing.nativeElement).not.toHaveClass('valid');
-    expect(buttonPublishing.nativeElement).not.toHaveClass('selected');
-
-    component.mode = SCENARIO_MODE.casting;
-    fixture.detectChanges();
-    expect(component.isStepPassed(SCENARIO_MODE.writing)).toBeTruthy();
-    expect(component.isStepPassed(SCENARIO_MODE.casting)).toBeFalsy();
-    expect(component.isStepPassed(SCENARIO_MODE.production)).toBeFalsy();
-    expect(component.isStepPassed(SCENARIO_MODE.publishing)).toBeFalsy();
-    expect(buttonWriting.nativeElement).toHaveClass('valid');
-    expect(buttonWriting.nativeElement).not.toHaveClass('selected');
-    expect(buttonCasting.nativeElement).not.toHaveClass('valid');
-    expect(buttonCasting.nativeElement).toHaveClass('selected');
-    expect(buttonProduction.nativeElement).not.toHaveClass('valid');
-    expect(buttonProduction.nativeElement).not.toHaveClass('selected');
-    expect(buttonPublishing.nativeElement).not.toHaveClass('valid');
-    expect(buttonPublishing.nativeElement).not.toHaveClass('selected');
-
-    component.scenario = scenarioCasting as Scenario;
-    component.mode = SCENARIO_MODE.production;
-    fixture.detectChanges();
-    expect(component.isStepPassed(SCENARIO_MODE.writing)).toBeTruthy();
-    expect(component.isStepPassed(SCENARIO_MODE.casting)).toBeTruthy();
-    expect(component.isStepPassed(SCENARIO_MODE.production)).toBeFalsy();
-    expect(component.isStepPassed(SCENARIO_MODE.publishing)).toBeFalsy();
-    expect(buttonWriting.nativeElement).toHaveClass('valid');
-    expect(buttonWriting.nativeElement).not.toHaveClass('selected');
-    expect(buttonCasting.nativeElement).toHaveClass('valid');
-    expect(buttonCasting.nativeElement).not.toHaveClass('selected');
-    expect(buttonProduction.nativeElement).not.toHaveClass('valid');
-    expect(buttonProduction.nativeElement).toHaveClass('selected');
-    expect(buttonPublishing.nativeElement).not.toHaveClass('valid');
-    expect(buttonPublishing.nativeElement).not.toHaveClass('selected');
-
-    component.scenario = scenarioProduction as Scenario;
-    component.mode = SCENARIO_MODE.publishing;
-    fixture.detectChanges();
-    expect(component.isStepPassed(SCENARIO_MODE.writing)).toBeTruthy();
-    expect(component.isStepPassed(SCENARIO_MODE.casting)).toBeTruthy();
-    expect(component.isStepPassed(SCENARIO_MODE.production)).toBeTruthy();
-    expect(component.isStepPassed(SCENARIO_MODE.publishing)).toBeFalsy();
-    expect(buttonWriting.nativeElement).toHaveClass('valid');
-    expect(buttonWriting.nativeElement).not.toHaveClass('selected');
-    expect(buttonCasting.nativeElement).toHaveClass('valid');
-    expect(buttonCasting.nativeElement).not.toHaveClass('selected');
-    expect(buttonProduction.nativeElement).toHaveClass('valid');
-    expect(buttonProduction.nativeElement).not.toHaveClass('selected');
-    expect(buttonPublishing.nativeElement).not.toHaveClass('valid');
-    expect(buttonPublishing.nativeElement).toHaveClass('selected');
-
-    component.scenario = scenarioPublishing as Scenario;
-    fixture.detectChanges();
-    expect(buttonPublishing.nativeElement).toHaveClass('valid');
+        if (test.scenario) component.scenario = test.scenario;
+        component.mode = test.mode;
+        fixture.detectChanges();
+        expect(component.isStepPassed(SCENARIO_MODE.writing)).toBe(test.stepPassed.writing);
+        expect(component.isStepPassed(SCENARIO_MODE.casting)).toBe(test.stepPassed.casting);
+        expect(component.isStepPassed(SCENARIO_MODE.production)).toBe(test.stepPassed.production);
+        expect(component.isStepPassed(SCENARIO_MODE.publishing)).toBe(test.stepPassed.publishing);
+        expect(buttonWriting.nativeElement.classList.value).toEqual(test.buttonClass.writing);
+        expect(buttonCasting.nativeElement.classList.value).toEqual(test.buttonClass.casting);
+        expect(buttonProduction.nativeElement.classList.value).toEqual(test.buttonClass.production);
+        expect(buttonPublishing.nativeElement.classList.value).toEqual(test.buttonClass.publishing);
+      });
+    });
   });
 
   it('should not switch to mode casting if step is not valid', () => {

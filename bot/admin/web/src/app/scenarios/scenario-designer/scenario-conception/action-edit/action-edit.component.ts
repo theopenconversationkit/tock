@@ -220,20 +220,20 @@ export class ActionEditComponent implements OnInit {
     this.deleteDefinition.emit();
   }
 
-  getContextByName(outputContext): TickContext[] {
+  getContextByName(context: string): TickContext[] {
     return [
       this.contexts.find((ctx) => {
-        return ctx.name == outputContext;
+        return ctx.name == context;
       })
     ];
   }
 
-  getContextEntityColor(context): string | undefined {
+  getContextEntityColor(context: TickContext): string | undefined {
     if (context.entityType)
       return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
-  getContextEntityContrast(context): string | undefined {
+  getContextEntityContrast(context: TickContext): string | undefined {
     if (context.entityType)
       return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }

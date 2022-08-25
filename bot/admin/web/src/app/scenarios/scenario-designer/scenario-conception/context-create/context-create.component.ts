@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
+import { Subject } from 'rxjs';
 import { normalizedSnakeCase } from '../../../commons/utils';
 
 const ENTITY_NAME_MINLENGTH = 5;
@@ -11,6 +12,8 @@ const ENTITY_NAME_MINLENGTH = 5;
   styleUrls: ['./context-create.component.scss']
 })
 export class ContextCreateComponent {
+  destroy = new Subject();
+
   @Output() validate = new EventEmitter();
 
   constructor(public dialogRef: NbDialogRef<ContextCreateComponent>) {}
@@ -49,5 +52,10 @@ export class ContextCreateComponent {
 
   cancel(): void {
     this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next();
+    this.destroy.complete();
   }
 }

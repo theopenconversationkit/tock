@@ -1,16 +1,15 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import {
-  async,
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-  waitForAsync
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from '../../../../core-nlp/state.service';
-import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
+import {
+  Scenario,
+  ScenarioItemFrom,
+  SCENARIO_MODE,
+  SCENARIO_STATE,
+  TickContext
+} from '../../../models';
 import { ActionEditComponent } from './action-edit.component';
 
 const scenarioMock = {
@@ -40,7 +39,7 @@ const scenarioMock = {
         tickActionDefinition: {
           name: 'action1',
           inputContextNames: [],
-          outputContextNames: ['test']
+          outputContextNames: ['TEST']
         }
       },
       {
@@ -50,8 +49,8 @@ const scenarioMock = {
         parentIds: [0, 1],
         tickActionDefinition: {
           name: 'action2',
-          inputContextNames: ['test'],
-          outputContextNames: [],
+          inputContextNames: ['TEST'],
+          outputContextNames: ['CONTEXT2'],
           answerId: '456',
           answer: 'action2 answer'
         }
@@ -75,9 +74,10 @@ const scenarioMock = {
       }
     ],
     contexts: [
-      { name: 'test', type: 'string' },
-      { name: 'context2', type: 'string' },
-      { name: 'context3', type: 'string' }
+      { name: 'TEST', type: 'string', entityType: 'hello', entityRole: 'world' },
+      { name: 'CONTEXT2', type: 'string' },
+      { name: 'CONTEXT3', type: 'string' },
+      { name: 'CONTEXT4', type: 'string' }
     ],
     stateMachine: {
       id: 'root',
@@ -103,7 +103,7 @@ function getScenarioMock() {
   return JSON.parse(JSON.stringify(scenarioMock)) as Scenario;
 }
 
-fdescribe('ActionEditComponent', () => {
+describe('ActionEditComponent', () => {
   let component: ActionEditComponent;
   let fixture: ComponentFixture<ActionEditComponent>;
   beforeEach(async () => {
@@ -114,7 +114,7 @@ fdescribe('ActionEditComponent', () => {
           provide: NbDialogRef,
           useValue: {}
         },
-        { provide: StateService, useValue: {} }
+        { provide: StateService, useValue: { user: { organization: 'org' } } }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -137,8 +137,8 @@ fdescribe('ActionEditComponent', () => {
       handler: null,
       answer: 'action2 answer',
       answerId: '456',
-      inputContextNames: ['test'],
-      outputContextNames: [],
+      inputContextNames: ['TEST'],
+      outputContextNames: ['CONTEXT2'],
       final: false
     });
   });
@@ -168,7 +168,7 @@ fdescribe('ActionEditComponent', () => {
   it('Should list contexts for autocomplete', () => {
     component.updateContextsAutocompleteValues();
     component.contextsAutocompleteValues.subscribe((result) =>
-      expect(result).toEqual(['context2', 'context3'])
+      expect(result).toEqual(['CONTEXT3', 'CONTEXT4'])
     );
   });
 
@@ -177,20 +177,51 @@ fdescribe('ActionEditComponent', () => {
       target: { value: '3' }
     } as unknown as KeyboardEvent);
     component.contextsAutocompleteValues.subscribe((result) =>
-      expect(result).toEqual(['context3'])
+      expect(result).toEqual(['CONTEXT3'])
     );
   });
 
   it('Should add context', () => {
     component.inputContextsInput.nativeElement.value = 'test add context';
     component.addContext('input');
-    expect(component.inputContextNames.value).toEqual(['test', 'TEST_ADD_CONTEXT']);
+    expect(component.inputContextNames.value).toEqual(
+      ['TEST', 'TEST_ADD_CONTEXT'],
+      'Should add context'
+    );
+    expect(component.form.dirty).toBeTruthy('Should make form dirty');
   });
 
   it('Should not add context if string is too short', () => {
     component.inputContextsInput.nativeElement.value = 'abc';
     component.addContext('input');
-    console.log(component.inputContextNames.value);
-    expect(component.inputContextNames.value).toEqual(['test']);
+    expect(component.inputContextNames.value).toEqual(['TEST']);
+  });
+
+  it('Should not add context if context already associated with action input contexts', () => {
+    component.inputContextsInput.nativeElement.value = 'test';
+    component.addContext('input');
+    expect(component.inputContextNames.value).toEqual(['TEST']);
+  });
+
+  it('Should not add context if context already associated with action output contexts', () => {
+    component.inputContextsInput.nativeElement.value = 'context2';
+    component.addContext('input');
+    expect(component.inputContextNames.value).toEqual(['TEST']);
+  });
+
+  it('Should remove context', () => {
+    component.removeContext('input', 'TEST');
+    expect(component.inputContextNames.value).toEqual([]);
+    expect(component.form.dirty).toBeTruthy('Should make form dirty');
+  });
+
+  it('Should return context color', () => {
+    let color = component.getContextEntityColor(scenarioMock.data.contexts[0] as TickContext);
+    expect(color).toEqual('#ff87ef');
+  });
+
+  it('Should return context contrast', () => {
+    let color = component.getContextEntityContrast(scenarioMock.data.contexts[0] as TickContext);
+    expect(color).toEqual('black');
   });
 });

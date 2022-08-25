@@ -116,41 +116,66 @@ describe('ScenarioConceptionComponent', () => {
     expect(component.destroy.isStopped).toBeTruthy();
   });
 
-  it('Should respond to scenarioDesignerItemsCommunication events', () => {
+  describe('Should respond to scenarioDesignerItemsCommunication events', () => {
     const item = { id: 1, from: SCENARIO_ITEM_FROM_BOT, text: 'Bot response1' } as ScenarioItem;
-
-    spyOn(component, 'addItem');
-    component['scenarioConceptionService'].addAnswer(item);
-    expect(component.addItem).toHaveBeenCalledWith(item);
-
-    spyOn(component, 'deleteItem');
-    component['scenarioConceptionService'].deleteAnswer(item, 0);
-    expect(component.deleteItem).toHaveBeenCalledWith(item, 0);
-
-    spyOn(component, 'itemDropped');
-    component['scenarioConceptionService'].itemDropped(0, 1);
-    expect(component.itemDropped).toHaveBeenCalledWith(0, 1);
-
-    spyOn(component, 'selectItem');
-    component['scenarioConceptionService'].selectItem(item);
-    expect(component.selectItem).toHaveBeenCalledWith(item);
-
-    spyOn(component, 'testStory');
-    component['scenarioConceptionService'].testItem(item);
-    expect(component.testStory).toHaveBeenCalledWith(item);
-
     const position = { offsetLeft: 1, offsetTop: 1, offsetWidth: 10, offsetHeight: 10 };
-    spyOn(component, 'centerOnItem');
-    component['scenarioConceptionService'].exposeItemPosition(item, position);
-    expect(component.centerOnItem).toHaveBeenCalledWith(item, position);
 
-    spyOn(component, 'changeItemType');
-    component['scenarioConceptionService'].changeItemType(item, SCENARIO_ITEM_FROM_BOT);
-    expect(component.changeItemType).toHaveBeenCalledWith(item, SCENARIO_ITEM_FROM_BOT);
-
-    spyOn(component, 'removeItemDefinition');
-    component['scenarioConceptionService'].removeItemDefinition(item);
-    expect(component.removeItemDefinition).toHaveBeenCalledWith(item);
+    [
+      {
+        description: 'addItem',
+        method: 'addItem',
+        servicemethod: 'addAnswer',
+        parameters: [item]
+      },
+      {
+        description: 'deleteAnswer',
+        method: 'deleteItem',
+        servicemethod: 'deleteAnswer',
+        parameters: [item, 0]
+      },
+      {
+        description: 'itemDropped',
+        method: 'itemDropped',
+        servicemethod: 'itemDropped',
+        parameters: [0, 1]
+      },
+      {
+        description: 'selectItem',
+        method: 'selectItem',
+        servicemethod: 'selectItem',
+        parameters: [item]
+      },
+      {
+        description: 'testStory',
+        method: 'testStory',
+        servicemethod: 'testItem',
+        parameters: [item]
+      },
+      {
+        description: 'centerOnItem',
+        method: 'centerOnItem',
+        servicemethod: 'exposeItemPosition',
+        parameters: [item, position]
+      },
+      {
+        description: 'changeItemType',
+        method: 'changeItemType',
+        servicemethod: 'changeItemType',
+        parameters: [item, SCENARIO_ITEM_FROM_BOT]
+      },
+      {
+        description: 'removeItemDefinition',
+        method: 'removeItemDefinition',
+        servicemethod: 'removeItemDefinition',
+        parameters: [item]
+      }
+    ].forEach((test) => {
+      it(test.description, () => {
+        spyOn(component, test.method as any);
+        component['scenarioConceptionService'][test.servicemethod](...test.parameters);
+        expect(component[test.method]).toHaveBeenCalledWith(...test.parameters);
+      });
+    });
   });
 
   it('Should clean actions when deleting context', () => {
