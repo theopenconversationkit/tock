@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Subject } from 'rxjs';
-import { normalizedSnakeCase } from '../../../commons/utils';
+import { normalizedSnakeCaseUpper } from '../../../commons/utils';
 
 const ENTITY_NAME_MINLENGTH = 5;
 
@@ -39,7 +39,7 @@ export class ContextCreateComponent {
     if (this.name.value) {
       this.form.patchValue({
         ...this.form.value,
-        name: normalizedSnakeCase(this.name.value)
+        name: normalizedSnakeCaseUpper(this.name.value)
       });
     }
   }

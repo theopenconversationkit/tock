@@ -6,7 +6,7 @@ import { first, take, takeUntil } from 'rxjs/operators';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { Filter, Scenario, ViewMode } from '../models';
+import { Filter, Scenario, SCENARIO_STATE, ViewMode } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -129,7 +129,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       description: '',
       name: '',
       tags: [],
-      state: 'draft',
+      state: SCENARIO_STATE.draft,
       applicationId: this.stateService.currentApplication._id
     } as Scenario;
     this.isSidePanelOpen = true;

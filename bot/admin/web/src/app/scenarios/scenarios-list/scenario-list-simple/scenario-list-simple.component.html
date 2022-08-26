@@ -94,6 +94,15 @@
             nbButton
             ghost
             shape="round"
+            nbTooltip="Download"
+            (click)="download(scenario)"
+          >
+            <nb-icon icon="download-outline"></nb-icon>
+          </button>
+          <button
+            nbButton
+            ghost
+            shape="round"
             nbTooltip="Delete"
             (click)="delete($event, scenario)"
           >

@@ -18,7 +18,8 @@ import {
   SCENARIO_ITEM_FROM_CLIENT,
   TempSentence,
   DependencyUpdateJob,
-  SCENARIO_STATE
+  SCENARIO_STATE,
+  TickStory
 } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioDesignerService } from '../scenario-designer.service';
@@ -359,7 +360,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  compileTickStory(): object {
+  compileTickStory(): TickStory {
     const intents: ScenarioItem[] = getScenarioIntents(this.scenario);
     let mainIntent;
     let primaryIntents = [];
@@ -376,12 +377,12 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     const app = this.state.currentApplication;
     let botId = app.name;
 
-    let tickStory = {
+    let tickStory: TickStory = {
       name: this.scenario.name,
       botId: botId,
       storyId: `${this.scenario.name}_${this.scenario.id}`, //A préciser
       description: this.scenario.description,
-      sagaId: 0,
+      sagaId: '0',
       mainIntent: mainIntent,
       primaryIntents: primaryIntents,
       secondaryIntents: secondaryIntents,

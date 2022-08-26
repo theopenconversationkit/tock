@@ -1,7 +1,11 @@
+import { saveAs } from 'file-saver';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { OrderBy } from '../../../shared/utils';
 import { Scenario } from '../../models';
+import { StateService } from '../../../core-nlp/state.service';
+import { normalizedSnakeCase } from '../../commons/utils';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'tock-scenario-list-simple',
@@ -18,6 +22,8 @@ export class ScenarioListSimpleComponent {
 
   orderBy = 'name';
   orderByReverse = false;
+
+  constructor(protected state: StateService, private datePipe: DatePipe) {}
 
   setOrderBy(criteria: string): void {
     if (criteria == this.orderBy) {
@@ -38,6 +44,24 @@ export class ScenarioListSimpleComponent {
   delete(event: MouseEvent, scenario: Scenario): void {
     event.stopPropagation();
     this.onDelete.emit(scenario);
+  }
+
+  download(scenario: Scenario) {
+    var jsonBlob = new Blob([JSON.stringify(scenario)], {
+      type: 'application/json'
+    });
+
+    saveAs(
+      jsonBlob,
+      this.state.currentApplication.name +
+        '_' +
+        this.state.currentLocale +
+        '_scenario_' +
+        normalizedSnakeCase(scenario.name) +
+        '_' +
+        this.datePipe.transform(new Date(), 'yyyy-MM-dd') +
+        '.json'
+    );
   }
 
   versions = [

@@ -13,9 +13,9 @@ export interface Scenario {
 }
 
 export enum SCENARIO_STATE {
-  draft = 'draft',
-  current = 'current',
-  archive = 'archive'
+  draft = 'DRAFT',
+  current = 'CURRENT',
+  archive = 'ARCHIVE'
 }
 
 export enum SCENARIO_MODE {
@@ -132,6 +132,20 @@ export interface DependencyUpdateJob {
 export interface IntegrityCheckResult {
   valid: boolean;
   reason?: string;
+}
+
+export interface TickStory {
+  name: string;
+  botId: string;
+  storyId: string;
+  description: string;
+  sagaId: string;
+  mainIntent: string;
+  primaryIntents: string[];
+  secondaryIntents: string[];
+  contexts: TickContext[];
+  actions: TickActionDefinition[];
+  stateMachine: MachineState;
 }
 export interface Filter {
   search: string;

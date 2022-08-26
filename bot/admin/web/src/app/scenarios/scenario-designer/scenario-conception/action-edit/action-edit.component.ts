@@ -11,7 +11,11 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Scenario, ScenarioItem, TickContext } from '../../../models';
-import { getContrastYIQ, getScenarioActions, normalizedSnakeCase } from '../../../commons/utils';
+import {
+  getContrastYIQ,
+  getScenarioActions,
+  normalizedSnakeCaseUpper
+} from '../../../commons/utils';
 import { Observable, of, Subject } from 'rxjs';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
@@ -158,7 +162,7 @@ export class ActionEditComponent implements OnInit {
     if (this.name.value) {
       this.form.patchValue({
         ...this.form.value,
-        name: normalizedSnakeCase(this.name.value)
+        name: normalizedSnakeCaseUpper(this.name.value)
       });
     }
   }
@@ -173,7 +177,7 @@ export class ActionEditComponent implements OnInit {
 
   addContext(wich: 'input' | 'output'): void {
     const eventTarget = this[`${wich}ContextsInput`].nativeElement as HTMLInputElement;
-    const ctxName = normalizedSnakeCase(eventTarget.value);
+    const ctxName = normalizedSnakeCaseUpper(eventTarget.value);
 
     this.resetContextsAddErrors();
 

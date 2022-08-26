@@ -16,7 +16,7 @@ import {
   getSmTransitionParentsByname,
   normalize,
   normalizedCamelCase,
-  normalizedSnakeCase,
+  normalizedSnakeCaseUpper,
   removeSmStateById,
   renameSmStateById,
   revertTransformMatrix,
@@ -33,7 +33,7 @@ describe('Scenarios Utils', () => {
   it('Should normalize and convert a string to snake case', () => {
     const before = ' test IF sNake-Case   FUNCTION \u0300 wörks°  ';
     const after = 'TEST_IF_SNAKE_CASE_FUNCTION_WORKS';
-    expect(normalizedSnakeCase(before)).toEqual(after);
+    expect(normalizedSnakeCaseUpper(before)).toEqual(after);
   });
 
   it('Should normalize and convert a string to camel case', () => {
