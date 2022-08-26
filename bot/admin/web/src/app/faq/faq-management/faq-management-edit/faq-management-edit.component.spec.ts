@@ -164,11 +164,13 @@ describe('FaqManagementEditComponent', () => {
     }).compileComponents();
   });
 
-  beforeEach(() => {
+  beforeEach(fakeAsync(() => {
     fixture = TestBed.createComponent(FaqManagementEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
+
+    tick(100);
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
