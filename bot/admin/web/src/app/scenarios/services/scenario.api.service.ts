@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { Scenario } from '../models';
+import { Scenario, TickStory } from '../models';
 
 @Injectable()
 export class ScenarioApiService {
@@ -25,6 +25,6 @@ export class ScenarioApiService {
   }
 
   postTickStory(tickStory): Observable<any> {
-    return this.rest.post('/bot/story/tick', tickStory, null, null, true);
+    return this.rest.post<TickStory, any>('/bot/story/tick', tickStory, null, null, true);
   }
 }

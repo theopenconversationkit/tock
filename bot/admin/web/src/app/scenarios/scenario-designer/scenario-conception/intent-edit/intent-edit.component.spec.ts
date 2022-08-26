@@ -91,6 +91,11 @@ describe('IntentEditComponent', () => {
 
   it('Should create', () => {
     expect(component).toBeTruthy();
+    expect(component.form.getRawValue()).toEqual({
+      sentences: [],
+      contextsEntities: [],
+      primary: true
+    });
   });
 
   it('Should destroy', () => {

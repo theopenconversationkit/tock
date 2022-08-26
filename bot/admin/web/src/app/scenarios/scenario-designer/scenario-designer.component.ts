@@ -213,7 +213,9 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   updateScenarioBackup(scenario: Scenario): void {
-    this.scenarioBackup = JSON.stringify(scenario);
+    let backup = JSON.parse(JSON.stringify(scenario));
+    delete backup.updateDate;
+    this.scenarioBackup = JSON.stringify(backup);
   }
 
   exit(): void {
@@ -234,7 +236,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   canDeactivate(): boolean {
     if (this.isReadonly) return true;
-    return this.scenarioBackup == stringifiedCleanScenario(this.scenario);
+    let current = stringifiedCleanScenario(this.scenario);
+    let currentParsed = JSON.parse(current);
+    delete currentParsed.updateDate;
+    return this.scenarioBackup == JSON.stringify(currentParsed);
   }
 }
 

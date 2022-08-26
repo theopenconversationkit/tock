@@ -18,8 +18,11 @@ export function normalizedSnakeCase(str: string): string {
     .replace(/\s+/g, ' ')
     .replace(/[^A-Za-z0-9_\s]*/g, '')
     .trim()
-    .replace(/\s+/g, '_')
-    .toUpperCase();
+    .replace(/\s+/g, '_');
+}
+
+export function normalizedSnakeCaseUpper(str: string): string {
+  return normalizedSnakeCase(str).toUpperCase();
 }
 
 export function normalizedCamelCase(str: string): string {
