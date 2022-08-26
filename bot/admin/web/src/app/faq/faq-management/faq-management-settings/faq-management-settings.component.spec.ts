@@ -16,7 +16,7 @@ import { of, throwError } from 'rxjs';
 import { BotService } from '../../../bot/bot-service';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
-import { FormControlComponent } from '../../../shared/form-control/form-control.component';
+import { FormControlComponent } from '../../../shared/components';
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqService } from '../../services/faq.service';
 import { FaqManagementSettingsComponent } from './faq-management-settings.component';

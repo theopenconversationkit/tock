@@ -2,10 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbIconModule, NbSelectModule, NbTooltipModule } from '@nebular/theme';
 
-import { TestSharedModule } from '../test-shared.module';
+import { TestSharedModule } from '../../test-shared.module';
 import { Pagination, PaginationComponent } from './pagination.component';
 
-describe('NoDataFoundComponent', () => {
+describe('PaginationComponent', () => {
   let component: PaginationComponent;
   let fixture: ComponentFixture<PaginationComponent>;
 

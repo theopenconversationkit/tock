@@ -28,7 +28,6 @@ import { BotSharedService } from './bot-shared.service';
 import { DisplayDialogComponent } from './bot-dialog/display-dialog.component';
 import { MomentModule } from 'ngx-moment';
 import { SelectBotComponent } from './select-bot/select-bot.component';
-import { PaginationComponent } from './pagination/pagination.component';
 import {
   NbCalendarRangeModule,
   NbCardModule,
@@ -40,12 +39,17 @@ import {
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
-import { ErrorHelperComponent } from './error-helper/error-helper.component';
-import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
-import { FormControlComponent } from './form-control/form-control.component';
-import { ChatUiComponent } from './chat-ui/chat-ui.component';
-import { ChatUiMessageComponent } from './chat-ui/chat-ui-message/chat-ui-message.component';
-import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
+
+import {
+  ChatUiComponent,
+  ChatUiMessageComponent,
+  ChoiceDialogComponent,
+  ErrorHelperComponent,
+  FormControlComponent,
+  NoDataFoundComponent,
+  PaginationComponent
+} from './components';
+
 import { AutofocusDirective, DelayDirective } from './directives';
 
 @NgModule({

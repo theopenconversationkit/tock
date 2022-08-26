@@ -10,7 +10,7 @@ import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
+import { ChoiceDialogComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
 
 export enum FaqTabs {

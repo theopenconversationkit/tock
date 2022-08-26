@@ -1,4 +1,4 @@
-import { ComponentFixture, discardPeriodicTasks, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SimpleChange } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { FormControl } from '@angular/forms';
@@ -18,16 +18,16 @@ import {
   NbTagModule,
   NbTooltipModule
 } from '@nebular/theme';
+import { of } from 'rxjs';
 
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqManagementEditComponent, FaqTabs } from './faq-management-edit.component';
-import { FormControlComponent } from '../../../shared/form-control/form-control.component';
+import { FormControlComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
-import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from 'src/app/model/nlp';
-import { of } from 'rxjs';
+import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../../model/nlp';
 
 const mockSentences: Sentence[] = [
   {

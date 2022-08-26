@@ -8,7 +8,7 @@ import { StateService } from '../../core-nlp/state.service';
 import { PaginatedQuery } from '../../model/commons';
 import { Intent, PaginatedResult, SearchQuery, Sentence, SentenceStatus } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
-import { Pagination } from '../../shared/pagination/pagination.component';
+import { Pagination } from '../../shared/components';
 import { Action, FaqTrainingFilter } from '../models';
 import { truncate } from '../../model/commons';
 import { FaqTrainingListComponent } from './faq-training-list/faq-training-list.component';

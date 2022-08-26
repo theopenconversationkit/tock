@@ -19,7 +19,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { Classification, SentenceStatus } from '../../../model/nlp';
 import { StateService } from '../../../core-nlp/state.service';
-import { Pagination, PaginationComponent } from '../../../shared/pagination/pagination.component';
+import { Pagination, PaginationComponent } from '../../../shared/components';
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqTrainingComponent, SentenceExtended } from '../faq-training.component';
 import { FaqTrainingListComponent } from './faq-training-list.component';

@@ -8,7 +8,7 @@ import { IntentsCategory } from '../../../model/nlp';
 import { StateService } from '../../../core-nlp/state.service';
 import { UserRole } from '../../../model/auth';
 import { Action } from '../../models';
-import { Pagination } from '../../../shared/pagination/pagination.component';
+import { Pagination } from '../../../shared/components';
 import { SentenceExtended } from '../faq-training.component';
 
 @Component({
