@@ -52,7 +52,7 @@ function getScenarioMock() {
   return JSON.parse(JSON.stringify(scenario)) as Scenario;
 }
 
-describe('IntentEditComponent', () => {
+fdescribe('IntentEditComponent', () => {
   let component: IntentEditComponent;
   let fixture: ComponentFixture<IntentEditComponent>;
   beforeEach(async () => {
@@ -91,6 +91,11 @@ describe('IntentEditComponent', () => {
 
   it('Should create', () => {
     expect(component).toBeTruthy();
+    expect(component.form.getRawValue()).toEqual({
+      sentences: [],
+      contextsEntities: [],
+      primary: true
+    });
   });
 
   it('Should destroy', () => {
