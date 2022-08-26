@@ -52,7 +52,7 @@ function getScenarioMock() {
   return JSON.parse(JSON.stringify(scenario)) as Scenario;
 }
 
-fdescribe('IntentEditComponent', () => {
+describe('IntentEditComponent', () => {
   let component: IntentEditComponent;
   let fixture: ComponentFixture<IntentEditComponent>;
   beforeEach(async () => {
