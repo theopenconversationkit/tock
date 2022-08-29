@@ -87,7 +87,6 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "prettier": "2.6.2",
     "protractor": "~7.0.0",
-    "puppeteer": "^13.5.1",
     "resize-observer-polyfill": "^1.5.1",
     "stylelint": "^13.3.3",
     "ts-node": "3.2.2",
