@@ -191,14 +191,7 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
     await this.nlp.updateSentence(sentence).pipe(take(1)).toPromise();
 
     this.pagination.total--;
-    if (this.pagination.end <= this.pagination.total) {
-      this.loadData(this.pagination.end - 1, 1, true, true, true);
-    } else {
-      this.pagination.end--;
-      if (this.pagination.start > 0 && this.pagination.start === this.pagination.total) {
-        this.loadData(this.pagination.end - this.pagination.size);
-      }
-    }
+    this.loadSentencesAfterActionPerformed();
 
     if (this.selection.isSelected(sentence)) {
       this.selection.deselect(sentence);
@@ -212,14 +205,6 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
   }
 
   async handleBatchAction(action: Action): Promise<void> {
-    if (!this.selection?.selected?.length) {
-      this.toastrService.warning('No data selected', 'Warning', {
-        duration: 2000,
-        status: 'warning'
-      });
-      return;
-    }
-
     const actionTitle = this.setActionTitle(action);
     let actionPerformed = 0;
 
@@ -236,6 +221,17 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.loadSentencesAfterActionPerformed(actionPerformed);
+
+    this.toastrService.success(`${actionTitle} ${this.selection.selected.length} sentences`, actionTitle, {
+      duration: 2000,
+      status: 'basic'
+    });
+
+    this.selection.clear();
+  }
+
+  private loadSentencesAfterActionPerformed(actionPerformed: number = 1): void {
     if (this.pagination.end <= this.pagination.total) {
       const start = this.pagination.end - actionPerformed >= 0 ? this.pagination.end - actionPerformed : 0;
       this.loadData(start, actionPerformed, true, true, true);
@@ -246,13 +242,6 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
         this.loadData(start);
       }
     }
-
-    this.toastrService.success(`${actionTitle} ${this.selection.selected.length} sentences`, actionTitle, {
-      duration: 2000,
-      status: 'basic'
-    });
-
-    this.selection.clear();
   }
 
   private setSentenceAccordingToAction(action: Action, sentence: SentenceExtended): void {
