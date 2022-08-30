@@ -20,9 +20,6 @@ export class ScenarioEditComponent implements OnChanges {
   @Input()
   scenario?: Scenario;
 
-  @Input()
-  scenarios?: Scenario[];
-
   @Output()
   onClose = new EventEmitter<boolean>();
 

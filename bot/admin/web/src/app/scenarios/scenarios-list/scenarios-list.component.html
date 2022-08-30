@@ -3,26 +3,14 @@
 
   <section class="grid-actions">
     <button
-      *ngIf="currentViewMode === viewMode.LIST"
       nbButton
       ghost
-      shape="round"
-      nbTooltip="Switch to table view"
+      nbTooltip="Import scenario"
       [disabled]="!configurations?.length"
-      (click)="switchViewMode()"
+      (click)="callImportScenario()"
     >
-      <nb-icon icon="grid-outline"></nb-icon>
-    </button>
-    <button
-      *ngIf="currentViewMode === viewMode.TREE"
-      nbButton
-      ghost
-      shape="round"
-      nbTooltip="Switch to scroll view"
-      [disabled]="!configurations?.length"
-      (click)="switchViewMode()"
-    >
-      <nb-icon icon="menu-outline"></nb-icon>
+      <nb-icon icon="upload-outline"></nb-icon>
+      Import scenario
     </button>
     <button
       nbButton
@@ -88,22 +76,16 @@
       </nb-card>
 
       <tock-scenario-list-simple
-        *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.LIST"
+        *ngIf="!loading.list && filteredScenarios?.length"
         [nbSpinner]="loading.delete"
         [scenarios]="paginatedScenarios"
         [selectedScenario]="scenarioEdit"
-        (onEdit)="addOrEditScenario($event)"
+        (onDeleteSaga)="askDeleteSaga($event)"
+        (onEdit)="editSaga($event)"
+        (onDuplicate)="askDuplicationDescription($event)"
         (onDelete)="delete($event)"
         (onOrderBy)="orderBy($event)"
       ></tock-scenario-list-simple>
-
-      <tock-scenario-tree
-        *ngIf="!loading.list && filteredScenarios?.length && currentViewMode === viewMode.TREE"
-        [nbSpinner]="loading.delete"
-        [scenarios]="filteredScenarios"
-        (onEdit)="addOrEditScenario($event)"
-        (onDelete)="delete($event)"
-      ></tock-scenario-tree>
     </div>
   </div>
 
@@ -113,8 +95,72 @@
     class="aside"
     [loading]="loading.edit"
     [scenario]="scenarioEdit"
-    [scenarios]="scenarios"
     (onClose)="closeSidePanel()"
     (onSave)="saveScenario($event)"
   ></tock-scenario-edit>
 </section>
+
+<ng-template #duplicationModal>
+  <nb-card>
+    <nb-card-header class="d-flex justify-content-between align-items-center">
+      <h4>Duplicate a scenario</h4>
+
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="duplicationCancel()"
+        class="ml-3"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </nb-card-header>
+    <nb-card-body>
+      <form
+        [formGroup]="duplicationForm"
+        (submit)="duplicationSubmit()"
+      >
+        <div class="row main-row">
+          <div class="col-12">
+            <div class="mb-4">
+              <tock-form-control
+                label="Version description"
+                name="description"
+                required="true"
+                [controls]="description"
+                [showError]="isDuplicationSubmitted"
+              >
+                <textarea
+                  nbInput
+                  formControlName="description"
+                  fullWidth
+                  id="description"
+                  type="text"
+                  placeholder="Enter a description"
+                  autofocusElement
+                ></textarea>
+              </tock-form-control>
+            </div>
+          </div>
+        </div>
+      </form>
+    </nb-card-body>
+    <nb-card-footer class="d-flex justify-content-between">
+      <button
+        nbButton
+        (click)="duplicationCancel()"
+      >
+        Cancel
+      </button>
+      <button
+        nbButton
+        status="primary"
+        (click)="duplicationSubmit()"
+        [disabled]="!canSaveDuplication"
+      >
+        Duplicate
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

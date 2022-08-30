@@ -48,7 +48,7 @@ import { ScenarioApiService } from './services/scenario.api.service';
 import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
 import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
-import { ScenarioTreeComponent } from './scenarios-list/scenario-tree/scenario-tree.component';
+import { ScenarioImportComponent } from './scenarios-list/scenario-import/scenario-import.component';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
 import { ScenariosResolver } from './scenarios.resolver';
@@ -87,7 +87,6 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
     ScenariosListComponent,
     ScenarioEditComponent,
     ScenarioListSimpleComponent,
-    ScenarioTreeComponent,
     ScenarioDesignerComponent,
     ScenarioConceptionItemComponent,
     ScenarioFiltersComponent,
@@ -103,7 +102,8 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
     ScenarioPublishingComponent,
     ScenarioStateGroupComponent,
     ScenarioProductionStateGroupAddComponent,
-    ScenarioTransitionComponent
+    ScenarioTransitionComponent,
+    ScenarioImportComponent
   ],
   exports: [],
   providers: [
