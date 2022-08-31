@@ -1,0 +1,67 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between align-items-center">
+    <h4>Import a scenario</h4>
+  </nb-card-header>
+  <nb-card-body>
+    <form
+      [formGroup]="importForm"
+      (submit)="importSubmit()"
+    >
+      <div class="row main-row">
+        <div class="col-12">
+          <div class="mb-4">
+            <tock-form-control
+              label="Scenario dump file"
+              name="importFile"
+              required="true"
+              [controls]="importFile"
+              [showError]="isImportSubmitted"
+            >
+              <input
+                nbInput
+                formControlName="importFile"
+                fullWidth
+                id="importFile"
+                type="file"
+                multiple="multiple"
+                placeholder="Select a scenario dump file"
+                (change)="onFileChange($event)"
+              />
+            </tock-form-control>
+
+            <div
+              *ngIf="filesInError.length"
+              class="text-danger"
+            >
+              The following files do not have the required format:
+              <ul>
+                <li
+                  *ngFor="let error of filesInError"
+                  class="text-danger"
+                >
+                  {{ error }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+  <nb-card-footer class="d-flex justify-content-between">
+    <button
+      nbButton
+      (click)="importCancel()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      status="primary"
+      (click)="importSubmit()"
+      [disabled]="!canSaveImport"
+    >
+      Upload
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -97,7 +97,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     });
 
     getScenarioActions(this.scenario).forEach((action) => {
-      if (!action.tickActionDefinition.answerId) {
+      if (action.tickActionDefinition.answer && !action.tickActionDefinition.answerId) {
         this.dependencies.answersToCreate.push({
           type: 'creation',
           done: false,
@@ -335,6 +335,12 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   tickStoryErrors: string[];
 
   postTickStory(): void {
+    // this.scenario.state = SCENARIO_STATE.current;
+    // this.scenarioDesignerService.saveScenario(this.scenario.id, this.scenario).subscribe((res) => {
+    //   console.log(res);
+    //   this.scenarioService.setScenariosUnloading();
+    // });
+
     this.tickStoryErrors = undefined;
     const story = this.compileTickStory();
     this.scenarioService.postTickStory(story).subscribe(
@@ -344,6 +350,9 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         this.scenarioDesignerService
           .saveScenario(this.scenario.id, this.scenario)
           .subscribe((data) => {
+            // reset of scenarioService scenarios cache to force the reload of scenarios list on next call to scenarioService.getScenarios
+            this.scenarioService.setScenariosUnloading();
+
             this.toastrService.success(`Tick story successfully saved`, 'Success', {
               duration: 5000,
               status: 'success'

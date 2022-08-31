@@ -1,6 +1,17 @@
 import { ParseQuery, Sentence } from '../../model/nlp';
+
+export interface Saga {
+  sagaId: string;
+  name: string;
+  description: string;
+  category: string;
+  tags: string[];
+  scenarios: Scenario[];
+}
+
 export interface Scenario {
   id: string | null;
+  sagaId?: string | null;
   name: string;
   category?: string;
   tags?: Array<string>;

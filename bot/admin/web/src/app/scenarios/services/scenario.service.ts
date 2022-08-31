@@ -139,6 +139,18 @@ export class ScenarioService {
     );
   }
 
+  deleteSaga(sagaId: string): Observable<any> {
+    return this.scenarioApiService.deleteSaga(sagaId).pipe(
+      tap(() => {
+        let state = this.getState();
+        state.scenarios = state.scenarios.filter((s) => s.sagaId !== sagaId);
+        state.categories = this.updateCategoriesCache(state.scenarios);
+        state.tags = this.updateTagsCache(state.scenarios);
+        this.setState(state);
+      })
+    );
+  }
+
   deleteScenario(id: string): Observable<any> {
     return this.scenarioApiService.deleteScenario(id).pipe(
       tap(() => {

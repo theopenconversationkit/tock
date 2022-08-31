@@ -2,13 +2,19 @@ shared
 
         #DONE (espacement déjà géré avec la class gap-1 qui est présente dans la refacto de la faq) Regarder le prblm du bouton close de ChoiceDialogComponent quand le modalStatus n'est pas primary. Voir aussi l'espacement des boutons
 
-Scenarios
+Scenarios list
 
-        ??? Pour plus de clareté la catégorie des tickStories ne devrait-il pas être scenario ?
+        Adapter la pagination à l'affichage par saga. 
+                Reporter le regroupement par saga au niveau de scenarioService ? 
+                Voir si ca reste compatible avec la préservation de l'état collapsed. Il serait désagréable que le collapse se replie quand on supprime juste un scenario d'une saga
 
-        ??? Peut-on supprimer tout un scenario est ses différentes versions ?
+        Activation/desactivation tickStory => quelle mécanique ?
 
-        ??? La suppression d'un scenario "current" implique-t-elle la suppression de sa tickStory ?
+        Suppression de saga => un endpoint de suppression de tickStory est necessaire
+
+        Supprimer la TickStory à la suppression d'un scenario "current". Adapter le warning pour signaler que la stroy va également être supprimée
+
+        #DONE Import de scenario
 
         #DONE scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. 
 
@@ -16,7 +22,7 @@ Scenarios
 
 Scenario designer :
 
-        Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
+        #DONE Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
 
         #DONE Au chargement checker l'existence des answersId référencées. Pour celles qui n'existent plus, supprimer le answerId pour permettre à nouveau le post à la publication
 
@@ -34,7 +40,7 @@ Scenario designer :
 
         WRITING :
                 
-                ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ?
+                ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => A discuter avec Mohamed
 
                 #DONE Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
 
@@ -46,9 +52,9 @@ Scenario designer :
 
                 Internationalisation des answers. Pour le moment seul la i18n d'interfaceType textChat et de locale currentLocale est définie
 
-                Intent avec intnetdefinition manquante mais affichage pas en accord ???
-
                 ??? Quid des sharedIntents ?
+
+                #DONE Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
                 #DONE intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
 
@@ -75,11 +81,11 @@ Scenario designer :
                 #DONE Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
 
         PUBLISHING :
-
-                A la modification d'une answer existante, faire un update plutot qu'un post
+                
+                ??? Intent : c'est quoi les mandatoryStates ?
 
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
 
-                ??? Intent : c'est quoi les mandatoryStates ?
+                #DONE A la modification d'une answer existante, faire un update plutot qu'un post
 
                 #DONE Comment le front fait-il pour créer une secondary intent ?

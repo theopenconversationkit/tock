@@ -20,6 +20,10 @@ export class ScenarioApiService {
     return this.rest.put<Scenario, Scenario>(`/scenarios/${id}`, scenario);
   }
 
+  deleteSaga(sagaId: string): Observable<any> {
+    return this.rest.delete<Scenario>(`/sagas/${sagaId}`);
+  }
+
   deleteScenario(id: string): Observable<any> {
     return this.rest.delete<Scenario>(`/scenarios/${id}`);
   }

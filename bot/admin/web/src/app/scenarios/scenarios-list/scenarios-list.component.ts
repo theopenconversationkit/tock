@@ -1,12 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { Subject, Subscription } from 'rxjs';
 import { first, take, takeUntil } from 'rxjs/operators';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { Filter, Scenario, SCENARIO_STATE, ViewMode } from '../models';
+import { Filter, Saga, Scenario, SCENARIO_STATE } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
@@ -14,6 +14,8 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { ScenarioEditComponent } from '../scenario-edit/scenario-edit.component';
 import { Pagination } from '../../shared/pagination/pagination.component';
 import { OrderBy, orderBy } from '../../shared/utils';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ScenarioImportComponent } from './scenario-import/scenario-import.component';
 
 @Component({
   selector: 'scenarios-list',
@@ -22,6 +24,7 @@ import { OrderBy, orderBy } from '../../shared/utils';
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
   @ViewChild('scenarioEditComponent') scenarioEditComponent: ScenarioEditComponent;
+  @ViewChild('duplicationModal') duplicationModal: TemplateRef<any>;
 
   configurations: BotApplicationConfiguration[];
   destroy$ = new Subject();
@@ -29,11 +32,9 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   filteredScenarios: Scenario[] = [];
   paginatedScenarios: Scenario[] = [];
   scenarioEdit?: Scenario;
+  sagaEdit?: Saga;
   categoriesCache: string[] = [];
   tagsCache: string[] = [];
-
-  currentViewMode: ViewMode = ViewMode.LIST;
-  viewMode: typeof ViewMode = ViewMode;
 
   isSidePanelOpen: boolean = false;
 
@@ -140,6 +141,94 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     this.isSidePanelOpen = true;
   }
 
+  editSaga(saga: Saga): void {
+    this.sagaEdit = saga;
+    this.edit(saga.scenarios[0]);
+  }
+
+  duplicationForm: FormGroup = new FormGroup({
+    description: new FormControl('', [Validators.required])
+  });
+
+  get description(): FormControl {
+    return this.duplicationForm.get('description') as FormControl;
+  }
+
+  get canSaveDuplication(): boolean {
+    return this.isDuplicationSubmitted ? this.duplicationForm.valid : this.duplicationForm.dirty;
+  }
+
+  duplicationDialogRef: NbDialogRef<TemplateRef<any>>;
+  duplicationScenario: Scenario;
+  askDuplicationDescription(scenario: Scenario): void {
+    this.duplicationScenario = scenario;
+    this.duplicationDialogRef = this.dialogService.openDialog(this.duplicationModal);
+  }
+
+  duplicationCancel(): void {
+    this.isDuplicationSubmitted = false;
+    this.duplicationForm.reset();
+    this.duplicationDialogRef.close();
+  }
+
+  isDuplicationSubmitted: boolean = false;
+  duplicationSubmit(): void {
+    this.isDuplicationSubmitted = true;
+    if (this.canSaveDuplication) {
+      this.duplicateScenario();
+    }
+  }
+
+  duplicateScenario(): void {
+    const copy = JSON.parse(JSON.stringify(this.duplicationScenario));
+    delete copy.id;
+    delete copy.createDate;
+    delete copy.updateDate;
+    copy.state = SCENARIO_STATE.draft;
+    copy.description = this.duplicationForm.value.description;
+
+    this.saveScenario({ scenario: copy });
+    this.duplicationCancel();
+  }
+
+  askDeleteSaga(saga: Saga) {
+    const deleteAction = 'delete';
+    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: `Delete all scenarios of saga "${saga.name}"`,
+        subtitle:
+          'Are you sure you want to delete all the scenarios of this saga and, if applicable, the corresponding TickStory?',
+        action: deleteAction
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === deleteAction) {
+        this.deleteSaga(saga);
+      }
+    });
+  }
+
+  deleteSaga(saga: Saga) {
+    this.loading.delete = true;
+
+    this.scenarioService
+      .deleteSaga(saga.sagaId)
+      .pipe(first())
+      .subscribe({
+        next: () => {
+          this.toastrService.success(`Saga scenarios successfully deleted`, 'Success', {
+            duration: 5000,
+            status: 'success'
+          });
+          this.loading.delete = false;
+          alert('TODO : delete corresponding TickStory if any => endpoint required');
+        },
+        error: () => {
+          this.loading.delete = false;
+        }
+      });
+  }
+
   delete(scenario: Scenario): void {
     const deleteAction = 'delete';
     const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
@@ -162,6 +251,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   closeSidePanel(): void {
     this.isSidePanelOpen = false;
     this.scenarioEdit = undefined;
+    this.sagaEdit = undefined;
   }
 
   deleteScenario(id: string): void {
@@ -209,32 +299,63 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
           }
         });
     } else {
-      this.scenarioService
-        .putScenario(result.scenario.id, result.scenario)
-        .pipe(first())
-        .subscribe({
-          next: (newScenario) => {
-            this.loading.edit = false;
-            this.toastrService.success(`Scenario successfully updated`, 'Success', {
-              duration: 5000,
-              status: 'success'
-            });
-            if (result.redirect) {
-              this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
-            } else {
-              this.closeSidePanel();
+      if (this.sagaEdit) {
+        this.saveSagaEdition(result);
+      } else {
+        this.scenarioService
+          .putScenario(result.scenario.id, result.scenario)
+          .pipe(first())
+          .subscribe({
+            next: (newScenario) => {
+              this.loading.edit = false;
+              this.toastrService.success(`Scenario successfully updated`, 'Success', {
+                duration: 5000,
+                status: 'success'
+              });
+              if (result.redirect) {
+                this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
+              } else {
+                this.closeSidePanel();
+              }
+            },
+            error: () => {
+              this.loading.edit = false;
             }
-          },
-          error: () => {
-            this.loading.edit = false;
-          }
-        });
+          });
+      }
     }
   }
 
-  switchViewMode(): void {
-    this.currentViewMode =
-      this.currentViewMode === ViewMode.LIST ? this.viewMode.TREE : this.viewMode.LIST;
+  saveSagaEdition(result, index = 0) {
+    const scenarioUpdate = JSON.parse(JSON.stringify(this.sagaEdit.scenarios[index]));
+    delete scenarioUpdate.createDate;
+    delete scenarioUpdate.updateDate;
+
+    scenarioUpdate.name = result.scenario.name;
+    scenarioUpdate.description = result.scenario.description;
+    scenarioUpdate.category = result.scenario.category;
+    scenarioUpdate.tags = result.scenario.tags;
+
+    this.scenarioService
+      .putScenario(scenarioUpdate.id, scenarioUpdate)
+      .pipe(first())
+      .subscribe({
+        next: (res) => {
+          if (this.sagaEdit.scenarios.length > index) {
+            this.saveSagaEdition(result, index + 1);
+          } else {
+            this.loading.edit = false;
+            this.toastrService.success(`Scenarios successfully updated`, 'Success', {
+              duration: 5000,
+              status: 'success'
+            });
+            this.closeSidePanel();
+          }
+        },
+        error: () => {
+          this.loading.edit = false;
+        }
+      });
   }
 
   filterScenarios(filters: Filter, resetPaginationStart: boolean = true): void {
@@ -310,5 +431,54 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     );
 
     this.paginateScenario(this.filteredScenarios);
+  }
+
+  callImportScenario() {
+    const modal = this.dialogService.openDialog(ScenarioImportComponent, {
+      context: {}
+    });
+    const validate = modal.componentRef.instance.validate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((importJson) => {
+        this.importAllScenarios(importJson);
+
+        validate.unsubscribe();
+        modal.close();
+      });
+  }
+
+  importAllScenarios(importJsons: JSON[], index = 0) {
+    this.loading.edit = true;
+    if (index < importJsons.length && importJsons[index]) {
+      this.importScenario(importJsons, index);
+    } else {
+      this.loading.edit = false;
+      this.toastrService.success(`Scenario successfully imported`, 'Success', {
+        duration: 5000,
+        status: 'success'
+      });
+    }
+  }
+
+  importScenario(importJsons, index) {
+    const json = importJsons[index];
+    delete json.id;
+    delete json.applicationId;
+    delete json.createDate;
+    delete json.updateDate;
+
+    json.state = SCENARIO_STATE.draft;
+    json.applicationId = this.stateService.currentApplication._id;
+    this.scenarioService
+      .postScenario(json)
+      .pipe(first())
+      .subscribe({
+        next: (newScenario) => {
+          this.importAllScenarios(importJsons, index + 1);
+        },
+        error: () => {
+          this.importAllScenarios(importJsons, index + 1);
+        }
+      });
   }
 }

@@ -298,3 +298,19 @@ export function getAllSmNonGroupStatesNames(group: MachineState, result: string[
   }
   return result;
 }
+
+export function readFileAsText(file: File) {
+  return new Promise(function (resolve, reject) {
+    let fr = new FileReader();
+
+    fr.onload = function () {
+      resolve({ fileName: file.name, data: fr.result });
+    };
+
+    fr.onerror = function () {
+      reject(fr);
+    };
+
+    fr.readAsText(file);
+  });
+}
