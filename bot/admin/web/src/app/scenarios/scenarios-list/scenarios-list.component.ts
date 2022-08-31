@@ -28,9 +28,9 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   configurations: BotApplicationConfiguration[];
   destroy$ = new Subject();
-  scenarios: Scenario[] = [];
-  filteredScenarios: Scenario[] = [];
-  paginatedScenarios: Scenario[] = [];
+  sagas: Saga[] = [];
+  filteredSagas: Saga[] = [];
+  paginatedSagas: Saga[] = [];
   scenarioEdit?: Scenario;
   sagaEdit?: Saga;
   categoriesCache: string[] = [];
@@ -77,25 +77,22 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
     this.loading.list = true;
 
-    this.subscribeToScenarios();
+    this.subscribeToSagas();
 
     this.stateService.configurationChange.pipe(takeUntil(this.destroy$)).subscribe((_) => {
-      this.subscribeToScenarios(true);
+      this.subscribeToSagas(true);
     });
   }
 
-  scenariosSubscription: Subscription;
-  subscribeToScenarios(forceReload = false) {
-    if (this.scenariosSubscription) this.scenariosSubscription.unsubscribe();
-
-    this.scenariosSubscription = this.scenarioService
-      .getScenarios(forceReload)
+  subscribeToSagas(forceReload = false) {
+    this.scenarioService
+      .getSagas(forceReload)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: Scenario[]) => {
+      .subscribe((data: Saga[]) => {
         this.loading.list = false;
-        this.scenarios = [...data];
+        this.sagas = [...data];
         this.pagination.total = data.length;
-        this.filterScenarios(this.currentFilters, false);
+        this.filterSagas(this.currentFilters, false);
         this.orderBy(this.currentOrderByCriteria);
       });
   }
@@ -302,6 +299,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       if (this.sagaEdit) {
         this.saveSagaEdition(result);
       } else {
+        // doit disparaitre
         this.scenarioService
           .putScenario(result.scenario.id, result.scenario)
           .pipe(first())
@@ -358,26 +356,26 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       });
   }
 
-  filterScenarios(filters: Filter, resetPaginationStart: boolean = true): void {
+  filterSagas(filters: Filter, resetPaginationStart: boolean = true): void {
     const { search, tags } = filters;
     this.currentFilters = filters;
 
-    this.filteredScenarios = this.scenarios.filter((scenario: Scenario) => {
+    this.filteredSagas = this.sagas.filter((saga: Saga) => {
       if (
         search &&
         !(
-          scenario.name.toUpperCase().includes(search.toUpperCase()) ||
-          scenario.description.toUpperCase().includes(search.toUpperCase())
+          saga.name.toUpperCase().includes(search.toUpperCase()) ||
+          saga.description.toUpperCase().includes(search.toUpperCase())
         )
       ) {
         return;
       }
 
-      if (tags?.length && !scenario.tags.some((tag) => tags.includes(tag))) {
+      if (tags?.length && !saga.tags.some((tag) => tags.includes(tag))) {
         return;
       }
 
-      return scenario;
+      return saga;
     });
 
     this.resetPaginationAfterFiltering(resetPaginationStart);
@@ -389,7 +387,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     if (resetPaginationStart) {
       this.pagination.start = 0;
     }
-    this.pagination.total = this.filteredScenarios.length;
+    this.pagination.total = this.filteredSagas.length;
 
     const pageEnd = this.pagination.start + this.pagination.size;
     this.pagination.end = pageEnd < this.pagination.total ? pageEnd : this.pagination.total;
@@ -400,20 +398,17 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     }
   }
 
-  paginateScenario(scenarios: Scenario[]): void {
+  paginateSagas(sagas: Saga[]): void {
     if (!this.pagination.end) {
       const pageEnd = this.pagination.end + this.pagination.size;
-      this.pagination.end = scenarios.length > pageEnd ? pageEnd : scenarios.length;
+      this.pagination.end = sagas.length > pageEnd ? pageEnd : sagas.length;
     }
 
-    this.paginatedScenarios = this.filteredScenarios.slice(
-      this.pagination.start,
-      this.pagination.end
-    );
+    this.paginatedSagas = this.filteredSagas.slice(this.pagination.start, this.pagination.end);
   }
 
   paginationChange(): void {
-    this.paginateScenario(this.scenarios);
+    this.paginateSagas(this.sagas);
   }
 
   orderBy(event: OrderBy): void {
@@ -423,14 +418,14 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       reverse: event.reverse
     };
 
-    this.filteredScenarios = orderBy<Scenario>(
-      this.filteredScenarios,
+    this.filteredSagas = orderBy<Saga>(
+      this.filteredSagas,
       this.currentOrderByCriteria.criteria,
       this.currentOrderByCriteria.reverse,
       this.currentOrderByCriteria.secondField
     );
 
-    this.paginateScenario(this.filteredScenarios);
+    this.paginateSagas(this.filteredSagas);
   }
 
   callImportScenario() {
@@ -466,8 +461,10 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     delete json.applicationId;
     delete json.createDate;
     delete json.updateDate;
+    delete json.sagaId;
 
     json.state = SCENARIO_STATE.draft;
+
     json.applicationId = this.stateService.currentApplication._id;
     this.scenarioService
       .postScenario(json)

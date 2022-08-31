@@ -44,13 +44,12 @@
   >
     <tock-scenario-filters
       class="d-block mb-2"
-      [scenarios]="scenarios"
-      (onFilter)="filterScenarios($event)"
+      (onFilter)="filterSagas($event)"
     ></tock-scenario-filters>
 
     <div
       class="d-flex justify-content-end mb-2"
-      *ngIf="!loading.list && paginatedScenarios?.length"
+      *ngIf="!loading.list && paginatedSagas?.length"
     >
       <tock-pagination
         [pagination]="pagination"
@@ -62,7 +61,7 @@
       class="loading"
       [nbSpinner]="loading.list"
     >
-      <nb-card *ngIf="!loading.list && (!scenarios?.length || !filteredScenarios.length)">
+      <nb-card *ngIf="!loading.list && (!sagas?.length || !filteredSagas.length)">
         <nb-card-body class="d-flex">
           <img
             src="{{ baseHref }}assets/images/best_bot_gray.png"
@@ -76,9 +75,9 @@
       </nb-card>
 
       <tock-scenario-list-simple
-        *ngIf="!loading.list && filteredScenarios?.length"
+        *ngIf="!loading.list"
         [nbSpinner]="loading.delete"
-        [scenarios]="paginatedScenarios"
+        [sagas]="paginatedSagas"
         [selectedScenario]="scenarioEdit"
         (onDeleteSaga)="askDeleteSaga($event)"
         (onEdit)="editSaga($event)"

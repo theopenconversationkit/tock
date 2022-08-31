@@ -84,6 +84,7 @@ const initialState = {
   loaded: false,
   loading: false,
   scenarios: [],
+  sagas: [],
   tags: [],
   categories: []
 };

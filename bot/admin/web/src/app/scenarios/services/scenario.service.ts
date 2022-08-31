@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable, of } from 'rxjs';
 import { map, tap, switchMap, filter } from 'rxjs/operators';
 
-import { Scenario } from '../models';
+import { Scenario, Saga } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
 interface ScenarioState {
   loaded: boolean;
   loading: boolean;
   scenarios: Scenario[];
+  sagas: Saga[];
   tags: string[];
   categories: string[];
 }
@@ -17,6 +18,7 @@ const scenariosInitialState: ScenarioState = {
   loaded: false,
   loading: false,
   scenarios: [],
+  sagas: [],
   tags: [],
   categories: []
 };
@@ -92,14 +94,6 @@ export class ScenarioService {
     return merge(notLoaded, loaded);
   }
 
-  // getScenario(id: string): Observable<Scenario> {
-  //   return this.getScenarios().pipe(
-  //     switchMap(() => this.state$),
-  //     mergeMap((state) => state.scenarios),
-  //     filter((scenario) => scenario.id === id)
-  //   );
-  // }
-
   getScenario(id: string): Observable<Scenario | never> {
     return this.getScenarios().pipe(
       switchMap(() => this.state$),
@@ -107,6 +101,56 @@ export class ScenarioService {
         let res: Scenario = state.scenarios.find((s) => s.id === id);
         if (res) return of(res);
         else return of(null);
+      })
+    );
+  }
+
+  private groupScenariosBySaga(state: ScenarioState) {
+    state.scenarios.forEach((scenario) => {
+      let existingSaga = state.sagas.find((saga) => saga.sagaId === scenario.sagaId);
+      if (!existingSaga) {
+        existingSaga = {
+          sagaId: scenario.sagaId,
+          name: scenario.name,
+          description: scenario.description,
+          category: scenario.category,
+          tags: scenario.tags,
+          scenarios: [scenario]
+        };
+        state.sagas.push(existingSaga);
+      } else {
+        if (!existingSaga.scenarios.find((scn) => scn.id === scenario.id)) {
+          existingSaga.scenarios.push(scenario);
+        }
+      }
+      existingSaga.scenarios.sort((a, b) => {
+        return new Date(a.createDate).getTime() - new Date(b.createDate).getTime();
+      });
+    });
+  }
+
+  private cleanRemovedSagaScenarios(state: ScenarioState) {
+    for (let index = state.sagas.length - 1; index >= 0; index--) {
+      const saga = state.sagas[index];
+      for (let indexScn = saga.scenarios.length - 1; indexScn >= 0; indexScn--) {
+        const scenario = saga.scenarios[indexScn];
+        if (!state.scenarios.find((scn) => scn.id === scenario.id)) {
+          saga.scenarios.splice(indexScn, 1);
+        }
+      }
+      if (!saga.scenarios.length) {
+        state.sagas.splice(index, 1);
+      }
+    }
+  }
+
+  getSagas(forceReload: boolean = false): Observable<Array<Saga>> {
+    return this.getScenarios(forceReload).pipe(
+      switchMap(() => this.state$),
+      switchMap((state: ScenarioState) => {
+        this.groupScenariosBySaga(state);
+        this.cleanRemovedSagaScenarios(state);
+        return of(state.sagas);
       })
     );
   }
