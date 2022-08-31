@@ -342,9 +342,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           if (this.sagaEdit.scenarios.length > index) {
-            setTimeout(() => {
-              this.saveSagaEdition(result, index + 1);
-            }, 100);
+            this.saveSagaEdition(result, index + 1);
           } else {
             this.loading.edit = false;
             this.toastrService.success(`Scenarios successfully updated`, 'Success', {

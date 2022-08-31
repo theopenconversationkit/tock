@@ -5,12 +5,12 @@
     <button
       nbButton
       ghost
+      shape="round"
       nbTooltip="Import scenario"
       [disabled]="!configurations?.length"
       (click)="callImportScenario()"
     >
       <nb-icon icon="upload-outline"></nb-icon>
-      Import scenario
     </button>
     <button
       nbButton
