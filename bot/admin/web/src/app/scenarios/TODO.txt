@@ -4,6 +4,10 @@ shared
 
 Scenarios list
 
+        Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios 
+        
+        Besoin d'un champ supplementaire du genre versionComment coté back ?
+
         Adapter la pagination à l'affichage par saga. 
                 Reporter le regroupement par saga au niveau de scenarioService ? 
                 Voir si ca reste compatible avec la préservation de l'état collapsed. Il serait désagréable que le collapse se replie quand on supprime juste un scenario d'une saga
