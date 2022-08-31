@@ -4,7 +4,12 @@ shared
 
 Scenarios list
 
+        scenario-import : deporter les appels api dans le composant de facon à pouvoir afficher le détail en cas d'erreurs
+
         Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios 
+                Une fois fait, refacto scenarioListComponent.edit : scenarioListComponent.edit disparait au profit de scenarioListComponent.editSaga, scenarioListComponent.scenarioEdit disparait au profit de scenarioListComponent.sagaEdit etc... 
+                
+                ScenarioEditComponent ne devrait il pas etre autonome pour dialoguer avec scenarioService ?
         
         Besoin d'un champ supplementaire du genre versionComment coté back ?
 

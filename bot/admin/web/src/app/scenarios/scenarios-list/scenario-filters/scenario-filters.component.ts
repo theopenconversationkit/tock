@@ -12,9 +12,6 @@ import { ScenarioService } from '../../services/scenario.service';
   styleUrls: ['./scenario-filters.component.scss']
 })
 export class ScenarioFiltersComponent implements OnInit, OnDestroy {
-  @Input()
-  scenarios!: Scenario[];
-
   @Output()
   onFilter = new EventEmitter<Filter>();
 

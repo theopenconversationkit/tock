@@ -16,18 +16,16 @@ import { normalizedSnakeCase } from '../../commons/utils';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
-
-export type SagaExtended = Saga & { collapsed?: boolean };
-
 @Component({
   selector: 'tock-scenario-list-simple',
   templateUrl: './scenario-list-simple.component.html',
   styleUrls: ['./scenario-list-simple.component.scss']
 })
-export class ScenarioListSimpleComponent implements OnChanges, OnDestroy {
+export class ScenarioListSimpleComponent implements OnDestroy {
   destroy$ = new Subject();
 
-  @Input() scenarios!: Scenario[];
+  // @Input() scenarios!: Scenario[];
+  @Input() sagas!: Saga[];
   @Input() selectedScenario?: Scenario;
 
   @Output() onEdit = new EventEmitter<Saga>();
@@ -40,55 +38,7 @@ export class ScenarioListSimpleComponent implements OnChanges, OnDestroy {
   orderBy = 'name';
   orderByReverse = false;
 
-  sagas: SagaExtended[] = [];
-
   constructor(protected state: StateService, private datePipe: DatePipe, private router: Router) {}
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.scenarios?.currentValue) {
-      // grouping of scenarios by sagas. We don't just empty this.sagas every time because we want to keep their collapsed state
-      this.scenarios.forEach((scenario) => {
-        let existingSaga = this.sagas.find((saga) => saga.sagaId === scenario.sagaId);
-        if (!existingSaga) {
-          existingSaga = {
-            sagaId: scenario.sagaId,
-            name: scenario.name,
-            description: scenario.description,
-            category: scenario.category,
-            tags: scenario.tags,
-            scenarios: [scenario]
-          };
-          this.sagas.push(existingSaga);
-        } else {
-          if (!existingSaga.scenarios.find((scn) => scn.id === scenario.id)) {
-            existingSaga.scenarios.push(scenario);
-          }
-        }
-        // sorting by creation date to display an history list
-        existingSaga.scenarios.sort((a, b) => {
-          return new Date(a.createDate).getTime() - new Date(b.createDate).getTime();
-        });
-      });
-
-      // clean deleted scenarios / sagas
-      for (let index = this.sagas.length - 1; index >= 0; index--) {
-        const saga = this.sagas[index];
-        for (let indexScn = saga.scenarios.length - 1; indexScn >= 0; indexScn--) {
-          const scenario = saga.scenarios[indexScn];
-          if (!this.scenarios.find((scn) => scn.id === scenario.id)) {
-            saga.scenarios.splice(indexScn, 1);
-          }
-        }
-        if (!saga.scenarios.length) {
-          this.sagas.splice(index, 1);
-        }
-      }
-    }
-  }
-
-  collapsedChange(event, saga: SagaExtended) {
-    saga.collapsed = event;
-  }
 
   setOrderBy(criteria: string): void {
     if (criteria == this.orderBy) {
@@ -101,20 +51,30 @@ export class ScenarioListSimpleComponent implements OnChanges, OnDestroy {
     this.onOrderBy.emit({ criteria: this.orderBy, reverse: this.orderByReverse });
   }
 
-  sagaHasDraft(saga: SagaExtended) {
+  sagaHasDraft(saga: Saga) {
     return saga.scenarios.find((scn) => scn.state === SCENARIO_STATE.draft);
   }
 
-  design(event: MouseEvent, saga: SagaExtended) {
+  design(event: MouseEvent, saga: Saga) {
     event.stopPropagation();
+    let scenarioToOpen;
     const drafts = saga.scenarios.filter((scn) => scn.state === SCENARIO_STATE.draft);
-    const lastDraft = drafts.sort((a, b) => {
-      return new Date(b.createDate).getTime() - new Date(a.createDate).getTime();
-    });
-    this.router.navigateByUrl('/scenarios/' + lastDraft[0].id);
+    if (drafts.length) {
+      scenarioToOpen = drafts.sort((a, b) => {
+        return new Date(b.createDate).getTime() - new Date(a.createDate).getTime();
+      })[0];
+    } else {
+      const current = saga.scenarios.filter((scn) => scn.state === SCENARIO_STATE.current);
+      if (current) {
+        scenarioToOpen = current[0];
+      } else {
+        scenarioToOpen = saga.scenarios[saga.scenarios.length - 1];
+      }
+    }
+    this.router.navigateByUrl('/scenarios/' + scenarioToOpen.id);
   }
 
-  edit(event: MouseEvent, saga: SagaExtended): void {
+  edit(event: MouseEvent, saga: Saga): void {
     event.stopPropagation();
     this.onEdit.emit(saga);
   }
