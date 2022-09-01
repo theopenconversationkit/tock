@@ -15,7 +15,7 @@
  */
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
-import * as html2pdf from 'html2pdf.js';
+// import * as html2pdf from 'html2pdf.js';
 import { ChartDialogComponent } from '../chart-dialog/chart-dialog.component';
 
 import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
@@ -509,16 +509,16 @@ export class ChartComponent implements OnChanges {
     return `tock-${exportType}export-` + this.title + `.${exportType}`;
   }
 
-  onPdfAction() {
-    const options = {
-      margin: 0,
-      filename: this.getFileName('pdf'),
-      image: { type: 'jpeg ', quality: 0.95 },
-      html2canvas: { scale: 1 },
-      jsPDF: { orientation: 'landscape', format: 'a2', compress: true },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-    let element = document.getElementById(this.pdfId);
-    html2pdf().from(element).set(options).save();
-  }
+  // onPdfAction() {
+  //   const options = {
+  //     margin: 0,
+  //     filename: this.getFileName('pdf'),
+  //     image: { type: 'jpeg ', quality: 0.95 },
+  //     html2canvas: { scale: 1 },
+  //     jsPDF: { orientation: 'landscape', format: 'a2', compress: true },
+  //     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  //   };
+  //   let element = document.getElementById(this.pdfId);
+  //   html2pdf().from(element).set(options).save();
+  // }
 }

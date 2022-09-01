@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { StateService } from '../core-nlp/state.service';
 import { EntityDefinition, Intent, IntentsCategory } from '../model/nlp';
@@ -97,8 +97,9 @@ export class IntentsComponent implements OnInit {
         category: intent.category
       }
     });
+
     dialogRef.onClose.subscribe((result) => {
-      if (result.name) {
+      if (result?.name) {
         this.nlp
           .saveIntent(
             new Intent(
@@ -161,7 +162,7 @@ export class IntentsComponent implements OnInit {
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result !== 'cancel') {
+      if (result && result !== 'cancel') {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
           (response) => {
@@ -225,7 +226,7 @@ export class IntentsComponent implements OnInit {
     });
 
     dialogRef.onClose.subscribe((result) => {
-      if (result !== 'cancel') {
+      if (result && result !== 'cancel') {
         this.addSharedIntent(this.selectedIntent, result.intent);
       } else {
         this.selectedIntent = null;

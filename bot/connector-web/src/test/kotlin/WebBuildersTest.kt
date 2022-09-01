@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import ai.tock.bot.connector.web.HrefTargetType
+import ai.tock.bot.connector.web.*
 import ai.tock.bot.connector.web.send.ButtonStyle
 import ai.tock.bot.connector.web.send.ButtonType
-import ai.tock.bot.connector.web.webIntentQuickReply
-import ai.tock.bot.connector.web.webNlpQuickReply
-import ai.tock.bot.connector.web.webPostbackButton
-import ai.tock.bot.connector.web.webUrlButton
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.action.SendAttachment
+import ai.tock.translator.raw
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -211,6 +211,64 @@ internal class WebBuildersTest {
             )
             Assertions.assertThat(webNlpQuickReply.type).isEqualTo(ButtonType.quick_reply)
             Assertions.assertThat(webNlpQuickReply).hasFieldOrPropertyWithValue("style", null)
+        }
+    }
+
+    @Nested
+    inner class WebImageTests {
+
+        @Test
+        fun `webImage with no description`() {
+            val webImageReply = bus.webImage(
+                imageUrl = "https://ab.c.de",
+                title = "title"
+            )
+            Assertions.assertThat(webImageReply.image?.file?.type).isEqualTo(SendAttachment.AttachmentType.image.toString())
+            Assertions.assertThat(webImageReply.image?.file?.description).isNull()
+        }
+
+        @Test
+        fun `webImage with description`() {
+            every { bus.translate("description") } returns "description".raw
+            val webImageReply = bus.webImage(
+                imageUrl = "https://ab.c.de",
+                title = "title",
+                description = "description"
+            )
+            Assertions.assertThat(webImageReply.image?.file?.type).isEqualTo(SendAttachment.AttachmentType.image.toString())
+            Assertions.assertThat(webImageReply.image?.file?.description).isEqualTo("description")
+            verify { bus.translate("description") }
+        }
+    }
+
+    @Nested
+    inner class WebCardWithAttachmentTests {
+
+        @Test
+        fun `webCard with no description`() {
+            val webCardWithAttachmentReply = bus.webCardWithAttachment(
+                title = "title",
+                subTitle = "subTitle",
+                attachmentUrl = "https://ab.c.de",
+                buttons = emptyList()
+            )
+            Assertions.assertThat(webCardWithAttachmentReply.file?.type).isEqualTo(SendAttachment.AttachmentType.file.toString())
+            Assertions.assertThat(webCardWithAttachmentReply.file?.description).isNull()
+        }
+
+        @Test
+        fun `webCard with description`() {
+            every { bus.translate("description") } returns "description".raw
+            val webCardWithAttachmentReply = bus.webCardWithAttachment(
+                title = "title",
+                subTitle = "subTitle",
+                attachmentUrl = "https://ab.c.de",
+                buttons = emptyList(),
+                fileDescription = "description"
+            )
+            Assertions.assertThat(webCardWithAttachmentReply.file?.type).isEqualTo(SendAttachment.AttachmentType.file.toString())
+            Assertions.assertThat(webCardWithAttachmentReply.file?.description).isEqualTo("description")
+            verify { bus.translate("description") }
         }
     }
 }

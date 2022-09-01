@@ -89,7 +89,7 @@ object I18nCsvCodec {
             val isNamespaceInCsv = headers.contains(CsvColumn.Namespace.name)
             parsedCsv
                 .records
-                .mapIndexedNotNull { i, it ->
+                .mapNotNull {
                     I18nLabel(
                         if (isNamespaceInCsv)
                             it.get(CsvColumn.Id.name).replaceFirst(it.get(CsvColumn.Namespace.name), namespace).toId()

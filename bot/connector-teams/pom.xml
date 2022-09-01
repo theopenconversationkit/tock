@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>22.3.1-SNAPSHOT</version>
+        <version>22.3.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-connector-teams</artifactId>
@@ -30,7 +30,7 @@
 
     <properties>
         <microsoft.bot>4.14.2</microsoft.bot>
-        <nimbus-jose-jwt>9.21</nimbus-jose-jwt>
+        <nimbus-jose-jwt>9.23</nimbus-jose-jwt>
         <gson>2.9.0</gson>
     </properties>
 

@@ -62,6 +62,11 @@ export class MediaDialogComponent implements OnInit {
         this.state.currentLocale
       ).label;
     }
+    if (this.media.file && this.media.file.description) {
+      this.media.file.descriptionLabel = this.media.file.description.defaultLocalizedLabelForLocale(
+        this.state.currentLocale
+      ).label;
+    }
 
     this.media.actions.forEach(
       (a) => (a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label)
@@ -87,6 +92,10 @@ export class MediaDialogComponent implements OnInit {
 
   private isSubtitle() {
     return this.media.subTitleLabel && this.media.subTitleLabel.trim().length !== 0;
+  }
+
+  private isDescription() {
+    return this.media.file && this.media.file.descriptionLabel && this.media.file.descriptionLabel.trim().length !== 0;
   }
 
   private isFile() {
@@ -171,6 +180,31 @@ export class MediaDialogComponent implements OnInit {
         }
       } else {
         this.media.subTitle = null;
+      }
+
+      if (this.isDescription()) {
+        if (this.media.file && this.media.file.description) {
+          this.bot
+            .saveI18nLabel(
+              this.media.file.description.changeDefaultLabelForLocale(
+                this.state.currentLocale,
+                this.media.file.descriptionLabel.trim()
+              )
+            )
+            .subscribe((_) => {});
+        } else {
+          this.bot
+            .createI18nLabel(
+              new CreateI18nLabelRequest(
+                this.category,
+                this.media.file.descriptionLabel.trim(),
+                this.state.currentLocale
+              )
+            )
+            .subscribe((i18n) => (this.media.file.description = i18n));
+        }
+      } else if (this.media.file) {
+        this.media.file.description = null;
       }
 
       this.media.actions = this.media.actions

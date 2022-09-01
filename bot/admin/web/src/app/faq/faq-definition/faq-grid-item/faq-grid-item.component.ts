@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {saveAs} from "file-saver";
+import {saveAs} from "file-saver-es";
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Observable, of, ReplaySubject} from 'rxjs';
 import {delay, take, tap} from 'rxjs/operators';

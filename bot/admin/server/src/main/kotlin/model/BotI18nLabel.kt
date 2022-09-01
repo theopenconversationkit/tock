@@ -65,7 +65,7 @@ data class BotI18nLabel(
             label.i18n.mapTo(LinkedHashSet()) { BotI18nLocalizedLabel(it, selectStats(it, label.i18n, stats)) },
             label.defaultLabel,
             label.defaultLocale,
-            stats.sumBy { it.count },
+            stats.sumOf { it.count },
             stats.maxByOrNull { it.lastUpdate }?.lastUpdate,
             stats.filter { label.i18n.none { l -> it.hasSameLanguage(l) } },
             label.version
