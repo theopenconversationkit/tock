@@ -12,6 +12,7 @@ import {
   NbIconModule,
   NbInputModule,
   NbListModule,
+  NbRadioModule,
   NbSelectModule,
   NbSpinnerModule,
   NbStepperModule,
@@ -49,6 +50,7 @@ import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
 import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
 import { ScenarioImportComponent } from './scenarios-list/scenario-import/scenario-import.component';
+import { ScenarioExportComponent } from './scenarios-list/scenario-export/scenario-export.component';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
 import { ScenariosResolver } from './scenarios.resolver';
@@ -81,7 +83,8 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
     NbAccordionModule,
     NbContextMenuModule,
     NbAlertModule,
-    NbStepperModule
+    NbStepperModule,
+    NbRadioModule
   ],
   declarations: [
     ScenariosListComponent,
@@ -103,7 +106,8 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
     ScenarioStateGroupComponent,
     ScenarioProductionStateGroupAddComponent,
     ScenarioTransitionComponent,
-    ScenarioImportComponent
+    ScenarioImportComponent,
+    ScenarioExportComponent
   ],
   exports: [],
   providers: [
