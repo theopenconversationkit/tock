@@ -124,4 +124,9 @@ interface Connector {
      * Default returns an empty list.
      */
     fun toConnectorMessage(message: MediaMessage): BotBus.() -> List<ConnectorMessage> = { emptyList() }
+
+    /**
+     * Determines if this connector can handle other connector messages.
+     */
+    fun canHandleMessageFor(otherConnectorType: ConnectorType): Boolean = connectorType == otherConnectorType
 }
