@@ -4,6 +4,8 @@ shared
 
 Scenarios list
 
+        Ajouter l'applicationId au get des scenarios
+
         scenario-import : deporter les appels api dans le composant de facon à pouvoir afficher le détail en cas d'erreurs
 
         Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios 
@@ -13,15 +15,13 @@ Scenarios list
         
         Besoin d'un champ supplementaire du genre versionComment coté back ?
 
-        Adapter la pagination à l'affichage par saga. 
-                Reporter le regroupement par saga au niveau de scenarioService ? 
-                Voir si ca reste compatible avec la préservation de l'état collapsed. Il serait désagréable que le collapse se replie quand on supprime juste un scenario d'une saga
-
-        Activation/desactivation tickStory => quelle mécanique ?
+        Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
 
         Suppression de saga => un endpoint de suppression de tickStory est necessaire
 
-        Supprimer la TickStory à la suppression d'un scenario "current". Adapter le warning pour signaler que la stroy va également être supprimée
+        Supprimer la TickStory à la suppression d'un scenario "current". Adapter le warning pour signaler que la story va également être supprimée
+
+        #DONE Adapter la pagination à l'affichage par saga. 
 
         #DONE Import de scenario
 
