@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.alcmeon
 
-import ai.tock.shared.security.shaS256
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
-import java.util.concurrent.TimeUnit
+const val whatsappBackend = "whatsapp"
+const val facebookBackend = "facebook"
 
-object UserHashedIdCache {
+enum class AlcmeonBackend(val backendId: String) {
+    WHATSAPP(whatsappBackend),
+    FACEBOOK(facebookBackend);
 
-    private val idCache: Cache<String, String> =
-        CacheBuilder.newBuilder()
-            .expireAfterAccess(2, TimeUnit.MINUTES)
-            .build()
-
-    fun createHashedId(id: String): String = shaS256(id).apply { idCache.put(this, id) }
-
-    fun getRealId(hashedId: String): String = idCache.getIfPresent(hashedId) ?: error("real id not found: $hashedId")
+    companion object {
+        fun findBackend(backend: String) =
+            values().firstOrNull { it.backendId == backend } ?: error("Unknown backend $backend")
+    }
 }

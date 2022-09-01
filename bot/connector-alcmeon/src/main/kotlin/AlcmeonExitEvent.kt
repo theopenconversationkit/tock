@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp
+package ai.tock.bot.connector.alcmeon
 
-import ai.tock.shared.security.shaS256
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
-import java.util.concurrent.TimeUnit
+import ai.tock.bot.engine.event.Event
 
-object UserHashedIdCache {
+class AlcmeonExitEvent(applicationId: String, val exitReason: String, val delayInMs: Long = 0L) : Event(applicationId)
 
-    private val idCache: Cache<String, String> =
-        CacheBuilder.newBuilder()
-            .expireAfterAccess(2, TimeUnit.MINUTES)
-            .build()
-
-    fun createHashedId(id: String): String = shaS256(id).apply { idCache.put(this, id) }
-
-    fun getRealId(hashedId: String): String = idCache.getIfPresent(hashedId) ?: error("real id not found: $hashedId")
-}

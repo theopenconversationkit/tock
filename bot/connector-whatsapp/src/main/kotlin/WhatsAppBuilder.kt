@@ -44,7 +44,7 @@ fun <T : Bus<T>> T.sendToWhatsApp(
     messageProvider: T.() -> WhatsAppBotMessage,
     delay: Long = defaultDelay(currentAnswerIndex)
 ): T {
-    if (targetConnectorType == whatsAppConnectorType) {
+    if (isCompatibleWith(whatsAppConnectorType)) {
         withMessage(messageProvider(this))
         send(delay)
     }
@@ -58,7 +58,7 @@ fun <T : Bus<T>> T.endForWhatsApp(
     messageProvider: T.() -> WhatsAppBotMessage,
     delay: Long = defaultDelay(currentAnswerIndex)
 ): T {
-    if (targetConnectorType == whatsAppConnectorType) {
+    if (isCompatibleWith(whatsAppConnectorType)) {
         withMessage(messageProvider(this))
         end(delay)
     }
