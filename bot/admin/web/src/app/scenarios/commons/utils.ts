@@ -8,7 +8,7 @@ import {
   TickActionDefinition
 } from '../models';
 
-import { saveAs } from 'file-saver';
+import { saveAs } from 'file-saver-es';
 
 export function normalize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
