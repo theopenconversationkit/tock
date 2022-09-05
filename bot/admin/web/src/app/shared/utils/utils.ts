@@ -4,12 +4,7 @@ export interface OrderBy {
   secondField?: string;
 }
 
-export function orderBy<T>(
-  array: T[],
-  field: string,
-  reverse: boolean = false,
-  secondField?: string
-): T[] {
+export function orderBy<T>(array: T[], field: string, reverse: boolean = false, secondField?: string): T[] {
   if (!Array.isArray(array)) {
     throw new TypeError('Invalid array argument');
   }
