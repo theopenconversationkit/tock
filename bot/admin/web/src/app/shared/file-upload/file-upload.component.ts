@@ -35,7 +35,7 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
   }
 
   set files(f: File[]) {
-    if (f) {
+    if (f?.length) {
       this._files = this.multiple ? this.concatFilesWhithoutDuplicate(this.files, f) : f;
       this.onChange(this._files);
       this.onTouch(this._files);
@@ -58,8 +58,7 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
     this.subscriptions.unsubscribe();
   }
 
-  @HostListener('change', ['$event.target.files']) emitFiles(event: FileList) {
-    const fileList: FileList = event;
+  @HostListener('change', ['$event.target.files']) emitFiles(fileList: FileList) {
     const files = this.getFiles(fileList);
 
     this.files = files;
@@ -84,11 +83,7 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
       this.preventDefault(event);
       this.isFilesContainerHover = false;
       const fileList = event.dataTransfer.files;
-      const files = this.getFiles(fileList);
-
-      if (files.length) {
-        this.files = files;
-      }
+      this.emitFiles(fileList);
     }
   }
 
@@ -139,7 +134,7 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
     return this.filesInError?.includes(file.name);
   }
 
-  writeValue(v: null): void {
+  writeValue(): void {
     // clear file input
     this.host.nativeElement.value = '';
     this.files = [];

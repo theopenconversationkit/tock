@@ -1,4 +1,7 @@
-<div [class.max-width]="!fullWidth">
+<div
+  [class.max-width]="!fullWidth"
+  data-testid="root"
+>
   <input
     type="file"
     id="file"
@@ -12,17 +15,18 @@
     class="d-flex flex-column justify-content-between gap-4"
     [class.max-width]="!fullWidth"
     [class.dragHover]="isFilesContainerHover && !disabled"
+    data-testid="input-file-zone"
   >
     <div
       *ngIf="files.length"
       class="files"
+      data-testid="files"
     >
       <div
         *ngFor="let file of files"
         class="file"
         [class.error]="wrongType(file) || wrongFormat(file)"
         (click)="preventDefault($event)"
-        data-testid="files"
       >
         <nb-icon icon="file-text-outline"></nb-icon>
         <div class="footer">
@@ -41,7 +45,6 @@
             size="small"
             type="button"
             (click)="preventDefault($event); removeFile(file.name)"
-            data-testid="remove-file-button"
           >
             <nb-icon icon="trash-outline"></nb-icon>
           </button>
@@ -57,9 +60,10 @@
       <span>or</span>
       <span
         class="button"
-        data-testid="browse-for-file-button"
-        >Browse for file<span *ngIf="multiple">s</span></span
+        data-testid="browse-for-file"
       >
+        Browse for file<span *ngIf="multiple">s</span>
+      </span>
     </div>
   </label>
 </div>
