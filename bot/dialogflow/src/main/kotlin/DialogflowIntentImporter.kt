@@ -29,6 +29,7 @@ import ai.tock.nlp.front.shared.codec.SentenceDump
 import ai.tock.nlp.front.shared.codec.SentencesDump
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.sharedModule
@@ -37,8 +38,8 @@ import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
-import mu.KotlinLogging
 import java.util.Locale
+import mu.KotlinLogging
 
 /**
  * Intent Importer from Dialogflow
@@ -72,7 +73,7 @@ object DialogflowIntentImporter {
                 val sentences = mutableListOf<SentenceDump>()
 
                 for (dialogflowIntent in DialogflowService.getIntents(projectId)) {
-                    val intentName = dialogflowIntent.displayName.replace(" ", "_").toLowerCase()
+                    val intentName = dialogflowIntent.displayName.replace(" ", "_").lowercase(defaultLocale)
 
                     // Create intent if not exist
                     var intentDefinition = FrontClient.getIntentByNamespaceAndName(application.namespace, intentName)
@@ -105,7 +106,8 @@ object DialogflowIntentImporter {
                     }
 
                     // Create a new story with simple answers
-                    val simpleAnswers = createSimpleAnswers(dialogflowIntent.messagesList, locale, application.namespace)
+                    val simpleAnswers =
+                        createSimpleAnswers(dialogflowIntent.messagesList, locale, application.namespace)
                     if (simpleAnswers.isNotEmpty()) {
                         val storyDefinitionConfiguration = StoryDefinitionConfiguration(
                             intentName,

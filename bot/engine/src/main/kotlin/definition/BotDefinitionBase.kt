@@ -17,6 +17,7 @@
 package ai.tock.bot.definition
 
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
@@ -50,7 +51,8 @@ open class BotDefinitionBase(
     override val handleAttachmentStory: StoryDefinition? = null,
     override val eventListener: EventListener = EventListenerBase(),
     override val keywordStory: StoryDefinition = defaultKeywordStory,
-    override val flowDefinition: DialogFlowDefinition? = null
+    override val flowDefinition: DialogFlowDefinition? = null,
+    override val botEnabledListener: (Action) -> Unit = {},
 ) : BotDefinition {
 
     companion object {

@@ -16,6 +16,7 @@ import { Pagination } from '../../shared/pagination/pagination.component';
 import { OrderBy, orderBy } from '../../shared/utils';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ScenarioImportComponent } from './scenario-import/scenario-import.component';
+import { ScenarioExportComponent } from './scenario-export/scenario-export.component';
 
 @Component({
   selector: 'scenarios-list',
@@ -426,6 +427,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     );
 
     this.paginateSagas(this.filteredSagas);
+  }
+
+  callExportScenario() {
+    const modal = this.dialogService.openDialog(ScenarioExportComponent, {
+      context: { sagas: this.sagas }
+    });
   }
 
   callImportScenario() {

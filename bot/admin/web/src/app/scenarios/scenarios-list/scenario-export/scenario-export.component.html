@@ -1,0 +1,53 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between align-items-center">
+    <h4>Export scenarios dumps</h4>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Cancel"
+      (click)="cancel()"
+      class="ml-3"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <form
+      [formGroup]="form"
+      (submit)="export()"
+    >
+      <div class="row main-row">
+        <div class="col-12">
+          <nb-radio-group
+            formControlName="allOrCurrentOnly"
+            name="reactive-forms-group"
+          >
+            <nb-radio value="one"
+              >For each saga, export only the current scenario or the most recent draft
+              version</nb-radio
+            >
+            <nb-radio value="all">Export all scenarios versions of all sagas</nb-radio>
+          </nb-radio-group>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer class="d-flex justify-content-between">
+    <button
+      nbButton
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      status="primary"
+      (click)="export()"
+    >
+      Export
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -229,8 +229,9 @@ export class StepComponent implements OnInit {
         entityValue: e ? e.value : null
       }
     });
+
     dialogRef.afterClosed().subscribe((result) => {
-      if (result.entity) {
+      if (result?.entity) {
         if (!result.role) {
           this.step.entity = null;
         } else {

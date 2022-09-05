@@ -1,0 +1,35 @@
+{
+  "responses": [
+    {
+      "card": {
+        "title": "title",
+        "subTitle": "subTitle",
+        "file": {
+          "name": "imageName",
+          "url": "http://www.sncf.com/image.png",
+          "type": "image",
+          "description": "description"
+        },
+        "buttons": [
+          {
+            "title": "title",
+            "payload": "payload",
+            "type": "postback",
+            "style": "primary",
+            "clazz": "postback_button"
+          },
+          {
+            "title": "title",
+            "url": "http://www.sncf.com",
+            "type": "web_url",
+            "target": "_blank",
+            "style": "primary",
+            "clazz": "url_button"
+          }
+        ]
+      },
+      "version": "1",
+      "type": "WebMessage"
+    }
+  ]
+}

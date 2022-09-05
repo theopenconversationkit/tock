@@ -1,6 +1,17 @@
 <nb-card>
   <nb-card-header class="d-flex justify-content-between align-items-center">
-    <h4>Import a scenario</h4>
+    <h4>Import scenarios dumps</h4>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Cancel"
+      (click)="importCancel()"
+      class="ml-3"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
   </nb-card-header>
   <nb-card-body>
     <form
@@ -11,7 +22,7 @@
         <div class="col-12">
           <div>
             <tock-form-control
-              label="Scenario dump file"
+              label="Scenario dump files"
               name="importFile"
               required="true"
               [controls]="filesSources"

@@ -30,6 +30,7 @@ title: Table des matières
         - [Construire un modèle conversationnel](../user/guides/build-model)
         - [Créer un bot multicanal (connecteurs)](../user/guides/canaux)
         - [Créer un bot multilingue (internationalisation)](../user/guides/i18n)
+        - [Restreindre la portée des intentions)](../user/guides/intents-restrictions)
 
 - Développer avec Tock :
     - [Modes disponibles](../dev/modes)

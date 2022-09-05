@@ -5,6 +5,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.StoryTag
+import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -75,6 +76,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _configuredAnswers_set : Boolean = false
             var _configuredSteps_: MutableList<StoryDefinitionConfigurationByBotStep>? = null
             var _configuredSteps_set : Boolean = false
+            var _nextIntentsQualifiers_: MutableList<NlpIntentQualifier>? = null
+            var _nextIntentsQualifiers_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -185,6 +188,11 @@ internal class StoryDefinitionConfiguration_Deserializer :
                              else p.readValueAs(_configuredSteps__reference);
                             _configuredSteps_set = true
                             }
+                    "nextIntentsQualifiers" -> {
+                            _nextIntentsQualifiers_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_nextIntentsQualifiers__reference);
+                            _nextIntentsQualifiers_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -197,7 +205,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     && _version_set && _namespace_set && _mandatoryEntities_set && _steps_set &&
                     _name_set && _category_set && _description_set && _userSentence_set &&
                     _userSentenceLocale_set && _configurationName_set && _features_set && __id_set
-                    && _tags_set && _configuredAnswers_set && _configuredSteps_set)
+                    && _tags_set && _configuredAnswers_set && _configuredSteps_set &&
+                    _nextIntentsQualifiers_set)
                     StoryDefinitionConfiguration(storyId = _storyId_!!, botId = _botId_!!, intent =
                             _intent_!!, currentType = _currentType_!!, answers = _answers_!!,
                             version = _version_!!, namespace = _namespace_!!, mandatoryEntities =
@@ -206,7 +215,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                             _userSentence_!!, userSentenceLocale = _userSentenceLocale_,
                             configurationName = _configurationName_, features = _features_!!, _id =
                             __id_!!, tags = _tags_!!, configuredAnswers = _configuredAnswers_!!,
-                            configuredSteps = _configuredSteps_!!)
+                            configuredSteps = _configuredSteps_!!, nextIntentsQualifiers =
+                            _nextIntentsQualifiers_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_storyId_set)
@@ -248,7 +258,9 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     if(_configuredAnswers_set)
                     map[parameters.getValue("configuredAnswers")] = _configuredAnswers_
                     if(_configuredSteps_set)
-                    map[parameters.getValue("configuredSteps")] = _configuredSteps_ 
+                    map[parameters.getValue("configuredSteps")] = _configuredSteps_
+                    if(_nextIntentsQualifiers_set)
+                    map[parameters.getValue("nextIntentsQualifiers")] = _nextIntentsQualifiers_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -280,7 +292,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                 primaryConstructor.findParameterByName("_id")!!, "tags" to
                 primaryConstructor.findParameterByName("tags")!!, "configuredAnswers" to
                 primaryConstructor.findParameterByName("configuredAnswers")!!, "configuredSteps" to
-                primaryConstructor.findParameterByName("configuredSteps")!!) }
+                primaryConstructor.findParameterByName("configuredSteps")!!, "nextIntentsQualifiers"
+                to primaryConstructor.findParameterByName("nextIntentsQualifiers")!!) }
 
         private val _answers__reference: TypeReference<List<AnswerConfiguration>> = object :
                 TypeReference<List<AnswerConfiguration>>() {}
@@ -307,5 +320,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
         private val _configuredSteps__reference:
                 TypeReference<List<StoryDefinitionConfigurationByBotStep>> = object :
                 TypeReference<List<StoryDefinitionConfigurationByBotStep>>() {}
+
+        private val _nextIntentsQualifiers__reference: TypeReference<List<NlpIntentQualifier>> =
+                object : TypeReference<List<NlpIntentQualifier>>() {}
     }
 }

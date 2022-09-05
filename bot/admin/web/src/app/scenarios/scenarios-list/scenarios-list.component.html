@@ -6,7 +6,18 @@
       nbButton
       ghost
       shape="round"
-      nbTooltip="Import scenario"
+      nbTooltip="Export scenarios dumps"
+      [disabled]="!configurations?.length"
+      (click)="callExportScenario()"
+      [disabled]="!sagas.length"
+    >
+      <nb-icon icon="download-outline"></nb-icon>
+    </button>
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Import scenarios dumps"
       [disabled]="!configurations?.length"
       (click)="callImportScenario()"
     >
@@ -17,6 +28,7 @@
       status="primary"
       [disabled]="!configurations?.length"
       (click)="addOrEditScenario()"
+      class="ml-2"
     >
       <nb-icon icon="plus-outline"></nb-icon>
       Create

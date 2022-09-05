@@ -8,6 +8,8 @@ import {
   TickActionDefinition
 } from '../models';
 
+import { saveAs } from 'file-saver-es';
+
 export function normalize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -313,4 +315,13 @@ export function readFileAsText(file: File) {
 
     fr.readAsText(file);
   });
+}
+
+export function exportJsonDump(obj: Object, fileName: string) {
+  saveAs(
+    new Blob([JSON.stringify(obj)], {
+      type: 'application/json'
+    }),
+    fileName + '.json'
+  );
 }

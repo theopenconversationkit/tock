@@ -1,18 +1,9 @@
-import { saveAs } from 'file-saver';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 import { OrderBy } from '../../../shared/utils';
 import { Saga, Scenario, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
-import { normalizedSnakeCase } from '../../commons/utils';
+import { exportJsonDump, normalizedSnakeCase } from '../../commons/utils';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
@@ -94,21 +85,15 @@ export class ScenarioListSimpleComponent implements OnDestroy {
   }
 
   download(scenario: Scenario) {
-    var jsonBlob = new Blob([JSON.stringify(scenario)], {
-      type: 'application/json'
-    });
+    const fileName = [
+      this.state.currentApplication.name,
+      'SCENARIO',
+      normalizedSnakeCase(scenario.name),
+      scenario.state,
+      this.datePipe.transform(scenario.createDate, 'yyyy-MM-dd')
+    ].join('_');
 
-    saveAs(
-      jsonBlob,
-      this.state.currentApplication.name +
-        '_' +
-        this.state.currentLocale +
-        '_scenario_' +
-        normalizedSnakeCase(scenario.name) +
-        '_' +
-        this.datePipe.transform(new Date(), 'yyyy-MM-dd') +
-        '.json'
-    );
+    exportJsonDump(scenario, fileName);
   }
 
   ngOnDestroy(): void {

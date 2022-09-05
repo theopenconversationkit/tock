@@ -611,6 +611,9 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
           bot.duplicateLabel(clonedMediaMessage.subTitle, (i18n) => {
             clonedMediaMessage.subTitle = i18n;
           });
+          bot.duplicateLabel(clonedMediaMessage.file?.description, (i18n) => {
+            clonedMediaMessage.file.description = i18n;
+          });
           clonedMediaMessage.actions.forEach((action) => {
             bot.duplicateLabel(action.title, (i18n) => {
               action.title = i18n;
@@ -728,6 +731,7 @@ export class MediaAction extends Media {
   }
 
   public titleLabel = '';
+  public readonly internalId = Math.random()
 
   static fromJSON(json: any): MediaAction {
     const value = Object.create(MediaAction.prototype);
@@ -753,8 +757,11 @@ export class MediaFile {
     public name: string,
     public id: string,
     public type: AttachmentType,
-    public externalUrl?: string
+    public externalUrl?: string,
+    public description?: I18nLabel
   ) {}
+
+  public descriptionLabel: string;
 
   url(baseUrl: string): String {
     return this.externalUrl ? this.externalUrl : `${baseUrl}/file/${this.id}.${this.suffix}`;
@@ -786,7 +793,8 @@ export class MediaFile {
     }
     const value = Object.create(MediaFile.prototype);
     const result = Object.assign(value, json, {
-      type: AttachmentType[json.type]
+      type: AttachmentType[json.type],
+      description: json.description ? I18nLabel.fromJSON(json.description) : null
     });
     return result;
   }

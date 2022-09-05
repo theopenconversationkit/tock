@@ -20,7 +20,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>22.3.1-SNAPSHOT</version>
+    <version>22.3.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -31,19 +31,19 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.6.20</kotlin>
-        <couroutine>1.6.1</couroutine>
+        <kotlin>1.7.0</kotlin>
+        <couroutine>1.6.3</couroutine>
 
-        <slf4j>1.7.30</slf4j>
-        <logback>1.2.3</logback>
+        <slf4j>1.7.36</slf4j>
+        <logback>1.2.11</logback>
 
-        <kotlin-logging>2.1.21</kotlin-logging>
+        <kotlin-logging>2.1.23</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.5.1</kmongo>
-        <jackson>2.13.2</jackson>
-        <jackson-databind>2.13.2.2</jackson-databind>
-        <jackson-module>2.13.2</jackson-module>
+        <kmongo>4.6.1</kmongo>
+        <jackson>2.13.3</jackson>
+        <jackson-databind>2.13.3</jackson-databind>
+        <jackson-module>2.13.3</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
@@ -55,29 +55,29 @@
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
         <guava>31.1-jre</guava>
-        <google-auth>1.33.3</google-auth>
-        <google-http-client>1.41.7</google-http-client>
+        <google-auth>1.34.1</google-auth>
+        <google-http-client>1.42.0</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.9.0</commons-csv>
         <commons-text>1.9</commons-text>
         <emoji>5.0</emoji>
         <commons-codec>1.15</commons-codec>
         <commons-lang>3.12.0</commons-lang>
-        <commonmark>0.18.2</commonmark>
+        <commonmark>0.19.0</commonmark>
         <json>20220320</json>
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>25.1.0</google>
-        <aws-sdk>1.12.201</aws-sdk>
+        <google>25.4.0</google>
+        <aws-sdk>1.12.248</aws-sdk>
         <pac4j>4.5.2</pac4j>
         <vertx-pac4j>5.0.1</vertx-pac4j>
 
         <junit-jupiter>5.8.2</junit-jupiter>
 
-        <mockk>1.12.3</mockk>
+        <mockk>1.12.4</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.12.9</byte-buddy>
+        <byte-buddy>1.12.12</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M5</plugin.surefire>
