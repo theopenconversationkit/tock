@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NbButtonModule, NbIconModule, NbTooltipModule } from '@nebular/theme';
+import { TestSharedModule } from '../test-shared.module';
 
 import { FileUploadComponent } from './file-upload.component';
 
@@ -8,7 +10,8 @@ describe('FileUploadComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FileUploadComponent]
+      declarations: [FileUploadComponent],
+      imports: [TestSharedModule, NbButtonModule, NbIconModule, NbTooltipModule]
     }).compileComponents();
   });
 
@@ -18,7 +21,7 @@ describe('FileUploadComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  fit('should create', () => {
     expect(component).toBeTruthy();
   });
 });

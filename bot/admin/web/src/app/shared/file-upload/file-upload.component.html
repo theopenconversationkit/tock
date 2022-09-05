@@ -5,12 +5,13 @@
     class="inputfile"
     [disabled]="disabled"
     [multiple]="multiple"
+    data-testid="input-file"
   />
   <label
     for="file"
     class="d-flex flex-column justify-content-between gap-4"
     [class.max-width]="!fullWidth"
-    [class.dragHover]="isFilesContainerHover"
+    [class.dragHover]="isFilesContainerHover && !disabled"
   >
     <div
       *ngIf="files.length"
@@ -21,12 +22,14 @@
         class="file"
         [class.error]="wrongType(file) || wrongFormat(file)"
         (click)="preventDefault($event)"
+        data-testid="files"
       >
         <nb-icon icon="file-text-outline"></nb-icon>
         <div class="footer">
           <span
             class="fileName"
             [nbTooltip]="file.name"
+            data-testid="filename"
           >
             {{ file.name }}
           </span>
@@ -38,6 +41,7 @@
             size="small"
             type="button"
             (click)="preventDefault($event); removeFile(file.name)"
+            data-testid="remove-file-button"
           >
             <nb-icon icon="trash-outline"></nb-icon>
           </button>
@@ -51,13 +55,18 @@
       ></nb-icon>
       <span>Drag and drop file<span *ngIf="multiple">s</span> here</span>
       <span>or</span>
-      <span class="button">Browse for file<span *ngIf="multiple">s</span></span>
+      <span
+        class="button"
+        data-testid="browse-for-file-button"
+        >Browse for file<span *ngIf="multiple">s</span></span
+      >
     </div>
   </label>
 </div>
 <small
   *ngIf="fileTypeAccepted"
   class="text-muted"
+  data-testid="file-type-accepted"
 >
   File type<span *ngIf="fileTypeAccepted.length > 1">s</span> accepted: {{ fileTypes }}
 </small>

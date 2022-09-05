@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  forwardRef,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit
-} from '@angular/core';
+import { Component, ElementRef, forwardRef, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -57,7 +49,9 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
       this.files = [...this.currentFile];
     }
 
-    this.fileTypes = this.fileTypeAccepted.join(', ');
+    if (this.fileTypeAccepted?.length) {
+      this.fileTypes = this.fileTypeAccepted.join(', ');
+    }
   }
 
   ngOnDestroy(): void {
@@ -72,23 +66,29 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
   }
 
   @HostListener('dragover', ['$event']) onDragOver(event: DragEvent) {
-    this.preventDefault(event);
-    this.isFilesContainerHover = true;
+    if (!this.disabled) {
+      this.preventDefault(event);
+      this.isFilesContainerHover = true;
+    }
   }
 
   @HostListener('dragleave', ['$event']) onDragLeave(event: DragEvent) {
-    this.preventDefault(event);
-    this.isFilesContainerHover = false;
+    if (!this.disabled) {
+      this.preventDefault(event);
+      this.isFilesContainerHover = false;
+    }
   }
 
   @HostListener('drop', ['$event']) onDrop(event: DragEvent) {
-    this.preventDefault(event);
-    this.isFilesContainerHover = false;
-    const fileList = event.dataTransfer.files;
-    const files = this.getFiles(fileList);
+    if (!this.disabled) {
+      this.preventDefault(event);
+      this.isFilesContainerHover = false;
+      const fileList = event.dataTransfer.files;
+      const files = this.getFiles(fileList);
 
-    if (files.length) {
-      this.files = files;
+      if (files.length) {
+        this.files = files;
+      }
     }
   }
 
