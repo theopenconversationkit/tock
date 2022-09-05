@@ -109,6 +109,10 @@
         color: nb-theme(color-danger-400);
       }
     }
+
+    &:focus + label {
+      border-color: nb-theme(color-info-500);
+    }
   }
 
   .inputfile + label::-webkit-scrollbar {
