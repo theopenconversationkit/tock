@@ -112,6 +112,8 @@
 
     &:focus + label {
       border-color: nb-theme(color-info-500);
+      box-shadow: inset 0 8px 17px 2px nb-theme(color-info-transparent-100), inset 0 3px 14px 2px nb-theme(color-info-transparent-300),
+        inset 0 5px 5px -3px nb-theme(color-info-transparent-500);
     }
   }
 
