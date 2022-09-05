@@ -1,6 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../models';
 import { ModeStepperComponent } from './mode-stepper.component';
@@ -146,7 +147,7 @@ describe('ModeStepperComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ModeStepperComponent],
-      providers: [{ provide: DialogService, useValue: {} }],
+      providers: [{ provide: DialogService, useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) } }],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });
@@ -231,18 +232,10 @@ describe('ModeStepperComponent', () => {
       }
     ].forEach((test) => {
       it(test.description, () => {
-        const buttonWriting = fixture.debugElement.query(
-          By.css('[data-testid="step-ctrl-writing"]')
-        );
-        const buttonCasting = fixture.debugElement.query(
-          By.css('[data-testid="step-ctrl-casting"]')
-        );
-        const buttonProduction = fixture.debugElement.query(
-          By.css('[data-testid="step-ctrl-production"]')
-        );
-        const buttonPublishing = fixture.debugElement.query(
-          By.css('[data-testid="step-ctrl-publishing"]')
-        );
+        const buttonWriting = fixture.debugElement.query(By.css('[data-testid="step-ctrl-writing"]'));
+        const buttonCasting = fixture.debugElement.query(By.css('[data-testid="step-ctrl-casting"]'));
+        const buttonProduction = fixture.debugElement.query(By.css('[data-testid="step-ctrl-production"]'));
+        const buttonPublishing = fixture.debugElement.query(By.css('[data-testid="step-ctrl-publishing"]'));
 
         if (test.scenario) component.scenario = test.scenario;
         component.mode = test.mode;
@@ -281,9 +274,7 @@ describe('ModeStepperComponent', () => {
 
   it('should not switch to mode production if step is not valid', () => {
     spyOn(component.modeSwitch, 'emit');
-    const buttonProduction = fixture.debugElement.query(
-      By.css('[data-testid="step-ctrl-production"]')
-    );
+    const buttonProduction = fixture.debugElement.query(By.css('[data-testid="step-ctrl-production"]'));
     buttonProduction.triggerEventHandler('click', null);
     fixture.detectChanges();
 
@@ -294,9 +285,7 @@ describe('ModeStepperComponent', () => {
     component.scenario = scenarioProduction as Scenario;
 
     spyOn(component.modeSwitch, 'emit');
-    const buttonProduction = fixture.debugElement.query(
-      By.css('[data-testid="step-ctrl-production"]')
-    );
+    const buttonProduction = fixture.debugElement.query(By.css('[data-testid="step-ctrl-production"]'));
     buttonProduction.triggerEventHandler('click', null);
     fixture.detectChanges();
 
@@ -305,9 +294,7 @@ describe('ModeStepperComponent', () => {
 
   it('should not switch to mode publishing if step is not valid', () => {
     spyOn(component.modeSwitch, 'emit');
-    const buttonPublishing = fixture.debugElement.query(
-      By.css('[data-testid="step-ctrl-publishing"]')
-    );
+    const buttonPublishing = fixture.debugElement.query(By.css('[data-testid="step-ctrl-publishing"]'));
     buttonPublishing.triggerEventHandler('click', null);
     fixture.detectChanges();
 
@@ -318,9 +305,7 @@ describe('ModeStepperComponent', () => {
     component.scenario = scenarioPublishing as Scenario;
 
     spyOn(component.modeSwitch, 'emit');
-    const buttonPublishing = fixture.debugElement.query(
-      By.css('[data-testid="step-ctrl-publishing"]')
-    );
+    const buttonPublishing = fixture.debugElement.query(By.css('[data-testid="step-ctrl-publishing"]'));
     buttonPublishing.triggerEventHandler('click', null);
     fixture.detectChanges();
 

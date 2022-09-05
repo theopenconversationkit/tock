@@ -6,5 +6,28 @@
   <small *ngIf="field?.errors?.maxlength">
     This field is limited to {{ field?.errors?.maxlength.requiredLength }} characters
   </small>
+  <small *ngIf="field?.errors?.filesNameWithWrongType">
+    The following files are not accepted file types:
+    <ul>
+      <li
+        *ngFor="let file of field.errors.filesNameWithWrongType"
+        class="text-danger"
+      >
+        <small>{{ file }}</small>
+      </li>
+    </ul>
+  </small>
+  <small *ngIf="field?.errors?.filesNameWithWrongFormat">
+    <span *ngIf="field?.errors?.message">{{ field.errors.message }}<br /></span>
+    The following files do not have the required format:
+    <ul>
+      <li
+        *ngFor="let file of field.errors.filesNameWithWrongFormat"
+        class="text-danger"
+      >
+        <small>{{ file }}</small>
+      </li>
+    </ul>
+  </small>
   <small *ngIf="field?.errors?.custom">{{ field.errors.custom }}</small>
 </div>

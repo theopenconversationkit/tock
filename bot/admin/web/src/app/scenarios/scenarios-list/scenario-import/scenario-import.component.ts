@@ -1,8 +1,17 @@
 import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  AsyncValidatorFn,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Subject } from 'rxjs';
+
 import { readFileAsText } from '../../commons/utils';
+import { FileValidators } from '../../../shared/validators';
 
 @Component({
   selector: 'tock-scenario-import',
@@ -16,17 +25,20 @@ export class ScenarioImportComponent implements OnDestroy {
 
   constructor(public dialogRef: NbDialogRef<ScenarioImportComponent>) {}
 
+  private filesToImport = [];
+
+  filesInError = [];
   isImportSubmitted: boolean = false;
   importForm: FormGroup = new FormGroup({
-    importFile: new FormControl('', [Validators.required]),
-    filesSources: new FormArray([], [Validators.required])
+    filesSources: new FormControl(
+      [],
+      [Validators.required, FileValidators.typeSupported(['application/json'])],
+      [this.checkFilesFormat()]
+    )
   });
 
-  get importFile(): FormControl {
-    return this.importForm.get('importFile') as FormControl;
-  }
-  get filesSources(): FormArray {
-    return this.importForm.get('filesSources') as FormArray;
+  get filesSources(): FormControl {
+    return this.importForm.get('filesSources') as FormControl;
   }
 
   get canSaveImport(): boolean {
@@ -40,71 +52,60 @@ export class ScenarioImportComponent implements OnDestroy {
     this.dialogRef.close();
   }
 
-  onFileChange(event: Event) {
-    this.filesInError = [];
-    const target = event.currentTarget as HTMLInputElement;
-    if (target.files?.length) {
-      const files: FileList = target.files;
+  checkFilesFormat(): AsyncValidatorFn {
+    return async (control: AbstractControl): Promise<ValidationErrors> | null => {
+      this.filesInError = [];
+      const filesNameWithWrongFormat = [];
+      const readers = [];
 
-      for (let index = 0; index < files.length; index++) {
-        const file = files[index];
-        if (file?.type !== 'application/json') {
-          this.setWrongFileFormatError(file.name);
-        } else {
-          this.filesSources.push(new FormControl(file));
-        }
-      }
-    }
-  }
-
-  filesInError = [];
-  setWrongFileFormatError(filename) {
-    this.importFile.setErrors({
-      custom:
-        "A least one of the selected file has the wrong format and won't be imported. Please provide Json dump files from previous scenario exports."
-    });
-    this.filesInError.push(filename);
-  }
-
-  importSubmit() {
-    this.isImportSubmitted = true;
-    if (this.canSaveImport) {
-      let readers = [];
-
-      this.filesSources.value.forEach((file) => {
+      control.value.forEach((file) => {
         readers.push(readFileAsText(file));
       });
 
-      Promise.all(readers).then((values) => {
-        let jsons = [];
+      let jsons = [];
+      await Promise.all(readers).then((values) => {
         values.forEach((result) => {
           if (typeof result.data === 'string') {
             let importJson;
             try {
               importJson = JSON.parse(result.data);
             } catch (error) {
-              this.setWrongFileFormatError(result.fileName);
+              filesNameWithWrongFormat.push(result.fileName);
               return;
             }
             if (!importJson.data?.scenarioItems) {
-              this.setWrongFileFormatError(result.fileName);
+              filesNameWithWrongFormat.push(result.fileName);
             } else {
               jsons.push(importJson);
             }
           } else {
-            this.setWrongFileFormatError(result.fileName);
+            filesNameWithWrongFormat.push(result.fileName);
           }
         });
+      });
 
-        if (jsons.length) {
-          this.validate.emit(jsons);
-        } else {
-          this.importFile.setErrors({
-            custom:
-              'None of the files provided had the required format. Please provide Json dump files from previous scenario exports.'
+      return new Promise((resolve) => {
+        if (filesNameWithWrongFormat.length) {
+          this.filesInError = [...filesNameWithWrongFormat];
+          resolve({
+            filesNameWithWrongFormat,
+            message: jsons.length
+              ? "A least one of the selected file has the wrong format and won't be imported. Please provide Json dump files from previous scenario exports."
+              : 'None of the files provided had the required format. Please provide Json dump files from previous scenario exports.'
           });
+        } else {
+          this.filesToImport = [...jsons];
+          resolve(null);
         }
       });
+    };
+  }
+
+  importSubmit() {
+    this.isImportSubmitted = true;
+
+    if (this.canSaveImport && this.filesToImport) {
+      this.validate.emit(this.filesToImport);
     }
   }
 

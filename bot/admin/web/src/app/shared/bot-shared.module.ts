@@ -48,6 +48,7 @@ import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
 import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
 import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
 import { CanvasModule } from './canvas/canvas.module';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 @NgModule({
   imports: [
@@ -82,6 +83,7 @@ import { CanvasModule } from './canvas/canvas.module';
     FormControlComponent,
     ChoiceDialogComponent,
     JsonPreviewerComponent,
+    FileUploadComponent,
 
     AutofocusDirective,
     DelayDirective,
@@ -99,6 +101,7 @@ import { CanvasModule } from './canvas/canvas.module';
     FormControlComponent,
     ChoiceDialogComponent,
     JsonPreviewerComponent,
+    FileUploadComponent,
 
     AutofocusDirective,
     DelayDirective,
