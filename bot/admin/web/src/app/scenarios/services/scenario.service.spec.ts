@@ -106,10 +106,12 @@ const updatedScenario: Scenario = {
 
 describe('ScenarioService', () => {
   let service: ScenarioService;
-  const mockedScenarioApiService: jasmine.SpyObj<ScenarioApiService> = jasmine.createSpyObj(
-    'ScenarioApiService',
-    ['getScenarios', 'postScenario', 'putScenario', 'deleteScenario']
-  );
+  const mockedScenarioApiService: jasmine.SpyObj<ScenarioApiService> = jasmine.createSpyObj('ScenarioApiService', [
+    'getScenarios',
+    'postScenario',
+    'putScenario',
+    'deleteScenario'
+  ]);
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -175,7 +177,7 @@ describe('ScenarioService', () => {
 
     service.postScenario(newScenario).subscribe(() => {
       const state = service.getState();
-      expect(mockedScenarioApiService.postScenario).toHaveBeenCalledOnceWith(newScenario);
+      expect(mockedScenarioApiService.postScenario).toHaveBeenCalledWith(newScenario);
       expect(state.scenarios).toHaveSize(mockScenarios.length + 1);
       expect(state.scenarios).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
       expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
@@ -184,20 +186,13 @@ describe('ScenarioService', () => {
     });
   });
 
-  /**
-   * TODO: Fix the test. We don't pass in the error block
-   */
-  xit('should not update state when post scenario fails', (done) => {
+  it('should not update state when post scenario fails', (done) => {
     mockedScenarioApiService.postScenario.and.returnValue(throwError(new Error()));
 
     expect(service.getState()).toEqual(initialState);
 
-    service.getScenarios().subscribe({
-      next: () => {
-        console.log('success');
-      },
+    service.postScenario(newScenario).subscribe({
       error: () => {
-        console.log('error');
         const state = service.getState();
         expect(mockedScenarioApiService.postScenario).toHaveBeenCalled();
         expect(state.loaded).toBeFalse();
