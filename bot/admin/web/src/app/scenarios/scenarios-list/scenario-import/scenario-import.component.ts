@@ -1,12 +1,5 @@
 import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
-import {
-  AbstractControl,
-  AsyncValidatorFn,
-  FormControl,
-  FormGroup,
-  ValidationErrors,
-  Validators
-} from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { Subject } from 'rxjs';
 
@@ -30,11 +23,7 @@ export class ScenarioImportComponent implements OnDestroy {
   filesInError = [];
   isImportSubmitted: boolean = false;
   importForm: FormGroup = new FormGroup({
-    filesSources: new FormControl(
-      [],
-      [Validators.required, FileValidators.typeSupported(['application/json'])],
-      [this.checkFilesFormat()]
-    )
+    filesSources: new FormControl([], [Validators.required, FileValidators.typeSupported(['application/json'])], [this.checkFilesFormat()])
   });
 
   get filesSources(): FormControl {

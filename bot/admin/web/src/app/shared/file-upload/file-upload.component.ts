@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
   ]
 })
 export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  @Input() autofocus: boolean = false;
   @Input() currentFile?: File[];
   @Input() disabled: boolean = false;
   @Input() fullWidth: boolean = false;
