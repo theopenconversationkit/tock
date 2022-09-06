@@ -6,11 +6,11 @@ export interface OrderBy {
 
 export function orderBy<T>(array: T[], field: string, reverse: boolean = false, secondField?: string): T[] {
   if (!Array.isArray(array)) {
-    throw new TypeError('Invalid array argument');
+    throw new TypeError('invalid array argument. The parameter must be an array');
   }
 
   if (!field) {
-    throw new Error('The field parameter cannot be empty');
+    throw new Error('the field parameter cannot be empty');
   }
 
   const sortedArray = [...array].sort((a: T, b: T) => {

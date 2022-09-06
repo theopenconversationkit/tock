@@ -5,7 +5,7 @@ describe('OrderBy', () => {
     [undefined, null, '', 'a', 'aaaaaa', 0, 1, 15, true, false].forEach((arg: any) => {
       expect(() => {
         orderBy(arg, '');
-      }).toThrowError('Invalid array argument');
+      }).toThrowError('invalid array argument. The parameter must be an array');
     });
   });
 
@@ -13,7 +13,7 @@ describe('OrderBy', () => {
     [undefined, null, ''].forEach((arg) => {
       expect(() => {
         orderBy([], arg);
-      }).toThrowError('The field parameter cannot be empty');
+      }).toThrowError('the field parameter cannot be empty');
     });
   });
 
