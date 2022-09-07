@@ -8,8 +8,6 @@ import {
   TickActionDefinition
 } from '../models';
 
-import { saveAs } from 'file-saver-es';
-
 export function normalize(str: string): string {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
@@ -62,9 +60,7 @@ export function revertTransformMatrix(el: Element, transformedParent: Element): 
 
   const matrix = new DOMMatrix(transformation).inverse();
   const topleft = new DOMPoint(brect.x, brect.y).matrixTransform(matrix);
-  const bottomRight = new DOMPoint(brect.x + brect.width, brect.y + brect.height).matrixTransform(
-    matrix
-  );
+  const bottomRight = new DOMPoint(brect.x + brect.width, brect.y + brect.height).matrixTransform(matrix);
 
   let x = topleft.x;
   let y = topleft.y;
@@ -153,11 +149,7 @@ export function getAllSmTransitionNames(group: MachineState): string[] {
   return [...results];
 }
 
-export function getSmTransitionParentsByname(
-  transitionName: string,
-  group: MachineState,
-  result: MachineState[] = []
-): MachineState[] {
+export function getSmTransitionParentsByname(transitionName: string, group: MachineState, result: MachineState[] = []): MachineState[] {
   if (group.on) {
     for (let transName in group.on) {
       if (transName === transitionName) {
@@ -173,10 +165,7 @@ export function getSmTransitionParentsByname(
   return result;
 }
 
-export function getSmTransitionParentByTarget(
-  targetName: string,
-  group: MachineState
-): { parent: MachineState; intents: string[] } | null {
+export function getSmTransitionParentByTarget(targetName: string, group: MachineState): { parent: MachineState; intents: string[] } | null {
   let result;
   if (group.on) {
     for (let transitionName in group.on) {
@@ -197,11 +186,7 @@ export function getSmTransitionParentByTarget(
   return result;
 }
 
-export function renameSmStateById(
-  currentStateId: string,
-  newStateId: string,
-  group: MachineState
-): void {
+export function renameSmStateById(currentStateId: string, newStateId: string, group: MachineState): void {
   const stateParent = getSmStateParentById(currentStateId, group);
   if (stateParent) {
     if (stateParent.initial === currentStateId) {
@@ -299,29 +284,4 @@ export function getAllSmNonGroupStatesNames(group: MachineState, result: string[
     }
   }
   return result;
-}
-
-export function readFileAsText(file: File) {
-  return new Promise(function (resolve, reject) {
-    let fr = new FileReader();
-
-    fr.onload = function () {
-      resolve({ fileName: file.name, data: fr.result });
-    };
-
-    fr.onerror = function () {
-      reject(fr);
-    };
-
-    fr.readAsText(file);
-  });
-}
-
-export function exportJsonDump(obj: Object, fileName: string) {
-  saveAs(
-    new Blob([JSON.stringify(obj)], {
-      type: 'application/json'
-    }),
-    fileName + '.json'
-  );
 }

@@ -3,7 +3,8 @@ import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core
 import { OrderBy } from '../../../shared/utils';
 import { Saga, Scenario, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
-import { exportJsonDump, normalizedSnakeCase } from '../../commons/utils';
+import { normalizedSnakeCase } from '../../commons/utils';
+import { exportJsonDump } from '../../../shared/utils';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';

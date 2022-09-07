@@ -1,3 +1,5 @@
+import { saveAs } from 'file-saver-es';
+
 export interface OrderBy {
   criteria: string;
   reverse: boolean;
@@ -25,4 +27,29 @@ export function orderBy<T>(array: T[], field: string, reverse: boolean = false, 
   });
 
   return reverse ? sortedArray.reverse() : sortedArray;
+}
+
+export function readFileAsText(file: File): Promise<any> {
+  return new Promise(function (resolve, reject) {
+    let fr = new FileReader();
+
+    fr.onload = function () {
+      resolve({ fileName: file.name, data: fr.result });
+    };
+
+    fr.onerror = function () {
+      reject(fr);
+    };
+
+    fr.readAsText(file);
+  });
+}
+
+export function exportJsonDump(obj: Object, fileName: string): void {
+  saveAs(
+    new Blob([JSON.stringify(obj)], {
+      type: 'application/json'
+    }),
+    fileName + '.json'
+  );
 }
