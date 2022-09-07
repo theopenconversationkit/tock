@@ -7,7 +7,7 @@
       ghost
       shape="round"
       nbTooltip="Close"
-      (click)="cancel()"
+      (click)="close()"
       class="ml-3"
     >
       <nb-icon icon="close-outline"></nb-icon>
@@ -32,13 +32,13 @@
     </form>
   </nb-card-body>
 
-  <nb-card-footer class="d-flex justify-content-between">
+  <nb-card-footer class="grid-button">
     <button
       nbButton
       outline
       status="primary"
       size="small"
-      (click)="cancel()"
+      (click)="close()"
     >
       Cancel
     </button>

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NbDialogRef, NbToastrService } from '@nebular/theme';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { first, take, takeUntil } from 'rxjs/operators';
 
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -24,6 +24,8 @@ import { ScenarioExportComponent } from './scenario-export/scenario-export.compo
   styleUrls: ['./scenarios-list.component.scss']
 })
 export class ScenariosListComponent implements OnInit, OnDestroy {
+  @ViewChild('scenarioImportComponent') scenarioImportComponent: ScenarioImportComponent;
+  @ViewChild('scenarioExportComponent') scenarioExportComponent: ScenarioExportComponent;
   @ViewChild('scenarioEditComponent') scenarioEditComponent: ScenarioEditComponent;
   @ViewChild('duplicationModal') duplicationModal: TemplateRef<any>;
 
@@ -37,7 +39,11 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   categoriesCache: string[] = [];
   tagsCache: string[] = [];
 
-  isSidePanelOpen: boolean = false;
+  isSidePanelOpen = {
+    edit: false,
+    export: false,
+    import: false
+  };
 
   loading = {
     delete: false,
@@ -69,12 +75,10 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.botConfigurationService.configurations
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((confs) => {
-        this.configurations = confs;
-        this.closeSidePanel();
-      });
+    this.botConfigurationService.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
+      this.configurations = confs;
+      this.closeSidePanel();
+    });
 
     this.loading.list = true;
 
@@ -104,12 +108,28 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   addOrEditScenario(scenario?: Scenario): void {
-    if (this.scenarioEditComponent) {
+    if (this.scenarioExportComponent) {
+      this.closeSidePanel('export');
+      setTimeout(() => {
+        this.addOrEditScenario(scenario);
+      }, 200);
+    } else if (this.scenarioEditComponent) {
       this.scenarioEditComponent
         .close()
         .pipe(take(1))
         .subscribe((res) => {
-          if (res != 'cancel') {
+          if (res != 'cancel' && res != undefined) {
+            setTimeout(() => {
+              this.addOrEditScenario(scenario);
+            }, 200);
+          }
+        });
+    } else if (this.scenarioImportComponent) {
+      this.scenarioImportComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel' && res != undefined) {
             setTimeout(() => {
               this.addOrEditScenario(scenario);
             }, 200);
@@ -131,12 +151,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       state: SCENARIO_STATE.draft,
       applicationId: this.stateService.currentApplication._id
     } as Scenario;
-    this.isSidePanelOpen = true;
+    this.isSidePanelOpen.edit = true;
   }
 
   edit(scenario: Scenario): void {
     this.scenarioEdit = scenario;
-    this.isSidePanelOpen = true;
+    this.isSidePanelOpen.edit = true;
   }
 
   editSaga(saga: Saga): void {
@@ -194,8 +214,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
         title: `Delete all scenarios of saga "${saga.name}"`,
-        subtitle:
-          'Are you sure you want to delete all the scenarios of this saga and, if applicable, the corresponding TickStory?',
+        subtitle: 'Are you sure you want to delete all the scenarios of this saga and, if applicable, the corresponding TickStory?',
         action: deleteAction
       }
     });
@@ -239,17 +258,35 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     dialogRef.onClose.subscribe((result) => {
       if (result === deleteAction) {
         if (scenario.id === this.scenarioEdit?.id) {
-          this.closeSidePanel();
+          this.closeSidePanel('edit');
         }
         this.deleteScenario(scenario.id);
       }
     });
   }
 
-  closeSidePanel(): void {
-    this.isSidePanelOpen = false;
-    this.scenarioEdit = undefined;
-    this.sagaEdit = undefined;
+  closeSidePanel(panel?: 'edit' | 'export' | 'import'): void {
+    if (!panel) {
+      this.isSidePanelOpen.edit = false;
+      this.isSidePanelOpen.export = false;
+      this.isSidePanelOpen.import = false;
+      this.scenarioEdit = undefined;
+      this.sagaEdit = undefined;
+    } else {
+      switch (panel) {
+        case 'edit':
+          this.isSidePanelOpen.edit = false;
+          this.scenarioEdit = undefined;
+          this.sagaEdit = undefined;
+          break;
+        case 'export':
+          this.isSidePanelOpen.export = false;
+          break;
+        case 'import':
+          this.isSidePanelOpen.import = false;
+          break;
+      }
+    }
   }
 
   deleteScenario(id: string): void {
@@ -289,7 +326,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
             if (result.redirect) {
               this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
             } else {
-              this.closeSidePanel();
+              this.closeSidePanel('edit');
             }
           },
           error: () => {
@@ -314,7 +351,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               if (result.redirect) {
                 this.router.navigateByUrl(`/scenarios/${newScenario.id}`);
               } else {
-                this.closeSidePanel();
+                this.closeSidePanel('edit');
               }
             },
             error: () => {
@@ -348,7 +385,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               duration: 5000,
               status: 'success'
             });
-            this.closeSidePanel();
+            this.closeSidePanel('edit');
           }
         },
         error: () => {
@@ -364,10 +401,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     this.filteredSagas = this.sagas.filter((saga: Saga) => {
       if (
         search &&
-        !(
-          saga.name.toUpperCase().includes(search.toUpperCase()) ||
-          saga.description.toUpperCase().includes(search.toUpperCase())
-        )
+        !(saga.name.toUpperCase().includes(search.toUpperCase()) || saga.description.toUpperCase().includes(search.toUpperCase()))
       ) {
         return;
       }
@@ -429,60 +463,45 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     this.paginateSagas(this.filteredSagas);
   }
 
-  callExportScenario() {
-    const modal = this.dialogService.openDialog(ScenarioExportComponent, {
-      context: { sagas: this.sagas }
-    });
-  }
-
-  callImportScenario() {
-    const modal = this.dialogService.openDialog(ScenarioImportComponent, {
-      context: {}
-    });
-    const validate = modal.componentRef.instance.validate
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((importJson) => {
-        this.importAllScenarios(importJson);
-
-        validate.unsubscribe();
-        modal.close();
-      });
-  }
-
-  importAllScenarios(importJsons: JSON[], index = 0) {
-    this.loading.edit = true;
-    if (index < importJsons.length && importJsons[index]) {
-      this.importScenario(importJsons, index);
+  openExportScenario() {
+    if (this.scenarioEditComponent) {
+      this.scenarioEditComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel' && res != undefined) {
+            this.isSidePanelOpen.export = true;
+          }
+        });
+    } else if (this.scenarioImportComponent) {
+      this.scenarioImportComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel' && res != undefined) {
+            this.isSidePanelOpen.export = true;
+          }
+        });
     } else {
-      this.loading.edit = false;
-      this.toastrService.success(`Scenario successfully imported`, 'Success', {
-        duration: 5000,
-        status: 'success'
-      });
+      this.isSidePanelOpen.export = true;
     }
   }
 
-  importScenario(importJsons, index) {
-    const json = importJsons[index];
-    delete json.id;
-    delete json.applicationId;
-    delete json.createDate;
-    delete json.updateDate;
-    delete json.sagaId;
-
-    json.state = SCENARIO_STATE.draft;
-
-    json.applicationId = this.stateService.currentApplication._id;
-    this.scenarioService
-      .postScenario(json)
-      .pipe(first())
-      .subscribe({
-        next: (newScenario) => {
-          this.importAllScenarios(importJsons, index + 1);
-        },
-        error: () => {
-          this.importAllScenarios(importJsons, index + 1);
-        }
-      });
+  openImportScenario() {
+    if (this.scenarioEditComponent) {
+      this.scenarioEditComponent
+        .close()
+        .pipe(take(1))
+        .subscribe((res) => {
+          if (res != 'cancel' && res != undefined) {
+            this.isSidePanelOpen.import = true;
+          }
+        });
+    } else if (this.scenarioExportComponent) {
+      this.closeSidePanel('export');
+      this.isSidePanelOpen.import = true;
+    } else {
+      this.isSidePanelOpen.import = true;
+    }
   }
 }
