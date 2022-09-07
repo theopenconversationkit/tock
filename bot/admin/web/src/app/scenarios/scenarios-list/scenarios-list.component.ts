@@ -113,28 +113,12 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.addOrEditScenario(scenario);
       }, 200);
-    } else if (this.scenarioEditComponent) {
-      this.scenarioEditComponent
-        .close()
-        .pipe(take(1))
-        .subscribe((res) => {
-          if (res != 'cancel' && res != undefined) {
-            setTimeout(() => {
-              this.addOrEditScenario(scenario);
-            }, 200);
-          }
-        });
-    } else if (this.scenarioImportComponent) {
-      this.scenarioImportComponent
-        .close()
-        .pipe(take(1))
-        .subscribe((res) => {
-          if (res != 'cancel' && res != undefined) {
-            setTimeout(() => {
-              this.addOrEditScenario(scenario);
-            }, 200);
-          }
-        });
+    } else if (this.scenarioEditComponent || this.scenarioImportComponent) {
+      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioImportComponent, () => {
+        setTimeout(() => {
+          this.addOrEditScenario(scenario);
+        }, 200);
+      });
     } else {
       if (scenario) this.edit(scenario);
       else this.add();
@@ -464,24 +448,10 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   openExportScenario() {
-    if (this.scenarioEditComponent) {
-      this.scenarioEditComponent
-        .close()
-        .pipe(take(1))
-        .subscribe((res) => {
-          if (res != 'cancel' && res != undefined) {
-            this.isSidePanelOpen.export = true;
-          }
-        });
-    } else if (this.scenarioImportComponent) {
-      this.scenarioImportComponent
-        .close()
-        .pipe(take(1))
-        .subscribe((res) => {
-          if (res != 'cancel' && res != undefined) {
-            this.isSidePanelOpen.export = true;
-          }
-        });
+    if (this.scenarioEditComponent || this.scenarioImportComponent) {
+      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioImportComponent, () => {
+        this.isSidePanelOpen.export = true;
+      });
     } else {
       this.isSidePanelOpen.export = true;
     }
@@ -489,19 +459,25 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   openImportScenario() {
     if (this.scenarioEditComponent) {
-      this.scenarioEditComponent
-        .close()
-        .pipe(take(1))
-        .subscribe((res) => {
-          if (res != 'cancel' && res != undefined) {
-            this.isSidePanelOpen.import = true;
-          }
-        });
+      this.closeSidePanelCheck(this.scenarioEditComponent, () => {
+        this.isSidePanelOpen.import = true;
+      });
     } else if (this.scenarioExportComponent) {
       this.closeSidePanel('export');
       this.isSidePanelOpen.import = true;
     } else {
       this.isSidePanelOpen.import = true;
     }
+  }
+
+  private closeSidePanelCheck(component: ScenarioEditComponent | ScenarioImportComponent, cb: Function): void {
+    component
+      .close()
+      .pipe(take(1))
+      .subscribe((res) => {
+        if (res != 'cancel' && res != undefined) {
+          cb();
+        }
+      });
   }
 }
