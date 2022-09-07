@@ -1,8 +1,8 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NbToastrService } from '@nebular/theme';
-import { Observable, of, Subject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { catchError, first } from 'rxjs/operators';
 
 import { readFileAsText } from '../../../shared/utils';
 import { FileValidators } from '../../../shared/validators';
@@ -12,14 +12,14 @@ import { StateService } from '../../../core-nlp/state.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 
+type JsonFile = { filename: string; data: Scenario };
+
 @Component({
   selector: 'tock-scenario-import',
   templateUrl: './scenario-import.component.html',
   styleUrls: ['./scenario-import.component.scss']
 })
-export class ScenarioImportComponent implements OnDestroy {
-  destroy = new Subject();
-
+export class ScenarioImportComponent {
   @Output() onClose = new EventEmitter<boolean>();
 
   constructor(
@@ -31,7 +31,8 @@ export class ScenarioImportComponent implements OnDestroy {
 
   private filesToImport = [];
 
-  filesInError = [];
+  importFilesInError: string[] = [];
+  filesInError: string[] = [];
   isImportSubmitted: boolean = false;
   loading: boolean = false;
   importForm: FormGroup = new FormGroup({
@@ -58,20 +59,18 @@ export class ScenarioImportComponent implements OnDestroy {
       });
       dialogRef.onClose.subscribe((result) => {
         if (result === validAction) {
-          this.filesInError = [];
-          this.isImportSubmitted = false;
-          this.importForm.reset();
           this.onClose.emit(true);
         }
       });
       return dialogRef.onClose;
     } else {
-      this.filesInError = [];
-      this.isImportSubmitted = false;
-      this.importForm.reset();
       this.onClose.emit(true);
       return of(validAction);
     }
+  }
+
+  closeAlertImportFilesInError(): void {
+    this.importFilesInError = [];
   }
 
   checkFilesFormat(): AsyncValidatorFn {
@@ -84,7 +83,7 @@ export class ScenarioImportComponent implements OnDestroy {
         readers.push(readFileAsText(file));
       });
 
-      let jsons: Scenario[] = [];
+      const jsons: JsonFile[] = [];
       await Promise.all(readers).then((values) => {
         values.forEach((result) => {
           if (typeof result.data === 'string') {
@@ -98,7 +97,7 @@ export class ScenarioImportComponent implements OnDestroy {
             if (!importJson.data?.scenarioItems) {
               filesNameWithWrongFormat.push(result.fileName);
             } else {
-              jsons.push(importJson);
+              jsons.push({ filename: result.fileName, data: importJson });
             }
           } else {
             filesNameWithWrongFormat.push(result.fileName);
@@ -131,46 +130,48 @@ export class ScenarioImportComponent implements OnDestroy {
     }
   }
 
-  importAllScenarios(importJsons: JSON[], index = 0) {
+  importAllScenarios(importJsons: JsonFile[]): void {
     this.loading = true;
-    if (index < importJsons.length && importJsons[index]) {
-      this.importScenario(importJsons, index);
-    } else {
-      this.loading = false;
-      this.toastrService.success(`Scenario successfully imported`, 'Success', {
-        duration: 5000,
-        status: 'success'
-      });
-      this.onClose.emit(true);
-    }
-  }
 
-  importScenario(importJsons, index) {
-    const json = importJsons[index];
-    delete json.id;
-    delete json.applicationId;
-    delete json.createDate;
-    delete json.updateDate;
-    delete json.sagaId;
-
-    json.state = SCENARIO_STATE.draft;
-
-    json.applicationId = this.stateService.currentApplication._id;
-    this.scenarioService
-      .postScenario(json)
+    forkJoin(importJsons.map((json: JsonFile) => this.importScenario(json)))
       .pipe(first())
-      .subscribe({
-        next: (_newScenario) => {
-          this.importAllScenarios(importJsons, index + 1);
-        },
-        error: () => {
-          this.importAllScenarios(importJsons, index + 1);
+      .subscribe((res: []) => {
+        this.loading = false;
+        this.importFilesInError = res.filter((r) => typeof r === 'string');
+
+        if (!this.importFilesInError.length) {
+          this.onClose.emit(true);
+        } else {
+          this.toastrService.warning(`Not all scenarios were imported`, 'Warning', {
+            duration: 5000,
+            status: 'warning'
+          });
+
+          this.filesSources.setValue(this.filesSources.value.filter((f: File) => this.importFilesInError.includes(f.name)));
+        }
+
+        if (this.importFilesInError.length !== importJsons.length) {
+          this.toastrService.success(`Scenario successfully imported`, 'Success', {
+            duration: 5000,
+            status: 'success'
+          });
         }
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
+  importScenario(json: JsonFile): Observable<Scenario | string> {
+    delete json.data.id;
+    delete json.data.applicationId;
+    delete json.data.createDate;
+    delete json.data.updateDate;
+    delete json.data.sagaId;
+
+    json.data.state = SCENARIO_STATE.draft;
+    json.data.applicationId = this.stateService.currentApplication._id;
+
+    return this.scenarioService.postScenario(json.data).pipe(
+      first(),
+      catchError((_err) => of(json.filename))
+    );
   }
 }

@@ -41,6 +41,23 @@
           </div>
         </div>
       </div>
+
+      <nb-alert
+        *ngIf="importFilesInError.length"
+        status="warning"
+        closable
+        (close)="closeAlertImportFilesInError()"
+      >
+        <small>The following files were not imported:</small>
+        <ul>
+          <li
+            *ngFor="let file of importFilesInError"
+            class="text-break"
+          >
+            <small>{{ file }}</small>
+          </li>
+        </ul>
+      </nb-alert>
     </form>
   </nb-card-body>
   <nb-card-footer class="grid-button">
