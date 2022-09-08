@@ -28,9 +28,9 @@ data class FaqDefinitionRequest(
     val applicationId: Id<ApplicationDefinition>,
     val creationDate: Instant?,
     val updateDate: Instant?,
-     // storyName
-    var title: String,
-    var description: String = "",
+    // storyName
+    val title: String,
+    val description: String = "",
     val utterances: List<String>,
     val tags: List<String>,
     val answer: String,

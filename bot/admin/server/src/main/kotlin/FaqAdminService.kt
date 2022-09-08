@@ -438,7 +438,7 @@ object FaqAdminService {
 
         val faqResultsTmp = if (fromTockBotDb?.isNotEmpty() == true) fromTockBotDb else fromTockFrontDb
 
-        // feed story name
+        // feed story data with name and description
         val faqResults = feedFaqDataStory(faqResultsTmp, applicationDefinition)
 
         logger.debug { "faqResults $faqResults" }
@@ -446,25 +446,49 @@ object FaqAdminService {
     }
 
     /**
-     * Feed faq data story
+     * Feed faq data story especially with story name and description
+     *
      * @param faqs: list of FAQ
      * @param applicationDefinition: application definition
      */
-    private fun feedFaqDataStory(faqs: Set<FaqDefinitionRequest>, applicationDefinition: ApplicationDefinition): Set<FaqDefinitionRequest> {
-        val intentNames = faqs.mapNotNull { it.intentName }
-        val faqStories = BotAdminService.findConfiguredStoriesByBotIdAndIntent(
-            applicationDefinition.namespace,
-            applicationDefinition.name,
-            intentNames)
+    private fun feedFaqDataStory(
+        faqs: Set<FaqDefinitionRequest>,
+        applicationDefinition: ApplicationDefinition
+    ): Set<FaqDefinitionRequest> {
+        val intentNames = faqs.map { it.intentName }
+        //creates a map with intentName
+        val faqStoriesByIntentName: Map<String, StoryDefinitionConfiguration> =
+            BotAdminService.findConfiguredStoriesByBotIdAndIntent(
+                applicationDefinition.namespace,
+                applicationDefinition.name,
+                intentNames
+            ).associateBy { it.intent.name }
 
-        return faqs.map {faq ->
-            faqStories.firstOrNull { s -> s.intent.name == faq.intentName }?.let {
-                faq.title = it.name
-                faq.description = it.description
-            }
-            faq
-        }.toSet()
+        //lambda to filter a faq on intent name
+        val faqWithStoryIntentName: (FaqDefinitionRequest) -> Boolean = {
+            faqStoriesByIntentName.keys.contains(it.intentName)
+        }
+
+        return faqs
+            .filter(faqWithStoryIntentName)
+            .map { faq -> faq.updatedFaqSearchWithStoryNameAndDescription(faqStoriesByIntentName) }
+            // give back all other elements
+            .union(faqs.filterNot(faqWithStoryIntentName))
     }
+
+    /**
+     * lambda to update Faq with story name and description
+     * @param : faqStoriesByIntentName : Map<String, StoryDefinitionConfiguration>
+     * @return : FaqDefinitionRequest
+     * @see FaqDefinitionRequest
+     */
+    private val updatedFaqSearchWithStoryNameAndDescription: FaqDefinitionRequest.(Map<String, StoryDefinitionConfiguration>) -> FaqDefinitionRequest =
+        {
+            // intentName is not empty since it is present in the map
+            it[this.intentName]!!.let { story ->
+                this.copy(title = story.name, description = story.description)
+            }
+        }
 
     /**
      * Search from the faqQuery the i18Labels associated with the Faq
