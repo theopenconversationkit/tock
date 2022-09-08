@@ -16,7 +16,6 @@
       padding: 0.5rem;
       margin: 0;
       border: 2px dashed nb-theme(color-basic-500);
-      overflow: auto;
 
       &.dragHover {
         border: 2px solid nb-theme(color-info-500);
@@ -41,15 +40,14 @@
           }
 
           & .footer {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto;
             align-items: center;
 
             .fileName {
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
-              max-width: 10rem;
             }
           }
 
