@@ -12,4 +12,5 @@ export class FormControlComponent {
   @Input() name!: string;
   @Input() showError: boolean = false;
   @Input() required: boolean = false;
+  @Input() hasMargin: boolean = true;
 }

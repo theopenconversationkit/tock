@@ -1,7 +1,6 @@
 <nb-card id="modal-wrapper">
   <nb-card-header class="d-flex justify-content-between align-items-start">
-    <h4>Intent definition</h4>
-
+    Intent definition
     <button
       nbButton
       ghost
@@ -25,12 +24,8 @@
 
       <div class="col-12">
         <label class="font-weight-bold">Status :</label>
-        <span *ngIf="item.intentDefinition.intentId">
-          Already exists. Will be reassigned upon publication.
-        </span>
-        <span *ngIf="!item.intentDefinition.intentId">
-          Does not exist. Will be created upon publishing.
-        </span>
+        <span *ngIf="item.intentDefinition.intentId"> Already exists. Will be reassigned upon publication. </span>
+        <span *ngIf="!item.intentDefinition.intentId"> Does not exist. Will be created upon publishing. </span>
       </div>
 
       <div
@@ -161,25 +156,21 @@
     </div>
   </nb-card-body>
 
-  <nb-card-footer class="d-flex justify-content-between">
+  <nb-card-footer class="card-footer-actions">
     <button
       nbButton
+      ghost
       size="small"
-      status="basic"
-      class="m-1"
       (click)="cancel()"
     >
       Cancel
     </button>
-
     <button
       nbButton
       size="small"
       status="danger"
-      class="m-1"
       (click)="dissociateIntent()"
     >
-      <nb-icon icon="slash-outline"></nb-icon>
       <span *ngIf="item.intentDefinition.intentId"> Dissociate intent </span>
       <span *ngIf="!item.intentDefinition.intentId"> Delete intent </span>
     </button>
@@ -188,10 +179,8 @@
       nbButton
       size="small"
       status="primary"
-      class="m-1"
       (click)="save()"
     >
-      <nb-icon icon="save-outline"></nb-icon>
       Save
     </button>
   </nb-card-footer>

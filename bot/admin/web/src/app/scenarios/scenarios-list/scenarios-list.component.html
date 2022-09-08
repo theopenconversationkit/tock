@@ -1,15 +1,14 @@
-<div class="d-flex flex-wrap mb-2">
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
   <h1 class="flex-grow-1">Scenarios Management</h1>
 
-  <section class="grid-actions">
+  <section class="d-flex flex-wrap header-actions">
     <button
       nbButton
       ghost
       shape="round"
       nbTooltip="Export scenarios dumps"
-      [disabled]="!configurations?.length"
+      [disabled]="!configurations?.length || !sagas.length"
       (click)="openExportScenario()"
-      [disabled]="!sagas.length"
     >
       <nb-icon icon="download-outline"></nb-icon>
     </button>
@@ -28,7 +27,6 @@
       status="primary"
       [disabled]="!configurations?.length"
       (click)="addOrEditScenario()"
-      class="ml-2"
     >
       <nb-icon icon="plus-outline"></nb-icon>
       Create
@@ -121,16 +119,14 @@
 
 <ng-template #duplicationModal>
   <nb-card>
-    <nb-card-header class="d-flex justify-content-between align-items-center">
-      <h4>Duplicate a scenario</h4>
-
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Duplicate a scenario
       <button
         nbButton
         ghost
         shape="round"
         nbTooltip="Cancel"
         (click)="duplicationCancel()"
-        class="ml-3"
       >
         <nb-icon icon="close-outline"></nb-icon>
       </button>
@@ -140,36 +136,30 @@
         [formGroup]="duplicationForm"
         (submit)="duplicationSubmit()"
       >
-        <div class="row main-row">
-          <div class="col-12">
-            <div class="mb-4">
-              <tock-form-control
-                label="Version description"
-                name="description"
-                required="true"
-                [controls]="description"
-                [showError]="isDuplicationSubmitted"
-              >
-                <textarea
-                  nbInput
-                  formControlName="description"
-                  fullWidth
-                  id="description"
-                  type="text"
-                  placeholder="Enter a description"
-                  autofocusElement
-                ></textarea>
-              </tock-form-control>
-            </div>
-          </div>
-        </div>
+        <tock-form-control
+          label="Version description"
+          name="description"
+          required="true"
+          [controls]="description"
+          [showError]="isDuplicationSubmitted"
+          [hasMargin]="false"
+        >
+          <textarea
+            nbInput
+            formControlName="description"
+            fullWidth
+            id="description"
+            type="text"
+            placeholder="Enter a description"
+            autofocusElement
+          ></textarea>
+        </tock-form-control>
       </form>
     </nb-card-body>
-    <nb-card-footer class="d-flex justify-content-between">
+    <nb-card-footer class="card-footer-actions">
       <button
         nbButton
-        outline
-        status="primary"
+        ghost
         size="small"
         (click)="duplicationCancel()"
       >

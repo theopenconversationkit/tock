@@ -92,6 +92,8 @@ Scenario designer :
 
         PUBLISHING :
 
+                Problème de mise à jour du state local une fois la plublication effectuée avec succès
+
                 ??? Intent : c'est quoi les mandatoryStates ?
 
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier

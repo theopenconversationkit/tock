@@ -15,8 +15,7 @@
       position: absolute;
       z-index: 5;
       background-color: nb-theme(background-basic-color-1);
-      box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1),
-        2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+      box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1), 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
       width: 2rem;
       border-bottom-right-radius: 0.5rem;
       transition: width 0.2s;
@@ -82,6 +81,8 @@
         }
 
         .contexts-list {
+          @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+
           display: block;
         }
         .addContextButton {
@@ -171,19 +172,5 @@
 
   .font-2rem {
     font-size: 2rem;
-  }
-
-  .contexts-list::-webkit-scrollbar {
-    width: nb-theme(scrollbar-width);
-    height: nb-theme(scrollbar-width);
-  }
-
-  .contexts-list::-webkit-scrollbar-thumb {
-    background: nb-theme(scrollbar-color);
-    cursor: pointer;
-    border-radius: calc(nb-theme(scrollbar-width) / 2);
-  }
-  .contexts-list::-webkit-scrollbar-track {
-    background: nb-theme(scrollbar-background-color);
   }
 }

@@ -1,14 +1,12 @@
 <nb-card [nbSpinner]="loading">
-  <nb-card-header class="d-flex justify-content-between align-items-center">
-    <h4>Import scenarios dumps</h4>
-
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    Import scenarios dumps
     <button
       nbButton
       ghost
       shape="round"
       nbTooltip="Close"
       (click)="close()"
-      class="ml-3"
     >
       <nb-icon icon="close-outline"></nb-icon>
     </button>
@@ -60,11 +58,10 @@
       </nb-alert>
     </form>
   </nb-card-body>
-  <nb-card-footer class="grid-button">
+  <nb-card-footer class="card-footer-actions">
     <button
       nbButton
-      outline
-      status="primary"
+      ghost
       size="small"
       (click)="close()"
     >

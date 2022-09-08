@@ -3,6 +3,8 @@
 @import '~@nebular/theme/styles/themes';
 
 @include nb-install-component() {
+  @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+
   .inputfile {
     width: 0.1px;
     height: 0.1px;
@@ -115,27 +117,12 @@
     }
   }
 
-  .inputfile + label::-webkit-scrollbar {
-    width: nb-theme(scrollbar-width);
-    height: nb-theme(scrollbar-width);
-  }
-
-  .inputfile + label::-webkit-scrollbar-thumb {
-    background: nb-theme(scrollbar-color);
-    cursor: pointer;
-    border-radius: calc(nb-theme(scrollbar-width) / 2);
-  }
-
-  .inputfile + label::-webkit-scrollbar-track {
-    background: nb-theme(scrollbar-background-color);
-  }
-
   @include media-breakpoint-up(sm) {
     .inputfile + label {
       padding: 1rem;
 
       .files {
-        grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
         gap: 1rem;
 
         .fileName {
