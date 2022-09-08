@@ -36,7 +36,11 @@ export class ScenarioImportComponent {
   isImportSubmitted: boolean = false;
   loading: boolean = false;
   importForm: FormGroup = new FormGroup({
-    filesSources: new FormControl([], [Validators.required, FileValidators.typeSupported(['application/json'])], [this.checkFilesFormat()])
+    filesSources: new FormControl(
+      [],
+      [Validators.required, FileValidators.mimeTypeSupported(['application/json'])],
+      [this.checkFilesFormat()]
+    )
   });
 
   get filesSources(): FormControl {

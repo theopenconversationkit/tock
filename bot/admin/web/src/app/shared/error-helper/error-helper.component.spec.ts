@@ -72,7 +72,7 @@ describe('ErrorHelperComponent', () => {
 
   it('should render files with wrong type error', () => {
     const errorElement: HTMLElement = fixture.debugElement.nativeElement;
-    const field = new FormControl([], FileValidators.typeSupported(['application/json']));
+    const field = new FormControl([], FileValidators.mimeTypeSupported(['application/json']));
     const files: File[] = [
       new File(['content'], 'file1.json', { type: 'application/json' }),
       new File(['content'], 'file2.xml', { type: 'application/xml' })
