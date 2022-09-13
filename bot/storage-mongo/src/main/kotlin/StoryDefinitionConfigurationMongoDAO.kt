@@ -38,6 +38,7 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
+import ai.tock.shared.allowDiacriticsInRegexp
 import ai.tock.shared.safeCollation
 import ai.tock.shared.trace
 import ai.tock.shared.warn
@@ -174,7 +175,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
                 Namespace eq request.namespace,
                 BotId eq request.botId,
                 if (request.category.isNullOrBlank()) null else Category eq request.category,
-                request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(it.trim(), "i") },
+                request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "i") },
                 if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
             )
             .projection(
