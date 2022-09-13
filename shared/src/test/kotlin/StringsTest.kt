@@ -17,6 +17,7 @@
 package ai.tock.shared
 
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
@@ -27,5 +28,11 @@ class StringsTest {
     @Test
     fun `WHEN string ends with dot THEN endWithPunctuation returns true`() {
         assertTrue("hkh.".endWithPunctuation())
+    }
+
+    @Test
+    fun `Test Regex for replace accent`() {
+        assertEquals(allowDiacriticsInRegexp("demo"), "d[eéèêë]m[oòóôõöø]")
+        assertEquals(allowDiacriticsInRegexp("c est une mise a jour"), "c['-_ ][eéèêë]st['-_ ][uùúûü][nñ][eéèêë]['-_ ]m[iìíîï]s[eéèêë]['-_ ][aàáâãä]['-_ ]j[oòóôõöø][uùúûü]r")
     }
 }
