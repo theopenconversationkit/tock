@@ -26,26 +26,39 @@ interface ScenarioDAO {
     fun findAll(): Collection<Scenario>
 
     /**
-     * Return Scenario find by id or null if not exist.
-     * @property id of scenario to find.
+     * Return Scenario find by version id or null if not exist.
+     * @param version of scenario history to find.
+     */
+    fun findByVersion(version: String): Scenario?
+
+    /**
+     * Return a Scenario find by id or null if not exist.
+     * @param id of scenarios to find.
      */
     fun findById(id: String): Scenario?
 
     /**
      * Create Scenario and return it.
-     * @property scenario to create.
+     * @param scenario to create.
      */
     fun create(scenario: Scenario): Scenario?
 
     /**
+     * Patch Scenario and return it.
+     * (to create new version on existing scenario)
+     * @param scenario to create.
+     */
+    fun patch(scenario: Scenario): Scenario?
+
+    /**
      * Update Scenario and return it.
-     * @property scenario to update.
+     * @param scenario to update.
      */
     fun update(scenario: Scenario): Scenario?
 
     /**
      * Delete Scenario by id.
-     * @property id of scenario to delete.
+     * @param id of scenario to delete.
      */
     fun delete(id: String)
 }

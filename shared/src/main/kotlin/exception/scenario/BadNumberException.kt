@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.mongo
+package ai.tock.shared.exception.scenario
 
-import ai.tock.bot.admin.scenario.Scenario
-import org.litote.jackson.data.JacksonData
-import org.litote.kmongo.Data
-import org.litote.kmongo.Id
-
-@Data(internal = true)
-@JacksonData(internal = true)
-internal data class ScenarioCol (
-    var _id: Id<Scenario>,
-    var versions: List<ScenarioVersionCol>
-)
+class BadNumberException(val expected: Int, val received: Int, message: String) : ScenarioException(message)

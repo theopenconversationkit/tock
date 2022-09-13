@@ -17,13 +17,23 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.scenario.Scenario
+import ai.tock.bot.admin.scenario.ScenarioState
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import java.time.ZonedDateTime
 
 @Data(internal = true)
 @JacksonData(internal = true)
-internal data class ScenarioCol (
-    var _id: Id<Scenario>,
-    var versions: List<ScenarioVersionCol>
+internal data class ScenarioVersionCol (
+    val version: Id<Scenario>,
+    val name: String, //must be moved in ScenarioCol ?
+    val category: String? = null, //must be moved in ScenarioCol ?
+    val tags: List<String> = emptyList(), //must be moved in ScenarioCol ?
+    val applicationId: String, //must be moved in ScenarioCol ?
+    val creationDate: ZonedDateTime? = null,
+    val updateDate: ZonedDateTime? = null,
+    val description: String? = null, //must be moved in ScenarioCol ?
+    val data: String? = null,
+    val state: ScenarioState
 )

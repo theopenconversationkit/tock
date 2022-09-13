@@ -16,12 +16,18 @@
 
 package ai.tock.bot.admin.scenario
 
+import ai.tock.bot.admin.scenario.ScenarioAbstractTest.Companion.createScenario
+import ai.tock.bot.admin.scenario.ScenarioAbstractTest.Companion.draft
+import ai.tock.bot.admin.scenario.ScenarioAbstractTest.Companion.createScenarioResult
+import ai.tock.bot.admin.scenario.ScenarioState.*
 import ai.tock.bot.admin.model.scenario.ScenarioRequest
 import ai.tock.bot.admin.model.scenario.ScenarioResult
+import ai.tock.bot.admin.scenario.ScenarioAbstractTest.Companion.createScenarioRequest
 import ai.tock.shared.exception.TockException
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.exception.rest.InternalServerException
 import ai.tock.shared.exception.rest.NotFoundException
+import ai.tock.shared.exception.scenario.ScenarioNotFoundException
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
@@ -41,8 +47,13 @@ import kotlin.test.assertTrue
 class ScenarioVerticleTest : ScenarioVerticle() {
 
     private val scenarioId = "scenarioID"
+    private val sagaId = "sagaID"
+
     private val ID1 = "id_test_1"
     private val ID2 = "id_test_2"
+
+    private val VERSION1 = "version_test_1"
+    private val VERSION2 = "version_test_2"
 
     val routingContext: RoutingContext = mockk(relaxed = true)
 
@@ -63,21 +74,28 @@ class ScenarioVerticleTest : ScenarioVerticle() {
     }
 
     @Test
-    fun `getAllScenarios WHEN findAll return list of valide scenario THEN return list of ScenarioResult`() {
+    fun `getAllScenarios WHEN findAll returns a list of valid scenario THEN returns a list of ScenarioResult`() {
         //GIVEN
         val ids = listOf(ID1, ID2)
-        every { scenarioService.findAll() } returns listOf(createScenarioForId(ID1), createScenarioForId(ID2))
+        val versions = listOf(VERSION1, VERSION2)
+        every {
+            scenarioService.findAll()
+        } returns listOf( createScenario(ID1, draft(VERSION1)), createScenario(ID2, draft(VERSION2)) )
 
         //WHEN
         val scenarioResult: List<ScenarioResult> = getAllScenarios.invoke(routingContext)
 
         //THEN
         assertEquals(2, scenarioResult.size)
-        assertTrue { scenarioResult.fold(true) { condition, element -> (condition && ids.contains(element.id)) } }
+        assertTrue {
+            scenarioResult.fold(true) {
+                condition, element -> condition && ids.contains(element.sagaId) && versions.contains(element.id)
+            }
+        }
     }
 
     @Test
-    fun `getAllScenarios WHEN findAll return empty list THEN return empty list`() {
+    fun `getAllScenarios WHEN findAll returns empty list THEN returns an empty list`() {
         //GIVEN
         every { scenarioService.findAll() } returns listOf()
 
@@ -89,200 +107,213 @@ class ScenarioVerticleTest : ScenarioVerticle() {
     }
 
     @Test
-    fun `getAllScenarios WHEN findAll return list of invalid scenario THEN throw InternalServerException`() {
+    fun `getAllScenarios WHEN findAll returns a list of invalid scenario THEN throws InternalServerException`() {
         //GIVEN
-        every { scenarioService.findAll() } returns listOf(createScenarioForId(null), createScenarioForId(ID2))
+        every { scenarioService.findAll() } returns listOf(createScenario(null),createScenario(ID2))
 
         //WHEN THEN
-        assertThrows<InternalServerException> { getAllScenarios.invoke(routingContext) }
+        val exceptionThrown = assertThrows<InternalServerException> { getAllScenarios.invoke(routingContext) }
+        assertEquals("scenario must be not empty", exceptionThrown.message)
     }
 
     @Test
-    fun `getAllScenarios WHEN findAll throw tockException THEN throw InternalServerException`() {
+    fun `getAllScenarios WHEN findAll throw tockException THEN throws InternalServerException`() {
         //GIVEN
-        every { scenarioService.findAll() } throws TockException("test_exception")
+        val testExceptionMessage: String = "test exception message"
+        every { scenarioService.findAll() } throws TockException(testExceptionMessage)
         //WHEN THEN
-        assertThrows<InternalServerException> { getAllScenarios.invoke(routingContext) }
+        val exceptionThrown = assertThrows<InternalServerException> { getAllScenarios.invoke(routingContext) }
+        assertEquals(testExceptionMessage, exceptionThrown.message)
     }
 
     @Test
-    fun `getOneScenario WHEN findById return a valide scenario THEN return ScenarioResult`() {
-        val id: String = ID1
-
+    fun `getOneScenario WHEN findById returns a valide scenario THEN returns a ScenarioResult`() {
         //GIVEN
-        val scenario: Scenario = createScenarioForId(id)
-        every { scenarioService.findById(id) } returns scenario
-        every { routingContext.pathParam(scenarioId) } returns id
+        val scenario: Scenario = createScenario(ID1, draft(VERSION1))
+        every { scenarioService.findOnlyVersion(ID1) } returns scenario
+        every { routingContext.pathParam(scenarioId) } returns ID1
 
         //WHEN
         val scenarioResult: ScenarioResult = getOneScenario.invoke(routingContext)
 
         //THEN
-        assertEquals(createScenarioResultForId(id), scenarioResult)
+        assertEquals(createScenarioResult(ID1, VERSION1, DRAFT), scenarioResult)
     }
 
     @Test
-    fun `getOneScenario WHEN findById return an invalid scenario THEN throw an internal InternalServerException`() {
-        val id: String = ID1
-
+    fun `getOneScenario WHEN findById returns a scenario with no id and no sagaid THEN throws an internal InternalServerException`() {
         //GIVEN
-        val scenario: Scenario = createScenarioForId(null)
-        every { routingContext.pathParam(scenarioId) } returns id
-        every { scenarioService.findById(id) } returns scenario
+        val scenario: Scenario = createScenario(null)
+        every { routingContext.pathParam(scenarioId) } returns ID1
+        every { scenarioService.findOnlyVersion(ID1) } returns scenario
 
         //WHEN THEN
-        assertThrows<InternalServerException> { getOneScenario.invoke(routingContext) }
+        val exceptionThrown = assertThrows<InternalServerException> { getOneScenario.invoke(routingContext) }
+        assertEquals("1 scenario expected but 0 found", exceptionThrown.message)
     }
 
     @Test
-    fun `getOneScenario WHEN bad parameter id THEN throw an internal NotFoundException`() {
+    fun `getOneScenario WHEN findById returns a scenario with no sagaid THEN throws an internal InternalServerException`() {
+        //GIVEN
+        val scenario: Scenario = createScenario(ID1)
+        every { routingContext.pathParam(scenarioId) } returns ID1
+        every { scenarioService.findOnlyVersion(ID1) } returns scenario
+
+        //WHEN THEN
+        val exceptionThrown = assertThrows<InternalServerException> { getOneScenario.invoke(routingContext) }
+        assertEquals("1 scenario expected but 0 found", exceptionThrown.message)
+    }
+
+    @Test
+    fun `getOneScenario WHEN bad parameter id THEN throws an internal NotFoundException`() {
         //GIVEN
         every { routingContext.pathParam(scenarioId) } returns null
 
         //WHEN THEN
-        assertThrows<NotFoundException> { getOneScenario.invoke(routingContext) }
+        val exceptionThrown = assertThrows<NotFoundException> { getOneScenario.invoke(routingContext) }
+        assertEquals("scenarioID uri parameter not found", exceptionThrown.message)
     }
 
     @Test
-    fun `getOneScenario WHEN findById throw tockException THEN throw InternalServerException`() {
+    fun `getOneScenario WHEN findById throw tockException THEN throws an InternalServerException`() {
         //GIVEN
+        val testExceptionMessage: String = "test exception message"
         every { routingContext.pathParam(any()) } returns ID1
-        every { scenarioService.findById(any()) } throws TockException("test_exception")
+        every { scenarioService.findOnlyVersion(any()) } throws TockException(testExceptionMessage)
 
         //WHEN THEN
-        assertThrows<InternalServerException> { getOneScenario.invoke(routingContext) }
+        val exceptionThrown = assertThrows<InternalServerException> { getOneScenario.invoke(routingContext) }
+        assertEquals(testExceptionMessage, exceptionThrown.message)
     }
 
     @Test
-    fun `createScenario WHEN create return a valide scenario THEN return ScenarioResult`() {
-        val id: String = ID1
-
+    fun `createScenario WHEN create returns a valide scenario THEN returns a ScenarioResult`() {
         //GIVEN
-        val scenarioRequest: ScenarioRequest = createScenarioRequestForId(null)
-        val scenarioToCreate: Scenario = createScenarioForId(null)
-        val scenarioCreated: Scenario = createScenarioForId(id)
+        val scenarioRequest: ScenarioRequest = createScenarioRequest(null)
+        val scenarioToCreate: Scenario = createScenario(null, draft(null))
+        val scenarioCreated: Scenario = createScenario(ID1, draft(VERSION1))
         every { scenarioService.create(scenarioToCreate) } returns scenarioCreated
 
         //WHEN
         val scenarioResult: ScenarioResult = createScenario.invoke(routingContext, scenarioRequest)
 
         //THEN
-        assertEquals(createScenarioResultForId(id), scenarioResult)
+        assertEquals(createScenarioResult(ID1, VERSION1, DRAFT), scenarioResult)
     }
 
     @Test
-    fun `createScenario WHEN create return an invalid scenario THEN throw an InternalServerException`() {
+    fun `createScenario WHEN create returns an invalid scenario THEN throws an InternalServerException`() {
         //GIVEN
-        val scenarioToCreate: Scenario = createScenarioForId(null)
-        val scenarioCreated: Scenario = createScenarioForId(null)
+        val scenarioToCreate: Scenario = createScenario(null, draft(null))
+        val scenarioCreated: Scenario = createScenario(null, draft(VERSION1))
         every { scenarioService.create(scenarioToCreate) } returns scenarioCreated
 
         //WHEN THEN
-        assertThrows<InternalServerException> { createScenario.invoke(routingContext, createScenarioRequestForId(null)) }
+        val exceptionThrown = assertThrows<InternalServerException> {
+            createScenario.invoke(routingContext, createScenarioRequest(null))
+        }
+        assertEquals("scenario must have saga id but is null", exceptionThrown.message)
     }
 
     @Test
-    fun `createScenario WHEN create throw tockException THEN throw InternalServerException`() {
+    fun `createScenario WHEN create throw tockException THEN throws an InternalServerException`() {
         //GIVEN
-        every { scenarioService.create(any()) } throws TockException("test_exception")
+        val testExceptionMessage: String = "test exception message"
+        every { scenarioService.create(any()) } throws TockException(testExceptionMessage)
 
         //WHEN THEN
-        assertThrows<InternalServerException> { createScenario.invoke(routingContext, createScenarioRequestForId(null)) }
+        val exceptionThrown = assertThrows<InternalServerException> {
+            createScenario.invoke(routingContext, createScenarioRequest(null))
+        }
+        assertEquals(testExceptionMessage, exceptionThrown.message)
     }
 
     @Test
-    fun `updateScenario WHEN update return a valide scenario THEN return ScenarioResult`() {
-        val id: String = ID1
-
+    fun `updateScenario WHEN update returns a valide scenario THEN returns a ScenarioResult`() {
         //GIVEN
-        val scenarioRequest: ScenarioRequest = createScenarioRequestForId(id)
-        val scenario: Scenario = createScenarioForId(id)
-        every { routingContext.pathParam(scenarioId) } returns id
-        every { scenarioService.update(id, scenario) } returns scenario
+        val scenarioRequest: ScenarioRequest = createScenarioRequest(ID1, VERSION1, DRAFT)
+        val scenario: Scenario = createScenario(ID1, draft(VERSION1))
+        every { routingContext.pathParam(scenarioId) } returns ID1
+        every { scenarioService.update(ID1, scenario) } returns scenario
 
         //WHEN
         val scenarioResult: ScenarioResult = updateScenario.invoke(routingContext, scenarioRequest)
 
         //THEN
-        assertEquals(createScenarioResultForId(id), scenarioResult)
+        assertEquals(createScenarioResult(ID1, VERSION1, DRAFT), scenarioResult)
     }
 
     @Test
-    fun `updateScenario WHEN update return an invalid scenario THEN throw an InternalServerException`() {
-        val id: String = ID1
-
+    fun `updateScenario WHEN update returns an invalid scenario THEN throws an InternalServerException`() {
         //GIVEN
-        val scenarioRequest: ScenarioRequest = createScenarioRequestForId(null)
-        val scenario: Scenario = createScenarioForId(null)
-        every { routingContext.pathParam(scenarioId) } returns id
-        every { scenarioService.update(id, scenario) } returns scenario
+        val scenarioRequest: ScenarioRequest = createScenarioRequest(ID1, VERSION1)
+        val scenario: Scenario = createScenario(null, draft(VERSION1))
+        every { routingContext.pathParam(scenarioId) } returns VERSION1
+        every { scenarioService.update(VERSION1, any()) } returns scenario
 
         //WHEN THEN
-        assertThrows<InternalServerException> { updateScenario.invoke(routingContext, scenarioRequest) }
+        val exceptionThrown = assertThrows<InternalServerException> {
+            updateScenario.invoke(routingContext, scenarioRequest)
+        }
+        assertEquals("scenario must have saga id but is null", exceptionThrown.message)
     }
 
     @Test
-    fun `updateScenario WHEN bad parameter id THEN throw an internal NotFoundException`() {
+    fun `updateScenario WHEN bad parameter id THEN throws an internal NotFoundException`() {
         //GIVEN
-        val scenarioRequest: ScenarioRequest = createScenarioRequestForId(null)
+        val scenarioRequest: ScenarioRequest = createScenarioRequest(null)
         every { routingContext.pathParam(scenarioId) } returns null
 
         //WHEN THEN
-        assertThrows<NotFoundException> { updateScenario.invoke(routingContext, scenarioRequest) }
+        val exceptionThrown = assertThrows<NotFoundException> { updateScenario.invoke(routingContext, scenarioRequest) }
+        assertEquals("scenarioID uri parameter not found", exceptionThrown.message)
     }
 
     @Test
-    fun `updateScenario WHEN updateScenario throw tockException THEN throw InternalServerException`() {
+    fun `updateScenario WHEN updateScenario throw tockException THEN throws InternalServerException`() {
         //GIVEN
+        val testExceptionMessage: String = "test exception message"
         every { routingContext.pathParam(scenarioId) } returns ID1
-        every { scenarioService.update(any(), any()) } throws TockException("test_exception")
+        every { scenarioService.update(any(), any()) } throws TockException(testExceptionMessage)
 
         //WHEN THEN
-        assertThrows<InternalServerException> { updateScenario.invoke(routingContext, createScenarioRequestForId(ID1)) }
+        val exceptionThrown = assertThrows<InternalServerException> {
+            updateScenario.invoke(routingContext, createScenarioRequest(ID1))
+        }
+        assertEquals(testExceptionMessage, exceptionThrown.message)
     }
 
     @Test
-    fun `deleteScenario WHEN update return a valide scenario THEN return ScenarioResult`() {
-        val id: String = ID1
-
+    fun `deleteScenario WHEN delete don't throw notfound THEN nothing`() {
         //GIVEN
-        every { routingContext.pathParam(scenarioId) } returns id
-        every { scenarioService.delete(id) } returns Unit
+        every { routingContext.pathParam(sagaId) } returns ID1
+        every { scenarioService.deleteById(ID1) } returns Unit
 
         //WHEN
         deleteScenario.invoke(routingContext)
 
-        verify(exactly = 1) { scenarioService.delete(id) }
+        verify(exactly = 1) { scenarioService.deleteById(ID1) }
     }
 
     @Test
-    fun `deleteScenario WHEN bad parameter id THEN throw an internal NotFoundException`() {
+    fun `deleteScenario WHEN bad parameter id THEN throws an internal NotFoundException`() {
         //GIVEN
-        every { routingContext.pathParam(scenarioId) } returns null
+        every { routingContext.pathParam(sagaId) } returns null
+        every { scenarioService.deleteById(ID1) } returns Unit
 
         //WHEN THEN
-        assertThrows<NotFoundException> { deleteScenario.invoke(routingContext) }
+        val exceptionThrown = assertThrows<NotFoundException> { deleteScenario.invoke(routingContext) }
+        assertEquals("sagaID uri parameter not found", exceptionThrown.message)
     }
 
     @Test
-    fun `deleteScenario WHEN delete throw tockException THEN throw InternalServerException`() {
+    fun `deleteScenario WHEN deleteByVersion throw tockException THEN throws an InternalServerException`() {
         //GIVEN
-        every { routingContext.pathParam(scenarioId) } returns ID1
-        every { scenarioService.delete(any()) } throws TockException("test_exception")
+        every { routingContext.pathParam(sagaId) } returns ID1
+        every { scenarioService.deleteById(ID1) } throws ScenarioNotFoundException(ID1, "test exception message")
 
         //WHEN THEN
-        assertThrows<InternalServerException> { deleteScenario.invoke(routingContext) }
-    }
-
-    private fun createScenarioForId(id: String?): Scenario {
-        return Scenario(id = id, name = "test", applicationId = "test", state = "test")
-    }
-
-    private fun createScenarioRequestForId(id: String?): ScenarioRequest {
-        return ScenarioRequest(id = id, name = "test", applicationId = "test", state = "test")
-    }
-
-    private fun createScenarioResultForId(id: String): ScenarioResult {
-        return ScenarioResult(id = id, name = "test", applicationId = "test", state = "test")
+        val exceptionThrown = assertThrows<NotFoundException> { deleteScenario.invoke(routingContext) }
+        assertEquals("saga $ID1 not found", exceptionThrown.message)
     }
 }

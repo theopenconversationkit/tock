@@ -57,7 +57,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"idOperator\": \"42\",\n    \"idConversation\": \"42\",\n    \"message\": {\n        \"payload\": {\n            \"value\": \"zerzer\",\n            \"contentType\": \"blob\"\n        }\n    }\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -65,7 +65,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/rest/admin/scenarios",
+					"raw": "http://localhost:7999/rest/admin/scenarios/",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -74,7 +74,8 @@
 					"path": [
 						"rest",
 						"admin",
-						"scenarios"
+						"scenarios",
+						""
 					],
 					"query": [
 						{
@@ -93,7 +94,7 @@
 			"response": []
 		},
 		{
-			"name": "get one",
+			"name": "get all active",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -102,7 +103,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n      \"id\": \"62c2de078af62438482f8cf\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -110,7 +111,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/rest/admin/scenarios/62c2de078af62438482f8cf2",
+					"raw": "http://localhost:7999/rest/admin/scenarios/active",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -120,7 +121,7 @@
 						"rest",
 						"admin",
 						"scenarios",
-						"62c2de078af62438482f8cf2"
+						"active"
 					],
 					"query": [
 						{
@@ -139,13 +140,199 @@
 			"response": []
 		},
 		{
-			"name": "create",
+			"name": "get one scenario",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/scenarios/62d97f28d911c2045fc99242",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"scenarios",
+						"62d97f28d911c2045fc99242"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get one saga",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/sagas/62d97f28d911c2045fc99242",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"sagas",
+						"62d97f28d911c2045fc99242"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get current for saga",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/sagas/63032fc66279463ac86efdfb/current",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"sagas",
+						"63032fc66279463ac86efdfb",
+						"current"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all active for saga",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/sagas/63032fc66279463ac86efdfb/active",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"sagas",
+						"63032fc66279463ac86efdfb",
+						"active"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create scenario on new saga",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"raw": "  {\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"createDate\": \"2022-08-22T08:46:12.452Z\",\n        \"updateDate\": null,\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"data\": {\n            \"marcus\": \"marcus\"\n        },\n        \"state\": \"DRAFT\"\n    }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -181,13 +368,13 @@
 			"response": []
 		},
 		{
-			"name": "update",
+			"name": "create scenario on existing saga",
 			"request": {
-				"method": "PUT",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n        \"id\": \"62d681862d41f87c07d32f7b\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"raw": "  {\n        \"sagaId\": \"63032fc66279463ac86efdfb\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"createDate\": \"2022-08-22T08:46:12.452Z\",\n        \"updateDate\": null,\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"data\": {\n            \"marcus\": \"marcus\"\n        },\n        \"state\": \"DRAFT\"\n    }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -195,7 +382,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7999/rest/admin/scenarios/62d681862d41f87c07d32f7b",
+					"raw": "http://localhost:7999/rest/admin/scenarios",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -204,8 +391,7 @@
 					"path": [
 						"rest",
 						"admin",
-						"scenarios",
-						"62d681862d41f87c07d32f7b"
+						"scenarios"
 					],
 					"query": [
 						{
@@ -224,13 +410,56 @@
 			"response": []
 		},
 		{
-			"name": "delete",
+			"name": "update scenario",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\n        \"id\": \"630725f57c83ca6c01b22360\",\n        \"sagaId\": \"63032fc66279463ac86efdfb\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"createDate\": \"2022-08-22T08:46:12.452Z\",\n        \"updateDate\": null,\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"data\": {\n            \"marcus\": \"marcus\"\n        },\n        \"state\": \"ARCHIVE\"\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/scenarios/630725f57c83ca6c01b22360",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"scenarios",
+						"630725f57c83ca6c01b22360"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete scenario",
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "  {\n        \"id\": \"62c3217b466d044ed40b03e9\",\n        \"name\": \"Activation carte\",\n        \"category\": \"marcus\",\n        \"tags\": [\n            \"Carte\",\n            \"Process\"\n        ],\n        \"applicationId\": \"app_id1\",\n        \"updateDate\": \"2022-03-31T12:08:25.927Z\",\n        \"description\": \"Scénario permettant de cibler le cas d'activation du client afin de fournir une réponse adaptée\",\n        \"state\": \"design\"\n    }",
+					"raw": "  ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -248,6 +477,49 @@
 						"rest",
 						"admin",
 						"scenarios",
+						"62c3217b466d044ed40b03e9"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete saga",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/sagas/62c3217b466d044ed40b03e9",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"sagas",
 						"62c3217b466d044ed40b03e9"
 					],
 					"query": [

@@ -17,8 +17,10 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.scenario.Scenario
-import ai.tock.shared.exception.TockIllegalArgumentException
-import ai.tock.shared.exception.TockNotFound
+import ai.tock.bot.admin.scenario.ScenarioVersion
+import ai.tock.bot.admin.scenario.ScenarioState
+import ai.tock.shared.exception.scenario.ScenarioNotFoundException
+import ai.tock.shared.exception.scenario.ScenarioWithNoIdException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -32,6 +34,8 @@ class ScenarioDAOTest : AbstractTest() {
 
     private val ID1 = "id_test_1"
     private val ID2 = "id_test_2"
+
+    private val VERSION = "version_test_1"
 
     @BeforeEach
     fun clearDB() {
@@ -48,10 +52,10 @@ class ScenarioDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `findAll WHEN 2 scenario existe THEN return list of 2 scenario`() {
+    fun `findAll WHEN 2 scenarios exists THEN returns list of 2 scenario`() {
         //GIVEN
-        ScenarioMongoDAO.update(createScenarioForId(ID1))
-        ScenarioMongoDAO.update(createScenarioForId(ID2))
+        ScenarioMongoDAO.update(createScenario(ID1, VERSION))
+        ScenarioMongoDAO.update(createScenario(ID2, VERSION))
 
         //WHEN
         val scenarioFound = ScenarioMongoDAO.findAll()
@@ -61,91 +65,102 @@ class ScenarioDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `findById WHEN id exist in database THEN return scenario`() {
+    fun `findById WHEN id exists in database THEN returns scenario`() {
         //GIVEN
-        val scenario = createScenarioForId(ID1)
+        val scenario = createScenario(ID1, VERSION)
         ScenarioMongoDAO.update(scenario)
 
         //WHEN
-        val scenarioFound = ScenarioMongoDAO.findById(ID1)
+        val scenarioFound = ScenarioMongoDAO.findByVersion(VERSION)
 
         //THEN
         assertEquals(scenario, scenarioFound)
     }
 
     @Test
-    fun `findById WHEN id does not exist in database THEN return null`() {
+    fun `findById WHEN id does not exists in database THEN return null`() {
         //GIVEN
-        val scenario = createScenarioForId(ID1)
+        val scenario = createScenario(ID1, VERSION)
         ScenarioMongoDAO.update(scenario)
 
         //WHEN
-        val scenarioFound = ScenarioMongoDAO.findById(ID2)
+        val scenarioFound = ScenarioMongoDAO.findByVersion(ID2)
 
         //THEN
         assertNull(scenarioFound)
     }
 
     @Test
-    fun `create GIVEN scenario with no id THEN add scenario in database`() {
+    fun `create GIVEN scenario without an id THEN add scenario in database`() {
         //GIVEN
-        val scenario = createScenarioForId(null)
+        val scenario = createScenario(null, null)
 
         //WHEN
         val scenarioCreated = ScenarioMongoDAO.create(scenario)
 
         //THEN
-        assertTrue(scenarioCreated?.id != null)
-        assertNotNull(ScenarioMongoDAO.findById(scenarioCreated?.id.toString()))
+        assertNotNull(scenarioCreated?.id)
+        assertNotNull(scenarioCreated?.versions?.first()?.version)
+        assertNotNull(ScenarioMongoDAO.findByVersion(scenarioCreated?.versions?.first()?.version.toString()))
     }
 
     @Test
-    fun `create GIVEN scenario with id THEN throw TockIllegaleArgumentException`() {
+    fun `create GIVEN scenario with id THEN throws TockIllegaleArgumentException`() {
         //GIVEN
-        val scenario = createScenarioForId(ID1)
+        val scenario = createScenario(ID1, null)
 
-        //WHEN //THEN
-        assertThrows<TockIllegalArgumentException> {  ScenarioMongoDAO.create(scenario) }
+        //WHEN
+        val scenarioCreated = ScenarioMongoDAO.create(scenario)
+
+        //THEN
+        assertEquals(ID1, scenarioCreated?.id)
+        assertNotNull(scenarioCreated?.versions?.first()?.version)
+        assertNotNull(ScenarioMongoDAO.findByVersion(scenarioCreated?.versions?.first()?.version.toString()))
     }
 
     @Test
     fun `update GIVEN scenario with id THEN update scenario in database`() {
         //GIVEN
-        val scenario = createScenarioForId(ID1)
+        val scenario = createScenario(ID1, VERSION)
 
         //WHEN
         val scenarioCreated = ScenarioMongoDAO.update(scenario)
 
         //THEN
         assertEquals(ID1, scenarioCreated?.id)
+        assertEquals(VERSION, scenarioCreated?.versions?.first()?.version)
         assertNotNull(ScenarioMongoDAO.findById(ID1))
+        assertNotNull(ScenarioMongoDAO.findByVersion(VERSION))
     }
 
     @Test
-    fun `update GIVEN scenario with no id THEN throw TockIllegalArgumentException`() {
+    fun `update GIVEN scenario without an id THEN throws TockIllegalArgumentException`() {
         //GIVEN
-        val scenario = createScenarioForId(null)
+        val scenario = createScenario(null, VERSION)
 
         //WHEN //THEN
-        assertThrows<TockIllegalArgumentException> {  ScenarioMongoDAO.update(scenario) }
+        assertThrows<ScenarioWithNoIdException> {  ScenarioMongoDAO.update(scenario) }
     }
 
     @Test
-    fun `delete GIVEN scenario existe in database THEN is deleted`() {
+    fun `delete GIVEN scenario exists in database THEN is deleted`() {
         //GIVEN
-        ScenarioMongoDAO.update(createScenarioForId(ID1))
+        ScenarioMongoDAO.update(createScenario(ID1, VERSION))
 
         //WHEN //THEN
         ScenarioMongoDAO.delete(ID1)
     }
 
     @Test
-    fun `delete GIVEN scenario does not existe in database THEN throw TockNotFound`() {
+    fun `delete GIVEN scenario does not exists in database THEN throws TockNotFound`() {
         //GIVEN //WHEN //THEN
-        assertThrows<TockNotFound> {  ScenarioMongoDAO.delete(ID1) }
+        assertThrows<ScenarioNotFoundException> {  ScenarioMongoDAO.delete(ID1) }
     }
 
-    private fun createScenarioForId(id: String?): Scenario {
-        return Scenario(id = id, name = "test", applicationId = "test", state = "test")
+    private fun createScenario(id: String?, version: String?): Scenario {
+        return Scenario(
+            id = id,
+            versions = listOf(ScenarioVersion(version = version, name = "test", applicationId = "test", state = ScenarioState.DRAFT))
+        )
     }
 }

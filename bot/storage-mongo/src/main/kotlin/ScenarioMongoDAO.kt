@@ -17,60 +17,105 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.scenario.Scenario
 import ai.tock.bot.admin.scenario.ScenarioDAO
-import ai.tock.bot.mongo.ScenarioCol_.Companion.Name
-import ai.tock.shared.exception.TockIllegalArgumentException
-import ai.tock.shared.exception.TockNotFound
-import com.fasterxml.jackson.databind.ObjectMapper
+import ai.tock.bot.admin.scenario.ScenarioVersion
+import ai.tock.bot.mongo.ScenarioVersionCol_.Companion.Version
+import ai.tock.bot.mongo.ScenarioCol_.Companion.Versions
+import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.exception.scenario.*
+import ai.tock.shared.warn
 import com.mongodb.client.result.DeleteResult
+import mu.KotlinLogging
 import org.litote.kmongo.*
 
 internal object ScenarioMongoDAO : ScenarioDAO {
 
-    private val objectMapper = ObjectMapper()
+    private val logger = KotlinLogging.logger {}
 
     internal val scenarioDatabase =
         MongoBotConfiguration.database.getCollection<ScenarioCol>("scenario")
 
+    init {
+        try {
+            scenarioDatabase.ensureUniqueIndex(Scenario::versions / ScenarioVersion::version)
+        } catch (e: Exception) {
+            logger.warn(e)
+        }
+    }
     /**
      * Return a collection of all Scenario.
      */
     override fun findAll(): List<Scenario> {
         return scenarioDatabase.find()
-            .ascendingSort(Name)
             .toList()
-            .map(mapToScenario)
+            .map(toScenario)
+    }
+
+    /**
+     * Return Scenario find by version or null if not exist.
+     * @param version of scenario to find.
+     */
+    override fun findByVersion(version: String): Scenario? {
+        val scenarios: List<Scenario> = scenarioDatabase
+            .aggregate<ScenarioCol>(match(Scenario::versions / ScenarioVersion::version eq version))
+            .toList()
+            .map(toScenario)
+
+        if(scenarios.size > 1) {
+            throw BadNumberOfScenarioException(1, scenarios.size, "at most 1 scenario expected, but ${scenarios.size} have been found")
+        }
+
+        return scenarios.firstOrNull()
     }
 
     /**
      * Return Scenario find by id or null if not exist.
-     * @property id of scenario to find.
+     * @param id of scenario to find.
      */
     override fun findById(id: String): Scenario? {
-        return scenarioDatabase.findOneById(id.toId<Scenario>())?.mapToScenario()
+        return scenarioDatabase.findOneById(id)?.toScenario()
     }
 
     /**
      * Create Scenario and return it.
-     * @property scenario to create.
-     * @throws TockIllegalArgumentException when scenario have id.
+     * @property scenario with versions to create.
+     * @throws ScenarioWithVersionException when scenario has a version with id sets.
      */
     override fun create(scenario: Scenario): Scenario? {
-        if(isIdPresent(scenario)) {
-            throw TockIllegalArgumentException("scenario musn't have id")
+        if(isVersionPresent(scenario)) {
+            val version: String = scenario.versions.firstNotNullOf { it.version }
+            throw ScenarioWithVersionException(version, "scenario version must not have version")
         }
-        return save(scenario.mapToScenarioCol())?.mapToScenario()
+        return save(scenario.toScenarioCol())?.toScenario()
+    }
+
+    /**
+     * Patch Scenario and return it.
+     * (to create new version on existing scenario with no check)
+     * @param scenario with versions to create.
+     * @throws ScenarioWithVersionException when scenario has a version with id sets.
+     */
+    override fun patch(scenario: Scenario): Scenario? {
+        return save(scenario.toScenarioCol())?.toScenario()
     }
 
     /**
      * Update Scenario and return it.
-     * @property scenario to update.
-     * @throws TockIllegalArgumentException when scenario have no id.
+     * @param scenario with versions to update.
+     * @throws ScenarioWithNoIdException when scenario has no id.
+     * @throws ScenarioWithNoVersionIdException when scenario has a version without an id.
      */
     override fun update(scenario: Scenario): Scenario? {
         if(!isIdPresent(scenario)) {
-            throw TockIllegalArgumentException("scenario must have id")
+            throw ScenarioWithNoIdException("scenario must have an id")
         }
-        return save(scenario.mapToScenarioCol())?.mapToScenario()
+        if(!isVersionPresent(scenario)) {
+            throw ScenarioWithNoVersionIdException(scenario.id, "version must have an id")
+        }
+        return save(scenario.toScenarioCol())?.toScenario()
+    }
+
+    private fun isVersionPresent(scenario: Scenario): Boolean {
+        return scenario.versions.all{ it.version?.isNotBlank() ?: false }
     }
 
     private fun isIdPresent(scenario: Scenario): Boolean {
@@ -84,42 +129,55 @@ internal object ScenarioMongoDAO : ScenarioDAO {
 
     /**
      * Delete Scenario by id.
-     * @property id of scenario to delete
-     * @throws TockNotFound when no delete process of id
+     * @param id of scenario to delete.
+     * @throws ScenarioNotFoundException when no delete process of id.
      */
     override fun delete(id: String) {
         val result: DeleteResult = scenarioDatabase.deleteOneById(id.toId<Scenario>())
         if(result.deletedCount == 0L) {
-            throw TockNotFound("scenario $id not found in database")
+            throw ScenarioNotFoundException(id, "scenario $id not found in database")
         }
     }
 
-    private val mapToScenario: ScenarioCol.() -> Scenario  = {
+    private val toScenario: ScenarioCol.() -> Scenario = {
         Scenario(
             id = _id.toString(),
+            versions = versions.map(toScenarioVersion) )
+    }
+
+    private val toScenarioVersion: ScenarioVersionCol.() -> ScenarioVersion = {
+        ScenarioVersion (
+            version = version.toString(),
             name = name,
             category = category,
             tags = tags,
             applicationId = applicationId,
-            createDate = createDate,
+            creationDate = creationDate,
             updateDate = updateDate,
-            description= description,
+            description = description,
             data = data,
-            state = state )
+            state = state
+        )
     }
 
-    private val mapToScenarioCol: Scenario.() -> ScenarioCol  = {
-        ScenarioCol(
+    private fun Scenario.toScenarioCol(): ScenarioCol {
+        return ScenarioCol(
             _id = id?.toId() ?: newId(),
+            versions = versions.map(toScenarioVersionCol) )
+    }
+
+    private val toScenarioVersionCol: ScenarioVersion.() -> ScenarioVersionCol = {
+        ScenarioVersionCol (
+            version = version?.toId() ?: newId(),
             name = name,
             category = category,
             tags = tags,
             applicationId = applicationId,
-            createDate = createDate,
+            creationDate = creationDate,
             updateDate = updateDate,
-            description= description,
+            description = description,
             data = data,
-            state = state )
+            state = state
+        )
     }
-
 }

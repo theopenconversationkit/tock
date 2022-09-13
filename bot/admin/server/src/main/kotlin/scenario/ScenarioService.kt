@@ -13,43 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package ai.tock.bot.admin.scenario
-
-import ai.tock.shared.exception.rest.InternalServerException
-import ai.tock.shared.exception.rest.NotFoundException
 
 interface ScenarioService {
 
     /**
-     * Returns all scenarios know
+     * Returns all scenarios on all versions
      */
     fun findAll(): Collection<Scenario>
 
     /**
-     * Returns a specific scenario based on its id
-     * @property scenarioId id of scenario to find
-     * @throws NotFoundException when no scenario found
-     * @throws InternalServerException when scenario found is invalid
+     * Returns all scenarios that are active and not in the state ARCHIVE {@see ScenarioState}
      */
-    fun findById(scenarioId: String): Scenario
+    fun findAllActive(): Collection<Scenario>
 
     /**
-     * Create a new scenario
-     * @property scenario to create
+     * Returns a scenario with only the version requested
+     * @param version of scenario to find
+     */
+    fun findOnlyVersion(version: String): Scenario
+
+    /**
+     * Returns a scenario with all version based on its id
+     * @param id of scenario to find
+     */
+    fun findById(id: String): Scenario
+
+    /**
+     * Returns the current version of a scenario based on its id
+     * @param id of scenario to find
+     */
+    fun findCurrentById(id: String): Scenario
+
+    /**
+     * Returns scenario with versions not archive based on its id
+     * @param id of scenario to find
+     */
+    fun findActiveById(id: String): Scenario
+
+    /**
+     * Create a new version on a new scenario or on an existing scenario if id is set
+     * @param scenario to create
      */
     fun create(scenario: Scenario): Scenario
 
     /**
-     * Update an existing scenario
-     * @property scenarioId id of URI to update scenario
-     * @property scenario to update
+     * Update an existing version on an existing scenario
+     * @param scenarioId id of URI to update scenario
+     * @param scenario to update
      */
-    fun update(scenarioId: String, scenario: Scenario): Scenario
+    fun update(version: String, scenario: Scenario): Scenario
 
     /**
-     * Delete an existing scenario
-     * @property scenarioId id of scenario to delete
+     * Delete an existing version of a scenario
+     * @param version of scenario to delete
      */
-    fun delete(scenarioId: String)
+    fun deleteByVersion(version: String)
+
+    /**
+     * Delete all versions of an existing scenario
+     * @param id of scenario to delete
+     */
+    fun deleteById(id: String)
 }

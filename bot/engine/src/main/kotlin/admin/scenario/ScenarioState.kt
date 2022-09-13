@@ -16,7 +16,21 @@
 
 package ai.tock.bot.admin.scenario
 
-data class Scenario(
-    val id: String? = null,
-    val versions: List<ScenarioVersion> = emptyList(),
-)
+import ai.tock.shared.exception.TockException
+
+enum class ScenarioState(val value: String) {
+    DRAFT("draft"),
+    CURRENT("current"),
+    ARCHIVED("archive");
+
+    companion object {
+        fun find(value: String): ScenarioState =
+            when(value.lowercase()) {
+                DRAFT.value -> DRAFT
+                CURRENT.value -> CURRENT
+                ARCHIVED.value -> ARCHIVED
+                else -> throw TockException("unknown $value state")
+            }
+    }
+
+}
