@@ -21,14 +21,14 @@
 
 .select-intent {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) 0 minmax(0, 0.5fr) auto;
+  grid-template-columns: minmax(7.5rem, 5fr) 0 minmax(1rem, 0.5fr);
   align-items: center;
   grid-gap: 0.5rem;
 }
 
 @include media-breakpoint-up(sm) {
   .grid-columns {
-    grid-template-columns: auto 0.8fr 1.2fr auto;
+    grid-template-columns: auto minmax(5rem, 1.25fr) minmax(10rem, 1fr) minmax(5rem, auto);
   }
 
   .grid-columns-header {

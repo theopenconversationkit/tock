@@ -9,6 +9,6 @@
 
 @include media-breakpoint-up(sm) {
   .grid {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   }
 }

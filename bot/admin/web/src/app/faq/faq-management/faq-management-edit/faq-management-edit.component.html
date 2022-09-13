@@ -4,7 +4,7 @@
 >
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start">
-      <h4>{{ faq?.id ? 'Edit "' + faq.title + '"' : 'New faq' }}</h4>
+      {{ faq?.id ? 'Edit "' + faq.title + '"' : 'New faq' }}
       <button
         type="button"
         nbButton

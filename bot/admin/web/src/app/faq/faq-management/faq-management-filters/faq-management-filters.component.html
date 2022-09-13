@@ -1,4 +1,18 @@
 <nb-card class="mb-0">
+  <nb-card-header class="d-flex align-items-center justify-content-between">
+    Filters
+    <button
+      *ngIf="isFiltered"
+      nbButton
+      nbTooltip="Clear all filters"
+      ghost
+      shape="round"
+      (click)="clearFilters()"
+      data-testid="clear-button"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
   <nb-card-body>
     <form
       class="grid"
@@ -42,20 +56,6 @@
       >
         Active
       </nb-checkbox>
-
-      <div class="actions">
-        <button
-          *ngIf="isFiltered"
-          nbButton
-          nbTooltip="Clear all filters"
-          ghost
-          shape="round"
-          (click)="clearFilters()"
-          data-testid="clear-button"
-        >
-          <nb-icon icon="close-outline"></nb-icon>
-        </button>
-      </div>
     </form>
   </nb-card-body>
 </nb-card>

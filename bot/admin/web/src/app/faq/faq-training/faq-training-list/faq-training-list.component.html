@@ -129,6 +129,9 @@
       </nb-autocomplete>
 
       <span nbTooltip="Detection probability"> {{ selectIntent(sentence, 'probability') }}% </span>
+    </div>
+
+    <div>
       <button
         *ngIf="state.hasRole(UserRole.botUser)"
         nbButton
@@ -141,9 +144,6 @@
       >
         <nb-icon icon="plus-circle-outline"></nb-icon>
       </button>
-    </div>
-
-    <div>
       <button
         nbButton
         nbTooltip="Validate"

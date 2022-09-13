@@ -25,7 +25,7 @@
 
 @include media-breakpoint-up(lg) {
   .grid {
-    grid-template-columns: calc(65% - 1rem) 35%;
+    grid-template-columns: 6fr 4fr;
 
     .main {
       order: 1;

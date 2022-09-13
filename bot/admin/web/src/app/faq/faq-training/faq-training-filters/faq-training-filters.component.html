@@ -1,4 +1,5 @@
 <nb-card class="mb-0">
+  <nb-card-header>Filters</nb-card-header>
   <nb-card-body>
     <form
       class="grid"
@@ -30,13 +31,15 @@
         </button>
       </nb-form-field>
 
-      <nb-toggle
-        class="mb-n2 mr-2"
-        nbTooltip="Show unknown sentences"
-        formControlName="showUnknown"
-      >
-        Unknown
-      </nb-toggle>
+      <div>
+        <nb-toggle
+          class="mb-n2 mr-2"
+          nbTooltip="Show unknown sentences"
+          formControlName="showUnknown"
+        >
+          Unknown
+        </nb-toggle>
+      </div>
     </form>
   </nb-card-body>
 </nb-card>
