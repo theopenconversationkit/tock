@@ -168,7 +168,8 @@ class IadvizeConnector internal constructor(
     }
 
     /*
-     * if id conversation is in echo, it's an echo : do not treat request.
+     * If request is a MessageRequest and the author of message have role "operator" : do not treat request.
+     * in many case it's an echo, but it can be a human operator
      */
     private fun isOperator(iadvizeRequest: IadvizeRequest): Boolean {
         return if(iadvizeRequest is MessageRequest) {
