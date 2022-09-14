@@ -57,7 +57,8 @@ class IadvizeConnectorTest {
     val operateurId: String = "operateurId"
     val conversationId: String = "conversationId"
 
-    val marcus: String = "MARCUS"
+    val marcus1: String = "MARCUS1"
+    val marcus2: String = "MARCUS2"
 
     @BeforeEach
     fun before() {
@@ -69,8 +70,10 @@ class IadvizeConnectorTest {
         every { context.pathParam("idConversation") } returns conversationId
 
         every { controller.botDefinition.i18nTranslator(any(), any(), any(), any()) } returns translator
-        val marcusAnswer = I18nLabelValue("", "", "", marcus)
-        every { translator.translate(marcus) } returns marcusAnswer.raw
+        val marcusAnswer1 = I18nLabelValue("", "", "", marcus1)
+        every { translator.translate(marcus1) } returns marcusAnswer1.raw
+        val marcusAnswer2 = I18nLabelValue("", "", "", marcus2)
+        every { translator.translate(marcus2) } returns marcusAnswer2.raw
 
         // Force date to expected date
         mockkStatic(LocalDateTime::class)
@@ -83,12 +86,14 @@ class IadvizeConnectorTest {
         val iAdvizeRequest: IadvizeRequest = getIadvizeRequestMessage("/request_message_text.json", conversationId)
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS")
+        val action1 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS1")
+        val action2 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS2")
         val connectorData = slot<ConnectorData>()
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
-            callback.addAction(action, 0)
-            callback.eventAnswered(action)
+            callback.addAction(action1, 0)
+            callback.addAction(action2, 0)
+            callback.eventAnswered(action2)
         }
 
         connector.handleRequest(
@@ -206,12 +211,14 @@ class IadvizeConnectorTest {
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
         every { context.getBodyAsString() } returns request
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS")
+        val action1 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS1")
+        val action2 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS2")
         val connectorData = slot<ConnectorData>()
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
-            callback.addAction(action, 0)
-            callback.eventAnswered(action)
+            callback.addAction(action1, 0)
+            callback.addAction(action2, 0)
+            callback.eventAnswered(action2)
         }
 
         connector.handlerConversation(context, controller)
@@ -224,15 +231,19 @@ class IadvizeConnectorTest {
     @Test
     fun handlerEchoConversation_shouldHandleWell_TockBot() {
         val request: String = Resources.toString(resource("/request_message_text.json"), Charsets.UTF_8)
+        val requestEchoMarcus1: String = Resources.toString(resource("/request_echo_marcus1.json"), Charsets.UTF_8)
+        val requestEchoMarcus2: String = Resources.toString(resource("/request_echo_marcus2.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
         every { context.getBodyAsString() } returns request
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS")
+        val action1 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS1")
+        val action2 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS2")
         val connectorData = slot<ConnectorData>()
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
-            callback.addAction(action, 0)
-            callback.eventAnswered(action)
+            callback.addAction(action1, 0)
+            callback.addAction(action2, 0)
+            callback.eventAnswered(action2)
         }
 
         connector.handlerConversation(context, controller)
@@ -241,9 +252,14 @@ class IadvizeConnectorTest {
         verify { response.end(capture(messageResponse)) }
         assertEquals(expectedResponse, messageResponse.captured)
 
-        //echo
+        //echo1
+        every { context.getBodyAsString() } returns requestEchoMarcus1
         connector.handlerConversation(context, controller)
+        verify { response.end() }
 
+        //echo2
+        every { context.getBodyAsString() } returns requestEchoMarcus2
+        connector.handlerConversation(context, controller)
         verify { response.end() }
     }
 

@@ -61,10 +61,7 @@ class IadvizeConnector internal constructor(
         private val logger = KotlinLogging.logger {}
     }
 
-    //TODO : solution non-scalable horizontally
-    //be careful, this solution makes the iadvize connector non-scalable horizontally.
-    // in case of deployment of several instances of BotAdmin: implement another solution.
-    private val echo: MutableSet<String> = mutableSetOf()
+    private val ROLE_OPERATOR: String = "operator"
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -157,16 +154,14 @@ class IadvizeConnector internal constructor(
 
     internal var handlerConversation: IadvizeHandler = { context, controller ->
         val idConversation: String = context.pathParam(QUERY_ID_CONVERSATION)
-        if (!isEcho(idConversation)) {
+        val iadvizeRequest: IadvizeRequest = mapRequest(idConversation, context)
+        if (!isOperator(iadvizeRequest)) {
             logger.info { "request : POST /conversations/$idConversation/messages\nbody : ${context.getBodyAsString()}" }
-
             logger.info { context.normalisedPath() }
-            val iadvizeRequest: IadvizeRequest = mapRequest(idConversation, context)
             logger.info { "body parsed : $iadvizeRequest" }
-            // warn echo message from iadvize
-            echo.add(idConversation)
             handleRequest(controller, context, iadvizeRequest)
         } else {
+            //ignore message from operator
             logger.info { "request echo : POST /conversations/$idConversation/messages ${context.getBodyAsString()}" }
             context.response().end()
         }
@@ -175,8 +170,12 @@ class IadvizeConnector internal constructor(
     /*
      * if id conversation is in echo, it's an echo : do not treat request.
      */
-    private fun isEcho(idConversation: String): Boolean {
-        return echo.remove(idConversation)
+    private fun isOperator(iadvizeRequest: IadvizeRequest): Boolean {
+        return if(iadvizeRequest is MessageRequest) {
+            iadvizeRequest.message.author.role.equals(ROLE_OPERATOR)
+        } else {
+            false
+        }
     }
 
     private fun mapRequest(idConversation: String, context: RoutingContext): IadvizeRequest {
