@@ -16,14 +16,14 @@
 
 package ai.tock.bot.connector.alcmeon
 
-import ai.tock.bot.engine.Bus
+import ai.tock.bot.engine.BotBus
 
-fun <T : Bus<T>> T.endWithAlcmeonExit(
+fun <T : BotBus> T.endWithAlcmeonExit(
     delay: Long = defaultDelay(currentAnswerIndex),
     exitReasonProvider: T.() -> String
 ): T {
     if (isCompatibleWith(alcmeonConnectorType)) {
-        send { AlcmeonExitEvent(applicationId, exitReasonProvider(), delay) }
+        send(AlcmeonExitEvent(applicationId, exitReasonProvider(), delay))
     }
     return this
 }
