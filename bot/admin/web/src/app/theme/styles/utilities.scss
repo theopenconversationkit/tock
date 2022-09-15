@@ -48,3 +48,29 @@ nb-accordion.selected {
 .break-word {
   word-break: break-word;
 }
+
+.header-actions {
+  gap: 0.5rem;
+}
+
+.card-header-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.card-footer-actions {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+}
+
+@media screen and (min-width: 400px) {
+  .card-footer-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}

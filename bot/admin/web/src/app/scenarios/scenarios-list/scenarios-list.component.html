@@ -1,15 +1,14 @@
-<div class="d-flex flex-wrap mb-2">
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
   <h1 class="flex-grow-1">Scenarios Management</h1>
 
-  <section class="grid-actions">
+  <section class="d-flex flex-wrap header-actions">
     <button
       nbButton
       ghost
       shape="round"
       nbTooltip="Export scenarios dumps"
-      [disabled]="!configurations?.length"
-      (click)="callExportScenario()"
-      [disabled]="!sagas.length"
+      [disabled]="!configurations?.length || !sagas.length"
+      (click)="openExportScenario()"
     >
       <nb-icon icon="download-outline"></nb-icon>
     </button>
@@ -19,7 +18,7 @@
       shape="round"
       nbTooltip="Import scenarios dumps"
       [disabled]="!configurations?.length"
-      (click)="callImportScenario()"
+      (click)="openImportScenario()"
     >
       <nb-icon icon="upload-outline"></nb-icon>
     </button>
@@ -28,7 +27,6 @@
       status="primary"
       [disabled]="!configurations?.length"
       (click)="addOrEditScenario()"
-      class="ml-2"
     >
       <nb-icon icon="plus-outline"></nb-icon>
       Create
@@ -36,7 +34,7 @@
   </section>
 </div>
 
-<section [class.grid]="isSidePanelOpen">
+<section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.export || isSidePanelOpen.import">
   <nb-alert
     *ngIf="configurations?.length === 0"
     class="alert-config flex-row align-items-center"
@@ -95,27 +93,40 @@
 
   <tock-scenario-edit
     #scenarioEditComponent
-    *ngIf="isSidePanelOpen"
+    *ngIf="isSidePanelOpen.edit"
     class="aside"
     [loading]="loading.edit"
     [scenario]="scenarioEdit"
-    (onClose)="closeSidePanel()"
+    (onClose)="closeSidePanel('edit')"
     (onSave)="saveScenario($event)"
   ></tock-scenario-edit>
+
+  <tock-scenario-import
+    #scenarioImportComponent
+    *ngIf="isSidePanelOpen.import"
+    class="aside"
+    (onClose)="closeSidePanel('import')"
+  ></tock-scenario-import>
+
+  <tock-scenario-export
+    #scenarioExportComponent
+    *ngIf="isSidePanelOpen.export"
+    class="aside"
+    [sagas]="sagas"
+    (onClose)="closeSidePanel('export')"
+  ></tock-scenario-export>
 </section>
 
 <ng-template #duplicationModal>
   <nb-card>
-    <nb-card-header class="d-flex justify-content-between align-items-center">
-      <h4>Duplicate a scenario</h4>
-
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Duplicate a scenario
       <button
         nbButton
         ghost
         shape="round"
         nbTooltip="Cancel"
         (click)="duplicationCancel()"
-        class="ml-3"
       >
         <nb-icon icon="close-outline"></nb-icon>
       </button>
@@ -125,34 +136,31 @@
         [formGroup]="duplicationForm"
         (submit)="duplicationSubmit()"
       >
-        <div class="row main-row">
-          <div class="col-12">
-            <div class="mb-4">
-              <tock-form-control
-                label="Version description"
-                name="description"
-                required="true"
-                [controls]="description"
-                [showError]="isDuplicationSubmitted"
-              >
-                <textarea
-                  nbInput
-                  formControlName="description"
-                  fullWidth
-                  id="description"
-                  type="text"
-                  placeholder="Enter a description"
-                  autofocusElement
-                ></textarea>
-              </tock-form-control>
-            </div>
-          </div>
-        </div>
+        <tock-form-control
+          label="Version description"
+          name="description"
+          required="true"
+          [controls]="description"
+          [showError]="isDuplicationSubmitted"
+          [hasMargin]="false"
+        >
+          <textarea
+            nbInput
+            formControlName="description"
+            fullWidth
+            id="description"
+            type="text"
+            placeholder="Enter a description"
+            autofocusElement
+          ></textarea>
+        </tock-form-control>
       </form>
     </nb-card-body>
-    <nb-card-footer class="d-flex justify-content-between">
+    <nb-card-footer class="card-footer-actions">
       <button
         nbButton
+        ghost
+        size="small"
         (click)="duplicationCancel()"
       >
         Cancel
@@ -160,6 +168,7 @@
       <button
         nbButton
         status="primary"
+        size="small"
         (click)="duplicationSubmit()"
         [disabled]="!canSaveDuplication"
       >

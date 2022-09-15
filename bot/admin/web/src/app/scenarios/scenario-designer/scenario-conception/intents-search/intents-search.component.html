@@ -2,19 +2,20 @@
   id="modal-wrapper"
   size="large"
 >
-  <nb-card-header class="d-flex justify-content-between align-items-start">
-    <div class="mr-3">
-      <h4>{{ title }}</h4>
-      <div *ngIf="groupedIntents?.length">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    <div>
+      {{ title }}
+      <div
+        *ngIf="groupedIntents?.length"
+        class="card-header-subtitle"
+      >
         <span *ngIf="groupedIntents.length == 1">
           There is one intent matching the given sentence "{{ intentSentence }}"
           <br />
           Do you want to use it as intent for this scenario ?
         </span>
         <span *ngIf="groupedIntents.length > 1">
-          There are {{ groupedIntents.length }} intents matching the given sentence "{{
-            intentSentence
-          }}"
+          There are {{ groupedIntents.length }} intents matching the given sentence "{{ intentSentence }}"
           <br />
           Do you want to use one of them as intent for this scenario ?
         </span>
@@ -63,12 +64,11 @@
     </div>
   </nb-card-body>
 
-  <nb-card-footer class="grid-button">
+  <nb-card-footer class="card-footer-actions">
     <button
       nbButton
+      ghost
       size="small"
-      status="basic"
-      class="m-1"
       (click)="cancel()"
     >
       Cancel
@@ -77,7 +77,6 @@
       nbButton
       size="small"
       status="primary"
-      class="m-1"
       (click)="createNewIntent()"
     >
       <nb-icon icon="plus-outline"></nb-icon>

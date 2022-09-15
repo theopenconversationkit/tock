@@ -6,13 +6,11 @@ Scenarios list
 
         Ajouter l'applicationId au get des scenarios
 
-        scenario-import : deporter les appels api dans le composant de facon à pouvoir afficher le détail en cas d'erreurs
+        Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios
+                Une fois fait, refacto scenarioListComponent.edit : scenarioListComponent.edit disparait au profit de scenarioListComponent.editSaga, scenarioListComponent.scenarioEdit disparait au profit de scenarioListComponent.sagaEdit etc...
 
-        Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios 
-                Une fois fait, refacto scenarioListComponent.edit : scenarioListComponent.edit disparait au profit de scenarioListComponent.editSaga, scenarioListComponent.scenarioEdit disparait au profit de scenarioListComponent.sagaEdit etc... 
-                
                 ScenarioEditComponent ne devrait il pas etre autonome pour dialoguer avec scenarioService ?
-        
+
         Besoin d'un champ supplementaire du genre versionComment coté back ?
 
         Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
@@ -21,11 +19,14 @@ Scenarios list
 
         Supprimer la TickStory à la suppression d'un scenario "current". Adapter le warning pour signaler que la story va également être supprimée
 
-        #DONE Adapter la pagination à l'affichage par saga. 
+        #DONE scenario-import : deporter les appels api dans le composant de facon à pouvoir afficher le détail en cas d'erreurs
+                Changement de logique, l'export et l'import ne sont plus affiché dans une boite de dialogue mais directement en tant que panel (comme création / édition de scénario) afin d'être cohérent entre les écrans
+
+        #DONE Adapter la pagination à l'affichage par saga.
 
         #DONE Import de scenario
 
-        #DONE scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement. 
+        #DONE scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement.
 
         #DONE Tock studio menu et titre de la vue scenarios-list : Scenarios management => Scenarios Management
 
@@ -48,7 +49,7 @@ Scenario designer :
         #DONE Adapter les css au mode nuit
 
         WRITING :
-                
+
                 ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => A discuter avec Mohamed
 
                 #DONE Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
@@ -90,7 +91,9 @@ Scenario designer :
                 #DONE Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
 
         PUBLISHING :
-                
+
+                Problème de mise à jour du state local une fois la plublication effectuée avec succès
+
                 ??? Intent : c'est quoi les mandatoryStates ?
 
                 Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier

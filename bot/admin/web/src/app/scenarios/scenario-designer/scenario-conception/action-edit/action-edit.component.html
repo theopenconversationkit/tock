@@ -1,14 +1,12 @@
 <nb-card id="modal-wrapper">
-  <nb-card-header class="d-flex justify-content-between align-items-center">
-    <h4>Action definition</h4>
-
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    Action definition
     <button
       nbButton
       ghost
       shape="round"
       nbTooltip="Cancel"
       (click)="cancel()"
-      class="ml-3"
     >
       <nb-icon icon="close-outline"></nb-icon>
     </button>
@@ -294,12 +292,11 @@
     </form>
   </nb-card-body>
 
-  <nb-card-footer class="d-flex justify-content-between">
+  <nb-card-footer class="card-footer-actions">
     <button
       nbButton
+      ghost
       size="small"
-      status="basic"
-      class="m-1"
       (click)="cancel()"
     >
       Cancel
@@ -309,11 +306,9 @@
       nbButton
       size="small"
       status="danger"
-      class="m-1"
       (click)="removeActionDefinition()"
       *ngIf="item.tickActionDefinition"
     >
-      <nb-icon icon="slash-outline"></nb-icon>
       Delete action definition
     </button>
 
@@ -321,11 +316,9 @@
       nbButton
       size="small"
       status="primary"
-      class="m-1"
       (click)="save()"
       [disabled]="!canSave"
     >
-      <nb-icon icon="save-outline"></nb-icon>
       Save
     </button>
   </nb-card-footer>

@@ -1,14 +1,12 @@
 <nb-card>
-  <nb-card-header class="d-flex justify-content-between align-items-center">
-    <h4>Export scenarios dumps</h4>
-
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    Export scenarios dumps
     <button
       nbButton
       ghost
       shape="round"
-      nbTooltip="Cancel"
-      (click)="cancel()"
-      class="ml-3"
+      nbTooltip="Close"
+      (click)="close()"
     >
       <nb-icon icon="close-outline"></nb-icon>
     </button>
@@ -18,27 +16,22 @@
       [formGroup]="form"
       (submit)="export()"
     >
-      <div class="row main-row">
-        <div class="col-12">
-          <nb-radio-group
-            formControlName="allOrCurrentOnly"
-            name="reactive-forms-group"
-          >
-            <nb-radio value="one">For each saga, export only the current scenario or the most recent draft version</nb-radio>
-            <nb-radio value="all">Export all scenarios versions of all sagas</nb-radio>
-          </nb-radio-group>
-        </div>
-      </div>
+      <nb-radio-group
+        formControlName="allOrCurrentOnly"
+        name="reactive-forms-group"
+      >
+        <nb-radio value="one">For each saga, export only the current scenario or the most recent draft version</nb-radio>
+        <nb-radio value="all">Export all scenarios versions of all sagas</nb-radio>
+      </nb-radio-group>
     </form>
   </nb-card-body>
 
-  <nb-card-footer class="d-flex justify-content-between">
+  <nb-card-footer class="card-footer-actions">
     <button
       nbButton
-      outline
-      status="primary"
+      ghost
       size="small"
-      (click)="cancel()"
+      (click)="close()"
     >
       Cancel
     </button>

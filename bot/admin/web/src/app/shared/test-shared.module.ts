@@ -5,7 +5,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { NbThemeModule } from '@nebular/theme';
 
+import { AutofocusDirective } from './directives';
+
 @NgModule({
+  declarations: [AutofocusDirective],
   imports: [
     BrowserAnimationsModule,
     CommonModule,
@@ -15,6 +18,6 @@ import { NbThemeModule } from '@nebular/theme';
     NbThemeModule.forRoot({ name: 'default' }),
     NbEvaIconsModule
   ],
-  exports: [CommonModule, FormsModule, ReactiveFormsModule]
+  exports: [AutofocusDirective, CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class TestSharedModule {}

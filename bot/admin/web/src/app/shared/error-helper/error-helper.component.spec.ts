@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, Validators } from '@angular/forms';
 
 import { ErrorHelperComponent } from './error-helper.component';
+import { FileValidators } from '../validators';
 
 describe('ErrorHelperComponent', () => {
   let component: ErrorHelperComponent;
@@ -9,9 +10,8 @@ describe('ErrorHelperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ErrorHelperComponent ]
-    })
-    .compileComponents();
+      declarations: [ErrorHelperComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('ErrorHelperComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render required error if the field has a required error', () => {
+  it('should render required error', () => {
     const errorElement: HTMLElement = fixture.debugElement.nativeElement;
     const textContent = 'This field is required'.toUpperCase();
     const field = new FormControl('', Validators.required);
@@ -36,7 +36,7 @@ describe('ErrorHelperComponent', () => {
     expect(errorElement.textContent).toBeFalsy();
   });
 
-  it('should render min length error if the field has a min length error', () => {
+  it('should render min length error', () => {
     const errorElement: HTMLElement = fixture.debugElement.nativeElement;
     const minLength = 5;
     const textContent = `This field must contain at least ${minLength} characters`.toUpperCase();
@@ -53,7 +53,7 @@ describe('ErrorHelperComponent', () => {
     expect(errorElement.textContent).toBeFalsy();
   });
 
-  it('should render max length error if the field has a max length error', () => {
+  it('should render max length error', () => {
     const errorElement: HTMLElement = fixture.debugElement.nativeElement;
     const maxLength = 10;
     const textContent = `This field is limited to ${maxLength} characters`.toUpperCase();
@@ -65,6 +65,30 @@ describe('ErrorHelperComponent', () => {
     expect(errorElement.textContent.toUpperCase().trim()).toBe(textContent);
 
     field.setValue('test');
+    fixture.detectChanges();
+
+    expect(errorElement.textContent).toBeFalsy();
+  });
+
+  it('should render files with wrong type error', () => {
+    const errorElement: HTMLElement = fixture.debugElement.nativeElement;
+    const field = new FormControl([], FileValidators.mimeTypeSupported(['application/json']));
+    const files: File[] = [
+      new File(['content'], 'file1.json', { type: 'application/json' }),
+      new File(['content'], 'file2.xml', { type: 'application/xml' })
+    ];
+
+    field.setValue([...files]);
+    component.field = field;
+    fixture.detectChanges();
+    const listElement: HTMLUListElement = errorElement.querySelector('ul');
+
+    expect(errorElement.textContent.trim()).toMatch(/^The following files are not accepted file types:./);
+    expect(listElement.children).toHaveSize(1);
+    expect(listElement.children.item(0).textContent.trim()).toBe('file2.xml');
+
+    field.setValue([files[0]]);
+    component.field = field;
     fixture.detectChanges();
 
     expect(errorElement.textContent).toBeFalsy();

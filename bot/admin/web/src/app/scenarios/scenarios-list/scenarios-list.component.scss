@@ -5,14 +5,6 @@
 }
 
 section {
-  &.grid-actions {
-    display: grid;
-    grid-gap: 0.5rem;
-    grid-auto-flow: column;
-    align-items: center;
-    justify-content: end;
-  }
-
   & nb-card {
     height: min-content;
 
@@ -48,7 +40,7 @@ section {
 
 @include media-breakpoint-up(lg) {
   .grid {
-    grid-template-columns: 6fr minmax(0, 4fr);
+    grid-template-columns: 6fr 4fr;
 
     .main {
       order: 1;

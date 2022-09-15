@@ -1,4 +1,19 @@
 <nb-card class="mb-0">
+  <nb-card-header class="d-flex justify-content-between gap-1">
+    Filters
+    <div class="actions">
+      <button
+        *ngIf="isFiltered"
+        nbButton
+        nbTooltip="Clear all filters"
+        ghost
+        shape="round"
+        (click)="clearFilters()"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </div>
+  </nb-card-header>
   <nb-card-body>
     <form
       class="grid"
@@ -33,19 +48,6 @@
           <span class="initial-capitalize">{{ tag }}</span>
         </nb-option>
       </nb-select>
-
-      <div class="actions">
-        <button
-          *ngIf="isFiltered"
-          nbButton
-          nbTooltip="Clear all filters"
-          ghost
-          shape="round"
-          (click)="clearFilters()"
-        >
-          <nb-icon icon="close-outline"></nb-icon>
-        </button>
-      </div>
     </form>
   </nb-card-body>
 </nb-card>

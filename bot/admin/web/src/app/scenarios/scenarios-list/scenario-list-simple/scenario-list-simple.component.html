@@ -71,7 +71,7 @@
           </nb-tag-list>
         </div>
 
-        <div class="actions">
+        <div>
           <a
             nbButton
             ghost
@@ -110,40 +110,49 @@
       </div>
     </nb-accordion-item-header>
     <nb-accordion-item-body>
+      <div class="grid-accordion-item-body grid-accordion-item-body-header gap-1">
+        <span>Creation date</span>
+        <span>Last updated date</span>
+        <span>Status</span>
+        <span>Version description</span>
+      </div>
       <div
-        class="d-flex justify-content-between"
+        class="grid-accordion-item-body gap-1"
         *ngFor="let scenario of saga.scenarios"
       >
-        <div
-          class="row"
-          style="width: 100%"
-        >
-          <div class="col-3">
-            <span
-              [ngClass]="{ 'font-weight-bold': scenario.state === SCENARIO_STATE.current }"
-              [nbTooltip]="scenario.createDate | date: 'y/MM/dd HH:mm:ss'"
-            >
-              {{ scenario.createDate | date: 'y/MM/dd' }}
-            </span>
-          </div>
-          <div
-            class="col-3 d-flex"
+        <div>
+          <span
             [ngClass]="{ 'font-weight-bold': scenario.state === SCENARIO_STATE.current }"
+            [nbTooltip]="scenario.createDate | date: 'y/MM/dd HH:mm:ss'"
           >
-            {{ scenario.state }}
-            <nb-icon
-              *ngIf="scenario.state === SCENARIO_STATE.current"
-              status="success"
-              icon="checkmark-outline"
-              class="min-width-1em"
-            ></nb-icon>
-          </div>
-          <div class="col-6 text-muted font-italic col">
-            {{ scenario.description }}
-          </div>
+            {{ scenario.createDate | date: 'y/MM/dd' }}
+          </span>
+        </div>
+        <div>
+          <span
+            [ngClass]="{ 'font-weight-bold': scenario.state === SCENARIO_STATE.current }"
+            [nbTooltip]="scenario.updateDate | date: 'y/MM/dd HH:mm:ss'"
+          >
+            {{ scenario.updateDate | date: 'y/MM/dd' }}
+          </span>
+        </div>
+        <div
+          class="d-flex"
+          [ngClass]="{ 'font-weight-bold': scenario.state === SCENARIO_STATE.current }"
+        >
+          {{ scenario.state }}
+          <nb-icon
+            *ngIf="scenario.state === SCENARIO_STATE.current"
+            status="success"
+            icon="checkmark-outline"
+            class="min-width-1em"
+          ></nb-icon>
+        </div>
+        <div class="text-muted font-italic">
+          {{ scenario.description }}
         </div>
 
-        <div class="d-flex">
+        <div class="d-flex align-items-start">
           <button
             nbButton
             ghost

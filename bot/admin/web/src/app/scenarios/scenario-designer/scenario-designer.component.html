@@ -1,15 +1,13 @@
-<div class="row mb-2">
-  <div class="col">
-    <h4 class="initial-capitalize">
-      {{ this.scenario?.name }}
-    </h4>
-  </div>
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
+  <h4 class="initial-capitalize">
+    {{ this.scenario?.name }}
+  </h4>
 
-  <div class="col-auto text-right d-flex align-items-center">
+  <div class="d-flex flex-wrap header-actions">
     <button
       nbButton
+      ghost
       size="small"
-      status="basic"
       (click)="exit()"
       data-testid="exit-button"
     >
@@ -21,7 +19,6 @@
       nbButton
       size="small"
       status="primary"
-      class="ml-2"
       (click)="save()"
       data-testid="save-button"
     >
@@ -32,7 +29,6 @@
       nbButton
       size="small"
       status="primary"
-      class="ml-2"
       (click)="save(true)"
       data-testid="save-and-exit-button"
     >
@@ -50,9 +46,7 @@
 ></scenario-mode-stepper>
 
 <scenario-conception
-  *ngIf="
-    scenario?.data.mode === SCENARIO_MODE.writing || scenario?.data.mode === SCENARIO_MODE.casting
-  "
+  *ngIf="scenario?.data.mode === SCENARIO_MODE.writing || scenario?.data.mode === SCENARIO_MODE.casting"
   [scenario]="scenario"
   [isReadonly]="isReadonly"
 ></scenario-conception>

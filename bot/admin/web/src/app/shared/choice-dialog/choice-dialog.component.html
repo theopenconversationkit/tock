@@ -1,7 +1,6 @@
 <nb-card [status]="modalStatus">
-  <nb-card-header class="d-flex justify-content-between align-items-center">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     {{ title }}
-
     <button
       *ngIf="cancellable"
       [status]="modalStatus"

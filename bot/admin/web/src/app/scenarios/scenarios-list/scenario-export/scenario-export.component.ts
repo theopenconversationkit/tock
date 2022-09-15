@@ -1,10 +1,11 @@
 import { DatePipe } from '@angular/common';
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { NbDialogRef } from '@nebular/theme';
 import { Subject } from 'rxjs';
+
 import { StateService } from '../../../core-nlp/state.service';
-import { exportJsonDump, normalizedSnakeCase } from '../../commons/utils';
+import { normalizedSnakeCase } from '../../commons/utils';
+import { exportJsonDump } from '../../../shared/utils';
 import { Saga, Scenario, SCENARIO_STATE } from '../../models';
 
 @Component({
@@ -16,11 +17,9 @@ export class ScenarioExportComponent implements OnDestroy {
   destroy = new Subject();
 
   @Input() sagas: Saga[];
-  constructor(
-    protected state: StateService,
-    public dialogRef: NbDialogRef<ScenarioExportComponent>,
-    private datePipe: DatePipe
-  ) {}
+  @Output() onClose = new EventEmitter<boolean>();
+
+  constructor(protected state: StateService, private datePipe: DatePipe) {}
 
   form: FormGroup = new FormGroup({
     allOrCurrentOnly: new FormControl('one')
@@ -40,9 +39,7 @@ export class ScenarioExportComponent implements OnDestroy {
         let current = saga.scenarios.find((scenario) => scenario.state === SCENARIO_STATE.current);
         if (current) exportables.push(current);
         else {
-          const drafts = saga.scenarios.filter(
-            (scenario) => scenario.state === SCENARIO_STATE.draft
-          );
+          const drafts = saga.scenarios.filter((scenario) => scenario.state === SCENARIO_STATE.draft);
           if (drafts.length) {
             exportables.push(
               drafts.sort((a, b) => {
@@ -59,7 +56,7 @@ export class ScenarioExportComponent implements OnDestroy {
       });
     }
 
-    this.dialogRef.close();
+    this.onClose.emit(true);
   }
 
   download(scenario: Scenario) {
@@ -74,8 +71,8 @@ export class ScenarioExportComponent implements OnDestroy {
     exportJsonDump(scenario, fileName);
   }
 
-  cancel() {
-    this.dialogRef.close();
+  close() {
+    this.onClose.emit(true);
   }
 
   ngOnDestroy(): void {

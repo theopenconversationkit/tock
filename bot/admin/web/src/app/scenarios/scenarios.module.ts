@@ -22,10 +22,7 @@ import {
 } from '@nebular/theme';
 
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
-import {
-  ScenarioDesignerNavigationGuard,
-  ScenarioDesignerComponent
-} from './scenario-designer/scenario-designer.component';
+import { ScenarioDesignerNavigationGuard, ScenarioDesignerComponent } from './scenario-designer/scenario-designer.component';
 import { ScenarioConceptionItemComponent } from './scenario-designer/scenario-conception/scenario-conception-item.component';
 import { IntentsSearchComponent } from './scenario-designer/scenario-conception/intents-search/intents-search.component';
 import { IntentCreateComponent } from './scenario-designer/scenario-conception/intent-create/intent-create.component';
@@ -110,14 +107,7 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
     ScenarioExportComponent
   ],
   exports: [],
-  providers: [
-    ScenarioService,
-    ScenarioApiService,
-    ScenarioDesignerNavigationGuard,
-    ScenariosResolver,
-    NlpService,
-    ScenarioDesignerService
-  ],
+  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, ScenariosResolver, NlpService, ScenarioDesignerService],
   entryComponents: []
 })
 export class ScenariosModule {

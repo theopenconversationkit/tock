@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
   ]
 })
 export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAccessor {
+  @Input() autofocus: boolean = false;
   @Input() currentFile?: File[];
   @Input() disabled: boolean = false;
   @Input() fullWidth: boolean = false;
@@ -134,10 +135,11 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
     return this.filesInError?.includes(file.name);
   }
 
-  writeValue(): void {
-    // clear file input
+  writeValue(files: File[]): void {
     this.host.nativeElement.value = '';
-    this.files = [];
+    this._files = files;
+    this.onChange(this._files);
+    this.onTouch(this._files);
   }
 
   registerOnChange(fn: any): void {
