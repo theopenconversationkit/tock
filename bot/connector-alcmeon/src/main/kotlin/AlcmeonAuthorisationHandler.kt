@@ -41,10 +41,11 @@ class AlcmeonAuthorisationHandler(secret: String) : Handler<RoutingContext> {
 
         val signature = calculateSignature("$normalisedPath $requestPayload")
 
-        if (alcmeonWebhookSignature == signature)
+        if (alcmeonWebhookSignature == signature) {
             routingContext.next()
-
-        routingContext.response().setStatusCode(403).end("Invalid Alcmeon webhook signature")
+        } else {
+            routingContext.response().setStatusCode(403).end("Invalid Alcmeon webhook signature")
+        }
     }
 
     private fun calculateSignature(payload: String): String {
