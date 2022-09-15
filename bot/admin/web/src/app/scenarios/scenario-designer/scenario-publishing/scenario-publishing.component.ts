@@ -2,12 +2,13 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
+
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest, I18nLabel, I18nLabels } from '../../../bot/model/i18n';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { UserInterfaceType } from '../../../core/model/configuration';
-import { ClassifiedEntity, Intent } from '../../../model/nlp';
+import { ClassifiedEntity, Intent, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 import { getScenarioActions, getScenarioIntents } from '../../commons/utils';
@@ -30,10 +31,10 @@ import { ScenarioDesignerService } from '../scenario-designer.service';
   styleUrls: ['./scenario-publishing.component.scss']
 })
 export class ScenarioPublishingComponent implements OnInit, OnDestroy {
-  destroy = new Subject();
   @Input() scenario: Scenario;
   @Input() isReadonly: boolean;
 
+  destroy = new Subject();
   i18n: I18nLabels;
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
@@ -135,11 +136,9 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
             this.processAnswer(nextAnswerUpdate);
           } else {
             // save the scenario
-            this.scenarioDesignerService
-              .saveScenario(this.scenario.id, this.scenario)
-              .subscribe((data) => {
-                this.postTickStory();
-              });
+            this.scenarioDesignerService.saveScenario(this.scenario.id, this.scenario).subscribe((data) => {
+              this.postTickStory();
+            });
           }
         }
       }
@@ -211,14 +210,11 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         // sentence = sentence.withIntent(this.state, intentId);
         sentence.classification.intentId = intent._id;
         tempSentence.classification.entities.forEach((entity) => (entity.subEntities = []));
-        sentence.classification.entities = tempSentence.classification
-          .entities as ClassifiedEntity[];
-
+        sentence.classification.entities = tempSentence.classification.entities as ClassifiedEntity[];
+        sentence.status = SentenceStatus.validated;
         this.nlp.updateSentence(sentence).subscribe(
-          (res) => {
-            task.data.intentDefinition.sentences = task.data.intentDefinition.sentences.filter(
-              (s) => s != tempSentence
-            );
+          (_res) => {
+            task.data.intentDefinition.sentences = task.data.intentDefinition.sentences.filter((s) => s != tempSentence);
             this.processIntent(task);
           },
           (error) => {
@@ -288,9 +284,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     });
 
     let i18n = i18nLabel.i18n.find((i) => {
-      return (
-        i.interfaceType === UserInterfaceType.textChat && i.locale === this.state.currentLocale
-      );
+      return i.interfaceType === UserInterfaceType.textChat && i.locale === this.state.currentLocale;
     });
     i18n.label = answerTask.data.tickActionDefinition.answer;
 
@@ -306,11 +300,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   }
 
   postNewAnswer(answerTask: DependencyUpdateJob): void {
-    let request = new CreateI18nLabelRequest(
-      'scenario',
-      answerTask.data.tickActionDefinition.answer,
-      this.state.currentLocale
-    );
+    let request = new CreateI18nLabelRequest('scenario', answerTask.data.tickActionDefinition.answer, this.state.currentLocale);
     this.botService.createI18nLabel(request).subscribe(
       (answer) => {
         answerTask.data.tickActionDefinition.answerId = answer._id;
@@ -347,20 +337,18 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       (res) => {
         // Successful save. We pass the scenario state to "current" and save it
         this.scenario.state = SCENARIO_STATE.current;
-        this.scenarioDesignerService
-          .saveScenario(this.scenario.id, this.scenario)
-          .subscribe((data) => {
-            // reset of scenarioService scenarios cache to force the reload of scenarios list on next call to scenarioService.getScenarios
-            this.scenarioService.setScenariosUnloading();
+        this.scenarioDesignerService.saveScenario(this.scenario.id, this.scenario).subscribe((data) => {
+          // reset of scenarioService scenarios cache to force the reload of scenarios list on next call to scenarioService.getScenarios
+          this.scenarioService.setScenariosUnloading();
 
-            this.toastrService.success(`Tick story successfully saved`, 'Success', {
-              duration: 5000,
-              status: 'success'
-            });
-            // Scenario saved. Redirect the user to scenario list view
-            this.tickStoryPostSuccessfull = true;
-            setTimeout(() => this.scenarioDesignerService.exitDesigner(), 3000);
+          this.toastrService.success(`Tick story successfully saved`, 'Success', {
+            duration: 5000,
+            status: 'success'
           });
+          // Scenario saved. Redirect the user to scenario list view
+          this.tickStoryPostSuccessfull = true;
+          setTimeout(() => this.scenarioDesignerService.exitDesigner(), 3000);
+        });
       },
       (error) => {
         // Errors have occurred, let's inform the user.
