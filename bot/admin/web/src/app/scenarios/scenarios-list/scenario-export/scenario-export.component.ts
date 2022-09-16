@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Subject } from 'rxjs';
 
 import { StateService } from '../../../core-nlp/state.service';
 import { normalizedSnakeCase } from '../../commons/utils';
@@ -13,19 +12,17 @@ import { Saga, Scenario, SCENARIO_STATE } from '../../models';
   templateUrl: './scenario-export.component.html',
   styleUrls: ['./scenario-export.component.scss']
 })
-export class ScenarioExportComponent implements OnDestroy {
-  destroy = new Subject();
-
+export class ScenarioExportComponent {
   @Input() sagas: Saga[];
   @Output() onClose = new EventEmitter<boolean>();
-
-  constructor(protected state: StateService, private datePipe: DatePipe) {}
 
   form: FormGroup = new FormGroup({
     allOrCurrentOnly: new FormControl('one')
   });
 
-  export() {
+  constructor(protected state: StateService, private datePipe: DatePipe) {}
+
+  export(): void {
     const mode = this.form.value.allOrCurrentOnly;
     if (mode === 'all') {
       this.sagas.forEach((saga) => {
@@ -59,7 +56,7 @@ export class ScenarioExportComponent implements OnDestroy {
     this.onClose.emit(true);
   }
 
-  download(scenario: Scenario) {
+  download(scenario: Scenario): void {
     const fileName = [
       this.state.currentApplication.name,
       'SCENARIO',
@@ -71,12 +68,7 @@ export class ScenarioExportComponent implements OnDestroy {
     exportJsonDump(scenario, fileName);
   }
 
-  close() {
+  close(): void {
     this.onClose.emit(true);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
   }
 }

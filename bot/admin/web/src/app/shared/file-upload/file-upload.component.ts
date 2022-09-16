@@ -36,7 +36,7 @@ export class FileUploadComponent implements OnInit, OnDestroy, ControlValueAcces
   }
 
   set files(f: File[]) {
-    if (f?.length) {
+    if (f.length) {
       this._files = this.multiple ? this.concatFilesWhithoutDuplicate(this.files, f) : f;
       this.onChange(this._files);
       this.onTouch(this._files);

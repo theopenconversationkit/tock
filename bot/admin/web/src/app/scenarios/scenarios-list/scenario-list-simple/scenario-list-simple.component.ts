@@ -1,22 +1,19 @@
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { OrderBy } from '../../../shared/utils';
 import { Saga, Scenario, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
 import { normalizedSnakeCase } from '../../commons/utils';
 import { exportJsonDump } from '../../../shared/utils';
-import { DatePipe } from '@angular/common';
-import { Subject } from 'rxjs';
-import { Router } from '@angular/router';
+
 @Component({
   selector: 'tock-scenario-list-simple',
   templateUrl: './scenario-list-simple.component.html',
   styleUrls: ['./scenario-list-simple.component.scss']
 })
-export class ScenarioListSimpleComponent implements OnDestroy {
-  destroy$ = new Subject();
-
-  // @Input() scenarios!: Scenario[];
+export class ScenarioListSimpleComponent {
   @Input() sagas!: Saga[];
   @Input() selectedScenario?: Scenario;
 
@@ -43,13 +40,13 @@ export class ScenarioListSimpleComponent implements OnDestroy {
     this.onOrderBy.emit({ criteria: this.orderBy, reverse: this.orderByReverse });
   }
 
-  sagaHasDraft(saga: Saga) {
+  sagaHasDraft(saga: Saga): Scenario {
     return saga.scenarios.find((scn) => scn.state === SCENARIO_STATE.draft);
   }
 
-  design(event: MouseEvent, saga: Saga) {
+  design(event: MouseEvent, saga: Saga): void {
     event.stopPropagation();
-    let scenarioToOpen;
+    let scenarioToOpen: Scenario;
     const drafts = saga.scenarios.filter((scn) => scn.state === SCENARIO_STATE.draft);
     if (drafts.length) {
       scenarioToOpen = drafts.sort((a, b) => {
@@ -71,7 +68,7 @@ export class ScenarioListSimpleComponent implements OnDestroy {
     this.onEdit.emit(saga);
   }
 
-  deleteSaga(event: MouseEvent, saga: Saga) {
+  deleteSaga(event: MouseEvent, saga: Saga): void {
     event.stopPropagation();
     this.onDeleteSaga.emit(saga);
   }
@@ -81,11 +78,11 @@ export class ScenarioListSimpleComponent implements OnDestroy {
     this.onDelete.emit(scenario);
   }
 
-  duplicate(scenario: Scenario) {
+  duplicate(scenario: Scenario): void {
     this.onDuplicate.emit(scenario);
   }
 
-  download(scenario: Scenario) {
+  download(scenario: Scenario): void {
     const fileName = [
       this.state.currentApplication.name,
       'SCENARIO',
@@ -95,10 +92,5 @@ export class ScenarioListSimpleComponent implements OnDestroy {
     ].join('_');
 
     exportJsonDump(scenario, fileName);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }

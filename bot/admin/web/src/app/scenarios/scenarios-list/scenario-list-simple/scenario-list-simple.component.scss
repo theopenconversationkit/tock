@@ -1,6 +1,7 @@
 @import '~@nebular/theme/styles/global/_breakpoints.scss';
 @import '~@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/themes';
+@import '../../../theme/styles/utilities.scss';
 
 .grid-columns {
   display: grid;
@@ -46,10 +47,5 @@
 }
 
 .truncate {
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  display: block;
-  display: -webkit-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @include truncate(4);
 }

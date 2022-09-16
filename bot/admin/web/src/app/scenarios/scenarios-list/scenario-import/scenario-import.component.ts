@@ -22,14 +22,7 @@ type JsonFile = { filename: string; data: Scenario };
 export class ScenarioImportComponent {
   @Output() onClose = new EventEmitter<boolean>();
 
-  constructor(
-    private dialogService: DialogService,
-    private toastrService: NbToastrService,
-    private stateService: StateService,
-    private scenarioService: ScenarioService
-  ) {}
-
-  private filesToImport = [];
+  private filesToImport: JsonFile[] = [];
 
   importFilesInError: string[] = [];
   filesInError: string[] = [];
@@ -50,6 +43,13 @@ export class ScenarioImportComponent {
   get canSaveImport(): boolean {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
+
+  constructor(
+    private dialogService: DialogService,
+    private toastrService: NbToastrService,
+    private stateService: StateService,
+    private scenarioService: ScenarioService
+  ) {}
 
   close(): Observable<any> {
     const validAction = 'yes';

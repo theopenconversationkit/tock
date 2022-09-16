@@ -14,17 +14,11 @@ import { ScenarioService } from '../services/scenario.service';
   styleUrls: ['./scenario-edit.component.scss']
 })
 export class ScenarioEditComponent implements OnChanges {
-  @Input()
-  loading: boolean;
+  @Input() loading: boolean;
+  @Input() scenario?: Scenario;
 
-  @Input()
-  scenario?: Scenario;
-
-  @Output()
-  onClose = new EventEmitter<boolean>();
-
-  @Output()
-  onSave = new EventEmitter();
+  @Output() onClose = new EventEmitter<boolean>();
+  @Output() onSave = new EventEmitter();
 
   isSubmitted: boolean = false;
 
@@ -83,21 +77,15 @@ export class ScenarioEditComponent implements OnChanges {
     this.tagsAutocompleteValues = of([...this.scenarioService.getState().tags]);
   }
 
-  updateCategoriesAutocompleteValues(event: any) {
+  updateCategoriesAutocompleteValues(event: any): void {
     this.categoriesAutocompleteValues = of(
-      this.scenarioService
-        .getState()
-        .categories.filter((category) =>
-          category.toLowerCase().includes(event.target.value.toLowerCase())
-        )
+      this.scenarioService.getState().categories.filter((category) => category.toLowerCase().includes(event.target.value.toLowerCase()))
     );
   }
 
-  updateTagsAutocompleteValues(event: any) {
+  updateTagsAutocompleteValues(event: any): void {
     this.tagsAutocompleteValues = of(
-      this.scenarioService
-        .getState()
-        .tags.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase()))
+      this.scenarioService.getState().tags.filter((tag) => tag.toLowerCase().includes(event.target.value.toLowerCase()))
     );
   }
 

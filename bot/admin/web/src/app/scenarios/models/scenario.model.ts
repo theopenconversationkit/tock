@@ -158,7 +158,3 @@ export interface TickStory {
   actions: TickActionDefinition[];
   stateMachine: MachineState;
 }
-export interface Filter {
-  search: string;
-  tags: Array<string>;
-}
