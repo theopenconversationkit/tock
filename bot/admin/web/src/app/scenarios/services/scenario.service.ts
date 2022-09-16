@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable, of } from 'rxjs';
 import { map, tap, switchMap, filter } from 'rxjs/operators';
 
-import { Scenario, Saga } from '../models';
+import { Scenario, Saga, TickStory } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
 interface ScenarioState {
@@ -207,6 +207,10 @@ export class ScenarioService {
     );
   }
 
+  postTickStory(tickStory: TickStory): Observable<TickStory> {
+    return this.scenarioApiService.postTickStory(tickStory);
+  }
+
   updateCategoriesCache(scenarios: Scenario[]): string[] {
     return [...new Set([...scenarios.map((v) => v.category)])].sort().filter((c) => c);
   }
@@ -222,9 +226,5 @@ export class ScenarioService {
     ]
       .sort()
       .filter((t) => t);
-  }
-
-  postTickStory(tickStory) {
-    return this.scenarioApiService.postTickStory(tickStory);
   }
 }

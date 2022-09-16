@@ -1,10 +1,4 @@
-import {
-  IntegrityCheckResult,
-  Scenario,
-  SCENARIO_ITEM_FROM_BOT,
-  SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE
-} from '../models';
+import { IntegrityCheckResult, Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE } from '../models';
 
 import {
   getAllSmNonGroupStatesNames,
@@ -16,26 +10,24 @@ import {
 } from '../commons/utils';
 
 export const SCENARIO_STEPS_ERRORS = {
-  one_intervention_at_least: () =>
-    'The scenario must contain at least one customer intervention and one bot response',
-  interventions_text_must_be_filled: () =>
-    'The texts of the customer and bot interventions must be filled in',
-  client_intervention_should_have_intent: (txt) =>
+  one_intervention_at_least: () => 'The scenario must contain at least one customer intervention and one bot response',
+  interventions_text_must_be_filled: () => 'The texts of the customer and bot interventions must be filled in',
+  client_intervention_should_have_intent: (txt: string) =>
     `An intent must be defined for each client intervention. The "${txt}" client intervention does not have an intent defined.`,
-  bot_intervention_should_have_action: (txt) =>
+  bot_intervention_should_have_action: (txt: string) =>
     `An action must be defined for each bot intervention. The "${txt}" bot intervention does not have an action defined.`,
-  input_context_should_exist_as_output: (txt) =>
+  input_context_should_exist_as_output: (txt: string) =>
     `For each context declared as input to an action, there must be at least one other action producing the same context as output. The context "${txt}" was not found as an output of any other action.`,
-  output_context_should_exist_as_input: (txt) =>
+  output_context_should_exist_as_input: (txt: string) =>
     `For each context declared as output to an action, there must be at least one other action requiring the same context as input. The context "${txt}" was not found as an input of any other action.`,
   statemachine_should_be_defined: () => 'A valid state machine must be defined',
-  intents_should_be_transitions: (txt) =>
+  intents_should_be_transitions: (txt: string) =>
     `For each defined intent there must be a transition with the same name in the state machine. No transition found for the intent "${txt}".`,
-  transitions_should_be_intents: (txt) =>
+  transitions_should_be_intents: (txt: string) =>
     `For each transition in the state machine there must be a defined intent with the same name. No intent found for the transition "${txt}".`,
-  actions_should_be_states: (txt) =>
+  actions_should_be_states: (txt: string) =>
     `For each defined action there must be a state with the same name in the state machine. No state found for the action "${txt}".`,
-  states_should_be_actions: (txt) =>
+  states_should_be_actions: (txt: string) =>
     `For each state in the state machine there must be a defined action with the same name. No action found for the state "${txt}".`
 };
 

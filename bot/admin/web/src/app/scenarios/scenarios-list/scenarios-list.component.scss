@@ -4,21 +4,6 @@
   height: fit-content;
 }
 
-section {
-  & nb-card {
-    height: min-content;
-
-    .tock-robot {
-      width: 4rem;
-      height: fit-content;
-    }
-  }
-
-  & .alert-config {
-    height: fit-content;
-  }
-}
-
 .loading {
   min-height: 50px;
 }

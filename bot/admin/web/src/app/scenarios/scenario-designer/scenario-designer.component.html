@@ -6,7 +6,8 @@
   <div class="d-flex flex-wrap header-actions">
     <button
       nbButton
-      ghost
+      [ghost]="!isReadonly"
+      [status]="isReadonly ? 'primary' : 'basic'"
       size="small"
       (click)="exit()"
       data-testid="exit-button"

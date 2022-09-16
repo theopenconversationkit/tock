@@ -16,29 +16,23 @@
       [formGroup]="importForm"
       (submit)="importSubmit()"
     >
-      <div class="row main-row">
-        <div class="col-12">
-          <div>
-            <tock-form-control
-              label="Scenario dump files"
-              name="importFile"
-              required="true"
-              [controls]="filesSources"
-              [showError]="isImportSubmitted"
-            >
-              <tock-file-upload
-                id="importFile"
-                formControlName="filesSources"
-                [autofocus]="true"
-                [fullWidth]="true"
-                [multiple]="true"
-                [fileTypeAccepted]="['json']"
-                [filesInError]="filesInError"
-              ></tock-file-upload>
-            </tock-form-control>
-          </div>
-        </div>
-      </div>
+      <tock-form-control
+        label="Scenario dump files"
+        name="importFile"
+        required="true"
+        [controls]="filesSources"
+        [showError]="isImportSubmitted"
+      >
+        <tock-file-upload
+          id="importFile"
+          formControlName="filesSources"
+          [autofocus]="true"
+          [fullWidth]="true"
+          [multiple]="true"
+          [fileTypeAccepted]="['json']"
+          [filesInError]="filesInError"
+        ></tock-file-upload>
+      </tock-form-control>
 
       <nb-alert
         *ngIf="importFilesInError.length"

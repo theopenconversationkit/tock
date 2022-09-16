@@ -6,14 +6,9 @@
     >
       Name
       <nb-icon
-        icon="chevron-down-outline"
+        *ngIf="orderBy === 'name'"
+        [icon]="'chevron-' + (orderByReverse ? 'up' : 'down') + '-outline'"
         class="valign-middle"
-        *ngIf="orderBy == 'name' && !orderByReverse"
-      ></nb-icon>
-      <nb-icon
-        icon="chevron-up-outline"
-        class="valign-middle"
-        *ngIf="orderBy == 'name' && orderByReverse"
       ></nb-icon>
     </span>
   </div>
@@ -24,14 +19,9 @@
     >
       Category
       <nb-icon
-        icon="chevron-down-outline"
+        *ngIf="orderBy === 'category'"
+        [icon]="'chevron-' + (orderByReverse ? 'up' : 'down') + '-outline'"
         class="valign-middle"
-        *ngIf="orderBy == 'category' && !orderByReverse"
-      ></nb-icon>
-      <nb-icon
-        icon="chevron-up-outline"
-        class="valign-middle"
-        *ngIf="orderBy == 'category' && orderByReverse"
       ></nb-icon>
     </span>
   </div>
@@ -72,22 +62,15 @@
         </div>
 
         <div>
-          <a
+          <button
             nbButton
             ghost
             shape="round"
             nbTooltip="Designer"
             (click)="design($event, saga)"
           >
-            <nb-icon
-              *ngIf="sagaHasDraft(saga)"
-              icon="color-palette-outline"
-            ></nb-icon>
-            <nb-icon
-              *ngIf="!sagaHasDraft(saga)"
-              icon="eye-outline"
-            ></nb-icon>
-          </a>
+            <nb-icon [icon]="sagaHasDraft(saga) ? 'color-palette-outline' : 'eye-outline'"></nb-icon>
+          </button>
           <!-- <button
               nbButton
               ghost
@@ -148,7 +131,7 @@
             class="min-width-1em"
           ></nb-icon>
         </div>
-        <div class="text-muted font-italic">
+        <div class="text-muted font-italic truncate">
           {{ scenario.description }}
         </div>
 
@@ -160,14 +143,7 @@
             nbTooltip="Open scenario"
             [routerLink]="'./' + scenario.id"
           >
-            <nb-icon
-              *ngIf="scenario.state !== SCENARIO_STATE.draft"
-              icon="eye-outline"
-            ></nb-icon>
-            <nb-icon
-              *ngIf="scenario.state === SCENARIO_STATE.draft"
-              icon="color-palette-outline"
-            ></nb-icon>
+            <nb-icon [icon]="scenario.state === SCENARIO_STATE.draft ? 'color-palette-outline' : 'eye-outline'"></nb-icon>
           </button>
 
           <button

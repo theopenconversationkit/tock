@@ -12,8 +12,7 @@ import { ScenarioService } from '../../services/scenario.service';
   styleUrls: ['./scenario-filters.component.scss']
 })
 export class ScenarioFiltersComponent implements OnInit, OnDestroy {
-  @Output()
-  onFilter = new EventEmitter<Filter>();
+  @Output() onFilter = new EventEmitter<Filter>();
 
   subscription = new Subscription();
   tagsCache: string[] = [];
@@ -32,7 +31,7 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
   }
 
   get isFiltered(): boolean {
-    return this.search.value || this.tags.value?.length;
+    return this.search.value || this.tags.value.length;
   }
 
   constructor(private scenarioService: ScenarioService) {}

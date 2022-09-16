@@ -1,3 +1,11 @@
+@mixin truncate($line) {
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @for $i from 1 through 4 {
   .gap-#{$i} {
     gap: #{$i}rem;

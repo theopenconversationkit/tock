@@ -37,7 +37,8 @@ import {
   NbTooltipModule,
   NbPopoverModule,
   NbButtonModule,
-  NbButtonGroupModule
+  NbButtonGroupModule,
+  NbAlertModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -49,12 +50,14 @@ import { JsonPreviewerComponent } from './json-previewer/json-previewer.componen
 import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
 import { CanvasModule } from './canvas/canvas.module';
 import { FileUploadComponent } from './file-upload/file-upload.component';
+import { NoBotConfigurationComponent } from './no-bot-configuration/no-bot-configuration.component';
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
     MomentModule,
+    NbAlertModule,
     NbCalendarRangeModule,
     NbCardModule,
     NbSelectModule,
@@ -84,6 +87,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     ChoiceDialogComponent,
     JsonPreviewerComponent,
     FileUploadComponent,
+    NoBotConfigurationComponent,
 
     AutofocusDirective,
     DelayDirective,
@@ -102,6 +106,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     ChoiceDialogComponent,
     JsonPreviewerComponent,
     FileUploadComponent,
+    NoBotConfigurationComponent,
 
     AutofocusDirective,
     DelayDirective,
