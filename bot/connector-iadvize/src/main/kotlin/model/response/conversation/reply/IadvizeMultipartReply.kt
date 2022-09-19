@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation
+package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
-enum class ReplyType {
-    await, message, transfer, close, multipart
+import ai.tock.bot.connector.iadvize.model.response.conversation.ReplyType
+
+class IadvizeMultipartReply() : IadvizeReply, ArrayList<IadvizeReply>() {
+    override val type: ReplyType = ReplyType.multipart
+
+    constructor(vararg replies : IadvizeReply) : this(replies.toList())
+
+    constructor(replies : List<IadvizeReply>) : this() {
+        this.addAll(replies)
+    }
+
 }

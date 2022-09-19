@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.iadvize.model.DistributionRule
 import ai.tock.bot.connector.iadvize.model.request.*
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
 import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest.UnsupportedRequestJson
@@ -54,7 +55,8 @@ class IadvizeConnector internal constructor(
     val applicationId: String,
     val path: String,
     val editorUrl: String,
-    val firstMessage: String
+    val firstMessage: String,
+    val distributionRule: String?
 ) : ConnectorBase(IadvizeConnectorProvider.connectorType) {
 
     companion object {
@@ -151,7 +153,7 @@ class IadvizeConnector internal constructor(
         logger.info { "request : POST /conversations\nbody : ${context.getBodyAsString()}" }
         val conversationRequest: ConversationsRequest =
             mapper.readValue(context.getBodyAsString(), ConversationsRequest::class.java)
-        val callback = IadvizeConnectorCallback(applicationId, controller, context, conversationRequest)
+        val callback = IadvizeConnectorCallback(applicationId, controller, context, conversationRequest, distributionRule)
         callback.sendResponse()
     }
 
@@ -216,7 +218,7 @@ class IadvizeConnector internal constructor(
         context: RoutingContext,
         iadvizeRequest: IadvizeRequest
     ) {
-        val callback = IadvizeConnectorCallback(applicationId, controller, context, iadvizeRequest)
+        val callback = IadvizeConnectorCallback(applicationId, controller, context, iadvizeRequest, distributionRule)
         when (iadvizeRequest) {
             is MessageRequest -> {
                 val event = WebhookActionConverter.toEvent(iadvizeRequest, applicationId)

@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorCallbackBase
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
@@ -24,7 +25,9 @@ import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest
 import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMultipartReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeTransfer
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
@@ -34,12 +37,12 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.loadProperties
+import ai.tock.shared.vertx.RestException
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 
 private const val UNSUPPORTED_MESSAGE_REQUEST = "tock_iadvize_unsupported_message_request"
 
@@ -47,8 +50,9 @@ class IadvizeConnectorCallback(override val  applicationId: String,
                                val controller: ConnectorController,
                                val context: RoutingContext,
                                val request: IadvizeRequest,
-                               val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()) :
-    ConnectorCallbackBase(applicationId, iadvizeConnectorType) {
+                               val distributionRule: String?,
+                               val actions: MutableList<ActionWithDelay> = mutableListOf()
+) : ConnectorCallbackBase(applicationId, iadvizeConnectorType) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -127,21 +131,57 @@ class IadvizeConnectorCallback(override val  applicationId: String,
     private fun toListIadvizeReply(actions: List<ActionWithDelay>): List<IadvizeReply> {
         return actions.map {
             if (it.action is SendSentence) {
-                val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterIsInstance<IadvizeReply>()
+                val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
+
                 if (it.action.text != null) {
-                    //Extract text to a simple TextPayload
-                    val message: String = translator.translate(it.action.text).toString()
-                    val simpleTextPayload = IadvizeMessage(TextPayload(message))
-                    //Combine 1 TextPayload with messages IadvizeReply
+                    val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
+                    //Combine 1 MessageTextPayload with messages enhanced IadvizeReply
                     listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
                 } else {
-                    //No simple TextPayload, juste return IadvizeReply
+                    //No simple MessageTextPayload, just return enhanced IadvizeReply
                     listIadvizeReply
                 }
             } else {
                 emptyList()
             }
         }.flatten()
+    }
+
+    private fun List<ConnectorMessage>.filterAndEnhanceIadvizeReply(): List<IadvizeReply> {
+        // Filter Message not IadvizeReply for other connector
+        return filterIsInstance<IadvizeReply>()
+            .map(ungroupMultipartIadvizeReplies)
+            .flatten()
+            .map(addDistributionRulesOnTransfer)
+    }
+
+    /*
+     * For IadvizeReply instance of IadvizeTransfer
+     * return new IadvizeTransfer with distribution rule configured on connector
+     */
+    private val addDistributionRulesOnTransfer: (IadvizeReply) -> IadvizeReply = {
+        if(it is IadvizeTransfer) {
+            if(distributionRule == null) {
+                throw RestException("Distribution rule is not configured in connector, transfer to human is impossible")
+            }
+            IadvizeTransfer(distributionRule, it.transferOptions)
+        } else {
+            it
+        }
+    }
+
+    private val ungroupMultipartIadvizeReplies: (IadvizeReply) -> List<IadvizeReply> = {
+        if(it is IadvizeMultipartReply) {
+            it
+        } else {
+            listOf(it)
+        }
+    }
+
+    private fun mapToMessageTextPayload(text: CharSequence): IadvizeMessage {
+        //Extract text to a simple TextPayload
+        val message: String = translator.translate(text).toString()
+        return IadvizeMessage(TextPayload(message))
     }
 
     override fun exceptionThrown(event: Event, throwable: Throwable) {

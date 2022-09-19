@@ -19,9 +19,24 @@ package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
 import ai.tock.bot.connector.iadvize.model.response.conversation.ReplyType
 
-data class IadvizeTransfer(val distributionRule: String,
-                           val transferOptions: TransferOptions) : IadvizeReply {
+data class IadvizeTransfer(
+    val distributionRule: String?,
+    val transferOptions: TransferOptions) : IadvizeReply {
     override val type: ReplyType = ReplyType.transfer
 
     data class TransferOptions(val timeout: Duration)
+
+    /**
+     * When an IadvizeTransfer is created on a story, distribution rule is not known.
+     * Distribution rule is added when response is built.
+     */
+    constructor(timeoutInSeconds: Long)
+            : this(null, TransferOptions(Duration(timeoutInSeconds, Duration.TimeUnit.seconds)))
+
+    /**
+     * When an IadvizeTransfer is created on a story, distribution rule is not known.
+     * Distribution rule is added when response is built.
+     */
+    constructor(timout: Duration)
+            : this(null, TransferOptions(timout))
 }
