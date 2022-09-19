@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Subject } from 'rxjs';
+
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
 import { isStepValid } from '../../commons/scenario-validation';
@@ -11,12 +11,16 @@ import { Scenario, SCENARIO_MODE } from '../../models';
   styleUrls: ['./mode-stepper.component.scss']
 })
 export class ModeStepperComponent {
-  destroy = new Subject();
-
-  readonly SCENARIO_MODE = SCENARIO_MODE;
   @Input() mode: SCENARIO_MODE;
   @Input() scenario!: Scenario;
   @Output() modeSwitch = new EventEmitter();
+
+  steps = [
+    { mode: SCENARIO_MODE.writing, label: 'Writing', icon: 'edit-outline' },
+    { mode: SCENARIO_MODE.casting, label: 'Casting', icon: 'people-outline' },
+    { mode: SCENARIO_MODE.production, label: 'Production', icon: 'video-outline' },
+    { mode: SCENARIO_MODE.publishing, label: 'Publishing', icon: 'film-outline' }
+  ];
 
   constructor(private dialogService: DialogService) {}
 
@@ -63,28 +67,19 @@ export class ModeStepperComponent {
   }
 
   isStepSequenceValid(mode: SCENARIO_MODE): boolean {
-    if (mode === SCENARIO_MODE.writing) return true;
-
-    if (mode === SCENARIO_MODE.casting) {
-      return isStepValid(this.scenario, SCENARIO_MODE.casting).valid;
+    switch (mode) {
+      case SCENARIO_MODE.writing:
+        return true;
+      case SCENARIO_MODE.casting:
+        return isStepValid(this.scenario, SCENARIO_MODE.casting).valid;
+      case SCENARIO_MODE.production:
+        return isStepValid(this.scenario, SCENARIO_MODE.casting).valid && isStepValid(this.scenario, SCENARIO_MODE.production).valid;
+      case SCENARIO_MODE.publishing:
+        return (
+          isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
+          isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
+          isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
+        );
     }
-    if (mode === SCENARIO_MODE.production) {
-      return (
-        isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
-        isStepValid(this.scenario, SCENARIO_MODE.production).valid
-      );
-    }
-    if (mode === SCENARIO_MODE.publishing) {
-      return (
-        isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
-        isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
-        isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
-      );
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
   }
 }

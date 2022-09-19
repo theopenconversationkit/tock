@@ -1,3 +1,4 @@
+@import '~@nebular/theme/styles/global/_breakpoints.scss';
 @import '~@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/themes';
 
@@ -5,9 +6,9 @@
   .canvas-wrapper {
     position: relative;
     z-index: 10;
-    margin-left: -2.25rem;
-    margin-right: -2.25rem;
-    margin-bottom: -0.75rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-bottom: 0;
     height: 75vh;
     overflow: hidden;
 
@@ -172,5 +173,21 @@
 
   .font-2rem {
     font-size: 2rem;
+  }
+
+  @include media-breakpoint-up(md) {
+    .canvas-wrapper {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+      margin-bottom: -0.5rem;
+    }
+  }
+
+  @include media-breakpoint-up(lg) {
+    .canvas-wrapper {
+      margin-left: -2.25rem;
+      margin-right: -2.25rem;
+      margin-bottom: -0.75rem;
+    }
   }
 }

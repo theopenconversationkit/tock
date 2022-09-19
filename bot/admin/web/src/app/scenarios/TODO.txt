@@ -92,6 +92,8 @@ Scenario designer :
 
         PUBLISHING :
 
+                Lors de l'envoi de la tick story, rajouter le sagaId associé
+
                 Problème de mise à jour du state local une fois la plublication effectuée avec succès
 
                 ??? Intent : c'est quoi les mandatoryStates ?
