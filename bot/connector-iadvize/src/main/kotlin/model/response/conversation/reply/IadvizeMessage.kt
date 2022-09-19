@@ -24,5 +24,6 @@ import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPay
 data class IadvizeMessage(val payload: Payload,
                           val quickReplies: MutableList<QuickReply> = mutableListOf()) : IadvizeReply {
     override val type: ReplyType = ReplyType.message
+
     constructor(messagePayload: String) : this(TextPayload(messagePayload))
 }

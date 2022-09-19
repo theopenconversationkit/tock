@@ -29,7 +29,6 @@ import ai.tock.bot.connector.media.MediaFile
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.image
-import java.util.Collections
 
 internal object MediaConverter {
 
