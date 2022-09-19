@@ -19,5 +19,6 @@ package ai.tock.bot.connector.web.send
 data class WebMediaFile(
     val url: String,
     val name: String,
-    val type: String
+    val type: String,
+    val description: CharSequence? = null
 )

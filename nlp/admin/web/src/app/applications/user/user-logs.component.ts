@@ -22,25 +22,23 @@ import { StateService } from '../../core-nlp/state.service';
 import { UserLog } from '../../model/application';
 import { PaginatedQuery } from '../../model/commons';
 
-
 @Component({
   selector: 'tock-user-logs',
   templateUrl: './user-logs.component.html',
   styleUrls: ['./user-logs.component.css']
 })
 export class UserLogsComponent implements OnInit {
-
   dataSource: UserLog[];
   totalSize: number;
   pageSize: number = 10;
   pageIndex: number = 0;
   loading: boolean = false;
 
-  constructor(private state: StateService,
-              private applicationService: ApplicationService,
-              private dialogService: NbDialogService) {
-
-  }
+  constructor(
+    private state: StateService,
+    private applicationService: ApplicationService,
+    private dialogService: NbDialogService
+  ) {}
 
   ngOnInit(): void {
     this.search();
@@ -50,7 +48,7 @@ export class UserLogsComponent implements OnInit {
     if (!appId) {
       return null;
     }
-    const r = this.state.applications.find(a => a._id === appId);
+    const r = this.state.applications.find((a) => a._id === appId);
     return r ? r.name : appId;
   }
 
@@ -62,67 +60,79 @@ export class UserLogsComponent implements OnInit {
     });
   }
 
-  getIndex(){
-    if(this.pageIndex > 0) return this.pageIndex - 1;
-    else return this.pageIndex
+  getIndex() {
+    if (this.pageIndex > 0) return this.pageIndex - 1;
+    else return this.pageIndex;
   }
 
-  search(){
+  search() {
     this.loading = true;
     const startIndex = this.getIndex() * this.pageSize;
-    this.applicationService.searchUserLogs(
-      new PaginatedQuery(
-        this.state.currentApplication.namespace,
-        this.state.currentApplication.name,
-        this.state.currentLocale,
-        startIndex,
-        this.pageSize
+    this.applicationService
+      .searchUserLogs(
+        new PaginatedQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          startIndex,
+          this.pageSize
+        )
       )
-    ).subscribe(r => {
-      this.loading = false;
-      this.totalSize = r.total;
-      this.dataSource = r.logs;
-    });
+      .subscribe((r) => {
+        this.loading = false;
+        this.totalSize = r.total;
+        this.dataSource = r.logs;
+      });
   }
 }
 
 @Component({
   selector: 'tock-display-full-log',
-  template: `
-    <nb-card status="primary">
-      <nb-card-header>User Action Data</nb-card-header>
-      <nb-card-body class="no-padding">
-        <json-editor [options]="editorOptions" [data]="data"></json-editor>
-      </nb-card-body>
-      <nb-card-footer class="btn-align">
-        <button nbButton status="primary" (click)="close()">Close</button>
-      </nb-card-footer>
-    </nb-card>`,
-  styles: [`:host ::ng-deep json-editor,
-            :host ::ng-deep json-editor .jsoneditor,
-            :host ::ng-deep json-editor > div,
-            :host ::ng-deep json-editor jsoneditor-outer {
-                height: 30rem;
-                width: 30rem;
-            }
-            .no-padding{
-              padding: 0;
-            }
-            .btn-align {
-              text-align: right;
-            }
-  `
+  template: ` <nb-card status="primary">
+    <nb-card-header>User Action Data</nb-card-header>
+    <nb-card-body class="no-padding">
+      <json-editor
+        [options]="editorOptions"
+        [data]="data"
+      ></json-editor>
+    </nb-card-body>
+    <nb-card-footer class="btn-align">
+      <button
+        nbButton
+        status="primary"
+        (click)="close()"
+      >
+        Close
+      </button>
+    </nb-card-footer>
+  </nb-card>`,
+  styles: [
+    `
+      :host ::ng-deep json-editor,
+      :host ::ng-deep json-editor .jsoneditor,
+      :host ::ng-deep json-editor > div,
+      :host ::ng-deep json-editor jsoneditor-outer {
+        height: 30rem;
+        width: 30rem;
+      }
+      .no-padding {
+        padding: 0;
+      }
+      .btn-align {
+        text-align: right;
+      }
+    `
   ]
 })
 export class DisplayUserDataComponent {
   public editorOptions: JsonEditorOptions;
 
-  @ViewChild(JsonEditorComponent, {static: true}) editor: JsonEditorComponent;
+  @ViewChild(JsonEditorComponent, { static: true }) editor: JsonEditorComponent;
 
   @Input() data: string;
 
   constructor(public dialogRef: NbDialogRef<DisplayUserDataComponent>) {
-    this.editorOptions = new JsonEditorOptions()
+    this.editorOptions = new JsonEditorOptions();
     this.editorOptions.modes = ['code', 'view'];
     this.editorOptions.mode = 'view';
     this.editorOptions.expandAll = true;

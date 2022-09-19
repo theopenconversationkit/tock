@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {Component, Inject, Input, OnInit} from "@angular/core";
-import {DialogReport} from "../model/dialog-data";
-import {UserRole} from "../../model/auth";
-import {StateService} from "../../core-nlp/state.service";
-import {AnalyticsService} from "../../analytics/analytics.service";
-import {Router} from "@angular/router";
-import {APP_BASE_HREF} from "@angular/common";
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { DialogReport } from '../model/dialog-data';
+import { UserRole } from '../../model/auth';
+import { StateService } from '../../core-nlp/state.service';
+import { AnalyticsService } from '../../analytics/analytics.service';
+import { Router } from '@angular/router';
+import { APP_BASE_HREF } from '@angular/common';
 
 @Component({
   selector: 'tock-display-dialog',
@@ -28,7 +28,6 @@ import {APP_BASE_HREF} from "@angular/common";
   styleUrls: ['./display-dialog.component.css']
 })
 export class DisplayDialogComponent implements OnInit {
-
   @Input()
   dialog: DialogReport;
   @Input()
@@ -38,20 +37,17 @@ export class DisplayDialogComponent implements OnInit {
     private state: StateService,
     private analyticsService: AnalyticsService,
     @Inject(APP_BASE_HREF) public baseHref: string
-  ) {
-  }
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   canReveal(): boolean {
     return this.dialog.obfuscated && this.state.hasRole(UserRole.admin);
   }
 
   reveal() {
-    this.analyticsService.dialog(this.state.currentApplication._id, this.dialog.id).subscribe(
-      d => this.dialog = d
-    )
+    this.analyticsService
+      .dialog(this.state.currentApplication._id, this.dialog.id)
+      .subscribe((d) => (this.dialog = d));
   }
-
 }

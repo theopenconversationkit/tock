@@ -14,13 +14,25 @@
   ~ limitations under the License.
   -->
 
-<nb-card style="width: 80rem;">
-
-    <tock-chart [data]="data" [title]="title" [chartPreferences]="userPreferences" [type]="type"
-                [isLoading]="false" [isFullScreen]="true" [isMultiChart]="isMultiChart"
-                [seriesSelectionList]="seriesSelectionList"></tock-chart>
+<nb-card style="width: 80rem">
+  <tock-chart
+    [data]="data"
+    [title]="title"
+    [chartPreferences]="userPreferences"
+    [type]="type"
+    [isLoading]="false"
+    [isFullScreen]="true"
+    [isMultiChart]="isMultiChart"
+    [seriesSelectionList]="seriesSelectionList"
+  ></tock-chart>
   <nb-card-footer>
-    <button nbButton status="info" (click)="dialogRef.close()" nbTooltip="Close" style="float: right;" >
+    <button
+      nbButton
+      status="info"
+      (click)="dialogRef.close()"
+      nbTooltip="Close"
+      style="float: right"
+    >
       Close
     </button>
   </nb-card-footer>

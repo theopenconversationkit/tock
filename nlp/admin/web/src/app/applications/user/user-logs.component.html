@@ -16,44 +16,76 @@
 
 <nb-card>
   <nb-card-body>
-  <table *ngIf="dataSource && dataSource.length !== 0" class="table table-sm table-fixed">
-    <thead>
-    <tr>
-      <th><p>Date</p></th>
-      <th><p>Type</p></th>
-      <th><p>User</p></th>
-      <th><p>Application</p></th>
-      <th><p>Data</p></th>
-      <th><p>Error</p></th>
-    </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let row of dataSource; index as i">
-        <td><p>{{row.date | amDateFormat: 'YYYY-MM-DD HH:mm' }}</p></td>
-        <td><p>{{row.actionType}}</p></td>
-        <td><p>{{row.login}}</p></td>
-        <td><p>{{appName(row.applicationId)}}</p></td>
-        <td><p><button nbButton ghost size="tiny" *ngIf="row.newData" (click)="displayData(row)">
-                  <mat-icon>visibility</mat-icon>
-                </button>
-              </p>
-        </td>
-        <td><p class="error">
-            <span *ngIf="row.error"><mat-icon style="color: red">error</mat-icon></span>
+    <table
+      *ngIf="dataSource && dataSource.length !== 0"
+      class="table table-sm table-fixed"
+    >
+      <thead>
+        <tr>
+          <th><p>Date</p></th>
+          <th><p>Type</p></th>
+          <th><p>User</p></th>
+          <th><p>Application</p></th>
+          <th><p>Data</p></th>
+          <th><p>Error</p></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of dataSource; index as i">
+          <td>
+            <p>{{ row.date | amDateFormat: 'YYYY-MM-DD HH:mm' }}</p>
+          </td>
+          <td>
+            <p>{{ row.actionType }}</p>
+          </td>
+          <td>
+            <p>{{ row.login }}</p>
+          </td>
+          <td>
+            <p>{{ appName(row.applicationId) }}</p>
+          </td>
+          <td>
+            <p>
+              <button
+                nbButton
+                ghost
+                size="tiny"
+                *ngIf="row.newData"
+                (click)="displayData(row)"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
             </p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div *ngIf="dataSource && dataSource.length !== 0" class="d-flex justify-content-center">
-    <nb-select [(ngModel)]="pageSize" (ngModelChange)="search()" nbTooltip="Items per page:">
-      <nb-option [value]="10">10</nb-option >
-      <nb-option [value]="20">20</nb-option >
-      <nb-option [value]="50">50</nb-option >
-    </nb-select>
-    <ngb-pagination [collectionSize]="totalSize" [(page)]="pageIndex" [maxSize]="10"
-                    [pageSize]="pageSize" (pageChange)="search()">
-    </ngb-pagination>
-  </div>
-</nb-card-body>
+          </td>
+          <td>
+            <p class="error">
+              <span *ngIf="row.error"><mat-icon style="color: red">error</mat-icon></span>
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div
+      *ngIf="dataSource && dataSource.length !== 0"
+      class="d-flex justify-content-center"
+    >
+      <nb-select
+        [(ngModel)]="pageSize"
+        (ngModelChange)="search()"
+        nbTooltip="Items per page:"
+      >
+        <nb-option [value]="10">10</nb-option>
+        <nb-option [value]="20">20</nb-option>
+        <nb-option [value]="50">50</nb-option>
+      </nb-select>
+      <ngb-pagination
+        [collectionSize]="totalSize"
+        [(page)]="pageIndex"
+        [maxSize]="10"
+        [pageSize]="pageSize"
+        (pageChange)="search()"
+      >
+      </ngb-pagination>
+    </div>
+  </nb-card-body>
 </nb-card>

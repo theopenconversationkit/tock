@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
-import {ParseQuery, Sentence} from "../model/nlp";
-import {NlpService} from "../nlp-tabs/nlp.service";
-import {StateService} from "../core-nlp/state.service";
-import {Subscription} from "rxjs";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ParseQuery, Sentence } from '../model/nlp';
+import { NlpService } from '../nlp-tabs/nlp.service';
+import { StateService } from '../core-nlp/state.service';
+import { Subscription } from 'rxjs';
 import { NbToastrService } from '@nebular/theme';
 
 @Component({
@@ -27,19 +27,19 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['./try.component.css']
 })
 export class TryComponent implements OnInit, OnDestroy {
-
   sentence: Sentence;
   skipCache: boolean = false;
   queryState: string;
   private subscription: Subscription;
 
-  constructor(private nlp: NlpService,
-              private state: StateService,
-              private toastrService: NbToastrService) {
-  }
+  constructor(
+    private nlp: NlpService,
+    private state: StateService,
+    private toastrService: NbToastrService
+  ) {}
 
   ngOnInit() {
-    this.subscription = this.state.configurationChange.subscribe(_ => this.onClose());
+    this.subscription = this.state.configurationChange.subscribe((_) => this.onClose());
   }
 
   ngOnDestroy(): void {
@@ -51,25 +51,27 @@ export class TryComponent implements OnInit, OnDestroy {
     const language = this.state.currentLocale;
     const v = value.trim();
     if (v.length == 0) {
-      this.toastrService.show(`Please enter a non-empty query`, "ERROR", {duration: 2000});
+      this.toastrService.show(`Please enter a non-empty query`, 'ERROR', { duration: 2000 });
     } else {
       this.sentence = null;
-      this.nlp.parse(
-        new ParseQuery(
-          app.namespace,
-          app.name,
-          language,
-          v,
-          !this.skipCache,
-          !this.queryState || this.queryState.trim().length === 0 ? null : this.queryState.trim())
-      ).subscribe(sentence => {
-        this.sentence = sentence;
-      });
+      this.nlp
+        .parse(
+          new ParseQuery(
+            app.namespace,
+            app.name,
+            language,
+            v,
+            !this.skipCache,
+            !this.queryState || this.queryState.trim().length === 0 ? null : this.queryState.trim()
+          )
+        )
+        .subscribe((sentence) => {
+          this.sentence = sentence;
+        });
     }
   }
 
   onClose() {
     this.sentence = null;
   }
-
 }

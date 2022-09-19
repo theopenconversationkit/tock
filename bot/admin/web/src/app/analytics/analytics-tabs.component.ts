@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {ActivatedRoute, Router, RouterState} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {StateService} from "../core-nlp/state.service";
+import {UserRole} from "../model/auth";
+
 class TabLink {
   constructor(
     public route: string,
     public title: string,
     public icon?: string
-  ) { }
+  ) {
+  }
 }
 
 const tabs = [
-  new TabLink("activity", "Activity", 'activity-outline'),
-  new TabLink("behavior", "Behavior", 'pie-chart-outline'),
-  new TabLink("flow", "Flow", 'funnel-outline'),
-  new TabLink("users", "Users", 'people-outline'),
-  new TabLink("dialogs", "Search", 'search-outline'),
-  new TabLink("preferences", "Preferences", 'settings-2-outline')
+  new TabLink('activity', 'Activity', 'activity-outline'),
+  new TabLink('behavior', 'Behavior', 'pie-chart-outline'),
+  new TabLink('flow', 'Flow', 'funnel-outline'),
+  new TabLink('users', 'Users', 'people-outline'),
+  new TabLink('dialogs', 'Search', 'search-outline'),
+  new TabLink('preferences', 'Preferences', 'settings-2-outline')
 ];
 
 @Component({
@@ -39,16 +43,17 @@ const tabs = [
   styleUrls: ['./analytics-tabs.component.css']
 })
 export class AnalyticsTabsComponent implements OnInit {
-
   analyticsTabLinks = tabs;
 
-  constructor(private router: Router) {
-  }
-
-  ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/analytics")) {
-       this.router.navigateByUrl("/analytics/activity");
+  constructor(private router: Router, private state: StateService) {
+    if (!state.hasRole(UserRole.botUser)) {
+      this.analyticsTabLinks = this.analyticsTabLinks.filter(t => !["flow", "users"].includes(t.route))
     }
   }
 
+  ngOnInit() {
+    if (this.router.routerState.snapshot.url.endsWith('/analytics')) {
+      this.router.navigateByUrl('/analytics/activity');
+    }
+  }
 }

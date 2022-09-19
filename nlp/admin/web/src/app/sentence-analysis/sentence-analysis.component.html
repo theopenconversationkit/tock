@@ -15,119 +15,279 @@
   -->
 
 <nb-card class="sentence-analysis">
-  <nb-card-header style="font-size: medium;font-weight: normal;" (click)="displayAllView()">
-    <tock-highlight *ngIf="displayEntities" [sentence]="sentence"></tock-highlight>
+  <nb-card-header
+    style="font-size: medium; font-weight: normal"
+    (click)="displayAllView()"
+  >
+    <tock-highlight
+      *ngIf="displayEntities"
+      [sentence]="sentence"
+    ></tock-highlight>
   </nb-card-header>
   <nb-card-body (click)="displayAllView()">
-    <div *ngIf="minimalView" class="minimal">
-      <span class="update-intent" title="Modify the Intent" (click)="focusOnIntentSelect();$event.stopPropagation();">{{sentence.getIntentLabel(this.state)}}
+    <div
+      *ngIf="minimalView"
+      class="minimal"
+    >
+      <span
+        class="update-intent"
+        title="Modify the Intent"
+        (click)="focusOnIntentSelect(); $event.stopPropagation()"
+        >{{ sentence.getIntentLabel(this.state) }}
         <nb-icon icon="edit-2-outline"></nb-icon>
       </span>
-      <span *ngIf="displayStatus" class="status status-header" [style.background]="sentence.statusColor()">
-        {{sentence.statusDisplayed()}}
+      <span
+        *ngIf="displayStatus"
+        class="status status-header"
+        [style.background]="sentence.statusColor()"
+      >
+        {{ sentence.statusDisplayed() }}
       </span>
-      <button nbButton outline status="primary" size="small" shape="semi-round" class="btn" (click)="displayAllView();$event.stopPropagation();">Details
+      <button
+        nbButton
+        outline
+        status="primary"
+        size="small"
+        shape="semi-round"
+        class="btn"
+        (click)="displayAllView(); $event.stopPropagation()"
+      >
+        Details
       </button>
-      <button nbButton status="primary" size="small" shape="semi-round" class="btn" (click)="onValidate();$event.stopPropagation();">Validate
+      <button
+        nbButton
+        status="primary"
+        size="small"
+        shape="semi-round"
+        class="btn"
+        (click)="onValidate(); $event.stopPropagation()"
+      >
+        Validate
       </button>
     </div>
-    <div *ngIf="!minimalView" class="sentence-analysis-content">
-      <tock-search-filter [groups]="intentGroups()"
-                          (filterChange)="changeIntentFilter($event)"
-                          [selectedValue]="selectedValueLabel"
-                          [activeFirst]="true"
-                          [cleanupIfSelected]="true"
-                          name="Intent">
-                        </tock-search-filter>
-      <button nbButton ghost (click)="newIntent()" nbTooltip="Create New Intent" size="small">
+    <div
+      *ngIf="!minimalView"
+      class="sentence-analysis-content"
+    >
+      <tock-search-filter
+        [groups]="intentGroups()"
+        (filterChange)="changeIntentFilter($event)"
+        [selectedValue]="selectedValueLabel"
+        [activeFirst]="true"
+        [cleanupIfSelected]="true"
+        name="Intent"
+      >
+      </tock-search-filter>
+      <button
+        nbButton
+        ghost
+        (click)="newIntent()"
+        nbTooltip="Create New Intent"
+        size="small"
+      >
         <mat-icon>library_add</mat-icon>
       </button>
-      <nb-select status="primary" placeholder="Language" [(ngModel)]="sentence.language" size="small"
-                 (selectedChange)="onLanguageChange()">
-        <nb-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
-          {{state.localeName(l)}}
+      <nb-select
+        status="primary"
+        placeholder="Language"
+        [(ngModel)]="sentence.language"
+        size="small"
+        (selectedChange)="onLanguageChange()"
+      >
+        <nb-option
+          *ngFor="let l of state.currentApplication.supportedLocales"
+          [value]="l"
+        >
+          {{ state.localeName(l) }}
         </nb-option>
       </nb-select>
-      <span *ngIf="displayStatus" class="status" [style.background]="sentence.statusColor()">
-        {{sentence.statusDisplayed()}}
+      <span
+        *ngIf="displayStatus"
+        class="status"
+        [style.background]="sentence.statusColor()"
+      >
+        {{ sentence.statusDisplayed() }}
       </span>
-      <span *ngIf="displayStatus && sentence.forReview" class="status" style="background:dodgerblue">
+      <span
+        *ngIf="displayStatus && sentence.forReview"
+        class="status"
+        style="background: dodgerblue"
+      >
         To review
       </span>
-      <span *ngIf="displayProbabilities" class="probability">
+      <span
+        *ngIf="displayProbabilities"
+        class="probability"
+      >
         <span
-          *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
-          nbTooltip="intent probability">
-           intent : {{sentence.classification.intentProbability | percent:'1.0-2'}}
-        </span>
-        <span *ngIf="displayProbabilities && displayEntities
-        && sentence.classification.entities.length !== 0 && sentence.classification.hasEntitiesProbability()"
-              nbTooltip="entities probability">
-           , entities : {{sentence.classification.entitiesProbability | percent:'1.0-2'}}
+          *ngIf="
+            displayProbabilities &&
+            sentence.classification.intentId &&
+            sentence.classification.hasIntentProbability()
+          "
+          nbTooltip="intent probability"
+        >
+          intent : {{ sentence.classification.intentProbability | percent: '1.0-2' }}
         </span>
         <span
-          *ngIf="displayProbabilities && (sentence.classification.notRetainedEntities?.length !== 0 || sentence.classification.otherIntentsProbabilities?.size !== 0)">
-                <button *ngIf="!sentence.classification.displayOtherIntents"
-                        (click)="sentence.classification.displayOtherIntents=true"
-                        mat-icon-button
-                        nbTooltip="Display probability for other intents & entities"><mat-icon>expand_more</mat-icon></button>
-                <button
-                  *ngIf="sentence.classification.displayOtherIntents"
-                  mat-icon-button
-                  (click)="sentence.classification.displayOtherIntents=false"
-                  nbTooltip="Hide probabilities"><mat-icon>expand_less</mat-icon></button>
+          *ngIf="
+            displayProbabilities &&
+            displayEntities &&
+            sentence.classification.entities.length !== 0 &&
+            sentence.classification.hasEntitiesProbability()
+          "
+          nbTooltip="entities probability"
+        >
+          , entities : {{ sentence.classification.entitiesProbability | percent: '1.0-2' }}
         </span>
-        <span *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0">
-          <span *ngIf="sentence.classification.displayOtherIntents" class="otherEntities">
-            <span style="float:left">Other entities:</span><br>
-            <tock-edit-entities [container]="sentence.notRetainedEntitiesContainer()"
-                                [displayProbabilities]="displayProbabilities"
-                                [readOnly]="true">
+        <span
+          *ngIf="
+            displayProbabilities &&
+            (sentence.classification.notRetainedEntities?.length !== 0 ||
+              sentence.classification.otherIntentsProbabilities?.size !== 0)
+          "
+        >
+          <button
+            *ngIf="!sentence.classification.displayOtherIntents"
+            (click)="sentence.classification.displayOtherIntents = true"
+            mat-icon-button
+            nbTooltip="Display probability for other intents & entities"
+          >
+            <mat-icon>expand_more</mat-icon>
+          </button>
+          <button
+            *ngIf="sentence.classification.displayOtherIntents"
+            mat-icon-button
+            (click)="sentence.classification.displayOtherIntents = false"
+            nbTooltip="Hide probabilities"
+          >
+            <mat-icon>expand_less</mat-icon>
+          </button>
+        </span>
+        <span
+          *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0"
+        >
+          <span
+            *ngIf="sentence.classification.displayOtherIntents"
+            class="otherEntities"
+          >
+            <span style="float: left">Other entities:</span><br />
+            <tock-edit-entities
+              [container]="sentence.notRetainedEntitiesContainer()"
+              [displayProbabilities]="displayProbabilities"
+              [readOnly]="true"
+            >
             </tock-edit-entities>
           </span>
         </span>
-        <span *ngIf="displayProbabilities && sentence.classification.otherIntentsProbabilities?.size !== 0">
-           <span *ngIf="sentence.classification.displayOtherIntents" class="otherIntents">
-                  Probability for other intents:
-                  <ol style="overflow:auto">
-                    <li *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable">
-                      <div style="float:left">{{state.intentLabelByName(i.key)}}&nbsp;&nbsp;</div><div
-                      style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
-                    </li>
-                  </ol>
-           </span>
+        <span
+          *ngIf="
+            displayProbabilities && sentence.classification.otherIntentsProbabilities?.size !== 0
+          "
+        >
+          <span
+            *ngIf="sentence.classification.displayOtherIntents"
+            class="otherIntents"
+          >
+            Probability for other intents:
+            <ol style="overflow: auto">
+              <li
+                *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable"
+              >
+                <div style="float: left">{{ state.intentLabelByName(i.key) }}&nbsp;&nbsp;</div>
+                <div style="float: right">&nbsp;{{ i.value | percent: '1.0-2' }}</div>
+              </li>
+            </ol>
+          </span>
         </span>
       </span>
-      <tock-edit-entities *ngIf="displayEntities"
-                          [container]="sentence"
-                          [displayProbabilities]="displayProbabilities"
-                          (containerChange)="onSentenceChange()"></tock-edit-entities>
+      <tock-edit-entities
+        *ngIf="displayEntities"
+        [container]="sentence"
+        [displayProbabilities]="displayProbabilities"
+        (containerChange)="onSentenceChange()"
+      ></tock-edit-entities>
     </div>
     <nb-card *ngIf="!minimalView && sentence.forReview && sentence.reviewComment">
       <nb-card-header>Comment</nb-card-header>
       <nb-card-body class="reviewComment">
-        {{sentence.reviewComment}}
+        {{ sentence.reviewComment }}
       </nb-card-body>
     </nb-card>
   </nb-card-body>
-  <nb-card-footer *ngIf="!minimalView" class="sentence-analysis-content">
-    <button nbButton status="danger" size="small" shape="semi-round" class="btn" (click)="onDelete()">Delete</button>
-    <button nbButton status="warning" size="small" shape="semi-round" class="btn" (click)="onUnknown()"
-            *ngIf="displayUnknownButton"
-            nbTooltip="Set as unknown to use later">
+  <nb-card-footer
+    *ngIf="!minimalView"
+    class="sentence-analysis-content"
+  >
+    <button
+      nbButton
+      status="danger"
+      size="small"
+      shape="semi-round"
+      class="btn"
+      (click)="onDelete()"
+    >
+      Delete
+    </button>
+    <button
+      nbButton
+      status="warning"
+      size="small"
+      shape="semi-round"
+      class="btn"
+      (click)="onUnknown()"
+      *ngIf="displayUnknownButton"
+      nbTooltip="Set as unknown to use later"
+    >
       Unknown
     </button>
-    <button nbButton status="primary" size="small" shape="semi-round" class="btn" (click)="onValidate()">Validate
+    <button
+      nbButton
+      status="primary"
+      size="small"
+      shape="semi-round"
+      class="btn"
+      (click)="onValidate()"
+    >
+      Validate
     </button>
-    <button nbButton outline status="primary" size="small" shape="semi-round" class="btn" (click)="onReviewRequest()">
+    <button
+      nbButton
+      outline
+      status="primary"
+      size="small"
+      shape="semi-round"
+      class="btn"
+      (click)="onReviewRequest()"
+    >
       Ask for Review
     </button>
-    <button *ngIf="displayClose" nbButton outline status="primary" size="small" shape="semi-round" class="btn"
-            (click)="closed.emit(null)" nbTooltip="Close">
+    <button
+      *ngIf="displayClose"
+      nbButton
+      outline
+      status="primary"
+      size="small"
+      shape="semi-round"
+      class="btn"
+      (click)="closed.emit(null)"
+      nbTooltip="Close"
+    >
       <nb-icon icon="arrow-back-outline"></nb-icon>
     </button>
-    <div *ngIf="sentence.qualifier" class="lastUpdate" nbTooltip="Qualifier">{{sentence.qualifier}}</div>
-    <div *ngIf="sentence.updateDate" class="lastUpdate"
-         nbTooltip="Last update">{{sentence.updateDate | amLocal | amDateFormat: 'HH:mm:ss YYYY/MM/DD'}}</div>
+    <div
+      *ngIf="sentence.qualifier"
+      class="lastUpdate"
+      nbTooltip="Qualifier"
+    >
+      {{ sentence.qualifier }}
+    </div>
+    <div
+      *ngIf="sentence.updateDate"
+      class="lastUpdate"
+      nbTooltip="Last update"
+    >
+      {{ sentence.updateDate | amLocal | amDateFormat: 'HH:mm:ss YYYY/MM/DD' }}
+    </div>
   </nb-card-footer>
 </nb-card>

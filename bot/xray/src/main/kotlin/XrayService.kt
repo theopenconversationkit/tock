@@ -247,8 +247,8 @@ class XrayService(
             }
 
         return XrayPlanExecutionResult(
-            success = reports.sumBy { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
-            total = reports.sumBy { it.execution.dialogs.size },
+            success = reports.sumOf { it.execution.dialogs.filter { dialogExecutionReport -> !dialogExecutionReport.error }.size },
+            total = reports.sumOf { it.execution.dialogs.size },
             errorMessage = reports.map { it.execution.dialogs.find { dialogExecutionReport -> dialogExecutionReport.error }?.errorMessage }
                 .toString()
         )

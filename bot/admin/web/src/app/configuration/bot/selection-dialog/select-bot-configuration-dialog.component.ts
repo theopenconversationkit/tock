@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
-import {NbComponentStatus, NbDialogRef} from '@nebular/theme';
-import {BotApplicationConfiguration, BotConfiguration} from '../../../core/model/configuration';
-import {BotConfigurationService} from '../../../core/bot-configuration.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { NbComponentStatus, NbDialogRef } from '@nebular/theme';
+import { BotApplicationConfiguration, BotConfiguration } from '../../../core/model/configuration';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
 
 @Component({
   selector: 'tock-bot-configuration-dialog',
@@ -25,7 +25,6 @@ import {BotConfigurationService} from '../../../core/bot-configuration.service';
   styleUrls: ['./select-bot-configuration-dialog.component.css']
 })
 export class SelectBotConfigurationDialogComponent implements OnInit {
-
   @Input()
   title: string;
   selectedConfig: BotConfiguration;
@@ -33,40 +32,44 @@ export class SelectBotConfigurationDialogComponent implements OnInit {
   botApplicationConfigurations: BotConfiguration[];
   valid = true;
 
-  constructor(private dialogRef: NbDialogRef<SelectBotConfigurationDialogComponent>,
-              private botConfiguration: BotConfigurationService) {
-  }
+  constructor(
+    private dialogRef: NbDialogRef<SelectBotConfigurationDialogComponent>,
+    private botConfiguration: BotConfigurationService
+  ) {}
 
   ngOnInit() {
     this.load();
   }
 
   private load() {
-    this.botConfiguration.configurations.subscribe(applicationConfigurations => {
+    this.botConfiguration.configurations.subscribe((applicationConfigurations) => {
       const configsByName = this.groupByName(applicationConfigurations);
       const bots = this.botConfiguration.bots.getValue();
-      this.botApplicationConfigurations = Array.from(configsByName.values())
-        .map(connectorConfigurations => {
-            const existingConf = bots.find(botConfig => botConfig.name === connectorConfigurations[0].name);
-            if (existingConf) {
-              existingConf.configurations = connectorConfigurations;
-              return existingConf;
-            }
-            const firstBotConfiguration = connectorConfigurations[0];
-            return new BotConfiguration(
-              firstBotConfiguration.botId,
-              firstBotConfiguration.name,
-              firstBotConfiguration.namespace,
-              firstBotConfiguration.nlpModel,
-              connectorConfigurations);
+      this.botApplicationConfigurations = Array.from(configsByName.values()).map(
+        (connectorConfigurations) => {
+          const existingConf = bots.find(
+            (botConfig) => botConfig.name === connectorConfigurations[0].name
+          );
+          if (existingConf) {
+            existingConf.configurations = connectorConfigurations;
+            return existingConf;
           }
-        );
+          const firstBotConfiguration = connectorConfigurations[0];
+          return new BotConfiguration(
+            firstBotConfiguration.botId,
+            firstBotConfiguration.name,
+            firstBotConfiguration.namespace,
+            firstBotConfiguration.nlpModel,
+            connectorConfigurations
+          );
+        }
+      );
     });
   }
 
   private groupByName(applicationConfigurations: BotApplicationConfiguration[]) {
     const botConfigurationsByName = new Map<string, BotApplicationConfiguration[]>();
-    applicationConfigurations.forEach(configuration => {
+    applicationConfigurations.forEach((configuration) => {
       const configs = botConfigurationsByName.get(configuration.name);
       if (!configs) {
         botConfigurationsByName.set(configuration.name, [configuration]);

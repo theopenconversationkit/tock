@@ -15,7 +15,7 @@
  */
 
 .applications-applications {
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 .applications-applications__item {
@@ -43,7 +43,6 @@
 }
 
 .applications-applications__complex-actions {
-
 }
 
 .applications-applications__complex-actions .mat-button {
@@ -56,7 +55,7 @@
 
 .create {
   color: #3366ff;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .tock-toolbar-menu {

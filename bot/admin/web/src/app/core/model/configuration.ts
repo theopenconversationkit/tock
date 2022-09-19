@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import {RestService} from "../../core-nlp/rest/rest.service";
+import { RestService } from '../../core-nlp/rest/rest.service';
 
 export class BotConfiguration {
-
   constructor(
     public botId: string,
     public name: string,
@@ -27,8 +26,7 @@ export class BotConfiguration {
     public webhookUrl?: string,
     public apiKey?: string,
     public supportedLocales?: string[]
-  ) {
-  }
+  ) {}
 
   static fromJSON(json?: any): BotConfiguration {
     const value = Object.create(BotConfiguration.prototype);
@@ -44,28 +42,31 @@ export class BotConfiguration {
 }
 
 export class BotApplicationConfiguration {
+  constructor(
+    public applicationId: string,
+    public botId: string,
+    public namespace: string,
+    public nlpModel: string,
+    public connectorType: ConnectorType,
+    public name: string,
+    public parameters: Map<string, string>,
+    public baseUrl?: string,
+    public _id?: string,
+    public ownerConnectorType?: ConnectorType,
+    public path?: string,
+    public fillMandatoryValues?: boolean,
+    public targetConfigurationId?: string
+  ) {}
 
-  constructor(public applicationId: string,
-              public botId: string,
-              public namespace: string,
-              public nlpModel: string,
-              public connectorType: ConnectorType,
-              public name: string,
-              public parameters: Map<string, string>,
-              public baseUrl?: string,
-              public _id?: string,
-              public ownerConnectorType?: ConnectorType,
-              public path?: string,
-              public fillMandatoryValues?: boolean,
-              public targetConfigurationId?: string) {
-  }
-
-  static getRestConfiguration(allConfs: BotApplicationConfiguration[], conf: BotApplicationConfiguration): BotApplicationConfiguration {
+  static getRestConfiguration(
+    allConfs: BotApplicationConfiguration[],
+    conf: BotApplicationConfiguration
+  ): BotApplicationConfiguration {
     if (conf.connectorType.isRest()) {
       return conf;
     }
 
-    return allConfs.find(c => c.targetConfigurationId === conf._id);
+    return allConfs.find((c) => c.targetConfigurationId === conf._id);
   }
 
   ownConnectorType(): ConnectorType {
@@ -89,13 +90,10 @@ export class BotApplicationConfiguration {
 }
 
 export class ConnectorType {
-
-  constructor(public id: string,
-              public userInterfaceType: UserInterfaceType) {
-  }
+  constructor(public id: string, public userInterfaceType: UserInterfaceType) {}
 
   public label(): string {
-    return this.isRest() ? "test" : this.id;
+    return this.isRest() ? 'test' : this.id;
   }
 
   iconUrl(): string {
@@ -103,7 +101,7 @@ export class ConnectorType {
   }
 
   isRest(): boolean {
-    return this.id === "rest";
+    return this.id === 'rest';
   }
 
   static fromJSON(json?: any): ConnectorType {
@@ -113,7 +111,7 @@ export class ConnectorType {
     const value = Object.create(ConnectorType.prototype);
 
     const result = Object.assign(value, json, {
-      userInterfaceType: UserInterfaceType[json.userInterfaceType],
+      userInterfaceType: UserInterfaceType[json.userInterfaceType]
     });
 
     return result;
@@ -125,11 +123,11 @@ export class ConnectorType {
 }
 
 export class ConnectorTypeConfiguration {
-
-  constructor(public connectorType: ConnectorType,
-              public fields: ConnectorTypeConfigurationField[],
-              public svgIcon: string) {
-  }
+  constructor(
+    public connectorType: ConnectorType,
+    public fields: ConnectorTypeConfigurationField[],
+    public svgIcon: string
+  ) {}
 
   static fromJSON(json?: any): ConnectorTypeConfiguration {
     if (!json) {
@@ -148,16 +146,10 @@ export class ConnectorTypeConfiguration {
   static fromJSONArray(json?: Array<any>): ConnectorTypeConfiguration[] {
     return json ? json.map(ConnectorTypeConfiguration.fromJSON) : [];
   }
-
 }
 
 export class ConnectorTypeConfigurationField {
-
-  constructor(
-    public label: string,
-    public key: string,
-    public mandatory: boolean) {
-  }
+  constructor(public label: string, public key: string, public mandatory: boolean) {}
 
   static fromJSON(json?: any): ConnectorTypeConfigurationField {
     if (!json) {
@@ -173,19 +165,26 @@ export class ConnectorTypeConfigurationField {
   static fromJSONArray(json?: Array<any>): ConnectorTypeConfigurationField[] {
     return json ? json.map(ConnectorTypeConfigurationField.fromJSON) : [];
   }
-
 }
 
 export enum UserInterfaceType {
-  textChat, voiceAssistant, textAndVoiceAssistant
+  textChat,
+  voiceAssistant,
+  textAndVoiceAssistant
 }
 
 export enum EventType {
-  sentence, choice, attachment, location
+  sentence,
+  choice,
+  attachment,
+  location
 }
 
 export enum AttachmentType {
-  image, audio, video, file
+  image,
+  audio,
+  video,
+  file
 }
 
 export const defaultUserInterfaceType = UserInterfaceType.textChat;

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {EntityStepSelection, IntentName, StoryStep} from "../model/story";
-import { MatDialog } from "@angular/material/dialog";
-import {Intent, IntentsCategory, ParseQuery} from "../../model/nlp";
-import {StateService} from "../../core-nlp/state.service";
-import {IntentDialogComponent} from "../../sentence-analysis/intent-dialog/intent-dialog.component";
-import {NlpService} from "../../nlp-tabs/nlp.service";
-import {DialogService} from "../../core-nlp/dialog.service";
-import {CreateI18nLabelRequest, I18nLocalizedLabel} from "../model/i18n";
-import {BotService} from "../bot-service";
-import {SelectEntityDialogComponent} from "./select-entity-dialog.component";
-import {defaultUserInterfaceType} from "../../core/model/configuration";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { EntityStepSelection, IntentName, StoryStep } from '../model/story';
+import { MatDialog } from '@angular/material/dialog';
+import { Intent, IntentsCategory, ParseQuery } from '../../model/nlp';
+import { StateService } from '../../core-nlp/state.service';
+import { IntentDialogComponent } from '../../sentence-analysis/intent-dialog/intent-dialog.component';
+import { NlpService } from '../../nlp-tabs/nlp.service';
+import { DialogService } from '../../core-nlp/dialog.service';
+import { CreateI18nLabelRequest, I18nLocalizedLabel } from '../model/i18n';
+import { BotService } from '../bot-service';
+import { SelectEntityDialogComponent } from './select-entity-dialog.component';
+import { defaultUserInterfaceType } from '../../core/model/configuration';
 
 @Component({
   selector: 'tock-step',
@@ -33,12 +33,11 @@ import {defaultUserInterfaceType} from "../../core/model/configuration";
   styleUrls: ['./step.component.css']
 })
 export class StepComponent implements OnInit {
-
   @Input()
   step: StoryStep;
 
   @Input()
-  defaultCategory: string = "build";
+  defaultCategory: string = 'build';
 
   @Output()
   delete = new EventEmitter<StoryStep>();
@@ -79,11 +78,11 @@ export class StepComponent implements OnInit {
     private dialog: DialogService,
     private matDialog: MatDialog,
     private nlp: NlpService,
-    private bot: BotService) {
-  }
+    private bot: BotService
+  ) {}
 
   ngOnInit() {
-    this.state.currentIntentsCategories.subscribe(c => {
+    this.state.currentIntentsCategories.subscribe((c) => {
       this.intentCategories = c;
       this.currentIntentCategories = c;
     });
@@ -94,22 +93,24 @@ export class StepComponent implements OnInit {
     if (this.currentEditedIntent !== name) {
       this.currentEditedIntent = name;
       const intent = name.trim().toLowerCase();
-      let target = this.intentCategories.map(
-        c => new IntentsCategory(c.category,
-          c.intents.filter(i =>
-            i.intentLabel().toLowerCase().startsWith(intent)
-          ))
-      )
-        .filter(c => c.intents.length !== 0);
+      let target = this.intentCategories
+        .map(
+          (c) =>
+            new IntentsCategory(
+              c.category,
+              c.intents.filter((i) => i.intentLabel().toLowerCase().startsWith(intent))
+            )
+        )
+        .filter((c) => c.intents.length !== 0);
 
       this.currentIntentCategories = target;
     }
   }
 
   validateIntent(step: StoryStep, targetIntent?: boolean) {
-    setTimeout(_ => {
+    setTimeout((_) => {
       const intentName = (targetIntent ? step.targetIntent : step.intent).name.trim();
-      const intentDef = (targetIntent ? step.targetIntentDefinition : step.intentDefinition);
+      const intentDef = targetIntent ? step.targetIntentDefinition : step.intentDefinition;
       if (intentName.length !== 0 && (!intentDef || intentDef.name !== intentName)) {
         let intent = this.state.findIntentByName(intentName);
         if (intent) {
@@ -119,51 +120,50 @@ export class StepComponent implements OnInit {
             step.intentDefinition = intent;
           }
           if (!step.name || step.name.trim().length === 0) {
-            step.name = intentName + "_" + step.level;
+            step.name = intentName + '_' + step.level;
           }
           this.checkStep();
         } else {
-          let dialogRef = this.dialog.openDialog(
-            IntentDialogComponent,
-            {
-              context: {
-                create: true,
-                category: this.defaultCategory,
-                name: intentName,
-                label: intentName
-              }
-            });
-          dialogRef.onClose.subscribe(result => {
+          let dialogRef = this.dialog.openDialog(IntentDialogComponent, {
+            context: {
+              create: true,
+              category: this.defaultCategory,
+              name: intentName,
+              label: intentName
+            }
+          });
+          dialogRef.onClose.subscribe((result) => {
             if (result.name) {
-              const newIntent =
-                new Intent(
-                  result.name,
-                  this.state.currentApplication.namespace,
-                  [],
-                  [this.state.currentApplication._id],
-                  [],
-                  [],
-                  result.label,
-                  result.description,
-                  result.category
-                );
+              const newIntent = new Intent(
+                result.name,
+                this.state.currentApplication.namespace,
+                [],
+                [this.state.currentApplication._id],
+                [],
+                [],
+                result.label,
+                result.description,
+                result.category
+              );
               if (targetIntent) {
                 step.targetIntentDefinition = newIntent;
                 step.targetIntent.name = result.name;
               } else {
                 step.intentDefinition = newIntent;
                 step.intent.name = result.name;
-                step.name = result.name + "_" + step.level;
+                step.name = result.name + '_' + step.level;
               }
             } else {
               if (targetIntent) {
-                step.targetIntent.name = step.targetIntentDefinition ? step.targetIntentDefinition.name : "";
+                step.targetIntent.name = step.targetIntentDefinition
+                  ? step.targetIntentDefinition.name
+                  : '';
               } else {
-                step.intent.name = step.intentDefinition ? step.intentDefinition.name : "";
+                step.intent.name = step.intentDefinition ? step.intentDefinition.name : '';
               }
             }
             this.checkStep();
-          })
+          });
         }
       } else {
         this.checkStep();
@@ -176,7 +176,7 @@ export class StepComponent implements OnInit {
   }
 
   duplicateStep() {
-    this.duplicate.emit(this.step)
+    this.duplicate.emit(this.step);
   }
 
   checkStep() {
@@ -185,7 +185,10 @@ export class StepComponent implements OnInit {
       if (invalidMessage) {
         this.dialog.notify(`Error: ${invalidMessage}`);
         return;
-      } else if (this.step.newUserSentence.trim().length === 0 || this.step.intent.name.trim().length === 0) {
+      } else if (
+        this.step.newUserSentence.trim().length === 0 ||
+        this.step.intent.name.trim().length === 0
+      ) {
         return;
       } else {
         this.save(this.step);
@@ -194,16 +197,18 @@ export class StepComponent implements OnInit {
   }
 
   private save(step: StoryStep) {
-    this.bot.createI18nLabel(
-      new CreateI18nLabelRequest(
-        this.defaultCategory,
-        step.newUserSentence.trim(),
-        this.state.currentLocale,
+    this.bot
+      .createI18nLabel(
+        new CreateI18nLabelRequest(
+          this.defaultCategory,
+          step.newUserSentence.trim(),
+          this.state.currentLocale
+        )
       )
-    ).subscribe(i18n => {
-      step.userSentence = i18n;
-      step.new = false;
-    })
+      .subscribe((i18n) => {
+        step.userSentence = i18n;
+        step.new = false;
+      });
   }
 
   addChild() {
@@ -212,32 +217,25 @@ export class StepComponent implements OnInit {
 
   focusTargetIntent(element) {
     this.displayTargetIntent = true;
-    setTimeout(_ => element.focus(), 200);
+    setTimeout((_) => element.focus(), 200);
   }
 
   setEntity() {
     const e = this.step.entity;
-    let dialogRef = this.dialog.open(
-      this.matDialog,
-      SelectEntityDialogComponent,
-      {
-        data: {
-          selectedEntity: e ? e.entityType : null,
-          role: e ? e.entityRole : null,
-          entityValue: e ? e.value : null
-        }
+    let dialogRef = this.dialog.open(this.matDialog, SelectEntityDialogComponent, {
+      data: {
+        selectedEntity: e ? e.entityType : null,
+        role: e ? e.entityRole : null,
+        entityValue: e ? e.value : null
       }
-    );
-    dialogRef.afterClosed().subscribe(result => {
-      if (result.entity) {
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.entity) {
         if (!result.role) {
           this.step.entity = null;
         } else {
-          this.step.entity = new EntityStepSelection(
-            result.value,
-            result.role,
-            result.entity.name
-          )
+          this.step.entity = new EntityStepSelection(result.value, result.role, result.entity.name);
         }
       }
     });
@@ -248,29 +246,24 @@ export class StepComponent implements OnInit {
     if (changedSentence.trim().length !== 0) {
       if (!step.new) {
         this.updateStepI18nLabel(step, changedSentence);
-        this.bot.saveI18nLabel(step.userSentence).subscribe(_ => {
-        });
+        this.bot.saveI18nLabel(step.userSentence).subscribe((_) => {});
       }
       if (step.intent.name.length === 0 && !step.entity) {
         const app = this.state.currentApplication;
         const language = this.state.currentLocale;
-        this.nlp.parse(new ParseQuery(
-          app.namespace,
-          app.name,
-          language,
-          changedSentence,
-          true
-        )).subscribe(r => {
-          if (r.classification.intentId) {
-            const intent = this.state.findIntentById(r.classification.intentId);
-            if (intent) {
-              step.intentDefinition = intent;
-              step.intent = new IntentName(intent.name);
-              this.onIntentChange(step, intent.name);
-              this.validateIntent(step, false);
+        this.nlp
+          .parse(new ParseQuery(app.namespace, app.name, language, changedSentence, true))
+          .subscribe((r) => {
+            if (r.classification.intentId) {
+              const intent = this.state.findIntentById(r.classification.intentId);
+              if (intent) {
+                step.intentDefinition = intent;
+                step.intent = new IntentName(intent.name);
+                this.onIntentChange(step, intent.name);
+                this.validateIntent(step, false);
+              }
             }
-          }
-        })
+          });
       } else {
         this.checkStep();
       }
@@ -278,34 +271,33 @@ export class StepComponent implements OnInit {
   }
 
   private updateStepI18nLabel(step: StoryStep, changedSentence: string) {
-    step.userSentence.defaultLocale = this.state.currentLocale
+    step.userSentence.defaultLocale = this.state.currentLocale;
     let currentLocaleI18nSentence = step.userSentence.i18n.find(
-      i18nSentence => i18nSentence.locale === this.state.currentLocale
-    )
+      (i18nSentence) => i18nSentence.locale === this.state.currentLocale
+    );
     if (!currentLocaleI18nSentence) {
-      step.userSentence.i18n.push(new I18nLocalizedLabel(
-        this.state.currentLocale,
-        defaultUserInterfaceType,
-        changedSentence,
-        false,
-        null,
-        []))
+      step.userSentence.i18n.push(
+        new I18nLocalizedLabel(
+          this.state.currentLocale,
+          defaultUserInterfaceType,
+          changedSentence,
+          false,
+          null,
+          []
+        )
+      );
     } else {
-      currentLocaleI18nSentence.label = changedSentence
+      currentLocaleI18nSentence.label = changedSentence;
     }
   }
 
   generateChildren() {
-    let dialogRef = this.dialog.open(
-      this.matDialog,
-      SelectEntityDialogComponent,
-      {
-        data: {generate: true}
-      }
-    );
-    dialogRef.afterClosed().subscribe(result => {
+    let dialogRef = this.dialog.open(this.matDialog, SelectEntityDialogComponent, {
+      data: { generate: true }
+    });
+    dialogRef.afterClosed().subscribe((result) => {
       if (result.entity) {
-        this.nlp.getDictionary(result.entity).subscribe(dictionary => {
+        this.nlp.getDictionary(result.entity).subscribe((dictionary) => {
           //dictionary
           const newSteps = StoryStep.generateEntitySteps(
             result.intent,
@@ -315,7 +307,7 @@ export class StepComponent implements OnInit {
             dictionary,
             this.step.level + 1
           );
-          newSteps.forEach(s => {
+          newSteps.forEach((s) => {
             this.step.children.push(s);
             this.save(s);
           });
@@ -326,10 +318,10 @@ export class StepComponent implements OnInit {
   }
 
   upwardStep() {
-    this.upward.emit(this.step)
+    this.upward.emit(this.step);
   }
 
   downwardStep() {
-    this.downward.emit(this.step)
+    this.downward.emit(this.step);
   }
 }

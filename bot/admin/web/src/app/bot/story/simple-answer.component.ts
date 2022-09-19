@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, Input, OnInit, ViewChild} from "@angular/core";
-import {AnswerContainer, Media, SimpleAnswer, SimpleAnswerConfiguration} from "../model/story";
-import {BotService} from "../bot-service";
-import {StateService} from "../../core-nlp/state.service";
-import {CreateI18nLabelRequest} from "../model/i18n";
-import {MediaDialogComponent} from "./media/media-dialog.component";
-import {AnswerController} from "./controller";
-import {DialogService} from "../../core-nlp/dialog.service";
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AnswerContainer, Media, SimpleAnswer, SimpleAnswerConfiguration } from '../model/story';
+import { BotService } from '../bot-service';
+import { StateService } from '../../core-nlp/state.service';
+import { CreateI18nLabelRequest } from '../model/i18n';
+import { MediaDialogComponent } from './media/media-dialog.component';
+import { AnswerController } from './controller';
+import { DialogService } from '../../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-simple-answer',
@@ -29,12 +29,11 @@ import {DialogService} from "../../core-nlp/dialog.service";
   styleUrls: ['./simple-answer.component.css']
 })
 export class SimpleAnswerComponent implements OnInit {
-
   @Input()
   container: AnswerContainer;
 
   @Input()
-  answerLabel: string = "Answer";
+  answerLabel: string = 'Answer';
 
   @Input()
   submit: AnswerController = new AnswerController();
@@ -47,17 +46,18 @@ export class SimpleAnswerComponent implements OnInit {
 
   @ViewChild('newAnswerElement') newAnswerElement: ElementRef;
 
-  constructor(private state: StateService,
-              private bot: BotService,
-              private dialog: DialogService) {
-  }
+  constructor(
+    private state: StateService,
+    private bot: BotService,
+    private dialog: DialogService
+  ) {}
 
   ngOnInit(): void {
     this.answer = this.container.simpleAnswer();
     this.answer.allowNoAnswer = this.container.allowNoAnwser();
-    setTimeout(_ => this.newAnswerElement.nativeElement.focus(), 500);
+    setTimeout((_) => this.newAnswerElement.nativeElement.focus(), 500);
     const _this = this;
-    this.submit.answerSubmitListener = callback => _this.addAnswerIfNonEmpty(callback);
+    this.submit.answerSubmitListener = (callback) => _this.addAnswerIfNonEmpty(callback);
   }
 
   toggleDisplay() {
@@ -65,9 +65,12 @@ export class SimpleAnswerComponent implements OnInit {
   }
 
   updateLabel(answer: SimpleAnswer) {
-    this.bot
-      .saveI18nLabel(answer.label)
-      .subscribe(_ => this.dialog.notify(`Story label has been updated successfully.`, "Label Updated", {duration: 3000, status: "success"}));
+    this.bot.saveI18nLabel(answer.label).subscribe((_) =>
+      this.dialog.notify(`Story label has been updated successfully.`, 'Label Updated', {
+        duration: 3000,
+        status: 'success'
+      })
+    );
   }
 
   private addAnswerIfNonEmpty(callback) {
@@ -80,32 +83,29 @@ export class SimpleAnswerComponent implements OnInit {
 
   addAnswer(callback?) {
     if (!this.newAnswer || this.newAnswer.trim().length === 0) {
-      this.newAnswer = "";
+      this.newAnswer = '';
       if (!this.container.allowNoAnwser() && this.answer.answers.length === 0) {
-        this.dialog.notify("Please specify an answer")
+        this.dialog.notify('Please specify an answer');
       } else {
         this.submit.submitAnswer();
       }
     } else {
-      this.bot.createI18nLabel(
-        new CreateI18nLabelRequest(
-          this.container.category,
-          this.newAnswer.trim(),
-          this.state.currentLocale,
+      this.bot
+        .createI18nLabel(
+          new CreateI18nLabelRequest(
+            this.container.category,
+            this.newAnswer.trim(),
+            this.state.currentLocale
+          )
         )
-      ).subscribe(i18n => {
-        this.answer.answers.push(
-          new SimpleAnswer(
-            i18n,
-            -1,
-            this.newMedia
-          ));
-        this.newAnswer = "";
-        this.newMedia = null;
-        if (callback) {
-          callback();
-        }
-      });
+        .subscribe((i18n) => {
+          this.answer.answers.push(new SimpleAnswer(i18n, -1, this.newMedia));
+          this.newAnswer = '';
+          this.newMedia = null;
+          if (callback) {
+            callback();
+          }
+        });
     }
   }
 
@@ -137,35 +137,35 @@ export class SimpleAnswerComponent implements OnInit {
 
   deleteAnswer(answer: SimpleAnswer, notify: boolean = false) {
     this.answer.answers.splice(this.answer.answers.indexOf(answer), 1);
-    this.bot.deleteI18nLabel(answer.label).subscribe(c => {
-      if (notify) this.dialog.notify(`Label deleted`, "DELETE")
+    this.bot.deleteI18nLabel(answer.label).subscribe((c) => {
+      if (notify) this.dialog.notify(`Label deleted`, 'DELETE');
     });
   }
 
   displayMediaMessage(answer?: SimpleAnswer) {
     const media = answer ? answer.mediaMessage : this.newMedia;
-    let dialogRef = this.dialog.openDialog(
-      MediaDialogComponent,
-      {
-        context:
-          {
-            // @ts-ignore
-            media: media,
-            category: this.container.category
-          }
+    let dialogRef = this.dialog.openDialog(MediaDialogComponent, {
+      context: {
+        // @ts-ignore
+        media: media,
+        category: this.container.category
       }
-    );
-    dialogRef.onClose.subscribe(result => {
-      const removeMedia = result.removeMedia;
-      const media = result.media;
-      if (removeMedia || media) {
-        if (removeMedia) {
-          if (answer) answer.mediaMessage = null; else this.newMedia = null;
-        } else {
-          if (answer) answer.mediaMessage = media; else this.newMedia = media;
+    });
+
+    dialogRef.onClose.subscribe((result) => {
+      if (result) {
+        const removeMedia = result.removeMedia;
+        const media = result.media;
+        if (removeMedia || media) {
+          if (removeMedia) {
+            if (answer) answer.mediaMessage = null;
+            else this.newMedia = null;
+          } else {
+            if (answer) answer.mediaMessage = media;
+            else this.newMedia = media;
+          }
         }
       }
     });
   }
-
 }

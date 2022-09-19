@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 class TabLink {
-  constructor(
-    public route: string,
-    public title: string,
-    public icon?: string
-  ) { }
+  constructor(public route: string, public title: string, public icon?: string) {}
 }
 
 const tabs = [
-  new TabLink("try", "New Sentence", 'plus-circle-outline'),
-  new TabLink("inbox", "Inbox", 'inbox-outline'),
-  new TabLink("search", "Search", 'search-outline'),
-  new TabLink("unknown", "Unknown", 'question-mark-circle-outline'),
-  new TabLink("intents", "Intents", 'compass-outline'),
-  new TabLink("entities", "Entities", 'attach-outline'),
-  new TabLink("logs", "Logs", 'list-outline')
+  new TabLink('try', 'New Sentence', 'plus-circle-outline'),
+  new TabLink('inbox', 'Inbox', 'inbox-outline'),
+  new TabLink('search', 'Search', 'search-outline'),
+  new TabLink('unknown', 'Unknown', 'question-mark-circle-outline'),
+  new TabLink('intents', 'Intents', 'compass-outline'),
+  new TabLink('entities', 'Entities', 'attach-outline'),
+  new TabLink('logs', 'Logs', 'list-outline')
 ];
 
 @Component({
@@ -41,16 +37,13 @@ const tabs = [
   styleUrls: ['./nlp-tabs.component.css']
 })
 export class NlpTabsComponent implements OnInit {
-
   tabLinks = tabs;
 
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/nlp")) {
-      this.router.navigateByUrl("/nlp/inbox");
+    if (this.router.routerState.snapshot.url.endsWith('/nlp')) {
+      this.router.navigateByUrl('/nlp/inbox');
     }
   }
-
 }

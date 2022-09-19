@@ -18,7 +18,8 @@
   margin-top: 20px;
 }
 
-.activation-story, .deactivation-story {
+.activation-story,
+.deactivation-story {
   display: inline-block;
   margin-right: 10px;
   vertical-align: top;

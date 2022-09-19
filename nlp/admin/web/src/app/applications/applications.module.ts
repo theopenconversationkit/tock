@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {SharedModule} from "../shared-nlp/shared.module";
-import {CommonModule} from "@angular/common";
-import {Injectable, NgModule} from "@angular/core";
-import {RouterModule, Routes} from "@angular/router";
-import {AuthGuard} from "../core-nlp/auth/auth.guard";
-import {ApplicationsComponent} from "./applications/applications.component";
-import {ApplicationsResolver} from "./applications.resolver";
-import {ApplicationComponent} from "./application/application.component";
-import {ApplicationUploadComponent} from "./application-upload/application-upload.component";
-import {FileUploadModule} from "ng2-file-upload";
-import {ApplicationAdvancedOptionsComponent} from "./application-advanced-options/application-advanced-options.component";
+import { SharedModule } from '../shared-nlp/shared.module';
+import { CommonModule } from '@angular/common';
+import { Injectable, NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from '../core-nlp/auth/auth.guard';
+import { ApplicationsComponent } from './applications/applications.component';
+import { ApplicationsResolver } from './applications.resolver';
+import { ApplicationComponent } from './application/application.component';
+import { ApplicationUploadComponent } from './application-upload/application-upload.component';
+import { FileUploadModule } from 'ng2-file-upload';
+import { ApplicationAdvancedOptionsComponent } from './application-advanced-options/application-advanced-options.component';
 import {
   NbAccordionModule,
   NbActionsModule,
@@ -38,15 +38,14 @@ import {
   NbSpinnerModule,
   NbTabsetModule,
   NbTooltipModule
-} from "@nebular/theme";
-import {DisplayUserDataComponent, UserLogsComponent} from "./user/user-logs.component";
-import {MomentModule} from "ngx-moment";
-import {ConfigurationTabsComponent} from "./configuration-tabs.component";
-import {NamespacesComponent} from "./namespace/namespaces.component";
-import {NgJsonEditorModule} from 'ang-jsoneditor'
-import {ApplicationConfig} from "./application.config";
-import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
-
+} from '@nebular/theme';
+import { DisplayUserDataComponent, UserLogsComponent } from './user/user-logs.component';
+import { MomentModule } from 'ngx-moment';
+import { ConfigurationTabsComponent } from './configuration-tabs.component';
+import { NamespacesComponent } from './namespace/namespaces.component';
+import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { ApplicationConfig } from './application.config';
+import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 const routes: Routes = [
   {
@@ -95,7 +94,8 @@ const routes: Routes = [
       {
         path: 'namespaces',
         component: NamespacesComponent
-      }]
+      }
+    ]
   }
 ];
 
@@ -103,17 +103,14 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ApplicationsRoutingModule {
-}
+export class ApplicationsRoutingModule {}
 
 @Injectable()
 export class NlpApplicationConfig implements ApplicationConfig {
-
   /** is it allowed to create namespace? **/
   canCreateNamespace(): boolean {
     return true;
   }
-
 }
 
 @NgModule({
@@ -158,6 +155,4 @@ export class NlpApplicationConfig implements ApplicationConfig {
   ],
   entryComponents: [DisplayUserDataComponent]
 })
-export class ApplicationsModule {
-
-}
+export class ApplicationsModule {}

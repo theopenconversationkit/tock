@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'tock-info-button',
@@ -22,7 +22,6 @@ import {Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./info-button.component.css']
 })
 export class InfoButtonComponent implements OnInit {
-
   /**
    * the information button message
    */
@@ -48,5 +47,4 @@ export class InfoButtonComponent implements OnInit {
       this.message = 'No information provided!';
     }
   }
-
 }

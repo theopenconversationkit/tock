@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-
-import {map} from 'rxjs/operators';
-import {Injectable} from "@angular/core";
-import {ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from "@angular/router";
-import {Observable} from "rxjs";
-import {Application} from "../model/application";
-import {ApplicationService} from "./applications.service";
-import {CoreConfig} from "./core.config";
+import { map } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
+import { Observable } from 'rxjs';
+import { Application } from '../model/application';
+import { ApplicationService } from './applications.service';
+import { CoreConfig } from './core.config';
 
 @Injectable()
 export class ApplicationResolver implements Resolve<Application> {
-
-  constructor(private config: CoreConfig,
-              private appService: ApplicationService,
-              private router: Router) {
-  }
+  constructor(
+    private config: CoreConfig,
+    private appService: ApplicationService,
+    private router: Router
+  ) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application> {
-    return this.appService.retrieveCurrentApplication().pipe(map(app => {
-      if (app) {
-        return app;
-      } else {
-        this.router.navigateByUrl(this.config.configurationUrl);
-        return null;
-      }
-    }));
+    return this.appService.retrieveCurrentApplication().pipe(
+      map((app) => {
+        if (app) {
+          return app;
+        } else {
+          this.router.navigateByUrl(this.config.configurationUrl);
+          return null;
+        }
+      })
+    );
   }
 }

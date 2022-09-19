@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { StateService } from '../core-nlp/state.service';
+import { UserRole } from '../model/auth';
+
 class TabLink {
   constructor(
     public route: string,
@@ -25,8 +28,8 @@ class TabLink {
 }
 
 const tabs = [
-  new TabLink("test", "Test the bot", 'smiling-face-outline'),
-  new TabLink("plan", "Test Plans", 'map-outline')
+  new TabLink('test', 'Test the bot', 'smiling-face-outline'),
+  new TabLink('plan', 'Test Plans', 'map-outline')
 ];
 
 @Component({
@@ -35,16 +38,17 @@ const tabs = [
   styleUrls: ['./test-tabs.component.css']
 })
 export class TestTabsComponent implements OnInit {
-
   testTabLinks = tabs;
 
-  constructor(private router: Router) {
-  }
-
-  ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/test")) {
-      this.router.navigateByUrl("/test/test");
+  constructor(private router: Router, private state: StateService) {
+    if (!state.hasRole(UserRole.botUser)) {
+      this.testTabLinks = this.testTabLinks.filter(t => t.route !== 'plan')
     }
   }
 
+  ngOnInit() {
+    if (this.router.routerState.snapshot.url.endsWith('/test')) {
+      this.router.navigateByUrl('/test/test');
+    }
+  }
 }

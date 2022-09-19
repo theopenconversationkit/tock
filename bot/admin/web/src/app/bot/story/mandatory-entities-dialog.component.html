@@ -17,87 +17,162 @@
 <h1 mat-dialog-title>Mandatory Entities</h1>
 <div class="container">
   <div class="table">
-    <div *ngFor="let e of entities" class="line">
+    <div
+      *ngFor="let e of entities"
+      class="line"
+    >
       <!-- answer -->
-      <tock-answer [answer]="e" class="entity-button answer" [answerLabel]="'Question'"></tock-answer>&nbsp;
+      <tock-answer
+        [answer]="e"
+        class="entity-button answer"
+        [answerLabel]="'Question'"
+      ></tock-answer
+      >&nbsp;
       <!-- entity role -->
-      <mat-chip-list *ngIf="e.entity" class="entity-button">
-        <mat-chip matTooltip="Change Entity"
-                  selected="false"
-                  (click)="selectEntity(e)"
-                  [style.background-color]="e.entity.entityColor"
-                  color="primary">
-          {{e.entity.qualifiedName(state.user)}}
+      <mat-chip-list
+        *ngIf="e.entity"
+        class="entity-button"
+      >
+        <mat-chip
+          matTooltip="Change Entity"
+          selected="false"
+          (click)="selectEntity(e)"
+          [style.background-color]="e.entity.entityColor"
+          color="primary"
+        >
+          {{ e.entity.qualifiedName(state.user) }}
         </mat-chip>
       </mat-chip-list>
-      <div *ngIf="!e.entity" class="entity-button">
-      <button mat-button color="primary" (click)="selectEntity(e)">
-        Select Entity
-      </button>
+      <div
+        *ngIf="!e.entity"
+        class="entity-button"
+      >
+        <button
+          mat-button
+          color="primary"
+          (click)="selectEntity(e)"
+        >
+          Select Entity
+        </button>
       </div>
       <!-- intent -->
       <mat-form-field class="entity-button">
-        <input matInput name="intent" placeholder="Intent" [(ngModel)]="e.intent.name"
-               matTooltip="Intent used to find the Entity"
-               [matAutocomplete]="intentAuto"
-               (keyup)="onIntentChange(e, $event.target.value)"
-               (focus)="onIntentChange(e, $event.target.value)"
-               (blur)="validateIntent(e)">
+        <input
+          matInput
+          name="intent"
+          placeholder="Intent"
+          [(ngModel)]="e.intent.name"
+          matTooltip="Intent used to find the Entity"
+          [matAutocomplete]="intentAuto"
+          (keyup)="onIntentChange(e, $event.target.value)"
+          (focus)="onIntentChange(e, $event.target.value)"
+          (blur)="validateIntent(e)"
+        />
       </mat-form-field>
 
-      <button class="entity-button" mat-icon-button color="warn"
-              matTooltip="Remove Mandatory Entity" (click)="removeEntity(e)">
+      <button
+        class="entity-button"
+        mat-icon-button
+        color="warn"
+        matTooltip="Remove Mandatory Entity"
+        (click)="removeEntity(e)"
+      >
         <mat-icon>remove</mat-icon>
       </button>
     </div>
 
     <div class="line">
       <!-- answer -->
-      <tock-answer [answer]="newEntity" class="entity-button answer" [answerLabel]="'Question'"></tock-answer>&nbsp;
+      <tock-answer
+        [answer]="newEntity"
+        class="entity-button answer"
+        [answerLabel]="'Question'"
+      ></tock-answer
+      >&nbsp;
       <!-- entity role -->
-      <mat-chip-list *ngIf="newEntity.entity" class="entity-button">
-        <mat-chip matTooltip="Change Entity"
-                  selected="false"
-                  (click)="selectEntity(newEntity)"
-                  [style.background-color]="newEntity.entity.entityColor"
-                  color="primary">
-          {{newEntity.entity.qualifiedName(state.user)}}
+      <mat-chip-list
+        *ngIf="newEntity.entity"
+        class="entity-button"
+      >
+        <mat-chip
+          matTooltip="Change Entity"
+          selected="false"
+          (click)="selectEntity(newEntity)"
+          [style.background-color]="newEntity.entity.entityColor"
+          color="primary"
+        >
+          {{ newEntity.entity.qualifiedName(state.user) }}
         </mat-chip>
       </mat-chip-list>
-      <div *ngIf="!newEntity.entity" class="entity-button">
-      <button  mat-button color="primary" (click)="selectEntity(newEntity)">
-        Select Entity
-      </button>
+      <div
+        *ngIf="!newEntity.entity"
+        class="entity-button"
+      >
+        <button
+          mat-button
+          color="primary"
+          (click)="selectEntity(newEntity)"
+        >
+          Select Entity
+        </button>
       </div>
       <!-- intent -->
       <mat-form-field class="entity-button">
-        <input matInput name="intent" placeholder="Select Intent" [(ngModel)]="newEntity.intent.name"
-               matTooltip="Intent used to find the Entity"
-               [matAutocomplete]="intentAuto"
-               (keyup)="onIntentChange(newEntity, $event.target.value)"
-               (focus)="onIntentChange(newEntity, $event.target.value)"
-               (blur)="validateIntent(newEntity)">
+        <input
+          matInput
+          name="intent"
+          placeholder="Select Intent"
+          [(ngModel)]="newEntity.intent.name"
+          matTooltip="Intent used to find the Entity"
+          [matAutocomplete]="intentAuto"
+          (keyup)="onIntentChange(newEntity, $event.target.value)"
+          (focus)="onIntentChange(newEntity, $event.target.value)"
+          (blur)="validateIntent(newEntity)"
+        />
       </mat-form-field>
 
-      <button mat-icon-button color="primary" matTooltip="Add Mandatory Entity" class="entity-button"
-              (click)="addEntity()">
+      <button
+        mat-icon-button
+        color="primary"
+        matTooltip="Add Mandatory Entity"
+        class="entity-button"
+        (click)="addEntity()"
+      >
         <mat-icon>library_add</mat-icon>
       </button>
-
     </div>
   </div>
 
-  <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption>
-    <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
-      <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
-        {{intent.intentLabel()}}
+  <mat-autocomplete
+    #intentAuto="matAutocomplete"
+    autoActiveFirstOption
+  >
+    <mat-optgroup
+      *ngFor="let category of currentIntentCategories"
+      [label]="category.category"
+    >
+      <mat-option
+        *ngFor="let intent of category.intents"
+        [value]="intent.name"
+      >
+        {{ intent.intentLabel() }}
       </mat-option>
     </mat-optgroup>
   </mat-autocomplete>
-
-
 </div>
 <mat-dialog-actions>
-  <button mat-stroked-button (click)="cancel()">Cancel</button>
-  <button mat-raised-button class="submit-button" color="primary" (click)="save()">Update</button>
+  <button
+    mat-stroked-button
+    (click)="cancel()"
+  >
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    class="submit-button"
+    color="primary"
+    (click)="save()"
+  >
+    Update
+  </button>
 </mat-dialog-actions>

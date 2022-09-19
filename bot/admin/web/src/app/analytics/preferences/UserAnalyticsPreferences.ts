@@ -15,12 +15,11 @@
  */
 
 export class UserAnalyticsPreferences {
-
   lineConfig: {
-    stacked: boolean,
-    curvedLines: boolean,
-    focusTarget: boolean,
-  }
+    stacked: boolean;
+    curvedLines: boolean;
+    focusTarget: boolean;
+  };
 
   graphs: {
     activity: {
@@ -31,7 +30,7 @@ export class UserAnalyticsPreferences {
       messagesAll: boolean;
       messagesByDays: boolean;
       users: boolean;
-    }
+    };
     behavior: {
       messagesByStory: boolean;
       messagesByIntent: boolean;
@@ -41,9 +40,8 @@ export class UserAnalyticsPreferences {
       messagesByStoryCategory: boolean;
       messagesByStoryType: boolean;
       messagesByLocale: boolean;
-    }
-  }
-
+    };
+  };
 
   private constructor() {
     this.lineConfig = {
@@ -76,9 +74,8 @@ export class UserAnalyticsPreferences {
   }
 
   static defaultConfiguration(): UserAnalyticsPreferences {
-    return new UserAnalyticsPreferences()
+    return new UserAnalyticsPreferences();
   }
-
 }
 
 export enum ChartType {

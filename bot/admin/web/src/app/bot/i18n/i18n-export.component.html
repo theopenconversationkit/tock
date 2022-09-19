@@ -15,10 +15,16 @@
   -->
 <div>
   <span class="export-label">Export:</span>
-  <nb-radio-group [(ngModel)]="exportAllOption" name="filterPreference" class="btn-group">
-    <nb-radio *ngFor="let filterPreference of exportAllOptions"
-              [value]="filterPreference"
-              class="export-radio">
+  <nb-radio-group
+    [(ngModel)]="exportAllOption"
+    name="filterPreference"
+    class="btn-group"
+  >
+    <nb-radio
+      *ngFor="let filterPreference of exportAllOptions"
+      [value]="filterPreference"
+      class="export-radio"
+    >
       {{ filterPreference }}
     </nb-radio>
   </nb-radio-group>
@@ -26,18 +32,36 @@
 
 <div>
   <span class="export-label">As:</span>
-  <nb-radio-group [(ngModel)]="exportToOption" name="exportType" class="btn-group">
-    <nb-radio *ngFor="let exportType of exportToOptions"
-              [value]="exportType"
-              class="export-radio">
+  <nb-radio-group
+    [(ngModel)]="exportToOption"
+    name="exportType"
+    class="btn-group"
+  >
+    <nb-radio
+      *ngFor="let exportType of exportToOptions"
+      [value]="exportType"
+      class="export-radio"
+    >
       {{ exportType.label }}
     </nb-radio>
   </nb-radio-group>
 </div>
 
 <div class="modal-footer">
-  <button nbButton (click)="closeWindow()">Cancel</button>
-  <button nbButton status="primary" type="submit" (click)="export()" [disabled]="loading" #focusElement>
+  <button
+    nbButton
+    (click)="closeWindow()"
+  >
+    Cancel
+  </button>
+  <button
+    nbButton
+    status="primary"
+    type="submit"
+    (click)="export()"
+    [disabled]="loading"
+    #focusElement
+  >
     <nb-icon icon="download-outline"></nb-icon>&nbsp;Export
   </button>
 </div>

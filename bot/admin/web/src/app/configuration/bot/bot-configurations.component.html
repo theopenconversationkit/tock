@@ -14,28 +14,57 @@
   ~ limitations under the License.
   -->
 
-<nb-card *ngIf="configurations" class="configurations">
+<nb-card
+  *ngIf="configurations"
+  class="configurations"
+>
   <nb-card-header>
-    <div style="display: flex;">
+    <div style="display: flex">
       <span>Bot Configurations</span>
-      <nb-actions size="small" style="cursor: pointer;">
-        <nb-action *ngIf="state.currentApplication" class="control-item" nbTooltip="Refresh" (click)="refresh()">
+      <nb-actions
+        size="small"
+        style="cursor: pointer"
+      >
+        <nb-action
+          *ngIf="state.currentApplication"
+          class="control-item"
+          nbTooltip="Refresh"
+          (click)="refresh()"
+        >
           <i class="material-icons tock-toolbar-menu">refresh</i>
         </nb-action>
 
-        <nb-action class="control-item"
-                   nbTooltip="Create a new Configuration"
-                   (click)="prepareCreate()"
-                   *ngIf="!newApplicationConfiguration && state.currentApplication">
-          <i class="material-icons tock-toolbar-menu" style="color: #3366ff;">add_box</i>
+        <nb-action
+          class="control-item"
+          nbTooltip="Create a new Configuration"
+          (click)="prepareCreate()"
+          *ngIf="!newApplicationConfiguration && state.currentApplication"
+        >
+          <i
+            class="material-icons tock-toolbar-menu"
+            style="color: #3366ff"
+            >add_box</i
+          >
         </nb-action>
 
-        <nb-action class="control-item"
-                   nbTooltip="{{ displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations'}}"
-                   (click)="displayTestConfigurations = !displayTestConfigurations"
-                   *ngIf="!newApplicationConfiguration && state.currentApplication">
-          <i *ngIf="!displayTestConfigurations" class="material-icons tock-toolbar-menu">visibility</i>
-          <i *ngIf="displayTestConfigurations" class="material-icons tock-toolbar-menu">visibility_off</i>
+        <nb-action
+          class="control-item"
+          nbTooltip="{{
+            displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations'
+          }}"
+          (click)="displayTestConfigurations = !displayTestConfigurations"
+          *ngIf="!newApplicationConfiguration && state.currentApplication"
+        >
+          <i
+            *ngIf="!displayTestConfigurations"
+            class="material-icons tock-toolbar-menu"
+            >visibility</i
+          >
+          <i
+            *ngIf="displayTestConfigurations"
+            class="material-icons tock-toolbar-menu"
+            >visibility_off</i
+          >
         </nb-action>
       </nb-actions>
     </div>
@@ -50,36 +79,64 @@
         *ngIf="newApplicationConfiguration"
         [configuration]="newApplicationConfiguration"
         (onRemove)="cancelCreate()"
-        (onValidate)="create()"></tock-bot-configuration>
+        (onValidate)="create()"
+      ></tock-bot-configuration>
 
-      <textarea #copy class="copy"></textarea>
+      <textarea
+        #copy
+        class="copy"
+      ></textarea>
 
       <div *ngFor="let a of configurations">
         <nb-accordion>
           <nb-accordion-item>
             <nb-accordion-item-header>
-              {{a.name}}
+              {{ a.name }}
               <div *ngFor="let conf of a.configurations">
-                <img *ngIf="isFirstLevelConfiguration(a, conf)"
-                     src="{{conf.connectorType.iconUrl()}}"
-                     class="connector"
-                     [nbTooltip]="conf.connectorType.label()"/>
+                <img
+                  *ngIf="isFirstLevelConfiguration(a, conf)"
+                  src="{{ conf.connectorType.iconUrl() }}"
+                  class="connector"
+                  [nbTooltip]="conf.connectorType.label()"
+                />
               </div>
             </nb-accordion-item-header>
             <nb-accordion-item-body>
               <span class="nb-form-field inline">
                 <label>API Key</label>
-                <input nbInput type="text" placeholder="API Key" nbTooltip="API Key for Bot API"
-                       [(ngModel)]="a.apiKey" [readonly]="true">
-                <button nbButton (click)="copyToClipboard(a)" nbTooltip="Copy API Key" class="copy-button">
+                <input
+                  nbInput
+                  type="text"
+                  placeholder="API Key"
+                  nbTooltip="API Key for Bot API"
+                  [(ngModel)]="a.apiKey"
+                  [readonly]="true"
+                />
+                <button
+                  nbButton
+                  (click)="copyToClipboard(a)"
+                  nbTooltip="Copy API Key"
+                  class="copy-button"
+                >
                   <nb-icon icon="copy-outline"></nb-icon>
                 </button>
               </span>
               <span class="nb-form-field inline">
                 <label>Webhook url</label>
-                <input nbInput type="text" placeholder="Webhook url" nbTooltip="Optional webhook for Bot API"
-                       [(ngModel)]="a.webhookUrl" (keyup.enter)="saveBot(a)">
-                <button nbButton status="primary" (click)="saveBot(a)" nbTooltip="Save Webhook">
+                <input
+                  nbInput
+                  type="text"
+                  placeholder="Webhook url"
+                  nbTooltip="Optional webhook for Bot API"
+                  [(ngModel)]="a.webhookUrl"
+                  (keyup.enter)="saveBot(a)"
+                />
+                <button
+                  nbButton
+                  status="primary"
+                  (click)="saveBot(a)"
+                  nbTooltip="Save Webhook"
+                >
                   <nb-icon icon="save-outline"></nb-icon>
                 </button>
               </span>
@@ -89,7 +146,8 @@
                   *ngIf="displayTestConfigurations || isFirstLevelConfiguration(a, conf)"
                   [configuration]="conf"
                   (onRemove)="remove(conf)"
-                  (onValidate)="update(conf)">
+                  (onValidate)="update(conf)"
+                >
                 </tock-bot-configuration>
               </div>
             </nb-accordion-item-body>

@@ -27,8 +27,8 @@
   height: 56px;
 }
 
-.background{
-  background: inherit
+.background {
+  background: inherit;
 }
 
 .title {
@@ -52,11 +52,11 @@ button:focus {
 }
 
 .green-text {
-  color: nb-theme(text-success-color)
+  color: nb-theme(text-success-color);
 }
 
 .green-text:hover {
-  color: nb-theme(text-success-hover-color)
+  color: nb-theme(text-success-hover-color);
 }
 
 .nb-column-select {
@@ -99,11 +99,11 @@ button:focus {
 }
 
 .nb-tree-grid-header-cell * {
-  justify-content:center;
+  justify-content: center;
 }
 
 .loader-parent {
-  display:flex;
+  display: flex;
 }
 
 .loader {
@@ -112,9 +112,8 @@ button:focus {
 
 .table-container {
   overflow: auto;
-  height:600px;
+  height: 600px;
 }
 .btn {
   margin: 4px 8px;
 }
-

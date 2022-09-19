@@ -15,58 +15,105 @@
   -->
 
 <div *ngIf="!fullDisplay">
-
-  <button *ngIf="answer.answers.length !== 0" mat-icon-button class="display" color="primary" matTooltip="Display I18n"
-          (click)="toggleDisplay()">
+  <button
+    *ngIf="answer.answers.length !== 0"
+    mat-icon-button
+    class="display"
+    color="primary"
+    matTooltip="Display I18n"
+    (click)="toggleDisplay()"
+  >
     <mat-icon>zoom_in</mat-icon>
   </button>
 
-  <div *ngFor="let a of answer.answers" class="answer">
-    <textarea class="i18n-label"
-              matInput
-              [(ngModel)]="a.label.defaultLocalizedLabelForLocale(state.currentLocale).label"
-              (change)="updateLabel(a)"
-              [style.height]="a.label.defaultLocalizedLabel().baseHeight()">
+  <div
+    *ngFor="let a of answer.answers"
+    class="answer"
+  >
+    <textarea
+      class="i18n-label"
+      matInput
+      [(ngModel)]="a.label.defaultLocalizedLabelForLocale(state.currentLocale).label"
+      (change)="updateLabel(a)"
+      [style.height]="a.label.defaultLocalizedLabel().baseHeight()"
+    >
     </textarea>
-    <button mat-icon-button
-            class="mediaButton"
-            [color]="a.mediaMessage ? 'primary' : 'secondary'"
-            matTooltip="Choose media message"
-            (click)="displayMediaMessage(a)">
+    <button
+      mat-icon-button
+      class="mediaButton"
+      [color]="a.mediaMessage ? 'primary' : 'secondary'"
+      matTooltip="Choose media message"
+      (click)="displayMediaMessage(a)"
+    >
       <mat-icon>perm_media</mat-icon>
     </button>
-    <button *ngIf="answer.allowNoAnswer || answer.answers.length !== 1" class="answerButton" mat-icon-button
-            color="warn"
-            matTooltip="Delete {{answerLabel}}" (click)="deleteAnswer(a, true)">
+    <button
+      *ngIf="answer.allowNoAnswer || answer.answers.length !== 1"
+      class="answerButton"
+      mat-icon-button
+      color="warn"
+      matTooltip="Delete {{ answerLabel }}"
+      (click)="deleteAnswer(a, true)"
+    >
       <mat-icon>remove</mat-icon>
     </button>
-    <button *ngIf="canDownward(a)" mat-icon-button color="accent" class="answerButton" matTooltip="Downward" (click)="downward(a)">
+    <button
+      *ngIf="canDownward(a)"
+      mat-icon-button
+      color="accent"
+      class="answerButton"
+      matTooltip="Downward"
+      (click)="downward(a)"
+    >
       <mat-icon>arrow_downward</mat-icon>
     </button>
-    <button *ngIf="canUpward(a)" mat-icon-button color="accent" class="answerButton" matTooltip="Upward" (click)="upward(a)">
+    <button
+      *ngIf="canUpward(a)"
+      mat-icon-button
+      color="accent"
+      class="answerButton"
+      matTooltip="Upward"
+      (click)="upward(a)"
+    >
       <mat-icon>arrow_upward</mat-icon>
     </button>
   </div>
-  <textarea class="i18n-label i18n-label-add"
-            matInput
-            placeholder="Add new {{answerLabel}}"
-            [(ngModel)]="newAnswer"
-            (keyup.enter)="addAnswer()"
-            #newAnswerElement>
-    </textarea>
-  <button mat-icon-button
-          class="mediaButton"
-          [color]="newMedia ? 'primary' : 'secondary'"
-          matTooltip="Edit Media Message"
-          (click)="displayMediaMessage()">
+  <textarea
+    class="i18n-label i18n-label-add"
+    matInput
+    placeholder="Add new {{ answerLabel }}"
+    [(ngModel)]="newAnswer"
+    (keyup.enter)="addAnswer()"
+    #newAnswerElement
+  >
+  </textarea>
+  <button
+    mat-icon-button
+    class="mediaButton"
+    [color]="newMedia ? 'primary' : 'secondary'"
+    matTooltip="Edit Media Message"
+    (click)="displayMediaMessage()"
+  >
     <mat-icon>perm_media</mat-icon>
   </button>
-  <button mat-icon-button color="primary" matTooltip="Add {{answerLabel}}" class="answerButton" (click)="addAnswer()">
+  <button
+    mat-icon-button
+    color="primary"
+    matTooltip="Add {{ answerLabel }}"
+    class="answerButton"
+    (click)="addAnswer()"
+  >
     <mat-icon>library_add</mat-icon>
   </button>
 </div>
 <div *ngIf="fullDisplay">
-  <button mat-icon-button class="display" color="primary" matTooltip="Hide I18n" (click)="toggleDisplay()">
+  <button
+    mat-icon-button
+    class="display"
+    color="primary"
+    matTooltip="Hide I18n"
+    (click)="toggleDisplay()"
+  >
     <mat-icon>zoom_out</mat-icon>
   </button>
   <mat-list dense>
@@ -74,8 +121,7 @@
       *ngFor="let a of answer.answers"
       [deleteLabelAllowed]="answer.answers.length !== 1"
       [i]="a.label"
-      (delete)="deleteAnswer(a, false)"></tock-i18n-label>
+      (delete)="deleteAnswer(a, false)"
+    ></tock-i18n-label>
   </mat-list>
-
 </div>
-

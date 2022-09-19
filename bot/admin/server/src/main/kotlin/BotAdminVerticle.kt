@@ -33,6 +33,8 @@ import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
 import ai.tock.bot.admin.model.DialogsSearchQuery
+import ai.tock.bot.admin.model.FaqDefinitionRequest
+import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.I18LabelQuery
 import ai.tock.bot.admin.model.StorySearchRequest
@@ -51,11 +53,15 @@ import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
+import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.faqBotUser
+import ai.tock.shared.security.TockUserRole.faqNlpUser
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
@@ -80,6 +86,8 @@ open class BotAdminVerticle : AdminVerticle() {
 
     private val i18n: I18nDAO by injector.instance()
 
+    private val front = FrontClient
+
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
     override fun configureServices() {
@@ -94,6 +102,15 @@ open class BotAdminVerticle : AdminVerticle() {
         return result
     }
 
+    private fun <R> checkAndMeasure(context: RoutingContext, request: ApplicationScopedQuery, function: () -> R): R =
+        if (context.organization == request.namespace) {
+            measureTimeMillis(context) {
+                function()
+            }
+        } else {
+            unauthorized()
+        }
+
     override fun configure() {
         configureServices()
 
@@ -105,189 +122,133 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/analytics/messages", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByType(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost("/analytics/messages", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByType(request)
             }
         }
 
-        blockingJsonPost("/analytics/users", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportUsersByType(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost("/analytics/users", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportUsersByType(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byConfiguration", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByConfiguration(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byConnectorType",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.countMessagesByConnectorType(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byConnectorType", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByConnectorType(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byConfiguration",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByConfiguration(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byDayOfWeek", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByDayOfWeek(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byConnectorType",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByConnectorType(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byHour", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByHour(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byDayOfWeek",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByDayOfWeek(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byDateAndIntent", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByDateAndIntent(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byHour",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByHour(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byIntent", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByIntent(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byIntent",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByIntent(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byDateAndStory", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByDateAndStory(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byDateAndIntent",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByDateAndIntent(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byStory", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByStory(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byDateAndStory",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByDateAndStory(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byStoryCategory", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByStoryCategory(request)
-                    }
-                )
-            } else {
-                unauthorized()
+        blockingJsonPost(
+            "/analytics/messages/byStory",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByStory(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byStoryType", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByStoryType(request)
-                    }
-                )
-            } else {
-                unauthorized()
+
+        blockingJsonPost("/analytics/messages/byStoryCategory", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByStoryCategory(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byStoryLocale", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByStoryLocale(request)
-                    }
-                )
-            } else {
-                unauthorized()
+
+        blockingJsonPost(
+            "/analytics/messages/byStoryType",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByStoryType(request)
             }
         }
 
-        blockingJsonPost("/analytics/messages/byActionType", botUser) { context, request: DialogFlowRequest ->
-            if (context.organization == request.namespace) {
-                measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.reportMessagesByActionType(request)
-                    }
-                )
-            } else {
-                unauthorized()
+
+        blockingJsonPost(
+            "/analytics/messages/byStoryLocale",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByStoryLocale(request)
             }
         }
 
-        blockingJsonGet("/dialog/:applicationId/:dialogId", botUser) { context ->
+        blockingJsonPost("/analytics/messages/byActionType", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+            checkAndMeasure(context, request) {
+                BotAdminAnalyticsService.reportMessagesByActionType(request)
+            }
+        }
+
+        blockingJsonGet("/dialog/:applicationId/:dialogId", setOf(botUser, faqBotUser)) { context ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {
                 dialogReportDAO
@@ -306,7 +267,10 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/dialogs/search", botUser) { context, query: DialogsSearchQuery ->
+        blockingJsonPost(
+            "/dialogs/search",
+            setOf(botUser, faqNlpUser, faqBotUser)
+        ) { context, query: DialogsSearchQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.search(query)
             } else {
@@ -314,12 +278,12 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/bots/:botId", botUser) { context ->
+        blockingJsonGet("/bots/:botId", setOf(botUser, faqNlpUser, faqBotUser)) { context ->
             BotAdminService.getBots(context.organization, context.path("botId"))
         }
 
         blockingJsonPost(
-            "/bot",
+            "/bot", admin,
             logger = logger<BotConfiguration>(" Create or Update Bot Configuration") { _, c ->
                 c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
@@ -331,7 +295,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/configuration/bots/:botId", botUser) { context ->
+        blockingJsonGet("/configuration/bots/:botId", setOf(botUser, faqBotUser)) { context ->
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, context.path("botId"))
         }
 
@@ -344,7 +308,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost(
-            "/configuration/bot",
+            "/configuration/bot", admin,
             logger = logger<BotConnectorConfiguration>("Create or Update Bot Connector Configuration") { _, c ->
                 c?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
@@ -356,12 +320,16 @@ open class BotAdminVerticle : AdminVerticle() {
                         unauthorized()
                     }
                     if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId)
-                        ?.run { _id != conf._id } == true
+                            ?.run { _id != conf._id } == true
                     ) {
                         badRequest("Connector identifier already exists")
                     }
                 } else {
-                    if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId) != null
+                    if (getBotConfigurationByApplicationIdAndBotId(
+                            bot.namespace,
+                            bot.applicationId,
+                            bot.botId
+                        ) != null
                     ) {
                         badRequest("Connector identifier already exists")
                     }
@@ -370,7 +338,7 @@ open class BotAdminVerticle : AdminVerticle() {
                     if (getBotConfigurationsByNamespaceAndBotId(
                             bot.namespace,
                             bot.botId
-                        ).any { conf -> conf._id != bot._id && conf.path?.toLowerCase() == it.toLowerCase() }
+                        ).any { conf -> conf._id != bot._id && conf.path?.lowercase() == it.lowercase() }
                     )
                         badRequest("Connector path already exists (case-insensitive)")
                 }
@@ -444,18 +412,18 @@ open class BotAdminVerticle : AdminVerticle() {
                 } ?: unauthorized()
         }
 
-        blockingJsonGet("/action/nlp-stats/:actionId", botUser) { context ->
+        blockingJsonGet("/action/nlp-stats/:actionId", setOf(botUser, faqBotUser)) { context ->
             dialogReportDAO.getNlpCallStats(context.pathId("actionId"), context.organization)
         }
 
-        blockingJsonGet("/feature/:applicationId", botUser) { context ->
+        blockingJsonGet("/feature/:applicationId", setOf(botUser, faqBotUser)) { context ->
             val applicationId = context.path("applicationId")
             BotAdminService.getFeatures(applicationId, context.organization)
         }
 
         blockingPost(
             "/feature/:applicationId/toggle",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Toogle Application Feature", { it.bodyAsString })
         ) { context ->
             val applicationId = context.path("applicationId")
@@ -466,7 +434,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingPost(
             "/feature/:applicationId/update",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Update Application Feature", { it.bodyAsString })
         ) { context ->
             val applicationId = context.path("applicationId")
@@ -481,7 +449,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingPost(
             "/feature/:applicationId/add",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Create Application Feature", { it.bodyAsString })
         ) { context ->
             val applicationId = context.path("applicationId")
@@ -540,12 +508,17 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/bot/story/new",
-            botUser,
+            setOf(botUser, faqBotUser),
             logger<CreateStoryRequest>("Create Story") { context, r ->
                 r?.story?.let { s ->
                     BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
                         .firstOrNull()
-                        ?.let { FrontClient.getApplicationByNamespaceAndName(context.organization, it.nlpModel)?._id }
+                        ?.let {
+                            FrontClient.getApplicationByNamespaceAndName(
+                                context.organization,
+                                it.nlpModel
+                            )?._id
+                        }
                 }
             }
         ) { context, query: CreateStoryRequest ->
@@ -581,19 +554,24 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/bot/story",
-            botUser,
+            setOf(botUser, faqBotUser),
             logger<BotStoryDefinitionConfiguration>("Update Story") { context, r ->
                 r?.let { s ->
                     getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
                         .firstOrNull()
-                        ?.let { FrontClient.getApplicationByNamespaceAndName(context.organization, it.nlpModel)?._id }
+                        ?.let {
+                            FrontClient.getApplicationByNamespaceAndName(
+                                context.organization,
+                                it.nlpModel
+                            )?._id
+                        }
                 }
             }
         ) { context, story: BotStoryDefinitionConfiguration ->
             BotAdminService.saveStory(context.organization, story, context.userLogin) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/story/load", botUser) { context, request: StorySearchRequest ->
+        blockingJsonPost("/bot/story/load", setOf(botUser, faqBotUser)) { context, request: StorySearchRequest ->
             if (context.organization == request.namespace) {
                 BotAdminService.loadStories(request)
             } else {
@@ -601,7 +579,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/bot/story/search", botUser) { context, request: StorySearchRequest ->
+        blockingJsonPost("/bot/story/search", setOf(botUser, faqBotUser)) { context, request: StorySearchRequest ->
             if (context.organization == request.namespace) {
                 BotAdminService.searchStories(request)
             } else {
@@ -609,7 +587,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/bot/story/:storyId", botUser) { context ->
+        blockingJsonGet("/bot/story/:storyId", setOf(botUser, faqBotUser)) { context ->
             BotAdminService.findStory(context.organization, context.path("storyId"))
         }
 
@@ -627,7 +605,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonDelete(
             "/bot/story/:storyId",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Delete Story", { it.path("storyId") })
         ) { context ->
             BotAdminService.deleteStory(context.organization, context.path("storyId"))
@@ -646,7 +624,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/i18n", botUser) { context ->
+        blockingJsonGet("/i18n", setOf(botUser, faqBotUser)) { context ->
             val stats = i18n.getLabelStats(context.organization).groupBy { it.labelId }
             BotI18nLabels(
                 i18n
@@ -662,7 +640,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/complete",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Complete Responses Labels")
         ) { context, labels: List<I18nLabel> ->
             if (!injector.provide<TranslatorEngine>().supportAdminTranslation) {
@@ -673,7 +651,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/saveAll",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Save Responses Labels")
         ) { context, labels: List<I18nLabel> ->
             i18n.save(labels.filter { it.namespace == context.organization })
@@ -681,7 +659,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/save",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Save Response Label")
         ) { context, label: I18nLabel ->
             if (label.namespace == context.organization) {
@@ -693,7 +671,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/create",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Create Response Label")
         ) { context, request: CreateI18nLabelRequest ->
             createI18nRequest(context.organization, request)
@@ -701,17 +679,17 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingDelete(
             "/i18n/:id",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("Delete Response Label", { it.path("id") })
         ) { context ->
             i18n.deleteByNamespaceAndId(context.organization, context.pathId("id"))
         }
 
-        blockingJsonGet("/i18n/export/csv", botUser) { context ->
+        blockingJsonGet("/i18n/export/csv", setOf(botUser, faqBotUser)) { context ->
             I18nCsvCodec.exportCsv(context.organization)
         }
 
-        blockingJsonPost("/i18n/export/csv", botUser) { context, query: I18LabelQuery ->
+        blockingJsonPost("/i18n/export/csv", setOf(botUser, faqBotUser)) { context, query: I18LabelQuery ->
             I18nCsvCodec.exportCsv(context.organization, query)
         }
 
@@ -725,18 +703,18 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/i18n/export/json", botUser) { context ->
+        blockingJsonGet("/i18n/export/json", setOf(botUser, faqBotUser)) { context ->
             mapper.writeValueAsString(i18n.getLabels(context.organization))
         }
 
-        blockingJsonPost("/i18n/export/json", botUser) { context, query: I18LabelQuery ->
+        blockingJsonPost("/i18n/export/json", setOf(botUser, faqBotUser)) { context, query: I18LabelQuery ->
             val labels = i18n.getLabels(context.organization, query.toI18nLabelFilter())
             mapper.writeValueAsString(labels)
         }
 
         blockingUploadJsonPost(
             "/i18n/import/json",
-            botUser,
+            setOf(botUser, faqBotUser),
             simpleLogger("JSON Import Response Labels")
         ) { context, labels: List<I18nLabel> ->
             measureTimeMillis(context) {
@@ -761,7 +739,6 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blocking(GET, "/file/:id.:suffix", botUser) { context ->
-
             val id = context.path("id")
             if (!id.startsWith(context.organization)) {
                 unauthorized()
@@ -770,7 +747,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/connectorTypes", botUser) {
+        blockingJsonGet("/connectorTypes", setOf(botUser, faqBotUser, faqNlpUser)) {
             ConnectorTypeConfiguration.connectorConfigurations
         }
 
@@ -780,6 +757,81 @@ open class BotAdminVerticle : AdminVerticle() {
             context.response().putHeader("Cache-Control", "max-age=84600, public")
             ConnectorTypeConfiguration.connectorConfigurations.firstOrNull { it.connectorType.id == connectorType }?.svgIcon
                 ?: ""
+        }
+
+        blockingJsonPost(
+            "/faq",
+            setOf(botUser, faqBotUser),
+            logger<FaqDefinitionRequest>("Save FAQ")
+        ) { context, query: FaqDefinitionRequest ->
+            if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
+                badRequest("Missing argument or trouble in query: $query")
+            } else {
+                val applicationDefinition = front.getApplicationById(query.applicationId)
+                if (context.organization == applicationDefinition?.namespace) {
+                    FaqAdminService.saveFAQ(query, context.userLogin, applicationDefinition)
+                } else {
+                    unauthorized()
+                }
+            }
+        }
+
+        blockingJsonDelete(
+            "/faq/:faqId",
+            setOf(botUser, faqBotUser),
+            simpleLogger("Delete Story", { it.path("faqId") })
+        ) { context ->
+            FaqAdminService.deleteFaqDefinition(context.organization, context.path("faqId"))
+        }
+
+        blockingJsonPost("/faq/tags", setOf(botUser, faqBotUser)) { context, applicationId: String ->
+            val applicationDefinition = front.getApplicationById(applicationId.toId())
+            if (context.organization == applicationDefinition?.namespace) {
+                try {
+                    FaqAdminService.searchTags(applicationDefinition._id.toString())
+                } catch (t: Exception) {
+                    logger.error(t)
+                    badRequest("Error searching faq tags: ${t.message}")
+                }
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+            "/faq/search",
+            setOf(botUser, faqBotUser),
+            logger<FaqSearchRequest>("Search FAQ")
+        )
+        { context, request: FaqSearchRequest ->
+            val applicationDefinition =
+                FrontClient.getApplicationByNamespaceAndName(request.namespace, request.applicationName)
+            if (context.organization == applicationDefinition?.namespace) {
+                try {
+                    FaqAdminService.searchFAQ(request, applicationDefinition)
+                } catch (t: NoEncryptionPassException) {
+                    logger.error(t)
+                    badRequest("Error obfuscating faq: ${t.message}")
+                } catch (t: Exception) {
+                    logger.error(t)
+                    badRequest("Error searching faq: ${t.message}")
+                }
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+            "/faq/status",
+            setOf(botUser, faqBotUser),
+            logger<FaqDefinitionRequest>("Change FAQ status")
+        ) { context, query: FaqDefinitionRequest ->
+            val applicationDefinition = front.getApplicationById(query.applicationId)
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.updateActivationStatusStory(query, context.userLogin, applicationDefinition)
+            } else {
+                unauthorized()
+            }
         }
 
         blockingJsonGet("/configuration") {
@@ -809,3 +861,4 @@ open class BotAdminVerticle : AdminVerticle() {
         return super.saveApplication(existingApp, app)
     }
 }
+

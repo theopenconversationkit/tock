@@ -33,7 +33,7 @@
 }
 
 .answer {
-  display:inline-block;
+  display: inline-block;
 }
 
 .label-answer {
@@ -94,5 +94,3 @@
 .section-card-body {
   margin: 15px;
 }
-
-

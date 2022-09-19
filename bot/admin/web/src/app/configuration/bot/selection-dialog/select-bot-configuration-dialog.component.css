@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-.configuration-select{
+.configuration-select {
   min-width: 400px;
 }
 
-.configuration-select-label{
+.configuration-select-label {
   max-height: 25px;
   overflow: hidden;
 }
 
-.configuration-name{
+.configuration-name {
   margin-right: 10px;
 }
 
-.configuration-connectors{
+.configuration-connectors {
   margin-left: 5px;
 }
 

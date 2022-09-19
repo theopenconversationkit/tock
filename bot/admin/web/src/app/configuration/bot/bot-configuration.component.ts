@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {BotApplicationConfiguration, ConnectorType} from "../../core/model/configuration";
-import {BotSharedService} from "../../shared/bot-shared.service";
-import {StateService} from "../../core-nlp/state.service";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
+import { BotSharedService } from '../../shared/bot-shared.service';
+import { StateService } from '../../core-nlp/state.service';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
 
 @Component({
   selector: 'tock-bot-configuration',
@@ -26,7 +26,6 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
   styleUrls: ['./bot-configuration.component.css']
 })
 export class BotConfigurationComponent implements OnInit {
-
   @Input()
   configuration: BotApplicationConfiguration;
 
@@ -42,26 +41,21 @@ export class BotConfigurationComponent implements OnInit {
   constructor(
     public botSharedService: BotSharedService,
     private state: StateService,
-    private botConfiguration: BotConfigurationService) {
-  }
+    private botConfiguration: BotConfigurationService
+  ) {}
 
   ngOnInit(): void {
-    this
-      .botSharedService
-      .getConnectorTypes()
-      .subscribe(
-        confConf => {
-          const c = confConf.map(it => it.connectorType).sort((a, b) => a.id.localeCompare(b.id));
-          this.connectorTypes = c.filter(conn => !conn.isRest());
-          const rest = c.find(conn => conn.isRest());
-          this.connectorTypesAndRestType = c.filter(conn => !conn.isRest());
-          this.connectorTypesAndRestType.push(rest);
-          if (!this.configuration._id && c.length > 0) {
-            this.configuration.connectorType = c[0];
-            this.changeConnectorType();
-          }
-        }
-      )
+    this.botSharedService.getConnectorTypes().subscribe((confConf) => {
+      const c = confConf.map((it) => it.connectorType).sort((a, b) => a.id.localeCompare(b.id));
+      this.connectorTypes = c.filter((conn) => !conn.isRest());
+      const rest = c.find((conn) => conn.isRest());
+      this.connectorTypesAndRestType = c.filter((conn) => !conn.isRest());
+      this.connectorTypesAndRestType.push(rest);
+      if (!this.configuration._id && c.length > 0) {
+        this.configuration.connectorType = c[0];
+        this.changeConnectorType();
+      }
+    });
   }
 
   remove() {
@@ -80,5 +74,4 @@ export class BotConfigurationComponent implements OnInit {
   changePath() {
     this.configuration.path = this.configuration.path.toLowerCase();
   }
-
 }

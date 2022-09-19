@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import {Component} from "@angular/core";
-import {AnalyticsService} from "../analytics.service";
-import {UserReport, UserSearchQuery} from "./users";
-import {StateService} from "../../core-nlp/state.service";
-import {DialogReportQuery} from "../dialogs/dialogs";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {DialogReport} from "../../shared/model/dialog-data";
-import {ScrollComponent} from "../../scroll/scroll.component";
-import {Observable} from "rxjs";
-import {PaginatedResult} from "../../model/nlp";
-import {PaginatedQuery} from "../../model/commons";
-import {NbToastrService} from '@nebular/theme';
-import {BotApplicationConfiguration, ConnectorType} from "../../core/model/configuration";
-import {TestPlan} from "../../test/model/test";
+import { Component } from '@angular/core';
+import { AnalyticsService } from '../analytics.service';
+import { UserReport, UserSearchQuery } from './users';
+import { StateService } from '../../core-nlp/state.service';
+import { DialogReportQuery } from '../dialogs/dialogs';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { DialogReport } from '../../shared/model/dialog-data';
+import { ScrollComponent } from '../../scroll/scroll.component';
+import { Observable } from 'rxjs';
+import { PaginatedResult } from '../../model/nlp';
+import { PaginatedQuery } from '../../model/commons';
+import { NbToastrService } from '@nebular/theme';
+import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
+import { TestPlan } from '../../test/model/test';
 
 @Component({
   selector: 'tock-users',
@@ -35,22 +35,23 @@ import {TestPlan} from "../../test/model/test";
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent extends ScrollComponent<UserReport> {
-
   filter: UserFilter = new UserFilter([], false);
   selectedUser: UserReport;
   selectedPlan: TestPlan;
-  configurations: BotApplicationConfiguration[]
+  configurations: BotApplicationConfiguration[];
   isCollapsed: boolean = true;
   loadingDialog: boolean = false;
 
-  constructor(state: StateService,
-              private analytics: AnalyticsService,
-              private botConfiguration: BotConfigurationService,
-              private toastrService: NbToastrService) {
+  constructor(
+    state: StateService,
+    private analytics: AnalyticsService,
+    private botConfiguration: BotConfigurationService,
+    private toastrService: NbToastrService
+  ) {
     super(state);
-    this.botConfiguration.configurations.subscribe(configs => {
-      this.configurations = configs
-      this.refresh()
+    this.botConfiguration.configurations.subscribe((configs) => {
+      this.configurations = configs;
+      this.refresh();
     });
   }
 
@@ -60,7 +61,7 @@ export class UsersComponent extends ScrollComponent<UserReport> {
 
   reload() {
     this.selectedUser = null;
-    this.refresh()
+    this.refresh();
   }
 
   protected loadResults(result: PaginatedResult<UserReport>, init: boolean): boolean {
@@ -76,16 +77,20 @@ export class UsersComponent extends ScrollComponent<UserReport> {
   }
 
   containsFlag(flag: string): boolean {
-    return this.filter.flags.indexOf(flag) !== -1
+    return this.filter.flags.indexOf(flag) !== -1;
   }
 
   getConnector(applicationId: string): ConnectorType {
-    let connectors = this.configurations.filter(config => config.applicationId === applicationId).map(config => config.connectorType)
-    return connectors && connectors.length > 0 ? connectors[0] : null
+    let connectors = this.configurations
+      .filter((config) => config.applicationId === applicationId)
+      .map((config) => config.connectorType);
+    return connectors && connectors.length > 0 ? connectors[0] : null;
   }
 
   getUserPicture(user: UserReport): string {
-    return user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png'
+    return user.userPreferences.picture
+      ? user.userPreferences.picture
+      : '/assets/images/people.png';
   }
 
   toggleFlag(flag: string) {
@@ -114,7 +119,7 @@ export class UsersComponent extends ScrollComponent<UserReport> {
   }
 
   waitAndRefresh() {
-    setTimeout(_ => this.reload());
+    setTimeout((_) => this.reload());
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<UserReport>> {
@@ -136,51 +141,48 @@ export class UsersComponent extends ScrollComponent<UserReport> {
       this.filter.from,
       this.filter.to,
       this.filter.flags,
-      this.filter.displayTests);
+      this.filter.displayTests
+    );
   }
 
   private buildDialogQuery(user: UserReport): DialogReportQuery {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
-    return new DialogReportQuery(
-      app.namespace,
-      app.name,
-      language,
-      0,
-      1,
-      true,
-      user.playerId);
+    return new DialogReportQuery(app.namespace, app.name, language, 0, 1, true, user.playerId);
   }
 
   loadDialog(user: UserReport) {
     this.loadingDialog = true;
-    this.analytics.dialogs(this.buildDialogQuery(user)).subscribe(r => {
+    this.analytics.dialogs(this.buildDialogQuery(user)).subscribe((r) => {
       if (r.rows.length != 0) {
         user.userDialog = r.rows[0];
-        this.analytics.getTestPlansByNamespaceAndNlpModel().subscribe(r => user.testPlans = r);
+        this.analytics.getTestPlansByNamespaceAndNlpModel().subscribe((r) => (user.testPlans = r));
       }
       user.displayDialogs = true;
       this.loadingDialog = false;
-      this.selectedUser = user
+      this.selectedUser = user;
     });
   }
 
   addDialogToTestPlan(planId: string, dialog: DialogReport) {
     if (!planId) {
-      this.toastrService.show(`Please select a Plan first`, "Error", {duration: 3000});
+      this.toastrService.show(`Please select a Plan first`, 'Error', { duration: 3000 });
       return;
     }
-    this.analytics.addDialogToTestPlan(planId, dialog.id)
-      .subscribe(_ => this.toastrService.show(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
+    this.analytics
+      .addDialogToTestPlan(planId, dialog.id)
+      .subscribe((_) =>
+        this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 })
+      );
   }
-
 }
 
 export class UserFilter {
-  constructor(public flags: string[],
-              public displayTests: boolean,
-              public from?: Date,
-              public to?: Date,
-              public intent : string = "") {
-  }
+  constructor(
+    public flags: string[],
+    public displayTests: boolean,
+    public from?: Date,
+    public to?: Date,
+    public intent: string = ''
+  ) {}
 }

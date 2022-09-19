@@ -22,6 +22,10 @@ Le code est disponible dans la classe [`PropertyBasedAuthProvider`](https://gith
 
 - Un modèle basé sur des jetons [_JWT_](https://jwt.io/), dont une implémentation pour AWS est disponible dans [`AWSJWTAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt)    
 
+Il est également possible d'intégrer une authentification CAS (SSO), dans le cas d'une installation de type entreprise.
+Ce modèle nécessite d'hériter d'un modèle de base, mais permet de faire correspondre un profil utilisateur selon vos 
+propres contraintes et spécificités.
+
 Des détails et exemples de configuration sont donnés plus bas dans cette page.
 
 Si ces modèles ne correspondent pas à votre besoin, il est relativement simple d'en développer d'autres
@@ -35,12 +39,14 @@ un ou plusieurs de ces rôles, lui donnant différents accès dans l'application
 
 Les rôles disponibles sont définis dans l'enum `TockUserRole`:
 
-| Rôle             | Description                                   |
-|------------------|-----------------------------------------------|
-| `nlpUser` | NLP platform user, allowed to qualify and search sentences. |
-| `botUser` | Bot platform user, allowed to create and modify stories, rules and answers.  |
-| `admin` | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc.. |
-| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc. |
+| Rôle             | Description                                                                                                    |
+|------------------|----------------------------------------------------------------------------------------------------------------|
+| `nlpUser`        | NLP platform user, allowed to qualify and search sentences.                                                    |
+| `faqNlpUser`     | FAQ NLP platform user, allowed to qualify and search sentences.                                                |
+| `faqBotUser`     | A faq bot user is allowed to manage the FAQ content, and train the FAQ                                            |
+| `botUser`        | Bot platform user, allowed to create and modify stories, rules and answers.                                    |
+| `admin`          | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc.. |
+| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc.                                        |
 
 La manière de configurer quel utilisateur _Tock Studio_ a quel rôle dépend du mode d'authentification, 
 autrement dit l'implémentation de `TockAuthProvider` utilisée.
@@ -154,7 +160,7 @@ Voici les propriétés et leurs valeurs par défaut :
 Ci-dessous un exemple au format Docker-Compose :
 
 ```yaml
-{ "name" : "tock_jwt_custom_roles_mapping", "value" : "MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,admin,technicalAdmin" },
+{ "name" : "tock_jwt_custom_roles_mapping", "value" : "MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,faqNlpUser,faqBotUser,admin,technicalAdmin" },
 ```
 
 Dans cet exemple, les utilisateurs appartenant au groupe `MY_USER_GROUP` possèdent les rôles `nlpUser` et `botUser`, 
@@ -162,6 +168,37 @@ alors que les membres de `MY_ADMIN_GROUP` ont tous les rôles.
 
 > Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
 > [`AWSJWTAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt).
+
+### Implémentation SSO/CAS
+
+Cette implémentation a pour vocation de servir de pont entre un environnement entreprise et Tock.
+Elle est donc en partie spécifique à chaque entreprise, dans la mesure ou il est nécessaire de faire correspondre 
+un profil utilisateur vers des groupes et rôles Tock.
+
+Elle est composée de :
+- Une implémentation du mécanisme d'authentification CAS intégrée à Tock \( basée sur ['PAC4J'](https://www.pac4j.org/) \)
+- Votre module externalisé qui va hériter de cette implémentation, avec une (re)définition des rôles/groupes selon le 
+ profil utilisateur
+
+> L'authentification CAS est spécifique à l'entreprise, et nécessite un module dédié externe à développer pour Tock
+> 
+>Example de module CAS: ['samples/tock-sample-cas-auth-provider'](https://github.com/theopenconversationkit/tock/blob/master/samples/tock-sample-cas-auth-provider/)
+
+Voici les propriétés et leurs valeurs par défaut :
+
+| Variable d'environnement             | Valeur par défaut | Description                                      |
+|--------------------------------------|-------------------|--------------------------------------------------|
+| `tock_cas_auth_enabled`              | `false`           | Activation de l'authentification PAC4J/CAS.      |
+| `tock_cas_auth_proxy_host`           | `127.0.0.1`       | Host du proxy (ne pas indiquer si pas de proxy)  |
+| `tock_cas_auth_proxy_port`           | `3128`            | Port optionnel du proxy                          |
+| `tock_cas_join_same_namespace_per_user`| `true`          | Lors de la création de l'utilisateur, si le namespace existe déjà et que d'autres utilisateurs sont déjà présent, le nouvel utilisateur rejoint le même namespace existant                       |
+
+> Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe
+> [`CASAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/CASAuthProvider.kt).
+
+Note complémentaire:
+
+> Lorsque l'authentification est de type SSO le bouton de Logout n'est pas disponible
 
 ## Données
 

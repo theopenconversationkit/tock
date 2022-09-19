@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {PaginatedResult} from "../model/nlp";
-import {StateService} from "../core-nlp/state.service";
-import {Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {PaginatedQuery, SearchMark} from "../model/commons";
-import {Observable, Subscription} from "rxjs";
+import { PaginatedResult } from '../model/nlp';
+import { StateService } from '../core-nlp/state.service';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { PaginatedQuery, SearchMark } from '../model/commons';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'tock-scroll',
@@ -26,7 +26,6 @@ import {Observable, Subscription} from "rxjs";
   styleUrls: ['./scroll.component.css']
 })
 export class ScrollComponent<T> implements OnInit, OnDestroy {
-
   @Input() title: string;
   @Input() loadOnInit: boolean = true;
 
@@ -40,14 +39,13 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
 
   private subscription: Subscription;
 
-  constructor(protected state: StateService) {
-  }
+  constructor(protected state: StateService) {}
 
   ngOnInit() {
     if (this.loadOnInit) {
       this.load();
     }
-    this.subscription = this.state.configurationChange.subscribe(_ => this.refresh());
+    this.subscription = this.state.configurationChange.subscribe((_) => this.refresh());
   }
 
   ngOnDestroy() {
@@ -75,8 +73,7 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     if (!this.loading && (this.total === -1 || this.total > this.cursor)) {
       this.loading = true;
       const init = this.total === -1;
-      this.search(this.paginatedQuery())
-        .subscribe(s => this.loadResults(s, init));
+      this.search(this.paginatedQuery()).subscribe((s) => this.loadResults(s, init));
     }
   }
 
@@ -108,11 +105,11 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<T>> {
-    throw "please override method search"
+    throw 'please override method search';
   }
 
   dataEquals(d1: T, d2: T): boolean {
-    throw "please override method equals"
+    throw 'please override method equals';
   }
 
   onScroll() {
@@ -120,7 +117,7 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   }
 
   onClose(row: T) {
-    let r = this.data.filter(r => this.dataEquals(r, row))[0];
+    let r = this.data.filter((r) => this.dataEquals(r, row))[0];
     this.data.splice(this.data.indexOf(r), 1);
     this.total -= 1;
     this.cursor -= 1;
@@ -128,5 +125,4 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
       this.load();
     }
   }
-
 }

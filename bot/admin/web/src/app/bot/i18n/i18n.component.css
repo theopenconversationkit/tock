@@ -70,9 +70,9 @@
   left: -10px;
   font-weight: bold;
 }
-.label-title{
-  transform: translateY(-1.28125em) scale(.75) perspective(100px) translateZ(.001px);
-    -ms-transform: translateY(-1.28125em) scale(.75);
-    display: block;
-    top: -15px;
+.label-title {
+  transform: translateY(-1.28125em) scale(0.75) perspective(100px) translateZ(0.001px);
+  -ms-transform: translateY(-1.28125em) scale(0.75);
+  display: block;
+  top: -15px;
 }

@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 class TabLink {
-  constructor(
-    public route: string,
-    public title: string,
-    public icon?: string
-  ) { }
+  constructor(public route: string, public title: string, public icon?: string) {}
 }
 
 const tabs = [
-  new TabLink("log-stats", "Model Stats", 'activity-outline'),
-  new TabLink("intent-quality", "Intent Distance", 'pantone-outline'),
-  new TabLink("model-builds", "Model Builds", 'save-outline'),
-  new TabLink("test-builds", "Test Trends", 'trending-down-outline'),
-  new TabLink("test-intent-errors", "Test Intent Errors", 'alert-triangle-outline'),
-  new TabLink("test-entity-errors", "Test Entity Errors", 'alert-triangle-outline'),
+  new TabLink('log-stats', 'Model Stats', 'activity-outline'),
+  new TabLink('intent-quality', 'Intent Distance', 'pantone-outline'),
+  new TabLink('model-builds', 'Model Builds', 'save-outline'),
+  new TabLink('test-builds', 'Test Trends', 'trending-down-outline'),
+  new TabLink('test-intent-errors', 'Test Intent Errors', 'alert-triangle-outline'),
+  new TabLink('test-entity-errors', 'Test Entity Errors', 'alert-triangle-outline')
 ];
 
 @Component({
@@ -39,16 +35,13 @@ const tabs = [
   templateUrl: './quality-tabs.component.html'
 })
 export class QualityTabsComponent implements OnInit {
-
   tabLinks = tabs;
 
-  constructor(private router: Router) {
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
-    if(this.router.routerState.snapshot.url.endsWith("/quality")) {
-      this.router.navigateByUrl("/quality/log-stats");
+    if (this.router.routerState.snapshot.url.endsWith('/quality')) {
+      this.router.navigateByUrl('/quality/log-stats');
     }
   }
-
 }

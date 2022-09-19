@@ -16,89 +16,151 @@
 
 <div class="highlight-block">
   <div class="highlight-text">
-    <nb-actions size="small" style="cursor: pointer;float: right">
-      <nb-action class="control-item" nbTooltip="Reveal the sentence" (click)="$event.stopPropagation();reveal();" *ngIf="displayActions && canReveal()">
+    <nb-actions
+      size="small"
+      style="cursor: pointer; float: right"
+    >
+      <nb-action
+        class="control-item"
+        nbTooltip="Reveal the sentence"
+        (click)="$event.stopPropagation(); reveal()"
+        *ngIf="displayActions && canReveal()"
+      >
         <i class="material-icons">visibility</i>
       </nb-action>
-      <nb-action class="control-item" nbTooltip="Display conversations using this sentence"
-                 *ngIf="displayActions && coreConfig.displayDialogUrl && isRootSentence()">
-        <a [routerLink]="[coreConfig.displayDialogUrl]"
-           [queryParams]="{ text: this.sentence.text}" target="_blank">
+      <nb-action
+        class="control-item"
+        nbTooltip="Display conversations using this sentence"
+        *ngIf="displayActions && coreConfig.displayDialogUrl && isRootSentence()"
+      >
+        <a
+          [routerLink]="[coreConfig.displayDialogUrl]"
+          [queryParams]="{ text: this.sentence.text }"
+          target="_blank"
+        >
           <i class="material-icons">format_quote</i>
         </a>
       </nb-action>
-      <nb-action class="control-item" (click)="answerToSentence()" nbTooltip="Set a custom answer"
-                 *ngIf="displayActions && coreConfig.answerToSentenceUrl && isRootSentence()">
+      <nb-action
+        class="control-item"
+        (click)="answerToSentence()"
+        nbTooltip="Set a custom answer"
+        *ngIf="displayActions && coreConfig.answerToSentenceUrl && isRootSentence()"
+      >
         <i class="material-icons">question_answers</i>
       </nb-action>
-      <nb-action class="control-item" (click)="$event.stopPropagation();copyToClipboard();"
-                 nbTooltip="Copy sentence to clipboard"
-                 *ngIf="displayActions && isRootSentence()">
+      <nb-action
+        class="control-item"
+        (click)="$event.stopPropagation(); copyToClipboard()"
+        nbTooltip="Copy sentence to clipboard"
+        *ngIf="displayActions && isRootSentence()"
+      >
         <i class="material-icons">content_copy</i>
       </nb-action>
     </nb-actions>
 
-    <div *ngIf="tokens && !readOnly"
-         #tokensContainer
-         class="tokens"
-         (mouseup)="select()" (touchend)="select()"><span *ngFor="let t of tokens"
-                                                          (dblclick)="remove($event, t)"
-                                                          [title]="t.entity ? t.entity.role+' - Alt + Double Click to remove' : ''"
-                                                          [style.font-size]="fontSize"
-                                                          [style.background]="t.color()"
-                                                          [id]="prefix + t.index">{{t.text}}</span>
+    <div
+      *ngIf="tokens && !readOnly"
+      #tokensContainer
+      class="tokens"
+      (mouseup)="select()"
+      (touchend)="select()"
+    >
+      <span
+        *ngFor="let t of tokens"
+        (dblclick)="remove($event, t)"
+        [title]="t.entity ? t.entity.role + ' - Alt + Double Click to remove' : ''"
+        [style.font-size]="fontSize"
+        [style.background]="t.color()"
+        [id]="prefix + t.index"
+        >{{ t.text }}</span
+      >
     </div>
-    <div *ngIf="tokens && readOnly"
-         class="tokens-readonly"><span *ngFor="let t of tokens"
-                                       [style.font-size]="fontSize"
-                                       [style.background]="t.color()"
-                                       [id]="t.index"
-                                       [nbTooltip]="t.display(sentence, state.user)">{{t.text}}</span>
+    <div
+      *ngIf="tokens && readOnly"
+      class="tokens-readonly"
+    >
+      <span
+        *ngFor="let t of tokens"
+        [style.font-size]="fontSize"
+        [style.background]="t.color()"
+        [id]="t.index"
+        [nbTooltip]="t.display(sentence, state.user)"
+        >{{ t.text }}</span
+      >
     </div>
 
-
-    <textarea *ngIf="displayActions && isRootSentence()" #copy class="copy"></textarea>
+    <textarea
+      *ngIf="displayActions && isRootSentence()"
+      #copy
+      class="copy"
+    ></textarea>
   </div>
-  <div *ngIf="sentence && sentence.getEditedSubEntities().length !== 0" class="sub-entities">
-    <div *ngFor="let e of sentence.getEditedSubEntities();let idx = index" [style.padding-left]="leftPadding+'px'">
+  <div
+    *ngIf="sentence && sentence.getEditedSubEntities().length !== 0"
+    class="sub-entities"
+  >
+    <div
+      *ngFor="let e of sentence.getEditedSubEntities(); let idx = index"
+      [style.padding-left]="leftPadding + 'px'"
+    >
       <mat-chip-list class="role-container">
-        <mat-chip [style.background-color]="e.entityColor"
-                  [nbTooltip]="e.qualifiedName(state.user)"
-                  selected="false"
-                  color="primary">
-          {{e.role}}
+        <mat-chip
+          [style.background-color]="e.entityColor"
+          [nbTooltip]="e.qualifiedName(state.user)"
+          selected="false"
+          color="primary"
+        >
+          {{ e.role }}
         </mat-chip>
       </mat-chip-list>
-      <tock-highlight [sentence]="e"
-                      [readOnly]="readOnly"
-                      prefix="{{prefix}}_{{idx}}"
-                      fontSize="medium"
-                      [leftPadding]="leftPadding + 50"></tock-highlight>
-      <br>
+      <tock-highlight
+        [sentence]="e"
+        [readOnly]="readOnly"
+        prefix="{{ prefix }}_{{ idx }}"
+        fontSize="medium"
+        [leftPadding]="leftPadding + 50"
+      ></tock-highlight>
+      <br />
     </div>
   </div>
 
-  <div *ngIf="!readOnly && edited" class="highlight">
-    <mat-chip-list *ngIf="entityProvider" class="inner-highlight">
-      <mat-chip *ngFor="let entity of entityProvider.getEntities()"
-                nbTooltip="Select {{entity.qualifiedName(state.user)}}"
-                selected="false"
-                (click)="onSelect(entity)"
-                [style.background-color]="entity.entityColor"
-                color="primary">
-        {{entity.qualifiedName(state.user)}}
+  <div
+    *ngIf="!readOnly && edited"
+    class="highlight"
+  >
+    <mat-chip-list
+      *ngIf="entityProvider"
+      class="inner-highlight"
+    >
+      <mat-chip
+        *ngFor="let entity of entityProvider.getEntities()"
+        nbTooltip="Select {{ entity.qualifiedName(state.user) }}"
+        selected="false"
+        (click)="onSelect(entity)"
+        [style.background-color]="entity.entityColor"
+        color="primary"
+      >
+        {{ entity.qualifiedName(state.user) }}
       </mat-chip>
     </mat-chip-list>
     <div>
-      <button nbButton ghost (click)="addEntity()">
+      <button
+        nbButton
+        ghost
+        (click)="addEntity()"
+      >
         <mat-icon>add</mat-icon>
         Add Entity
       </button>
-      <button nbButton ghost (click)="onClose()">
+      <button
+        nbButton
+        ghost
+        (click)="onClose()"
+      >
         <mat-icon>close</mat-icon>
         Close Entity Selection
       </button>
     </div>
   </div>
 </div>
-

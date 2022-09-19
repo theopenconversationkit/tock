@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-import {StateService} from '../../core-nlp/state.service';
+import { StateService } from '../../core-nlp/state.service';
 
 @Component({
   selector: 'tock-intent-dialog',
@@ -24,7 +24,6 @@ import {StateService} from '../../core-nlp/state.service';
   styleUrls: ['./intent-dialog.component.css']
 })
 export class IntentDialogComponent implements OnInit {
-
   @Input() create: boolean;
   @Input() name: string;
   @Input() label: string;
@@ -38,16 +37,14 @@ export class IntentDialogComponent implements OnInit {
 
   @ViewChild('labelElement') labelElement: ElementRef;
 
-  constructor(
-    public dialogRef: NbDialogRef<IntentDialogComponent>,
-    private state: StateService) {
-      this.dialogType = this.story ? 'Story' : 'Intent';
-      setTimeout(() => this.labelElement.nativeElement.focus(), 500);
+  constructor(public dialogRef: NbDialogRef<IntentDialogComponent>, private state: StateService) {
+    this.dialogType = this.story ? 'Story' : 'Intent';
+    setTimeout(() => this.labelElement.nativeElement.focus(), 500);
   }
 
   ngOnInit() {
-    this.state.currentIntentsCategories.subscribe(c => {
-      this.categories = c.map(cat => cat.category);
+    this.state.currentIntentsCategories.subscribe((c) => {
+      this.categories = c.map((cat) => cat.category);
       this.originalCategories = this.categories;
     });
   }
@@ -61,9 +58,10 @@ export class IntentDialogComponent implements OnInit {
   categoryChange() {
     if (this.category) {
       const cat = this.category.toLowerCase().trim();
-      this.categories = cat.length === 0
-        ? this.originalCategories
-        : this.originalCategories.filter(c => c.toLowerCase().startsWith(cat));
+      this.categories =
+        cat.length === 0
+          ? this.originalCategories
+          : this.originalCategories.filter((c) => c.toLowerCase().startsWith(cat));
     }
   }
 
@@ -74,7 +72,10 @@ export class IntentDialogComponent implements OnInit {
 
   private formatName(name: string) {
     if (name) {
-      this.name = name.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
+      this.name = name
+        .replace(/[^A-Za-z_-]*/g, '')
+        .toLowerCase()
+        .trim();
     }
   }
 
@@ -88,10 +89,12 @@ export class IntentDialogComponent implements OnInit {
       this.dialogRef.close({
         name: this.name.trim(),
         label: !this.label || this.label.trim().length === 0 ? null : this.label.trim(),
-        description: !this.description || this.description.trim().length === 0 ? null : this.description.trim(),
-        category: !this.category || this.category.trim().length === 0 ? null : this.category.trim(),
+        description:
+          !this.description || this.description.trim().length === 0
+            ? null
+            : this.description.trim(),
+        category: !this.category || this.category.trim().length === 0 ? null : this.category.trim()
       });
     }
   }
-
 }

@@ -81,7 +81,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         val date: Instant = Instant.now()
     )
 
-    private val col = database.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
+    val col = database.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
     private val asyncCol = asyncDatabase.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
     private val historyCol =
         database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
