@@ -1,7 +1,10 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { NbButtonModule, NbIconModule } from '@nebular/theme';
 import { of } from 'rxjs';
+
+import { TestSharedModule } from '../../../shared/test-shared.module';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../models';
 import { ModeStepperComponent } from './mode-stepper.component';
@@ -147,6 +150,7 @@ describe('ModeStepperComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ModeStepperComponent],
+      imports: [TestSharedModule, NbButtonModule, NbIconModule],
       providers: [{ provide: DialogService, useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) } }],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -163,13 +167,6 @@ describe('ModeStepperComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Should destroy', () => {
-    expect(component.ngOnDestroy).toBeDefined();
-    expect(component.destroy.isStopped).toBeFalsy();
-    component.ngOnDestroy();
-    expect(component.destroy.isStopped).toBeTruthy();
-  });
-
   describe('should respect steps order', () => {
     [
       {
@@ -177,10 +174,10 @@ describe('ModeStepperComponent', () => {
         mode: SCENARIO_MODE.writing,
         stepPassed: { writing: false, casting: false, production: false, publishing: false },
         buttonClass: {
-          writing: 'step valid selected',
-          casting: 'step',
-          production: 'step',
-          publishing: 'step'
+          writing: ['step', 'valid', 'selected'],
+          casting: ['step'],
+          production: ['step'],
+          publishing: ['step']
         }
       },
       {
@@ -188,10 +185,10 @@ describe('ModeStepperComponent', () => {
         mode: SCENARIO_MODE.casting,
         stepPassed: { writing: true, casting: false, production: false, publishing: false },
         buttonClass: {
-          writing: 'step valid',
-          casting: 'step selected',
-          production: 'step',
-          publishing: 'step'
+          writing: ['step', 'valid'],
+          casting: ['step', 'selected'],
+          production: ['step'],
+          publishing: ['step']
         }
       },
       {
@@ -200,10 +197,10 @@ describe('ModeStepperComponent', () => {
         mode: SCENARIO_MODE.production,
         stepPassed: { writing: true, casting: true, production: false, publishing: false },
         buttonClass: {
-          writing: 'step valid',
-          casting: 'step valid',
-          production: 'step selected',
-          publishing: 'step'
+          writing: ['step', 'valid'],
+          casting: ['step', 'valid'],
+          production: ['step', 'selected'],
+          publishing: ['step']
         }
       },
       {
@@ -212,10 +209,10 @@ describe('ModeStepperComponent', () => {
         mode: SCENARIO_MODE.publishing,
         stepPassed: { writing: true, casting: true, production: true, publishing: false },
         buttonClass: {
-          writing: 'step valid',
-          casting: 'step valid',
-          production: 'step valid',
-          publishing: 'step selected'
+          writing: ['step', 'valid'],
+          casting: ['step', 'valid'],
+          production: ['step', 'valid'],
+          publishing: ['step', 'selected']
         }
       },
       {
@@ -224,18 +221,22 @@ describe('ModeStepperComponent', () => {
         mode: SCENARIO_MODE.publishing,
         stepPassed: { writing: true, casting: true, production: true, publishing: false },
         buttonClass: {
-          writing: 'step valid',
-          casting: 'step valid',
-          production: 'step valid',
-          publishing: 'step valid selected'
+          writing: ['step', 'valid'],
+          casting: ['step', 'valid'],
+          production: ['step', 'valid'],
+          publishing: ['step', 'valid', 'selected']
         }
       }
     ].forEach((test) => {
       it(test.description, () => {
-        const buttonWriting = fixture.debugElement.query(By.css('[data-testid="step-ctrl-writing"]'));
-        const buttonCasting = fixture.debugElement.query(By.css('[data-testid="step-ctrl-casting"]'));
-        const buttonProduction = fixture.debugElement.query(By.css('[data-testid="step-ctrl-production"]'));
-        const buttonPublishing = fixture.debugElement.query(By.css('[data-testid="step-ctrl-publishing"]'));
+        const buttonWriting: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="step-ctrl-writing"]')).nativeElement;
+        const buttonCasting: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="step-ctrl-casting"]')).nativeElement;
+        const buttonProduction: HTMLButtonElement = fixture.debugElement.query(
+          By.css('[data-testid="step-ctrl-production"]')
+        ).nativeElement;
+        const buttonPublishing: HTMLButtonElement = fixture.debugElement.query(
+          By.css('[data-testid="step-ctrl-publishing"]')
+        ).nativeElement;
 
         if (test.scenario) component.scenario = test.scenario;
         component.mode = test.mode;
@@ -244,10 +245,10 @@ describe('ModeStepperComponent', () => {
         expect(component.isStepPassed(SCENARIO_MODE.casting)).toBe(test.stepPassed.casting);
         expect(component.isStepPassed(SCENARIO_MODE.production)).toBe(test.stepPassed.production);
         expect(component.isStepPassed(SCENARIO_MODE.publishing)).toBe(test.stepPassed.publishing);
-        expect(buttonWriting.nativeElement.classList.value).toEqual(test.buttonClass.writing);
-        expect(buttonCasting.nativeElement.classList.value).toEqual(test.buttonClass.casting);
-        expect(buttonProduction.nativeElement.classList.value).toEqual(test.buttonClass.production);
-        expect(buttonPublishing.nativeElement.classList.value).toEqual(test.buttonClass.publishing);
+        expect(test.buttonClass.writing.every((i) => buttonWriting.classList.contains(i))).toBeTrue();
+        expect(test.buttonClass.casting.every((i) => buttonCasting.classList.contains(i))).toBeTrue();
+        expect(test.buttonClass.production.every((i) => buttonProduction.classList.contains(i))).toBeTrue();
+        expect(test.buttonClass.publishing.every((i) => buttonPublishing.classList.contains(i))).toBeTrue();
       });
     });
   });

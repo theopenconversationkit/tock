@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NbAlertModule, NbIconModule } from '@nebular/theme';
+
+import { TestSharedModule } from '../test-shared.module';
 
 import { NoBotConfigurationComponent } from './no-bot-configuration.component';
 
@@ -8,7 +11,8 @@ describe('NoBotConfigurationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NoBotConfigurationComponent ]
+      declarations: [NoBotConfigurationComponent],
+      imports: [TestSharedModule, NbAlertModule, NbIconModule]
     })
     .compileComponents();
   });
