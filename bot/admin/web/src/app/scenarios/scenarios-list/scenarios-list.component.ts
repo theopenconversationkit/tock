@@ -235,7 +235,10 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
         title: `Delete scenario "${scenario.name}"`,
-        subtitle: 'Are you sure you want to delete the scenario ?',
+        subtitle:
+          scenario.state === SCENARIO_STATE.current
+            ? 'Are you sure you want to delete the scenario and, if applicable, the corresponding TickStory?'
+            : 'Are you sure you want to delete the scenario ?',
         action: deleteAction
       }
     });
