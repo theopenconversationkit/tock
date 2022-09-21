@@ -289,7 +289,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 }
             }
             if (dialogFlowStatEnabled && botDefinition != null && lastDialog != null && lastSnapshot != null && lastUserAction != null) {
-                DialogFlowMongoDAO.addFlowStat(botDefinition, lastUserAction, lastDialog, lastSnapshot)
+                DialogFlowMongoDAO.addFlowStat(userTimeline, botDefinition, lastUserAction, lastDialog, lastSnapshot)
             }
         }
         logger.debug { "end saving timeline $userTimeline" }

@@ -32,9 +32,17 @@ internal class DialogFlowStateTransitionStatCol_Serializer :
         if(_text_ == null) { gen.writeNull() } else {
                 gen.writeString(_text_)
                 }
+        gen.writeFieldName("locale")
+        val _locale_ = value.locale
+        if(_locale_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_locale_, gen)
+                }
         gen.writeFieldName("date")
         val _date_ = value.date
         serializers.defaultSerializeValue(_date_, gen)
+        gen.writeFieldName("processedLevel")
+        val _processedLevel_ = value.processedLevel
+        gen.writeNumber(_processedLevel_)
         gen.writeEndObject()
     }
 }

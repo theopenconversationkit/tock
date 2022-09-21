@@ -338,7 +338,7 @@ export class ChartComponent implements OnChanges {
     this.chartOptions = {
       tooltip: {
         trigger: 'item',
-        formatter: '{a} <br/>{b} : {c} ({d}%)'
+        formatter: '{b} : {c} ({d}%)'
       },
       legend: {
         type: 'scroll',

@@ -21,6 +21,7 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinFileCompilation
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.create
+import ai.tock.shared.error
 import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
@@ -36,14 +37,15 @@ object KotlinCompilerClient {
     private val logger = KotlinLogging.logger {}
     val compilerDisabled: Boolean = booleanProperty("tock_bot_compiler_disabled", false)
 
-    private val service: KotlinCompilerService
-
-    init {
-        service = retrofitBuilderWithTimeoutAndLogger(compilerTimeoutInSeconds)
+    private val service: KotlinCompilerService? = try {
+        retrofitBuilderWithTimeoutAndLogger(compilerTimeoutInSeconds)
             .addJacksonConverter()
             .baseUrl(compilerUrl)
             .build()
             .create()
+    } catch (t: Throwable) {
+        logger.error(t)
+        null
     }
 
     fun compile(file: KotlinFile): KotlinFileCompilation? =
@@ -51,6 +53,6 @@ object KotlinCompilerClient {
             logger.warn { "kotlin compiler is disabled" }
             null
         } else {
-            service.compile(file).execute().body()
+            service?.compile(file)?.execute()?.body()
         }
 }

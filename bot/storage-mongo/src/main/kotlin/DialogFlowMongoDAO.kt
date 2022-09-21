@@ -16,15 +16,13 @@
 
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
-import ai.tock.bot.admin.bot.BotApplicationConfiguration_
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogFlowAggregateData
 import ai.tock.bot.admin.dialog.DialogFlowStateData
 import ai.tock.bot.admin.dialog.DialogFlowStateTransitionData
-import ai.tock.bot.admin.dialog.DialogFlowTransitionStatsData
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.admin.story.StoryDefinitionConfiguration_
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
@@ -41,8 +39,8 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.dialog.Snapshot
+import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getHackedConfigurationByApplicationIdAndBot
-import ai.tock.bot.mongo.ConfigurationLookup_.Companion.Configuration
 import ai.tock.bot.mongo.DialogFlowAggregateResult_.Companion.Count
 import ai.tock.bot.mongo.DialogFlowAggregateResult_.Companion.SeriesKey
 import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.BotId
@@ -61,11 +59,15 @@ import ai.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.Type
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.ApplicationId
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Date
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.DialogId
+import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.ProcessedLevel
 import ai.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.TransitionId
+import ai.tock.bot.mongo.DialogFlowStateTransitionStatDateAggregationCol_.Companion.ActionType
+import ai.tock.bot.mongo.DialogFlowStateTransitionStatDateAggregationCol_.Companion.ConfigurationName
+import ai.tock.bot.mongo.DialogFlowStateTransitionStatDateAggregationCol_.Companion.HourOfDay
+import ai.tock.bot.mongo.DialogFlowStateTransitionStatDateAggregationCol_.Companion.Locale
+import ai.tock.bot.mongo.DialogFlowStateTransitionStatDateAggregationCol_.Companion.StoryCategory
 import ai.tock.bot.mongo.GroupById_.Companion.ConnectorType
-import ai.tock.bot.mongo.NextStateLookup_.Companion.NextState
-import ai.tock.bot.mongo.StoryLookup_.Companion.Story
-import ai.tock.bot.mongo.TransitionLookup_.Companion.Transition
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultZoneId
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.error
@@ -73,11 +75,15 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.sumByLong
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.UpdateOneModel
+import com.mongodb.client.model.UpdateOptions
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.TemporalAccessor
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KProperty
 import mu.KotlinLogging
@@ -88,25 +94,28 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
-import org.litote.kmongo.arrayElemAt
-import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.dateToString
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
+import org.litote.kmongo.findOneById
 import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
 import org.litote.kmongo.gt
+import org.litote.kmongo.gte
 import org.litote.kmongo.ifNull
 import org.litote.kmongo.`in`
-import org.litote.kmongo.lookup
+import org.litote.kmongo.inc
 import org.litote.kmongo.lt
+import org.litote.kmongo.lte
 import org.litote.kmongo.match
+import org.litote.kmongo.ne
 import org.litote.kmongo.project
 import org.litote.kmongo.projection
-import org.litote.kmongo.projectionWith
+import org.litote.kmongo.set
+import org.litote.kmongo.setTo
 import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
@@ -134,9 +143,10 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
             .apply {
                 try {
-                    ensureIndex(TransitionId)
                     ensureIndex(TransitionId, Date)
+                    ensureIndex(ApplicationId, Date)
                     ensureIndex(DialogId)
+                    ensureIndex(ProcessedLevel)
                     ensureIndex(
                         Date,
                         indexOptions = IndexOptions()
@@ -146,6 +156,241 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     logger.error(e)
                 }
             }
+
+    private val flowTransitionStatsDateAggregationCol =
+        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatDateAggregationCol>("flow_transition_stats_date")
+            .apply {
+                try {
+                    ensureIndex(
+                        ApplicationId,
+                        Date,
+                        Intent,
+                        StoryDefinitionId,
+                        StoryCategory,
+                        StoryType,
+                        Locale,
+                        ConfigurationName,
+                        ConnectorType,
+                        ActionType,
+                        HourOfDay,
+                    )
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
+            }
+
+    private val flowTransitionStatsDialogAggregationCol =
+        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatDialogAggregationCol>("flow_transition_stats_dialog")
+            .apply {
+                try {
+                    ensureIndex(
+                        ApplicationId,
+                        Date,
+                        DialogId,
+                    )
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
+            }
+
+    private val flowTransitionStatsUserAggregationCol =
+        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatUserAggregationCol>("flow_transition_stats_user")
+            .apply {
+                try {
+                    ensureIndex(
+                        ApplicationId,
+                        Date,
+                    )
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
+            }
+
+
+    private const val currentProcessedLevel = 1
+
+    override fun initFlowStatCrawl() {
+        val executor = Executors.newSingleThreadExecutor()
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
+            {
+                try {
+                    var found = true
+                    var minDate: LocalDateTime? = null
+                    val applicationsMap =
+                        mutableMapOf<Id<BotApplicationConfiguration>, BotApplicationConfiguration>()
+                    val nextStateMap = mutableMapOf<Id<DialogFlowStateCol>, DialogFlowStateCol>()
+                    val storyMap = mutableMapOf<Triple<String, String, String>, StoryDefinitionConfiguration?>()
+                    while (found) {
+                        val transitionsMap =
+                            mutableMapOf<Id<DialogFlowStateTransitionCol>, DialogFlowStateTransitionCol>()
+                        found = false
+                        flowTransitionStatsCol
+                            .find(ProcessedLevel ne currentProcessedLevel)
+                            .limit(1000)
+                            .toList()
+                            .apply {
+                                if (isNotEmpty()) {
+                                    logger.debug { "update $size stats" }
+                                    val dateStats: List<UpdateOneModel<DialogFlowStateTransitionStatDateAggregationCol>> =
+                                        mapNotNull {
+                                            try {
+                                                val transition = transitionsMap.getOrPut(it.transitionId) {
+                                                    flowTransitionCol.findOneById(it.transitionId)
+                                                        ?: error("no transition for id ${it.transitionId}")
+                                                }
+                                                val configuration = applicationsMap.getOrPut(it.applicationId) {
+                                                    BotApplicationConfigurationMongoDAO.getConfigurationById(it.applicationId)
+                                                        ?: error("no application for id ${it.applicationId}")
+                                                }
+                                                val nextState = nextStateMap.getOrPut(transition.nextStateId) {
+                                                    flowStateCol.findOneById(transition.nextStateId)
+                                                        ?: error("no state for id ${transition.nextStateId}")
+                                                }
+                                                val story = storyMap.getOrPut(
+                                                    Triple(
+                                                        configuration.namespace,
+                                                        configuration.botId,
+                                                        nextState.storyDefinitionId
+                                                    )
+                                                ) {
+                                                    StoryDefinitionConfigurationMongoDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                                                        configuration.namespace,
+                                                        configuration.botId,
+                                                        nextState.storyDefinitionId
+                                                    )
+                                                        ?: StoryDefinitionConfigurationMongoDAO.getStoryDefinitionById(
+                                                            nextState.storyDefinitionId.toId()
+                                                        )
+                                                }
+                                                val date = it.date.atZone(defaultZoneId).toLocalDateTime()
+                                                val truncatedDate = date.truncatedTo(DAYS)
+                                                minDate = minDate?.let { d -> minOf(d, truncatedDate) } ?: truncatedDate
+                                                UpdateOneModel(
+                                                    and(
+                                                        ApplicationId eq it.applicationId,
+                                                        DialogFlowStateTransitionStatDateAggregationCol_.Date eq truncatedDate,
+                                                        Intent eq transition.intent,
+                                                        StoryDefinitionId eq nextState.storyName,
+                                                        StoryCategory eq (story?.category ?: "default"),
+                                                        StoryType eq (nextState.storyType
+                                                            ?: AnswerConfigurationType.builtin),
+                                                        Locale eq (it.locale ?: defaultLocale),
+                                                        ConfigurationName eq configuration.name,
+                                                        ConnectorType eq configuration.connectorType,
+                                                        ActionType eq transition.type,
+                                                        HourOfDay eq date.hour
+                                                    ),
+                                                    inc(Count, 1),
+                                                    UpdateOptions().upsert(true)
+                                                )
+                                            } catch (t: Throwable) {
+                                                logger.error(t)
+                                                null
+                                            }
+                                        }
+
+                                    logger.debug { "statsDate calculated" }
+
+                                    val dialogStats: List<UpdateOneModel<DialogFlowStateTransitionStatDialogAggregationCol>> =
+                                        mapNotNull {
+                                            try {
+                                                val date = it.date.atZone(defaultZoneId).toLocalDateTime()
+
+                                                UpdateOneModel(
+                                                    and(
+                                                        ApplicationId eq it.applicationId,
+                                                        DialogFlowStateTransitionStatDialogAggregationCol_.Date eq date.truncatedTo(
+                                                            DAYS
+                                                        ),
+                                                        DialogId eq it.dialogId,
+                                                    ),
+                                                    inc(Count, 1),
+                                                    UpdateOptions().upsert(true)
+                                                )
+                                            } catch (t: Throwable) {
+                                                logger.error(t)
+                                                null
+                                            }
+                                        }
+
+                                    val stats: List<UpdateOneModel<DialogFlowStateTransitionStatCol>> = map {
+                                        UpdateOneModel(
+                                            and(
+                                                ApplicationId eq it.applicationId,
+                                                TransitionId eq it.transitionId,
+                                                DialogId eq it.dialogId,
+                                                Date eq it.date,
+                                                ProcessedLevel ne currentProcessedLevel,
+                                            ),
+                                            set(ProcessedLevel setTo currentProcessedLevel)
+                                        )
+                                    }
+                                    logger.debug { "stats calculated" }
+
+                                    executor.submit {
+                                        if (dateStats.isNotEmpty()) {
+                                            flowTransitionStatsDateAggregationCol.bulkWrite(dateStats)
+                                        }
+                                    }
+
+                                    if (stats.isNotEmpty()) {
+                                        found = true
+                                        flowTransitionStatsCol.bulkWrite(stats)
+                                    }
+
+                                    logger.debug { "stats persisted" }
+
+                                    if (dialogStats.isNotEmpty()) {
+                                        flowTransitionStatsDialogAggregationCol.bulkWrite(dialogStats)
+                                    }
+
+                                    logger.debug { "stats date persisted" }
+                                }
+                            }
+                    }
+                    if (minDate != null) {
+                        logger.debug { "min date $minDate" }
+                        val match = match(DialogFlowStateTransitionStatDialogAggregationCol_.Date gte minDate)
+                        val distinct = group(
+                            document(
+                                ApplicationId from ApplicationId,
+                                Date from Date
+                            ),
+                            Count sum 1
+                        )
+                        val proj = project(
+                            Date from GroupByIdContainer_._id.date.projection,
+                            ApplicationId from GroupByIdContainer_._id.applicationId.projection,
+                            Count from Count.projection
+                        )
+                        val userStats: List<UpdateOneModel<DialogFlowStateTransitionStatUserAggregationCol>> =
+                            flowTransitionStatsDialogAggregationCol
+                                .aggregate<DialogFlowAggregateApplicationIdResult>(match, distinct, proj)
+                                .toList()
+                                .map {
+                                    logger.debug { it }
+                                    UpdateOneModel(
+                                        and(
+                                            ApplicationId eq it.applicationId,
+                                            DialogFlowStateTransitionStatUserAggregationCol_.Date eq it.date
+                                        ),
+                                        set(Count setTo it.count),
+                                        UpdateOptions().upsert(true)
+                                    )
+                                }
+                        if (userStats.isNotEmpty()) {
+                            flowTransitionStatsUserAggregationCol.bulkWrite(userStats)
+                        }
+                    }
+                } catch (e: Throwable) {
+                    logger.error(e)
+                }
+            },
+            1,
+            1,
+            TimeUnit.MINUTES
+        )
+    }
 
     override fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition) {
         TODO("not implemented")
@@ -162,8 +407,12 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         logger.debug { "Fetching application flow for ns $namespace, bot $botId, apps $applicationIds from $from to $to..." }
         val states = findStates(namespace, botId)
         val transitions = findTransitions(namespace, botId)
+        val supportedTransitions = transitions.map { it._id }.toSet()
         val stats =
-            findStats(transitions.map { it._id }, applicationIds, from, to).associateBy { it.first }
+            findStats(applicationIds, from, to)
+                .asSequence()
+                .filter { supportedTransitions.contains(it.first) }
+                .associateBy { it.first }
                 .mapValues { it.value.second }
 
         @Suppress("UNCHECKED_CAST")
@@ -201,6 +450,12 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats, emptyList()/*TODO*/)
     }
 
+    private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =
+        flowStateCol.find(Namespace eq namespace, BotId eq botId).toList()
+
+    private fun findTransitions(namespace: String, botId: String): List<DialogFlowStateTransitionCol> =
+        flowTransitionCol.find(Namespace eq namespace, BotId eq botId).toList()
+
     override fun countMessagesByDate(
         namespace: String,
         botId: String,
@@ -210,14 +465,17 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         // group messages that were sent the same day together
-        val group = group(Date.kDateToString(), Count.sum(1))
+        val group = group(Date.kDateToString(), Count.sum(Count.projection))
 
         val proj = project(
             Date from _id.projection,
             Count from Count.projection,
             SeriesKey from "Messages"
         )
-        return aggregateFlowTransitionStats(match, group, proj)
+        return flowTransitionStatsDateAggregationCol
+            .aggregate<DialogFlowAggregateResult>(match, group, proj)
+            .groupBy({ it.date }) { DialogFlowAggregateData(it.seriesKey, it.count) }
+            .mapValues { entry -> entry.value.sortedBy { it.seriesKey } }
     }
 
 
@@ -229,23 +487,19 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        // keep one object for every date/user combination
         val distinct = group(
-            document(
-                Date from Date.kDateToString(),
-                DialogId from DialogId
-            )
-        )
-        val group = group(
-            GroupByIdContainer_._id.date.projection,
-            Count.sum(1)
+            Date.kDateToString(),
+            Count sum Count.projection,
         )
         val proj = project(
             Date from _id.projection,
             Count from Count.projection,
             SeriesKey from "Users"
         )
-        return aggregateFlowTransitionStats(match, distinct, group, proj)
+        return flowTransitionStatsUserAggregationCol
+            .aggregate<DialogFlowAggregateResult>(match, distinct, proj)
+            .groupBy({ it.date }) { DialogFlowAggregateData(it.seriesKey, it.count) }
+            .mapValues { entry -> entry.value.sortedBy { it.seriesKey } }
     }
 
     override fun countMessagesByDateAndConnectorType(
@@ -256,25 +510,19 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val lookup = lookup(
-            BotApplicationConfigurationMongoDAO.col,
-            ApplicationId,
-            BotApplicationConfiguration_._id,
-            Configuration
-        )
         val group = group(
             document(
                 Date from Date.kDateToString(),
-                ConnectorType from Configuration.connectorType.id.arrayElemAt(0)
+                ConnectorType from ConnectorType.id
             ),
-            Count.sum(1)
+            Count sum Count.projection
         )
         val proj = project(
             Date from GroupByIdContainer_._id.date.projection,
             Count from Count.projection,
             SeriesKey from GroupByIdContainer_._id.connectorType.projection,
         )
-        return aggregateFlowTransitionStats(match, lookup, group, proj)
+        return aggregateFlowTransitionStats(match, group, proj)
     }
 
     override fun countMessagesByDateAndConfiguration(
@@ -285,25 +533,19 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val lookup = lookup(
-            BotApplicationConfigurationMongoDAO.col,
-            ApplicationId,
-            BotApplicationConfiguration_._id,
-            Configuration
-        )
         val group = group(
             document(
                 Date from Date.kDateToString(),
-                GroupById_.Configuration from Configuration.applicationId.arrayElemAt(0)
+                GroupById_.Configuration from ConfigurationName
             ),
-            Count.sum(1)
+            Count sum Count.projection
         )
         val proj = project(
             Date from GroupByIdContainer_._id.date.projection,
             Count from Count.projection,
             SeriesKey from GroupByIdContainer_._id.configuration.projection,
         )
-        return aggregateFlowTransitionStats(match, lookup, group, proj)
+        return aggregateFlowTransitionStats(match, group, proj)
     }
 
     override fun countMessagesByDayOfWeek(
@@ -314,13 +556,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<DayOfWeek, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val group = group(Date.kDateToString(format = "%u"), Count.sum(1))
+        val group = group(Date.kDateToString(format = "%u"), Count sum Count.projection)
         val proj = project(
             DialogFlowAggregateResult::date from _id.projection,
             DialogFlowAggregateResult::count from Count.projection,
         )
         logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
+        return flowTransitionStatsDateAggregationCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
             .associateBy({ DayOfWeek.of(it.date.toInt()) }, { it.count })
     }
 
@@ -332,13 +574,14 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<Int, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val group = group(Date.kDateToString(format = "%H"), Count.sum(1))
+        val group = group(HourOfDay, Count sum Count.projection)
         val proj = project(
             DialogFlowAggregateResult::date from _id.projection,
             DialogFlowAggregateResult::count from Count.projection,
         )
         logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
+        return flowTransitionStatsDateAggregationCol
+            .aggregate<DialogFlowAggregateResult>(match, group, proj)
             .associateBy({ it.date.toInt() }, { it.count })
     }
 
@@ -350,25 +593,19 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val lookup = lookup(
-            flowTransitionCol,
-            TransitionId,
-            DialogFlowStateTransitionCol_._id,
-            Transition
-        )
         val group = group(
             document(
                 Date from Date.kDateToString(),
-                GroupById_.Intent from Transition.intent.arrayElemAt(0)
+                Intent from ifNull(Intent, "unknown")
             ),
-            Count.sum(1)
+            Count sum Count.projection
         )
         val proj = project(
             Date from GroupByIdContainer_._id.date.projection,
             Count from Count.projection,
             SeriesKey from GroupByIdContainer_._id.intent.projection,
         )
-        return aggregateFlowTransitionStats(match, lookup, group, proj)
+        return aggregateFlowTransitionStats(match, group, proj)
     }
 
     override fun countMessagesByIntent(
@@ -379,20 +616,11 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val lookup = lookup(
-            flowTransitionCol,
-            TransitionId,
-            DialogFlowStateTransitionCol_._id,
-            Transition
-        )
         val group = group(
-            ifNull(Transition.intent.arrayElemAt(0), "unknown"),
-            Count.sum(1)
+            ifNull(Intent, "unknown"),
+            Count sum Count.projection
         )
-        val proj = projectToResult()
-        logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj)
-            .associateBy({ it.seriesKey }, { it.count })
+        return aggregateStatDate(match, group)
     }
 
     override fun countMessagesByStory(
@@ -402,15 +630,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int> {
-        val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
+        val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
-            NextState.storyDefinitionId.arrayElemAt(0),
-            Count.sum(1)
+            StoryDefinitionId,
+            Count sum Count.projection
         )
 
-        val proj = projectToResult()
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(*nextStateLookup, group, proj)
-            .associateBy({ it.seriesKey }) { it.count }
+        return aggregateStatDate(match, group)
     }
 
     override fun countMessagesByDateAndStory(
@@ -420,20 +646,20 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
-        val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
+        val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
             document(
                 Date from Date.kDateToString(),
-                StoryDefinitionId from NextState.storyDefinitionId.arrayElemAt(0)
+                StoryDefinitionId from StoryDefinitionId
             ),
-            Count.sum(1)
+            Count sum Count.projection
         )
         val proj = project(
             Date from GroupByIdContainer_._id.date.projection,
             Count from Count.projection,
             SeriesKey from GroupByIdContainer_._id.storyDefinitionId.projection,
         )
-        return aggregateFlowTransitionStats(*nextStateLookup, group, proj)
+        return aggregateFlowTransitionStats(match, group, proj)
     }
 
     override fun countMessagesByStoryCategory(
@@ -443,7 +669,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int> {
-        return countMessagesByStoryProperty(applicationIds, from, to, "category", "default")
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val group = group(
+            StoryCategory,
+            Count sum Count.projection
+        )
+
+        return aggregateStatDate(match, group)
     }
 
     override fun countMessagesByStoryType(
@@ -453,7 +685,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int> {
-        return countMessagesByStoryProperty(applicationIds, from, to, "currentType", "builtin")
+        val match = buildAnalyticsFilter(applicationIds, from, to)
+        val group = group(
+            StoryType,
+            Count sum Count.projection
+        )
+
+        return aggregateStatDate(match, group)
     }
 
     override fun countMessagesByStoryLocale(
@@ -463,40 +701,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): Map<String, Int> {
-        return countMessagesByStoryProperty(applicationIds, from, to, "userSentenceLocale", "unknown")
-    }
-
-    private fun countMessagesByStoryProperty(
-        applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
-        queriedProperty: String,
-        builtInStoryQualifier: String
-    ): Map<String, Int> {
-        val nextStateLookup = buildNextStateLookup(applicationIds, from, to)
-        val projectStory = project(StoryDefinitionId from NextState.storyDefinitionId.arrayElemAt(0))
-
-        //built-in story are not handled here - we would need an other join
-        val storyLookup =
-            lookup(
-                StoryDefinitionConfigurationMongoDAO.col,
-                StoryDefinitionId,
-                StoryDefinitionConfiguration_._id,
-                Story
-            )
+        val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
-            ifNull(arrayElemAt(Story projectionWith queriedProperty, 0), builtInStoryQualifier),
-            Count.sum(1)
+            Locale,
+            Count sum Count.projection
         )
 
-        val proj = projectToResult()
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(
-            *nextStateLookup,
-            projectStory,
-            storyLookup,
-            group,
-            proj
-        ).associateBy({ it.seriesKey }, { it.count })
+        return aggregateStatDate(match, group)
     }
 
     override fun countMessagesByActionType(
@@ -507,14 +718,17 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         to: ZonedDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
-        val lookup = lookup(flowTransitionCol, TransitionId, DialogFlowStateTransitionCol_._id, Transition)
         val group = group(
-            Transition.type.arrayElemAt(0),
-            Count.sum(1)
+            ifNull(ActionType, nlp),
+            Count sum Count.projection
         )
+        return aggregateStatDate(match, group)
+    }
+
+    private fun aggregateStatDate(match: Bson, group: Bson): Map<String, Int> {
         val proj = projectToResult()
-        logger.debug { "Flow Message pipeline: [$match, $lookup, $group, $proj]" }
-        return flowTransitionStatsCol.aggregate<DialogFlowAggregateResult>(match, lookup, group, proj)
+        logger.debug { "Flow Message pipeline: [$match, $group, $proj]" }
+        return flowTransitionStatsDateAggregationCol.aggregate<DialogFlowAggregateResult>(match, group, proj)
             .associateBy({ it.seriesKey }, { it.count })
     }
 
@@ -522,26 +736,6 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         SeriesKey from _id.projection,
         Count from Count.projection
     )
-
-    private fun buildNextStateLookup(
-        applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
-    ): Array<Bson> {
-        val match = buildAnalyticsFilter(applicationIds, from, to)
-        val transitionLookup = lookup(
-            flowTransitionCol,
-            TransitionId,
-            DialogFlowStateTransitionCol_._id,
-            Transition
-        )
-        val proj = project(
-            Date from 1,
-            NextStateId from Transition.nextStateId.arrayElemAt(0)
-        )
-        val nextStateLookup = lookup(flowStateCol, NextStateId, _id, NextState)
-        return arrayOf(match, transitionLookup, proj, nextStateLookup)
-    }
 
     private fun buildAnalyticsFilter(
         applicationIds: Set<Id<BotApplicationConfiguration>>,
@@ -551,180 +745,48 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         and(
             listOfNotNull(
                 if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                if (from == null) null else Date gt from.toInstant(),
-                if (to == null) null else Date lt to.toInstant()
+                if (from == null) null else Date gte from.toInstant(),
+                if (to == null) null else Date lte to.toInstant()
             )
         )
     )
 
     private fun aggregateFlowTransitionStats(vararg pipeline: Bson): Map<String, List<DialogFlowAggregateData>> {
         logger.debug { "Flow Message pipeline: ${pipeline.contentToString()}" }
-        return flowTransitionStatsCol
+        return flowTransitionStatsDateAggregationCol
             .aggregate<DialogFlowAggregateResult>(*pipeline)
             .groupBy({ it.date }) { DialogFlowAggregateData(it.seriesKey, it.count) }
             .mapValues { entry -> entry.value.sortedBy { it.seriesKey } }
     }
 
-    override fun search(
-        namespace: String,
-        botId: String,
-        applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
-        intent: String?
-    ): List<DialogFlowTransitionStatsData> {
-        val filter =
-            and(
-                listOfNotNull(
-                    if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                    if (from == null) null else Date gt from.toInstant(),
-                    if (to == null) null else Date lt to.toInstant()
-                )
-            )
-        logger.debug { "Flow Message filter: $filter" }
-        val zoneId = defaultZoneId
-        return flowTransitionStatsCol.find(filter).ascendingSort(Date).toList()
-            .map {
-                DialogFlowTransitionStatsData(
-                    applicationId = it.applicationId.toString(),
-                    transitionId = it.transitionId.toString(),
-                    dialogId = it.dialogId.toString(),
-                    text = it.text,
-                    date = LocalDateTime.ofInstant(it.date, zoneId)
-                )
-            }
-    }
-
-    override fun searchByDateWithIntent(
-        namespace: String,
-        botId: String,
-        applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
-        intent: String?
-    ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
-        // SELECT (m.applicationId, m.transitionId, m.dialogId, t.intent, m.date)
-        // FROM messages m INNER JOIN transitions t ON m.transitionId = t.id
-        // WHERE m.date BETWEEN (from, to) AND m.namespace = namespace
-
-        // all message transitions contained in the database
-        val transitions: Map<String, DialogFlowStateTransitionCol> =
-            findTransitions(namespace, botId).associateBy { it._id.toString() }
-        // all messages contained in the database, for the relevant time period and namespace
-        val messages: List<DialogFlowTransitionStatsData> = search(namespace, botId, applicationIds, from, to, intent)
-        // all transitions that are used by at least one message over the relevant time period
-        val transitionToIntent: Map<String?, String?> =
-            messages.associateBy({ it.transitionId }, { transitions[it.transitionId]?.intent })
-        return Pair(
-            messages.map {
-                DialogFlowTransitionStatsData(
-                    applicationId = it.applicationId,
-                    transitionId = it.transitionId,
-                    dialogId = it.dialogId,
-                    text = transitionToIntent[it.transitionId],
-                    date = it.date
-                )
-            },
-            emptyList()
-        )
-    }
-
-    override fun searchByDateWithActionType(
-        namespace: String,
-        botId: String,
-        applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
-        intent: String?
-    ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
-        val transitions = findTransitions(namespace, botId)
-        val filteredTransitions = transitions
-            .groupBy { it._id.toString() }
-            .mapValues { it.value.firstOrNull() }
-        val filteredTransitionsByIntent =
-            filteredTransitions.filter { it.value?.intent == intent || intent.isNullOrEmpty() }
-
-        val messages = search(namespace, botId, applicationIds, from, to, null)
-        val transitionToType =
-            messages.groupBy { it.transitionId }.keys.associateBy({ it }, { filteredTransitionsByIntent[it] })
-        val intents = messages.groupBy { it.transitionId }.keys.associateBy({ it },
-            { filteredTransitions[it] }).values.mapNotNull { it?.intent }.distinct().sorted()
-        return Pair(
-            messages.filter { transitionToType[it.transitionId]?.type != null }.map {
-                DialogFlowTransitionStatsData(
-                    applicationId = it.applicationId,
-                    transitionId = it.transitionId,
-                    dialogId = it.dialogId,
-                    text = transitionToType[it.transitionId]?.type.toString(),
-                    date = it.date
-                )
-            },
-            intents
-        )
-    }
-
-    override fun searchByDateWithStory(
-        namespace: String,
-        botId: String,
-        applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
-        intent: String?
-    ): Pair<List<DialogFlowTransitionStatsData>, List<String>> {
-        val states = findStates(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
-        val transitions =
-            findTransitions(namespace, botId).groupBy { it._id.toString() }.mapValues { it.value.firstOrNull() }
-        val messages = search(namespace, botId, applicationIds, from, to, intent)
-        val transitionToState =
-            messages.groupBy { it.transitionId }.keys.associateBy({ it }, { transitions[it]?.nextStateId.toString() })
-        val transitionToStory = transitionToState.mapValues { states[it.value]?.storyDefinitionId }
-        return Pair(
-            messages.map {
-                DialogFlowTransitionStatsData(
-                    applicationId = it.applicationId,
-                    transitionId = it.transitionId,
-                    dialogId = it.dialogId,
-                    text = transitionToStory[it.transitionId],
-                    date = it.date
-                )
-            },
-            emptyList()
-        )
-    }
-
-    private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =
-        flowStateCol.find(Namespace eq namespace, BotId eq botId).toList()
-
-    private fun findTransitions(namespace: String, botId: String): List<DialogFlowStateTransitionCol> =
-        flowTransitionCol.find(Namespace eq namespace, BotId eq botId).toList()
-
     private fun findStats(
-        transitionIds: List<Id<DialogFlowStateTransitionCol>>,
         botAppConfIds: Set<Id<BotApplicationConfiguration>>,
         from: ZonedDateTime?,
         to: ZonedDateTime?
     ): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
-        flowTransitionStatsCol.aggregate<Pair<String, Long>>(
-            match(
-                and(
-                    listOfNotNull(
-                        TransitionId `in` transitionIds,
-                        if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds,
-                        if (from == null) null else Date gt from.toInstant(),
-                        if (to == null) null else Date lt to.toInstant()
+        flowTransitionStatsCol
+            .aggregate<Pair<String, Long>>(
+                match(
+                    and(
+                        listOfNotNull(
+                            if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds,
+                            if (from == null) null else Date gt from.toInstant(),
+                            if (to == null) null else Date lt to.toInstant()
+                        )
                     )
+                ),
+                group(
+                    TransitionId,
+                    Pair<*, Long>::second sum 1
+                ),
+                project(
+                    Pair<Id<DialogFlowStateTransitionCol>, Long>::first from _id,
+                    Pair<*, Long>::second from Pair<*, Long>::second
                 )
-            ),
-            org.litote.kmongo.group(
-                TransitionId,
-                Pair<*, Long>::second sum 1
-            ),
-            project(
-                Pair<Id<DialogFlowStateTransitionCol>, Long>::first from _id,
-                Pair<*, Long>::second from Pair<*, Long>::second
-            )
 
-        ).map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }.toList()
+            )
+            .map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }
+            .toList()
 
     private fun findState(botDefinition: BotDefinition, snapshot: Snapshot?): DialogFlowStateCol? {
         val storyDefinitionId = snapshot?.storyDefinitionId
@@ -815,7 +877,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     .also { flowTransitionCol.insertOne(it) }
                 )
 
-    fun addFlowStat(botDefinition: BotDefinition, lastUserAction: Action, dialog: Dialog, snapshot: SnapshotCol) {
+    fun addFlowStat(
+        userTimeline: UserTimeline,
+        botDefinition: BotDefinition,
+        lastUserAction: Action,
+        dialog: Dialog,
+        snapshot: SnapshotCol
+    ) {
 
         val previousState = findState(botDefinition, snapshot.snapshots.getOrNull(snapshot.snapshots.size - 2))
         val state = findState(botDefinition, snapshot.snapshots.lastOrNull())
@@ -830,7 +898,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         botAppConf._id,
                         transition._id,
                         dialog.id,
-                        obfuscate((lastUserAction as? SendSentence)?.stringText)
+                        obfuscate((lastUserAction as? SendSentence)?.stringText),
+                        (lastUserAction as? SendSentence)?.nlpStats?.locale ?: userTimeline.userPreferences.locale
                     )
                 )
             } else {
@@ -855,6 +924,7 @@ internal data class GroupById(
     val configuration: String,
     val intent: String,
     val storyDefinitionId: String,
+    val applicationId: Id<BotApplicationConfiguration>
 )
 
 @Data(internal = true)

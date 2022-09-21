@@ -62,8 +62,8 @@ internal object TestModelMongoDAO : TestModelDAO {
 
     private val intentErrorCol: MongoCollection<IntentTestError> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<IntentTestError>()
-        c.ensureIndex(IntentTestError_.ApplicationId, IntentTestError_.Language, IntentTestError_.Count)
-        c.ensureUniqueIndex(IntentTestError_.ApplicationId, IntentTestError_.Language, IntentTestError_.Text)
+        c.ensureIndex(IntentTestError_.ApplicationId, IntentTestError_.Language, Count)
+        c.ensureUniqueIndex(IntentTestError_.ApplicationId, IntentTestError_.Language, Text)
         c
     }
 
@@ -149,7 +149,7 @@ internal object TestModelMongoDAO : TestModelDAO {
                     )
                 )
             }
-            ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text)))
+            ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text))) else Unit
     }
 
     override fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
@@ -207,7 +207,7 @@ internal object TestModelMongoDAO : TestModelDAO {
                     )
                 )
             }
-            ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text)))
+            ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text))) else Unit
     }
 
     override fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {

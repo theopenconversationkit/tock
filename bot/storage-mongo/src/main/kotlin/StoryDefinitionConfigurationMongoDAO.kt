@@ -161,14 +161,6 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
-    override fun getStoryDefinitionsByNamespaceBotIdStoryId(
-        namespace: String,
-        botId: String,
-        storyId: String
-    ): StoryDefinitionConfiguration? {
-        return col.findOne(and(Namespace eq namespace, BotId eq botId, StoryId eq storyId))
-    }
-
     override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> =
         col.withDocumentClass<StoryDefinitionConfigurationSummary>()
             .find(

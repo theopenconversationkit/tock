@@ -307,7 +307,7 @@ object BotAdminService {
             getBotConfigurationsByNamespaceAndNlpModel(namespace, applicationName).firstOrNull()
         return if (botConf != null) {
             val story =
-                storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                     namespace = namespace,
                     botId = botConf.botId,
                     storyId = storyDefinitionId

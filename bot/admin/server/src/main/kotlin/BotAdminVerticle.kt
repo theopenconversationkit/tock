@@ -48,6 +48,7 @@ import ai.tock.bot.connector.rest.addRestConnector
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
+import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
@@ -86,12 +87,15 @@ open class BotAdminVerticle : AdminVerticle() {
 
     private val i18n: I18nDAO by injector.instance()
 
+    private val dialogFlowDAO: DialogFlowDAO by injector.instance()
+
     private val front = FrontClient
 
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
     override fun configureServices() {
         initTranslator()
+        dialogFlowDAO.initFlowStatCrawl()
         super.configureServices()
     }
 

@@ -25,6 +25,7 @@ import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType.bot
+import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.shared.defaultNamespace
 import io.mockk.every
@@ -79,7 +80,8 @@ class DialogFlowMongoDAOTest : AbstractTest() {
             )
         )
         val action = SendSentence(PlayerId("a"), "appId", PlayerId("appId", bot), "test")
-        DialogFlowMongoDAO.addFlowStat(def, action, dialog, snapshotCol)
+        val user = UserTimeline(PlayerId("a"))
+        DialogFlowMongoDAO.addFlowStat(user, def, action, dialog, snapshotCol)
     }
 
     @Test
