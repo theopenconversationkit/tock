@@ -1,13 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  NbButtonModule,
-  NbCardModule,
-  NbDialogRef,
-  NbIconModule,
-  NbInputModule,
-  NbToggleModule,
-  NbTooltipModule
-} from '@nebular/theme';
+import { NbButtonModule, NbCardModule, NbDialogRef, NbIconModule, NbInputModule, NbToggleModule, NbTooltipModule } from '@nebular/theme';
 import { StateService } from '../../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../../shared/test-shared.module';
 import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
@@ -68,15 +60,7 @@ describe('IntentEditComponent', () => {
           useValue: {}
         }
       ],
-      imports: [
-        TestSharedModule,
-        NbInputModule,
-        NbButtonModule,
-        NbIconModule,
-        NbTooltipModule,
-        NbToggleModule,
-        NbCardModule
-      ]
+      imports: [TestSharedModule, NbInputModule, NbButtonModule, NbIconModule, NbTooltipModule, NbToggleModule, NbCardModule]
     }).compileComponents();
   });
 

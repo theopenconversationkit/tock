@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
@@ -23,12 +15,7 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
-import {
-  getContrastYIQ,
-  getScenarioActionDefinitions,
-  getSmTransitionParentsByname,
-  removeSmStateById
-} from '../../commons/utils';
+import { getContrastYIQ, getScenarioActionDefinitions, getSmTransitionParentsByname, removeSmStateById } from '../../commons/utils';
 import { ContextCreateComponent } from './context-create/context-create.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
@@ -59,47 +46,41 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.scenarioConceptionService.scenarioDesignerItemsCommunication
-      .pipe(takeUntil(this.destroy))
-      .subscribe((evt) => {
-        if (evt.type == 'addAnswer') this.addItem(evt.item);
-        if (evt.type == 'deleteAnswer') this.deleteItem(evt.item, evt.parentItemId);
-        if (evt.type == 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
-        if (evt.type == 'itemSelected') this.selectItem(evt.item);
-        if (evt.type == 'testItem') this.testStory(evt.item);
-        if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
-        if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
-        if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
-      });
+    this.scenarioConceptionService.scenarioDesignerItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
+      if (evt.type == 'addAnswer') this.addItem(evt.item);
+      if (evt.type == 'deleteAnswer') this.deleteItem(evt.item, evt.parentItemId);
+      if (evt.type == 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
+      if (evt.type == 'itemSelected') this.selectItem(evt.item);
+      if (evt.type == 'testItem') this.testStory(evt.item);
+      if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
+      if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
+      if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
+    });
   }
 
   contextsPanelDisplayed: boolean = true;
 
   getContextEntityColor(context: TickContext): string {
-    if (context.entityType)
-      return entityColor(qualifiedRole(context.entityType, context.entityRole));
+    if (context.entityType) return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
   getContextEntityContrast(context: TickContext): string {
-    if (context.entityType)
-      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
+    if (context.entityType) return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
 
   addContext(): void {
     const modal = this.dialogService.openDialog(ContextCreateComponent, {
       context: {}
     });
-    const validate = modal.componentRef.instance.validate
-      .pipe(takeUntil(this.destroy))
-      .subscribe((contextDef) => {
-        this.scenario.data.contexts.push({
-          name: contextDef.name,
-          type: 'string'
-        });
-
-        validate.unsubscribe();
-        modal.close();
+    const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((contextDef) => {
+      this.scenario.data.contexts.push({
+        name: contextDef.name,
+        type: 'string'
       });
+
+      validate.unsubscribe();
+      modal.close();
+    });
   }
 
   confirmDeleteContext(context: TickContext): void {
@@ -121,10 +102,8 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   deleteContext(context: TickContext): void {
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
-        item.tickActionDefinition.inputContextNames =
-          item.tickActionDefinition.inputContextNames.filter((icn) => icn != context.name);
-        item.tickActionDefinition.outputContextNames =
-          item.tickActionDefinition.outputContextNames.filter((icn) => icn != context.name);
+        item.tickActionDefinition.inputContextNames = item.tickActionDefinition.inputContextNames.filter((icn) => icn != context.name);
+        item.tickActionDefinition.outputContextNames = item.tickActionDefinition.outputContextNames.filter((icn) => icn != context.name);
       }
     });
     this.scenario.data.contexts = this.scenario.data.contexts.filter((ctx) => ctx !== context);
@@ -175,9 +154,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
       this.removeItemDefinition(itemRef);
-      this.scenario.data.scenarioItems = this.scenario.data.scenarioItems.filter(
-        (item) => item.id != itemRef.id
-      );
+      this.scenario.data.scenarioItems = this.scenario.data.scenarioItems.filter((item) => item.id != itemRef.id);
     }
   }
 
@@ -200,10 +177,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   removeItemDefinition(item: ScenarioItem): void {
     if (item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
-        const intentTransitionsParents = getSmTransitionParentsByname(
-          item.intentDefinition.name,
-          this.scenario.data.stateMachine
-        );
+        const intentTransitionsParents = getSmTransitionParentsByname(item.intentDefinition.name, this.scenario.data.stateMachine);
         intentTransitionsParents.forEach((parent) => {
           delete parent.on[item.intentDefinition.name];
         });
@@ -388,9 +362,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   }
 
   getBrotherhood(item: ScenarioItem): ScenarioItem[] {
-    return this.scenario.data.scenarioItems.filter((oitem) =>
-      oitem.parentIds?.some((oip) => item.parentIds?.includes(oip))
-    );
+    return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.some((oip) => item.parentIds?.includes(oip)));
   }
 
   getItemBrothers(item: ScenarioItem): ScenarioItem[] {

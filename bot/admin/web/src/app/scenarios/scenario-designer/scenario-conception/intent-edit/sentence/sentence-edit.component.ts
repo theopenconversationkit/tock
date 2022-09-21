@@ -22,10 +22,7 @@ import { DialogService } from '../../../../../core-nlp/dialog.service';
 import { StateService } from '../../../../../core-nlp/state.service';
 import { EntityDefinition, qualifiedName, qualifiedRole, Sentence } from '../../../../../model/nlp';
 import { CreateEntityDialogComponent } from '../../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
-import {
-  SelectedResult,
-  Token
-} from '../../../../../sentence-analysis/highlight/highlight.component';
+import { SelectedResult, Token } from '../../../../../sentence-analysis/highlight/highlight.component';
 import { getContrastYIQ } from '../../../../commons/utils';
 import { TickContext } from '../../../../models';
 import { ContextCreateComponent } from '../../../scenario-conception/context-create/context-create.component';
@@ -125,26 +122,24 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     const modal = this.dialogService.openDialog(ContextCreateComponent, {
       context: {}
     });
-    const validate = modal.componentRef.instance.validate
-      .pipe(takeUntil(this.destroy))
-      .subscribe((contextDef) => {
-        this.contextsEntities.push(
-          new FormControl({
-            name: contextDef.name,
-            type: 'string',
-            entityType: token.entity.type,
-            entityRole: token.entity.role
-          })
-        );
-        this.contexts.push({
+    const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((contextDef) => {
+      this.contextsEntities.push(
+        new FormControl({
           name: contextDef.name,
-          type: 'string'
-        });
-
-        validate.unsubscribe();
-        modal.close();
-        this.hideTokenMenu();
+          type: 'string',
+          entityType: token.entity.type,
+          entityRole: token.entity.role
+        })
+      );
+      this.contexts.push({
+        name: contextDef.name,
+        type: 'string'
       });
+
+      validate.unsubscribe();
+      modal.close();
+      this.hideTokenMenu();
+    });
   }
 
   associateContextWithEntity(token, context): void {
@@ -173,20 +168,12 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   getContextIndexOfEntity(token): number {
     return this.contextsEntities.value.findIndex((ctx) => {
-      return (
-        token.entity?.type &&
-        token.entity?.type == ctx.entityType &&
-        token.entity?.role == ctx.entityRole
-      );
+      return token.entity?.type && token.entity?.type == ctx.entityType && token.entity?.role == ctx.entityRole;
     });
   }
   getContextOfEntity(token): TickContext {
     return this.contextsEntities.value.find((ctx) => {
-      return (
-        token.entity?.type &&
-        token.entity?.type == ctx.entityType &&
-        token.entity?.role == ctx.entityRole
-      );
+      return token.entity?.type && token.entity?.type == ctx.entityType && token.entity?.role == ctx.entityRole;
     });
   }
 
@@ -195,9 +182,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     const entity = new EntityDefinition(token.entity.type, token.entity.role);
     const ctx = this.getContextOfEntity(token);
     if (ctx) {
-      return `The entity "${entity.qualifiedName(
-        this.state.user
-      )}" is associated with the context "${ctx.name}" (click to edit)`;
+      return `The entity "${entity.qualifiedName(this.state.user)}" is associated with the context "${ctx.name}" (click to edit)`;
     }
     return `Entity "${entity.qualifiedName(this.state.user)}" (click to edit)`;
   }
@@ -297,25 +282,13 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   removeEntityFromSentence(token): void {
     if (this.sentence instanceof Sentence) {
-      const entitiesCopy = JSON.parse(JSON.stringify(this.sentence.classification.entities)).filter(
-        (e) => {
-          return !(
-            token.entity.type === e.type &&
-            token.entity.role === e.role &&
-            token.start === e.start &&
-            token.end === e.end
-          );
-        }
-      );
+      const entitiesCopy = JSON.parse(JSON.stringify(this.sentence.classification.entities)).filter((e) => {
+        return !(token.entity.type === e.type && token.entity.role === e.role && token.start === e.start && token.end === e.end);
+      });
       this.storeModifiedSentence.emit({ sentence: this.sentence, entities: entitiesCopy });
     } else {
       this.sentence.classification.entities = this.sentence.classification.entities.filter((e) => {
-        return !(
-          token.entity.type === e.type &&
-          token.entity.role === e.role &&
-          token.start === e.start &&
-          token.end === e.end
-        );
+        return !(token.entity.type === e.type && token.entity.role === e.role && token.start === e.start && token.end === e.end);
       });
       this.hideTokenMenu();
       this.initTokens();

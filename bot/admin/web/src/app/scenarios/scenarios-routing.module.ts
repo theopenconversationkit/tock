@@ -5,10 +5,7 @@ import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { ScenariosResolver } from './scenarios.resolver';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
-import {
-  ScenarioDesignerNavigationGuard,
-  ScenarioDesignerComponent
-} from './scenario-designer/scenario-designer.component';
+import { ScenarioDesignerNavigationGuard, ScenarioDesignerComponent } from './scenario-designer/scenario-designer.component';
 
 const routes: Routes = [
   {

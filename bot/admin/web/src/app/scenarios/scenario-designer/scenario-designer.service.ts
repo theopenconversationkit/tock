@@ -16,9 +16,7 @@ export class ScenarioDesignerService {
 
   saveScenario(scenarioId: string, scenario: Scenario): Observable<Scenario> {
     const cleanScenario = JSON.parse(stringifiedCleanScenario(scenario));
-    return this.scenarioService
-      .putScenario(scenarioId, cleanScenario)
-      .pipe(tap((data) => this.updateScenarioBackup(data)));
+    return this.scenarioService.putScenario(scenarioId, cleanScenario).pipe(tap((data) => this.updateScenarioBackup(data)));
   }
 
   exitDesigner(): void {

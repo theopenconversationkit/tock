@@ -108,9 +108,7 @@ describe('ScenarioDesignerComponent', () => {
     let saveButton = fixture.debugElement.query(By.css('[data-testid="save-button"]'));
     expect(saveButton).toBeTruthy();
 
-    let saveAnExitButton = fixture.debugElement.query(
-      By.css('[data-testid="save-and-exit-button"]')
-    );
+    let saveAnExitButton = fixture.debugElement.query(By.css('[data-testid="save-and-exit-button"]'));
     expect(saveAnExitButton).toBeTruthy();
   });
 
@@ -124,9 +122,7 @@ describe('ScenarioDesignerComponent', () => {
     let saveButton = fixture.debugElement.query(By.css('[data-testid="save-button"]'));
     expect(saveButton).toBeFalsy();
 
-    let saveAnExitButton = fixture.debugElement.query(
-      By.css('[data-testid="save-and-exit-button"]')
-    );
+    let saveAnExitButton = fixture.debugElement.query(By.css('[data-testid="save-and-exit-button"]'));
     expect(saveAnExitButton).toBeFalsy();
   });
 

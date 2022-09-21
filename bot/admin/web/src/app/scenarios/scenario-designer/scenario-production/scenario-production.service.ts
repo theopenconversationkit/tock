@@ -12,10 +12,9 @@ export class ScenarioProductionService {
   public scenarioProductionStateComponents: { [key: string]: ScenarioStateGroupComponent } = {};
 
   unRegisterTransitionComponent(name: string) {
-    this.scenarioProductionTransitionsComponents =
-      this.scenarioProductionTransitionsComponents.filter(
-        (entry) => entry.transition.name !== name
-      );
+    this.scenarioProductionTransitionsComponents = this.scenarioProductionTransitionsComponents.filter(
+      (entry) => entry.transition.name !== name
+    );
   }
   registerTransitionComponent(component: ScenarioTransitionComponent) {
     this.scenarioProductionTransitionsComponents.push(component);

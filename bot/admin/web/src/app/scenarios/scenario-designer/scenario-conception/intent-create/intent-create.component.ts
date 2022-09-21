@@ -57,9 +57,7 @@ export class IntentCreateComponent implements OnInit {
     let errorString;
     if (c.value === nameFromQualifiedName(Intent.unknown)) {
       isNotUnic = true;
-      errorString = `The string "${nameFromQualifiedName(
-        Intent.unknown
-      )}" is not allowed as an intent name`;
+      errorString = `The string "${nameFromQualifiedName(Intent.unknown)}" is not allowed as an intent name`;
     } else {
       const allIntentDefs = getScenarioIntentDefinitions(this.scenario);
       const nameExistInScenario = allIntentDefs.find((intentDef) => intentDef.name === c.value);
@@ -70,8 +68,7 @@ export class IntentCreateComponent implements OnInit {
         const intentAlreadyExist = this.state.intentExists(c.value);
         if (intentAlreadyExist) {
           isNotUnic = true;
-          errorString =
-            'This name is already used by an existing intent of this or another application';
+          errorString = 'This name is already used by an existing intent of this or another application';
         }
       }
     }

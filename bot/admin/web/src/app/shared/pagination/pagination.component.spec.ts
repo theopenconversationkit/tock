@@ -1,12 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import {
-  NbButtonModule,
-  NbIconModule,
-  NbSelectComponent,
-  NbSelectModule,
-  NbTooltipModule
-} from '@nebular/theme';
+import { NbButtonModule, NbIconModule, NbSelectComponent, NbSelectModule, NbTooltipModule } from '@nebular/theme';
 
 import { TestSharedModule } from '../test-shared.module';
 import { Pagination, PaginationComponent } from './pagination.component';
@@ -40,9 +34,8 @@ describe('PaginationComponent', () => {
 
   it('should disable the back button if the beginning of the page is strictly less than 1', () => {
     spyOn(component.onPaginationChange, 'emit');
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-back-outline"]')).nativeElement
+      .parentElement;
 
     previousButtonElement.click();
 
@@ -54,9 +47,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { start: 1, size: 10 } as Pagination;
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-back-outline"]')).nativeElement
+      .parentElement;
 
     previousButtonElement.click();
 
@@ -69,9 +61,8 @@ describe('PaginationComponent', () => {
     component.pagination = { end: 22, total: 22 } as Pagination;
     fixture.detectChanges();
 
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-forward-outline"]')).nativeElement
+      .parentElement;
 
     nextButtonElement.click();
 
@@ -90,9 +81,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 13, total: 22 } as Pagination;
     fixture.detectChanges();
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-forward-outline"]')).nativeElement
+      .parentElement;
 
     nextButtonElement.click();
 
@@ -104,9 +94,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 15, size: 5, start: 10, total: 22 };
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-back-outline"]')).nativeElement
+      .parentElement;
 
     previousButtonElement.click();
 
@@ -118,9 +107,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 7, size: 5, start: 2, total: 22 };
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-back-outline"]')).nativeElement
+      .parentElement;
 
     previousButtonElement.click();
 
@@ -132,9 +120,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 20, size: 10, start: 10, total: 22 };
     fixture.detectChanges();
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-forward-outline"]')).nativeElement
+      .parentElement;
 
     nextButtonElement.click();
 
@@ -146,9 +133,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 15, size: 5, start: 10, total: 22 };
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-back-outline"]')).nativeElement
+      .parentElement;
 
     previousButtonElement.click();
 
@@ -160,9 +146,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 10, size: 10, start: 0, total: 22 };
     fixture.detectChanges();
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-forward-outline"]')).nativeElement
+      .parentElement;
 
     nextButtonElement.click();
 
@@ -174,9 +159,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 20, size: 10, start: 10, total: 22 };
     fixture.detectChanges();
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-forward-outline"]')).nativeElement
+      .parentElement;
 
     nextButtonElement.click();
 
@@ -210,9 +194,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 20, size: 10, start: 10, total: 22 };
     fixture.detectChanges();
-    const nextButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-forward-outline"]')
-    ).nativeElement.parentElement;
+    const nextButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-forward-outline"]')).nativeElement
+      .parentElement;
 
     nextButtonElement.click();
 
@@ -224,9 +207,8 @@ describe('PaginationComponent', () => {
     spyOn(component.onPaginationChange, 'emit');
     component.pagination = { end: 20, size: 10, start: 10, total: 22 };
     fixture.detectChanges();
-    const previousButtonElement: HTMLElement = fixture.debugElement.query(
-      By.css('[icon="arrow-ios-back-outline"]')
-    ).nativeElement.parentElement;
+    const previousButtonElement: HTMLElement = fixture.debugElement.query(By.css('[icon="arrow-ios-back-outline"]')).nativeElement
+      .parentElement;
 
     previousButtonElement.click();
 

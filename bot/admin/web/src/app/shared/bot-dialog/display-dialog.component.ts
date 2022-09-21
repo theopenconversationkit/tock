@@ -33,11 +33,7 @@ export class DisplayDialogComponent implements OnInit {
   @Input()
   userPicture: string;
 
-  constructor(
-    private state: StateService,
-    private analyticsService: AnalyticsService,
-    @Inject(APP_BASE_HREF) public baseHref: string
-  ) {}
+  constructor(private state: StateService, private analyticsService: AnalyticsService, @Inject(APP_BASE_HREF) public baseHref: string) {}
 
   ngOnInit() {}
 
@@ -46,8 +42,6 @@ export class DisplayDialogComponent implements OnInit {
   }
 
   reveal() {
-    this.analyticsService
-      .dialog(this.state.currentApplication._id, this.dialog.id)
-      .subscribe((d) => (this.dialog = d));
+    this.analyticsService.dialog(this.state.currentApplication._id, this.dialog.id).subscribe((d) => (this.dialog = d));
   }
 }

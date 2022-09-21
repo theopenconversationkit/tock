@@ -17,11 +17,7 @@ export class ScenarioProductionStateGroupAddComponent {
   constructor(public dialogRef: NbDialogRef<ScenarioProductionStateGroupAddComponent>) {}
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(undefined, [
-      Validators.required,
-      Validators.minLength(ENTITY_NAME_MINLENGTH),
-      this.notUsedName.bind(this)
-    ])
+    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH), this.notUsedName.bind(this)])
   });
 
   notUsedName(c: FormControl) {

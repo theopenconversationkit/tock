@@ -46,26 +46,21 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
-  constructor(
-    private scenarioProductionService: ScenarioProductionService,
-    private dialogService: DialogService
-  ) {
-    this.scenarioProductionService.scenarioProductionItemsCommunication
-      .pipe(takeUntil(this.destroy))
-      .subscribe((evt) => {
-        if (evt.type == 'itemDropped') {
-          this.itemDropped(evt);
-        }
-        if (evt.type == 'addStateGroup') {
-          this.addStateGroup(evt);
-        }
-        if (evt.type == 'removeState') {
-          this.removeState(evt);
-        }
-        if (evt.type == 'redrawPaths') {
-          this.drawPaths();
-        }
-      });
+  constructor(private scenarioProductionService: ScenarioProductionService, private dialogService: DialogService) {
+    this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
+      if (evt.type == 'itemDropped') {
+        this.itemDropped(evt);
+      }
+      if (evt.type == 'addStateGroup') {
+        this.addStateGroup(evt);
+      }
+      if (evt.type == 'removeState') {
+        this.removeState(evt);
+      }
+      if (evt.type == 'redrawPaths') {
+        this.drawPaths();
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -120,11 +115,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     transitions.forEach((entry) => {
       const transitionName = entry[0];
       const transitionTarget = entry[1];
-      const transitionComponent =
-        this.scenarioProductionService.scenarioProductionTransitionsComponents.find(
-          (comp) =>
-            comp.transition.name === transitionName && comp.transition.target === transitionTarget
-        );
+      const transitionComponent = this.scenarioProductionService.scenarioProductionTransitionsComponents.find(
+        (comp) => comp.transition.name === transitionName && comp.transition.target === transitionTarget
+      );
       if (transitionComponent) {
         sortedTransitions.push({
           name: entry[0],
@@ -144,36 +137,19 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     sortedTransitions.forEach((transition) => {
       let color = transition.hovered ? TRANSITION_COLOR_HOVERED : TRANSITION_COLOR;
       let pathWidth = transition.hovered ? 4.3 : 3;
-      let startMarker = transition.hovered
-        ? this.svgCanvasStartMarkerHovered
-        : this.svgCanvasStartMarker;
+      let startMarker = transition.hovered ? this.svgCanvasStartMarkerHovered : this.svgCanvasStartMarker;
       let endMarker = transition.hovered ? this.svgCanvasEndMarkerHovered : this.svgCanvasEndMarker;
 
       const transitionElem = transition.component.elementRef.nativeElement;
-      const transitionElemPos = revertTransformMatrix(
-        transitionElem,
-        this.canvasElem.nativeElement
-      );
+      const transitionElemPos = revertTransformMatrix(transitionElem, this.canvasElem.nativeElement);
 
-      const sourceStateComponent =
-        this.scenarioProductionService.scenarioProductionStateComponents[
-          transition.component.parentState.id
-        ];
+      const sourceStateComponent = this.scenarioProductionService.scenarioProductionStateComponents[transition.component.parentState.id];
       const sourceStateElem = sourceStateComponent.stateWrapper.nativeElement;
-      const sourceStateElemPos = revertTransformMatrix(
-        sourceStateElem,
-        this.canvasElem.nativeElement
-      );
+      const sourceStateElemPos = revertTransformMatrix(sourceStateElem, this.canvasElem.nativeElement);
 
-      const targetStateComponent =
-        this.scenarioProductionService.scenarioProductionStateComponents[
-          transition.target.replace(/^#/, '')
-        ];
+      const targetStateComponent = this.scenarioProductionService.scenarioProductionStateComponents[transition.target.replace(/^#/, '')];
       const targetStateElem = targetStateComponent.stateWrapper.nativeElement;
-      const targetStateElemPos = revertTransformMatrix(
-        targetStateElem,
-        this.canvasElem.nativeElement
-      );
+      const targetStateElemPos = revertTransformMatrix(targetStateElem, this.canvasElem.nativeElement);
 
       let inPath;
       let inStartLeft;
@@ -350,10 +326,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         title: `Reset state machine`,
         subtitle: 'Are you sure you want to completely reset this state machine?',
         modalStatus: 'danger',
-        actions: [
-          { actionName: cancelAction, buttonStatus: 'default' },
-          { actionName: confirmAction }
-        ]
+        actions: [{ actionName: cancelAction, buttonStatus: 'default' }, { actionName: confirmAction }]
       }
     });
     dialogRef.onClose.subscribe((result) => {
@@ -385,10 +358,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
 
     if (event.dropped.type === 'transitionSource') {
-      const initialSourceState = getSmStateById(
-        event.dropped.source,
-        this.scenario.data.stateMachine
-      );
+      const initialSourceState = getSmStateById(event.dropped.source, this.scenario.data.stateMachine);
       const target = initialSourceState.on[event.dropped.name];
       delete initialSourceState.on[event.dropped.name];
       const newSourceState = getSmStateById(event.stateId, this.scenario.data.stateMachine);

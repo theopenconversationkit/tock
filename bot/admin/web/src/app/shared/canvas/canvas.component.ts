@@ -74,11 +74,7 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      this.canvas &&
-      changes.position.currentValue &&
-      changes.position.currentValue !== changes.position.previousValue
-    ) {
+    if (this.canvas && changes.position.currentValue && changes.position.currentValue !== changes.position.previousValue) {
       this.centerOnElement(changes.position.currentValue);
     }
   }
@@ -95,9 +91,7 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
       if (this.canvas) {
         if (this.centerCanvasAtInitialisation) this.centerCanvas();
       } else {
-        throw new Error(
-          'The container contains several elements. It is necessary to give a "canvas" identifier to the canvas element'
-        );
+        throw new Error('The container contains several elements. It is necessary to give a "canvas" identifier to the canvas element');
       }
     }, 0);
   }
@@ -162,8 +156,7 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   centerCanvas(): void {
     this.throwErrorUndefinedCanvas();
 
-    this.canvasPos.x =
-      ((this.canvas.offsetWidth * this.canvasScale - this.wrapper.offsetWidth) / 2) * -1;
+    this.canvasPos.x = ((this.canvas.offsetWidth * this.canvasScale - this.wrapper.offsetWidth) / 2) * -1;
     this.canvasPos.y = 0;
 
     this.canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
@@ -172,12 +165,8 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   centerOnElement(position: OffsetPosition): void {
     this.throwErrorUndefinedCanvas();
 
-    this.canvasPos.x =
-      position.offsetLeft * this.canvasScale * -1 +
-      (this.wrapper.offsetWidth - position.offsetWidth) / 2;
-    this.canvasPos.y =
-      position.offsetTop * this.canvasScale * -1 +
-      (this.wrapper.offsetHeight - position.offsetHeight) / 2;
+    this.canvasPos.x = position.offsetLeft * this.canvasScale * -1 + (this.wrapper.offsetWidth - position.offsetWidth) / 2;
+    this.canvasPos.y = position.offsetTop * this.canvasScale * -1 + (this.wrapper.offsetHeight - position.offsetHeight) / 2;
 
     this.canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
   }
