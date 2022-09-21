@@ -1,22 +1,11 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
-import { StateService } from 'src/app/core-nlp/state.service';
+import { Observable, of } from 'rxjs';
+
+import { StateService } from '../../../../core-nlp/state.service';
 import { Scenario, ScenarioItem, TickContext } from '../../../models';
-import {
-  getContrastYIQ,
-  getScenarioActions,
-  normalizedSnakeCaseUpper
-} from '../../../commons/utils';
-import { Observable, of, Subject } from 'rxjs';
+import { getContrastYIQ, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
 const ENTITY_NAME_MINLENGTH = 5;
@@ -26,9 +15,7 @@ const ENTITY_NAME_MINLENGTH = 5;
   templateUrl: './action-edit.component.html',
   styleUrls: ['./action-edit.component.scss']
 })
-export class ActionEditComponent implements OnInit {
-  destroy = new Subject();
-
+export class ActionEditComponent {
   @Input() item: ScenarioItem;
   @Input() contexts: TickContext[];
   @Input() scenario: Scenario;
@@ -38,6 +25,42 @@ export class ActionEditComponent implements OnInit {
   @ViewChild('outputContextsInput') outputContextsInput: ElementRef;
 
   private qualifiedName = qualifiedName;
+
+  isSubmitted: boolean = false;
+
+  form: FormGroup = new FormGroup({
+    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH), this.notUsedName()]),
+    description: new FormControl(),
+    handler: new FormControl(),
+    answer: new FormControl(),
+    answerId: new FormControl(),
+    inputContextNames: new FormArray([]),
+    outputContextNames: new FormArray([]),
+    final: new FormControl(false)
+  });
+
+  get canSave(): boolean {
+    return this.isSubmitted ? this.form.valid : this.form.dirty;
+  }
+
+  get name(): FormControl {
+    return this.form.get('name') as FormControl;
+  }
+  get description(): FormControl {
+    return this.form.get('description') as FormControl;
+  }
+  get handler(): FormControl {
+    return this.form.get('handler') as FormControl;
+  }
+  get answer(): FormControl {
+    return this.form.get('answer') as FormControl;
+  }
+  get inputContextNames(): FormArray {
+    return this.form.get('inputContextNames') as FormArray;
+  }
+  get outputContextNames(): FormArray {
+    return this.form.get('outputContextNames') as FormArray;
+  }
 
   constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {}
 
@@ -70,57 +93,21 @@ export class ActionEditComponent implements OnInit {
     }
   }
 
-  form: FormGroup = new FormGroup({
-    name: new FormControl(undefined, [
-      Validators.required,
-      Validators.minLength(ENTITY_NAME_MINLENGTH),
-      this.notUsedName.bind(this)
-    ]),
-    description: new FormControl(),
-    handler: new FormControl(),
-    answer: new FormControl(),
-    answerId: new FormControl(),
-    inputContextNames: new FormArray([]),
-    outputContextNames: new FormArray([]),
-    final: new FormControl(false)
-  });
+  notUsedName(): ValidatorFn {
+    return (c: FormControl): ValidationErrors | null => {
+      if (!this.scenario) return null;
 
-  notUsedName(c: FormControl): { custom: string } | null {
-    if (!this.scenario) return null;
+      const allOtherActionDefinitionNames = getScenarioActions(this.scenario)
+        .filter((action) => action !== this.item)
+        .filter((item) => item.tickActionDefinition)
+        .map((action) => action.tickActionDefinition.name);
 
-    const allOtherActionDefinitionNames = getScenarioActions(this.scenario)
-      .filter((action) => action !== this.item)
-      .filter((item) => item.tickActionDefinition)
-      .map((action) => action.tickActionDefinition.name);
-
-    return allOtherActionDefinitionNames.includes(c.value)
-      ? {
-          custom: 'This name is already used by another action'
-        }
-      : null;
-  }
-
-  get canSave(): boolean {
-    return this.isSubmitted ? this.form.valid : this.form.dirty;
-  }
-
-  get name(): FormControl {
-    return this.form.get('name') as FormControl;
-  }
-  get description(): FormControl {
-    return this.form.get('description') as FormControl;
-  }
-  get handler(): FormControl {
-    return this.form.get('handler') as FormControl;
-  }
-  get answer(): FormControl {
-    return this.form.get('answer') as FormControl;
-  }
-  get inputContextNames(): FormArray {
-    return this.form.get('inputContextNames') as FormArray;
-  }
-  get outputContextNames(): FormArray {
-    return this.form.get('outputContextNames') as FormArray;
+      return allOtherActionDefinitionNames.includes(c.value)
+        ? {
+            custom: 'This name is already used by another action'
+          }
+        : null;
+    };
   }
 
   copyDescToAnswer(): void {
@@ -130,6 +117,7 @@ export class ActionEditComponent implements OnInit {
     });
     this.form.markAsDirty();
   }
+
   copyDescToName(): void {
     this.form.patchValue({
       ...this.form.value,
@@ -144,15 +132,15 @@ export class ActionEditComponent implements OnInit {
   updateContextsAutocompleteValues(event?: KeyboardEvent): void {
     let results = this.contexts.map((ctx) => ctx.name);
 
-    ['inputContextNames', 'outputContextNames'].forEach((wich) => {
-      results = results.filter((r) => {
+    ['inputContextNames', 'outputContextNames'].forEach((wich: string) => {
+      results = results.filter((r: string) => {
         return !this[wich].value.includes(r);
       });
     });
 
     if (event) {
       const targetEvent = event.target as HTMLInputElement;
-      results = results.filter((ctxName) => ctxName.includes(targetEvent.value.toUpperCase()));
+      results = results.filter((ctxName: string) => ctxName.includes(targetEvent.value.toUpperCase()));
     }
 
     this.contextsAutocompleteValues = of(results);
@@ -191,7 +179,7 @@ export class ActionEditComponent implements OnInit {
     }
 
     const currentContextNamesArray = this[`${wich}ContextNames`];
-    if (currentContextNamesArray.value.find((ctx) => ctx == ctxName)) {
+    if (currentContextNamesArray.value.find((ctx: string) => ctx == ctxName)) {
       this[`${wich}ContextsAddError`] = {
         errors: { custom: `This ${wich} context is already associated with this action` }
       };
@@ -200,7 +188,7 @@ export class ActionEditComponent implements OnInit {
 
     const otherWich = wich == 'input' ? 'output' : 'input';
     const otherContextNamesArray = this[`${otherWich}ContextNames`];
-    if (otherContextNamesArray.value.find((ctx) => ctx == ctxName)) {
+    if (otherContextNamesArray.value.find((ctx: string) => ctx == ctxName)) {
       this[`${wich}ContextsAddError`] = {
         errors: {
           custom: `This context is already associated with the ${otherWich} contexts of this action`
@@ -216,7 +204,7 @@ export class ActionEditComponent implements OnInit {
 
   removeContext(wich: 'input' | 'output', contextName: string): void {
     const contextNamesArray = this[`${wich}ContextNames`];
-    contextNamesArray.removeAt(contextNamesArray.value.findIndex((ctx) => ctx === contextName));
+    contextNamesArray.removeAt(contextNamesArray.value.findIndex((ctx: string) => ctx === contextName));
     this.form.markAsDirty();
   }
 
@@ -233,16 +221,13 @@ export class ActionEditComponent implements OnInit {
   }
 
   getContextEntityColor(context: TickContext): string | undefined {
-    if (context.entityType)
-      return entityColor(qualifiedRole(context.entityType, context.entityRole));
+    if (context.entityType) return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
   getContextEntityContrast(context: TickContext): string | undefined {
-    if (context.entityType)
-      return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
+    if (context.entityType) return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
 
-  isSubmitted: boolean = false;
   save(): void {
     this.isSubmitted = true;
     if (this.canSave) this.saveModifications.emit(this.form.value);
@@ -250,10 +235,5 @@ export class ActionEditComponent implements OnInit {
 
   cancel(): void {
     this.dialogRef.close();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
   }
 }

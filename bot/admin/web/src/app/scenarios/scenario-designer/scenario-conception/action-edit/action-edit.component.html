@@ -37,7 +37,7 @@
         />
       </tock-form-control>
 
-      <div class="mb-3 position-relative">
+      <div class="position-relative">
         <div
           class="position-absolute"
           style="left: 50%"
@@ -72,7 +72,7 @@
           label="Input contexts"
           name="inputContexts"
           [controls]="inputContextsAddError"
-          showError="true"
+          [showError]="true"
         >
           <div class="d-flex">
             <div class="w-100">
@@ -193,7 +193,7 @@
           label="Output contexts"
           name="outputContexts"
           [controls]="outputContextsAddError"
-          showError="true"
+          [showError]="true"
         >
           <div class="d-flex">
             <div class="w-100">

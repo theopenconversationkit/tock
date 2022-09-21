@@ -3,7 +3,7 @@
 @import '~@nebular/theme/styles/themes';
 
 :host nb-card {
-  max-height: nb-theme(card-height-large);
+  max-height: nb-theme(card-height-giant);
 }
 
 @include nb-install-component {
