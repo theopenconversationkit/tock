@@ -87,11 +87,7 @@ describe('ScenarioConceptionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ScenarioConceptionComponent],
-      providers: [
-        ScenarioConceptionService,
-        { provide: DialogService, useValue: {} },
-        { provide: StateService, useValue: {} }
-      ],
+      providers: [ScenarioConceptionService, { provide: DialogService, useValue: {} }, { provide: StateService, useValue: {} }],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
@@ -218,9 +214,7 @@ describe('ScenarioConceptionComponent', () => {
 
     expect(component.selectedItem.id).toEqual(3);
 
-    expect(component['scenarioConceptionService'].requireItemPosition).toHaveBeenCalledWith(
-      newItem
-    );
+    expect(component['scenarioConceptionService'].requireItemPosition).toHaveBeenCalledWith(newItem);
   }));
 
   it('Should delete an item and its references', () => {
@@ -244,9 +238,7 @@ describe('ScenarioConceptionComponent', () => {
   });
 
   it('Should find item first child', () => {
-    expect(component.findItemChild(component.scenario.data.scenarioItems[0])).toEqual(
-      component.scenario.data.scenarioItems[1]
-    );
+    expect(component.findItemChild(component.scenario.data.scenarioItems[0])).toEqual(component.scenario.data.scenarioItems[1]);
   });
 
   it('Should find an item by id', () => {
@@ -268,9 +260,7 @@ describe('ScenarioConceptionComponent', () => {
   });
 
   it('Should find item brothers', () => {
-    expect(component.getItemBrothers(component.scenario.data.scenarioItems[1])).toEqual([
-      component.scenario.data.scenarioItems[2]
-    ]);
+    expect(component.getItemBrothers(component.scenario.data.scenarioItems[1])).toEqual([component.scenario.data.scenarioItems[2]]);
   });
 
   it('Should detect if an item has no brothers', () => {

@@ -13,8 +13,7 @@ describe('NoBotConfigurationComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [NoBotConfigurationComponent],
       imports: [TestSharedModule, NbAlertModule, NbIconModule]
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {

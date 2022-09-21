@@ -100,11 +100,7 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private replaceCharactersByHtmlCode(string: string): string {
-    return string
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/\s/g, '&nbsp;');
+    return string.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\s/g, '&nbsp;');
   }
 
   private jsonFormat(jsonData: string | object): string {

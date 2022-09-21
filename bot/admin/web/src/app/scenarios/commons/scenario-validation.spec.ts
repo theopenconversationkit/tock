@@ -1,12 +1,4 @@
-import {
-  IntentDefinition,
-  Scenario,
-  ScenarioItem,
-  ScenarioItemFrom,
-  SCENARIO_MODE,
-  SCENARIO_STATE,
-  TickActionDefinition
-} from '../models';
+import { IntentDefinition, Scenario, ScenarioItem, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, TickActionDefinition } from '../models';
 import { isStepValid, SCENARIO_STEPS_ERRORS } from './scenario-validation';
 
 const scenario = {
@@ -20,9 +12,7 @@ const scenario = {
   description: '',
   data: {
     mode: 'writing' as SCENARIO_MODE,
-    scenarioItems: [
-      { id: 0, from: 'client' as ScenarioItemFrom, text: 'Main intent', main: true }
-    ] as ScenarioItem[],
+    scenarioItems: [{ id: 0, from: 'client' as ScenarioItemFrom, text: 'Main intent', main: true }] as ScenarioItem[],
     contexts: []
   },
   state: 'draft' as SCENARIO_STATE

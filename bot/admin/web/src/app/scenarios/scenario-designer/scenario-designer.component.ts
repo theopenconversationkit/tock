@@ -1,21 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  Injectable,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, HostListener, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { pluck, takeUntil, take } from 'rxjs/operators';
-import {
-  Scenario,
-  SCENARIO_ITEM_FROM_BOT,
-  SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_MODE,
-  SCENARIO_STATE
-} from '../models/scenario.model';
+import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
 import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
@@ -58,15 +44,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private botService: BotService
   ) {
-    route.params
-      .pipe(takeUntil(this.destroy), pluck('id'))
-      .subscribe((id) => (this.scenarioId = id));
+    route.params.pipe(takeUntil(this.destroy), pluck('id')).subscribe((id) => (this.scenarioId = id));
 
-    this.scenarioDesignerService.scenarioDesignerCommunication
-      .pipe(takeUntil(this.destroy))
-      .subscribe((evt) => {
-        if (evt.type == 'updateScenarioBackup') this.updateScenarioBackup(evt.data);
-      });
+    this.scenarioDesignerService.scenarioDesignerCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
+      if (evt.type == 'updateScenarioBackup') this.updateScenarioBackup(evt.data);
+    });
   }
 
   ngOnInit(): void {
@@ -84,10 +66,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
         this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
 
-        if (!this.scenario.data)
-          this.scenario.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
-        if (typeof this.scenario.data.mode == 'undefined')
-          this.scenario.data.mode = SCENARIO_MODE.writing;
+        if (!this.scenario.data) this.scenario.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
+        if (typeof this.scenario.data.mode == 'undefined') this.scenario.data.mode = SCENARIO_MODE.writing;
 
         this.switchMode(this.scenario.data.mode || SCENARIO_MODE.writing);
         if (!this.scenario.data.scenarioItems.length) {

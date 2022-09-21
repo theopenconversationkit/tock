@@ -43,9 +43,7 @@ describe('Scenarios Utils', () => {
   });
 
   it('Should remove expandos begining by an underscore and stringify an object', () => {
-    const before = JSON.parse(
-      '{"data":{"scenarioItems":[{"intentDefinition":{"_sentences":"test"}}]},"__expando":"test"}'
-    );
+    const before = JSON.parse('{"data":{"scenarioItems":[{"intentDefinition":{"_sentences":"test"}}]},"__expando":"test"}');
     const after = '{"data":{"scenarioItems":[{"intentDefinition":{}}]}}';
     expect(stringifiedCleanScenario(before as Scenario)).toEqual(after);
   });
@@ -75,21 +73,14 @@ describe('Scenarios Utils', () => {
 
     const res = revertTransformMatrix(elem, parent);
 
-    const expected =
-      '{"x":10,"y":10,"width":10,"height":10,"top":10,"right":20,"bottom":20,"left":10}';
+    const expected = '{"x":10,"y":10,"width":10,"height":10,"top":10,"right":20,"bottom":20,"left":10}';
     expect(JSON.stringify(res)).toEqual(JSON.stringify(expected));
   });
 
   it('Should return the items of a scenario that are of type intent', () => {
     const scenario = {
       data: {
-        scenarioItems: [
-          { from: 'bot' },
-          { from: 'client' },
-          { from: 'test' },
-          { from: 'client' },
-          { from: 'bot' }
-        ]
+        scenarioItems: [{ from: 'bot' }, { from: 'client' }, { from: 'test' }, { from: 'client' }, { from: 'bot' }]
       }
     };
 
@@ -123,13 +114,7 @@ describe('Scenarios Utils', () => {
   it('Should return the items of a scenario that are of type action', () => {
     const scenario = {
       data: {
-        scenarioItems: [
-          { from: 'bot' },
-          { from: 'client' },
-          { from: 'test' },
-          { from: 'client' },
-          { from: 'bot' }
-        ]
+        scenarioItems: [{ from: 'bot' }, { from: 'client' }, { from: 'test' }, { from: 'client' }, { from: 'bot' }]
       }
     };
 

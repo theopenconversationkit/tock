@@ -374,10 +374,7 @@ describe('ScenarioConceptionItemComponent', () => {
     it('Should return child items', () => {
       component.itemId = 0;
       component.ngOnInit();
-      expect(component.getChildItems()).toEqual([
-        component.scenario.data.scenarioItems[1],
-        component.scenario.data.scenarioItems[2]
-      ]);
+      expect(component.getChildItems()).toEqual([component.scenario.data.scenarioItems[1], component.scenario.data.scenarioItems[2]]);
 
       expect(component.itemHasNoChildren()).toEqual(false);
       expect(component.itemHasSeveralChildren()).toEqual(true);
@@ -467,16 +464,10 @@ describe('ScenarioConceptionItemComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
 
-    let details = fixture.debugElement.query(
-      By.css('[data-testid="item-intent-definition-details"]')
-    );
+    let details = fixture.debugElement.query(By.css('[data-testid="item-intent-definition-details"]'));
     expect(details).not.toBeNull();
-    expect(details.nativeElement.textContent.trim()).toEqual(
-      scenarioMock.data.scenarioItems[0].intentDefinition.name
-    );
-    let primary = fixture.debugElement.query(
-      By.css('[data-testid="item-intent-definition-primary"]')
-    );
+    expect(details.nativeElement.textContent.trim()).toEqual(scenarioMock.data.scenarioItems[0].intentDefinition.name);
+    let primary = fixture.debugElement.query(By.css('[data-testid="item-intent-definition-primary"]'));
     expect(primary).not.toBeNull();
 
     component.itemId = 5;
@@ -495,13 +486,9 @@ describe('ScenarioConceptionItemComponent', () => {
     component.ngOnInit();
     fixture.detectChanges();
 
-    let details = fixture.debugElement.query(
-      By.css('[data-testid="item-action-definition-details"]')
-    );
+    let details = fixture.debugElement.query(By.css('[data-testid="item-action-definition-details"]'));
     expect(details).not.toBeNull();
-    expect(details.nativeElement.textContent.trim()).toEqual(
-      scenarioMock.data.scenarioItems[1].tickActionDefinition.name
-    );
+    expect(details.nativeElement.textContent.trim()).toEqual(scenarioMock.data.scenarioItems[1].tickActionDefinition.name);
 
     component.itemId = 4;
     component.ngOnInit();

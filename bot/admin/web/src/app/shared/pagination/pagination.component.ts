@@ -45,8 +45,7 @@ export class PaginationComponent implements OnInit {
 
   paginationSize(): void {
     this.pagination.start = 0;
-    this.pagination.end =
-      this.pagination.total < this.pagination.size ? this.pagination.total : this.pagination.size;
+    this.pagination.end = this.pagination.total < this.pagination.size ? this.pagination.total : this.pagination.size;
     this.onPaginationChange.emit();
   }
 

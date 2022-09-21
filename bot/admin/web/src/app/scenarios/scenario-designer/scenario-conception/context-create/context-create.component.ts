@@ -19,10 +19,7 @@ export class ContextCreateComponent {
   constructor(public dialogRef: NbDialogRef<ContextCreateComponent>) {}
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(undefined, [
-      Validators.required,
-      Validators.minLength(ENTITY_NAME_MINLENGTH)
-    ])
+    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH)])
   });
 
   isSubmitted: boolean = false;

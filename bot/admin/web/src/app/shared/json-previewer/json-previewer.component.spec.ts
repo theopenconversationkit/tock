@@ -12,13 +12,7 @@ describe('JsonPreviewerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        NbCardModule,
-        NbIconModule,
-        NbSelectModule,
-        NbToastrModule.forRoot({}),
-        TestSharedModule
-      ],
+      imports: [NbCardModule, NbIconModule, NbSelectModule, NbToastrModule.forRoot({}), TestSharedModule],
       declarations: [JsonPreviewerComponent]
     }).compileComponents();
   });
@@ -131,9 +125,7 @@ describe('JsonPreviewerComponent', () => {
         jsonData: new SimpleChange({}, component.jsonData, true)
       });
       fixture.detectChanges();
-      const linesNumberContainer: HTMLElement = fixture.debugElement.query(
-        By.css('.lines-number')
-      ).nativeElement;
+      const linesNumberContainer: HTMLElement = fixture.debugElement.query(By.css('.lines-number')).nativeElement;
 
       expect(linesNumberContainer.children.length).toBe(11);
       Array.from(linesNumberContainer.children).forEach((child, i) => {
@@ -147,9 +139,7 @@ describe('JsonPreviewerComponent', () => {
         jsonData: new SimpleChange({}, component.jsonData, true)
       });
       fixture.detectChanges();
-      const linesContainer: HTMLElement = fixture.debugElement.query(
-        By.css('.lines-container')
-      ).nativeElement;
+      const linesContainer: HTMLElement = fixture.debugElement.query(By.css('.lines-container')).nativeElement;
       const expectedResult = [
         '<span class="delimiter">{</span>',
         '<span class="space">&nbsp;&nbsp;</span><span class="key">"id":</span><span class="space">&nbsp;</span><span class="string">"root"</span><span class="comma">,</span>',

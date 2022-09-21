@@ -1,14 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../../core-nlp/dialog.service';
@@ -43,13 +33,11 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private cd: ChangeDetectorRef
   ) {
-    this.scenarioProductionService.scenarioProductionItemsCommunication
-      .pipe(takeUntil(this.destroy))
-      .subscribe((evt) => {
-        if (evt.type == 'redrawActions') {
-          this.updateTransitionWrapperWidth();
-        }
-      });
+    this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
+      if (evt.type == 'redrawActions') {
+        this.updateTransitionWrapperWidth();
+      }
+    });
   }
 
   ngOnInit(): void {}
@@ -102,8 +90,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     let width = 0;
     if (this.childTransitionsComponents) {
       this.childTransitionsComponents.forEach((t) => {
-        if (t.elementRef.nativeElement.offsetWidth > width)
-          width = t.elementRef.nativeElement.offsetWidth + 50;
+        if (t.elementRef.nativeElement.offsetWidth > width) width = t.elementRef.nativeElement.offsetWidth + 50;
       });
     }
     return width;
@@ -113,13 +100,11 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     const modal = this.dialogService.openDialog(ScenarioProductionStateGroupAddComponent, {
       context: { usedNames: this.usedNames }
     });
-    const validate = modal.componentRef.instance.validate
-      .pipe(takeUntil(this.destroy))
-      .subscribe((result) => {
-        this.scenarioProductionService.addStateGroup(this.state.id, result.name);
-        validate.unsubscribe();
-        modal.close();
-      });
+    const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((result) => {
+      this.scenarioProductionService.addStateGroup(this.state.id, result.name);
+      validate.unsubscribe();
+      modal.close();
+    });
   }
 
   removeState(): void {
