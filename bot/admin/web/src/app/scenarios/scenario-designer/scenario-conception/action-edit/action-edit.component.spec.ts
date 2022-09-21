@@ -3,13 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from '../../../../core-nlp/state.service';
-import {
-  Scenario,
-  ScenarioItemFrom,
-  SCENARIO_MODE,
-  SCENARIO_STATE,
-  TickContext
-} from '../../../models';
+import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, TickContext } from '../../../models';
 import { ActionEditComponent } from './action-edit.component';
 
 const scenarioMock = {
@@ -143,13 +137,6 @@ describe('ActionEditComponent', () => {
     });
   });
 
-  it('Should destroy', () => {
-    expect(component.ngOnDestroy).toBeDefined();
-    expect(component.destroy.isStopped).toBeFalsy();
-    component.ngOnDestroy();
-    expect(component.destroy.isStopped).toBeTruthy();
-  });
-
   it('Should not accept existing action name as name', () => {
     let modifItem = getScenarioMock().data.scenarioItems[2];
     modifItem.tickActionDefinition.name = 'action1';
@@ -167,27 +154,20 @@ describe('ActionEditComponent', () => {
 
   it('Should list contexts for autocomplete', () => {
     component.updateContextsAutocompleteValues();
-    component.contextsAutocompleteValues.subscribe((result) =>
-      expect(result).toEqual(['CONTEXT3', 'CONTEXT4'])
-    );
+    component.contextsAutocompleteValues.subscribe((result) => expect(result).toEqual(['CONTEXT3', 'CONTEXT4']));
   });
 
   it('Should list contexts for autocomplete matching typed string', () => {
     component.updateContextsAutocompleteValues({
       target: { value: '3' }
     } as unknown as KeyboardEvent);
-    component.contextsAutocompleteValues.subscribe((result) =>
-      expect(result).toEqual(['CONTEXT3'])
-    );
+    component.contextsAutocompleteValues.subscribe((result) => expect(result).toEqual(['CONTEXT3']));
   });
 
   it('Should add context', () => {
     component.inputContextsInput.nativeElement.value = 'test add context';
     component.addContext('input');
-    expect(component.inputContextNames.value).toEqual(
-      ['TEST', 'TEST_ADD_CONTEXT'],
-      'Should add context'
-    );
+    expect(component.inputContextNames.value).toEqual(['TEST', 'TEST_ADD_CONTEXT'], 'Should add context');
     expect(component.form.dirty).toBeTruthy('Should make form dirty');
   });
 

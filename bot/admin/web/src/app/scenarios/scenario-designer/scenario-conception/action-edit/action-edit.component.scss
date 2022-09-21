@@ -1,15 +1,49 @@
-.main-row {
-  min-width: 60vw;
+@import '~@nebular/theme/styles/global/_breakpoints.scss';
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
+:host nb-card {
+  max-height: nb-theme(card-height-giant);
 }
 
-.contexts-list {
-  max-height: calc(100vh - 620px);
-  min-height: 20vh;
-  overflow-y: auto;
-}
+@include nb-install-component {
+  form {
+    display: grid;
+    grid-template-columns: minmax(5rem, 80vw);
 
-.entity {
-  border-radius: 0.45rem;
-  padding: 0rem 0.3rem 0rem 0.3rem;
-  font-size: 0.7rem;
+    > :nth-child(4) {
+      display: none;
+    }
+
+    .contexts-list {
+      @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+      scrollbar-gutter: stable;
+      max-height: 15vh;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  @include media-breakpoint-up(sm) {
+    form {
+      grid-template-columns: minmax(5rem, 20rem) auto minmax(5rem, 20rem);
+      column-gap: 0.5rem;
+      grid-template-rows: auto auto auto;
+      grid-auto-flow: column;
+
+      > :nth-child(4) {
+        display: block;
+        grid-row-start: 2;
+        align-self: center;
+        margin-bottom: 1rem;
+      }
+
+      > :nth-child(5) {
+        grid-row-start: 1;
+      }
+
+      .contexts-list {
+        margin-bottom: 0;
+      }
+    }
+  }
 }
