@@ -52,12 +52,10 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     protected state: StateService,
     private nlp: NlpService
   ) {
-    this.scenarioConceptionService.scenarioDesignerItemsCommunication
-      .pipe(takeUntil(this.destroy))
-      .subscribe((evt) => {
-        if (evt.type == 'focusItem') this.focusItem(evt.item);
-        if (evt.type == 'requireItemPosition') this.requireItemPosition(evt.item);
-      });
+    this.scenarioConceptionService.scenarioDesignerItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
+      if (evt.type == 'focusItem') this.focusItem(evt.item);
+      if (evt.type == 'requireItemPosition') this.requireItemPosition(evt.item);
+    });
   }
 
   ngOnInit(): void {
@@ -99,42 +97,30 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         scenario: this.scenario
       }
     });
-    const saveModifications = modal.componentRef.instance.saveModifications
-      .pipe(takeUntil(this.destroy))
-      .subscribe((actionDef) => {
-        this.checkAndAddNewContexts(actionDef.inputContextNames);
-        this.checkAndAddNewContexts(actionDef.outputContextNames);
-        if (
-          this.scenario.data.stateMachine &&
-          this.item.tickActionDefinition &&
-          this.item.tickActionDefinition.name !== actionDef.name
-        ) {
-          renameSmStateById(
-            this.item.tickActionDefinition.name,
-            actionDef.name,
-            this.scenario.data.stateMachine
-          );
+    const saveModifications = modal.componentRef.instance.saveModifications.pipe(takeUntil(this.destroy)).subscribe((actionDef) => {
+      this.checkAndAddNewContexts(actionDef.inputContextNames);
+      this.checkAndAddNewContexts(actionDef.outputContextNames);
+      if (this.scenario.data.stateMachine && this.item.tickActionDefinition && this.item.tickActionDefinition.name !== actionDef.name) {
+        renameSmStateById(this.item.tickActionDefinition.name, actionDef.name, this.scenario.data.stateMachine);
+      }
+
+      if (this.item.tickActionDefinition?.answerId) {
+        if (this.item.tickActionDefinition.answer !== actionDef.answer) {
+          actionDef.answerUpdate = true;
         }
+      }
 
-        if (this.item.tickActionDefinition?.answerId) {
-          if (this.item.tickActionDefinition.answer !== actionDef.answer) {
-            actionDef.answerUpdate = true;
-          }
-        }
+      this.item.tickActionDefinition = actionDef;
+      // saveModifications.unsubscribe();
+      modal.close();
+    });
 
-        this.item.tickActionDefinition = actionDef;
-        // saveModifications.unsubscribe();
-        modal.close();
-      });
+    const deleteDefinition = modal.componentRef.instance.deleteDefinition.pipe(takeUntil(this.destroy)).subscribe(() => {
+      this.scenarioConceptionService.removeItemDefinition(this.item);
 
-    const deleteDefinition = modal.componentRef.instance.deleteDefinition
-      .pipe(takeUntil(this.destroy))
-      .subscribe(() => {
-        this.scenarioConceptionService.removeItemDefinition(this.item);
-
-        // deleteDefinition.unsubscribe();
-        modal.close();
-      });
+      // deleteDefinition.unsubscribe();
+      modal.close();
+    });
   }
 
   checkAndAddNewContexts(contextNames) {
@@ -162,20 +148,16 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         intentSentence: this.item.text
       }
     });
-    const createNewIntentEvent = modal.componentRef.instance.createNewIntentEvent
-      .pipe(takeUntil(this.destroy))
-      .subscribe(() => {
-        this.createIntent();
-        // createNewIntentEvent.unsubscribe();
-        modal.close();
-      });
-    const useIntentEvent = modal.componentRef.instance.useIntentEvent
-      .pipe(takeUntil(this.destroy))
-      .subscribe((intent) => {
-        this.setItemIntentDefinition(intent);
-        // useIntentEvent.unsubscribe();
-        modal.close();
-      });
+    const createNewIntentEvent = modal.componentRef.instance.createNewIntentEvent.pipe(takeUntil(this.destroy)).subscribe(() => {
+      this.createIntent();
+      // createNewIntentEvent.unsubscribe();
+      modal.close();
+    });
+    const useIntentEvent = modal.componentRef.instance.useIntentEvent.pipe(takeUntil(this.destroy)).subscribe((intent) => {
+      this.setItemIntentDefinition(intent);
+      // useIntentEvent.unsubscribe();
+      modal.close();
+    });
   }
 
   setItemIntentDefinition(intentDef) {
@@ -198,15 +180,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         scenario: this.scenario
       }
     });
-    const createIntentEvent = modal.componentRef.instance.createIntentEvent
-      .pipe(takeUntil(this.destroy))
-      .subscribe((res) => {
-        if (this.item.main) res.primary = true;
-        this.item.intentDefinition = res;
-        this.editIntent();
-        // createIntentEvent.unsubscribe();
-        modal.close();
-      });
+    const createIntentEvent = modal.componentRef.instance.createIntentEvent.pipe(takeUntil(this.destroy)).subscribe((res) => {
+      if (this.item.main) res.primary = true;
+      this.item.intentDefinition = res;
+      this.editIntent();
+      // createIntentEvent.unsubscribe();
+      modal.close();
+    });
   }
 
   editIntent(): void {
@@ -216,37 +196,33 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         contexts: this.contexts
       }
     });
-    const saveModificationsSubscription = modal.componentRef.instance.saveModifications
-      .pipe(takeUntil(this.destroy))
-      .subscribe((intentDef) => {
-        // If an intent is not primary anymore, it should not be a transition of the global state
-        if (
-          this.scenario.data.stateMachine &&
-          this.item.intentDefinition.primary &&
-          !intentDef.primary
-        ) {
-          const parents = getSmTransitionParentsByname(
-            this.item.intentDefinition.name,
-            this.scenario.data.stateMachine
-          );
-          parents.forEach((parent) => {
-            if (parent?.id.toLowerCase() === 'global') {
-              delete parent.on[this.item.intentDefinition.name];
-            }
-          });
-        }
 
-        this.item.intentDefinition.primary = intentDef.primary;
-        this.item.intentDefinition.sentences = intentDef.sentences;
-
-        intentDef.contextsEntities.forEach((ctxEntity) => {
-          const ctxIndex = this.contexts.findIndex((ctx) => ctx.name == ctxEntity.name);
-          if (ctxIndex >= 0) this.contexts.splice(ctxIndex, 1, ctxEntity);
-          else this.contexts.push(ctxEntity);
+    modal.componentRef.instance.saveModifications.pipe(takeUntil(this.destroy)).subscribe((intentDef) => {
+      // If an intent is not primary anymore, it should not be a transition of the global state
+      if (this.scenario.data.stateMachine && this.item.intentDefinition.primary && !intentDef.primary) {
+        const parents = getSmTransitionParentsByname(this.item.intentDefinition.name, this.scenario.data.stateMachine);
+        parents.forEach((parent) => {
+          if (parent?.id.toLowerCase() === 'global') {
+            delete parent.on[this.item.intentDefinition.name];
+          }
         });
-        // saveModificationsSubscription.unsubscribe();
-        modal.close();
+      }
+
+      this.item.intentDefinition.primary = intentDef.primary;
+      this.item.intentDefinition.sentences = intentDef.sentences;
+
+      intentDef.contextsEntities.forEach((ctxEntity) => {
+        const ctxIndex = this.contexts.findIndex((ctx) => ctx.name == ctxEntity.name);
+        if (ctxIndex >= 0) this.contexts.splice(ctxIndex, 1, ctxEntity);
+        else this.contexts.push(ctxEntity);
       });
+      modal.close();
+    });
+
+    modal.componentRef.instance.onRemoveDefinition.pipe(takeUntil(this.destroy)).subscribe((intentDef) => {
+      this.scenarioConceptionService.removeItemDefinition(this.item);
+      modal.close();
+    });
   }
 
   itemHasDefinition() {
@@ -283,9 +259,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   getChildItems(): ScenarioItem[] {
-    return this.scenario.data.scenarioItems.filter((item) =>
-      item.parentIds?.includes(this.item.id)
-    );
+    return this.scenario.data.scenarioItems.filter((item) => item.parentIds?.includes(this.item.id));
   }
 
   itemHasNoChildren(): boolean {
@@ -329,10 +303,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
           title: `Deletion of an intervention`,
           subtitle: alertMessage,
           modalStatus: 'danger',
-          actions: [
-            { actionName: cancelAction, buttonStatus: 'default' },
-            { actionName: confirmAction }
-          ]
+          actions: [{ actionName: cancelAction, buttonStatus: 'default' }, { actionName: confirmAction }]
         }
       });
       dialogRef.onClose.subscribe((result) => {
@@ -387,10 +358,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
           title: `Change of intervention type`,
           subtitle: alertMessage,
           modalStatus: 'danger',
-          actions: [
-            { actionName: cancelAction, buttonStatus: 'default' },
-            { actionName: confirmAction }
-          ]
+          actions: [{ actionName: cancelAction, buttonStatus: 'default' }, { actionName: confirmAction }]
         }
       });
       dialogRef.onClose.subscribe((result) => {
@@ -416,9 +384,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
 
   getItemBrothers(): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((item) => {
-      return (
-        item.id != this.item.id && item.parentIds?.some((id) => this.item.parentIds?.includes(id))
-      );
+      return item.id != this.item.id && item.parentIds?.some((id) => this.item.parentIds?.includes(id));
     });
   }
 

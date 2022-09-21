@@ -1,22 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostBinding,
-  HostListener,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import {
-  IntentDefinition,
-  MachineState,
-  TickActionDefinition,
-  Transition
-} from '../../../../models';
+import { IntentDefinition, MachineState, TickActionDefinition, Transition } from '../../../../models';
 import { ScenarioProductionService } from '../../scenario-production.service';
 
 @Component({
@@ -33,17 +18,12 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   @Input() actions: TickActionDefinition[];
   @Input() isReadonly: boolean = false;
 
-  constructor(
-    public elementRef: ElementRef,
-    private scenarioProductionService: ScenarioProductionService
-  ) {
-    this.scenarioProductionService.scenarioProductionItemsCommunication
-      .pipe(takeUntil(this.destroy))
-      .subscribe((evt) => {
-        if (evt.type == 'redrawIntents') {
-          this.setTransitionTop();
-        }
-      });
+  constructor(public elementRef: ElementRef, private scenarioProductionService: ScenarioProductionService) {
+    this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
+      if (evt.type == 'redrawIntents') {
+        this.setTransitionTop();
+      }
+    });
   }
 
   @HostBinding('class.hovered') isHovered: boolean = false;
@@ -80,10 +60,7 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   }
 
   getTransitionTop(): number {
-    const stateComponent =
-      this.scenarioProductionService.scenarioProductionStateComponents[
-        this.transition.target.replace(/^#/, '')
-      ];
+    const stateComponent = this.scenarioProductionService.scenarioProductionStateComponents[this.transition.target.replace(/^#/, '')];
 
     if (stateComponent) {
       if (this.parentState.states) {
@@ -113,13 +90,7 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
           totalHeight = totalHeight * i + margin * (i - 1);
         }
 
-        return (
-          stateElem.offsetTop +
-          stateElem.offsetHeight / 2 -
-          totalHeight / 2 +
-          averageHeight * index +
-          margin * index
-        );
+        return stateElem.offsetTop + stateElem.offsetHeight / 2 - totalHeight / 2 + averageHeight * index + margin * index;
       } else {
         return 12;
       }

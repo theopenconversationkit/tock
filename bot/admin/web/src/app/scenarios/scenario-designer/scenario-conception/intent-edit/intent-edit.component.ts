@@ -34,6 +34,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   @Input() item: ScenarioItem;
   @Input() contexts: TickContext[];
   @Output() saveModifications = new EventEmitter();
+  @Output() onRemoveDefinition = new EventEmitter();
   @ViewChildren(SentenceEditComponent) sentencesComponents: QueryList<SentenceEditComponent>;
   @ViewChild('addSentenceInput') addSentenceInput: ElementRef;
 
@@ -86,14 +87,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   storeModifiedSentence(data) {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
-    let sentenceCopy = new TempSentence(
-      app.namespace,
-      app.name,
-      language,
-      data.sentence.text,
-      false,
-      ''
-    );
+    let sentenceCopy = new TempSentence(app.namespace, app.name, language, data.sentence.text, false, '');
     sentenceCopy.classification.entities = data.entities;
     this.sentences.push(new FormControl(sentenceCopy));
   }
@@ -141,8 +135,9 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   }
 
   dissociateIntent() {
-    delete this.item.intentDefinition;
-    this.cancel();
+    this.onRemoveDefinition.emit();
+    // delete this.item.intentDefinition;
+    // this.cancel();
   }
 
   addSentence(sentenceString?) {
@@ -156,14 +151,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
       if (!this.isStringAlreadyASentence(sentenceString)) {
         const app = this.state.currentApplication;
         const language = this.state.currentLocale;
-        const newSentence = new TempSentence(
-          app.namespace,
-          app.name,
-          language,
-          sentenceString,
-          false,
-          ''
-        );
+        const newSentence = new TempSentence(app.namespace, app.name, language, sentenceString, false, '');
         this.sentences.push(new FormControl(newSentence));
       }
       if (eventTarget) eventTarget.value = '';
@@ -215,8 +203,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   }
 
   pushUnicEntity(entities, entity) {
-    if (entities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role))
-      return;
+    if (entities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) return;
     entities.push(entity);
   }
 
