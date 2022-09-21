@@ -379,7 +379,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       botId: botId,
       storyId: `${this.scenario.name}_${this.scenario.id}`, //A préciser
       description: this.scenario.description,
-      sagaId: '0',
+      sagaId: this.scenario.sagaId,
       mainIntent: mainIntent,
       primaryIntents: primaryIntents,
       secondaryIntents: secondaryIntents,

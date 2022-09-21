@@ -42,7 +42,7 @@
     grid-template-columns: minmax(var(--panel-with), 1fr) auto minmax(var(--panel-with), 1fr) auto var(--panel-with);
     grid-template-rows: var(--panel-with);
     grid-gap: 0.5rem;
-    box-shadow: inset 2px 2px 5px rgb(0 0 0 / 10%);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
   }
 }
 
