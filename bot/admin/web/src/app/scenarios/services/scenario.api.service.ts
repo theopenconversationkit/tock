@@ -1,31 +1,129 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { Application } from '../../model/application';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { Scenario, TickStory } from '../models';
+import { ScenarioGroup, ScenarioVersion, TickStory } from '../models';
 
 @Injectable()
 export class ScenarioApiService {
-  constructor(private rest: RestService) {}
+  constructor(private rest: RestService, private applicationService: ApplicationService) {}
 
-  getScenarios(): Observable<Array<Scenario>> {
-    return this.rest.get<Array<Scenario>>('/scenarios', (scenarios: Scenario[]) => scenarios);
+  getScenariosGroups(): Observable<Array<ScenarioGroup>> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.get<Array<ScenarioGroup>>(
+            `/bot/${currentApplication.name}/scenarios/groups`,
+            (scenariosGroups: ScenarioGroup[]) => scenariosGroups
+          )
+        )
+      );
   }
 
-  postScenario(scenario: Scenario): Observable<Scenario> {
-    return this.rest.post<Scenario, Scenario>('/scenarios', scenario);
+  postScenarioGroup(scenarioGroup: ScenarioGroup): Observable<ScenarioGroup> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.post<ScenarioGroup, ScenarioGroup>(`/bot/${currentApplication.name}/scenarios/groups`, scenarioGroup)
+        )
+      );
   }
 
-  putScenario(id: string, scenario: Scenario): Observable<Scenario> {
-    return this.rest.put<Scenario, Scenario>(`/scenarios/${id}`, scenario);
+  importScenarioGroup(scenarioGroup: ScenarioGroup): Observable<ScenarioGroup> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.post<ScenarioGroup, ScenarioGroup>(`/bot/${currentApplication.name}/scenarios/import/groups`, scenarioGroup)
+        )
+      );
   }
 
-  deleteSaga(sagaId: string): Observable<any> {
-    return this.rest.delete<Scenario>(`/sagas/${sagaId}`);
+  updateScenarioGroup(scenarioGroup: Partial<ScenarioGroup>): Observable<ScenarioGroup> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.put<ScenarioGroup, ScenarioGroup>(
+            `/bot/${currentApplication.name}/scenarios/groups/${scenarioGroup.id}`,
+            scenarioGroup as ScenarioGroup
+          )
+        )
+      );
   }
 
-  deleteScenario(id: string): Observable<any> {
-    return this.rest.delete<Scenario>(`/scenarios/${id}`);
+  deleteScenarioGroup(scenarioGroupId: string): Observable<boolean> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.delete<boolean>(`/bot/${currentApplication.name}/scenarios/groups/${scenarioGroupId}`)
+        )
+      );
+  }
+
+  getScenarioVersion(scenarioGroupId: string, scenarioVersionId: string): Observable<ScenarioVersion> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.get<ScenarioVersion>(
+            `/bot/${currentApplication.name}/scenarios/groups/${scenarioGroupId}/versions/${scenarioVersionId}`,
+            (scenarioVersion: ScenarioVersion) => scenarioVersion
+          )
+        )
+      );
+  }
+
+  postScenarioVersion(scenarioGroupId: string, scenarioVersion: ScenarioVersion): Observable<ScenarioVersion> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.post<ScenarioVersion, ScenarioVersion>(
+            `/bot/${currentApplication.name}/scenarios/groups/${scenarioGroupId}/versions`,
+            scenarioVersion
+          )
+        )
+      );
+  }
+
+  updateScenarioVersion(scenarioGroupId: string, scenarioVersion: ScenarioVersion): Observable<ScenarioVersion> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.put<ScenarioVersion, ScenarioVersion>(
+            `/bot/${currentApplication.name}/scenarios/groups/${scenarioGroupId}/versions/${scenarioVersion.id}`,
+            scenarioVersion
+          )
+        )
+      );
+  }
+
+  deleteScenarioVersion(scenarioGroupId: string, scenarioVersionId: string): Observable<boolean> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.delete<boolean>(`/bot/${currentApplication.name}/scenarios/groups/${scenarioGroupId}/versions/${scenarioVersionId}`)
+        )
+      );
+  }
+
+  getActionHandlers(): Observable<string[]> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.get<string[]>(`/bot/${currentApplication.name}/dialog-manager/action-handlers`, (handlers: string[]) => handlers)
+        )
+      );
   }
 
   postTickStory(tickStory: TickStory): Observable<TickStory> {

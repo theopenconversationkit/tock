@@ -43,17 +43,16 @@ import {
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
-import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
 import { CanvasModule } from './canvas/canvas.module';
-import { FileUploadComponent } from './file-upload/file-upload.component';
-import { NoBotConfigurationComponent } from './no-bot-configuration/no-bot-configuration.component';
-
 import {
   ChatUiComponent,
   ChatUiMessageComponent,
   ChoiceDialogComponent,
   ErrorHelperComponent,
+  FileUploadComponent,
   FormControlComponent,
+  JsonPreviewerComponent,
+  NoBotConfigurationComponent,
   NoDataFoundComponent,
   PaginationComponent
 } from './components';
@@ -129,4 +128,4 @@ import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from '
   providers: [BotSharedService],
   entryComponents: []
 })
-export class BotSharedModule { }
+export class BotSharedModule {}

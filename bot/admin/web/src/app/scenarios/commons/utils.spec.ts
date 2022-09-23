@@ -1,4 +1,4 @@
-import { Scenario, ScenarioItem } from '../models';
+import { ScenarioVersion, ScenarioItem } from '../models';
 import {
   getAllSmNonGroupStatesNames,
   getAllSmStatesNames,
@@ -20,7 +20,7 @@ import {
   removeSmStateById,
   renameSmStateById,
   revertTransformMatrix,
-  stringifiedCleanScenario
+  stringifiedCleanObject
 } from './utils';
 
 describe('Scenarios Utils', () => {
@@ -45,7 +45,7 @@ describe('Scenarios Utils', () => {
   it('Should remove expandos begining by an underscore and stringify an object', () => {
     const before = JSON.parse('{"data":{"scenarioItems":[{"intentDefinition":{"_sentences":"test"}}]},"__expando":"test"}');
     const after = '{"data":{"scenarioItems":[{"intentDefinition":{}}]}}';
-    expect(stringifiedCleanScenario(before as Scenario)).toEqual(after);
+    expect(stringifiedCleanObject(before as ScenarioVersion)).toEqual(after);
   });
 
   it('Should find the correct contrast shade for a given hex color', () => {
@@ -84,7 +84,7 @@ describe('Scenarios Utils', () => {
       }
     };
 
-    const res = getScenarioIntents(scenario as Scenario);
+    const res = getScenarioIntents(scenario as ScenarioVersion);
     const expected = [{ from: 'client' }, { from: 'client' }];
 
     expect(res).toEqual(expected as ScenarioItem[]);
@@ -105,7 +105,7 @@ describe('Scenarios Utils', () => {
       }
     };
 
-    const res = getScenarioIntentDefinitions(scenario as unknown as Scenario);
+    const res = getScenarioIntentDefinitions(scenario as unknown as ScenarioVersion);
     const expected = [{ attr: 'test1' }, { attr: 'test2' }];
 
     expect(res).toEqual(expected as any);
@@ -118,7 +118,7 @@ describe('Scenarios Utils', () => {
       }
     };
 
-    const res = getScenarioActions(scenario as Scenario);
+    const res = getScenarioActions(scenario as ScenarioVersion);
     const expected = [{ from: 'bot' }, { from: 'bot' }];
 
     expect(res).toEqual(expected as ScenarioItem[]);
@@ -139,7 +139,7 @@ describe('Scenarios Utils', () => {
       }
     };
 
-    const res = getScenarioActionDefinitions(scenario as unknown as Scenario);
+    const res = getScenarioActionDefinitions(scenario as unknown as ScenarioVersion);
     const expected = [{ attr: 'test1' }, { attr: 'test2' }];
 
     expect(res).toEqual(expected as any);

@@ -1,11 +1,11 @@
 import {
-  IntentDefinition,
+  ScenarioIntentDefinition,
   MachineState,
-  Scenario,
+  ScenarioVersion,
   ScenarioItem,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  TickActionDefinition
+  ScenarioActionDefinition
 } from '../models';
 
 export function normalize(str: string): string {
@@ -35,27 +35,31 @@ export function normalizedCamelCase(str: string): string {
     .replace(/[^A-Za-z0-9]*/g, '');
 }
 
-export function stringifiedCleanScenario(scenario: Scenario): string {
-  return JSON.stringify(scenario, function (key, value) {
+export function stringifiedCleanObject(obj: Object): string {
+  return JSON.stringify(obj, function (key, value) {
     if (key.indexOf('_') == 0) return undefined;
     return value;
   });
 }
 
+export function deepCopy<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 export function getContrastYIQ(hexcolor: string): string {
   if (!hexcolor) return '';
   hexcolor = hexcolor.replace('#', '');
-  var r = parseInt(hexcolor.substring(0, 2), 16);
-  var g = parseInt(hexcolor.substring(2, 4), 16);
-  var b = parseInt(hexcolor.substring(4, 6), 16);
-  var yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  let r = parseInt(hexcolor.substring(0, 2), 16);
+  let g = parseInt(hexcolor.substring(2, 4), 16);
+  let b = parseInt(hexcolor.substring(4, 6), 16);
+  let yiq = (r * 299 + g * 587 + b * 114) / 1000;
   return yiq >= 128 ? 'black' : 'white';
 }
 
 export function revertTransformMatrix(el: Element, transformedParent: Element): DOMRect {
-  var brect = el.getBoundingClientRect();
-  var style = getComputedStyle(transformedParent);
-  var transformation = style.transform;
+  let brect = el.getBoundingClientRect();
+  let style = getComputedStyle(transformedParent);
+  let transformation = style.transform;
   if (transformation === 'none') return brect;
 
   const matrix = new DOMMatrix(transformation).inverse();
@@ -86,21 +90,21 @@ export function revertTransformMatrix(el: Element, transformedParent: Element): 
   };
 }
 
-export function getScenarioIntents(scenario: Scenario): ScenarioItem[] {
+export function getScenarioIntents(scenario: ScenarioVersion): ScenarioItem[] {
   return scenario.data.scenarioItems.filter((item) => item.from === SCENARIO_ITEM_FROM_CLIENT);
 }
 
-export function getScenarioIntentDefinitions(scenario: Scenario): IntentDefinition[] {
+export function getScenarioIntentDefinitions(scenario: ScenarioVersion): ScenarioIntentDefinition[] {
   return getScenarioIntents(scenario)
     .filter((item) => item.intentDefinition)
     .map((item) => item.intentDefinition);
 }
 
-export function getScenarioActions(scenario: Scenario): ScenarioItem[] {
+export function getScenarioActions(scenario: ScenarioVersion): ScenarioItem[] {
   return scenario.data.scenarioItems.filter((item) => item.from === SCENARIO_ITEM_FROM_BOT);
 }
 
-export function getScenarioActionDefinitions(scenario: Scenario): TickActionDefinition[] {
+export function getScenarioActionDefinitions(scenario: ScenarioVersion): ScenarioActionDefinition[] {
   return getScenarioActions(scenario)
     .filter((item) => item.tickActionDefinition)
     .map((item) => item.tickActionDefinition);

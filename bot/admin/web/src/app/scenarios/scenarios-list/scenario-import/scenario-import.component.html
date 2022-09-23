@@ -13,6 +13,7 @@
   </nb-card-header>
   <nb-card-body>
     <form
+      *ngIf="!scenarioGroupNameConflictToResolve"
       [formGroup]="importForm"
       (submit)="importSubmit()"
     >
@@ -51,7 +52,66 @@
         </ul>
       </nb-alert>
     </form>
+
+    <form
+      *ngIf="scenarioGroupNameConflictToResolve"
+      [formGroup]="nameConflictForm"
+      (submit)="resolveConflict()"
+    >
+      <div class="d-flex font-weight-bold">
+        File
+        <div
+          class="ellipsis"
+          [title]="scenarioGroupNameConflictToResolve.filename"
+        >
+          "{{ scenarioGroupNameConflictToResolve.filename }}"
+        </div>
+      </div>
+
+      <div class="my-2">
+        The name "{{ scenarioGroupNameConflictToResolve.data.name }}" corresponds to an already existing scenario group.
+      </div>
+
+      <br />
+
+      <tock-form-control
+        label="Would you like to?"
+        name="addOrChangeName"
+        required="true"
+        [controls]="addOrChangeName"
+      >
+        <nb-radio-group formControlName="addOrChangeName">
+          <nb-radio [value]="nameConflictResolution.add">
+            <span *ngIf="scenarioGroupNameConflictToResolve.data.versions.length < 2"> Add the version to the existing group </span>
+            <span *ngIf="scenarioGroupNameConflictToResolve.data.versions.length > 1">
+              Add {{ scenarioGroupNameConflictToResolve.data.versions.length }} versions to the existing group
+            </span>
+          </nb-radio>
+          <nb-radio [value]="nameConflictResolution.new">Create a new group with a different name</nb-radio>
+        </nb-radio-group>
+      </tock-form-control>
+
+      <div *ngIf="nameConflictForm.value.addOrChangeName === nameConflictResolution.new">
+        <tock-form-control
+          label="New group name :"
+          name="newGroupName"
+          required="true"
+          [controls]="newGroupName"
+          showError="true"
+        >
+          <input
+            nbInput
+            formControlName="newGroupName"
+            fullWidth
+            id="newGroupName"
+            type="text"
+            placeholder="Enter new group name"
+          />
+        </tock-form-control>
+      </div>
+    </form>
   </nb-card-body>
+
   <nb-card-footer class="card-footer-actions">
     <button
       nbButton
@@ -62,6 +122,7 @@
       Cancel
     </button>
     <button
+      *ngIf="!scenarioGroupNameConflictToResolve"
       nbButton
       status="primary"
       size="small"
@@ -69,6 +130,16 @@
       [disabled]="!canSaveImport"
     >
       Import
+    </button>
+    <button
+      *ngIf="scenarioGroupNameConflictToResolve"
+      nbButton
+      status="primary"
+      size="small"
+      (click)="resolveConflict()"
+      [disabled]="!canResolveConflict"
+    >
+      Validate
     </button>
   </nb-card-footer>
 </nb-card>

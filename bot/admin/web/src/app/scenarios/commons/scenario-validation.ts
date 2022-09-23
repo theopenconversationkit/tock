@@ -1,4 +1,4 @@
-import { IntegrityCheckResult, Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE } from '../models';
+import { IntegrityCheckResult, ScenarioVersion, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE } from '../models';
 
 import {
   getAllSmNonGroupStatesNames,
@@ -31,7 +31,7 @@ export const SCENARIO_STEPS_ERRORS = {
     `For each state in the state machine there must be a defined action with the same name. No action found for the state "${txt}".`
 };
 
-export function isStepValid(scenario: Scenario, step: SCENARIO_MODE): IntegrityCheckResult {
+export function isStepValid(scenario: ScenarioVersion, step: SCENARIO_MODE): IntegrityCheckResult {
   const scenarioItems = scenario.data!.scenarioItems;
 
   if (step === SCENARIO_MODE.casting) {
@@ -85,7 +85,7 @@ export function isStepValid(scenario: Scenario, step: SCENARIO_MODE): IntegrityC
   return { valid: true };
 }
 
-function checkStoryIntegrity(scenario: Scenario): IntegrityCheckResult {
+function checkStoryIntegrity(scenario: ScenarioVersion): IntegrityCheckResult {
   const actionsDefinitions = getScenarioActionDefinitions(scenario);
 
   for (let index = 0; index < actionsDefinitions.length; index++) {
@@ -123,7 +123,7 @@ function checkStoryIntegrity(scenario: Scenario): IntegrityCheckResult {
   return { valid: true };
 }
 
-function checkStateMachineIntegrity(scenario: Scenario): IntegrityCheckResult {
+function checkStateMachineIntegrity(scenario: ScenarioVersion): IntegrityCheckResult {
   const stateMachine = scenario.data!.stateMachine;
 
   const intentDefinitions = getScenarioIntentDefinitions(scenario);

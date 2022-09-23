@@ -39,14 +39,8 @@ export class RestService {
 
   readonly errorEmitter: EventEmitter<string> = new EventEmitter();
 
-  constructor(
-    @Inject(APP_BASE_HREF) private baseHref: string,
-    private http: HttpClient,
-    private router: Router
-  ) {
-    this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${
-      environment.serverUrl
-    }`;
+  constructor(@Inject(APP_BASE_HREF) private baseHref: string, private http: HttpClient, private router: Router) {
+    this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${environment.serverUrl}`;
     this.url = `${this.notAuthenticatedUrl}/admin`;
     RestService.defaultNotAuthenticatedUrl = this.notAuthenticatedUrl;
   }
@@ -63,10 +57,7 @@ export class RestService {
     const headers = this.notAuthenticatedHeaders();
     //hack for dev env
     if (environment.autologin) {
-      headers.append(
-        'Authorization',
-        btoa(`${environment.default_user}:${environment.default_password}`)
-      );
+      headers.append('Authorization', btoa(`${environment.default_user}:${environment.default_password}`));
     }
     return headers;
   }
@@ -78,39 +69,27 @@ export class RestService {
   }
 
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http
-      .get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => parseFunction(res || {})),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => parseFunction(res || {})),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
   getArray<T>(path: string, parseFunction: (value: any) => T[]): Observable<T[]> {
-    return this.http
-      .get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => parseFunction(res || [])),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => parseFunction(res || [])),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
   delete<I>(path: string): Observable<boolean> {
-    return this.http
-      .delete(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => BooleanResponse.fromJSON(res || {}).success),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.delete(`${this.url}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => BooleanResponse.fromJSON(res || {}).success),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
-  post<I, O>(
-    path: string,
-    value?: I,
-    parseFunction?: (value: any) => O,
-    baseUrl?: string,
-    returnErrorOn400 = false
-  ): Observable<O> {
+  post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O, baseUrl?: string, returnErrorOn400 = false): Observable<O> {
     return this.http
       .post(`${baseUrl ? baseUrl : this.url}${path}`, JsonUtils.stringify(value), {
         headers: this.headers(),
@@ -135,19 +114,13 @@ export class RestService {
   }
 
   getNotAuthenticated<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http
-      .get(`${this.notAuthenticatedUrl}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => parseFunction(res || {})),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.get(`${this.notAuthenticatedUrl}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => parseFunction(res || {})),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
-  postNotAuthenticated<I, O>(
-    path: string,
-    value?: I,
-    parseFunction?: (value: any) => O
-  ): Observable<O> {
+  postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http
       .post(`${this.notAuthenticatedUrl}${path}`, JsonUtils.stringify(value), {
         headers: this.notAuthenticatedHeaders(),
@@ -167,12 +140,7 @@ export class RestService {
 
   setFileUploaderOptions(uploader: FileUploader, path: string) {
     uploader.setOptions({ url: `${this.url}${path}` });
-    uploader.onErrorItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
+    uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       uploader.removeFromQueue(item);
       this.handleError(this, response ? response : `Error ${status}`);
     };
@@ -190,10 +158,7 @@ export class RestService {
         rest.router.navigateByUrl('/login');
         return NEVER;
       }
-      errMsg =
-        e.status === 400
-          ? e.statusText || ''
-          : `Server error : ${e.status} - ${e.statusText || ''}`;
+      errMsg = e.status === 400 ? e.statusText || '' : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
       // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side
       if (returnErrorOn400 && e.status === 400) {
@@ -206,20 +171,26 @@ export class RestService {
         location.reload();
         return NEVER;
       }
-      errMsg = e.error
-        ? e.error.message
+
+      if (e.error?.errors && Array.isArray(e.error.errors)) {
+        errMsg = e.error.errors.map((err) => err.message).join(' | ');
+      } else {
+        errMsg = e.error
           ? e.error.message
-          : e.error.error && e.error.error.message
-          ? e.error.error.message
-          : 'Unknown error'
-        : e.message
-        ? e.message
-        : e.statusText
-        ? e.statusText
-        : typeof e === 'string'
-        ? e
-        : 'Unknown error';
+            ? e.error.message
+            : e.error.error && e.error.error.message
+            ? e.error.error.message
+            : 'Unknown error'
+          : e.message
+          ? e.message
+          : e.statusText
+          ? e.statusText
+          : typeof e === 'string'
+          ? e
+          : 'Unknown error';
+      }
     }
+
     rest.errorEmitter.emit(errMsg);
     return observableThrowError(errMsg);
   }

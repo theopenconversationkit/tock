@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { isStepValid } from '../../commons/scenario-validation';
-import { Scenario, SCENARIO_MODE } from '../../models';
+import { ScenarioVersion, SCENARIO_MODE } from '../../models';
 
 @Component({
   selector: 'scenario-mode-stepper',
@@ -12,7 +12,7 @@ import { Scenario, SCENARIO_MODE } from '../../models';
 })
 export class ModeStepperComponent {
   @Input() mode: SCENARIO_MODE;
-  @Input() scenario!: Scenario;
+  @Input() scenario!: ScenarioVersion;
   @Output() modeSwitch = new EventEmitter();
 
   steps = [

@@ -5,7 +5,7 @@
 
 .grid-columns {
   display: grid;
-  grid-gap: 1rem;
+  grid-gap: 0.2rem;
   grid-template-columns: 1fr;
   width: 100%;
   margin-right: 1.5rem;
@@ -31,18 +31,25 @@
   }
 
   &-header {
+    display: none;
     font-size: nb-theme(text-label-font-size);
     color: nb-theme(color-basic-600);
   }
 }
 
-@include media-breakpoint-up(md) {
-  .grid-columns {
-    grid-template-columns: minmax(5rem, 4fr) minmax(5rem, 1fr) minmax(5rem, 2fr) minmax(5rem, auto);
-  }
-
+@include media-breakpoint-up(sm) {
   .grid-accordion-item-body {
     grid-template-columns: minmax(5rem, 1fr) minmax(5rem, 1fr) minmax(5rem, 1fr) minmax(5rem, 4fr) minmax(10rem, auto);
+    &-header {
+      display: grid;
+    }
+  }
+}
+@include media-breakpoint-up(md) {
+  .grid-columns {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: minmax(5rem, 4fr) minmax(5rem, 1fr) minmax(5rem, 2fr) minmax(3.5rem, 1fr) minmax(8rem, auto);
   }
 }
 

@@ -25,6 +25,7 @@
         [showError]="isSubmitted"
       >
         <input
+          *ngIf="!isReadonly"
           nbInput
           autofocusElement
           formControlName="name"
@@ -35,10 +36,17 @@
           (blur)="formatActionName()"
           data-testid="name"
         />
+        <span
+          *ngIf="isReadonly"
+          class="text-black-50"
+        >
+          {{ name.value }}
+        </span>
       </tock-form-control>
 
       <div class="position-relative">
         <div
+          *ngIf="!isReadonly"
           class="position-absolute"
           style="left: 50%"
         >
@@ -50,6 +58,7 @@
             (click)="copyDescToName()"
           ></nb-icon>
         </div>
+
         <tock-form-control
           label="Description"
           name="description"
@@ -57,6 +66,7 @@
           [showError]="isSubmitted"
         >
           <textarea
+            *ngIf="!isReadonly"
             nbInput
             formControlName="description"
             fullWidth
@@ -64,11 +74,18 @@
             placeholder="Enter description"
             rows="4"
           ></textarea>
+          <span
+            *ngIf="isReadonly"
+            class="text-black-50"
+          >
+            {{ description.value }}
+          </span>
         </tock-form-control>
       </div>
 
       <div>
         <tock-form-control
+          *ngIf="!isReadonly"
           label="Input contexts"
           name="inputContexts"
           [controls]="inputContextsAddError"
@@ -114,6 +131,8 @@
           </div>
         </tock-form-control>
 
+        <label *ngIf="isReadonly">Input contexts</label>
+
         <nb-list class="contexts-list">
           <nb-list-item
             *ngFor="let inputContext of inputContextNames.value"
@@ -138,6 +157,7 @@
             </div>
 
             <nb-icon
+              *ngIf="!isReadonly"
               icon="trash-2-outline"
               status="danger"
               (click)="removeContext('input', inputContext)"
@@ -148,13 +168,16 @@
         </nb-list>
       </div>
 
-      <nb-icon
-        icon="arrowhead-right-outline"
-        status="basic"
-        nbTooltip="Use description as answer"
-        class="pointer"
-        (click)="copyDescToAnswer()"
-      ></nb-icon>
+      <div>
+        <nb-icon
+          *ngIf="!isReadonly"
+          icon="arrowhead-right-outline"
+          status="basic"
+          nbTooltip="Use description as answer"
+          class="pointer"
+          (click)="copyDescToAnswer()"
+        ></nb-icon>
+      </div>
 
       <tock-form-control
         label="Api handler"
@@ -163,13 +186,32 @@
         [showError]="isSubmitted"
       >
         <input
+          *ngIf="!isReadonly"
           nbInput
           formControlName="handler"
           fullWidth
           id="handler"
           type="text"
           placeholder="Enter handler class name"
+          autocomplete="off"
+          [nbAutocomplete]="handlersAutocomplete"
+          (focus)="updateHandlersAutocompleteValues()"
+          (keyup)="updateHandlersAutocompleteValues($event)"
         />
+        <nb-autocomplete #handlersAutocomplete>
+          <nb-option
+            *ngFor="let option of handlersAutocompleteValues | async"
+            [value]="option"
+          >
+            {{ option }}
+          </nb-option>
+        </nb-autocomplete>
+        <span
+          *ngIf="isReadonly"
+          class="text-black-50"
+        >
+          {{ handler.value }}
+        </span>
       </tock-form-control>
 
       <tock-form-control
@@ -179,6 +221,7 @@
         [showError]="isSubmitted"
       >
         <textarea
+          *ngIf="!isReadonly"
           nbInput
           formControlName="answer"
           fullWidth
@@ -186,10 +229,17 @@
           placeholder="Enter answer"
           rows="4"
         ></textarea>
+        <span
+          *ngIf="isReadonly"
+          class="text-black-50"
+        >
+          {{ answer.value }}
+        </span>
       </tock-form-control>
 
       <div>
         <tock-form-control
+          *ngIf="!isReadonly"
           label="Output contexts"
           name="outputContexts"
           [controls]="outputContextsAddError"
@@ -235,6 +285,8 @@
           </div>
         </tock-form-control>
 
+        <label *ngIf="isReadonly">Output contexts</label>
+
         <nb-list class="contexts-list">
           <nb-list-item
             *ngFor="let outputContext of outputContextNames.value"
@@ -257,6 +309,7 @@
             </ng-container>
 
             <nb-icon
+              *ngIf="!isReadonly"
               icon="trash-2-outline"
               status="danger"
               class="min-width-1em ml-2 pointer"
@@ -276,11 +329,12 @@
       size="small"
       (click)="cancel()"
     >
-      Cancel
+      <span *ngIf="!isReadonly">Cancel</span>
+      <span *ngIf="isReadonly">Close</span>
     </button>
 
     <button
-      *ngIf="item.tickActionDefinition"
+      *ngIf="item.tickActionDefinition && !isReadonly"
       nbButton
       size="small"
       status="danger"
@@ -290,6 +344,7 @@
     </button>
 
     <button
+      *ngIf="!isReadonly"
       nbButton
       size="small"
       status="primary"

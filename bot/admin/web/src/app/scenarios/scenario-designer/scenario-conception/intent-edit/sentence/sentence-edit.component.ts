@@ -20,11 +20,11 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../../../core-nlp/dialog.service';
 import { StateService } from '../../../../../core-nlp/state.service';
-import { EntityDefinition, qualifiedName, qualifiedRole, Sentence } from '../../../../../model/nlp';
+import { ClassifiedEntity, EntityDefinition, qualifiedName, qualifiedRole, Sentence } from '../../../../../model/nlp';
 import { CreateEntityDialogComponent } from '../../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
 import { SelectedResult, Token } from '../../../../../sentence-analysis/highlight/highlight.component';
-import { getContrastYIQ } from '../../../../commons/utils';
-import { TickContext } from '../../../../models';
+import { deepCopy, getContrastYIQ } from '../../../../commons/utils';
+import { ScenarioContext, ScenarioVersionExtended } from '../../../../models';
 import { ContextCreateComponent } from '../../../scenario-conception/context-create/context-create.component';
 import { SentenceExtended, TempSentenceExtended } from '../intent-edit.component';
 
@@ -36,9 +36,11 @@ import { SentenceExtended, TempSentenceExtended } from '../intent-edit.component
 export class SentenceEditComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
+  @Input() scenario: ScenarioVersionExtended;
   @Input() sentence: SentenceExtended | TempSentenceExtended;
-  @Input() contexts: TickContext[];
+  @Input() contexts: ScenarioContext[];
   @Input() contextsEntities: FormArray;
+  @Input() isReadonly: boolean;
 
   @Input() allEntities: [];
   @Output() componentActivated = new EventEmitter();
@@ -78,6 +80,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   }
 
   displayTokenMenu(event, token): void {
+    if (this.isReadonly) return;
     event.stopPropagation();
     this.hideTokenMenu();
     if (!token.entity) return;
@@ -120,7 +123,9 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   addContext(token): void {
     const modal = this.dialogService.openDialog(ContextCreateComponent, {
-      context: {}
+      context: {
+        scenario: this.scenario
+      }
     });
     const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((contextDef) => {
       this.contextsEntities.push(
@@ -159,7 +164,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   dissociateContextFromEntity(token): void {
     let index = this.getContextIndexOfEntity(token);
-    let context = JSON.parse(JSON.stringify(this.getContextOfEntity(token)));
+    let context = deepCopy(this.getContextOfEntity(token));
     delete context.entityType;
     delete context.entityRole;
     this.contextsEntities.setControl(index, new FormControl(context));
@@ -171,20 +176,24 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
       return token.entity?.type && token.entity?.type == ctx.entityType && token.entity?.role == ctx.entityRole;
     });
   }
-  getContextOfEntity(token): TickContext {
+  getContextOfEntity(token): ScenarioContext {
     return this.contextsEntities.value.find((ctx) => {
       return token.entity?.type && token.entity?.type == ctx.entityType && token.entity?.role == ctx.entityRole;
     });
   }
 
   getTokenTooltip(token): string {
-    if (!token.entity) return 'Select a part of this sentence to associate an entity';
+    if (!token.entity)
+      return this.isReadonly
+        ? 'Formulation of a question likely to trigger this intent'
+        : 'Select a part of this sentence to associate an entity';
+    let clickToEdit = this.isReadonly ? '' : '(click to edit)';
     const entity = new EntityDefinition(token.entity.type, token.entity.role);
     const ctx = this.getContextOfEntity(token);
     if (ctx) {
-      return `The entity "${entity.qualifiedName(this.state.user)}" is associated with the context "${ctx.name}" (click to edit)`;
+      return `The entity "${entity.qualifiedName(this.state.user)}" is associated with the context "${ctx.name}" ${clickToEdit}`;
     }
-    return `Entity "${entity.qualifiedName(this.state.user)}" (click to edit)`;
+    return `Entity "${entity.qualifiedName(this.state.user)}" ${clickToEdit}`;
   }
 
   initTokens(): void {
@@ -226,6 +235,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   @HostListener('mouseup', ['$event'])
   textSelected(event: MouseEvent): void {
+    if (this.isReadonly) return;
     event.stopPropagation();
     this.hideTokenMenu();
     this.setActive();
@@ -282,7 +292,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   removeEntityFromSentence(token): void {
     if (this.sentence instanceof Sentence) {
-      const entitiesCopy = JSON.parse(JSON.stringify(this.sentence.classification.entities)).filter((e) => {
+      const entitiesCopy = deepCopy(this.sentence.classification.entities).filter((e) => {
         return !(token.entity.type === e.type && token.entity.role === e.role && token.start === e.start && token.end === e.end);
       });
       this.storeModifiedSentence.emit({ sentence: this.sentence, entities: entitiesCopy });
@@ -323,7 +333,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
           }
         }
         if (this.txtSelectionStart < this.txtSelectionEnd) {
-          const tempEntity = {
+          const tempEntity: Partial<ClassifiedEntity> = {
             type: entity.entityTypeName,
             role: entity.role,
             start: this.txtSelectionStart,
@@ -334,12 +344,12 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
           };
 
           if (this.sentence instanceof Sentence) {
-            let entitiesCopy = JSON.parse(JSON.stringify(this.sentence.classification.entities));
-            entitiesCopy.push(tempEntity);
+            let entitiesCopy = deepCopy(this.sentence.classification.entities);
+            entitiesCopy.push(tempEntity as ClassifiedEntity);
             entitiesCopy.sort((e1, e2) => e1.start - e2.start);
             this.storeModifiedSentence.emit({ sentence: this.sentence, entities: entitiesCopy });
           } else {
-            this.sentence.classification.entities.push(tempEntity);
+            this.sentence.classification.entities.push(tempEntity as ClassifiedEntity);
             this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
           }
         }

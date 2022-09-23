@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
-import { Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { take, timeout } from 'rxjs/operators';
 
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest, I18nLabel, I18nLabels } from '../../../bot/model/i18n';
@@ -10,37 +10,38 @@ import { StateService } from '../../../core-nlp/state.service';
 import { UserInterfaceType } from '../../../core/model/configuration';
 import { ClassifiedEntity, Intent, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
-import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
-import { getScenarioActions, getScenarioIntents } from '../../commons/utils';
+import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
+import { getScenarioActionDefinitions, getScenarioActions, getScenarioIntents } from '../../commons/utils';
 import {
-Scenario,
-ScenarioItem,
-SCENARIO_ITEM_FROM_BOT,
-SCENARIO_ITEM_FROM_CLIENT,
-TempSentence,
-DependencyUpdateJob,
-SCENARIO_STATE,
-TickStory
+  ScenarioItem,
+  SCENARIO_ITEM_FROM_BOT,
+  SCENARIO_ITEM_FROM_CLIENT,
+  TempSentence,
+  DependencyUpdateJob,
+  SCENARIO_STATE,
+  TickStory,
+  ScenarioVersionExtended
 } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 
 @Component({
-selector: 'scenario-publishing',
-templateUrl: './scenario-publishing.component.html',
-styleUrls: ['./scenario-publishing.component.scss']
+  selector: 'scenario-publishing',
+  templateUrl: './scenario-publishing.component.html',
+  styleUrls: ['./scenario-publishing.component.scss']
 })
 export class ScenarioPublishingComponent implements OnInit, OnDestroy {
-@Input() scenario: Scenario;
-@Input() isReadonly: boolean;
+  @Input() scenario: ScenarioVersionExtended;
+  @Input() isReadonly: boolean;
+  @Input() i18n: I18nLabels;
+  @Input() readonly avalaibleHandlers: string[];
 
-destroy = new Subject();
-i18n: I18nLabels;
+  destroy = new Subject();
 
-readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
-readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
+  readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
+  readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
-constructor(
+  constructor(
     public state: StateService,
     private nlp: NlpService,
     private scenarioDesignerService: ScenarioDesignerService,
@@ -53,14 +54,27 @@ constructor(
   tickStoryJson: string;
   ngOnInit(): void {
     if (!this.isReadonly) {
-      this.botService
-        .i18nLabels()
-        .pipe(take(1))
-        .subscribe((results) => {
-          this.i18n = results;
-          this.checkDependencies();
-        });
+      this.checkDependencies();
     }
+  }
+
+  isScenarioUnPublishable() {
+    let unPublishable;
+
+    const actionDefs = getScenarioActionDefinitions(this.scenario);
+    const expectedHandlers = actionDefs.filter((ad) => ad.handler).map((ad) => ad.handler);
+    let unImplementedHandlers = [];
+    expectedHandlers.forEach((eh) => {
+      if (!this.avalaibleHandlers.includes(eh)) {
+        unImplementedHandlers.push(eh);
+      }
+    });
+
+    if (unImplementedHandlers.length) {
+      unPublishable = `The following handlers are not yet implemented on the server side : ${unImplementedHandlers.join(', ')}`;
+    }
+
+    return unPublishable;
   }
 
   dependencies: { [key: string]: DependencyUpdateJob[] };
@@ -136,7 +150,7 @@ constructor(
             this.processAnswer(nextAnswerUpdate);
           } else {
             // save the scenario
-            this.scenarioDesignerService.saveScenario(this.scenario.id, this.scenario).subscribe((data) => {
+            this.scenarioDesignerService.saveScenario(this.scenario).subscribe((data) => {
               this.postTickStory();
             });
           }
@@ -252,8 +266,8 @@ constructor(
           intentTask.data.intentDefinition.description,
           intentTask.data.intentDefinition.category
         )
-)
-.subscribe(
+      )
+      .subscribe(
         (intent) => {
           intentTask.data.intentDefinition.intentId = intent._id;
           this.state.addIntent(intent);
@@ -325,21 +339,15 @@ constructor(
   tickStoryErrors: string[];
 
   postTickStory(): void {
-    // this.scenario.state = SCENARIO_STATE.current;
-    // this.scenarioDesignerService.saveScenario(this.scenario.id, this.scenario).subscribe((res) => {
-    //   console.log(res);
-    //   this.scenarioService.setScenariosUnloading();
-    // });
-
     this.tickStoryErrors = undefined;
     const story = this.compileTickStory();
     this.scenarioService.postTickStory(story).subscribe(
       (res) => {
         // Successful save. We pass the scenario state to "current" and save it
         this.scenario.state = SCENARIO_STATE.current;
-        this.scenarioDesignerService.saveScenario(this.scenario.id, this.scenario).subscribe((data) => {
+        this.scenarioDesignerService.saveScenario(this.scenario).subscribe((data) => {
           // reset of scenarioService scenarios cache to force the reload of scenarios list on next call to scenarioService.getScenarios
-          this.scenarioService.setScenariosUnloading();
+          this.scenarioService.setScenariosGroupsUnloading();
 
           this.toastrService.success(`Tick story successfully saved`, 'Success', {
             duration: 5000,
@@ -352,7 +360,7 @@ constructor(
       },
       (error) => {
         // Errors have occurred, let's inform the user.
-        this.tickStoryErrors = error.error;
+        this.tickStoryErrors = error.error?.errors ? error.error?.errors : [{ messagte: 'An unknown error occured' }];
       }
     );
   }
@@ -371,15 +379,12 @@ constructor(
         secondaryIntents.push(intent.intentDefinition.name);
       }
     });
-    const app = this.state.currentApplication;
-    let botId = app.name;
 
     let tickStory: TickStory = {
-      name: this.scenario.name,
-      botId: botId,
-      storyId: `${this.scenario.name}_${this.scenario.id}`, //A préciser
-      description: this.scenario.description,
-      sagaId: this.scenario.sagaId,
+      botId: this.state.currentApplication.name,
+      storyId: this.scenario._scenarioGroupId,
+      name: `TickStory from the scenarioGroup "${this.scenario._name}"`,
+      description: `TickStory from the scenarioGroup "${this.scenario._name}" with id ${this.scenario._scenarioGroupId}`,
       mainIntent: mainIntent,
       primaryIntents: primaryIntents,
       secondaryIntents: secondaryIntents,
@@ -388,11 +393,7 @@ constructor(
       stateMachine: this.scenario.data.stateMachine
     };
 
-    this.scenario.data.scenarioItems.forEach((item) => {
-      if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
-        tickStory.actions.push(item.tickActionDefinition);
-      }
-    });
+    tickStory.actions = getScenarioActionDefinitions(this.scenario);
 
     return tickStory;
   }

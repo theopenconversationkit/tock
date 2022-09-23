@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { stringifiedCleanScenario } from '../commons/utils';
-import { Scenario } from '../models';
+import { stringifiedCleanObject } from '../commons/utils';
+import { ScenarioVersion, ScenarioVersionExtended } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 
 @Injectable({
@@ -14,16 +14,21 @@ export class ScenarioDesignerService {
 
   public scenarioDesignerCommunication = new Subject<any>();
 
-  saveScenario(scenarioId: string, scenario: Scenario): Observable<Scenario> {
-    const cleanScenario = JSON.parse(stringifiedCleanScenario(scenario));
-    return this.scenarioService.putScenario(scenarioId, cleanScenario).pipe(tap((data) => this.updateScenarioBackup(data)));
+  saveScenario(scenarioVersion: ScenarioVersionExtended): Observable<ScenarioVersion> {
+    const cleanScenario = JSON.parse(stringifiedCleanObject(scenarioVersion));
+    delete cleanScenario.creationDate;
+    delete cleanScenario.updateDate;
+
+    return this.scenarioService
+      .updateScenarioVersion(scenarioVersion._scenarioGroupId, cleanScenario)
+      .pipe(tap((data) => this.updateScenarioBackup(data)));
   }
 
   exitDesigner(): void {
     this.router.navigateByUrl('/scenarios');
   }
 
-  updateScenarioBackup(data: Scenario): void {
+  updateScenarioBackup(data: ScenarioVersion): void {
     this.scenarioDesignerCommunication.next({
       type: 'updateScenarioBackup',
       data: data

@@ -93,3 +93,48 @@ nb-card.selected {
 .nb-theme-dark nb-tabset .tab-link {
   padding: 1rem 1.5rem;
 }
+
+.min-width-1em {
+  min-width: 1em;
+}
+
+.unselectable {
+  user-select: none;
+}
+
+nb-accordion.selected {
+  border-left: 0.5rem solid var(--success);
+  nb-accordion-item {
+    padding-left: 1rem;
+  }
+}
+
+.break-word {
+  word-break: break-word;
+}
+
+.header-actions {
+  gap: 0.5rem;
+}
+
+.card-header-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.card-footer-actions {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+}
+
+@media screen and (min-width: 400px) {
+  .card-footer-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}

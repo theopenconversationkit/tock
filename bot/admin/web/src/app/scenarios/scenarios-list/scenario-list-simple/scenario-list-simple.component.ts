@@ -1,12 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { OrderBy } from '../../../shared/utils';
-import { Saga, Scenario, SCENARIO_STATE } from '../../models';
+import { ScenarioGroupExtended, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
-import { normalizedSnakeCase } from '../../commons/utils';
-import { exportJsonDump } from '../../../shared/utils';
+import { ScenarioService } from '../../services/scenario.service';
 
 @Component({
   selector: 'tock-scenario-list-simple',
@@ -14,20 +12,20 @@ import { exportJsonDump } from '../../../shared/utils';
   styleUrls: ['./scenario-list-simple.component.scss']
 })
 export class ScenarioListSimpleComponent {
-  @Input() sagas!: Saga[];
-  @Input() selectedScenario?: Scenario;
+  @Input() scenariosGroups!: ScenarioGroupExtended[];
+  @Input() selectedScenarioGroup?: ScenarioGroupExtended;
 
-  @Output() onEdit = new EventEmitter<Saga>();
-  @Output() onDeleteSaga = new EventEmitter<Saga>();
-  @Output() onDuplicate = new EventEmitter<Scenario>();
-  @Output() onDelete = new EventEmitter<Scenario>();
+  @Output() onEditScenarioGroup = new EventEmitter<ScenarioGroupExtended>();
+  @Output() onDeleteScenarioGroup = new EventEmitter<ScenarioGroupExtended>();
+  @Output() onDuplicateScenarioVersion = new EventEmitter<{ scenarioGroup: ScenarioGroupExtended; scenarioVersion: ScenarioVersion }>();
+  @Output() onDeleteScenarioVersion = new EventEmitter<{ scenarioGroup: ScenarioGroupExtended; scenarioVersion: ScenarioVersion }>();
   @Output() onOrderBy = new EventEmitter<OrderBy>();
 
   SCENARIO_STATE = SCENARIO_STATE;
   orderBy = 'name';
   orderByReverse = false;
 
-  constructor(protected state: StateService, private datePipe: DatePipe, private router: Router) {}
+  constructor(protected state: StateService, private router: Router, private scenarioService: ScenarioService) {}
 
   setOrderBy(criteria: string): void {
     if (criteria == this.orderBy) {
@@ -40,57 +38,63 @@ export class ScenarioListSimpleComponent {
     this.onOrderBy.emit({ criteria: this.orderBy, reverse: this.orderByReverse });
   }
 
-  sagaHasDraft(saga: Saga): Scenario {
-    return saga.scenarios.find((scn) => scn.state === SCENARIO_STATE.draft);
+  scenarioGroupHasState(scenarioGroup: ScenarioGroupExtended, state: SCENARIO_STATE): boolean {
+    return scenarioGroup.versions.find((scn) => scn.state === state) ? true : false;
   }
 
-  design(event: MouseEvent, saga: Saga): void {
+  scenarioGroupCollapsedChangeDebouncerFlag = false;
+  onScenarioGroupCollapsedChange(scenarioGroup, event) {
+    // debounce mechanism to workaround the nb-accordion-item collapsedChange emitter that always triggers twice in a row with incomprehensible values. The first call is ignored but a flag is set to allow the side effect to occur if a subsequent call is made less than 100ms later.
+    if (!this.scenarioGroupCollapsedChangeDebouncerFlag) {
+      this.scenarioGroupCollapsedChangeDebouncerFlag = true;
+      setTimeout(() => {
+        this.scenarioGroupCollapsedChangeDebouncerFlag = false;
+      }, 100);
+      return;
+    }
+
+    this.scenarioService.patchScenarioGroupState({ id: scenarioGroup.id, _expanded: !scenarioGroup._expanded });
+  }
+
+  design(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
-    let scenarioToOpen: Scenario;
-    const drafts = saga.scenarios.filter((scn) => scn.state === SCENARIO_STATE.draft);
+    let scenarioToOpen: ScenarioVersion;
+    const drafts = scenarioGroup.versions.filter((scn) => scn.state === SCENARIO_STATE.draft);
     if (drafts.length) {
       scenarioToOpen = drafts.sort((a, b) => {
-        return new Date(b.createDate).getTime() - new Date(a.createDate).getTime();
+        return new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime();
       })[0];
     } else {
-      const current = saga.scenarios.filter((scn) => scn.state === SCENARIO_STATE.current);
+      const current = scenarioGroup.versions.filter((scn) => scn.state === SCENARIO_STATE.current);
       if (current) {
         scenarioToOpen = current[0];
       } else {
-        scenarioToOpen = saga.scenarios[saga.scenarios.length - 1];
+        scenarioToOpen = scenarioGroup.versions[scenarioGroup.versions.length - 1];
       }
     }
-    this.router.navigateByUrl('/scenarios/' + scenarioToOpen.id);
+    this.router.navigateByUrl(`/scenarios/${scenarioGroup.id}/${scenarioToOpen.id}`);
   }
 
-  edit(event: MouseEvent, saga: Saga): void {
+  editScenarioGroup(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
-    this.onEdit.emit(saga);
+    this.onEditScenarioGroup.emit(scenarioGroup);
   }
 
-  deleteSaga(event: MouseEvent, saga: Saga): void {
+  deleteScenarioGroup(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
-    this.onDeleteSaga.emit(saga);
+    this.onDeleteScenarioGroup.emit(scenarioGroup);
   }
 
-  delete(event: MouseEvent, scenario: Scenario): void {
+  deleteScenarioVersion(event: MouseEvent, scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
     event.stopPropagation();
-    this.onDelete.emit(scenario);
+    this.onDeleteScenarioVersion.emit({ scenarioGroup: scenarioGroup, scenarioVersion: scenarioVersion });
   }
 
-  duplicate(scenario: Scenario): void {
-    this.onDuplicate.emit(scenario);
+  duplicate(scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
+    this.onDuplicateScenarioVersion.emit({ scenarioGroup, scenarioVersion });
   }
 
-  download(scenario: Scenario): void {
-    const fileName = [
-      this.state.currentApplication.name,
-      'SCENARIO',
-      normalizedSnakeCase(scenario.name),
-      scenario.state,
-      this.datePipe.transform(scenario.createDate, 'yyyy-MM-dd')
-    ].join('_');
-
-    exportJsonDump(scenario, fileName);
+  download(scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
+    this.scenarioService.loadScenariosAndDownload(this.scenariosGroups, [{ id: scenarioGroup.id, versions: [scenarioVersion.id] }]);
   }
 }

@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from '../../../../core-nlp/state.service';
-import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, TickContext } from '../../../models';
+import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, ScenarioContext } from '../../../models';
 import { ActionEditComponent } from './action-edit.component';
 
 const scenarioMock = {
@@ -12,7 +12,7 @@ const scenarioMock = {
   category: 'scenarios',
   tags: ['testing'],
   applicationId: '62558f21b318632c9200b567',
-  createDate: '2022-08-17T09:57:14.428Z',
+  creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
   description: '',
   data: {
@@ -31,7 +31,7 @@ const scenarioMock = {
         from: 'bot' as ScenarioItemFrom,
         parentIds: [0],
         tickActionDefinition: {
-          name: 'action1',
+          name: 'ACTION1',
           inputContextNames: [],
           outputContextNames: ['TEST']
         }
@@ -42,7 +42,7 @@ const scenarioMock = {
         from: 'bot' as ScenarioItemFrom,
         parentIds: [0, 1],
         tickActionDefinition: {
-          name: 'action2',
+          name: 'ACTION2',
           inputContextNames: ['TEST'],
           outputContextNames: ['CONTEXT2'],
           answerId: '456',
@@ -94,7 +94,7 @@ const scenarioMock = {
 };
 
 function getScenarioMock() {
-  return JSON.parse(JSON.stringify(scenarioMock)) as Scenario;
+  return JSON.parse(JSON.stringify(scenarioMock)) as ScenarioVersion;
 }
 
 describe('ActionEditComponent', () => {
@@ -126,7 +126,7 @@ describe('ActionEditComponent', () => {
   it('Should create', () => {
     expect(component).toBeTruthy();
     expect(component.form.value).toEqual({
-      name: 'action2',
+      name: 'ACTION2',
       description: null,
       handler: null,
       answer: 'action2 answer',
@@ -196,12 +196,12 @@ describe('ActionEditComponent', () => {
   });
 
   it('Should return context color', () => {
-    let color = component.getContextEntityColor(scenarioMock.data.contexts[0] as TickContext);
+    let color = component.getContextEntityColor(scenarioMock.data.contexts[0] as ScenarioContext);
     expect(color).toEqual('#ff87ef');
   });
 
   it('Should return context contrast', () => {
-    let color = component.getContextEntityContrast(scenarioMock.data.contexts[0] as TickContext);
+    let color = component.getContextEntityContrast(scenarioMock.data.contexts[0] as ScenarioContext);
     expect(color).toEqual('black');
   });
 });

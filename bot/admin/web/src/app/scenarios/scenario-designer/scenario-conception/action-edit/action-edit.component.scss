@@ -18,7 +18,7 @@
     .contexts-list {
       @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
       scrollbar-gutter: stable;
-      max-height: 15vh;
+      max-height: 16vh;
       margin-bottom: 1.5rem;
     }
   }
@@ -34,7 +34,6 @@
         display: block;
         grid-row-start: 2;
         align-self: center;
-        margin-bottom: 1rem;
       }
 
       > :nth-child(5) {
@@ -46,4 +45,12 @@
       }
     }
   }
+}
+
+.entity {
+  border-radius: 0.45rem;
+  padding: 0rem 0.3rem 0rem 0.3rem;
+  font-size: 0.7rem;
+  display: inline-block;
+  line-height: 1.25rem;
 }

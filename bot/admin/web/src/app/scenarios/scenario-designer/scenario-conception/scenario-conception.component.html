@@ -109,11 +109,12 @@
         <scenario-conception-item
           *ngIf="scenario?.data.scenarioItems.length"
           [isReadonly]="isReadonly"
-          [itemId]="0"
+          [item]="scenario.data.scenarioItems[0]"
           [contexts]="scenario.data.contexts"
           [selectedItem]="selectedItem"
           [mode]="scenario.data.mode"
           [scenario]="scenario"
+          [avalaibleHandlers]="avalaibleHandlers"
           (onSelectElement)="handleSeletedElement($event)"
         ></scenario-conception-item>
       </div>

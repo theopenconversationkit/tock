@@ -2,8 +2,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { DialogService } from '../../core-nlp/dialog.service';
-import { ScenarioService } from '../services/scenario.service';
+import { DialogService } from '../../../core-nlp/dialog.service';
+import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioEditComponent } from './scenario-edit.component';
 
 describe('ScenarioEditComponent', () => {

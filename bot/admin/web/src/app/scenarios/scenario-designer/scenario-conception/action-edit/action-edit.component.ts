@@ -4,8 +4,8 @@ import { NbDialogRef } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 
 import { StateService } from '../../../../core-nlp/state.service';
-import { Scenario, ScenarioItem, TickContext } from '../../../models';
-import { getContrastYIQ, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
+import { ScenarioVersion, ScenarioItem, ScenarioContext } from '../../../models';
+import { getContrastYIQ, getScenarioActionDefinitions, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
 const ENTITY_NAME_MINLENGTH = 5;
@@ -15,10 +15,13 @@ const ENTITY_NAME_MINLENGTH = 5;
   templateUrl: './action-edit.component.html',
   styleUrls: ['./action-edit.component.scss']
 })
-export class ActionEditComponent {
+export class ActionEditComponent implements OnInit {
   @Input() item: ScenarioItem;
-  @Input() contexts: TickContext[];
-  @Input() scenario: Scenario;
+  @Input() contexts: ScenarioContext[];
+  @Input() scenario: ScenarioVersion;
+  @Input() isReadonly: boolean;
+  @Input() readonly avalaibleHandlers: string[];
+
   @Output() saveModifications = new EventEmitter();
   @Output() deleteDefinition = new EventEmitter();
   @ViewChild('inputContextsInput') inputContextsInput: ElementRef;
@@ -29,7 +32,7 @@ export class ActionEditComponent {
   isSubmitted: boolean = false;
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH), this.notUsedName()]),
+    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH), this.isActionNameUnic()]),
     description: new FormControl(),
     handler: new FormControl(),
     answer: new FormControl(),
@@ -93,20 +96,25 @@ export class ActionEditComponent {
     }
   }
 
-  notUsedName(): ValidatorFn {
+  isActionNameUnic(): ValidatorFn {
     return (c: FormControl): ValidationErrors | null => {
-      if (!this.scenario) return null;
+      if (!c.value || !this.scenario) return null;
+
+      let formatedValue = normalizedSnakeCaseUpper(c.value.trim());
 
       const allOtherActionDefinitionNames = getScenarioActions(this.scenario)
         .filter((action) => action !== this.item)
         .filter((item) => item.tickActionDefinition)
         .map((action) => action.tickActionDefinition.name);
 
-      return allOtherActionDefinitionNames.includes(c.value)
-        ? {
-            custom: 'This name is already used by another action'
-          }
-        : null;
+      if (allOtherActionDefinitionNames.includes(formatedValue)) {
+        return { custom: 'This name is already used by another action' };
+      }
+
+      if (this.scenario.data.contexts.find((ctx) => ctx.name === formatedValue))
+        return { custom: 'Action cannot have the same name as a context' };
+
+      return null;
     };
   }
 
@@ -125,6 +133,21 @@ export class ActionEditComponent {
     });
     this.formatActionName();
     this.form.markAsDirty();
+  }
+
+  handlersAutocompleteValues: Observable<string[]>;
+
+  updateHandlersAutocompleteValues(event?: KeyboardEvent): void {
+    this.avalaibleHandlers;
+
+    let results = this.avalaibleHandlers;
+
+    if (event) {
+      const targetEvent = event.target as HTMLInputElement;
+      results = results.filter((handlerName: string) => handlerName.toLowerCase().includes(targetEvent.value.trim().toLowerCase()));
+    }
+
+    this.handlersAutocompleteValues = of(results);
   }
 
   contextsAutocompleteValues: Observable<string[]>;
@@ -178,6 +201,13 @@ export class ActionEditComponent {
       return;
     }
 
+    const actions = getScenarioActionDefinitions(this.scenario);
+
+    if (actions.find((act) => act.name === ctxName)) {
+      this[`${wich}ContextsAddError`] = { errors: { custom: 'A context cannot have the same name as an action' } };
+      return;
+    }
+
     const currentContextNamesArray = this[`${wich}ContextNames`];
     if (currentContextNamesArray.value.find((ctx: string) => ctx == ctxName)) {
       this[`${wich}ContextsAddError`] = {
@@ -212,7 +242,7 @@ export class ActionEditComponent {
     this.deleteDefinition.emit();
   }
 
-  getContextByName(context: string): TickContext[] {
+  getContextByName(context: string): ScenarioContext[] {
     return [
       this.contexts.find((ctx) => {
         return ctx.name == context;
@@ -220,11 +250,11 @@ export class ActionEditComponent {
     ];
   }
 
-  getContextEntityColor(context: TickContext): string | undefined {
+  getContextEntityColor(context: ScenarioContext): string | undefined {
     if (context.entityType) return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
-  getContextEntityContrast(context: TickContext): string | undefined {
+  getContextEntityContrast(context: ScenarioContext): string | undefined {
     if (context.entityType) return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
 

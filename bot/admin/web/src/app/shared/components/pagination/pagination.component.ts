@@ -1,24 +1,24 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 export interface Pagination {
-size: number;
-start: number;
-end: number;
-total: number;
+  size: number;
+  start: number;
+  end: number;
+  total: number;
 }
 
 @Component({
-selector: 'tock-pagination',
-templateUrl: './pagination.component.html',
-styleUrls: ['./pagination.component.scss']
+  selector: 'tock-pagination',
+  templateUrl: './pagination.component.html',
+  styleUrls: ['./pagination.component.scss']
 })
 export class PaginationComponent implements OnInit {
-@Input() pagination!: Pagination;
-@Input() sizes: number[] = [10, 25, 50, 100];
+  @Input() pagination!: Pagination;
+  @Input() sizes: number[] = [10, 25, 50, 100];
 
-@Output() onPaginationChange = new EventEmitter<Pagination>();
+  @Output() onPaginationChange = new EventEmitter<Pagination>();
 
-ngOnInit() {
+  ngOnInit() {
     if (!this.sizes.includes(this.pagination.size)) {
       this.sizes = [...this.sizes, this.pagination.size].sort(function (a, b) {
         return a - b;

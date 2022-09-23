@@ -7,6 +7,5 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./error-helper.component.scss']
 })
 export class ErrorHelperComponent {
-  @Input()
-  field!: FormArray | FormControl | FormGroup;
+  @Input() field!: FormArray | FormControl | FormGroup;
 }
