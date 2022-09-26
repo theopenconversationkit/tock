@@ -77,7 +77,8 @@ internal object ApplicationCodecService : ApplicationCodec {
         val entities = config.getEntityTypesByNamespaceAndSharedEntityTypes(app.namespace)
         val intents = config.getIntentsByApplicationId(applicationId)
         val sentences = config.getSentences(intents.map { it._id }.toSet()).sortedBy { it.updateDate }
-        return ApplicationDump(app, entities, intents, sentences)
+        val faqs = config.getFaqsDefinitionByApplicationId(applicationId)
+        return ApplicationDump(app, entities, intents, sentences, faqs)
     }
 
     override fun prepareImport(dump: ApplicationDump): ApplicationImportConfiguration {
@@ -288,6 +289,25 @@ internal object ApplicationCodecService : ApplicationCodec {
                     config.save(sentence)
                 }
             }
+
+            dump.faqs.forEach {
+                val intentDump = dump.intents.first { intent -> intent._id == it.intentId }
+                val intentDB = config.getIntentByNamespaceAndName(namespace, intentDump.name)!!
+                val faq = config.getFaqDefinitionByIntentId(intentDB._id)
+                if(faq == null) {
+                    val newFaq = it.copy(
+                        _id = newId(),
+                        applicationId = appId,
+                        intentId = intentDB._id
+                    )
+                    report.add(newFaq)
+                    config.save(newFaq)
+                    logger.debug { "Import faq $newFaq" }
+                } else {
+                    config.save(faq.copy(enabled = it.enabled, tags = it.tags))
+                }
+            }
+
             logger.info { "Dump imported! Result : $report" }
 
             // trigger build

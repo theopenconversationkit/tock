@@ -27,6 +27,7 @@ import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
+import ai.tock.nlp.front.service.storage.FaqSettingsDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
 import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.nlp.front.shared.ApplicationConfiguration
@@ -51,6 +52,7 @@ val intentDAO: IntentDefinitionDAO get() = injector.provide()
 val sentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
 val userNamespaceDAO: UserNamespaceDAO get() = injector.provide()
 val faqDefinitionDAO: FaqDefinitionDAO get() = injector.provide()
+val faqSettingsDAO: FaqSettingsDAO get() = injector.provide()
 
 /**
  *
@@ -90,10 +92,9 @@ object ApplicationConfigurationService :
         sentenceDAO.deleteSentencesByApplicationId(id)
         val app = applicationDAO.getApplicationById(id)!!
         intentDAO.getIntentsByApplicationId(id).forEach { intent ->
-            faqDefinitionDAO.getFaqDefinitionByIntentId(intent._id)
-                .let { faqDefinitionDAO.deleteFaqDefinitionById(it!!._id) }
             removeIntentFromApplication(app, intent._id)
         }
+        faqDefinitionDAO.deleteFaqDefinitionByApplicationId(id)
         applicationDAO.deleteApplicationById(id)
     }
 
@@ -102,7 +103,7 @@ object ApplicationConfigurationService :
         intentId: Id<IntentDefinition>
     ): Boolean {
         val intent = intentDAO.getIntentById(intentId)!!
-        sentenceDAO.switchSentencesIntent(application._id, intentId, UNKNOWN_INTENT_NAME.toId())
+        sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT_NAME.toId())
         applicationDAO.save(application.copy(intents = application.intents - intentId))
         val newIntent = intent.copy(applications = intent.applications - application._id)
         return if (newIntent.applications.isEmpty()) {
@@ -205,7 +206,7 @@ object ApplicationConfigurationService :
     private fun findIntent(intentId: Id<IntentDefinition>): Intent {
         return getIntentById(intentId)?.let {
             toIntent(it)
-        } ?: Intent(UNKNOWN_INTENT_NAME, emptyList())
+        } ?: Intent(Intent.UNKNOWN_INTENT_NAME, emptyList())
     }
 
     fun toIntent(intent: IntentDefinition): Intent {
@@ -315,4 +316,10 @@ object ApplicationConfigurationService :
 
     override fun isEntityTypeObfuscated(name: String): Boolean =
         ConfigurationRepository.entityTypeByName(name)?.obfuscated ?: true
+
+    override fun getFaqsDefinitionByApplicationId(id: Id<ApplicationDefinition>): List<FaqDefinition>
+            = faqDefinitionDAO.getFaqDefinitionByApplicationId(id)
+
+    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition?
+            = faqDefinitionDAO.getFaqDefinitionByIntentId(id)
 }

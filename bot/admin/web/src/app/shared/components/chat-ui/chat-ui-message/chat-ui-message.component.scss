@@ -1,0 +1,95 @@
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
+:host {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: row;
+
+  .message {
+    flex: 1;
+  }
+
+  .avatar {
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #c5cee0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 2.5rem;
+    height: 2.5rem;
+    text-align: center;
+    line-height: 2.5rem;
+    font-size: 0.875rem;
+    color: white;
+  }
+  .sender {
+    font-size: 0.875rem;
+    color: nb-theme(chat-message-sender-text-color);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    word-break: break-word;
+    white-space: pre-wrap;
+    max-width: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .text {
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  &.currentsentence .text {
+    background-color: nb-theme(color-success-500) !important;
+    color: white !important;
+  }
+
+  &.not-reply {
+    .message {
+      margin-left: 0.5rem;
+    }
+
+    align-items: flex-start;
+
+    .text {
+      border-top-left-radius: 0;
+      background: nb-theme(chat-message-background);
+      color: nb-theme(chat-message-text-color);
+    }
+  }
+
+  &.reply {
+    flex-direction: row-reverse;
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      margin-left: 0;
+      margin-right: 0.5rem;
+    }
+
+    .message-text {
+      align-items: flex-end;
+      .sender {
+        text-align: right;
+      }
+
+      .text {
+        border-top-right-radius: 0;
+        background: nb-theme(chat-message-reply-background-color);
+        color: nb-theme(chat-message-reply-text-color);
+      }
+    }
+  }
+}
+
+.nb-theme-dark :host.reply .message-text .text {
+  background: #192038;
+  color: #ffffff;
+}

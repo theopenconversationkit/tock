@@ -131,6 +131,7 @@ export class ImportReport {
     public entitiesImported: string[],
     public intentsImported: string[],
     public sentencesImported: number,
+    public faqsImported: number,
     public success: boolean,
     public modified: boolean,
     public errorMessages: string[]

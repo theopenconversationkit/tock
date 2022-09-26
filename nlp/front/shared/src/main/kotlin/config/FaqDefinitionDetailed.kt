@@ -29,6 +29,10 @@ data class FaqDefinitionDetailed(
      */
     val _id: Id<FaqDefinition>?,
     /**
+     * The application id.
+     */
+    val applicationId: Id<ApplicationDefinition>,
+    /**
      * The intent id.
      */
     val intentId: Id<IntentDefinition>,
@@ -70,5 +74,10 @@ data class FaqDefinitionDetailed(
     /**
      * The [I18nLabel] answer associated to the faq
      */
-    val i18nLabel: I18nLabel
+    val i18nLabel: I18nLabel,
+
+    /**
+     * The [StoryDefinitionBase] name of the faq
+     */
+    val storyName: String?=null,
 )

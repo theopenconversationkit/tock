@@ -54,6 +54,7 @@ import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.nlp.front.shared.config.FaqSettingsQuery
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
@@ -219,13 +220,14 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-
-        blockingJsonPost("/analytics/messages/byStoryCategory", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+        blockingJsonPost(
+            "/analytics/messages/byStoryCategory",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByStoryCategory(request)
             }
         }
-
 
         blockingJsonPost(
             "/analytics/messages/byStoryType",
@@ -236,7 +238,6 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-
         blockingJsonPost(
             "/analytics/messages/byStoryLocale",
             setOf(botUser, faqBotUser)
@@ -246,7 +247,10 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/analytics/messages/byActionType", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+        blockingJsonPost(
+            "/analytics/messages/byActionType",
+            setOf(botUser, faqBotUser)
+        ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByActionType(request)
             }
@@ -773,7 +777,7 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 val applicationDefinition = front.getApplicationById(query.applicationId)
                 if (context.organization == applicationDefinition?.namespace) {
-                    FaqAdminService.saveFAQ(query, context.userLogin, applicationDefinition)
+                    return@blockingJsonPost FaqAdminService.saveFAQ(query, context.userLogin, applicationDefinition)
                 } else {
                     unauthorized()
                 }
@@ -809,10 +813,12 @@ open class BotAdminVerticle : AdminVerticle() {
         )
         { context, request: FaqSearchRequest ->
             val applicationDefinition =
-                FrontClient.getApplicationByNamespaceAndName(request.namespace, request.applicationName)
+                front.getApplicationByNamespaceAndName(request.namespace, request.applicationName)
             if (context.organization == applicationDefinition?.namespace) {
                 try {
-                    FaqAdminService.searchFAQ(request, applicationDefinition)
+                    measureTimeMillis(context) {
+                        FaqAdminService.searchFAQ(request, applicationDefinition)
+                    }
                 } catch (t: NoEncryptionPassException) {
                     logger.error(t)
                     badRequest("Error obfuscating faq: ${t.message}")
@@ -825,14 +831,25 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost(
-            "/faq/status",
-            setOf(botUser, faqBotUser),
-            logger<FaqDefinitionRequest>("Change FAQ status")
-        ) { context, query: FaqDefinitionRequest ->
-            val applicationDefinition = front.getApplicationById(query.applicationId)
+        blockingJsonGet(
+            "/faq/settings/:applicationId",
+            setOf(botUser, faqBotUser)
+        ) { context ->
+            val applicationDefinition = front.getApplicationById(context.pathId("applicationId"))
             if (context.organization == applicationDefinition?.namespace) {
-                FaqAdminService.updateActivationStatusStory(query, context.userLogin, applicationDefinition)
+                FaqAdminService.getSettings(applicationDefinition)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+            "/faq/settings/:applicationId",
+            setOf(botUser, faqBotUser)
+        ) { context, faqSettingsQuery: FaqSettingsQuery ->
+            val applicationDefinition = front.getApplicationById(context.pathId("applicationId"))
+            if (context.organization == applicationDefinition?.namespace) {
+                FaqAdminService.saveSettings(applicationDefinition, faqSettingsQuery)
             } else {
                 unauthorized()
             }
@@ -865,4 +882,3 @@ open class BotAdminVerticle : AdminVerticle() {
         return super.saveApplication(existingApp, app)
     }
 }
-

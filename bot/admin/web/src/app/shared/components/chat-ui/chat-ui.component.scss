@@ -1,0 +1,59 @@
+:host {
+  border: none;
+  color: #222b45;
+  font-family: Open Sans, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+
+  .scrollable {
+    min-height: 16rem;
+
+    overflow: auto;
+    flex: 1;
+
+    .messages {
+      padding: 1rem 1.25rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-shrink: 0;
+      flex-direction: column;
+    }
+  }
+}
+
+.nb-theme-default :host {
+  background-color: #ffffff;
+  color: #222b45;
+}
+
+.nb-theme-dark :host {
+  background-color: #222b45;
+  color: #ffffff;
+}
+
+// ScrollBars
+:host .scrollable::-webkit-scrollbar {
+  width: 0.3125rem;
+  height: 0.3125rem;
+}
+
+:host .scrollable::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 0.15625rem;
+}
+
+.nb-theme-default :host .scrollable::-webkit-scrollbar-thumb {
+  background: #e4e9f2;
+}
+.nb-theme-default :host .scrollable::-webkit-scrollbar-track {
+  background: #f7f9fc;
+}
+
+.nb-theme-dark :host .scrollable::-webkit-scrollbar-thumb {
+  background: #101426;
+}
+.nb-theme-dark :host .scrollable::-webkit-scrollbar-track {
+  background: #192038;
+}

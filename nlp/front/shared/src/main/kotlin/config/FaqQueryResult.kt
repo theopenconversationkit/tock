@@ -29,10 +29,13 @@ data class FaqQueryResult(
      */
     val _id: Id<FaqDefinition>?,
     /**
+     * The application id.
+     */
+    val applicationId: Id<ApplicationDefinition>,
+    /**
      * The intent id.
      */
     val intentId: Id<IntentDefinition>,
-
     /**
      * The i18n label id.
      */
@@ -66,6 +69,11 @@ data class FaqQueryResult(
      * The [IntentDefinition] identity of the faq
      */
     val faq: IntentDefinition,
+
+    /**
+     * The [StoryDefinitionBase] name of the faq
+     */
+    val storyName: String?=null,
 ) {
     /**
      * Convert [FaqQueryResult] to [FaqDefinitionDetailed] with [I18nLabel]
@@ -76,6 +84,7 @@ data class FaqQueryResult(
     fun toFaqDefinitionDetailed(faqQueryResult: FaqQueryResult, i18nLabel: I18nLabel): FaqDefinitionDetailed {
         return FaqDefinitionDetailed(
             faqQueryResult._id,
+            faqQueryResult.applicationId,
             faqQueryResult.intentId,
             faqQueryResult.i18nId,
             faqQueryResult.tags,
@@ -84,7 +93,8 @@ data class FaqQueryResult(
             faqQueryResult.updateDate,
             faqQueryResult.utterances,
             faqQueryResult.faq,
-            i18nLabel
+            i18nLabel,
+            faqQueryResult.storyName
         )
     }
 

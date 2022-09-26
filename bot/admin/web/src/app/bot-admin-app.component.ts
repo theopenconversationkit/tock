@@ -30,7 +30,6 @@ import { User, UserRole } from './model/auth';
   styleUrls: ['./bot-admin-app.component.css']
 })
 export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
-
   UserRole = UserRole;
 
   private errorUnsuscriber: any;
@@ -101,8 +100,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           icon: 'school',
           pack: 'material-icons'
         },
-        link: '/faq/train'
-        ,
+        link: '/faq/training',
         hidden: !this.state.hasRole(UserRole.faqNlpUser)
       },
       {
@@ -111,9 +109,14 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           icon: 'question_answer',
           pack: 'material-icons'
         },
-        link: '/faq/qa'
-        ,
+        link: '/faq/management',
         hidden: !this.state.hasRole(UserRole.faqBotUser)
+      },
+      {
+        title: 'Answers',
+        icon: 'color-palette-outline',
+        link: '/build/i18n',
+        hidden: this.state.hasRole(UserRole.botUser) || !this.state.hasRole(UserRole.faqBotUser)
       }
     ];
   }
