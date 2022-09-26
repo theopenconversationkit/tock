@@ -97,17 +97,18 @@ Cette implémentation générique est à utiliser dès que vous souhaitez param�
 
 Voici les propriétés et leurs valeurs par défaut :
 
-| Variable d'environnement             | Exemple de valeur  | Description                                      |
-|--------------------------------------|--------------------|--------------------------------------------------|
-| `tock_oauth2_enabled`                | `true`             | Activation de l'authentification 0Auth2          |
-| `tock_oauth2_client_id`              | `CLIENT_ID`        | Identifiant pour interroger l'API GitHub         |
-| `tock_oauth2_secret_key`             | `SECRET_KEY`       | Mot de passe pour interroger l'API GitHub        |
-| `tock_oauth2_site_url`               | `https://provider` | Url du provider oauth2                           |
-| `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token     |
-| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Timeout vérification de l'identité (API GitHub)  |
-| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Timeout vérification de l'identité (API GitHub)  |
-| `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)  |
-| `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                          |
+| Variable d'environnement             | Exemple de valeur  | Description                                       |
+|--------------------------------------|--------------------|---------------------------------------------------|
+| `tock_oauth2_enabled`                | `true`             | Activation de l'authentification 0Auth2           |
+| `tock_oauth2_client_id`              | `CLIENT_ID`        | Identifiant pour interroger l'API GitHub          |
+| `tock_oauth2_secret_key`             | `SECRET_KEY`       | Mot de passe pour interroger l'API GitHub         |
+| `tock_oauth2_site_url`               | `https://provider` | Url du provider oauth2                            |
+| `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token      |
+| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Timeout vérification de l'identité (API GitHub)   |
+| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Timeout vérification de l'identité (API GitHub)   |
+| `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)   |
+| `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                           |
+| `tock_oauth2_user_role_attribute`    | `custom:roles`     | Attribut lu dans le token pour le mapping du role |
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
 
