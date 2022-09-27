@@ -17,8 +17,5 @@
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
-import ai.tock.bot.connector.iadvize.model.response.conversation.ReplyType
 
-data class IadvizeAwait(val duration: Duration): IadvizeReply {
-    override val type: ReplyType = ReplyType.await
-}
+data class IadvizeAwait(val duration: Duration): IadvizeReply(ReplyType.await)

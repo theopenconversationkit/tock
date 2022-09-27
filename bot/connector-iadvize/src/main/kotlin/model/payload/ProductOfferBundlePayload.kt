@@ -16,6 +16,5 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload
 
-data class ProductOfferBundlePayload(val cards: MutableList<ProductOfferPayload> = mutableListOf()) : Payload {
-    override val contentType: String = "bundle/product-offer"
-}
+data class ProductOfferBundlePayload(val cards: MutableList<ProductOfferPayload> = mutableListOf())
+    : Payload("bundle/product-offer")

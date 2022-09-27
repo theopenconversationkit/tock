@@ -40,8 +40,16 @@ internal val iadvizeConnectorType = ConnectorType(IADVIZE_CONNECTOR_TYPE_ID)
  * Create an iadvize message's provider
  * Used by Story script and bot api (external use)
  */
-fun <T : Bus<T>> T.withIadvize(messageProvider: () -> IadvizeReply): T {
-    return withMessage(iadvizeConnectorType, messageProvider)
+fun <T : Bus<T>> T.withIadvize(messageProvider: () -> Any): T {
+    val iadvizeMessageProvider: () -> IadvizeConnectorMessage = {
+        val iadvizeReply = messageProvider.invoke()
+        when(iadvizeReply) {
+            is IadvizeMultipartReply -> IadvizeConnectorMessage(iadvizeReply)
+            is IadvizeReply -> IadvizeConnectorMessage(iadvizeReply)
+            else -> IadvizeConnectorMessage()
+        }
+    }
+    return withMessage(iadvizeConnectorType, iadvizeMessageProvider)
 }
 
 /**

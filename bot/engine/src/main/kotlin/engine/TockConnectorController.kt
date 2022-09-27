@@ -245,7 +245,7 @@ internal class TockConnectorController constructor(
         connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
     }
 
-    fun sendIntent(intent: Intent, applicationId: String, data: ConnectorData){
+    fun sendIntent(intent: Intent, applicationId: String, data: ConnectorData) {
         connector.send(MetadataEvent.intent(intent, applicationId), data.callback)
     }
 

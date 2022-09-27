@@ -20,9 +20,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 data class FilePayload(val fileName: String,
                        val mimeType: MimeType,
-                       val url: String) : Payload {
-    override val contentType: String = "file"
-
+                       val url: String) : Payload("file") {
     enum class MimeType(@JsonValue val value: String) {
         GIF("image/gif"),
         PDF("application/pdf"),

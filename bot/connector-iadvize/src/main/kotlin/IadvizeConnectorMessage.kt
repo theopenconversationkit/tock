@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation.reply
+package ai.tock.bot.connector.iadvize
 
-data class IadvizeMultipartReply(val replies: List<IadvizeReply>) {
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMultipartReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import com.fasterxml.jackson.annotation.JsonIgnore
+
+data class IadvizeConnectorMessage(val replies: List<IadvizeReply>) : ConnectorMessage {
+
+    override val connectorType: ConnectorType
+        @JsonIgnore get() = IadvizeConnectorProvider.connectorType
+
     constructor(vararg replies : IadvizeReply) : this(replies.toList())
+
+    constructor(multipartReplies : IadvizeMultipartReply) : this(multipartReplies.replies)
 }

@@ -22,12 +22,10 @@ import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest
+import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
 import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMultipartReply
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeTransfer
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.*
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
@@ -131,15 +129,19 @@ class IadvizeConnectorCallback(override val  applicationId: String,
     private fun toListIadvizeReply(actions: List<ActionWithDelay>): List<IadvizeReply> {
         return actions.map {
             if (it.action is SendSentence) {
-                val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
+                 try{
+                    val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
 
-                if (it.action.text != null) {
-                    val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
-                    //Combine 1 MessageTextPayload with messages enhanced IadvizeReply
-                    listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
-                } else {
-                    //No simple MessageTextPayload, just return enhanced IadvizeReply
-                    listIadvizeReply
+                    if (it.action.text != null) {
+                        val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
+                        //Combine 1 MessageTextPayload with messages enhanced IadvizeReply
+                        listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
+                    } else {
+                        //No simple MessageTextPayload, just return enhanced IadvizeReply
+                        listIadvizeReply
+                    }
+                } catch (exception: RestException) {
+                     listOf()
                 }
             } else {
                 emptyList()
@@ -148,9 +150,9 @@ class IadvizeConnectorCallback(override val  applicationId: String,
     }
 
     private fun List<ConnectorMessage>.filterAndEnhanceIadvizeReply(): List<IadvizeReply> {
-        // Filter Message not IadvizeReply for other connector
-        return filterIsInstance<IadvizeReply>()
-            .map(ungroupMultipartIadvizeReplies)
+        // Filter Message not IadvizeConnectorMessage for other connector
+        return filterIsInstance<IadvizeConnectorMessage>()
+            .map{ connectorMessage -> connectorMessage.replies }
             .flatten()
             .map(addDistributionRulesOnTransfer)
     }
@@ -162,19 +164,12 @@ class IadvizeConnectorCallback(override val  applicationId: String,
     private val addDistributionRulesOnTransfer: (IadvizeReply) -> IadvizeReply = {
         if(it is IadvizeTransfer) {
             if(distributionRule == null) {
-                throw RestException("Distribution rule is not configured in connector, transfer to human is impossible")
+                IadvizeAwait(Duration(3, seconds))
+            } else {
+                IadvizeTransfer(distributionRule, it.transferOptions)
             }
-            IadvizeTransfer(distributionRule, it.transferOptions)
         } else {
             it
-        }
-    }
-
-    private val ungroupMultipartIadvizeReplies: (IadvizeReply) -> List<IadvizeReply> = {
-        if(it is IadvizeMultipartReply) {
-            it
-        } else {
-            listOf(it)
         }
     }
 

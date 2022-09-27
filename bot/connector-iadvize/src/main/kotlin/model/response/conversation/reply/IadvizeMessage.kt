@@ -17,13 +17,10 @@
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
-import ai.tock.bot.connector.iadvize.model.response.conversation.ReplyType
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.Payload
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 
 data class IadvizeMessage(val payload: Payload,
-                          val quickReplies: MutableList<QuickReply> = mutableListOf()) : IadvizeReply {
-    override val type: ReplyType = ReplyType.message
-
+                          val quickReplies: MutableList<QuickReply> = mutableListOf()) : IadvizeReply(ReplyType.message) {
     constructor(messagePayload: String) : this(TextPayload(messagePayload))
 }

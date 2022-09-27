@@ -16,6 +16,26 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload
 
-interface Payload {
-    val contentType: String
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeAwait
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeClose
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeTransfer
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "contentType"
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(name = "bundle/card", value = CardBundlePayload::class),
+    JsonSubTypes.Type(name = "file", value = FilePayload::class),
+    JsonSubTypes.Type(name = "card/content", value = GenericCardPayload::class),
+    JsonSubTypes.Type(name = "bundle/product-offer", value = ProductOfferBundlePayload::class),
+    JsonSubTypes.Type(name = "product-offer", value = ProductOfferPayload::class),
+    JsonSubTypes.Type(name = "text", value = TextPayload::class)
+)
+abstract class Payload(val contentType: String) {
+
 }

@@ -121,8 +121,9 @@ class IadvizeConnectorTest {
         val expectedResponse: String = Resources.toString(resource("/response_message_quickreply.json"), Charsets.UTF_8)
 
         val iadvizeReply: IadvizeReply = IadvizeMessage(TextPayload("MARCUS"), mutableListOf(QuickReply("MARCUS_YES"), QuickReply("MARCUS_NO")))
+        val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeReply)
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeReply))
+        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeConnectorMessage))
         val connectorData = slot<ConnectorData>()
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
@@ -149,8 +150,9 @@ class IadvizeConnectorTest {
         val expectedResponse: String = Resources.toString(resource("/response_message_transfer.json"), Charsets.UTF_8)
 
         val iadvizeTransfer: IadvizeReply = IadvizeTransfer(0)
+        val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeTransfer)
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeTransfer))
+        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeConnectorMessage))
         val connectorData = slot<ConnectorData>()
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
@@ -183,13 +185,14 @@ class IadvizeConnectorTest {
             IadvizeMessage("message after timeout"),
             IadvizeClose()
         )
+        val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeMultipartReply)
 
         val action = SendSentence(
             PlayerId("MockPlayerId"),
             "applicationId",
             PlayerId("recipientId"),
             text = null,
-            messages = mutableListOf(iadvizeMultipartReply)
+            messages = mutableListOf(iadvizeConnectorMessage)
         )
 
         val connectorData = slot<ConnectorData>()

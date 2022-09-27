@@ -22,6 +22,5 @@ import ai.tock.bot.connector.iadvize.model.response.conversation.payload.generic
 data class GenericCardPayload(val title: String? = null,
                               val text: String? = null,
                               val image: Image? = null,
-                              val actions: List<Action> = mutableListOf()) : Payload {
-    override val contentType: String = "card/content"
-}
+                              val actions: List<Action> = mutableListOf())
+    : Payload("card/content")

@@ -16,6 +16,4 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.payload
 
-data class TextPayload(val value: String) : Payload {
-    override val contentType: String = "text"
-}
+data class TextPayload(val value: String) : Payload("text")

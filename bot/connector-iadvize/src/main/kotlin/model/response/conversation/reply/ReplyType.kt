@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation
+package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
 enum class ReplyType {
-    await, message, transfer, close, multipart
+    await, message, transfer, close
 }

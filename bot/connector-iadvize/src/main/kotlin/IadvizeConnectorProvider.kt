@@ -16,7 +16,7 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.*
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.*
 import ai.tock.shared.loadProperties
 import ai.tock.shared.resourceAsString
 import java.util.*
@@ -36,7 +36,7 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
                 connectorConfiguration.path,
                 parameters.getValue(EDITOR_URL),
                 parameters.getValue(FIRST_MESSAGE),
-                parameters[DISTRIBUTION_RULE],
+                parameters.getValue(DISTRIBUTION_RULE)
             )
         }
     }
@@ -65,9 +65,7 @@ internal object IadvizeConnectorProvider : ConnectorProvider {
         )
     }
 
-    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(
-        IadvizeReply::class
-    )
+    override val supportedResponseConnectorMessageTypes: Set<KClass<out ConnectorMessage>> = setOf(IadvizeConnectorMessage::class)
 }
 
 internal class IadvizeConnectorProviderService : ConnectorProvider by IadvizeConnectorProvider

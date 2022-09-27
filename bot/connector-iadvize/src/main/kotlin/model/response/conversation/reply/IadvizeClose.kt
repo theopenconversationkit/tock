@@ -16,8 +16,4 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
-import ai.tock.bot.connector.iadvize.model.response.conversation.ReplyType
-
-class IadvizeClose : IadvizeReply {
-    override val type: ReplyType = ReplyType.close
-}
+class IadvizeClose : IadvizeReply(ReplyType.close)

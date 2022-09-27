@@ -46,7 +46,7 @@ internal object MediaConverter {
         val payload: Payload = TextPayload(translate(message).toString())
         val quickReply: MutableList<QuickReply> = suggestionToQuickReplies(suggestions)
 
-        IadvizeMessage(payload, quickReply)
+        IadvizeConnectorMessage(IadvizeMessage(payload, quickReply))
     }
 
     private fun BotBus.fromMediaCard(message: MediaCard): List<ConnectorMessage> {
@@ -62,9 +62,9 @@ internal object MediaConverter {
 
         val payload: Payload = getPayload(title, text, image, payloadActions)
 
-        val iadvizeMessage = IadvizeMessage(payload, quickReply)
+        val iadvizeMessageOnConnector = IadvizeConnectorMessage(IadvizeMessage(payload, quickReply))
 
-        return listOf(iadvizeMessage)
+        return listOf(iadvizeMessageOnConnector)
     }
 
     private fun BotBus.actionToQuickReplies(actions: List<MediaAction>): MutableList<QuickReply> {

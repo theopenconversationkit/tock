@@ -17,12 +17,10 @@
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
-import ai.tock.bot.connector.iadvize.model.response.conversation.ReplyType
 
 data class IadvizeTransfer(
     val distributionRule: String?,
-    val transferOptions: TransferOptions) : IadvizeReply {
-    override val type: ReplyType = ReplyType.transfer
+    val transferOptions: TransferOptions) : IadvizeReply(ReplyType.transfer) {
 
     data class TransferOptions(val timeout: Duration)
 
