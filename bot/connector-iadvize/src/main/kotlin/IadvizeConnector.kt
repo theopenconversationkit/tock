@@ -20,9 +20,12 @@ import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.iadvize.model.DistributionRule
-import ai.tock.bot.connector.iadvize.model.request.*
+import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
+import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
+import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
+import ai.tock.bot.connector.iadvize.model.request.TypeMessage
+import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest
 import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest.UnsupportedRequestJson
 import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies
 import ai.tock.bot.connector.iadvize.model.response.Bot

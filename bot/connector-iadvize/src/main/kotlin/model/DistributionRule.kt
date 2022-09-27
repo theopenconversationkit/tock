@@ -16,16 +16,7 @@
 
 package ai.tock.bot.connector.iadvize.model
 
-import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.iadvize.IadvizeConnectorProvider
-import ai.tock.bot.engine.message.Message
-import com.fasterxml.jackson.annotation.JsonIgnore
-
 /**
  *
  */
-data class DistributionRule(
-    val id: String,
-    val label: String
-)
+data class DistributionRule(val id: String, val label: String)

@@ -21,7 +21,12 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.*
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMultipartReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeTransfer
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeAwait
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeClose
 import ai.tock.bot.engine.Bus
 
 // Used by bot api, and story script

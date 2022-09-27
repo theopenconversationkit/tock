@@ -16,7 +16,7 @@
 
 package ai.tock.bot.connector.iadvize.model.response
 
-import java.util.*
+import java.util.UUID
 
 data class AvailabilityStrategies(
     val strategy: Strategy,

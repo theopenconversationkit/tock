@@ -15,11 +15,16 @@
  */
 package ai.tock.bot.connector.iadvize
 
-import ai.tock.bot.connector.*
-import ai.tock.bot.connector.iadvize.model.response.conversation.reply.*
+import ai.tock.bot.connector.ConnectorTypeConfiguration
+import ai.tock.bot.connector.ConnectorProvider
+import ai.tock.bot.connector.ConnectorType
+import ai.tock.bot.connector.ConnectorConfiguration
+import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorTypeConfigurationField
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.shared.loadProperties
 import ai.tock.shared.resourceAsString
-import java.util.*
+import java.util.Properties
 import kotlin.reflect.KClass
 
 internal object IadvizeConnectorProvider : ConnectorProvider {
