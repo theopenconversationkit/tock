@@ -1,0 +1,28 @@
+{
+  "idOperator": "operateurId",
+  "idConversation": "ba4e1f71-7012-4b1a-86c3-d2fce8883dc7",
+  "history": [
+    {
+      "idMessage": "ba4e1f71-7012-4b1a-86c3-d2fce8883dc8",
+      "author": {
+        "role": "visitor"
+      },
+      "payload": {
+        "contentType":"text",
+        "value":"historic 1"
+      },
+      "createdAt": "2017-11-22T12:04:00.762Z"
+    },
+    {
+      "idMessage": "ba4e1f71-7012-4b1a-86c3-d2fce8883dc9",
+      "author": {
+        "role": "visitor"
+      },
+      "payload": {
+        "contentType":"text",
+        "value":"historic 2"
+      },
+      "createdAt": "2017-11-22T12:04:00.762Z"
+    }
+  ]
+}
