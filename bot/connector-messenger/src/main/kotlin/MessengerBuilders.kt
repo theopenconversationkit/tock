@@ -73,7 +73,7 @@ fun <T : Bus<T>> T.sendToMessenger(
     delay: Long = defaultDelay(currentAnswerIndex),
     messageProvider: T.() -> MessengerConnectorMessage
 ): T {
-    if (targetConnectorType == messengerConnectorType) {
+    if (isCompatibleWith(messengerConnectorType)) {
         withMessage(messageProvider(this))
         send(delay)
     }
@@ -87,7 +87,7 @@ fun <T : Bus<T>> T.endForMessenger(
     delay: Long = defaultDelay(currentAnswerIndex),
     messageProvider: T.() -> MessengerConnectorMessage
 ): T {
-    if (targetConnectorType == messengerConnectorType) {
+    if (isCompatibleWith(messengerConnectorType)) {
         withMessage(messageProvider(this))
         end(delay)
     }

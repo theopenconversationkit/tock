@@ -1,8 +1,10 @@
 package ai.tock.bot.mongo
 
+import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.connector.ConnectorType
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -13,6 +15,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
+import org.litote.kmongo.Id
 
 internal class GroupById_Deserializer : JsonDeserializer<GroupById>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(GroupById::class.java, this)
@@ -31,6 +34,8 @@ internal class GroupById_Deserializer : JsonDeserializer<GroupById>(), JacksonMo
             var _intent_set : Boolean = false
             var _storyDefinitionId_: String? = null
             var _storyDefinitionId_set : Boolean = false
+            var _applicationId_: Id<BotApplicationConfiguration>? = null
+            var _applicationId_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -71,6 +76,11 @@ internal class GroupById_Deserializer : JsonDeserializer<GroupById>(), JacksonMo
                              else p.text;
                             _storyDefinitionId_set = true
                             }
+                    "applicationId" -> {
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_applicationId__reference);
+                            _applicationId_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -80,10 +90,11 @@ internal class GroupById_Deserializer : JsonDeserializer<GroupById>(), JacksonMo
                 _token_ = currentToken
                         } 
             return if(_date_set && _dialogId_set && _connectorType_set && _configuration_set &&
-                    _intent_set && _storyDefinitionId_set)
+                    _intent_set && _storyDefinitionId_set && _applicationId_set)
                     GroupById(date = _date_!!, dialogId = _dialogId_!!, connectorType =
                             _connectorType_!!, configuration = _configuration_!!, intent =
-                            _intent_!!, storyDefinitionId = _storyDefinitionId_!!)
+                            _intent_!!, storyDefinitionId = _storyDefinitionId_!!, applicationId =
+                            _applicationId_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_date_set)
@@ -97,7 +108,9 @@ internal class GroupById_Deserializer : JsonDeserializer<GroupById>(), JacksonMo
                     if(_intent_set)
                     map[parameters.getValue("intent")] = _intent_
                     if(_storyDefinitionId_set)
-                    map[parameters.getValue("storyDefinitionId")] = _storyDefinitionId_ 
+                    map[parameters.getValue("storyDefinitionId")] = _storyDefinitionId_
+                    if(_applicationId_set)
+                    map[parameters.getValue("applicationId")] = _applicationId_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -113,6 +126,10 @@ internal class GroupById_Deserializer : JsonDeserializer<GroupById>(), JacksonMo
                 to primaryConstructor.findParameterByName("connectorType")!!, "configuration" to
                 primaryConstructor.findParameterByName("configuration")!!, "intent" to
                 primaryConstructor.findParameterByName("intent")!!, "storyDefinitionId" to
-                primaryConstructor.findParameterByName("storyDefinitionId")!!) }
+                primaryConstructor.findParameterByName("storyDefinitionId")!!, "applicationId" to
+                primaryConstructor.findParameterByName("applicationId")!!) }
+
+        private val _applicationId__reference: TypeReference<Id<BotApplicationConfiguration>> =
+                object : TypeReference<Id<BotApplicationConfiguration>>() {}
     }
 }

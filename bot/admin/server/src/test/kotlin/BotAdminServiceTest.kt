@@ -276,7 +276,7 @@ class BotAdminServiceTest : AbstractTest() {
             applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(namespace, applicationName)
         } returns listOf(aApplication)
         every {
-            storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(namespace, any(), storyDefinitionId)
+            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, any(), storyDefinitionId)
         } returns aBuiltinStory.toStoryDefinitionConfiguration()
 
         // When
@@ -298,7 +298,7 @@ class BotAdminServiceTest : AbstractTest() {
             applicationDefininitionDAO.getApplicationByNamespaceAndName(namespace, applicationName)
         } returns null
         every {
-            storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(namespace, any(), storyDefinitionId)
+            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, any(), storyDefinitionId)
         } returns aBuiltinStory.toStoryDefinitionConfiguration()
 
         // When
@@ -322,7 +322,7 @@ class BotAdminServiceTest : AbstractTest() {
             applicationConfigurationDAO.getConfigurationsByNamespaceAndNlpModel(namespace, applicationName)
         } returns listOf(aApplication)
         every {
-            storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(namespace, any(), storyDefinitionId)
+            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, any(), storyDefinitionId)
         } returns null
 
         // When

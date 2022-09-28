@@ -1,0 +1,67 @@
+<div class="d-flex align-items-center">
+  <div>
+    <nb-select
+      size="small"
+      nbTooltip="Items per page"
+      [(selected)]="pagination.size"
+      (selectedChange)="paginationSize()"
+    >
+      <nb-option
+        *ngFor="let size of sizes"
+        [value]="size"
+      >
+        {{ size }}
+      </nb-option>
+    </nb-select>
+  </div>
+
+  <div class="mx-2">{{ paginationString() }}</div>
+
+  <div class="d-flex">
+    <button
+      *ngIf="showPrevious()"
+      nbButton
+      nbTooltip="Previous page"
+      ghost
+      shape="round"
+      (click)="paginationPrevious()"
+      data-testid="back-button"
+    >
+      <nb-icon icon="arrow-ios-back-outline"></nb-icon>
+    </button>
+    <!-- Workaround because tooltip is not hiding if button is disabled programmatically. -->
+    <button
+      *ngIf="!showPrevious()"
+      nbButton
+      ghost
+      shape="round"
+      disabled
+      data-testid="back-button"
+    >
+      <nb-icon icon="arrow-ios-back-outline"></nb-icon>
+    </button>
+
+    <button
+      *ngIf="showNext()"
+      nbButton
+      nbTooltip="Next page"
+      ghost
+      shape="round"
+      (click)="paginationNext()"
+      data-testid="next-button"
+    >
+      <nb-icon icon="arrow-ios-forward-outline"></nb-icon>
+    </button>
+    <!-- Workaround because tooltip is not hiding if button is disabled programmatically. -->
+    <button
+      *ngIf="!showNext()"
+      nbButton
+      ghost
+      shape="round"
+      disabled
+      data-testid="next-button"
+    >
+      <nb-icon icon="arrow-ios-forward-outline"></nb-icon>
+    </button>
+  </div>
+</div>

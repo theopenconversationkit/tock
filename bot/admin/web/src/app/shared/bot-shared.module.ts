@@ -35,12 +35,22 @@ import {
   NbSelectModule,
   NbTooltipModule,
   NbPopoverModule,
-  NbButtonModule,
-  NbIconLibraries
+  NbButtonModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
-import {ErrorHelperComponent} from './error-helper/error-helper.component';
+
+import {
+  ChatUiComponent,
+  ChatUiMessageComponent,
+  ChoiceDialogComponent,
+  ErrorHelperComponent,
+  FormControlComponent,
+  NoDataFoundComponent,
+  PaginationComponent
+} from './components';
+
+import { AutofocusDirective, DelayDirective } from './directives';
 
 @NgModule({
   imports: [
@@ -67,7 +77,16 @@ import {ErrorHelperComponent} from './error-helper/error-helper.component';
     DateRangeCalendarComponent,
     InfoButtonComponent,
     ConfirmationDialogComponent,
-    ErrorHelperComponent
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
+    ChoiceDialogComponent,
+
+    AutofocusDirective,
+    DelayDirective
   ],
   exports: [
     BotMessageComponent,
@@ -75,11 +94,18 @@ import {ErrorHelperComponent} from './error-helper/error-helper.component';
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,
-    ErrorHelperComponent
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
+    ChoiceDialogComponent,
+
+    AutofocusDirective,
+    DelayDirective
   ],
   providers: [BotSharedService],
   entryComponents: []
 })
-export class BotSharedModule {
-
-}
+export class BotSharedModule {}

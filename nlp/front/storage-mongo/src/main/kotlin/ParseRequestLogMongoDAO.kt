@@ -202,7 +202,6 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     internal val col: MongoCollection<ParseRequestLogCol> by lazy {
         val c = database.getCollection<ParseRequestLogCol>("parse_request_log")
         try {
-            c.ensureIndex(Query.context.language, ApplicationId)
             c.ensureIndex(Query.context.language, ApplicationId, Query.context.test)
             c.ensureIndex(Query.context.language, ApplicationId, Text)
             c.ensureIndex(

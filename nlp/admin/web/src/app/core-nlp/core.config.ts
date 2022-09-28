@@ -24,5 +24,5 @@ export abstract class CoreConfig {
   /** url to answer to sentence if it exists */
   answerToSentenceUrl: string;
   /** url map for each default rights */
-  roleMap: Map<UserRole, string>;
+  roleMap: Map<UserRole, string[]>;
 }

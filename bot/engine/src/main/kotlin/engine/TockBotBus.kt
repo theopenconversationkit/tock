@@ -172,14 +172,14 @@ internal class TockBotBus(
     }
 
     override fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
-        if (targetConnectorType == connectorType) {
+        if (isCompatibleWith(connectorType)) {
             context.addMessage(messageProvider.invoke())
         }
         return this
     }
 
     override fun withMessage(connectorType: ConnectorType, connectorId: String, messageProvider: () -> ConnectorMessage): BotBus {
-        if (applicationId == connectorId && targetConnectorType == connectorType) {
+        if (applicationId == connectorId && isCompatibleWith(connectorType)) {
             context.addMessage(messageProvider.invoke())
         }
         return this

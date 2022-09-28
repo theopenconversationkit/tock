@@ -26,9 +26,11 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
 import ai.tock.shared.defaultLocale
+import ai.tock.translator.I18nLabel
 import io.mockk.every
 import io.mockk.verify
 import mu.KotlinLogging
@@ -37,7 +39,9 @@ import org.junit.jupiter.api.Test
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
+import java.time.Instant
 import java.time.Instant.now
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -49,6 +53,7 @@ import kotlin.test.assertTrue
 class ApplicationCodecServiceTest : AbstractTest() {
 
     private val logger = KotlinLogging.logger {}
+    val now = Instant.now().truncatedTo(ChronoUnit.MILLIS)
 
     @BeforeEach
     fun before() {
@@ -103,6 +108,36 @@ class ApplicationCodecServiceTest : AbstractTest() {
                 match<ApplicationDefinition> {
                     it.supportedLocales.contains(newLocale) &&
                         it.supportedLocales.contains(defaultLocale)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `importing existing app with a new faq`() {
+
+        val faq = FaqDefinition(
+            applicationId= app._id,
+            intentId= defaultIntentDefinition._id,
+            i18nId= newId<I18nLabel>(),
+            tags = listOf("TAG1", "TAG2"),
+            enabled = false,
+            creationDate= now,
+            updateDate = now,
+        )
+        val dump = ApplicationDump(
+            application = app,
+            intents = listOf(defaultIntentDefinition),
+            faqs = listOf(faq)
+        )
+
+        every { context.config.getFaqDefinitionByIntentId(any())} returns null
+        val report = ApplicationCodecService.import(namespace, dump)
+        assertTrue(report.modified)
+        verify {
+            context.config.save(
+                match<FaqDefinition> {
+                    it.tags.containsAll(listOf("TAG1", "TAG2"))
                 }
             )
         }

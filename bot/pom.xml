@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>22.3.2-SNAPSHOT</version>
+        <version>22.3.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot</artifactId>
@@ -35,6 +35,7 @@
         <module>connector-rest</module>
         <module>connector-rest-client</module>
         <module>connector-messenger</module>
+        <module>connector-alcmeon</module>
         <module>connector-ga</module>
         <module>connector-slack</module>
         <module>connector-alexa</module>

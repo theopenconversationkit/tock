@@ -17,18 +17,21 @@
 package ai.tock.nlp.front.shared.config
 
 import ai.tock.translator.I18nLabel
-import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
 
-@JacksonData(internal = true)
 data class FaqDefinition(
 
     /**
      * The unique [Id] of the intent.
      */
     val _id: Id<FaqDefinition> = newId(),
+
+    /**
+     * The application id.
+     */
+    val applicationId: Id<ApplicationDefinition>,
 
     /**
      * The intent id.

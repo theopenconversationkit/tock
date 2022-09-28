@@ -1,0 +1,49 @@
+<header class="mb-2">
+  <h1>FAQ Training</h1>
+</header>
+
+<section [class.grid]="dialogDetailsSentence">
+  <div class="main">
+    <tock-faq-training-filters
+      #faqTrainingFilter
+      (onFilter)="filterFaqTraining($event)"
+      class="d-block mb-2"
+    ></tock-faq-training-filters>
+
+    <div
+      class="loading"
+      [nbSpinner]="loading"
+      infinite-scroll
+      [infiniteScrollDistance]="1"
+      (scrolled)="onScroll()"
+    >
+      <tock-no-data-found
+        *ngIf="!loading && !sentences?.length"
+        title="No sentences found"
+      ></tock-no-data-found>
+
+      <tock-faq-training-list
+        #faqTrainingList
+        *ngIf="sentences?.length"
+        [isFilteredUnknown]="isFilteredUnknown"
+        [sentences]="sentences"
+        [selection]="selection"
+        (onDetails)="showDetails($event)"
+        (onAction)="handleAction($event)"
+        (onBatchAction)="handleBatchAction($event)"
+        (onSort)="sortFaqTraining($event)"
+        [pagination]="pagination"
+        (onPaginationChange)="paginationChange($event)"
+      ></tock-faq-training-list>
+    </div>
+  </div>
+
+  <tock-faq-training-dialog
+    #faqTrainingDialog
+    *ngIf="dialogDetailsSentence"
+    class="aside"
+    [sentence]="dialogDetailsSentence"
+    (onClose)="closeDetails()"
+    (onSearchSentence)="retrieveSentence($event)"
+  ></tock-faq-training-dialog>
+</section>

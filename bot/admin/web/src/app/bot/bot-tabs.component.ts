@@ -16,6 +16,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { StateService } from '../core-nlp/state.service';
+import { UserRole } from '../model/auth';
 class TabLink {
   constructor(public route: string, public title: string, public icon?: string) {}
 }
@@ -35,7 +37,13 @@ const tabs = [
 export class BotTabsComponent implements OnInit {
   botTabLinks = tabs;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private state: StateService) {
+    if (!state.hasRole(UserRole.botUser)) {
+      this.botTabLinks = this.botTabLinks.filter(
+        (t) => !['story-create', 'story-search', 'story-rules'].includes(t.route)
+      );
+    }
+  }
 
   ngOnInit() {
     if (this.router.routerState.snapshot.url.endsWith('/build')) {

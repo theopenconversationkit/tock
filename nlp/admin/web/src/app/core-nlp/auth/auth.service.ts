@@ -20,7 +20,6 @@ import { Router } from '@angular/router';
 import { AuthenticateRequest, AuthenticateResponse, User } from '../../model/auth';
 import { Observable } from 'rxjs';
 import { RestService } from '../rest/rest.service';
-import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class AuthService {
@@ -50,20 +49,6 @@ export class AuthService {
     this.authListeners.push(listener);
   }
 
-  private login(response: AuthenticateResponse): boolean {
-    return this.logUser(response.toUser());
-  }
-
-  private logUser(user: User): boolean {
-    if (user.roles && user.roles.length !== 0) {
-      this.logged = true;
-      this.authListeners.forEach((l) => l.login(user));
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   logout() {
     this.rest.post('/logout', null, null, this.rest.notAuthenticatedUrl).subscribe(() => {
       this.logged = false;
@@ -82,5 +67,19 @@ export class AuthService {
 
   loadUser(): Observable<boolean> {
     return this.rest.getNotAuthenticated('/user', (j) => this.logUser(User.fromJSON(j)));
+  }
+
+  private login(response: AuthenticateResponse): boolean {
+    return this.logUser(response.toUser());
+  }
+
+  private logUser(user: User): boolean {
+    if (user.roles && user.roles.length !== 0) {
+      this.logged = true;
+      this.authListeners.forEach((l) => l.login(user));
+      return true;
+    } else {
+      return false;
+    }
   }
 }

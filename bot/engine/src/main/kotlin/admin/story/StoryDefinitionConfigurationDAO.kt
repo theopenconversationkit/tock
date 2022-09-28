@@ -38,6 +38,12 @@ interface StoryDefinitionConfigurationDAO {
         intent: String
     ): StoryDefinitionConfiguration?
 
+    fun getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
+        namespace: String,
+        botId: String,
+        intentNames: List<String>
+    ): List<StoryDefinitionConfiguration>
+
     fun getStoryDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
@@ -51,12 +57,6 @@ interface StoryDefinitionConfigurationDAO {
     ): StoryDefinitionConfiguration?
 
     fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration>
-
-    fun getStoryDefinitionsByNamespaceBotIdStoryId(
-        namespace: String,
-        botId: String,
-        storyId: String
-    ): StoryDefinitionConfiguration?
 
     fun save(story: StoryDefinitionConfiguration)
 

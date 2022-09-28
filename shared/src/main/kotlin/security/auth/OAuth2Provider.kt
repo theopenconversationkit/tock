@@ -86,6 +86,7 @@ internal class OAuth2Provider(
         private val logger = KotlinLogging.logger {}
         private val namespaceMapping = mapProperty("tock_custom_namespace_mapping", emptyMap())
         private val customRolesMapping = mapProperty("tock_custom_roles_mapping", emptyMap())
+        private val userRoleAttribute = property("tock_oauth2_user_role_attribute", "custom:roles")
         private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "http://localhost:8080")
     }
 
@@ -111,7 +112,7 @@ internal class OAuth2Provider(
                 if (user is AccessToken) {
                     user.userInfo {
                         val login = it.result().getString("email").toLowerCase()
-                        val customRoles = it.result().getString("custom:roles")
+                        val customRoles = it.result().getString(userRoleAttribute)
                         val roles = parseUserRoles(customRoles)
                         if (roles.isEmpty()) {
                             logger.warn { "empty role for $customRoles" }

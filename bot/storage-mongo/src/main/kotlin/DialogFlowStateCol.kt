@@ -18,14 +18,18 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
+import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.DialogFlowStateTransitionType
+import ai.tock.bot.definition.DialogFlowStateTransitionType.nlp
 import ai.tock.bot.engine.dialog.Dialog
+import java.time.Instant
+import java.time.Instant.now
+import java.time.LocalDateTime
+import java.util.Locale
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
-import java.time.Instant.now
 
 /**
  *
@@ -38,7 +42,7 @@ internal data class DialogFlowStateCol(
     val storyDefinitionId: String,
     val intent: String,
     val step: String?,
-    val entities: Set<String>,
+    val entities: Set<String> = emptySet(),
     val _id: Id<DialogFlowStateCol> = newId(),
     val storyType: AnswerConfigurationType? = null,
     val storyName: String = storyDefinitionId
@@ -53,8 +57,8 @@ internal data class DialogFlowStateTransitionCol(
     val nextStateId: Id<DialogFlowStateCol>,
     val intent: String?,
     val step: String?,
-    val newEntities: Set<String>,
-    val type: DialogFlowStateTransitionType,
+    val newEntities: Set<String> = emptySet(),
+    val type: DialogFlowStateTransitionType = nlp,
     val _id: Id<DialogFlowStateTransitionCol> = newId()
 )
 
@@ -65,7 +69,43 @@ internal data class DialogFlowStateTransitionStatCol(
     val transitionId: Id<DialogFlowStateTransitionCol>,
     val dialogId: Id<Dialog>,
     val text: String?,
-    val date: Instant = now()
+    val locale: Locale? = null,
+    val date: Instant = now(),
+    val processedLevel: Int = 1,
+)
+
+@Data(internal = true)
+@JacksonData(internal = true)
+internal data class DialogFlowStateTransitionStatDateAggregationCol(
+    val applicationId: Id<BotApplicationConfiguration>,
+    val date: LocalDateTime,
+    val hourOfDay: Int,
+    val intent: String?,
+    val storyDefinitionId: String,
+    val storyCategory: String,
+    val storyType: String,
+    val locale: Locale,
+    val configurationName: String,
+    val connectorType: ConnectorType,
+    val actionType: DialogFlowStateTransitionType,
+    val count: Long,
+)
+
+@Data(internal = true)
+@JacksonData(internal = true)
+internal data class DialogFlowStateTransitionStatDialogAggregationCol(
+    val applicationId: Id<BotApplicationConfiguration>,
+    val date: LocalDateTime,
+    val dialogId: Id<Dialog>,
+    val count: Long,
+)
+
+@Data(internal = true)
+@JacksonData(internal = true)
+internal data class DialogFlowStateTransitionStatUserAggregationCol(
+    val applicationId: Id<BotApplicationConfiguration>,
+    val date: LocalDateTime,
+    val count: Long,
 )
 
 @Data(internal = true)
@@ -81,4 +121,12 @@ internal data class DialogFlowAggregateResult(
 internal data class DialogFlowAggregateSeriesResult(
     val values: List<DialogFlowAggregateResult>,
     val seriesKey: String = "",
+)
+
+@Data(internal = true)
+@JacksonData(internal = true)
+internal data class DialogFlowAggregateApplicationIdResult(
+    val applicationId: Id<BotApplicationConfiguration>,
+    val date: LocalDateTime,
+    val count: Int = 0,
 )

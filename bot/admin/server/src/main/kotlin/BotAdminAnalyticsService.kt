@@ -36,17 +36,17 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.TextStyle.FULL_STANDALONE
+import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.HOURS
+import java.time.temporal.ChronoUnit.MINUTES
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
-import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 
 object BotAdminAnalyticsService {
-
-    private val logger = KotlinLogging.logger {}
 
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
@@ -107,8 +107,8 @@ object BotAdminAnalyticsService {
             val usersData =
                 dialogFlowDAO.countMessagesByHour(namespace, botId, applicationIds.toSet(), request.from, request.to)
             UserAnalyticsQueryResult(
-                (0..24).map { usersData[it] ?: 0 },
-                (0..24).map { "${it}h" }
+                (0..23).map { usersData[it] ?: 0 },
+                (0..23).map { "${it}h" }
             )
         }),
         countMessagesByIntent(loader = { (request, _) ->
@@ -199,7 +199,26 @@ object BotAdminAnalyticsService {
 
     }
 
-    private data class RequestCacheKey(val request: DialogFlowRequest, val operation: Operation)
+    private data class RequestCacheKey(val request: DialogFlowRequest, val operation: Operation) {
+        override fun equals(other: Any?): Boolean =
+            if (other is RequestCacheKey) {
+                operation == other.operation
+                        &&
+                        request.copy(
+                            from = request.from?.truncatedTo(HOURS),
+                            to = request.to?.truncatedTo(HOURS)
+                        ) ==
+                        other.request.copy(
+                            from = other.request.from?.truncatedTo(HOURS),
+                            to = other.request.to?.truncatedTo(HOURS)
+                        )
+            } else {
+                false
+            }
+
+        override fun hashCode(): Int = operation.hashCode()
+
+    }
 
     fun reportMessagesByType(request: DialogFlowRequest): UserAnalyticsQueryResult =
         requestCache.get(RequestCacheKey(request, countMessagesByDate))

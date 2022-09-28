@@ -71,7 +71,7 @@ internal class BotApiHandler(
     private fun BotBus.handleResponse(request: UserRequest, response: BotResponse?) {
         if (response != null) {
             //Check if there is a configuration for Ending story
-            val storySetting = storyDAO.getStoryDefinitionsByNamespaceBotIdStoryId(
+            val storySetting = storyDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                 botDefinition.namespace,
                 botDefinition.botId,
                 story.definition.id
