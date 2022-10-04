@@ -170,7 +170,7 @@ internal class BotVerticle(
     override fun startServer(promise: Promise<Void>, port: Int) {
         if (websocketEnabled) {
             logger.info { "Install WebSocket handler" }
-            server.websocketHandler { context ->
+            server.webSocketHandler { context ->
                 try {
                     val key = context.path().let { if (it.startsWith("/")) it.substring(1) else null }
 

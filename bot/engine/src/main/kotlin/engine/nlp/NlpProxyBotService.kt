@@ -27,9 +27,9 @@ import io.vertx.core.http.HttpMethod.POST
 import io.vertx.core.http.RequestOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import java.net.URL
 import mu.KLogger
 import mu.KotlinLogging
-import java.net.URL
 
 /**
  * Expose NLP API to BOT app
@@ -74,12 +74,14 @@ internal object NlpProxyBotService {
                 .setPort(tockNlpServicePort)
                 .setSsl(tockNlpServiceSsl)
                 .setURI(uri)
+                .setMethod(httpMethod)
             val cReq = client.request(
-                httpMethod,
                 options
-            ) { cRes ->
+            ).result()
+            cReq.send { res ->
                 try {
                     context.response().isChunked = true
+                    val cRes = res.result()
                     val resStatusCode = cRes.statusCode()
                     if (resStatusCode != 200 && resStatusCode != 201) {
                         logger.warn { "target server status code error : $resStatusCode" }

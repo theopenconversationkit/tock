@@ -95,7 +95,7 @@ object AlexaCodecService : AlexaCodec {
                     filter?.findSlot(intent, entity)?.targetType
                         ?: entity.entityTypeName.name().replace("-", "_"),
                     exportAlexaTypeDefinition(intent, entity, sentences, transformer)
-                        .distinctBy { type -> type.name.value.toLowerCase().trim() }
+                        .distinctBy { type -> type.name.value.lowercase().trim() }
                 )
             }
             .groupBy { it.name }
@@ -151,7 +151,7 @@ object AlexaCodecService : AlexaCodec {
             .filter { it.classification.intentId == intent._id }
             .filter { filter == null || it.classification.entities.all { filteredRoles!!.contains(it.role) } }
             .map { sentence ->
-                var t = sentence.text.toLowerCase()
+                var t = sentence.text.lowercase()
                 sentence
                     .classification
                     .entities
@@ -161,7 +161,7 @@ object AlexaCodecService : AlexaCodec {
                     }
                 t
             }
-            .map { it.toLowerCase() }
+            .map { it.lowercase() }
             .filter { !it.contains("*") }
             .map { sentence -> sentence.replace("'{", " {") }
             .map { sentence -> EmojiUtils.removeAllEmojis(sentence) }
@@ -204,7 +204,7 @@ object AlexaCodecService : AlexaCodec {
                         .map {
                             sentence.text.substring(it.start, it.end).replace("\n", "")
                         }
-                        .map { it.toLowerCase() }
+                        .map { it.lowercase() }
                         .map { it.replace(nonChar, " ") }
                         .map { it.trim() }
                         .map { it.replace(spaceRegex, " ") }

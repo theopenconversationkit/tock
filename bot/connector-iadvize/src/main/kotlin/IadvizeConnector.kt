@@ -42,6 +42,7 @@ import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.shared.jackson.mapper
+import io.vertx.core.Future
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
@@ -202,7 +203,7 @@ class IadvizeConnector internal constructor(
         }
     }
 
-    private fun <T> HttpServerResponse.endWithJson(response: T) {
+    private fun <T> HttpServerResponse.endWithJson(response: T) : Future<Void> {
         val response: String = mapper.writeValueAsString(response)
         logger.info { "response : $response" }
         return putHeader("Content-Type", "application/json").end(response)
