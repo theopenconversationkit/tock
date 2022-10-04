@@ -5,7 +5,7 @@ export interface FaqDefinition {
   intentId?: string;
   intentName?: string;
   language: string;
-  applicationId: string;
+  applicationName: string;
   creationDate?: Date;
   updateDate?: Date;
   title: string;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.model
+package ai.tock.bot.admin.constants
 
-import java.time.Instant
-import java.util.Locale
-
-data class FaqDefinitionRequest(
-    val id: String?,
-    val intentId: String?,
-    val language: Locale,
-    val applicationName: String,
-    val creationDate: Instant?,
-    val updateDate: Instant?,
-    // storyName
-    val title: String,
-    val description: String = "",
-    val utterances: List<String>,
-    val tags: List<String>,
-    val answer: String,
-    val enabled: Boolean,
-    val intentName: String
-)
+object Properties {
+    const val FAQ_MIGRATION_ENABLED = "tock_faq_migration_enabled"
+}
