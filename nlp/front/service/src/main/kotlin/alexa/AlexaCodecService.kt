@@ -35,7 +35,8 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.provide
-import emoji4j.EmojiUtils
+import com.vdurmont.emoji.EmojiManager
+import com.vdurmont.emoji.EmojiParser
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -63,14 +64,14 @@ object AlexaCodecService : AlexaCodec {
                     intent.entities
                         .filter { entity ->
                             filter == null ||
-                                filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
+                                    filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
                         }
                         .map {
                             AlexaSlot(
                                 (
-                                    filter?.findSlot(intent, it)?.targetName
-                                        ?: it.role
-                                    ) + "_slot",
+                                        filter?.findSlot(intent, it)?.targetName
+                                            ?: it.role
+                                        ) + "_slot",
                                 filter?.findSlot(intent, it)?.targetType ?: it.entityTypeName.name()
                             )
                         }
@@ -164,7 +165,7 @@ object AlexaCodecService : AlexaCodec {
             .map { it.lowercase() }
             .filter { !it.contains("*") }
             .map { sentence -> sentence.replace("'{", " {") }
-            .map { sentence -> EmojiUtils.removeAllEmojis(sentence) }
+            .map { sentence -> EmojiParser.removeAllEmojis(sentence) }
             .map { sentence -> sentence.replace("☺", " ") }
             .map { sentence -> sentence.replace(nonChar, " ") }
             .map { sentence -> sentence.replace("( )*_+( )*".toRegex(), "_") }

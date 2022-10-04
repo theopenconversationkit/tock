@@ -38,8 +38,8 @@
             <artifactId>tock-nlp-front-shared</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.kcthota</groupId>
-            <artifactId>emoji4j</artifactId>
+            <groupId>com.vdurmont</groupId>
+            <artifactId>emoji-java</artifactId>
         </dependency>
         <dependency>
             <groupId>io.mockk</groupId>
