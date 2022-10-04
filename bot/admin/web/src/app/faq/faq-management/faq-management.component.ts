@@ -211,7 +211,7 @@ export class FaqManagementComponent implements OnInit {
       tags: [],
       answer: '',
       enabled: true,
-      applicationId: this.stateService.currentApplication._id,
+      applicationName: this.stateService.currentApplication.name,
       language: this.stateService.currentLocale
     };
 

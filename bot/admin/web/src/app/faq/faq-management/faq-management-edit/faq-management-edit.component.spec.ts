@@ -86,7 +86,7 @@ const mockSentences: Sentence[] = [
 
 const mockFaq: FaqDefinitionExtended = {
   id: '1',
-  applicationId: '1',
+  applicationName: 'app',
   enabled: true,
   language: 'fr',
   title: 'title faq',
@@ -202,7 +202,7 @@ describe('FaqManagementEditComponent', () => {
         tags: [],
         answer: '',
         enabled: true,
-        applicationId: '1',
+        applicationName: 'app',
         language: 'fr'
       };
       component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
@@ -228,7 +228,7 @@ describe('FaqManagementEditComponent', () => {
         tags: [],
         answer: '',
         enabled: true,
-        applicationId: '1',
+        applicationName: 'app',
         language: 'fr',
         _initUtterance: 'test'
       };

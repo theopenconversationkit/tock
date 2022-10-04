@@ -72,7 +72,7 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
         faqs: List<FaqDefinition>,
         stories: List<StoryDefinitionConfiguration>
     ) {
-        every { faqDefinitionDAO.getFaqDefinitionByApplicationId(any()) } answers { faqs }
+        every { faqDefinitionDAO.getFaqDefinitionByBotId(any()) } answers { faqs }
 
         every { AdminService.front.getIntentById(any()) } answers { intent }
 
@@ -111,7 +111,7 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
     private fun generateFAQ(intent: IntentDefinition, faqId: String): FaqDefinition {
         return FaqDefinition(
             _id = faqId.toId(),
-            applicationId = "appId-$faqId".toId(),
+            "botId",
             intentId = intent._id,
             i18nId = "i18nId-$faqId".toId(),
             emptyList(), true, Instant.now(), Instant.now()

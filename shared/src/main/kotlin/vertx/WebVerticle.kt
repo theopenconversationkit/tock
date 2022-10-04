@@ -190,6 +190,12 @@ abstract class WebVerticle : AbstractVerticle() {
     }
 
     override fun start(promise: Promise<Void>) {
+        // Handle server started event by emitting an eventbus message to address 'server.started'
+        promise.future()
+            .onComplete {
+                vertx.eventBus().request<Void>(ServerStatus.SERVER_STARTED, it.succeeded())
+            }
+
         vertx.executeBlocking<Unit>(
             {
                 try {
