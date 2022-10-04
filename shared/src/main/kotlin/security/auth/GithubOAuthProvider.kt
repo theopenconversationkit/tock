@@ -33,6 +33,8 @@ import io.vertx.ext.web.handler.SessionHandler
 import mu.KLogger
 import mu.KotlinLogging
 
+private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "http://localhost:8080")
+
 /**
  *
  */
@@ -49,7 +51,7 @@ internal class GithubOAuthProvider(
     private val executor: Executor get() = injector.provide()
 
     override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler =
-        OAuth2AuthHandler.create(vertx, oauth2, "http://localhost:7999${callbackPath(verticle)}")
+        OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl${callbackPath(verticle)}")
 
     override fun protectPaths(
         verticle: WebVerticle,
