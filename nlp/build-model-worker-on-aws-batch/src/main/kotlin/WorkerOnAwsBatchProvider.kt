@@ -20,8 +20,10 @@ import ai.tock.nlp.build.ondemand.WorkerOnDemand
 import ai.tock.nlp.build.ondemand.WorkerOnDemandProvider
 import ai.tock.nlp.build.ondemand.WorkerOnDemandType
 import ai.tock.nlp.build.ondemand.WorkerProperties
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.intProperty
 import ai.tock.shared.property
+import java.util.Locale
 
 internal object WorkerOnAwsBatchProvider : WorkerOnDemandProvider {
     override val workerOnDemandType: WorkerOnDemandType
@@ -31,7 +33,8 @@ internal object WorkerOnAwsBatchProvider : WorkerOnDemandProvider {
         workerOnAwsBatchProperties = WorkerOnAwsBatchProperties(
             jobDefinitionName = property("tock_worker_aws_batch_job_definition_name", "tock-worker-job-definition"),
             jobQueueName = property("tock_worker_aws_batch_job_queue_name", "tock-worker-job-queue"),
-            jobName = property("tock_worker_aws_batch_job_name", "tock-worker-job") + "-${workerProperties["TOCK_BUILD_TYPE"]?.toLowerCase()}",
+            jobName = property("tock_worker_aws_batch_job_name", "tock-worker-job")
+                    + "-${workerProperties["TOCK_BUILD_TYPE"]?.lowercase(defaultLocale)}",
             attemptDurationSeconds = intProperty("tock_worker_aws_batch_attempt_duration_seconds", 7200),
             vcpus = intProperty("tock_worker_aws_batch_vcpus", 4),
             memory = intProperty("tock_worker_aws_batch_memory", 12288)

@@ -173,7 +173,7 @@ private object BotEngineJacksonConfiguration {
                                     .toList()
                             }
                             CharSequence::class.java.isAssignableFrom(beanDesc.beanClass) -> {
-                                beanProperties.filter { it.name != "length" }.toList()
+                                beanProperties.filter { it.name != "length" && it.name != "empty" }.toList()
                             }
                             else -> {
                                 super.changeProperties(config, beanDesc, beanProperties)

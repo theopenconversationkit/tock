@@ -23,7 +23,7 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.User
-import io.vertx.ext.web.handler.AuthHandler
+import io.vertx.ext.web.handler.AuthenticationHandler
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -37,7 +37,7 @@ class SSOTockAuthProviderTest {
                 return super.excludedPaths(verticle)
             }
 
-            override fun createAuthHandler(verticle: WebVerticle): AuthHandler {
+            override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
                 return mockk()
             }
 

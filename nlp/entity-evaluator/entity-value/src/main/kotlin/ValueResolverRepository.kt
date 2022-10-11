@@ -19,6 +19,7 @@ package ai.tock.nlp.entity
 import ai.tock.nlp.entity.date.DateEntityValue
 import ai.tock.nlp.entity.date.DateIntervalEntityValue
 import ai.tock.nlp.entity.temperature.TemperatureValue
+import java.util.Locale
 import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
@@ -63,7 +64,7 @@ object ValueResolverRepository {
     fun <T : Value> registerType(kClass: KClass<T>) {
         kClass.simpleName!!
             .replace("Value", "")
-            .decapitalize()
+            .replaceFirstChar { it.lowercase(Locale.getDefault()) }
             .apply {
                 idClassMap.put(this, kClass)
                 classIdMap.put(kClass, this)

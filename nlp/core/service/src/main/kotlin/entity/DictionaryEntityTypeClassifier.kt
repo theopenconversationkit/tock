@@ -98,7 +98,7 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
         for (predefinedValue in predefinedValues.keys) {
             if (predefinedValues[predefinedValue] != null) {
                 val synonyms = predefinedValues[predefinedValue]!!.toMutableList() + predefinedValue.value
-                if (synonyms.find { s -> s.toLowerCase(locale) == stripAccents(text.toLowerCase(locale)) } != null) {
+                if (synonyms.find { s -> s.lowercase(locale) == stripAccents(text.lowercase(locale)) } != null) {
                     return predefinedValue
                 }
             }

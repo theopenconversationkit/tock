@@ -35,7 +35,8 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.injector
 import ai.tock.shared.name
 import ai.tock.shared.provide
-import emoji4j.EmojiUtils
+import com.vdurmont.emoji.EmojiManager
+import com.vdurmont.emoji.EmojiParser
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -63,14 +64,14 @@ object AlexaCodecService : AlexaCodec {
                     intent.entities
                         .filter { entity ->
                             filter == null ||
-                                filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
+                                    filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
                         }
                         .map {
                             AlexaSlot(
                                 (
-                                    filter?.findSlot(intent, it)?.targetName
-                                        ?: it.role
-                                    ) + "_slot",
+                                        filter?.findSlot(intent, it)?.targetName
+                                            ?: it.role
+                                        ) + "_slot",
                                 filter?.findSlot(intent, it)?.targetType ?: it.entityTypeName.name()
                             )
                         }
@@ -95,7 +96,7 @@ object AlexaCodecService : AlexaCodec {
                     filter?.findSlot(intent, entity)?.targetType
                         ?: entity.entityTypeName.name().replace("-", "_"),
                     exportAlexaTypeDefinition(intent, entity, sentences, transformer)
-                        .distinctBy { type -> type.name.value.toLowerCase().trim() }
+                        .distinctBy { type -> type.name.value.lowercase().trim() }
                 )
             }
             .groupBy { it.name }
@@ -151,7 +152,7 @@ object AlexaCodecService : AlexaCodec {
             .filter { it.classification.intentId == intent._id }
             .filter { filter == null || it.classification.entities.all { filteredRoles!!.contains(it.role) } }
             .map { sentence ->
-                var t = sentence.text.toLowerCase()
+                var t = sentence.text.lowercase()
                 sentence
                     .classification
                     .entities
@@ -161,10 +162,10 @@ object AlexaCodecService : AlexaCodec {
                     }
                 t
             }
-            .map { it.toLowerCase() }
+            .map { it.lowercase() }
             .filter { !it.contains("*") }
             .map { sentence -> sentence.replace("'{", " {") }
-            .map { sentence -> EmojiUtils.removeAllEmojis(sentence) }
+            .map { sentence -> EmojiParser.removeAllEmojis(sentence) }
             .map { sentence -> sentence.replace("☺", " ") }
             .map { sentence -> sentence.replace(nonChar, " ") }
             .map { sentence -> sentence.replace("( )*_+( )*".toRegex(), "_") }
@@ -204,7 +205,7 @@ object AlexaCodecService : AlexaCodec {
                         .map {
                             sentence.text.substring(it.start, it.end).replace("\n", "")
                         }
-                        .map { it.toLowerCase() }
+                        .map { it.lowercase() }
                         .map { it.replace(nonChar, " ") }
                         .map { it.trim() }
                         .map { it.replace(spaceRegex, " ") }

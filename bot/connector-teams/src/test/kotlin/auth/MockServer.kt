@@ -19,12 +19,12 @@ package ai.tock.bot.connector.teams.auth
 import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
-import com.nimbusds.jose.shaded.json.JSONObject
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import java.util.UUID
+import net.minidev.json.JSONObject
 
 object MockServer {
 

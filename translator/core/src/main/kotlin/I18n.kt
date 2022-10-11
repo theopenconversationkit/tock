@@ -172,7 +172,7 @@ internal fun CharSequence.regionMatchesImpl(thisOffset: Int, other: CharSequence
 }
 
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-internal fun String.nativeIndexOf(ch: Char, fromIndex: Int): Int = (this as java.lang.String).indexOf(ch.toInt(), fromIndex)
+internal fun String.nativeIndexOf(ch: Char, fromIndex: Int): Int = (this as java.lang.String).indexOf(ch.code, fromIndex)
 
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-internal fun String.nativeLastIndexOf(ch: Char, fromIndex: Int): Int = (this as java.lang.String).lastIndexOf(ch.toInt(), fromIndex)
+internal fun String.nativeLastIndexOf(ch: Char, fromIndex: Int): Int = (this as java.lang.String).lastIndexOf(ch.code, fromIndex)

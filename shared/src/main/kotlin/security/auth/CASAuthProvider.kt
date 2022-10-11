@@ -18,7 +18,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.User
 import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.AuthHandler
+import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
@@ -108,7 +108,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
      */
     abstract fun readRolesByNamespace(user: Pac4jUser): Map<String, Set<String>>
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthHandler {
+    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
         val options: SecurityHandlerOptions = SecurityHandlerOptions().setClients("CasClient")
         options.authorizers = enabledPacAuthorizers
 
@@ -157,7 +157,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
-    ): AuthHandler {
+    ): AuthenticationHandler {
         val authHandler = super.protectPaths(verticle, pathsToProtect, sessionHandler)
 
         val excluded = excludedPaths(verticle)

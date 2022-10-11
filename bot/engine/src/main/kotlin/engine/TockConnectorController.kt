@@ -60,6 +60,8 @@ internal class TockConnectorController constructor(
     private val configuration: ConnectorConfiguration
 ) : ConnectorController {
 
+    override val botConfiguration: BotApplicationConfiguration = bot.configuration
+
     companion object {
 
         private val logger = KotlinLogging.logger {}
@@ -242,7 +244,7 @@ internal class TockConnectorController constructor(
         connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
     }
 
-    fun sendIntent(intent: Intent, applicationId: String, data: ConnectorData){
+    fun sendIntent(intent: Intent, applicationId: String, data: ConnectorData) {
         connector.send(MetadataEvent.intent(intent, applicationId), data.callback)
     }
 

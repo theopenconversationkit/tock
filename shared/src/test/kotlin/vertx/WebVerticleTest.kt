@@ -34,7 +34,7 @@ class WebVerticleTest {
     fun `GIVEN WebVerticle simple implementation THEN healthcheck returns HTTP 200`() {
         val verticle = WebVerticleImpl()
         val response: HttpServerResponse = mockk {
-            every { end() } returns Unit
+            every { end() } returns mockk()
         }
         val context: RoutingContext = mockk {
             every { response() } returns response
@@ -49,7 +49,7 @@ class WebVerticleTest {
     fun `GIVEN WebVerticle simple implementation THEN livenesscheck returns HTTP 200`() {
         val verticle = WebVerticleImpl()
         val response: HttpServerResponse = mockk {
-            every { end() } returns Unit
+            every { end() } returns mockk()
         }
         val context: RoutingContext = mockk {
             every { response() } returns response
@@ -64,7 +64,7 @@ class WebVerticleTest {
     fun `GIVEN WebVerticle simple implementation THEN readinesscheck returns HTTP 200`() {
         val verticle = WebVerticleImpl()
         val response: HttpServerResponse = mockk {
-            every { end() } returns Unit
+            every { end() } returns mockk()
         }
         val context: RoutingContext = mockk {
             every { response() } returns response

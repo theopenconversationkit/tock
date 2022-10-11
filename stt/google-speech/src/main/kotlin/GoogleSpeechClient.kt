@@ -23,13 +23,13 @@ import com.google.cloud.speech.v1.RecognitionConfig
 import com.google.cloud.speech.v1.SpeechClient
 import com.google.protobuf.ByteString
 import mu.KotlinLogging
-import ws.schild.jave.AudioAttributes
 import ws.schild.jave.Encoder
-import ws.schild.jave.EncodingAttributes
 import ws.schild.jave.MultimediaObject
 import java.io.File
 import java.nio.file.Files
 import java.util.Locale
+import ws.schild.jave.encode.AudioAttributes
+import ws.schild.jave.encode.EncodingAttributes
 
 /**
  *
@@ -43,8 +43,8 @@ internal object GoogleSpeechClient : STT {
         val a = EncodingAttributes()
         val audioA = AudioAttributes()
         audioA.setChannels(1)
-        a.audioAttributes = audioA
-        a.format = "flac"
+        a.setAudioAttributes(audioA)
+        a.setInputFormat("flac")
         val sourceFile = File.createTempFile("tock-", ".unknown")
         val targetFile = File.createTempFile("tock-", ".flac")
         return try {

@@ -19,7 +19,7 @@
     <parent>
         <artifactId>tock-bot</artifactId>
         <groupId>ai.tock</groupId>
-        <version>22.3.3-SNAPSHOT</version>
+        <version>22.9.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -63,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
+            <artifactId>mockk-jvm</artifactId>
             <scope>test</scope>
         </dependency>
 

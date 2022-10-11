@@ -32,7 +32,7 @@ object AdminTockUserListener : TockUserListener {
 
     override fun registerUser(user: TockUser, joinNamespace: Boolean): TockUser {
         logger.info { "register $user" }
-        var namespace = user.namespace.toLowerCase()
+        var namespace = user.namespace.lowercase()
         val existingNamespaces = namespaceDAO.getNamespaces(user.user)
         // if current: take it
         var selected = existingNamespaces.find { it.current }

@@ -56,6 +56,6 @@ class VertxTest {
     fun testThatVertxOptionCouldBeOverrided() {
         defaultVertxOptions = VertxOptions(defaultVertxOptions)
         defaultVertxOptions.workerPoolSize = 100
-        assertEquals(100, ((vertx as VertxInternal).workerPool as ThreadPoolExecutor).maximumPoolSize)
+        assertEquals(100, ((vertx as VertxInternal).workerPool.executor() as ThreadPoolExecutor).maximumPoolSize)
     }
 }

@@ -102,6 +102,6 @@ data class IntentDefinition(
 
     fun supportStates(states: Set<String>): Boolean {
         return mandatoryStates.isEmpty() ||
-            states.any { mandatoryStates.contains(it.toLowerCase()) }
+            states.any { mandatoryStates.contains(it.lowercase()) }
     }
 }

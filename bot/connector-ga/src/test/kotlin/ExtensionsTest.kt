@@ -27,26 +27,26 @@ class ExtensionsTest {
 
     @Test
     fun simpleResponseWithoutTranslate_shouldReturnsSpeechToTextWithoutEmoji() {
-        val r = simpleResponseWithoutTranslate("a:)d:(")
+        val r = simpleResponseWithoutTranslate("a\uD83D\uDE00d\uD83D\uDE09")
         assertEquals("ad", r.textToSpeech)
     }
 
     @Test
     fun simpleResponseWithoutTranslate_shouldReturnsSSMLWithoutEmoji() {
-        val r = simpleResponseWithoutTranslate("<speak>a:)d:(</speak>")
+        val r = simpleResponseWithoutTranslate("<speak>a\uD83D\uDE00d\uD83D\uDE09</speak>")
         assertEquals("<speak>ad</speak>", r.ssml)
     }
 
     @Test
     fun simpleResponseWithoutTranslate_shouldReturnsDisplayTextWithEmoji() {
-        val r = simpleResponseWithoutTranslate(TextAndVoiceTranslatedString("a:)d:(", "a:)d:("))
+        val r = simpleResponseWithoutTranslate(TextAndVoiceTranslatedString("a\uD83D\uDE00d\uD83D\uDE09", "a\uD83D\uDE00d\uD83D\uDE09"))
         assertEquals("ad", r.textToSpeech)
-        assertEquals("a:)d:(", r.displayText)
+        assertEquals("a\uD83D\uDE00d\uD83D\uDE09", r.displayText)
     }
 
     @Test
     fun simpleResponseWithoutTranslate_shouldReturnsDash_whenThereIsOnlyEmojisInTheString() {
-        val r = simpleResponseWithoutTranslate(":):(")
+        val r = simpleResponseWithoutTranslate("\uD83D\uDE00\uD83D\uDE09")
         assertEquals(" - ", r.textToSpeech)
     }
 
