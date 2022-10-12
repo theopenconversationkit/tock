@@ -75,6 +75,11 @@ interface Bus<T : Bus<T>> : I18nTranslator {
     fun defaultDelay(answerIndex: Int): Long
 
     /**
+     * Is the [targetConnectorType] compatible with [connectorType]
+     */
+    fun isCompatibleWith(connectorType: ConnectorType): Boolean
+
+    /**
      * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
     fun withMessage(message: ConnectorMessage): T = withMessage(message.connectorType) { message }

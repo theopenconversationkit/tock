@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.slot
 import io.vertx.core.http.HttpServerResponse
@@ -67,7 +68,7 @@ class DetailedHealthcheckTest {
         response = mockkClass(HttpServerResponse::class, relaxed = true)
         every { routingContext.response() } returns response
         every { response.setStatusCode(capture(statusSlot)) } answers { response }
-        every { response.end(capture(bodySlot)) } answers { response }
+        every { response.end(capture(bodySlot)) } answers { mockk() }
         taskA.invoked = false
         taskB.invoked = false
         taskC.invoked = false

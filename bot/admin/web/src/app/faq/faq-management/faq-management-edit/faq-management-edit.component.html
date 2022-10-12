@@ -1,0 +1,337 @@
+<nb-card
+  class="mb-0"
+  [nbSpinner]="loading"
+>
+  <nb-card-header>
+    <div class="d-flex justify-content-between align-items-start">
+      {{ faq?.id ? 'Edit "' + faq.title + '"' : 'New faq' }}
+      <button
+        type="button"
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Close"
+        (click)="close()"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body>
+    <form [formGroup]="form">
+      <nb-tabset
+        fullWidth
+        (changeTab)="setCurrentTab($event)"
+      >
+        <nb-tab
+          tabTitle="info"
+          badgePosition="top right"
+          badgeStatus="danger"
+          [badgeDot]="isSubmitted && (title.errors || description.errors || intentNameExistInApp)"
+          [active]="currentTab == faqTabs.INFO"
+        >
+        </nb-tab>
+        <nb-tab
+          tabTitle="question"
+          badgePosition="top right"
+          badgeStatus="danger"
+          [badgeDot]="isSubmitted && utterances.errors"
+          [active]="currentTab == faqTabs.QUESTION"
+        >
+        </nb-tab>
+        <nb-tab
+          tabTitle="answer"
+          badgePosition="top right"
+          badgeStatus="danger"
+          [badgeDot]="isSubmitted && answer.errors"
+          [active]="currentTab == faqTabs.ANSWER"
+        >
+        </nb-tab>
+      </nb-tabset>
+
+      <div *ngIf="currentTab == faqTabs.INFO">
+        <tock-form-control
+          label="Name"
+          name="name"
+          [controls]="title"
+          [showError]="isSubmitted"
+          [required]="true"
+          data-testid="name"
+        >
+          <input
+            autofocusElement
+            nbInput
+            formControlName="title"
+            id="name"
+            fullWidth
+            type="text"
+            placeholder="Enter faq title"
+            (keyup)="resetAlerts()"
+          />
+          <div
+            class="text-danger"
+            *ngIf="intentNameExistInApp"
+          >
+            <small> This title corresponds to an existing intent in this application </small>
+          </div>
+        </tock-form-control>
+
+        <tock-form-control
+          label="Description"
+          name="description"
+          [controls]="description"
+          [showError]="isSubmitted"
+          data-testid="description"
+        >
+          <textarea
+            nbInput
+            formControlName="description"
+            fullWidth
+            id="description"
+            type="text"
+            rows="8"
+            placeholder="Enter description"
+          ></textarea>
+          <small [ngClass]="getControlLengthIndicatorClass('description')">
+            {{ form.controls.description.value.length }} characters out of {{ controlsMaxLength.description }} max
+          </small>
+        </tock-form-control>
+
+        <tock-form-control
+          label="Tags"
+          name="tags"
+          [controls]="tags"
+          [showError]="isSubmitted"
+          data-testid="tags"
+        >
+          <nb-tag-list
+            tock-delay
+            (tagRemove)="onTagRemove($event)"
+          >
+            <nb-tag
+              *ngFor="let tag of tags.value"
+              removable
+              [text]="tag"
+            ></nb-tag>
+            <input
+              nbTagInput
+              #tagInput
+              fullWidth
+              id="tags"
+              type="text"
+              placeholder="Type tag and press enter"
+              autocomplete="off"
+              (tagAdd)="onTagAdd($event)"
+              (keyup)="updateTagsAutocompleteValues($event)"
+              [nbAutocomplete]="tagsAutocomplete"
+            />
+            <nb-autocomplete
+              #tagsAutocomplete
+              (selectedChange)="tagSelected($event)"
+            >
+              <nb-option
+                *ngFor="let option of tagsAutocompleteValues | async"
+                [value]="option"
+                class="text-capitalize"
+              >
+                {{ option }}
+              </nb-option>
+            </nb-autocomplete>
+          </nb-tag-list>
+        </tock-form-control>
+      </div>
+
+      <div *ngIf="currentTab == 'question'">
+        <tock-form-control
+          label="Question"
+          name="question"
+          [controls]="utterances"
+          [showError]="isSubmitted"
+          [required]="true"
+          data-testid="question"
+        >
+          <div class="d-flex">
+            <input
+              #addUtteranceInput
+              autofocusElement
+              nbInput
+              fullWidth
+              id="question"
+              type="text"
+              placeholder="Type a new wording and press the Enter key"
+              [disabled]="lookingForSameUterranceInOtherInent"
+              (keyup)="resetAlerts()"
+              (keyup.enter)="addUtterance()"
+            />
+            <button
+              type="button"
+              nbButton
+              ghost
+              size="small"
+              [disabled]="lookingForSameUterranceInOtherInent"
+              (click)="addUtterance()"
+            >
+              Add
+            </button>
+          </div>
+        </tock-form-control>
+
+        <nb-alert
+          status="danger"
+          *ngIf="existingUterranceInOtherintent"
+          class="closable mt-2"
+          data-testid="existing-uterrance-in-other-intent"
+        >
+          <button
+            type="button"
+            aria-label="Close"
+            class="close alert-custom-close"
+            (click)="resetAlerts()"
+          >
+            <span>×</span>
+          </button>
+          <span data-testid="alert-message">
+            Addition cancelled. This Sentence is already associated with the intent :
+            <strong>"{{ existingUterranceInOtherintent }}" </strong>
+          </span>
+        </nb-alert>
+
+        <div
+          #utterancesListWrapper
+          class="entries-list d-flex flex-column mb-2"
+          [nbSpinner]="lookingForSameUterranceInOtherInent"
+        >
+          <ul>
+            <li
+              *ngFor="let utterance of utterances.controls"
+              class="d-flex justify-content-between align-items-center"
+            >
+              <div
+                class="flex-grow-1"
+                *ngIf="!utterance._edit"
+              >
+                {{ utterance.value }}
+              </div>
+              <div
+                class="flex-grow-1 mr-3"
+                *ngIf="utterance._edit"
+              >
+                <textarea
+                  nbInput
+                  fullWidth
+                  fieldSize="small"
+                  [(ngModel)]="utteranceEditionValue"
+                  [ngModelOptions]="{ standalone: true }"
+                  (keyup.enter)="validateEditUtterance(utterance)"
+                ></textarea>
+              </div>
+
+              <button
+                *ngIf="!utterance._edit"
+                type="button"
+                nbButton
+                nbTooltip="Edit"
+                ghost
+                shape="round"
+                size="small"
+                (click)="editUtterance(utterance.value)"
+              >
+                <nb-icon icon="edit-outline"></nb-icon>
+              </button>
+              <button
+                *ngIf="utterance._edit"
+                type="button"
+                nbButton
+                nbTooltip="Validate changes"
+                shape="round"
+                size="small"
+                status="success"
+                (click)="validateEditUtterance(utterance)"
+              >
+                <nb-icon icon="checkmark-outline"></nb-icon>
+              </button>
+
+              <button
+                *ngIf="!utterance._edit"
+                type="button"
+                nbButton
+                nbTooltip="Delete"
+                ghost
+                shape="round"
+                size="small"
+                status="danger"
+                (click)="removeUtterance(utterance.value)"
+              >
+                <nb-icon icon="trash-2-outline"></nb-icon>
+              </button>
+
+              <button
+                *ngIf="utterance._edit"
+                type="button"
+                nbButton
+                nbTooltip="Cancel changes"
+                ghost
+                shape="round"
+                size="small"
+                (click)="cancelEditUtterance(utterance)"
+              >
+                <nb-icon icon="close-outline"></nb-icon>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div *ngIf="currentTab == 'answer'">
+        <tock-form-control
+          label="Answer"
+          name="answer"
+          [controls]="answer"
+          [showError]="isSubmitted"
+          [required]="true"
+          data-testid="answer"
+        >
+          <textarea
+            autofocusElement
+            nbInput
+            formControlName="answer"
+            fullWidth
+            id="answer"
+            type="text"
+            rows="15"
+            placeholder="Enter answer"
+          ></textarea>
+          <small [ngClass]="getControlLengthIndicatorClass('answer')">
+            {{ form.controls.answer.value.length }} characters out of {{ controlsMaxLength.answer }} max
+          </small>
+        </tock-form-control>
+      </div>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer>
+    <div class="grid-button">
+      <button
+        type="button"
+        nbButton
+        outline
+        status="primary"
+        size="small"
+        (click)="close()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        [disabled]="!canSave"
+        (click)="checkIntentNameAndSave()"
+      >
+        Save
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

@@ -87,3 +87,11 @@ private fun String.stripAccents(): String =
 
 fun String.normalize(locale: Locale): String =
     this.lowercase(locale).removeTrailingPunctuation().stripAccents()
+
+fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", ignoreCase = true)
+        .replace("a", "[aàáâãä]", ignoreCase = true)
+        .replace("i", "[iìíîï]", ignoreCase = true)
+        .replace("o", "[oòóôõöø]", ignoreCase = true)
+        .replace("u", "[uùúûü]", ignoreCase = true)
+        .replace("n", "[nñ]", ignoreCase = true)
+        .replace(" ", "['-_ ]")

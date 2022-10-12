@@ -21,7 +21,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>22.3.2-SNAPSHOT</version>
+    <version>22.9.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -32,53 +32,53 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.7.0</kotlin>
-        <couroutine>1.6.3</couroutine>
+        <kotlin>1.7.20</kotlin>
+        <couroutine>1.6.4</couroutine>
 
-        <slf4j>1.7.36</slf4j>
-        <logback>1.2.11</logback>
+        <slf4j>2.0.3</slf4j>
+        <logback>1.4.1</logback>
 
-        <kotlin-logging>2.1.23</kotlin-logging>
+        <kotlin-logging>3.0.0</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.6.1</kmongo>
-        <jackson>2.13.3</jackson>
-        <jackson-databind>2.13.3</jackson-databind>
-        <jackson-module>2.13.3</jackson-module>
+        <kmongo>4.7.1</kmongo>
+        <jackson>2.13.4</jackson>
+        <jackson-databind>2.13.4</jackson-databind>
+        <jackson-module>2.13.4</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>3.9.13</vertx>
+        <vertx>4.3.4</vertx>
         <retrofit>2.9.0</retrofit>
-        <okhttp>4.9.3</okhttp>
+        <okhttp>4.10.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
         <guava>31.1-jre</guava>
         <google-auth>1.34.1</google-auth>
-        <google-http-client>1.42.0</google-http-client>
+        <google-http-client>1.42.2</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.9.0</commons-csv>
-        <commons-text>1.9</commons-text>
-        <emoji>5.0</emoji>
+        <commons-text>1.10.0</commons-text>
+        <emoji>5.1.1</emoji>
         <commons-codec>1.15</commons-codec>
         <commons-lang>3.12.0</commons-lang>
         <commonmark>0.19.0</commonmark>
-        <json>20220320</json>
+        <json>20220924</json>
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>25.4.0</google>
-        <aws-sdk>1.12.248</aws-sdk>
-        <pac4j>4.5.2</pac4j>
-        <vertx-pac4j>5.0.1</vertx-pac4j>
+        <google>26.1.2</google>
+        <aws-sdk>1.12.314</aws-sdk>
+        <pac4j>5.6.0</pac4j>
+        <vertx-pac4j>6.0.1</vertx-pac4j>
 
-        <junit-jupiter>5.8.2</junit-jupiter>
+        <junit-jupiter>5.9.1</junit-jupiter>
 
-        <mockk>1.12.4</mockk>
+        <mockk>1.13.2</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.12.12</byte-buddy>
+        <byte-buddy>1.12.17</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M5</plugin.surefire>
@@ -86,7 +86,7 @@
         <plugin.release>3.0.0-M1</plugin.release>
         <plugin.gpg>3.0.1</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>1.4.10.2</plugin.dokka>
+        <plugin.dokka>1.7.10</plugin.dokka>
         <plugin.assembly>3.3.0</plugin.assembly>
         <plugin.frontend>1.12.0</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
@@ -99,12 +99,12 @@
         <plugin.gitid>4.9.10</plugin.gitid>
         <plugin.ktlint>1.10.2</plugin.ktlint>
 
-        <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+        <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
 
-        <node>v12.16.3</node>
+        <node>v16.17.1</node>
     </properties>
 
     <modules>
@@ -539,19 +539,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.kcthota</groupId>
-                <artifactId>emoji4j</artifactId>
+                <groupId>com.vdurmont</groupId>
+                <artifactId>emoji-java</artifactId>
                 <version>${emoji}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.fasterxml.jackson.core</groupId>
-                        <artifactId>jackson-databind</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
@@ -679,7 +669,7 @@
             </dependency>
             <dependency>
                 <groupId>io.mockk</groupId>
-                <artifactId>mockk</artifactId>
+                <artifactId>mockk-jvm</artifactId>
                 <version>${mockk}</version>
                 <scope>test</scope>
             </dependency>
@@ -724,6 +714,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${plugin.surefire}</version>
                 <configuration>
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
                     <includes>
                         <include>**/*Test.*</include>
                         <include>**/*Spec.*</include>

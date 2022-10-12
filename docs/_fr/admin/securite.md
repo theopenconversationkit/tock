@@ -20,8 +20,6 @@ Le code est disponible dans la classe [`PropertyBasedAuthProvider`](https://gith
 
 - Un modèle [_OAuth2_](https://oauth.net/2/) spécifique pour Github dont un exemple est donné par [`GithubOAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt)
 
-- Un modèle basé sur des jetons [_JWT_](https://jwt.io/), dont une implémentation pour AWS est disponible dans [`AWSJWTAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt)    
-
 Il est également possible d'intégrer une authentification CAS (SSO), dans le cas d'une installation de type entreprise.
 Ce modèle nécessite d'hériter d'un modèle de base, mais permet de faire correspondre un profil utilisateur selon vos 
 propres contraintes et spécificités.
@@ -97,17 +95,18 @@ Cette implémentation générique est à utiliser dès que vous souhaitez param�
 
 Voici les propriétés et leurs valeurs par défaut :
 
-| Variable d'environnement             | Exemple de valeur  | Description                                      |
-|--------------------------------------|--------------------|--------------------------------------------------|
-| `tock_oauth2_enabled`                | `true`             | Activation de l'authentification 0Auth2          |
-| `tock_oauth2_client_id`              | `CLIENT_ID`        | Identifiant pour interroger l'API GitHub         |
-| `tock_oauth2_secret_key`             | `SECRET_KEY`       | Mot de passe pour interroger l'API GitHub        |
-| `tock_oauth2_site_url`               | `https://provider` | Url du provider oauth2                           |
-| `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token     |
-| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Timeout vérification de l'identité (API GitHub)  |
-| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Timeout vérification de l'identité (API GitHub)  |
-| `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)  |
-| `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                          |
+| Variable d'environnement             | Exemple de valeur  | Description                                       |
+|--------------------------------------|--------------------|---------------------------------------------------|
+| `tock_oauth2_enabled`                | `true`             | Activation de l'authentification 0Auth2           |
+| `tock_oauth2_client_id`              | `CLIENT_ID`        | Identifiant pour interroger l'API GitHub          |
+| `tock_oauth2_secret_key`             | `SECRET_KEY`       | Mot de passe pour interroger l'API GitHub         |
+| `tock_oauth2_site_url`               | `https://provider` | Url du provider oauth2                            |
+| `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token      |
+| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Timeout vérification de l'identité (API GitHub)   |
+| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Timeout vérification de l'identité (API GitHub)   |
+| `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)   |
+| `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                           |
+| `tock_oauth2_user_role_attribute`    | `custom:roles`     | Attribut lu dans le token pour le mapping du role |
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
 
@@ -134,40 +133,6 @@ Voici les propriétés et leurs valeurs par défaut :
 
 > Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
 > [`GithubOAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt).
-
-### Implémentation AWS/JWT
-
-Une implémentation est fournie utilisant des jetons au format [_JWT_](https://jwt.io/) vérifiés par un service 
-_AWS (Amazon Web Services)_.
-
-Ce mode permet de créer une authentification unique (_[SSO (Single Sign-On)](https://en.wikipedia.org/wiki/Single_sign-on)_ 
-ou [_Fédération d'identité_](https://en.wikipedia.org/wiki/Federated_identity)) dans une infrastructure Cloud AWS. 
-Par défaut, la région ciblée pour vérifier les clefs publiques est la région Irlande (`eu-west-1`).
-
-Dans ce mode, activé par la propriété `tock_aws_jwt_enabled`, l'affectation des rôles _Tock Studio_ aux utilisateurs 
-se fait à travers leur jeton JWT et la propriété `tock_jwt_custom_roles_mapping`.
-
-Voici les propriétés et leurs valeurs par défaut :
-
-| Variable d'environnement                 | Valeur par défaut         | Description                                   |
-|------------------------------------------|---------------------------|-----------------------------------------------|
-| `tock_aws_jwt_enabled`                   | `false`                   | Activation de l'authentification AWS/JWT.     |
-| `tock_jwt_custom_namespace_mapping`      | Vide                      | Organisations (séparées par des virgules).    |
-| `tock_jwt_custom_roles_mapping`          | Vide                      | Correspondances groupe=rôles séparés par des virgules (puis par des `|`). |
-| `jwt_algorithm`                          | `ES256`                   | Algorithme de décodage du jeton JWT.          |
-| `tock_aws_public_key_request_timeout_ms` | `30000`                   | Timeout vérification des clefs (API AWS).     |
-
-Ci-dessous un exemple au format Docker-Compose :
-
-```yaml
-{ "name" : "tock_jwt_custom_roles_mapping", "value" : "MY_USER_GROUP=nlpUser,botUser|MY_ADMIN_GROUP=nlpUser,botUser,faqNlpUser,faqBotUser,admin,technicalAdmin" },
-```
-
-Dans cet exemple, les utilisateurs appartenant au groupe `MY_USER_GROUP` possèdent les rôles `nlpUser` et `botUser`, 
-alors que les membres de `MY_ADMIN_GROUP` ont tous les rôles.
-
-> Pour en savoir plus sur le fonctionnement précis de cette implémentation, voir la classe 
-> [`AWSJWTAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt).
 
 ### Implémentation SSO/CAS
 

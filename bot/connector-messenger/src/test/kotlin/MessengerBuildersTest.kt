@@ -58,6 +58,7 @@ class MessengerBuildersTest {
         }
 
         every { bus.targetConnectorType } returns messengerConnectorType
+        every { bus.isCompatibleWith(messengerConnectorType) } returns true
         every { bus.applicationId } returns "appId"
         every { bus.userPreferences } returns UserPreferences()
         every { bus.translate(allAny()) } answers { firstArg() ?: "".raw }

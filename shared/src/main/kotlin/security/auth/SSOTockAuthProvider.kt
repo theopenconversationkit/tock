@@ -22,7 +22,7 @@ import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.http.Cookie
 import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.AuthHandler
+import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.SessionHandler
 
 /**
@@ -36,26 +36,25 @@ abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
             val cookie = Cookie.cookie("tock-sso", "1")
             cookie.path = "/"
             // Don't set max age - it's a session cookie
-            c.addCookie(cookie)
+            c.response().addCookie(cookie)
             c.next()
         }
     }
 
     override val sessionCookieName: String get() = "tock-sso-session"
 
-    abstract fun createAuthHandler(verticle: WebVerticle): AuthHandler
+    abstract fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler
 
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
-    ): AuthHandler {
+    ): AuthenticationHandler {
         val authHandler = createAuthHandler(verticle)
         with(verticle) {
-            val excluded = excludedPaths(verticle)
-            router.route("/*").handler(WithExcludedPathHandler(excluded, sessionHandler))
-            router.route("/*").handler(WithExcludedPathHandler(excluded, authHandler))
-            router.route("/*").handler(AddSSOCookieHandler)
+            router.route().handler(WithExcludedPathHandler(defaultExcludedPaths(verticle), sessionHandler))
+            router.route().handler(WithExcludedPathHandler(excludedPaths(verticle), authHandler))
+            router.route().handler(AddSSOCookieHandler)
 
             router.get("$basePath/user").handler { it.response().end(mapper.writeValueAsString(toTockUser(it))) }
         }

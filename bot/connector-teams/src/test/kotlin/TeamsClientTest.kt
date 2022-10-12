@@ -41,7 +41,7 @@ class TeamsClientTest {
     private val logger = KotlinLogging.logger {}
 
     @BeforeEach
-    private fun resetToken() {
+    internal fun resetToken() {
         tokenHandler.token = null
     }
 

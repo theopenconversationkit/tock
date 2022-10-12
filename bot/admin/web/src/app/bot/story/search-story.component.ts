@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-import { saveAs } from 'file-saver-es';
-import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
-import { BotService } from '../bot-service';
-import { NlpService } from '../../nlp-tabs/nlp.service';
-import { StateService } from '../../core-nlp/state.service';
-import {
-  StoryDefinitionConfiguration,
-  StoryDefinitionConfigurationSummary,
-  StorySearchQuery
-} from '../model/story';
-import { Subscription } from 'rxjs';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import { CanDeactivate } from '@angular/router';
-import { LocationStrategy } from '@angular/common';
-import { NbToastrService } from '@nebular/theme';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
+import {saveAs} from 'file-saver-es';
+import {Component, Injectable, OnDestroy, OnInit} from '@angular/core';
+import {BotService} from '../bot-service';
+import {NlpService} from '../../nlp-tabs/nlp.service';
+import {StateService} from '../../core-nlp/state.service';
+import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery} from '../model/story';
+import {Subscription} from 'rxjs';
+import {FileItem, FileUploader, ParsedResponseHeaders} from 'ng2-file-upload';
+import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import {CanDeactivate} from '@angular/router';
+import {LocationStrategy} from '@angular/common';
+import {NbToastrService} from '@nebular/theme';
+import {DialogService} from 'src/app/core-nlp/dialog.service';
 
 interface TreeNode<T> {
   data: T;
@@ -60,6 +56,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   category: string = '';
   onlyConfigured: boolean = true;
   loading: boolean = false;
+  lastFilter: string = this.filter;
 
   displayUpload: boolean = false;
   uploader: FileUploader;
@@ -74,7 +71,8 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private location: LocationStrategy,
     private backButtonHolder: BackButtonHolder
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     // check if back or forward button is pressed.
@@ -101,7 +99,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     setTimeout((_) => {
       this.bot.exportStory(this.state.currentApplication.name, story.storyId).subscribe((blob) => {
         saveAs(blob, this.state.currentApplication.name + '_' + story.storyId + '.json');
-        this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
+        this.toastrService.show(`Dump provided`, 'Dump', {duration: 3000, status: 'success'});
       });
     }, 1);
   }
@@ -118,7 +116,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       if (result === 'remove') {
         this.bot.deleteStory(story._id).subscribe((_) => {
           this.delete(story.storyId);
-          this.toastrService.show(`Story deleted`, 'Delete', { duration: 3000, status: 'success' });
+          this.toastrService.show(`Story deleted`, 'Delete', {duration: 3000, status: 'success'});
         });
       }
     });
@@ -144,6 +142,8 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   search() {
     if (this.category === '_all_') this.category = '';
     this.loading = true;
+    const filter = this.filter;
+    this.lastFilter = filter;
     this.bot
       .searchStories(
         new StorySearchQuery(
@@ -158,50 +158,54 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
         )
       )
       .subscribe((s) => {
-        this.selectedStory = null;
-        const storyByCategories = new Map<string, StoryDefinitionConfigurationSummary[]>();
-        s.forEach((story) => {
-          let a = storyByCategories.get(story.category);
-          if (!a) {
-            a = [];
-            storyByCategories.set(story.category, a);
-          }
-          a.push(story);
-        });
+        if (this.lastFilter === filter) {
+          this.selectedStory = null;
+          const storyByCategories = new Map<string, StoryDefinitionConfigurationSummary[]>();
+          s.forEach((story) => {
+            let a = storyByCategories.get(story.category);
+            if (!a) {
+              a = [];
+              storyByCategories.set(story.category, a);
+            }
+            a.push(story);
+          });
 
-        if (this.category === '') {
-          const sortStringKeys = (a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1);
-          this.categories = Array.from(storyByCategories.keys()).sort(sortStringKeys);
+          if (this.category === '') {
+            const sortStringKeys = (a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1);
+            this.categories = Array.from(storyByCategories.keys()).sort(sortStringKeys);
+          }
+          const sortedMap = new Map<string, StoryDefinitionConfigurationSummary[]>();
+          this.categories.forEach((c) => {
+            const stories = storyByCategories.get(c);
+            if (stories) {
+              sortedMap.set(c, stories);
+            }
+          });
+
+          this.stories = s;
+          this.nodes = Array.from(sortedMap, ([key, value]) => {
+            return {
+              expanded:
+                s.length < 100 && (
+                  this.categories.length < 2 ||
+                  this.category != '' ||
+                  this.filter !== '' ||
+                  this.lastExpandableState.get(key) === true
+                ),
+              data: {
+                category: key,
+                expandable: true
+              },
+              children: value.map((s) => {
+                return {
+                  data: s
+                };
+              })
+            };
+          });
+          this.lastExpandableState = new Map();
+          this.loading = false;
         }
-        const sortedMap = new Map<string, StoryDefinitionConfigurationSummary[]>();
-        this.categories.forEach((c) => {
-          const stories = storyByCategories.get(c);
-          if (stories) {
-            sortedMap.set(c, stories);
-          }
-        });
-
-        this.stories = s;
-        this.nodes = Array.from(sortedMap, ([key, value]) => {
-          return {
-            expanded:
-              this.categories.length < 2 ||
-              this.category != '' ||
-              this.filter !== '' ||
-              this.lastExpandableState.get(key) === true,
-            data: {
-              category: key,
-              expandable: true
-            },
-            children: value.map((s) => {
-              return {
-                data: s
-              };
-            })
-          };
-        });
-        this.lastExpandableState = new Map();
-        this.loading = false;
       });
   }
 
@@ -209,20 +213,20 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     setTimeout((_) => {
       this.bot.exportStories(this.state.currentApplication.name).subscribe((blob) => {
         saveAs(blob, this.state.currentApplication.name + '_stories.json');
-        this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
+        this.toastrService.show(`Dump provided`, 'Dump', {duration: 3000, status: 'success'});
       });
     }, 1);
   }
 
   prepareUpload() {
-    this.uploader = new FileUploader({ removeAfterUpload: true });
+    this.uploader = new FileUploader({removeAfterUpload: true});
     this.uploader.onCompleteItem = (
       item: FileItem,
       response: string,
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toastrService.show(`Dump uploaded`, 'Dump', { duration: 3000, status: 'success' });
+      this.toastrService.show(`Dump uploaded`, 'Dump', {duration: 3000, status: 'success'});
       this.state.resetConfiguration();
     };
     this.displayUpload = true;
@@ -246,7 +250,8 @@ export class BackButtonHolder {
 
 @Injectable()
 export class SearchStoryNavigationGuard implements CanDeactivate<any> {
-  constructor(private backButtonHolder: BackButtonHolder) {}
+  constructor(private backButtonHolder: BackButtonHolder) {
+  }
 
   canDeactivate(component: any) {
     // will prevent user from going back

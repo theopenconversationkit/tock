@@ -20,5 +20,5 @@ data class FaqDefinitionSearchResult(
     val total: Long,
     val start: Long = 0,
     val end: Long = 10,
-    val faq: List<FaqDefinitionRequest> = emptyList(),
+    val rows: List<FaqDefinitionRequest> = emptyList(),
 )

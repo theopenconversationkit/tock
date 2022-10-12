@@ -24,6 +24,7 @@ import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Suggestion
 import ai.tock.bot.api.model.message.user.UserMessage
+import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.Bus
 import ai.tock.nlp.entity.Value
 import ai.tock.translator.I18nLabelValue
@@ -31,7 +32,7 @@ import ai.tock.translator.RawString
 import ai.tock.translator.TranslatedString
 
 /**
- * Bus implementation for Tock Bot APÏ mode.
+ * Bus implementation for Tock Bot API mode.
  */
 interface ClientBus : Bus<ClientBus> {
 
@@ -64,6 +65,9 @@ interface ClientBus : Bus<ClientBus> {
      * Handles the current request.
      */
     fun handle()
+
+
+    override fun isCompatibleWith(connectorType: ConnectorType) = targetConnectorType == connectorType
 
     /**
      * Sends a [Card].

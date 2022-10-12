@@ -1,0 +1,105 @@
+<div class="d-flex flex-wrap mb-2">
+  <h1 class="flex-grow-1">FAQ Management</h1>
+
+  <section class="grid-actions">
+    <button
+      *ngIf="isAuthorized"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="FAQ Parameters"
+      [disabled]="!configurations?.length"
+      (click)="openSettings()"
+    >
+      <nb-icon icon="settings-outline"></nb-icon>
+    </button>
+
+    <button
+      nbButton
+      status="primary"
+      [disabled]="!configurations?.length"
+      (click)="addOrEditFaq()"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      NEW FAQ
+    </button>
+  </section>
+</div>
+
+<section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings">
+  <nb-alert
+    *ngIf="configurations?.length === 0"
+    class="alert-config flex-row align-items-center"
+    accent="warning"
+  >
+    <nb-icon
+      class="mr-1"
+      icon="alert-triangle-outline"
+      status="warning"
+    ></nb-icon>
+    No bot configuration detected
+  </nb-alert>
+
+  <div
+    *ngIf="configurations?.length"
+    class="main"
+  >
+    <tock-faq-management-filters
+      [tagsCache]="tagsCache"
+      (onFilter)="filterFaqs($event)"
+      class="d-block mb-2"
+    ></tock-faq-management-filters>
+
+    <div
+      class="d-flex justify-content-end"
+      *ngIf="!loading.list && faqs?.length"
+    >
+      <tock-pagination
+        [pagination]="pagination"
+        (onPaginationChange)="paginationChange($event)"
+      ></tock-pagination>
+    </div>
+
+    <div
+      class="loading mt-2"
+      [nbSpinner]="loading.list"
+      infinite-scroll
+      [infiniteScrollDistance]="1"
+      (scrolled)="onScroll()"
+    >
+      <tock-no-data-found
+        *ngIf="!loading.list && !faqs?.length"
+        title="No Faq found"
+        message="You may create a new one using above button &#34;NEW FAQ&#34;."
+      ></tock-no-data-found>
+
+      <tock-faq-management-list
+        *ngIf="!loading.list && faqs?.length"
+        [nbSpinner]="loading.delete"
+        [faqs]="faqs"
+        [selectedFaq]="faqEdit"
+        (onEdit)="addOrEditFaq($event)"
+        (onDelete)="deleteFaq($event)"
+        (onEnable)="enableFaq($event)"
+      ></tock-faq-management-list>
+    </div>
+  </div>
+
+  <tock-faq-management-edit
+    #faqEditComponent
+    *ngIf="isSidePanelOpen.edit"
+    class="aside"
+    [loading]="loading.edit"
+    [faq]="faqEdit"
+    [tagsCache]="tagsCache"
+    (onClose)="closeSidePanel()"
+    (onSave)="saveFaq($event)"
+  ></tock-faq-management-edit>
+
+  <tock-faq-management-settings
+    #faqSettingsComponent
+    *ngIf="isSidePanelOpen.settings"
+    class="aside"
+    (onClose)="closeSidePanel()"
+  ></tock-faq-management-settings>
+</section>

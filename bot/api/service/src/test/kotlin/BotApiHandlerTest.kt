@@ -37,7 +37,6 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -90,7 +89,7 @@ class   BotApiHandlerTest {
     }
 
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO = mockk {
-        every { getStoryDefinitionsByNamespaceBotIdStoryId(any(), any(), any()) } returns
+        every { getStoryDefinitionByNamespaceAndBotIdAndStoryId(any(), any(), any()) } returns
                 mockk {
                     every { findEnabledEndWithStoryId(any()) } returns "endWithStoryId"
                 }

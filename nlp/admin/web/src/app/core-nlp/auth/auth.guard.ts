@@ -31,7 +31,7 @@ import { CoreConfig } from '../core.config';
 @Injectable()
 export class AuthGuard implements CanActivate, CanActivateChild {
   private autologin = environment.autologin;
-  private rolesMap: Map<UserRole, string>;
+  private rolesMap: Map<UserRole, string[]>;
 
   constructor(
     private authService: AuthService,
@@ -51,32 +51,43 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     return this.canActivate(route, state);
   }
 
+  private isAllowedToAccess(url) {
+    let rolesMapEntriesMatchingUrl = [];
+    this.rolesMap.forEach((urlFragmnts, roleIndex) => {
+      urlFragmnts.forEach((urlFrag) => {
+        if (url.startsWith(urlFrag)) {
+          rolesMapEntriesMatchingUrl.push(roleIndex);
+        }
+      });
+    });
+
+    if (!rolesMapEntriesMatchingUrl.length) return true;
+
+    return rolesMapEntriesMatchingUrl.some((e) => this.userState.hasRole(e));
+  }
+
   private checkLogin(url: string): boolean {
     const login = this.authService.isLoggedIn();
     if (login) {
       // check the user connected has the role
       // and check there is an url present in configuration.roleMap in core.module.ts in tock-nlp-admin-web
       // and bot-core.module.ts in tock-bot-admin
-      if ((!this.userState.hasRole(UserRole.nlpUser) && url.startsWith(this.rolesMap.get(UserRole.nlpUser)))
-      || (!this.userState.hasRole(UserRole.faqNlpUser) && url.startsWith(this.rolesMap.get(UserRole.faqNlpUser)))
-      || (!this.userState.hasRole(UserRole.faqBotUser) && url.startsWith(this.rolesMap.get(UserRole.faqBotUser)))
-      || (!this.userState.hasRole(UserRole.botUser) && url.startsWith(this.rolesMap.get(UserRole.botUser)))) {
-        setTimeout(_ => {
-          // try to navigate to the url present for the role
-          if (this.userState.hasRole(UserRole.nlpUser)) {
-            this.router.navigateByUrl(this.rolesMap.get(UserRole.nlpUser));
-          } else if (this.userState.hasRole(UserRole.faqNlpUser)) {
-            this.router.navigateByUrl(this.rolesMap.get(UserRole.faqNlpUser));
-          } else if (this.userState.hasRole(UserRole.faqBotUser)) {
-            this.router.navigateByUrl(this.rolesMap.get(UserRole.faqBotUser));
-          } else if (this.userState.hasRole(UserRole.botUser)) {
-            this.router.navigateByUrl(this.rolesMap.get(UserRole.botUser));
-          } else if (this.userState.hasRole(UserRole.admin)) {
-            this.router.navigateByUrl(this.rolesMap.get(UserRole.admin));
-          } else if (this.userState.hasRole(UserRole.technicalAdmin)) {
-            this.router.navigateByUrl(this.configuration.roleMap.get(UserRole.technicalAdmin));
-          }
-        });
+      if (!this.isAllowedToAccess(url)) {
+        // try to navigate to the first url present for the role
+        if (this.userState.hasRole(UserRole.nlpUser)) {
+          this.router.navigateByUrl(this.rolesMap.get(UserRole.nlpUser)[0]);
+        } else if (this.userState.hasRole(UserRole.faqNlpUser)) {
+          this.router.navigateByUrl(this.rolesMap.get(UserRole.faqNlpUser)[0]);
+        } else if (this.userState.hasRole(UserRole.faqBotUser)) {
+          this.router.navigateByUrl(this.rolesMap.get(UserRole.faqBotUser)[0]);
+        } else if (this.userState.hasRole(UserRole.botUser)) {
+          this.router.navigateByUrl(this.rolesMap.get(UserRole.botUser)[0]);
+        } else if (this.userState.hasRole(UserRole.admin)) {
+          this.router.navigateByUrl(this.rolesMap.get(UserRole.admin)[0]);
+        } else if (this.userState.hasRole(UserRole.technicalAdmin)) {
+          this.router.navigateByUrl(this.configuration.roleMap.get(UserRole.technicalAdmin)[0]);
+        }
+
         return false;
       }
       return true;

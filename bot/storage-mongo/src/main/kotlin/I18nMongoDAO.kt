@@ -86,7 +86,6 @@ internal object I18nMongoDAO : I18nDAO {
     private val logger = KotlinLogging.logger {}
 
     private val col = database.getCollection<I18nLabel>().apply {
-        ensureIndex(Namespace)
         ensureIndex(Namespace, Category)
     }
     private val asyncCol = asyncDatabase.getCollection<I18nLabel>()

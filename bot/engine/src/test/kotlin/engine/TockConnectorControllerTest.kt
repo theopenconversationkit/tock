@@ -16,11 +16,7 @@
 
 package ai.tock.bot.engine
 
-import io.mockk.every
-import io.mockk.invoke
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
+import io.mockk.*
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import org.junit.jupiter.api.Test
@@ -39,7 +35,9 @@ class TockConnectorControllerTest {
 
         val installer: (Router) -> Unit = mockk()
         every { installer.invoke(any()) } returns Unit
-        val controller = TockConnectorController(mockk(), mockk(), botVerticle, mockk(), mockk())
+        val bot: Bot = mockk()
+        every { bot.configuration } returns mockk()
+        val controller = TockConnectorController(bot, mockk(), botVerticle, mockk(), mockk())
 
         controller.registerServices("/path", installer)
 

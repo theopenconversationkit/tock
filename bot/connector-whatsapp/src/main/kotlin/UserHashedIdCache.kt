@@ -21,7 +21,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.util.concurrent.TimeUnit
 
-internal object UserHashedIdCache {
+object UserHashedIdCache {
 
     private val idCache: Cache<String, String> =
         CacheBuilder.newBuilder()

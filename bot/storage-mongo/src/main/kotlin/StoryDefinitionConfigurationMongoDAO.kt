@@ -38,6 +38,7 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
+import ai.tock.shared.allowDiacriticsInRegexp
 import ai.tock.shared.safeCollation
 import ai.tock.shared.trace
 import ai.tock.shared.warn
@@ -57,6 +58,7 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
+import org.litote.kmongo.`in`
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
 import org.litote.kmongo.projection
@@ -137,6 +139,19 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         )
     }
 
+    override fun getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
+        namespace: String,
+        botId: String,
+        intentNames: List<String>
+    ): List<StoryDefinitionConfiguration> {
+        return col.find(
+            Namespace eq namespace,
+            BotId eq botId,
+            CurrentType ne AnswerConfigurationType.builtin,
+            Intent.name_ `in` (intentNames.asIterable())
+        ).toList()
+    }
+
     override fun getStoryDefinitionByNamespaceAndBotIdAndIntent(
         namespace: String,
         botId: String,
@@ -160,21 +175,13 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
-    override fun getStoryDefinitionsByNamespaceBotIdStoryId(
-        namespace: String,
-        botId: String,
-        storyId: String
-    ): StoryDefinitionConfiguration? {
-        return col.findOne(and(Namespace eq namespace, BotId eq botId, StoryId eq storyId))
-    }
-
     override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> =
         col.withDocumentClass<StoryDefinitionConfigurationSummary>()
             .find(
                 Namespace eq request.namespace,
                 BotId eq request.botId,
                 if (request.category.isNullOrBlank()) null else Category eq request.category,
-                request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(it.trim(), "i") },
+                request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "i") },
                 if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
             )
             .projection(

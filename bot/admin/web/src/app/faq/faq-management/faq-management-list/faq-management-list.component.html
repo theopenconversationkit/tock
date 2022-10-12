@@ -1,0 +1,107 @@
+<nb-card
+  *ngFor="let faq of faqs"
+  [ngClass]="{ 'mb-2': true, selected: selectedFaq?.id === faq.id }"
+>
+  <nb-card-body class="grid-columns">
+    <div>
+      <div
+        class="font-weight-bold initial-capitalize"
+        data-testid="title"
+      >
+        {{ faq.title }}
+        <span
+          *ngIf="state.intentIdExistsInOtherApplication(faq.intentId)"
+          class="valign-middle text-primary"
+          nbTooltip="This faq uses an intent that is shared by at least one other application. Any change to the intent will also affect other applications that use that intent."
+        >
+          <nb-icon icon="share-outline"></nb-icon>
+        </span>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="truncate text-muted">
+            <small
+              class="d-block"
+              *ngIf="faq.utterances.length == 1"
+            >
+              Question
+            </small>
+            <small
+              class="d-block"
+              *ngIf="faq.utterances.length > 1"
+            >
+              First question (out of {{ faq.utterances.length }})
+            </small>
+            {{ faq.utterances[0] }}
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="truncate text-muted">
+            <small class="d-block">Answer</small>
+            {{ faq.answer }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <nb-tag-list>
+        <nb-tag
+          *ngFor="let tag of faq.tags"
+          appearance="filled"
+          status="basic"
+          size="tiny"
+          [text]="tag"
+        ></nb-tag>
+      </nb-tag-list>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-center justify-content-end">
+      <nb-toggle
+        class="mx-2"
+        [nbTooltip]="faq.enabled ? 'Disable' : 'Enable'"
+        [ngModel]="faq.enabled"
+        (mousedown)="toggleEnabled(faq)"
+        data-testid="toggle"
+      ></nb-toggle>
+
+      <div class="d-flex flex-wrap align-items-center justify-content-between">
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Edit"
+          class="mb-2"
+          (click)="editFaq(faq)"
+          data-testid="edit"
+        >
+          <nb-icon icon="edit-outline"></nb-icon>
+        </button>
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Download"
+          class="mb-2"
+          (click)="download(faq)"
+          data-testid="download"
+        >
+          <nb-icon icon="download-outline"></nb-icon>
+        </button>
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Delete"
+          class="mb-2"
+          (click)="delete(faq)"
+          data-testid="delete"
+        >
+          <nb-icon icon="trash-2-outline"></nb-icon>
+        </button>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

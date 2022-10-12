@@ -20,6 +20,7 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
+import ai.tock.shared.allowDiacriticsInRegexp
 import org.litote.kmongo.Id
 import java.time.ZonedDateTime
 
@@ -58,7 +59,7 @@ data class SearchQuery(
             language,
             start,
             size,
-            search,
+            search?.let { allowDiacriticsInRegexp(it.trim()) },
             intentId,
             status,
             entityType = entityType,

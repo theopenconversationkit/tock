@@ -17,7 +17,6 @@
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
-import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
 import ai.tock.shared.getAsyncDatabase
 import ai.tock.shared.getDatabase
 import ai.tock.shared.sharedTestModule
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach
  */
 abstract class AbstractTest {
 
+    protected val TOCK_DOCUMENT_DB_ON_PROPERTY: String = "tock_document_db_on"
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
@@ -47,8 +47,15 @@ abstract class AbstractTest {
                     )
                 }
                 bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }
-                bind<FaqDefinitionDAO>() with provider { FaqDefinitionMongoDAO }
+                import(moreBindingModules())
             }
         )
     }
+
+    /**
+     * Add binding modules
+     * is useful when overriden
+     * per default no module initiated
+     */
+    protected open fun moreBindingModules(): Kodein.Module = Kodein.Module {}
 }

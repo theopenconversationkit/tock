@@ -209,7 +209,7 @@ internal object DatesMerge {
         return newValue
     }
 
-    private fun normalize(s: String): String = s.trim().replace(removeDuplicateSpaceRegexp, " ").toLowerCase()
+    private fun normalize(s: String): String = s.trim().replace(removeDuplicateSpaceRegexp, " ").lowercase()
 
     fun isChangeHourPattern(content: String?): Boolean =
         content != null && frenchChangeHourRegex.matches(normalize(content))

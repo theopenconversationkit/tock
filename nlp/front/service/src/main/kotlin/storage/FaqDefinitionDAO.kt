@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.front.service.storage
 
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.FaqQuery
 import ai.tock.nlp.front.shared.config.FaqQueryResult
@@ -27,9 +28,13 @@ interface FaqDefinitionDAO {
 
     fun deleteFaqDefinitionById(id: Id<FaqDefinition>)
 
+    fun deleteFaqDefinitionByApplicationId(id: Id<ApplicationDefinition>)
+
     fun save(faqDefinition: FaqDefinition)
 
     fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition?
+
+    fun getFaqDefinitionByApplicationId(id: Id<ApplicationDefinition>): List<FaqDefinition>
 
     fun listenFaqDefinitionChanges(listener: () -> Unit)
 

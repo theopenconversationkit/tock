@@ -3,6 +3,8 @@ package ai.tock.bot.mongo
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.engine.dialog.Dialog
 import java.time.Instant
+import java.util.Locale
+import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
@@ -23,8 +25,12 @@ private val __DialogId: KProperty1<DialogFlowStateTransitionStatCol, Id<Dialog>?
     get() = DialogFlowStateTransitionStatCol::dialogId
 private val __Text: KProperty1<DialogFlowStateTransitionStatCol, String?>
     get() = DialogFlowStateTransitionStatCol::text
+private val __Locale: KProperty1<DialogFlowStateTransitionStatCol, Locale?>
+    get() = DialogFlowStateTransitionStatCol::locale
 private val __Date: KProperty1<DialogFlowStateTransitionStatCol, Instant?>
     get() = DialogFlowStateTransitionStatCol::date
+private val __ProcessedLevel: KProperty1<DialogFlowStateTransitionStatCol, Int?>
+    get() = DialogFlowStateTransitionStatCol::processedLevel
 internal class DialogFlowStateTransitionStatCol_<T>(previous: KPropertyPath<T, *>?, property:
         KProperty1<*, DialogFlowStateTransitionStatCol?>) : KPropertyPath<T,
         DialogFlowStateTransitionStatCol?>(previous,property) {
@@ -40,8 +46,14 @@ internal class DialogFlowStateTransitionStatCol_<T>(previous: KPropertyPath<T, *
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
 
+    val locale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__Locale)
+
     val date: KPropertyPath<T, Instant?>
         get() = KPropertyPath(this,__Date)
+
+    val processedLevel: KPropertyPath<T, Int?>
+        get() = KPropertyPath(this,__ProcessedLevel)
 
     companion object {
         val ApplicationId: KProperty1<DialogFlowStateTransitionStatCol,
@@ -54,8 +66,12 @@ internal class DialogFlowStateTransitionStatCol_<T>(previous: KPropertyPath<T, *
             get() = __DialogId
         val Text: KProperty1<DialogFlowStateTransitionStatCol, String?>
             get() = __Text
+        val Locale: KProperty1<DialogFlowStateTransitionStatCol, Locale?>
+            get() = __Locale
         val Date: KProperty1<DialogFlowStateTransitionStatCol, Instant?>
-            get() = __Date}
+            get() = __Date
+        val ProcessedLevel: KProperty1<DialogFlowStateTransitionStatCol, Int?>
+            get() = __ProcessedLevel}
 }
 
 internal class DialogFlowStateTransitionStatCol_Col<T>(previous: KPropertyPath<T, *>?, property:
@@ -74,8 +90,14 @@ internal class DialogFlowStateTransitionStatCol_Col<T>(previous: KPropertyPath<T
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
 
+    val locale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__Locale)
+
     val date: KPropertyPath<T, Instant?>
         get() = KPropertyPath(this,__Date)
+
+    val processedLevel: KPropertyPath<T, Int?>
+        get() = KPropertyPath(this,__ProcessedLevel)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):
@@ -98,8 +120,14 @@ internal class DialogFlowStateTransitionStatCol_Map<T, K>(previous: KPropertyPat
     val text: KPropertyPath<T, String?>
         get() = KPropertyPath(this,__Text)
 
+    val locale: KPropertyPath<T, Locale?>
+        get() = KPropertyPath(this,__Locale)
+
     val date: KPropertyPath<T, Instant?>
         get() = KPropertyPath(this,__Date)
+
+    val processedLevel: KPropertyPath<T, Int?>
+        get() = KPropertyPath(this,__ProcessedLevel)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):

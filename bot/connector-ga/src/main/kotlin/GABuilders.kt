@@ -48,7 +48,7 @@ import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import ai.tock.translator.UserInterfaceType.textChat
-import emoji4j.EmojiUtils
+import com.vdurmont.emoji.EmojiParser
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -336,8 +336,8 @@ internal fun concat(s1: String?, s2: String?): String {
 }
 
 internal fun String.removeEmojis(): String =
-    EmojiUtils.removeAllEmojis(
-        EmojiUtils.emojify(this.replace("://", "_____"))
+    EmojiParser.removeAllEmojis(
+        EmojiParser.parseToUnicode(this.replace("://", "_____"))
             .replace("\uD83D\uDC68", ":3")
             .replace("\uD83D\uDE2E", ":0")
             .replace("_____", "://")

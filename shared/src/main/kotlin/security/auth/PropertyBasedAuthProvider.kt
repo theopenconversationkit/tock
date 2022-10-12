@@ -39,9 +39,8 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.auth.User
-import io.vertx.ext.web.handler.AuthHandler
+import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.BasicAuthHandler
 import io.vertx.ext.web.handler.SessionHandler
 import mu.KotlinLogging
@@ -75,7 +74,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
-    ): AuthHandler {
+    ): AuthenticationHandler {
         val authHandler = BasicAuthHandler.create(this)
         with(verticle) {
             val excluded = excludedPaths(verticle)

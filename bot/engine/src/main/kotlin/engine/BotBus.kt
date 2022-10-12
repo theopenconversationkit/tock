@@ -19,6 +19,7 @@ package ai.tock.bot.engine
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
@@ -519,6 +520,12 @@ interface BotBus : Bus<BotBus> {
         }
         return this
     }
+
+    /**
+     * Compatibility with other connector message is delegated to connector
+     */
+    override fun isCompatibleWith(connectorType: ConnectorType) = underlyingConnector.canHandleMessageFor(connectorType)
+
 
     // this is mainly to allow mockk to work -->
 

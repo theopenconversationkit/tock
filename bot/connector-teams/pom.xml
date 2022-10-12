@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>22.3.2-SNAPSHOT</version>
+        <version>22.9.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-connector-teams</artifactId>
@@ -30,8 +30,9 @@
 
     <properties>
         <microsoft.bot>4.14.2</microsoft.bot>
-        <nimbus-jose-jwt>9.23</nimbus-jose-jwt>
-        <gson>2.9.0</gson>
+        <nimbus-jose-jwt>9.25.4</nimbus-jose-jwt>
+        <gson>2.9.1</gson>
+        <minidev>2.4.8</minidev>
     </properties>
 
     <dependencies>
@@ -58,7 +59,11 @@
             <artifactId>gson</artifactId>
             <version>${gson}</version>
         </dependency>
-
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>${minidev}</version>
+        </dependency>
 
         <!-- force jackson dependencies -->
         <dependency>
@@ -112,7 +117,7 @@
         </dependency>
         <dependency>
             <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
+            <artifactId>mockk-jvm</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

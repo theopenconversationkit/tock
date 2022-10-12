@@ -22,6 +22,9 @@ import ch.qos.logback.classic.LoggerContext
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.classic.jul.LevelChangePropagator
 import ch.qos.logback.classic.spi.Configurator
+import ch.qos.logback.classic.spi.Configurator.ExecutionStatus
+import ch.qos.logback.classic.spi.Configurator.ExecutionStatus.DO_NOT_INVOKE_NEXT_IF_ANY
+import ch.qos.logback.classic.spi.Configurator.ExecutionStatus.INVOKE_NEXT_IF_ANY
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.ConsoleAppender
 import ch.qos.logback.core.rolling.RollingFileAppender
@@ -42,7 +45,7 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
             )
         )
 
-    override fun configure(loggerContext: LoggerContext) {
+    override fun configure(loggerContext: LoggerContext): ExecutionStatus {
         if (booleanProperty("tock_logback_enabled", true)) {
             val c = context
 
@@ -83,7 +86,7 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
             }
             appender.start()
 
-            if(defaultLevel.toInt() <= Level.INFO.toInt()) {
+            if (defaultLevel.toInt() <= Level.INFO.toInt()) {
                 loggerContext.getLogger("org.mongodb.driver").apply {
                     level = Level.INFO
                     isAdditive = false
@@ -113,6 +116,10 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
                 level = defaultLevel
                 addAppender(appender)
             }
+
+            return DO_NOT_INVOKE_NEXT_IF_ANY
+        } else {
+            return INVOKE_NEXT_IF_ANY
         }
     }
 }

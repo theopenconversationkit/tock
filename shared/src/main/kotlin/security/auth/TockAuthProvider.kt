@@ -18,31 +18,32 @@ package ai.tock.shared.security.auth
 
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.vertx.WebVerticle
-import io.vertx.ext.auth.AuthProvider
+import io.vertx.ext.auth.authentication.AuthenticationProvider
 import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.AuthHandler
+import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.SessionHandler
 
 /**
- * Base interface for [AuthProvider] in Tock framework.
+ * Base interface for [AuthenticationProvider] in Tock framework.
  */
-interface TockAuthProvider : AuthProvider {
+interface TockAuthProvider : AuthenticationProvider {
 
     /**
      * The tock session cookie name.
      */
     val sessionCookieName: String get() = "tock-session"
 
+    fun defaultExcludedPaths(verticle: WebVerticle): Set<Regex> = listOfNotNull(
+        verticle.healthcheckPath?.toRegex(),
+        verticle.livenesscheckPath?.toRegex(),
+        verticle.readinesscheckPath?.toRegex(),
+        ".*\\.(css|html|js|ico|woff2?|ttf|eot)".toRegex()
+    ).toSet()
+
     /**
      * Paths to exclude from the [AuthProvider].
      */
-    fun excludedPaths(verticle: WebVerticle): Set<Regex> =
-        listOfNotNull(
-            verticle.healthcheckPath?.toRegex(),
-            verticle.livenesscheckPath?.toRegex(),
-            verticle.readinesscheckPath?.toRegex(),
-            ".*\\.(css|html|js|ico|woff2?|ttf|eot)".toRegex()
-        ).toSet()
+    fun excludedPaths(verticle: WebVerticle): Set<Regex> = defaultExcludedPaths(verticle)
 
     /**
      * Protect paths for the specified verticle.
@@ -52,7 +53,7 @@ interface TockAuthProvider : AuthProvider {
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
-    ): AuthHandler
+    ): AuthenticationHandler
 
     /**
      * Gets a [TockUser] from current vert.x state.

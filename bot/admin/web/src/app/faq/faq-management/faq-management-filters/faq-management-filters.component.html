@@ -1,0 +1,61 @@
+<nb-card class="mb-0">
+  <nb-card-header class="d-flex align-items-center justify-content-between">
+    Filters
+    <button
+      *ngIf="isFiltered"
+      nbButton
+      nbTooltip="Clear all filters"
+      ghost
+      shape="round"
+      (click)="clearFilters()"
+      data-testid="clear-button"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <form
+      class="grid"
+      [formGroup]="form"
+    >
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="search-outline"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          placeholder="Search"
+          type="text"
+          formControlName="search"
+        />
+      </nb-form-field>
+
+      <nb-select
+        multiple
+        placeholder="Tags"
+        fullWidth
+        optionsListClass="option-list--break-word"
+        formControlName="tags"
+      >
+        <nb-option
+          *ngFor="let tag of tagsCache"
+          value="{{ tag }}"
+        >
+          <span class="initial-capitalize">{{ tag }}</span>
+        </nb-option>
+      </nb-select>
+
+      <nb-checkbox
+        [checked]="enabled.value"
+        [indeterminate]="enabled.value === null"
+        formControlName="enabled"
+        (checkedChange)="enabledCheckChanged()"
+      >
+        Active
+      </nb-checkbox>
+    </form>
+  </nb-card-body>
+</nb-card>

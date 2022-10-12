@@ -19,6 +19,7 @@ package ai.tock.nlp.front.shared.codec
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
+import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 
 /**
@@ -29,6 +30,7 @@ data class ImportReport(
     val entitiesImported: MutableSet<String> = mutableSetOf(),
     val intentsImported: MutableSet<String> = mutableSetOf(),
     var sentencesImported: Long = 0L,
+    var faqsImported: Long = 0L,
     var localeAdded: Boolean = false,
     var success: Boolean = true,
     val errorMessages: MutableList<String> = mutableListOf()
@@ -39,6 +41,7 @@ data class ImportReport(
             entitiesImported.isNotEmpty() ||
             intentsImported.isNotEmpty() ||
             sentencesImported != 0L ||
+            faqsImported != 0L ||
             localeAdded
 
     fun add(app: ApplicationDefinition) = applicationsImported.add(app.qualifiedName)
@@ -48,6 +51,8 @@ data class ImportReport(
     fun add(intent: IntentDefinition) = intentsImported.add(intent.qualifiedName)
 
     fun add(sentence: ClassifiedSentence) = sentencesImported++
+
+    fun add(faq: FaqDefinition) = faqsImported++
 
     fun addError(error: String) {
         errorMessages.add(error)

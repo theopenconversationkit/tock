@@ -92,3 +92,4 @@ fun loadProperties(fileInClasspath: String): Properties =
  * Use "tock_env" property to know the environment - if not set or if the value is "dev", this is a dev environment.
  */
 val devEnvironment: Boolean = property("tock_env", "dev") == "dev"
+

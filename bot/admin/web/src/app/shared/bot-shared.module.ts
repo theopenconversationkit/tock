@@ -42,15 +42,23 @@ import {
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
-import { ErrorHelperComponent } from './error-helper/error-helper.component';
-import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
-import { FormControlComponent } from './form-control/form-control.component';
-import { ChoiceDialogComponent } from './choice-dialog/choice-dialog.component';
+
 import { JsonPreviewerComponent } from './json-previewer/json-previewer.component';
-import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
 import { CanvasModule } from './canvas/canvas.module';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { NoBotConfigurationComponent } from './no-bot-configuration/no-bot-configuration.component';
+
+import {
+  ChatUiComponent,
+  ChatUiMessageComponent,
+  ChoiceDialogComponent,
+  ErrorHelperComponent,
+  FormControlComponent,
+  NoDataFoundComponent,
+  PaginationComponent
+} from './components';
+
+import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
 
 @NgModule({
   imports: [
@@ -84,6 +92,8 @@ import { NoBotConfigurationComponent } from './no-bot-configuration/no-bot-confi
     PaginationComponent,
     NoDataFoundComponent,
     FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
     ChoiceDialogComponent,
     JsonPreviewerComponent,
     FileUploadComponent,
@@ -103,6 +113,8 @@ import { NoBotConfigurationComponent } from './no-bot-configuration/no-bot-confi
     PaginationComponent,
     NoDataFoundComponent,
     FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
     ChoiceDialogComponent,
     JsonPreviewerComponent,
     FileUploadComponent,

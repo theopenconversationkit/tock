@@ -34,6 +34,9 @@ internal class GroupById_Serializer : StdSerializer<GroupById>(GroupById::class.
         gen.writeFieldName("storyDefinitionId")
         val _storyDefinitionId_ = value.storyDefinitionId
         gen.writeString(_storyDefinitionId_)
+        gen.writeFieldName("applicationId")
+        val _applicationId_ = value.applicationId
+        serializers.defaultSerializeValue(_applicationId_, gen)
         gen.writeEndObject()
     }
 }

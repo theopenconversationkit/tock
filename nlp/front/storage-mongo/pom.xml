@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-nlp-front</artifactId>
-        <version>22.3.2-SNAPSHOT</version>
+        <version>22.9.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-front-storage-mongo</artifactId>
@@ -44,7 +44,7 @@
 
         <dependency>
             <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
+            <artifactId>mockk-jvm</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

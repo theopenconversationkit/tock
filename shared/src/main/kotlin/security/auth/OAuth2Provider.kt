@@ -17,6 +17,7 @@
 package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
 import ai.tock.shared.mapProperty
@@ -27,16 +28,16 @@ import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
-import io.vertx.core.Future
 import io.vertx.core.Vertx
+import io.vertx.core.json.JsonObject
 import io.vertx.core.net.ProxyOptions
-import io.vertx.ext.auth.oauth2.AccessToken
 import io.vertx.ext.auth.oauth2.OAuth2Auth
-import io.vertx.ext.auth.oauth2.OAuth2ClientOptions
 import io.vertx.ext.auth.oauth2.OAuth2FlowType
-import io.vertx.ext.web.handler.AuthHandler
+import io.vertx.ext.auth.oauth2.OAuth2Options
+import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
+import java.util.Base64
 import mu.KotlinLogging
 
 /**
@@ -45,9 +46,9 @@ import mu.KotlinLogging
 internal class OAuth2Provider(
     vertx: Vertx,
     private val oauth2: OAuth2Auth = OAuth2Auth.create(
-        vertx, OAuth2ClientOptions()
+        vertx, OAuth2Options()
             .setFlow(OAuth2FlowType.AUTH_CODE)
-            .setClientID(
+            .setClientId(
                 property("tock_oauth2_client_id", "")
             )
             .setClientSecret(
@@ -70,35 +71,33 @@ internal class OAuth2Provider(
                 val proxyPort = intProperty("tock_oauth2_proxy_port", 0)
                 if (proxyHost != null) {
                     logger.info { "set proxy $proxyHost:$proxyPort" }
-                    proxyOptions = ProxyOptions().apply {
+                    httpClientOptions.proxyOptions = ProxyOptions().apply {
                         host = proxyHost
                         port = proxyPort
                     }
                 }
             }
-    ).rbacHandler { _, _, handler ->
-        //TODO better
-        handler.handle(Future.succeededFuture(true))
-    }
+    )
 ) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
 
     companion object {
         private val logger = KotlinLogging.logger {}
         private val namespaceMapping = mapProperty("tock_custom_namespace_mapping", emptyMap())
         private val customRolesMapping = mapProperty("tock_custom_roles_mapping", emptyMap())
+        private val userRoleAttribute = property("tock_oauth2_user_role_attribute", "custom:roles")
         private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "http://localhost:8080")
     }
 
     private val executor: Executor get() = injector.provide()
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthHandler =
-        OAuth2AuthHandler.create(this, "$defaultBaseUrl/rest/callback")
+    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler =
+        OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
 
     override fun protectPaths(
         verticle: WebVerticle,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
-    ): AuthHandler {
+    ): AuthenticationHandler {
         val authHandler = super.protectPaths(verticle, pathsToProtect, sessionHandler)
 
         (authHandler as OAuth2AuthHandler).apply {
@@ -107,11 +106,14 @@ internal class OAuth2Provider(
 
         verticle.router.route("/*")
             .handler { context ->
+
                 val user = context.user()
-                if (user is AccessToken) {
-                    user.userInfo {
-                        val login = it.result().getString("email").toLowerCase()
-                        val customRoles = it.result().getString("custom:roles")
+                if (user?.containsKey("access_token") == true) {
+                    user.also { u ->
+                        val data = if(u.containsKey("email")) u.principal()
+                            else JsonObject(String(Base64.getDecoder().decode(user.get<String>("id_token").split(".")[1])))
+                        val login: String = data.getString("email").lowercase(defaultLocale)
+                        val customRoles: String = data.getString(userRoleAttribute)
                         val roles = parseUserRoles(customRoles)
                         if (roles.isEmpty()) {
                             logger.warn { "empty role for $customRoles" }

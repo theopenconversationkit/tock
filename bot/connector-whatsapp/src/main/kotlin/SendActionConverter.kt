@@ -27,7 +27,7 @@ import ai.tock.bot.engine.action.SendSentence
 /**
  *
  */
-internal object SendActionConverter {
+object SendActionConverter {
 
     fun toBotMessage(action: Action): WhatsAppSendBotMessage? {
         return if (action is SendSentence) {

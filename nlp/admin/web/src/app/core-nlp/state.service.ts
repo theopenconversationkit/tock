@@ -75,6 +75,15 @@ export class StateService implements AuthListener {
     return false;
   }
 
+  static intentIdExistsInApp(app: Application, intentId: string): boolean {
+    for (let j = 0; j < app.intents.length; j++) {
+      if (app.intents[j]._id === intentId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);
   }
@@ -212,6 +221,18 @@ export class StateService implements AuthListener {
       const a = this.applications[i];
       if (a._id !== this.currentApplication._id) {
         if (StateService.intentExistsInApp(a, intentName)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  intentIdExistsInOtherApplication(intentId: string): boolean {
+    for (let i = 0; i < this.applications.length; i++) {
+      const a = this.applications[i];
+      if (a._id !== this.currentApplication._id) {
+        if (StateService.intentIdExistsInApp(a, intentId)) {
           return true;
         }
       }

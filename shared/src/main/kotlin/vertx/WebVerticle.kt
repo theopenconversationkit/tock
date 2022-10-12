@@ -29,7 +29,6 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
-import ai.tock.shared.security.auth.AWSJWTAuthProvider
 import ai.tock.shared.security.auth.CASAuthProvider
 import ai.tock.shared.security.auth.GithubOAuthProvider
 import ai.tock.shared.security.auth.OAuth2Provider
@@ -61,18 +60,17 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.ErrorHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
-import mu.KLogger
-import mu.KotlinLogging
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.EnumSet
 import java.util.Locale
 import java.util.ServiceLoader
 import kotlin.LazyThreadSafetyMode.PUBLICATION
+import mu.KLogger
+import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -96,7 +94,7 @@ abstract class WebVerticle : AbstractVerticle() {
         }
 
         private val tockErrorHandler: ErrorHandler by lazy(PUBLICATION) {
-            ErrorHandler.create()
+            ErrorHandler.create(vertx)
         }
     }
 
@@ -233,7 +231,7 @@ abstract class WebVerticle : AbstractVerticle() {
         )
     }
 
-    override fun stop(stopFuture: Future<Void>?) {
+    override fun stop(stopFuture: Promise<Void>?) {
         server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
     }
 
@@ -249,7 +247,6 @@ abstract class WebVerticle : AbstractVerticle() {
             .setCookieHttpOnlyFlag(https)
             .setCookieSecureFlag(https)
             .setSessionCookieName(authProvider.sessionCookieName)
-            .setAuthProvider(authProvider)
 
         authProvider.protectPaths(this, pathsToProtect, sessionHandler)
     }
@@ -259,11 +256,11 @@ abstract class WebVerticle : AbstractVerticle() {
      */
     protected open fun defaultAuthProvider(): TockAuthProvider =
         when {
-            booleanProperty("tock_aws_jwt_enabled", false) -> AWSJWTAuthProvider(sharedVertx)
             booleanProperty("tock_github_oauth_enabled", false) -> GithubOAuthProvider(sharedVertx)
             booleanProperty("tock_oauth2_enabled", false) -> OAuth2Provider(sharedVertx)
             booleanProperty("tock_cas_auth_enabled", false) ->
                 loadCasAuthProvider(sharedVertx) ?: PropertyBasedAuthProvider
+
             else -> PropertyBasedAuthProvider
         }
 
@@ -306,7 +303,7 @@ abstract class WebVerticle : AbstractVerticle() {
             }
     }
 
-    private fun verticleProperty(propertyName: String) = "${verticleName.toLowerCase()}_$propertyName"
+    private fun verticleProperty(propertyName: String) = "${verticleName.lowercase()}_$propertyName"
 
     protected fun verticleIntProperty(propertyName: String, defaultValue: Int): Int =
         intProperty(verticleProperty(propertyName), defaultValue)
@@ -733,7 +730,10 @@ abstract class WebVerticle : AbstractVerticle() {
         if (useDefaultCorsHandler) {
             router.route().handler(
                 corsHandler(
-                    property("tock_web_use_default_cors_handler_url", defaultCorsOrigin),
+                    property(
+                        "tock_web_use_default_cors_handler_url",
+                        defaultCorsOrigin
+                    ).run { if (this == "*") emptyList() else split("|") },
                     booleanProperty("tock_web_use_default_cors_handler_with_credentials", defaultCorsWithCredentials)
                 )
             )
@@ -755,19 +755,36 @@ abstract class WebVerticle : AbstractVerticle() {
     fun corsHandler(
         origin: String = "*",
         allowCredentials: Boolean = false,
-        allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, PUT, DELETE),
+        allowedMethods: Set<HttpMethod> = setOf(GET, POST, PUT, DELETE),
         allowedHeaders: Set<String> = listOfNotNull(
             "X-Requested-With",
             "Access-Control-Allow-Origin",
             if (allowCredentials) "Authorization" else null,
             "Content-Type"
         ).toSet()
-    ): CorsHandler {
-        return CorsHandler.create(origin)
+    ): CorsHandler =
+        corsHandler(
+            if (origin == "*") emptyList() else listOf(origin),
+            allowCredentials,
+            allowedMethods,
+            allowedHeaders
+        )
+
+    fun corsHandler(
+        origins: List<String> = emptyList(),
+        allowCredentials: Boolean = false,
+        allowedMethods: Set<HttpMethod> = setOf(GET, POST, PUT, DELETE),
+        allowedHeaders: Set<String> = listOfNotNull(
+            "X-Requested-With",
+            "Access-Control-Allow-Origin",
+            if (allowCredentials) "Authorization" else null,
+            "Content-Type"
+        ).toSet()
+    ): CorsHandler =
+        (if (origins.isEmpty()) CorsHandler.create("*") else CorsHandler.create().addOrigins(origins))
             .allowedMethods(allowedMethods)
             .allowedHeaders(allowedHeaders)
             .allowCredentials(allowCredentials)
-    }
 
     protected fun bodyHandler(): BodyHandler {
         return BodyHandler.create().setBodyLimit(verticleLongProperty("body_limit", 1000000L))
@@ -811,10 +828,12 @@ abstract class WebVerticle : AbstractVerticle() {
                                 response().statusMessage = statusMessage
                                 fail(statusCode, this)
                             }
+
                             this != null -> {
                                 logger.error(this)
                                 fail(this)
                             }
+
                             else -> {
                                 logger.error { "unknown error" }
                                 fail(500)

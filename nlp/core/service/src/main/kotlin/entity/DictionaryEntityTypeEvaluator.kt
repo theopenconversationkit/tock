@@ -44,12 +44,12 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
         text: String,
         textSearch: Boolean
     ): StringValue? {
-        val textToCompare = text.toLowerCase(locale)
-        val values = predefinedValues.mapValues { l -> l.value?.map { s -> s.toLowerCase(locale) } ?: emptyList() }
+        val textToCompare = text.lowercase(locale)
+        val values = predefinedValues.mapValues { l -> l.value?.map { s -> s.lowercase(locale) } ?: emptyList() }
         if (onlyValues) {
             for (e in values) {
                 val labels = e.value
-                if (labels.any { s -> s.toLowerCase(locale) == textToCompare }) {
+                if (labels.any { s -> s.lowercase(locale) == textToCompare }) {
                     return StringValue(e.key.value)
                 }
             }

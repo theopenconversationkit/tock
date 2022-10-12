@@ -20,9 +20,9 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.auth.AbstractUser
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.auth.User
+import io.vertx.ext.auth.impl.UserImpl
 
 /**
  * Tock implementation of vertx [User].
@@ -32,17 +32,18 @@ data class TockUser(
     val namespace: String,
     val roles: Set<String>,
     val registered: Boolean = false
-) : AbstractUser() {
+) : UserImpl() {
 
-    override fun doIsPermitted(permissionOrRole: String, handler: Handler<AsyncResult<Boolean>>) {
-        handler.handle(Future.succeededFuture(roles.contains(permissionOrRole)))
+    override fun isAuthorized(authority: String, handler: Handler<AsyncResult<Boolean>>): User {
+        handler.handle(Future.succeededFuture(roles.contains(authority)))
+        return this
     }
 
     override fun setAuthProvider(authProvider: AuthProvider) {
         // do nothing
     }
 
-    override fun principal(): JsonObject {
-        return JsonObject().put("username", user)
-    }
+    override fun principal(): JsonObject = JsonObject().put("username", user)
+
+    override fun attributes(): JsonObject = JsonObject()
 }

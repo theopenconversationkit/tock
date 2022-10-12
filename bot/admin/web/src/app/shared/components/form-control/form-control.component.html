@@ -1,0 +1,25 @@
+<div
+  class="d-flex flex-column mb-3"
+  data-testid="form-control"
+>
+  <label
+    *ngIf="label"
+    [class.required]="required"
+    [for]="name"
+    data-testid="label"
+  >
+    <abbr
+      *ngIf="required"
+      title="Required"
+    >
+      *
+    </abbr>
+    {{ label }}
+  </label>
+  <ng-content></ng-content>
+  <tock-error-helper
+    *ngIf="showError"
+    class="mt-1"
+    [field]="controls"
+  ></tock-error-helper>
+</div>

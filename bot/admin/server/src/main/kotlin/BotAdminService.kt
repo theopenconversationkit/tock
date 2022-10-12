@@ -89,11 +89,11 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
-import java.time.Instant
-import java.util.Locale
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.time.Instant
+import java.util.Locale
 
 object BotAdminService {
 
@@ -307,7 +307,7 @@ object BotAdminService {
             getBotConfigurationsByNamespaceAndNlpModel(namespace, applicationName).firstOrNull()
         return if (botConf != null) {
             val story =
-                storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                     namespace = namespace,
                     botId = botConf.botId,
                     storyId = storyDefinitionId
@@ -416,6 +416,14 @@ object BotAdminService {
             ?.let {
                 loadStory(namespace, it)
             }
+    }
+
+    fun findConfiguredStoriesByBotIdAndIntent(
+        namespace: String,
+        botId: String,
+        intentNames: List<String>
+    ): List<StoryDefinitionConfiguration> {
+        return storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intentNames)
     }
 
     fun deleteStory(namespace: String, storyDefinitionId: String): Boolean {
@@ -1003,7 +1011,6 @@ object BotAdminService {
         ).forEach { story ->
             storyDefinitionDAO.delete(story)
         }
-
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {
@@ -1032,5 +1039,4 @@ object BotAdminService {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
     }
-
 }

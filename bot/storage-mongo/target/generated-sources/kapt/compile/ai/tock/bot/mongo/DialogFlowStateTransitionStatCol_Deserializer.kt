@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.time.Instant
+import java.util.Locale
+import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
 import kotlin.reflect.KFunction
@@ -34,8 +36,12 @@ internal class DialogFlowStateTransitionStatCol_Deserializer :
             var _dialogId_set : Boolean = false
             var _text_: String? = null
             var _text_set : Boolean = false
+            var _locale_: Locale? = null
+            var _locale_set : Boolean = false
             var _date_: Instant? = null
             var _date_set : Boolean = false
+            var _processedLevel_: Int? = null
+            var _processedLevel_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -66,10 +72,20 @@ internal class DialogFlowStateTransitionStatCol_Deserializer :
                              else p.text;
                             _text_set = true
                             }
+                    "locale" -> {
+                            _locale_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Locale::class.java);
+                            _locale_set = true
+                            }
                     "date" -> {
                             _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
+                            }
+                    "processedLevel" -> {
+                            _processedLevel_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
+                            _processedLevel_set = true
                             }
                     else -> {
                             if (_token_?.isStructStart == true)
@@ -80,10 +96,10 @@ internal class DialogFlowStateTransitionStatCol_Deserializer :
                 _token_ = currentToken
                         } 
             return if(_applicationId_set && _transitionId_set && _dialogId_set && _text_set &&
-                    _date_set)
+                    _locale_set && _date_set && _processedLevel_set)
                     DialogFlowStateTransitionStatCol(applicationId = _applicationId_!!, transitionId
-                            = _transitionId_!!, dialogId = _dialogId_!!, text = _text_, date =
-                            _date_!!)
+                            = _transitionId_!!, dialogId = _dialogId_!!, text = _text_, locale =
+                            _locale_, date = _date_!!, processedLevel = _processedLevel_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_applicationId_set)
@@ -94,8 +110,12 @@ internal class DialogFlowStateTransitionStatCol_Deserializer :
                     map[parameters.getValue("dialogId")] = _dialogId_
                     if(_text_set)
                     map[parameters.getValue("text")] = _text_
+                    if(_locale_set)
+                    map[parameters.getValue("locale")] = _locale_
                     if(_date_set)
-                    map[parameters.getValue("date")] = _date_ 
+                    map[parameters.getValue("date")] = _date_
+                    if(_processedLevel_set)
+                    map[parameters.getValue("processedLevel")] = _processedLevel_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -111,8 +131,10 @@ internal class DialogFlowStateTransitionStatCol_Deserializer :
                 primaryConstructor.findParameterByName("applicationId")!!, "transitionId" to
                 primaryConstructor.findParameterByName("transitionId")!!, "dialogId" to
                 primaryConstructor.findParameterByName("dialogId")!!, "text" to
-                primaryConstructor.findParameterByName("text")!!, "date" to
-                primaryConstructor.findParameterByName("date")!!) }
+                primaryConstructor.findParameterByName("text")!!, "locale" to
+                primaryConstructor.findParameterByName("locale")!!, "date" to
+                primaryConstructor.findParameterByName("date")!!, "processedLevel" to
+                primaryConstructor.findParameterByName("processedLevel")!!) }
 
         private val _applicationId__reference: TypeReference<Id<BotApplicationConfiguration>> =
                 object : TypeReference<Id<BotApplicationConfiguration>>() {}
