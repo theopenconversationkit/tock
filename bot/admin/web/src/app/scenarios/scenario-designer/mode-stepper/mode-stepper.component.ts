@@ -82,4 +82,20 @@ export class ModeStepperComponent {
         );
     }
   }
+
+  hasStepError(mode: SCENARIO_MODE): boolean {
+    switch (mode) {
+      case SCENARIO_MODE.writing:
+        return isStepValid(this.scenario, SCENARIO_MODE.casting).valid;
+      case SCENARIO_MODE.casting:
+        return isStepValid(this.scenario, SCENARIO_MODE.casting).valid && isStepValid(this.scenario, SCENARIO_MODE.production).valid;
+      case SCENARIO_MODE.production:
+      case SCENARIO_MODE.publishing:
+        return (
+          isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
+          isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
+          isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
+        );
+    }
+  }
 }

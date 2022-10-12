@@ -1,3 +1,5 @@
+@import '../../../theme/styles/utilities.scss';
+
 .grid-columns {
   display: grid;
   grid-gap: 1rem;
@@ -5,11 +7,5 @@
 }
 
 .truncate {
-  max-height: 5rem;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  display: block;
-  display: -webkit-box;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
+  @include truncate(4);
 }

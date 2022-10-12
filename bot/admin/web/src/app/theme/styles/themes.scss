@@ -48,9 +48,11 @@ $nb-themes: nb-register-theme(
     select-disabled-cursor: not-allowed,
     toggle-disabled-cursor: not-allowed,
 
+    button-ghost-basic-disabled-background-color: unset,
+    button-ghost-basic-disabled-text-color: #8f9bb354,
+
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),
-
     accordion-shadow: none
   ),
   default,
@@ -84,6 +86,9 @@ $nb-themes: nb-register-theme(
     button-disabled-cursor: not-allowed,
     select-disabled-cursor: not-allowed,
     toggle-disabled-cursor: not-allowed,
+
+    button-ghost-basic-disabled-background-color: unset,
+    button-ghost-basic-disabled-text-color: #8f9bb354,
 
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),
@@ -123,6 +128,9 @@ $nb-themes: nb-register-theme(
     select-disabled-cursor: not-allowed,
     toggle-disabled-cursor: not-allowed,
 
+    button-ghost-basic-disabled-background-color: unset,
+    button-ghost-basic-disabled-text-color: #8f9bb354,
+
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),
     accordion-shadow: none
@@ -160,6 +168,9 @@ $nb-themes: nb-register-theme(
     button-disabled-cursor: not-allowed,
     select-disabled-cursor: not-allowed,
     toggle-disabled-cursor: not-allowed,
+
+    button-ghost-basic-disabled-background-color: unset,
+    button-ghost-basic-disabled-text-color: #8f9bb354,
 
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),

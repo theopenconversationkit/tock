@@ -1,3 +1,6 @@
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
 @mixin truncate($line) {
   -webkit-line-clamp: $line;
   -webkit-box-orient: vertical;
@@ -16,8 +19,8 @@
   line-height: 0;
 }
 
-.text-muted {
-  color: #8f959b;
+.nb-theme-dark .text-muted {
+  color: nb-theme(color-basic-600) !important;
 }
 
 .valign-middle {
@@ -46,13 +49,10 @@ nb-select.appearance-outline .select-button {
   min-width: auto !important;
 }
 
-// Makes the disabled ghost button more discreet. By default, the background color makes it more visible than the non-deactivated buttons.
-.nb-theme-default [nbButton].appearance-ghost.status-basic[disabled],
-.nb-theme-default .appearance-ghost.status-basic[disabled][nbButtonToggle],
-.nb-theme-dark [nbButton].appearance-ghost.status-basic[disabled],
-.nb-theme-dark .appearance-ghost.status-basic[disabled][nbButtonToggle] {
-  background-color: unset;
-  color: #8f9bb354;
+// remove the top used by nebular to center the toggle button in the header
+.nb-theme-default .header-container .darkmode-toggle,
+.nb-theme-dark .header-container .darkmode-toggle {
+  top: 0 !important;
 }
 
 .option-list--break-word {
@@ -104,6 +104,7 @@ nb-card.selected {
 
 nb-accordion.selected {
   border-left: 0.5rem solid var(--success);
+
   nb-accordion-item {
     padding-left: 1rem;
   }
@@ -128,6 +129,10 @@ nb-accordion.selected {
   display: flex;
   flex-direction: column;
   grid-gap: 0.5rem;
+}
+
+nb-toggle > label {
+  margin: 0;
 }
 
 @media screen and (min-width: 400px) {

@@ -9,6 +9,18 @@
     (click)="switchMode(step.mode)"
     [attr.data-testid]="'step-ctrl-' + step.mode"
   >
+    <div class="error-indicator">
+      <nb-icon
+        *ngIf="hasStepError(step.mode)"
+        class="success"
+        icon="checkmark-circle-2-outline"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="!hasStepError(step.mode)"
+        class="error"
+        icon="alert-circle-outline"
+      ></nb-icon>
+    </div>
     <div class="label-index">
       <nb-icon [icon]="step.icon"></nb-icon>
     </div>

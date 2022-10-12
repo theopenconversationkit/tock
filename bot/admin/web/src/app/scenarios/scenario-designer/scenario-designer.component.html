@@ -5,15 +5,25 @@
 
   <div class="d-flex flex-wrap header-actions">
     <button
+      *ngIf="!isReadonly"
       nbButton
-      [ghost]="!isReadonly"
-      [status]="isReadonly ? 'primary' : 'basic'"
+      ghost
+      status="basic"
       size="small"
       (click)="exit()"
       data-testid="exit-button"
     >
-      <span *ngIf="!isReadonly">Cancel</span>
-      <span *ngIf="isReadonly">Exit</span>
+      Cancel
+    </button>
+    <button
+      *ngIf="isReadonly"
+      nbButton
+      status="primary"
+      size="small"
+      (click)="exit()"
+      data-testid="exit-button"
+    >
+      Exit
     </button>
     <button
       *ngIf="!isReadonly"

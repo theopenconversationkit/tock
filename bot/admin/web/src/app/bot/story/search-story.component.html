@@ -154,6 +154,12 @@
               nbTooltip="Script Story"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="row.data.isTickAnswer()"
+              class="story-type"
+              nbTooltip="Tick story"
+              icon="film-outline"
+            ></nb-icon>
 
             {{ row.data.name }}
           </span>

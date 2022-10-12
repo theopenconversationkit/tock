@@ -38,7 +38,7 @@
         />
         <span
           *ngIf="isReadonly"
-          class="text-black-50"
+          class="text-muted"
         >
           {{ name.value }}
         </span>
@@ -76,7 +76,7 @@
           ></textarea>
           <span
             *ngIf="isReadonly"
-            class="text-black-50"
+            class="text-muted"
           >
             {{ description.value }}
           </span>
@@ -208,7 +208,7 @@
         </nb-autocomplete>
         <span
           *ngIf="isReadonly"
-          class="text-black-50"
+          class="text-muted"
         >
           {{ handler.value }}
         </span>
@@ -231,7 +231,7 @@
         ></textarea>
         <span
           *ngIf="isReadonly"
-          class="text-black-50"
+          class="text-muted"
         >
           {{ answer.value }}
         </span>

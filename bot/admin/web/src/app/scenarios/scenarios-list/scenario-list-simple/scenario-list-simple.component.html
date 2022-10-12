@@ -64,14 +64,12 @@
           </nb-tag-list>
         </div>
 
-        <div>
+        <div class="d-flex align-items-center">
           <nb-toggle
-            [disabled]="!scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.current)"
+            class="mr-2"
             nbTooltip="Activate or deactivate this tick story"
+            [disabled]="!scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.current)"
           ></nb-toggle>
-        </div>
-
-        <div>
           <button
             nbButton
             ghost

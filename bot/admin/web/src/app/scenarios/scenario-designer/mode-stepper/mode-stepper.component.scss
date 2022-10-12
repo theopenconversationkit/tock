@@ -14,6 +14,8 @@
   }
 
   .step {
+    position: relative;
+
     .label-index {
       display: flex;
       justify-content: center;
@@ -49,6 +51,20 @@
       }
       .label {
         color: nb-theme(color-primary-active);
+      }
+    }
+
+    .error-indicator {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+
+      .success {
+        color: nb-theme(text-success-active-color);
+      }
+
+      .error {
+        color: nb-theme(text-danger-active-color);
       }
     }
   }
