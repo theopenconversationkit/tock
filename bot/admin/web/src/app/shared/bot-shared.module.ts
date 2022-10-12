@@ -28,7 +28,7 @@ import { BotSharedService } from './bot-shared.service';
 import { DisplayDialogComponent } from './bot-dialog/display-dialog.component';
 import { MomentModule } from 'ngx-moment';
 import { SelectBotComponent } from './select-bot/select-bot.component';
-import { PaginationComponent } from './pagination/pagination.component';
+
 import {
   NbCalendarRangeModule,
   NbCardModule,
@@ -129,4 +129,4 @@ import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from '
   providers: [BotSharedService],
   entryComponents: []
 })
-export class BotSharedModule {}
+export class BotSharedModule { }

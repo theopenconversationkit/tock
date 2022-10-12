@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@ang
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
+import { ChoiceDialogComponent } from '../../../shared/components';
 import {
   IntentDefinition,
   MachineState,

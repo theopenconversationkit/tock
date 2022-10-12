@@ -10,7 +10,7 @@ import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
 import { stringifiedCleanScenario } from '../commons/utils';
-import { ChoiceDialogComponent } from '../../shared/choice-dialog/choice-dialog.component';
+import { ChoiceDialogComponent } from '../../shared/components';
 import { Intent } from '../../model/nlp';
 import { BotService } from '../../bot/bot-service';
 import { I18nLabels } from '../../bot/model/i18n';

@@ -5,7 +5,7 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent, SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
-import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
+import { ChoiceDialogComponent } from '../../../shared/components';
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
 import {
   Scenario,

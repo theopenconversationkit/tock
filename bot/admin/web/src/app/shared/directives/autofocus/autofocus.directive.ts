@@ -1,12 +1,14 @@
-import { AfterViewInit, Directive, ElementRef } from '@angular/core';
+import { AfterContentInit, Directive, ElementRef, Input } from '@angular/core';
 
 @Directive({
   selector: '[autofocusElement]'
 })
-export class AutofocusDirective implements AfterViewInit {
+export class AutofocusDirective implements AfterContentInit {
+  @Input() autofocusElement: boolean | string = true;
+
   constructor(private host: ElementRef) {}
 
-  ngAfterViewInit(): void {
-    this.host.nativeElement.focus();
+  ngAfterContentInit(): void {
+    if (this.autofocusElement || this.autofocusElement === '') this.host.nativeElement.focus();
   }
 }

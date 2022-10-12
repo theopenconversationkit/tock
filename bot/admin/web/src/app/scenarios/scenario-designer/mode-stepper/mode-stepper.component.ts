@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { ChoiceDialogComponent } from '../../../shared/choice-dialog/choice-dialog.component';
+import { ChoiceDialogComponent } from '../../../shared/components';
 import { isStepValid } from '../../commons/scenario-validation';
 import { Scenario, SCENARIO_MODE } from '../../models';
 

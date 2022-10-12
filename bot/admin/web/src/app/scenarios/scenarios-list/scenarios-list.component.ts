@@ -12,11 +12,11 @@ import { StateService } from '../../core-nlp/state.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { ScenarioEditComponent } from '../scenario-edit/scenario-edit.component';
-import { Pagination } from '../../shared/pagination/pagination.component';
 import { OrderBy, orderBy } from '../../shared/utils';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ScenarioImportComponent } from './scenario-import/scenario-import.component';
 import { ScenarioExportComponent } from './scenario-export/scenario-export.component';
+import { Pagination } from 'src/app/shared/components';
 
 @Component({
   selector: 'scenarios-list',
