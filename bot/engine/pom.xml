@@ -28,7 +28,53 @@
     <name>Tock Bot Engine</name>
     <description>Core framework for building bots</description>
 
+    <properties>
+        <serialization.version>1.4.0-RC</serialization.version>
+        <jep.version>4.0.3</jep.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <compilerPlugins>
+                        <plugin>kotlinx-serialization</plugin>
+                    </compilerPlugins>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-serialization</artifactId>
+                        <version>${kotlin}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
+        <dependency>
+            <groupId>black.ninia</groupId>
+            <artifactId>jep</artifactId>
+            <version>${jep.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-serialization-json</artifactId>
+            <version>${serialization.version}</version>
+        </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-shared</artifactId>
@@ -44,6 +90,11 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-stt-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-dialog-manager</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

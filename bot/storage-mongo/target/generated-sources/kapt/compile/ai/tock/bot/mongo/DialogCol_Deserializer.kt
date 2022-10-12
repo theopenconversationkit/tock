@@ -1,6 +1,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.dialog.TickState
 import ai.tock.bot.engine.user.PlayerId
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
@@ -14,6 +15,7 @@ import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.MutableList
+import kotlin.collections.MutableMap
 import kotlin.collections.MutableSet
 import kotlin.collections.Set
 import kotlin.reflect.KFunction
@@ -34,6 +36,8 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
             var __id_set : Boolean = false
             var _state_: DialogCol.DialogStateMongoWrapper? = null
             var _state_set : Boolean = false
+            var _tickStates_: MutableMap<String, TickState>? = null
+            var _tickStates_set : Boolean = false
             var _stories_: MutableList<DialogCol.StoryMongoWrapper>? = null
             var _stories_set : Boolean = false
             var _applicationIds_: MutableSet<String>? = null
@@ -70,6 +74,11 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                             _state_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(DialogCol.DialogStateMongoWrapper::class.java);
                             _state_set = true
+                            }
+                    "tickStates" -> {
+                            _tickStates_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_tickStates__reference);
+                            _tickStates_set = true
                             }
                     "stories" -> {
                             _stories_ = if(_token_ == JsonToken.VALUE_NULL) null
@@ -109,13 +118,13 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                     } 
                 _token_ = currentToken
                         } 
-            return if(_playerIds_set && __id_set && _state_set && _stories_set &&
+            return if(_playerIds_set && __id_set && _state_set && _tickStates_set && _stories_set &&
                     _applicationIds_set && _lastUpdateDate_set && _groupId_set && _test_set &&
                     _namespace_set)
-                    DialogCol(playerIds = _playerIds_!!, _id = __id_!!, state = _state_!!, stories =
-                            _stories_!!, applicationIds = _applicationIds_!!, lastUpdateDate =
-                            _lastUpdateDate_!!, groupId = _groupId_, test = _test_!!, namespace =
-                            _namespace_)
+                    DialogCol(playerIds = _playerIds_!!, _id = __id_!!, state = _state_!!,
+                            tickStates = _tickStates_!!, stories = _stories_!!, applicationIds =
+                            _applicationIds_!!, lastUpdateDate = _lastUpdateDate_!!, groupId =
+                            _groupId_, test = _test_!!, namespace = _namespace_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_playerIds_set)
@@ -124,6 +133,8 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                     map[parameters.getValue("_id")] = __id_
                     if(_state_set)
                     map[parameters.getValue("state")] = _state_
+                    if(_tickStates_set)
+                    map[parameters.getValue("tickStates")] = _tickStates_
                     if(_stories_set)
                     map[parameters.getValue("stories")] = _stories_
                     if(_applicationIds_set)
@@ -149,7 +160,8 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                 kotlin.collections.mapOf("playerIds" to
                 primaryConstructor.findParameterByName("playerIds")!!, "_id" to
                 primaryConstructor.findParameterByName("_id")!!, "state" to
-                primaryConstructor.findParameterByName("state")!!, "stories" to
+                primaryConstructor.findParameterByName("state")!!, "tickStates" to
+                primaryConstructor.findParameterByName("tickStates")!!, "stories" to
                 primaryConstructor.findParameterByName("stories")!!, "applicationIds" to
                 primaryConstructor.findParameterByName("applicationIds")!!, "lastUpdateDate" to
                 primaryConstructor.findParameterByName("lastUpdateDate")!!, "groupId" to
@@ -162,6 +174,9 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
 
         private val __id__reference: TypeReference<Id<Dialog>> = object :
                 TypeReference<Id<Dialog>>() {}
+
+        private val _tickStates__reference: TypeReference<Map<String, TickState>> = object :
+                TypeReference<Map<String, TickState>>() {}
 
         private val _stories__reference: TypeReference<List<DialogCol.StoryMongoWrapper>> = object :
                 TypeReference<List<DialogCol.StoryMongoWrapper>>() {}

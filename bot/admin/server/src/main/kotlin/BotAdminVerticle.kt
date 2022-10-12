@@ -39,8 +39,9 @@ import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.I18LabelQuery
 import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
-import ai.tock.bot.admin.scenario.ScenarioVerticle
+import ai.tock.bot.admin.verticle.ScenarioVerticle
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
+import ai.tock.bot.admin.verticle.StoryVerticle
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
 import ai.tock.bot.connector.ConnectorType.Companion.rest
@@ -76,6 +77,7 @@ import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 
 /**
@@ -86,6 +88,7 @@ open class BotAdminVerticle : AdminVerticle() {
     private val botAdminConfiguration = BotAdminConfiguration()
 
     private val scenarioVerticle = ScenarioVerticle()
+    private val storyVerticle = StoryVerticle()
 
     override val logger: KLogger = KotlinLogging.logger {}
 
@@ -125,6 +128,7 @@ open class BotAdminVerticle : AdminVerticle() {
         configureServices()
 
         scenarioVerticle.configureScenario(this)
+        storyVerticle.configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
@@ -618,14 +622,6 @@ open class BotAdminVerticle : AdminVerticle() {
             )
         }
 
-        blockingJsonDelete(
-            "/bot/story/:storyId",
-            setOf(botUser, faqBotUser),
-            simpleLogger("Delete Story", { it.path("storyId") })
-        ) { context ->
-            BotAdminService.deleteStory(context.organization, context.path("storyId"))
-        }
-
         blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(
@@ -869,6 +865,13 @@ open class BotAdminVerticle : AdminVerticle() {
         findTestService().registerServices().invoke(this)
 
         configureStaticHandling()
+    }
+
+    private fun checkOrganisation(context: RoutingContext, applicationId: Id<ApplicationDefinition>) {
+        val applicationDefinition = front.getApplicationById(applicationId)
+        if(context.organization != applicationDefinition?.namespace) {
+            unauthorized()
+        }
     }
 
     override fun deleteApplication(app: ApplicationDefinition) {

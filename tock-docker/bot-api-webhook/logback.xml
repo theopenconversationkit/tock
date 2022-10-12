@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true">
+
+    <variable name="tock_default_log_level" value="${tock_default_log_level:-warn}" />
+    <variable name="tock_service_log_level" value="${tock_service_log_level:-info}" />
+    <variable name="tock_database_log_level" value="${tock_database_log_level:-warn}" />
+
+    <logger name="ai.tock" level="${tock_service_log_level}" />
+<!--    <logger name="ai.tock.bot.api" level="debug" />-->
+
+    <logger name="org.mongodb" level="${tock_database_log_level}" />
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d %-5level [%thread] %logger{1}: %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="${tock_default_log_level}">
+        <appender-ref ref="console" />
+    </root>
+
+</configuration>

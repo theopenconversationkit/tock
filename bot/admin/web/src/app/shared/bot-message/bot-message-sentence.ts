@@ -22,6 +22,7 @@ import { BotMessage, Sentence } from '../model/dialog-data';
   template: ` <div
       *ngIf="sentence.text"
       class="text"
+      [ngStyle]="sentence.text.startsWith('[DEBUG]') && { 'color': 'gray' }"
     >
       <img
         *ngIf="sentence.userInterface"

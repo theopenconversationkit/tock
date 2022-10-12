@@ -16,8 +16,9 @@
 
 package ai.tock.shared.exception.rest
 
+import io.netty.handler.codec.http.HttpResponseStatus
+
 /**
  * Http 401 exception.
  */
-class UnauthorizedException(message: String? = null, statusMessage: String = "Unauthorized") :
-    RestException(message, statusMessage, 401)
+class UnauthorizedException : RestException(httpResponseStatus = HttpResponseStatus.UNAUTHORIZED)

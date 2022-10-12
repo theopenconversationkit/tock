@@ -17,6 +17,7 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.answer.AnswerConfiguration
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
@@ -24,6 +25,7 @@ import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
@@ -48,6 +50,7 @@ import ai.tock.bot.admin.model.DialogFlowRequest
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.StorySearchRequest
+import ai.tock.bot.bean.TickStory
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
@@ -61,6 +64,7 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
+import ai.tock.bot.bean.TickStoryValidation
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
@@ -84,16 +88,18 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
+import ai.tock.shared.withoutNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
+import com.mongodb.MongoWriteException
+import java.time.Instant
+import java.util.Locale
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.time.Instant
-import java.util.Locale
 
 object BotAdminService {
 
@@ -418,31 +424,11 @@ object BotAdminService {
             }
     }
 
-    fun findConfiguredStoriesByBotIdAndIntent(
-        namespace: String,
-        botId: String,
-        intentNames: List<String>
-    ): List<StoryDefinitionConfiguration> {
-        return storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intentNames)
-    }
-
-    fun deleteStory(namespace: String, storyDefinitionId: String): Boolean {
-        val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
-        if (story != null) {
-            val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
-            if (botConf != null) {
-                storyDefinitionDAO.delete(story)
-            }
-        }
-        return false
-    }
-
     fun createStory(
         namespace: String,
         request: CreateStoryRequest,
         user: UserLogin
     ): IntentDefinition? {
-
         val botConf =
             getBotConfigurationsByNamespaceAndBotId(namespace, request.story.botId).firstOrNull()
         return if (botConf != null) {

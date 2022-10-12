@@ -18,7 +18,8 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.scenario.ScenarioDAO
+import ai.tock.bot.admin.scenario.ScenarioGroupDAO
+import ai.tock.bot.admin.scenario.ScenarioVersionDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.test.TestPlanDAO
 import ai.tock.bot.admin.user.UserReportDAO
@@ -38,6 +39,8 @@ import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 import com.mongodb.client.MongoDatabase
 import org.litote.kmongo.getCollection
+import scenario.ScenarioGroupMongoDAO
+import scenario.ScenarioVersionMongoDAO
 
 const val MONGO_DATABASE: String = TOCK_BOT_DATABASE
 
@@ -59,5 +62,6 @@ val botMongoModule = Kodein.Module {
     bind<FeatureCache>() with singleton { MongoFeatureCache() }
     bind<FeatureDAO>() with singleton { FeatureMongoDAO(instance(), MongoBotConfiguration.database.getCollection()) }
     bind<DialogFlowDAO>() with provider { DialogFlowMongoDAO }
-    bind<ScenarioDAO>() with provider { ScenarioMongoDAO }
+    bind<ScenarioGroupDAO>() with provider { ScenarioGroupMongoDAO }
+    bind<ScenarioVersionDAO>() with provider { ScenarioVersionMongoDAO }
 }

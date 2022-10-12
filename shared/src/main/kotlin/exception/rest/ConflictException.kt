@@ -16,8 +16,14 @@
 
 package ai.tock.shared.exception.rest
 
+import ai.tock.shared.exception.error.ErrorMessageWrapper
+import io.netty.handler.codec.http.HttpResponseStatus
+
 /**
  * Http 409 exception.
  */
-class ConflictException(message: String, statusMessage: String = "Conflict") :
-    RestException(message, statusMessage, 409)
+class ConflictException(httpResponseBody: ErrorMessageWrapper)
+    : RestException(httpResponseBody, HttpResponseStatus.BAD_REQUEST) {
+    constructor(message: String) : this(ErrorMessageWrapper(message))
+}
+

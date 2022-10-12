@@ -31,4 +31,5 @@ fun startAdminServer(vararg modules: Kodein.Module) {
     FrontIoc.setup(BotIoc.coreModules + modules.toList())
     // deploy verticle
     vertx.deployVerticle(BotAdminVerticle())
+    vertx.deployVerticle(BotAdminVerticle())
 }

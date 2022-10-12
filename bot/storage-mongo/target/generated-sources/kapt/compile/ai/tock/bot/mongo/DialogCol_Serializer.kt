@@ -33,6 +33,18 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         gen.writeFieldName("state")
         val _state_ = value.state
         serializers.defaultSerializeValue(_state_, gen)
+        gen.writeFieldName("tickStates")
+        val _tickStates_ = value.tickStates
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java),
+                serializers.config.typeFactory.constructType(ai.tock.bot.engine.dialog.TickState::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_tickStates_, gen, serializers)
         gen.writeFieldName("stories")
         val _stories_ = value.stories
         serializers.findTypedValueSerializer(

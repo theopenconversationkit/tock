@@ -150,7 +150,6 @@ export interface TickStory {
   botId: string;
   storyId: string;
   description: string;
-  sagaId: string;
   mainIntent: string;
   primaryIntents: string[];
   secondaryIntents: string[];

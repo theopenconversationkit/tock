@@ -1,6 +1,7 @@
 package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.dialog.TickState
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerId_Col
 import java.time.Instant
@@ -16,6 +17,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
+import org.litote.kmongo.property.KMapSimplePropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 private val __PlayerIds: KProperty1<DialogCol, Set<PlayerId>?>
@@ -24,6 +26,8 @@ private val ___id: KProperty1<DialogCol, Id<Dialog>?>
     get() = DialogCol::_id
 private val __State: KProperty1<DialogCol, DialogCol.DialogStateMongoWrapper?>
     get() = DialogCol::state
+private val __TickStates: KProperty1<DialogCol, Map<String, TickState>?>
+    get() = DialogCol::tickStates
 private val __Stories: KProperty1<DialogCol, List<DialogCol.StoryMongoWrapper>?>
     get() = DialogCol::stories
 private val __ApplicationIds: KProperty1<DialogCol, Set<String>?>
@@ -46,6 +50,9 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
         get() = KPropertyPath(this,__State)
+
+    val tickStates: KMapSimplePropertyPath<T, String?, TickState?>
+        get() = KMapSimplePropertyPath(this,DialogCol::tickStates)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
@@ -72,6 +79,8 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
             get() = ___id
         val State: KProperty1<DialogCol, DialogCol.DialogStateMongoWrapper?>
             get() = __State
+        val TickStates: KMapSimplePropertyPath<DialogCol, String?, TickState?>
+            get() = KMapSimplePropertyPath(null, __TickStates)
         val Stories: StoryMongoWrapper_Col<DialogCol>
             get() = StoryMongoWrapper_Col(null,__Stories)
         val ApplicationIds: KCollectionSimplePropertyPath<DialogCol, String?>
@@ -97,6 +106,9 @@ internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPrope
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
         get() = KPropertyPath(this,__State)
+
+    val tickStates: KMapSimplePropertyPath<T, String?, TickState?>
+        get() = KMapSimplePropertyPath(this,DialogCol::tickStates)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
@@ -130,6 +142,9 @@ internal class DialogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPr
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
         get() = KPropertyPath(this,__State)
+
+    val tickStates: KMapSimplePropertyPath<T, String?, TickState?>
+        get() = KMapSimplePropertyPath(this,DialogCol::tickStates)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)

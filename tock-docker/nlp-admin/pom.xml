@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ This file is part of the tock-docker distribution.
+  ~ (https://github.com/theopenconversationkit/tock-docker)
+  ~ Copyright (c) 2017 VSCT.
+  ~
+  ~ tock-corenlp is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as
+  ~ published by the Free Software Foundation, version 3.
+  ~
+  ~ tock-corenlp is distributed in the hope that it will be useful, but
+  ~ WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see <http://www.gnu.org/licenses />.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ai.tock</groupId>
+        <artifactId>tock-docker</artifactId>
+        <version>22.3.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>tock-docker-nlp-admin</artifactId>
+    <packaging>pom</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-admin-web</artifactId>
+            <type>zip</type>
+            <classifier>web</classifier>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-api-doc</artifactId>
+            <type>zip</type>
+            <classifier>web</classifier>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-admin-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-model-stanford</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-nlp-model-rasa</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>tock/nlp_admin:${project.version}</name>
+                            <build>
+                                <from>openjdk:18</from>
+                                <assembly>
+                                    <inline>
+                                        <dependencySets>
+                                            <dependencySet>
+                                                <outputDirectory>.</outputDirectory>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <scope>runtime</scope>
+                                                <unpack>false</unpack>
+                                                <excludes>
+                                                    <exclude>*:web</exclude>
+                                                    <exclude>*:sources</exclude>
+                                                </excludes>
+                                            </dependencySet>
+                                            <dependencySet>
+                                                <outputDirectory>.</outputDirectory>
+                                                <useProjectArtifact>false</useProjectArtifact>
+                                                <scope>runtime</scope>
+                                                <unpack>true</unpack>
+                                                <includes>
+                                                    <include>*:web</include>
+                                                </includes>
+                                            </dependencySet>
+                                        </dependencySets>
+                                        <files>
+                                            <file>
+                                                <source>logback.xml</source>
+                                                <outputDirectory>.</outputDirectory>
+                                            </file>
+                                        </files>
+                                    </inline>
+                                </assembly>
+                                <cmd>
+                                    <shell>java $JAVA_ARGS -Dfile.encoding=UTF-8 -Dtock_nlp_model_refresh_rate=10 -Dlogback.configurationFile='file:///maven/logback.xml' -cp '/maven/*' ai.tock.nlp.admin.StartAdminServerKt</shell>
+                                </cmd>
+                                <tags>
+                                    <tag>${major}</tag>
+                                    <tag>${latest}</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                            </build>
+                            <run>
+                                <ports>
+                                    <port>8080:8080</port>
+                                </ports>
+                                <log>
+                                    <prefix>nlp_admin</prefix>
+                                    <color>yellow</color>
+                                </log>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

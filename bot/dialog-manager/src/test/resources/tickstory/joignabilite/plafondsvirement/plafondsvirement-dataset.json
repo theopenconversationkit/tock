@@ -1,0 +1,210 @@
+[
+  {
+    "id": "1er Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {}
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Désolé, le service n'est actuellement pas disponible sur l'application, je vais vous mettre en relation avec un conseiller qui pourra traiter votre demande]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "2eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {
+          "destination": "France",
+          "montant": "4000"
+      }
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Vous ne pouvez modifier vos plafonds dans l'app je vais vous mettre en relation avec un conseiller pour traiter votre demande]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "3eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {}
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Désolé, le service n'est actuellement pas disponible sur l'application, je vais vous mettre en relation avec un conseiller qui pourra traiter votre demande]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "4eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {
+        "destination": "France",
+        "montant": "3000"
+      }
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Vous pouvez modifier vos plafonds dans l'app]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "5eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {}
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Désolé, le service n'est actuellement pas disponible sur l'application, je vais vous mettre en relation avec un conseiller qui pourra traiter votre demande]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "6eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {}
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "End message [ID : app_tick_Quel est le montant du virement que vous souhaitez effectuer ?]"
+        ],
+        [
+          "End message [ID : app_tick_C'est un virement pour la France ou l'étranger ?]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "7eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_preciser_destination",
+      "entities": {
+        "destination": "France"
+      }
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "End message [ID : app_tick_Quel est le montant du virement que vous souhaitez effectuer ?]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "8eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_preciser_montant",
+      "entities": {
+        "montant": "4000"
+      }
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Vous ne pouvez modifier vos plafonds dans l'app je vais vous mettre en relation avec un conseiller pour traiter votre demande]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "9eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {}
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Désolé, le service n'est actuellement pas disponible sur l'application, je vais vous mettre en relation avec un conseiller qui pourra traiter votre demande]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "10eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_probleme_virement",
+      "entities": {}
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "End message [ID : app_tick_Quel est le montant du virement que vous souhaitez effectuer ?]"
+        ],
+        [
+          "End message [ID : app_tick_C'est un virement pour la France ou l'étranger ?]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "11eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_preciser_montant",
+      "entities": {
+        "montant": "100"
+      }
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "End message [ID : app_tick_C'est un virement pour la France ou l'étranger ?]"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "12eme Cas",
+    "enabled": true,
+    "message": {
+      "intent": "i_preciser_destination",
+      "entities": {
+        "destination": "etranger"
+      }
+    },
+    "dialogManagerResponse": {
+      "responses" : [
+        [
+          "Send message [ID : app_tick_Vous pouvez modifier vos plafonds dans l'app]",
+          "End message [ID : app_tick_Fin de la Story, clean les contextes]"
+        ]
+      ]
+    }
+  }
+]

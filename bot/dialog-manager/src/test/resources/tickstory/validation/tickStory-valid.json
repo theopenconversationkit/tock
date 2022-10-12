@@ -1,0 +1,215 @@
+{
+  "name": "JoignabilitePlafondsVirement",
+  "botId": "new_assistant",
+  "storyId": "JoignabilitePlafondsVirement",
+  "description": "description",
+  "mainIntent": "i_probleme_virement",
+  "primaryIntents": [],
+  "secondaryIntents": [ "i_preciser_montant", "i_preciser_destination", "farewell", "greetings"],
+  "actions" : [
+    {
+      "name": "INTRODUCTION",
+      "description": "desc",
+      "handler": null,
+      "answerId": "app_tick_Salut je suis Max 🤖, un robot à 28 de Q.I., ce qui est plutôt élevé pour mon espèce. Je peux t'aider à faire ton virement.",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": false
+    },
+    {
+      "name": "HELLO",
+      "description": "desc",
+      "handler": null,
+      "answerId": "app_tick_Bien le bonjour à toi aussi !",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": false
+    },
+    {
+      "name": "BYE",
+      "description": "desc",
+      "handler": null,
+      "answerId": "app_tick_Au revoir, à la prochaine !",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": true
+    },
+    {
+      "name": "S_CHECK_SERVICE_AVAILABLE",
+      "description": "desc",
+      "handler": "s_check_service_available",
+      "answerId": null,
+      "inputContextNames": [],
+      "outputContextNames": [ "SERVICE_AVAILABLE", "SERVICE_UNAVAILABLE" ],
+      "final": false
+    },
+    {
+      "name": "S_ASK_TRANSFER_AMOUNT",
+      "description": "desc",
+      "handler": null,
+      "answerId": "app_tick_Quel est le montant du virement que vous souhaitez effectuer ?",
+      "inputContextNames": [ "SERVICE_AVAILABLE" ],
+      "outputContextNames": [ "MONTANT_VIREMENT" ],
+      "final": false
+    },
+    {
+      "name": "S_ASK_TRANSFER_DESTINATION",
+      "description": "desc",
+      "handler": null,
+      "answerId": "app_tick_C'est un virement pour la France ou l'étranger ?",
+      "inputContextNames": [ "SERVICE_AVAILABLE" ],
+      "outputContextNames": [ "DESTINATION_VIREMENT" ],
+      "final": false
+    },
+    {
+      "name": "S_CHECK_TRANSFER",
+      "description": "desc",
+      "handler": "s_check_transfer",
+      "answerId": null,
+      "inputContextNames": [ "MONTANT_VIREMENT", "DESTINATION_VIREMENT" ],
+      "outputContextNames": [ "LIMIT_EXCEDED", "CAN_CHANGE_LIMIT", "CANNOT_CHANGE_LIMIT" ],
+      "final": false
+    },
+    {
+      "name": "S_SERVICE_UNAVAILABLE_REDIRECT",
+      "description": "desc",
+      "handler": "s_service_unavailable_redirect",
+      "answerId": "app_tick_Désolé, le service n'est actuellement pas disponible sur l'application, je vais vous mettre en relation avec un conseiller qui pourra traiter votre demande",
+      "inputContextNames": [ "SERVICE_UNAVAILABLE" ],
+      "outputContextNames": [ "RESOLVE_LIMIT_DONE" ],
+      "final": false
+    },
+    {
+      "name": "S_SHOW_MSG_CAN_CHANGE_LIMIT",
+      "description": "desc",
+      "handler": "s_service_unavailable_redirect",
+      "answerId": "app_tick_Vous pouvez modifier vos plafonds dans l'app",
+      "inputContextNames": [ "LIMIT_EXCEDED", "CAN_CHANGE_LIMIT" ],
+      "outputContextNames": [ "RESOLVE_LIMIT_DONE" ],
+      "final": false
+    },
+    {
+      "name": "S_SHOW_MSG_CANNOT_CHANGE_LIMIT",
+      "description": "desc",
+      "handler": "s_service_unavailable_redirect",
+      "answerId": "app_tick_Vous ne pouvez modifier vos plafonds dans l'app je vais vous mettre en relation avec un conseiller pour traiter votre demande",
+      "inputContextNames": [ "LIMIT_EXCEDED", "CANNOT_CHANGE_LIMIT" ],
+      "outputContextNames": [ "RESOLVE_LIMIT_DONE" ],
+      "final": false
+    },
+    {
+      "name": "S_RESOLVE_LIMIT",
+      "description": "desc",
+      "handler": null,
+      "answerId": "app_tick_Fin de la Story, clean les contextes",
+      "inputContextNames": [ "RESOLVE_LIMIT_DONE" ],
+      "outputContextNames": [],
+      "final": true
+    }
+  ],
+  "contexts": [
+    {
+      "name": "MONTANT_VIREMENT",
+      "entityType": "app:montant",
+      "entityRole": "montant"
+    },
+    {
+      "name": "DESTINATION_VIREMENT",
+      "entityType": "app:destination",
+      "entityRole": "destination"
+    },
+    {
+      "name": "LIMIT_EXCEDED"
+    },
+    {
+      "name": "SERVICE_AVAILABLE"
+    },
+    {
+      "name": "SERVICE_UNAVAILABLE"
+    },
+    {
+      "name": "CAN_CHANGE_LIMIT"
+    },
+    {
+      "name": "CANNOT_CHANGE_LIMIT"
+    },
+    {
+      "name": "RESOLVE_LIMIT_DONE"
+    }
+  ],
+  "stateMachine": {
+    "id": "root",
+    "type": "parallel",
+    "states": {
+      "Global": {
+        "id": "Global",
+        "states": {
+          "hello": {
+            "id": "HELLO",
+            "states": {}
+          },
+          "bye": {
+            "id": "BYE",
+            "states": {}
+          },
+          "introduction": {
+            "id": "INTRODUCTION",
+            "states": {}
+          },
+          "S_TRANSFER_MANAGEMENT": {
+            "id": "S_TRANSFER_MANAGEMENT",
+            "states": {
+              "S_ASK_TRANSFER_AMOUNT": {
+                "id": "S_ASK_TRANSFER_AMOUNT",
+                "states": {},
+                "on": {}
+              },
+              "S_ASK_TRANSFER_DESTINATION": {
+                "id": "S_ASK_TRANSFER_DESTINATION",
+                "states": {},
+                "on": {}
+              },
+              "S_CHECK_TRANSFER": {
+                "id": "S_CHECK_TRANSFER",
+                "states": {}
+              },
+              "S_CHECK_SERVICE_AVAILABLE": {
+                "id": "S_CHECK_SERVICE_AVAILABLE",
+                "states": {}
+              },
+              "S_SERVICE_UNAVAILABLE_REDIRECT": {
+                "id": "S_SERVICE_UNAVAILABLE_REDIRECT",
+                "states": {}
+              },
+              "S_SHOW_MSG_CAN_CHANGE_LIMIT": {
+                "id": "S_SHOW_MSG_CAN_CHANGE_LIMIT",
+                "states": {}
+              },
+              "S_SHOW_MSG_CANNOT_CHANGE_LIMIT": {
+                "id": "S_SHOW_MSG_CANNOT_CHANGE_LIMIT",
+                "states": {}
+              },
+              "S_RESOLVE_LIMIT": {
+                "id": "S_RESOLVE_LIMIT",
+                "states": {}
+              }
+            },
+            "initial": "S_RESOLVE_LIMIT",
+            "on": {
+              "i_preciser_montant": "#S_RESOLVE_LIMIT",
+              "i_preciser_destination": "#S_RESOLVE_LIMIT"
+            }
+          }
+        },
+        "initial": "INTRODUCTION",
+        "on": {
+          "i_probleme_virement": "#S_TRANSFER_MANAGEMENT",
+          "greetings": "#HELLO",
+          "farewell": "#BYE"
+        }
+      }
+    },
+    "initial": "Global",
+    "on": {}
+  }
+}

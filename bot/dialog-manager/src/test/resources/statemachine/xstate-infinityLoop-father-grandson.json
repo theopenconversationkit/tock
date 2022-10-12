@@ -1,0 +1,57 @@
+{
+  "id": "root",
+  "type": "parallel",
+  "states": {
+    "Global": {
+      "id": "Global",
+      "states": {
+        "INTRODUCTION": {
+          "id": "INTRODUCTION",
+          "states": {}
+        },
+        "S_BOOK_MEETING": {
+          "id": "S_BOOK_MEETING",
+          "states": {
+            "root": {
+              "id": "root",
+              "states": {}
+            },
+            "S_SHOW_PROCEDURE_BOOK_MEETING": {
+              "id": "S_SHOW_PROCEDURE_BOOK_MEETING",
+              "states": {}
+            },
+            "S_SHOW_PROCEDURE_BOOK_MEETING_2": {
+              "id": "S_SHOW_PROCEDURE_BOOK_MEETING_3",
+              "states": {}
+            }
+          },
+          "initial": "S_SHOW_PROCEDURE_BOOK_MEETING",
+          "on": {
+            "i_book_physical_or_tel" : "#S_SHOW_PROCEDURE_BOOK_MEETING"
+          }
+        },
+        "S_BOOK_MEETING_2": {
+          "id": "S_BOOK_MEETING_2",
+          "states": {
+            "S_ASK_CHANNEL_2": {
+              "id": "S_ASK_CHANNEL_2",
+              "states": {}
+            }
+          },
+          "initial": "S_ASK_CHANNEL_2",
+          "on": {
+            "i_book_physical_or_tel_3" : "#S_SHOW_PROCEDURE_BOOK_MEETING_3",
+            "i_book_physical_or_tel_2" : "#S_SHOW_PROCEDURE_BOOK_MEETING"
+          }
+        }
+      },
+      "initial": "INTRODUCTION",
+      "on": {
+        "i_ask_book_visio": "#S_BOOK_MEETING",
+        "i_book_physical_or_tel_2" : "#S_ASK_CHANNEL"
+      }
+    }
+  },
+  "initial": "Global",
+  "on": {}
+}
