@@ -424,6 +424,14 @@ object BotAdminService {
             }
     }
 
+    fun findConfiguredStoriesByBotIdAndIntent(
+        namespace: String,
+        botId: String,
+        intentNames: List<String>
+    ): List<StoryDefinitionConfiguration> {
+        return storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intentNames)
+    }
+
     fun createStory(
         namespace: String,
         request: CreateStoryRequest,

@@ -69,7 +69,7 @@ class StoryServiceImpl: StoryService {
     }
 
     override fun deleteStoryByStoryId(namespace: String, botId: String, storyId: String): Boolean {
-        val story = storyDefinitionDAO.getStoryDefinitionsByNamespaceBotIdStoryId(namespace, botId, storyId)
+        val story = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId, storyId)
         if (story != null) {
             val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
             if (botConf != null) {

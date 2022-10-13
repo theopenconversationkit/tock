@@ -18,7 +18,7 @@ import { NEVER, Observable, of, throwError as observableThrowError } from 'rxjs'
 
 import { catchError, map } from 'rxjs/operators';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -184,7 +184,7 @@ export class RestService {
     console.log(error);
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
-    if (e instanceof Response) {
+    if (e instanceof Response || e instanceof HttpErrorResponse) {
       console.log('error instance of Response');
       if (e.status === 403 || e.status === 401) {
         rest.router.navigateByUrl('/login');

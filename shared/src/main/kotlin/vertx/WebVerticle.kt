@@ -19,8 +19,6 @@ package ai.tock.shared.vertx
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
-import ai.tock.shared.exception.error.ErrorMessage
-import ai.tock.shared.exception.error.ErrorMessageWrapper
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.exception.rest.NotFoundException
 import ai.tock.shared.exception.rest.RestException
@@ -679,7 +677,7 @@ abstract class WebVerticle : AbstractVerticle() {
         blockingJsonDelete(path, setOf(role), logger, basePath, handler)
     }
 
-    protected fun blockingJsonDelete(
+    fun blockingJsonDelete(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,

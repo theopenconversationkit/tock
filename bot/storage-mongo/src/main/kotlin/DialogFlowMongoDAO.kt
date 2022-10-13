@@ -162,19 +162,26 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatDateAggregationCol>("flow_transition_stats_date")
             .apply {
                 try {
-                    ensureIndex(
-                        ApplicationId,
-                        Date,
-                        Intent,
-                        StoryDefinitionId,
-                        StoryCategory,
-                        StoryType,
-                        Locale,
-                        ConfigurationName,
-                        ConnectorType,
-                        ActionType,
-                        HourOfDay,
-                    )
+                    // TODO MASS
+                    // 2022-10-13T11:16:32.878 [main] ERROR ai.tock.bot.mongo.DialogFlowMongoDAO - Command failed with error 67 (CannotCreateIndex):
+                    // 'namespace name generated from index name "tock_bot.flow_transition_stats_date.$applicationId_1_date_1_intent_1_storyDefinitionId_1_storyCategory_1_storyType_1_locale_1_configurationName_1_connectorType_1_actionType_1_hourOfDay_1"
+                    // is too long (127 byte max)' on server mongo:27017. The full response is {"operationTime": {"$timestamp": {"t": 1665652592, "i": 7}}, "ok": 0.0, "errmsg":
+                    // "namespace name generated from index name \"tock_bot.flow_transition_stats_date.$applicationId_1_date_1_intent_1_storyDefinitionId_1_storyCategory_1_storyType_1_locale_1_configurationName_1_connectorType_1_actionType_1_hourOfDay_1\"
+                    // is too long (127 byte max)", "code": 67, "codeName": "CannotCreateIndex", "$clusterTime": {"clusterTime": {"$timestamp": {"t": 1665652592, "i": 7}},
+                    // "signature": {"hash": {"$binary": {"base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "subType": "00"}}, "keyId": 0}}}
+//                    ensureIndex(
+//                        ApplicationId,
+//                        Date,
+//                        Intent,
+//                        StoryDefinitionId,
+//                        StoryCategory,
+//                        StoryType,
+//                        Locale,
+//                        ConfigurationName,
+//                        ConnectorType,
+//                        ActionType,
+//                        HourOfDay,
+//                    )
                 } catch (e: Exception) {
                     logger.error(e)
                 }

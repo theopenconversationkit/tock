@@ -13,34 +13,34 @@ import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
 import { getScenarioActions, getScenarioIntents } from '../../commons/utils';
 import {
-  Scenario,
-  ScenarioItem,
-  SCENARIO_ITEM_FROM_BOT,
-  SCENARIO_ITEM_FROM_CLIENT,
-  TempSentence,
-  DependencyUpdateJob,
-  SCENARIO_STATE,
-  TickStory
+Scenario,
+ScenarioItem,
+SCENARIO_ITEM_FROM_BOT,
+SCENARIO_ITEM_FROM_CLIENT,
+TempSentence,
+DependencyUpdateJob,
+SCENARIO_STATE,
+TickStory
 } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 
 @Component({
-  selector: 'scenario-publishing',
-  templateUrl: './scenario-publishing.component.html',
-  styleUrls: ['./scenario-publishing.component.scss']
+selector: 'scenario-publishing',
+templateUrl: './scenario-publishing.component.html',
+styleUrls: ['./scenario-publishing.component.scss']
 })
 export class ScenarioPublishingComponent implements OnInit, OnDestroy {
-  @Input() scenario: Scenario;
-  @Input() isReadonly: boolean;
+@Input() scenario: Scenario;
+@Input() isReadonly: boolean;
 
-  destroy = new Subject();
-  i18n: I18nLabels;
+destroy = new Subject();
+i18n: I18nLabels;
 
-  readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
-  readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
+readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
+readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
-  constructor(
+constructor(
     public state: StateService,
     private nlp: NlpService,
     private scenarioDesignerService: ScenarioDesignerService,
@@ -252,8 +252,8 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
           intentTask.data.intentDefinition.description,
           intentTask.data.intentDefinition.category
         )
-      )
-      .subscribe(
+)
+.subscribe(
         (intent) => {
           intentTask.data.intentDefinition.intentId = intent._id;
           this.state.addIntent(intent);
