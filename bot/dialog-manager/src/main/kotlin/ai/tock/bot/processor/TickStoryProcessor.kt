@@ -133,7 +133,8 @@ class TickStoryProcessor(
         logger.info { "1 - $objectivesStack" }
 
         val primaryObjective: String = if(tickUserAction != null) {
-            updateContexts(tickUserAction.entities)
+            updateContexts(tickUserAction)
+
             // Call to state machine to get the next state
             val objectiveTemp = getStateMachineNextState(tickUserAction).checkNotCurrentStateObjectif()
             objectivesStack.pushIfNotOnTop(objectiveTemp)
@@ -218,16 +219,41 @@ class TickStoryProcessor(
     }
 
     /**
+     * update contexts with [TickUserAction] data
+     */
+    private fun updateContexts(tickUserAction: TickUserAction){
+        updateContextsByEntities(tickUserAction.entities)
+        updateContextsByIntent(tickUserAction.intentName)
+    }
+
+    /**
      * Update contexts with entities value
      */
-    private fun updateContexts(entities: Map<String, String?>) {
+    private fun updateContextsByEntities(entities: Map<String, String?>) {
         configuration.contexts
-                .filter { it.entityRole != null }
-                .forEach {
-                    if(entities.contains(it.entityRole))
-                        contextNames[it.name] = entities[it.entityRole]
-                }
+            .filter { it.entityRole != null }
+            .forEach {
+                if(entities.contains(it.entityRole))
+                    contextNames[it.name] = entities[it.entityRole]
+            }
     }
+
+    /**
+     * Update contexts by intent
+     */
+    private fun updateContextsByIntent(intentName: String) {
+        contextNames.putAll(configuration
+            .intentsContexts
+            .firstOrNull { it.intentName == intentName }
+            ?.associations
+            ?.firstOrNull { it.actionName == ranHandlers.last() }
+            ?.contextNames
+            ?.associate { it to null }
+            ?: emptyMap()
+        )
+    }
+
+
 
     /**
      * Returns the tick action corresponding to the name,

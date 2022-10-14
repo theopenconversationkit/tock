@@ -34,6 +34,7 @@ data class TickStory(
     val secondaryIntents: Set<String>,
     val contexts: Set<TickContext>,
     val actions: Set<TickAction>,
+    val intentsContexts: Set<TickIntent> = emptySet(),
     val debug: Boolean = false
 )
 

@@ -217,4 +217,64 @@ class TickStoryValidationTest : DialogManagerTest() {
             assertTrue { errors.containsAll(expectedErrors) }
         }
     }
+
+    @Nested inner class ConsistencyOfTickIntent {
+        @Test
+        fun validTickIntentNames() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-valid-tick-intent-names")
+            val errors = TickStoryValidation.validateTickIntentNames(tickStory)
+
+            assertTrue { errors.isEmpty() }
+        }
+
+        @Test fun invalidTickIntentNames() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-tick-intent-names")
+            val errors = TickStoryValidation.validateTickIntentNames(tickStory)
+
+            val expectedErrors = setOf(
+                "Intent primaryIntents_1 is not secondary, it cannot be associated to contexts",
+                "Intent secondaryIntents_3 is not secondary, it cannot be associated to contexts")
+
+            assertEquals(expectedErrors.size, errors.size)
+            assertTrue { errors.containsAll(expectedErrors) }
+        }
+
+        @Test fun validTickIntentAssociationContexts() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-valid-tick-intent-contexts")
+            val errors = TickStoryValidation.validateTickIntentAssociationContexts(tickStory)
+
+            assertTrue { errors.isEmpty() }
+        }
+
+        @Test fun invalidTickIntentAssociationContexts() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-tick-intent-contexts")
+            val errors = TickStoryValidation.validateTickIntentAssociationContexts(tickStory)
+
+            val expectedErrors = setOf(
+                "Intent association context CONTEXT_3 not found in declared contexts",
+            )
+
+            assertEquals(expectedErrors.size, errors.size)
+            assertTrue { errors.containsAll(expectedErrors) }
+        }
+
+        @Test fun validTickIntentAssociationActions() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-valid-tick-intent-actions")
+            val errors = TickStoryValidation.validateTickIntentAssociationActions(tickStory)
+
+            assertTrue { errors.isEmpty() }
+        }
+
+        @Test fun invalidTickIntentAssociationActions() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-tick-intent-actions")
+            val errors = TickStoryValidation.validateTickIntentAssociationActions(tickStory)
+
+            val expectedErrors = setOf(
+                "Intent association action ACTION_20 not found in declared actions",
+            )
+
+            assertEquals(expectedErrors.size, errors.size)
+            assertTrue { errors.containsAll(expectedErrors) }
+        }
+    }
 }

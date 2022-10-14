@@ -69,6 +69,7 @@ class TickStoryExecutorTest {
                     stateMachine = tickStory.stateMachine,
                     contexts = tickStory.contexts,
                     actions = tickStory.actions,
+                    intentsContexts = tickStory.intentsContexts,
                     debug = false
                 ),
                 sender

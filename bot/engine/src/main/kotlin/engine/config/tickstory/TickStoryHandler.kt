@@ -49,7 +49,9 @@ object TickStoryHandler {
                     configuration.toTickConfiguration(),
                     TickSenderBotBus(botBus)
                 ).process(
-                    TickUserAction(intentName, parseEntities(entities, tickSession.init))
+                    TickUserAction(
+                        intentName,
+                        parseEntities(entities, tickSession.init))
                 )
 
             // Manage tick state
