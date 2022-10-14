@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.exception.rest
+package ai.tock.bot.bean
 
-import ai.tock.shared.exception.error.ErrorMessage
-import ai.tock.shared.exception.error.ErrorMessageWrapper
-import io.netty.handler.codec.http.HttpResponseStatus
-
-/**
- * Http 400 exception.
- */
-class BadRequestException(httpResponseBody: ErrorMessageWrapper)
-    : RestException(httpResponseBody, HttpResponseStatus.BAD_REQUEST) {
-        constructor(message: String) : this(ErrorMessageWrapper(message))
-
-        constructor(messages: Set<String>) : this(ErrorMessageWrapper(messages.map { ErrorMessage(message = it) }.toSet()))
-    }
+@kotlinx.serialization.Serializable
+data class TickIntentAssociation(val actionName: String, val contextNames: Set<String>)

@@ -100,6 +100,7 @@ class StoryServiceImpl: StoryService {
                         story.secondaryIntents,
                         story.contexts,
                         story.actions,
+                        story.intentsContexts,
                         debug = true,
                     )
                 ),

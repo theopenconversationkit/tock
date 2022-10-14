@@ -38,6 +38,44 @@ object TickStoryValidation {
         return errors
     }
 
+    fun validateTickIntentNames(tickStory: TickStory): List<String> {
+        val errors = mutableListOf<String>()
+        with(tickStory) {
+            // For each TickIntent, the Intent used must be secondary,
+            intentsContexts
+                .map { it.intentName }
+                .filterNot { it in secondaryIntents }
+                .forEach { errors.add("Intent $it is not secondary, it cannot be associated to contexts") }
+        }
+        return errors
+    }
+
+    fun validateTickIntentAssociationContexts(tickStory: TickStory): List<String> {
+        val errors = mutableListOf<String>()
+        with(tickStory) {
+            // For each TickIntentAssociation, the context used must be declared,
+            intentsContexts
+                .flatMap { it.associations }
+                .flatMap { it.contextNames }
+                .filterNot { contextName -> contextName in contexts.map { it.name } }
+                .forEach { errors.add("Intent association context $it not found in declared contexts") }
+        }
+        return errors
+    }
+
+    fun validateTickIntentAssociationActions(tickStory: TickStory): List<String> {
+        val errors = mutableListOf<String>()
+        with(tickStory) {
+            // For each TickIntentAssociation, the action used must be declared,
+            intentsContexts
+                .flatMap { it.associations }
+                .map { it.actionName }
+                .filterNot { actionName -> actionName in actions.map { it.name } }
+                .forEach { errors.add("Intent association action $it not found in declared actions") }
+        }
+        return errors
+    }
+
     fun validateTransitions(tickStory: TickStory): List<String> {
         val errors = mutableListOf<String>()
         with(tickStory) {
@@ -119,7 +157,7 @@ object TickStoryValidation {
     private fun validateContexts(actions: Set<TickAction>,
                                             first: (TickAction)->Set<String>,
                                             second: (TickAction)->Set<String>): List<Pair<String, String>> {
-        // Returns a collection containing all elements of the first set except the elements contained in the second set
+        // Returns the elements of the first set, except those that existed in the second
         return actions.flatMap { action ->
             val contexts = first(action)
             val contextsCompared = actions.filter { it.name != action.name }.flatMap { second(it) }.toSet()
@@ -152,8 +190,8 @@ object TickStoryValidation {
         return errors
     }
 
-    fun validateTickStory(tick: TickStory): List<String> {
-        val errors = mutableListOf<String>()
+    fun validateTickStory(tick: TickStory): Set<String> {
+        val errors = mutableSetOf<String>()
 
         // Consistency between declared intents and the state machine transitions :
         errors.addAll(validateIntents(tick))
@@ -169,6 +207,11 @@ object TickStoryValidation {
         // Consistency of contexts :
         errors.addAll(validateInputOutputContexts(tick))
         errors.addAll(validateDeclaredContexts(tick))
+
+        // Consistency of tick intents :
+        errors.addAll(validateTickIntentNames(tick))
+        errors.addAll(validateTickIntentAssociationContexts(tick))
+        errors.addAll(validateTickIntentAssociationActions(tick))
 
         // Consistency of names :
         errors.addAll(validateNames(tick))

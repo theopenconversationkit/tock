@@ -23,5 +23,6 @@ data class TickConfiguration (
     val stateMachine: State,
     val contexts: Set<TickContext>,
     val actions: Set<TickAction>,
+    val intentsContexts: Set<TickIntent>,
     val debug: Boolean
 )

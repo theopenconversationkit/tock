@@ -20,18 +20,21 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.bean.TickAction
 import ai.tock.bot.bean.TickContext
+import ai.tock.bot.bean.TickIntent
 import ai.tock.bot.statemachine.State
 
 data class BotTickAnswerConfiguration(val stateMachine: State,
                                       val primaryIntents: Set<String>,
                                       val secondaryIntents: Set<String>,
                                       val contexts: Set<TickContext>,
-                                      val actions: Set<TickAction>) :
+                                      val actions: Set<TickAction>,
+                                      val intentsContexts: Set<TickIntent>) :
     BotAnswerConfiguration(AnswerConfigurationType.tick) {
 
     constructor(conf: TickAnswerConfiguration) : this(conf.stateMachine,
         conf.primaryIntents,
         conf.secondaryIntents,
         conf.contexts,
-        conf.actions)
+        conf.actions,
+        conf.intentsContexts)
 }
