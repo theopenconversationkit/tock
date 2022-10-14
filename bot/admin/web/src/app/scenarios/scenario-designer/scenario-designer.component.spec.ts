@@ -7,18 +7,13 @@ import { of, Subject } from 'rxjs';
 import { BotService } from '../../bot/bot-service';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { StateService } from '../../core-nlp/state.service';
-import { Scenario, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models';
+import { ScenarioVersion, ScenarioVersionExtended, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { ScenarioDesignerComponent } from './scenario-designer.component';
 import { ScenarioDesignerService } from './scenario-designer.service';
 
-const testScenario: Scenario = {
+const testScenario: ScenarioVersionExtended = {
   id: '5',
-  name: 'Scenario 5',
-  description: 'Description 5',
-  category: 'scenario',
-  tags: null,
-  createDate: '12/01/1980',
   data: {
     mode: SCENARIO_MODE.writing,
     scenarioItems: [
@@ -31,7 +26,6 @@ const testScenario: Scenario = {
     ],
     contexts: []
   },
-  applicationId: '1',
   state: SCENARIO_STATE.draft
 };
 
@@ -46,7 +40,8 @@ describe('ScenarioDesignerComponent', () => {
         {
           provide: ScenarioService,
           useValue: {
-            getScenario: () => of(testScenario)
+            getScenarioVersion: () => of(testScenario),
+            getActionHandlers: () => of([])
           }
         },
         { provide: ActivatedRoute, useValue: { params: of({ id: '5' }) } },
@@ -90,13 +85,13 @@ describe('ScenarioDesignerComponent', () => {
   it("should init scenario.data when it doesn't exists", () => {
     const scenarioCopy = JSON.parse(JSON.stringify(testScenario));
     delete scenarioCopy.data;
-    spyOn(component['scenarioService'], 'getScenario').and.returnValue(of(scenarioCopy));
+    spyOn(component['scenarioService'], 'getScenarioVersion').and.returnValue(of(scenarioCopy));
     component.ngOnInit();
-    expect(component.scenario).toEqual(testScenario);
+    expect(component.scenarioVersion).toEqual(testScenario);
   });
 
   it('should set scenarioBackup on init', () => {
-    expect(component.scenarioBackup).toEqual(JSON.stringify(testScenario));
+    expect(component.scenarioVersionBackup).toEqual(JSON.stringify(testScenario));
   });
 
   it('should show exit button', () => {
@@ -115,7 +110,7 @@ describe('ScenarioDesignerComponent', () => {
   it('should not show save buttons if scenario is read only', () => {
     const scenarioCopy = JSON.parse(JSON.stringify(testScenario));
     scenarioCopy.state = SCENARIO_STATE.current;
-    spyOn(component['scenarioService'], 'getScenario').and.returnValue(of(scenarioCopy));
+    spyOn(component['scenarioService'], 'getScenarioVersion').and.returnValue(of(scenarioCopy));
     component.ngOnInit();
     fixture.detectChanges();
 
@@ -133,14 +128,14 @@ describe('ScenarioDesignerComponent', () => {
   });
 
   it('should display scenario-conception when conditions are met', () => {
-    component.scenario.data.mode = SCENARIO_MODE.writing;
+    component.scenarioVersion.data.mode = SCENARIO_MODE.writing;
     fixture.detectChanges();
 
     let compiled = fixture.debugElement.nativeElement;
     let stepper = compiled.querySelector('scenario-conception');
     expect(stepper).toBeTruthy();
 
-    component.scenario.data.mode = SCENARIO_MODE.casting;
+    component.scenarioVersion.data.mode = SCENARIO_MODE.casting;
     fixture.detectChanges();
 
     compiled = fixture.debugElement.nativeElement;
@@ -149,7 +144,7 @@ describe('ScenarioDesignerComponent', () => {
   });
 
   it('should display scenario-production when conditions are met', () => {
-    component.scenario.data.mode = SCENARIO_MODE.production;
+    component.scenarioVersion.data.mode = SCENARIO_MODE.production;
     fixture.detectChanges();
 
     let compiled = fixture.debugElement.nativeElement;
@@ -158,7 +153,7 @@ describe('ScenarioDesignerComponent', () => {
   });
 
   it('should display scenario-publishing when conditions are met', () => {
-    component.scenario.data.mode = SCENARIO_MODE.publishing;
+    component.scenarioVersion.data.mode = SCENARIO_MODE.publishing;
     fixture.detectChanges();
 
     let compiled = fixture.debugElement.nativeElement;

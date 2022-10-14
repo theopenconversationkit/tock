@@ -3,10 +3,10 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import { DialogService } from '../../core-nlp/dialog.service';
-import { Scenario } from '../models';
-import { ScenarioService } from '../services/scenario.service';
+import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { DialogService } from '../../../core-nlp/dialog.service';
+import { ScenarioGroup, ScenarioVersion } from '../../models';
+import { ScenarioService } from '../../services/scenario.service';
 
 @Component({
   selector: 'tock-scenario-edit',
@@ -15,10 +15,10 @@ import { ScenarioService } from '../services/scenario.service';
 })
 export class ScenarioEditComponent implements OnChanges {
   @Input() loading: boolean;
-  @Input() scenario?: Scenario;
+  @Input() scenarioGroup?: ScenarioGroup;
 
   @Output() onClose = new EventEmitter<boolean>();
-  @Output() onSave = new EventEmitter();
+  @Output() onSave = new EventEmitter<{ scenarioGroup: ScenarioGroup; redirect: boolean }>();
 
   isSubmitted: boolean = false;
 
@@ -55,18 +55,18 @@ export class ScenarioEditComponent implements OnChanges {
   tagsAutocompleteValues: Observable<string[]>;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.scenario?.currentValue) {
-      const scenario: Scenario = changes.scenario.currentValue;
+    if (changes.scenarioGroup?.currentValue) {
+      const scenarioGroup: ScenarioGroup = changes.scenarioGroup.currentValue;
 
       this.form.reset();
       this.tags.clear();
       this.isSubmitted = false;
 
-      if (scenario) {
-        this.form.patchValue(scenario);
+      if (scenarioGroup) {
+        this.form.patchValue(scenarioGroup);
 
-        if (scenario.tags?.length) {
-          scenario.tags.forEach((tag) => {
+        if (scenarioGroup.tags?.length) {
+          scenarioGroup.tags.forEach((tag) => {
             this.tags.push(new FormControl(tag));
           });
         }
@@ -114,7 +114,7 @@ export class ScenarioEditComponent implements OnChanges {
     if (this.form.dirty) {
       const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
         context: {
-          title: `Cancel ${this.scenario?.id ? 'edit' : 'create'} scenario`,
+          title: `Cancel ${this.scenarioGroup?.id ? 'edit' : 'create'} scenario`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
           action: validAction
         }
@@ -137,7 +137,7 @@ export class ScenarioEditComponent implements OnChanges {
     if (this.canSave) {
       this.onSave.emit({
         redirect: redirect,
-        scenario: { ...this.scenario, ...this.form.value }
+        scenarioGroup: { id: this.scenarioGroup.id, ...this.form.value }
       });
     }
   }

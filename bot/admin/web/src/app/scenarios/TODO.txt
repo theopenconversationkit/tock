@@ -1,23 +1,56 @@
+global
+
+        A voir avec la SNCF sur la maj des paquets ou possibilité de créer un fichier de définition de déclaration en attendant "xxx.d.ts" avec les fonctions attendues
+          - mettre @types/nodes vers minimum 17.0.29
+          - permet de bénéficier de la fonction structuredClone (présent dans les navigateurs récent ou node 17)
+          - évite les problématiques liées JSON.parse(JSON.stringify(xxx)) à savoir
+            • problème de performance
+            • disaparition des types (ne déclenche pas d'erreur avec les types non supportés)
+            • disparition de données dans certain cas
+          - déplacer la fonction "deepClone" du fichier scenarios/commons/utils.ts vers shared/utils/utils.ts
+          - remplacer les JSON.parse(JSON.stringify(xxx)) par l'appel deepClone pour ne gérer qu'une seule fois le remplacement de la fonction ?
+
+        Créer un composant partagé input avec autocomplétion ?
+
 shared
+        Export: proposer la possibilité de sauvegarder l'ensemble des exports dans un fichier .zip plutôt que de sauvegarder un à un chaque scenarioGroup
+
+        Import: faut-il préciser les erreurs correspondantes à un mauvais contenu du fichier ? (A voir à l'usage)
+
+        #DONE Import: que se passe t'il lorsque le scenarioGroup importé à le même nom que l'un déjà présent dans la liste ?
+
+        #DONE Import: utiliser le nouvel endpoint pour créer un scenarioGroup avec la / les versions lorsqu'il sera disponible
 
         #DONE (espacement déjà géré avec la class gap-1 qui est présente dans la refacto de la faq) Regarder le prblm du bouton close de ChoiceDialogComponent quand le modalStatus n'est pas primary. Voir aussi l'espacement des boutons
 
 Scenarios list
 
-        Ajouter l'applicationId au get des scenarios
+        Régler le souci d'appel au endpoint de get de scenarioGroups quand l'application courante n'a pas de configuration
 
-        Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios
+        Proposer le fait qu'il existe ou pas une version current dans les critères de filtre
+
+        Déplacer le rep scenario-edit dans scenarios-list
+
+        Permettre de classer les scenarios par date de creation / modification ?
+
+        A la suppression d'un scenarioGroup avec tickStory, ne devrait-on pas s'occuper du nettoyage des intents et answers attachées au scenario ?
+
+        Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
+
+        Storer au niveau du state l'index de pagination. On conserverais ainsi la derniere page affichée au retour du designer ce qui serait sympa
+
+        #DONE Ajouter l'applicationId au get des scenarios
+
+        #DONE Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios
                 Une fois fait, refacto scenarioListComponent.edit : scenarioListComponent.edit disparait au profit de scenarioListComponent.editSaga, scenarioListComponent.scenarioEdit disparait au profit de scenarioListComponent.sagaEdit etc...
 
                 ScenarioEditComponent ne devrait il pas etre autonome pour dialoguer avec scenarioService ?
 
-        Besoin d'un champ supplementaire du genre versionComment coté back ?
+        #DONE Besoin d'un champ supplementaire du genre versionComment coté back ?
 
-        Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
+        #DONE Supprimer la TickStory à la suppression d'un scenario "current". Adapter le warning pour signaler que la story va également être supprimée
 
-        Suppression de saga => un endpoint de suppression de tickStory est necessaire
-
-        Supprimer la TickStory à la suppression d'un scenario "current". Adapter le warning pour signaler que la story va également être supprimée
+        #DONE (Le back s'en occupe) Suppression de saga => un endpoint de suppression de tickStory est necessaire
 
         #DONE scenario-import : deporter les appels api dans le composant de facon à pouvoir afficher le détail en cas d'erreurs
                 Changement de logique, l'export et l'import ne sont plus affiché dans une boite de dialogue mais directement en tant que panel (comme création / édition de scénario) afin d'être cohérent entre les écrans
@@ -31,6 +64,8 @@ Scenarios list
         #DONE Tock studio menu et titre de la vue scenarios-list : Scenarios management => Scenarios Management
 
 Scenario designer :
+
+        Deux handlers sont susceptibles de porter le meme nom avec des variations de casse
 
         #DONE Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
 
@@ -92,11 +127,11 @@ Scenario designer :
 
         PUBLISHING :
 
-                Problème de mise à jour du state local une fois la plublication effectuée avec succès
-
                 ??? Intent : c'est quoi les mandatoryStates ?
 
-                Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
+                #DONE Problème de mise à jour du state local une fois la plublication effectuée avec succès
+
+                #DONE Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
 
                 #DONE Lors de l'envoi de la tick story, rajouter le sagaId associé
 

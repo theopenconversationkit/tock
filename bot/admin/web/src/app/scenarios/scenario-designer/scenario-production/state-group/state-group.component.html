@@ -21,7 +21,7 @@
       ></nb-icon>
 
       <nb-icon
-        *ngIf="state.id !== 'root' && !isInitialParentState()"
+        *ngIf="state.id !== 'root' && !isInitialParentState() && !isReadonly"
         icon="flash-outline"
         status="basic"
         class="valign-middle pointer"

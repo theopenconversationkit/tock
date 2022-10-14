@@ -1,15 +1,26 @@
+import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, merge, Observable, of } from 'rxjs';
-import { map, tap, switchMap, filter } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, iif, merge, Observable, of } from 'rxjs';
+import { map, tap, switchMap, filter, concatMap, take } from 'rxjs/operators';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { Application } from '../../model/application';
+import { exportJsonDump } from '../../shared/utils';
+import { deepCopy, normalizedSnakeCase, stringifiedCleanObject } from '../commons/utils';
 
-import { Scenario, Saga, TickStory } from '../models';
+import {
+  ScenarioVersion,
+  TickStory,
+  ScenarioVersionExtended,
+  ScenarioGroupExtended,
+  ScenarioGroup,
+  ExportableScenarioGroup
+} from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
 interface ScenarioState {
   loaded: boolean;
   loading: boolean;
-  scenarios: Scenario[];
-  sagas: Saga[];
+  scenariosGroups: ScenarioGroupExtended[];
   tags: string[];
   categories: string[];
 }
@@ -17,8 +28,7 @@ interface ScenarioState {
 const scenariosInitialState: ScenarioState = {
   loaded: false,
   loading: false,
-  scenarios: [],
-  sagas: [],
+  scenariosGroups: [],
   tags: [],
   categories: []
 };
@@ -28,7 +38,7 @@ export class ScenarioService {
   private _state: BehaviorSubject<ScenarioState>;
   state$: Observable<ScenarioState>;
 
-  constructor(private scenarioApiService: ScenarioApiService) {
+  constructor(private scenarioApiService: ScenarioApiService, private applicationService: ApplicationService, private datePipe: DatePipe) {
     this._state = new BehaviorSubject(scenariosInitialState);
     this.state$ = this._state.asObservable();
   }
@@ -40,191 +50,290 @@ export class ScenarioService {
     return this._state.next(state);
   }
 
-  setScenariosLoading(): void {
-    let state = this.getState();
-    state = {
-      ...state,
+  setScenariosGroupsLoading(): void {
+    this.setState({
+      ...this.getState(),
       loading: true,
       loaded: false
-    };
-    this.setState(state);
+    });
   }
 
-  setScenariosUnloading(): void {
-    let state = this.getState();
-    state = {
-      ...state,
+  setScenariosGroupsUnloading(): void {
+    this.setState({
+      ...this.getState(),
       loading: false,
       loaded: false
-    };
-    this.setState(state);
+    });
   }
 
-  setScenariosData(scenariosCollection): void {
-    let state = this.getState();
-    state = {
-      ...state,
+  setScenariosGroupsData(scenariosCollection): void {
+    this.setState({
+      ...this.getState(),
       loading: false,
       loaded: true,
-      scenarios: scenariosCollection,
+      scenariosGroups: scenariosCollection,
       categories: this.updateCategoriesCache(scenariosCollection),
       tags: this.updateTagsCache(scenariosCollection)
-    };
-    this.setState(state);
+    });
   }
 
-  getScenarios(forceReload: boolean = false): Observable<Array<Scenario>> {
+  getScenariosGroups(forceReload: boolean = false): Observable<Array<ScenarioGroupExtended>> {
     if (forceReload) {
-      this.setScenariosUnloading();
+      this.setScenariosGroupsUnloading();
     }
 
     const scenariosState = this.state$;
     const notLoaded = scenariosState.pipe(
       filter((state) => !state.loaded && !state.loading),
-      tap(() => this.setScenariosLoading()),
-      switchMap(() => this.scenarioApiService.getScenarios()),
-      tap((scenariosCollection) => this.setScenariosData(scenariosCollection)),
+      tap(() => this.setScenariosGroupsLoading()),
+      switchMap(() => this.scenarioApiService.getScenariosGroups()),
+      tap((scenariosCollection) => this.setScenariosGroupsData(scenariosCollection)),
       switchMap(() => scenariosState),
-      map((state) => state.scenarios)
+      map((state) => state.scenariosGroups)
     );
     const loaded = scenariosState.pipe(
       filter((state) => state.loaded === true),
-      map((state) => state.scenarios)
+      map((state) => state.scenariosGroups)
     );
     return merge(notLoaded, loaded);
   }
 
-  getScenario(id: string): Observable<Scenario | never> {
-    return this.getScenarios().pipe(
+  getScenarioVersion(scenarioGroupId: string, scenarioVersionId: string): Observable<ScenarioVersionExtended | never> {
+    let scenarioGroupInfo: ScenarioGroupExtended;
+
+    return this.getScenariosGroups().pipe(
       switchMap(() => this.state$),
-      switchMap((state: ScenarioState) => {
-        let res: Scenario = state.scenarios.find((s) => s.id === id);
-        if (res) return of(res);
-        else return of(null);
+      map((data) => data.scenariosGroups.find((sg) => sg.id === scenarioGroupId)),
+      tap((group) => {
+        scenarioGroupInfo = group;
+      }),
+      // here we don't just filter as we want to let the stream flow if the version isn't found to inform the user on the component side
+      map((group) => (group ? group.versions.find((gv) => gv.id === scenarioVersionId) : undefined)),
+      concatMap((version) => {
+        return iif(
+          () => version && typeof version.data === 'undefined',
+          // the version exist but it's data isn't yet loaded, let's call the endpoint
+          this.grabScenarioVersionWithData(scenarioGroupId, scenarioVersionId).pipe(
+            map((version) => ({
+              // we store the scenarioGroup name and id as expandos of the scenarioVersion
+              _name: scenarioGroupInfo.name,
+              _scenarioGroupId: scenarioGroupInfo.id,
+              ...version
+            }))
+          ),
+          iif(
+            () => version && typeof version.data !== 'undefined',
+            // the versiuon exist and it's data is already loaded
+            of({
+              // we store the scenarioGroup name and id as expandos of the scenarioVersion
+              _name: scenarioGroupInfo?.name,
+              _scenarioGroupId: scenarioGroupInfo?.id,
+              ...version
+            }),
+            // the version doesn't exist at all, we send null to inform the requesting component
+            of(null)
+          )
+        );
       })
     );
   }
 
-  private groupScenariosBySaga(state: ScenarioState) {
-    state.scenarios.forEach((scenario) => {
-      let existingSaga = state.sagas.find((saga) => saga.sagaId === scenario.sagaId);
-      if (!existingSaga) {
-        existingSaga = {
-          sagaId: scenario.sagaId,
-          name: scenario.name,
-          description: scenario.description,
-          category: scenario.category,
-          tags: scenario.tags,
-          scenarios: [scenario]
-        };
-        state.sagas.push(existingSaga);
-      } else {
-        if (!existingSaga.scenarios.find((scn) => scn.id === scenario.id)) {
-          existingSaga.scenarios.push(scenario);
-        }
-      }
-      existingSaga.scenarios.sort((a, b) => {
-        return new Date(a.createDate).getTime() - new Date(b.createDate).getTime();
-      });
-    });
+  grabScenarioVersionWithData(scenarioGroupId: string, scenarioVersionId: string): Observable<ScenarioVersion> {
+    return this.scenarioApiService
+      .getScenarioVersion(scenarioGroupId, scenarioVersionId)
+      .pipe(tap((scenarioVersionData) => this.setScenarioVersionData(scenarioGroupId, scenarioVersionData)));
   }
 
-  private cleanRemovedSagaScenarios(state: ScenarioState) {
-    for (let index = state.sagas.length - 1; index >= 0; index--) {
-      const saga = state.sagas[index];
-      for (let indexScn = saga.scenarios.length - 1; indexScn >= 0; indexScn--) {
-        const scenario = saga.scenarios[indexScn];
-        if (!state.scenarios.find((scn) => scn.id === scenario.id)) {
-          saga.scenarios.splice(indexScn, 1);
-        }
-      }
-      if (!saga.scenarios.length) {
-        state.sagas.splice(index, 1);
+  setScenarioVersionData(scenarioGroupId: string, scenarioVersionData: ScenarioVersion): void {
+    const state = this.getState();
+    const scenarioGroup = state.scenariosGroups.find((sg) => sg.id === scenarioGroupId);
+    const scenarioGroupIndex = state.scenariosGroups.indexOf(scenarioGroup);
+    const scenarioVersion = scenarioGroup.versions.find((sv) => sv.id === scenarioVersionData.id);
+    const scenarioVersionIndex = scenarioGroup.versions.indexOf(scenarioVersion);
+    state.scenariosGroups[scenarioGroupIndex].versions[scenarioVersionIndex] = {
+      ...scenarioVersion,
+      ...scenarioVersionData
+    };
+    this.setState(state);
+  }
+
+  postScenarioGroup(scenarioGroup: ScenarioGroupExtended): Observable<ScenarioGroupExtended> {
+    return this.scenarioApiService.postScenarioGroup(scenarioGroup).pipe(
+      tap((newScenarioGroup) => {
+        const state = this.getState();
+        state.scenariosGroups = [...state.scenariosGroups, newScenarioGroup];
+        state.categories = this.updateCategoriesCache(state.scenariosGroups);
+        state.tags = this.updateTagsCache(state.scenariosGroups);
+        this.setState(state);
+      })
+    );
+  }
+
+  importScenarioGroup(scenarioGroup: ScenarioGroupExtended): Observable<ScenarioGroupExtended> {
+    return this.scenarioApiService.importScenarioGroup(scenarioGroup).pipe(
+      tap((newScenarioGroup) => {
+        const state = this.getState();
+        state.scenariosGroups = [...state.scenariosGroups, newScenarioGroup];
+        state.categories = this.updateCategoriesCache(state.scenariosGroups);
+        state.tags = this.updateTagsCache(state.scenariosGroups);
+        this.setState(state);
+      })
+    );
+  }
+
+  updateScenarioGroup(
+    scenarioGroup: Omit<ScenarioGroupExtended, 'creationDate' | 'updateDate' | 'versions'>
+  ): Observable<ScenarioGroupExtended> {
+    const state = this.getState();
+    const existingScenarioGroup = state.scenariosGroups.find((s) => s.id === scenarioGroup.id);
+    const existingScenarioGroupIndex = state.scenariosGroups.indexOf(existingScenarioGroup);
+    if (existingScenarioGroupIndex > -1) {
+      return this.scenarioApiService.updateScenarioGroup(scenarioGroup).pipe(
+        tap((modifiedScenarioGroup) => {
+          state.scenariosGroups[existingScenarioGroupIndex] = modifiedScenarioGroup;
+          state.categories = this.updateCategoriesCache(state.scenariosGroups);
+          state.tags = this.updateTagsCache(state.scenariosGroups);
+          this.setState(state);
+        })
+      );
+    }
+  }
+
+  deleteScenarioGroup(scenarioGroupId: string): Observable<boolean> {
+    return this.scenarioApiService.deleteScenarioGroup(scenarioGroupId).pipe(
+      tap(() => {
+        const state = this.getState();
+        state.scenariosGroups = state.scenariosGroups.filter((s) => s.id !== scenarioGroupId);
+        state.categories = this.updateCategoriesCache(state.scenariosGroups);
+        state.tags = this.updateTagsCache(state.scenariosGroups);
+        this.setState(state);
+      })
+    );
+  }
+
+  patchScenarioGroupState(scenarioGroupUpdate: Partial<ScenarioGroupExtended>) {
+    const state = this.getState();
+    const existingScenarioGroup = state.scenariosGroups.find((s) => s.id === scenarioGroupUpdate.id);
+    const existingScenarioGroupIndex = state.scenariosGroups.indexOf(existingScenarioGroup);
+    if (existingScenarioGroupIndex > -1) {
+      state.scenariosGroups[existingScenarioGroupIndex] = {
+        ...state.scenariosGroups[existingScenarioGroupIndex],
+        ...scenarioGroupUpdate
+      };
+      this.setState(state);
+    }
+  }
+
+  postScenarioVersion(scenarioGroupId: string, scenarioVersion: ScenarioVersion): Observable<ScenarioVersion> {
+    const state = this.getState();
+    const existingScenarioGroup = state.scenariosGroups.find((s) => s.id === scenarioGroupId);
+    const existingScenarioGroupIndex = state.scenariosGroups.indexOf(existingScenarioGroup);
+    if (existingScenarioGroupIndex > -1) {
+      return this.scenarioApiService.postScenarioVersion(scenarioGroupId, scenarioVersion).pipe(
+        tap((newScenario) => {
+          state.scenariosGroups[existingScenarioGroupIndex].versions.push(newScenario);
+          this.setState(state);
+        })
+      );
+    }
+  }
+
+  updateScenarioVersion(scenarioGroupId: string, scenarioVersion: ScenarioVersion): Observable<ScenarioVersion> {
+    const state = this.getState();
+    const existingScenarioGroup = state.scenariosGroups.find((s) => s.id === scenarioGroupId);
+    const existingScenarioGroupIndex = state.scenariosGroups.indexOf(existingScenarioGroup);
+    if (existingScenarioGroupIndex > -1) {
+      const existingScenarioVersion = existingScenarioGroup.versions.find((sv) => sv.id === scenarioVersion.id);
+      const existingScenarioVersionIndex = existingScenarioGroup.versions.indexOf(existingScenarioVersion);
+      if (existingScenarioVersionIndex > -1) {
+        return this.scenarioApiService.updateScenarioVersion(scenarioGroupId, scenarioVersion).pipe(
+          tap((modifiedScenarioVersion) => {
+            state.scenariosGroups[existingScenarioGroupIndex].versions[existingScenarioVersionIndex] = modifiedScenarioVersion;
+            this.setState(state);
+          })
+        );
       }
     }
   }
 
-  getSagas(forceReload: boolean = false): Observable<Array<Saga>> {
-    return this.getScenarios(forceReload).pipe(
-      switchMap(() => this.state$),
-      switchMap((state: ScenarioState) => {
-        this.groupScenariosBySaga(state);
-        this.cleanRemovedSagaScenarios(state);
-        return of(state.sagas);
-      })
-    );
-  }
+  deleteScenarioVersion(scenarioGroupId: string, scenarioVersionId: string): Observable<boolean> {
+    const state = this.getState();
+    const existingScenarioGroup = state.scenariosGroups.find((s) => s.id === scenarioGroupId);
+    const existingScenarioGroupIndex = state.scenariosGroups.findIndex((s) => s === existingScenarioGroup);
+    if (existingScenarioGroupIndex > -1) {
+      return this.scenarioApiService.deleteScenarioVersion(scenarioGroupId, scenarioVersionId).pipe(
+        tap(() => {
+          if (existingScenarioGroup.versions.length === 1) {
+            // if we delete the last version of the group, we delete the whole group
+            state.scenariosGroups = state.scenariosGroups.filter((s) => s.id !== scenarioGroupId);
+            state.categories = this.updateCategoriesCache(state.scenariosGroups);
+            state.tags = this.updateTagsCache(state.scenariosGroups);
+          } else {
+            state.scenariosGroups[existingScenarioGroupIndex] = {
+              ...existingScenarioGroup,
+              versions: existingScenarioGroup.versions.filter((s) => s.id !== scenarioVersionId)
+            };
+          }
 
-  postScenario(scenario: Scenario): Observable<Scenario> {
-    return this.scenarioApiService.postScenario(scenario).pipe(
-      tap((newScenario) => {
-        let state = this.getState();
-        state.scenarios = [...state.scenarios, newScenario];
-        state.categories = this.updateCategoriesCache(state.scenarios);
-        state.tags = this.updateTagsCache(state.scenarios);
-        this.setState(state);
-      })
-    );
-  }
-
-  putScenario(id: string, scenario: Scenario): Observable<Scenario> {
-    return this.scenarioApiService.putScenario(id, scenario).pipe(
-      tap((modifiedScenario) => {
-        let state = this.getState();
-        const scenario = state.scenarios.find((s) => s.id === id);
-        if (scenario) {
-          const index = state.scenarios.indexOf(scenario);
-          state.scenarios[index] = modifiedScenario;
-          state.categories = this.updateCategoriesCache(state.scenarios);
-          state.tags = this.updateTagsCache(state.scenarios);
           this.setState(state);
-        }
-      })
-    );
+        })
+      );
+    }
   }
 
-  deleteSaga(sagaId: string): Observable<any> {
-    return this.scenarioApiService.deleteSaga(sagaId).pipe(
-      tap(() => {
-        let state = this.getState();
-        state.scenarios = state.scenarios.filter((s) => s.sagaId !== sagaId);
-        state.categories = this.updateCategoriesCache(state.scenarios);
-        state.tags = this.updateTagsCache(state.scenarios);
-        this.setState(state);
-      })
-    );
-  }
-
-  deleteScenario(id: string): Observable<any> {
-    return this.scenarioApiService.deleteScenario(id).pipe(
-      tap(() => {
-        let state = this.getState();
-        state.scenarios = state.scenarios.filter((s) => s.id !== id);
-        state.categories = this.updateCategoriesCache(state.scenarios);
-        state.tags = this.updateTagsCache(state.scenarios);
-        this.setState(state);
-      })
-    );
+  getActionHandlers(): Observable<string[]> {
+    return this.scenarioApiService.getActionHandlers();
   }
 
   postTickStory(tickStory: TickStory): Observable<TickStory> {
     return this.scenarioApiService.postTickStory(tickStory);
   }
 
-  updateCategoriesCache(scenarios: Scenario[]): string[] {
+  updateCategoriesCache(scenarios: ScenarioGroupExtended[]): string[] {
     return [...new Set([...scenarios.map((v) => v.category)])].sort().filter((c) => c);
   }
 
-  updateTagsCache(scenarios: Scenario[]): string[] {
+  updateTagsCache(scenarios: ScenarioGroupExtended[]): string[] {
     return [
       ...new Set(
         <string>[].concat.apply(
           [],
-          scenarios.map((s: Scenario) => s.tags)
+          scenarios.map((s: ScenarioGroupExtended) => s.tags)
         )
       )
     ]
       .sort()
       .filter((t) => t);
+  }
+
+  loadScenariosAndDownload(scenariosGroups: ScenarioGroup[], exportableGroups: ExportableScenarioGroup[]): void {
+    const loaders: Observable<ScenarioVersionExtended>[] = [];
+    exportableGroups.forEach((group) => {
+      group.versions.forEach((versionId) => {
+        loaders.push(this.getScenarioVersion(group.id, versionId).pipe(take(1)));
+      });
+    });
+
+    forkJoin(loaders).subscribe(() => {
+      exportableGroups.forEach((group) => {
+        const scenarioGroup = scenariosGroups.find((g) => g.id === group.id);
+        const copy = deepCopy(scenarioGroup);
+        copy.versions = copy.versions.filter((v) => group.versions.includes(v.id));
+        this.downloadScenarioGroup(copy);
+      });
+    });
+  }
+
+  downloadScenarioGroup(scenarioGroup: ScenarioGroup): void {
+    this.applicationService.retrieveCurrentApplication().subscribe((currentApplication: Application) => {
+      const fileName = [
+        currentApplication.name,
+        'SCENARIO',
+        normalizedSnakeCase(scenarioGroup.name),
+        this.datePipe.transform(scenarioGroup.creationDate, 'yyyy-MM-dd')
+      ].join('_');
+
+      exportJsonDump(JSON.parse(stringifiedCleanObject(scenarioGroup)), fileName);
+    });
   }
 }

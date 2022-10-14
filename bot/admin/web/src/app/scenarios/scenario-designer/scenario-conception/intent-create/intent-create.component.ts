@@ -5,7 +5,7 @@ import { of, Subject } from 'rxjs';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { Intent, nameFromQualifiedName } from '../../../../model/nlp';
 import { getScenarioIntentDefinitions, normalizedCamelCase } from '../../../commons/utils';
-import { Scenario, ScenarioItem } from '../../../models';
+import { ScenarioVersion, ScenarioItem } from '../../../models';
 
 @Component({
   selector: 'scenario-intent-create',
@@ -16,7 +16,7 @@ export class IntentCreateComponent implements OnInit {
   destroy = new Subject();
 
   @Input() item: ScenarioItem;
-  @Input() scenario: Scenario;
+  @Input() scenario: ScenarioVersion;
   @Output() createIntentEvent = new EventEmitter();
   categories: string[] = [];
   categoryAutocompleteValues;

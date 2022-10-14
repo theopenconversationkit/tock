@@ -1,21 +1,21 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, take } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { Intent, SearchQuery } from 'src/app/model/nlp';
+import { SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
 import {
-  Scenario,
   ScenarioItem,
   ScenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
-  TickContext
-} from '../../models/scenario.model';
+  ScenarioContext,
+  ScenarioVersionExtended
+} from '../../models';
 import { ActionEditComponent } from './action-edit/action-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
@@ -33,17 +33,19 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
   destroy = new Subject();
-  @Input() itemId: number;
+
+  @Input() item: ScenarioItem;
   @Input() parentId: number;
-  @Input() contexts: TickContext[];
+  @Input() contexts: ScenarioContext[];
   @Input() selectedItem: ScenarioItem;
   @Input() mode: string;
-  @Input() scenario: Scenario;
+  @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean = false;
+  @Input() readonly avalaibleHandlers: string[];
+
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
-  item: ScenarioItem;
   utterancesLoading = true;
 
   constructor(
@@ -59,7 +61,6 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.item = this.scenario.data.scenarioItems.find((item) => item.id === this.itemId);
     this.draggable = {
       data: this.item.id
     };
@@ -94,10 +95,12 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       context: {
         item: this.item,
         contexts: this.contexts,
-        scenario: this.scenario
+        scenario: this.scenario,
+        avalaibleHandlers: this.avalaibleHandlers,
+        isReadonly: this.isReadonly
       }
     });
-    const saveModifications = modal.componentRef.instance.saveModifications.pipe(takeUntil(this.destroy)).subscribe((actionDef) => {
+    modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((actionDef) => {
       this.checkAndAddNewContexts(actionDef.inputContextNames);
       this.checkAndAddNewContexts(actionDef.outputContextNames);
       if (this.scenario.data.stateMachine && this.item.tickActionDefinition && this.item.tickActionDefinition.name !== actionDef.name) {
@@ -111,14 +114,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       }
 
       this.item.tickActionDefinition = actionDef;
-      // saveModifications.unsubscribe();
+
       modal.close();
     });
 
-    const deleteDefinition = modal.componentRef.instance.deleteDefinition.pipe(takeUntil(this.destroy)).subscribe(() => {
+    modal.componentRef.instance.deleteDefinition.pipe(take(1)).subscribe(() => {
       this.scenarioConceptionService.removeItemDefinition(this.item);
 
-      // deleteDefinition.unsubscribe();
       modal.close();
     });
   }
@@ -148,12 +150,11 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         intentSentence: this.item.text
       }
     });
-    const createNewIntentEvent = modal.componentRef.instance.createNewIntentEvent.pipe(takeUntil(this.destroy)).subscribe(() => {
+    modal.componentRef.instance.createNewIntentEvent.pipe(take(1)).subscribe(() => {
       this.createIntent();
-      // createNewIntentEvent.unsubscribe();
       modal.close();
     });
-    const useIntentEvent = modal.componentRef.instance.useIntentEvent.pipe(takeUntil(this.destroy)).subscribe((intent) => {
+    const useIntentEvent = modal.componentRef.instance.useIntentEvent.pipe(take(1)).subscribe((intent) => {
       this.setItemIntentDefinition(intent);
       // useIntentEvent.unsubscribe();
       modal.close();
@@ -180,7 +181,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         scenario: this.scenario
       }
     });
-    const createIntentEvent = modal.componentRef.instance.createIntentEvent.pipe(takeUntil(this.destroy)).subscribe((res) => {
+    const createIntentEvent = modal.componentRef.instance.createIntentEvent.pipe(take(1)).subscribe((res) => {
       if (this.item.main) res.primary = true;
       this.item.intentDefinition = res;
       this.editIntent();
@@ -193,11 +194,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     const modal = this.dialogService.openDialog(IntentEditComponent, {
       context: {
         item: this.item,
-        contexts: this.contexts
+        contexts: this.contexts,
+        scenario: this.scenario,
+        isReadonly: this.isReadonly
       }
     });
 
-    modal.componentRef.instance.saveModifications.pipe(takeUntil(this.destroy)).subscribe((intentDef) => {
+    modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((intentDef) => {
       // If an intent is not primary anymore, it should not be a transition of the global state
       if (this.scenario.data.stateMachine && this.item.intentDefinition.primary && !intentDef.primary) {
         const parents = getSmTransitionParentsByname(this.item.intentDefinition.name, this.scenario.data.stateMachine);
@@ -219,7 +222,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       modal.close();
     });
 
-    modal.componentRef.instance.onRemoveDefinition.pipe(takeUntil(this.destroy)).subscribe((intentDef) => {
+    modal.componentRef.instance.onRemoveDefinition.pipe(take(1)).subscribe((intentDef) => {
       this.scenarioConceptionService.removeItemDefinition(this.item);
       modal.close();
     });

@@ -4,13 +4,12 @@ import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import {
-  IntentDefinition,
+  ScenarioIntentDefinition,
   MachineState,
-  Scenario,
+  ScenarioVersionExtended,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  SCENARIO_STATE,
-  TickActionDefinition
+  ScenarioActionDefinition
 } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
@@ -25,7 +24,7 @@ import {
   getAllSmStatesNames,
   removeSmStateById
 } from '../../commons/utils';
-import { JsonPreviewerComponent } from '../../../shared/json-previewer/json-previewer.component';
+import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
 
 const TRANSITION_COLOR = '#006fd6';
 const TRANSITION_COLOR_HOVERED = '#42aaff';
@@ -37,7 +36,7 @@ const TRANSITION_COLOR_HOVERED = '#42aaff';
 })
 export class ScenarioProductionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
-  @Input() scenario: Scenario;
+  @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
 
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
@@ -256,16 +255,16 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getDraggableIntentType(intent: IntentDefinition) {
+  getDraggableIntentType(intent: ScenarioIntentDefinition) {
     if (intent.primary) return 'primaryIntent';
     return 'intent';
   }
 
-  getIntentTooltip(intent: IntentDefinition) {
+  getIntentTooltip(intent: ScenarioIntentDefinition) {
     return intent.label ? intent.label : intent.name;
   }
 
-  getScenarioActionDefinitions(): TickActionDefinition[] {
+  getScenarioActionDefinitions(): ScenarioActionDefinition[] {
     return getScenarioActionDefinitions(this.scenario).sort((a, b) => {
       const aIsUsed = this.isActionInUse(a);
       if (aIsUsed) return 1;
@@ -283,15 +282,15 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     return [...names];
   }
 
-  isActionInUse(action: TickActionDefinition): MachineState {
+  isActionInUse(action: ScenarioActionDefinition): MachineState {
     return getSmStateById(action.name, this.scenario.data.stateMachine);
   }
 
-  isIntentInUse(intent: IntentDefinition): string {
+  isIntentInUse(intent: ScenarioIntentDefinition): string {
     return getSmTransitionByName(intent.name, this.scenario.data.stateMachine);
   }
 
-  isIntentDraggable(intent: IntentDefinition): boolean {
+  isIntentDraggable(intent: ScenarioIntentDefinition): boolean {
     const item = this.scenario.data.scenarioItems.find((item) => item.intentDefinition === intent);
     if (item.main) {
       let exists = this.isIntentInUse(intent);

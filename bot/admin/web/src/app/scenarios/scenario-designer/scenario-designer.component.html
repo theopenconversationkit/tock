@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
   <h4 class="initial-capitalize">
-    {{ this.scenario?.name }}
+    {{ this.scenarioVersion?._name }}
   </h4>
 
   <div class="d-flex flex-wrap header-actions">
@@ -39,27 +39,30 @@
 </div>
 
 <scenario-mode-stepper
-  *ngIf="scenario?.data"
+  *ngIf="scenarioVersion?.data"
   class="mb-3"
-  [mode]="scenario.data.mode"
-  [scenario]="scenario"
+  [mode]="scenarioVersion.data.mode"
+  [scenario]="scenarioVersion"
   (modeSwitch)="switchMode($event)"
 ></scenario-mode-stepper>
 
 <scenario-conception
-  *ngIf="scenario?.data.mode === SCENARIO_MODE.writing || scenario?.data.mode === SCENARIO_MODE.casting"
-  [scenario]="scenario"
+  *ngIf="scenarioVersion?.data.mode === SCENARIO_MODE.writing || scenarioVersion?.data.mode === SCENARIO_MODE.casting"
+  [scenario]="scenarioVersion"
   [isReadonly]="isReadonly"
+  [avalaibleHandlers]="avalaibleHandlers"
 ></scenario-conception>
 
 <scenario-production
-  *ngIf="scenario?.data.mode === SCENARIO_MODE.production"
-  [scenario]="scenario"
+  *ngIf="scenarioVersion?.data.mode === SCENARIO_MODE.production"
+  [scenario]="scenarioVersion"
   [isReadonly]="isReadonly"
 ></scenario-production>
 
 <scenario-publishing
-  *ngIf="scenario?.data.mode === SCENARIO_MODE.publishing"
-  [scenario]="scenario"
+  *ngIf="scenarioVersion?.data.mode === SCENARIO_MODE.publishing"
+  [scenario]="scenarioVersion"
   [isReadonly]="isReadonly"
+  [avalaibleHandlers]="avalaibleHandlers"
+  [i18n]="i18n"
 ></scenario-publishing>

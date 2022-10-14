@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, Validators } from '@angular/forms';
 
 import { ErrorHelperComponent } from './error-helper.component';
-import { FileValidators } from '../validators';
+import { FileValidators } from '../../validators';
 
 describe('ErrorHelperComponent', () => {
   let component: ErrorHelperComponent;

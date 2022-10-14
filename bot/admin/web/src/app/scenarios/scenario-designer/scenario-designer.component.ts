@@ -1,7 +1,14 @@
 import { Component, ElementRef, HostListener, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { pluck, takeUntil, take } from 'rxjs/operators';
-import { Scenario, SCENARIO_ITEM_FROM_BOT, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models/scenario.model';
+import { takeUntil, take } from 'rxjs/operators';
+import {
+  ScenarioVersion,
+  ScenarioVersionExtended,
+  SCENARIO_ITEM_FROM_BOT,
+  SCENARIO_ITEM_FROM_CLIENT,
+  SCENARIO_MODE,
+  SCENARIO_STATE
+} from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
 import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
@@ -9,8 +16,10 @@ import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confir
 import { NbToastrService } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
-import { stringifiedCleanScenario } from '../commons/utils';
+
+import { deepCopy, stringifiedCleanObject } from '../commons/utils';
 import { ChoiceDialogComponent } from '../../shared/components';
+
 import { Intent } from '../../model/nlp';
 import { BotService } from '../../bot/bot-service';
 import { I18nLabels } from '../../bot/model/i18n';
@@ -25,11 +34,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
-  scenarioId: string;
-  scenario: Scenario;
-  scenarioBackup: string;
+  scenarioVersion: ScenarioVersionExtended;
+  scenarioVersionBackup: string;
   isReadonly: boolean = false;
   i18n: I18nLabels;
+  avalaibleHandlers: string[];
 
   readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
@@ -37,59 +46,63 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   constructor(
     private scenarioService: ScenarioService,
-    route: ActivatedRoute,
+    private route: ActivatedRoute,
     private toastrService: NbToastrService,
     protected state: StateService,
     private scenarioDesignerService: ScenarioDesignerService,
     private dialogService: DialogService,
     private botService: BotService
   ) {
-    route.params.pipe(takeUntil(this.destroy), pluck('id')).subscribe((id) => (this.scenarioId = id));
-
     this.scenarioDesignerService.scenarioDesignerCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'updateScenarioBackup') this.updateScenarioBackup(evt.data);
     });
   }
 
   ngOnInit(): void {
-    this.scenarioService
-      .getScenario(this.scenarioId)
-      .pipe(take(1))
-      .subscribe((scenario) => {
-        if (scenario === null) {
-          return this.informNoScenarioFound();
-        }
+    this.route.params.pipe(takeUntil(this.destroy)).subscribe((routeParams) => {
+      this.scenarioService
+        .getScenarioVersion(routeParams.scenarioGroupId, routeParams.scenarioVersionId)
+        .pipe(takeUntil(this.destroy))
+        .subscribe((scenarioVersionExt: ScenarioVersionExtended) => {
+          if (scenarioVersionExt === null) {
+            return this.informNoScenarioFound();
+          }
 
-        this.updateScenarioBackup(scenario);
+          this.scenarioVersion = deepCopy(scenarioVersionExt);
 
-        this.scenario = JSON.parse(JSON.stringify(scenario));
+          this.isReadonly = this.scenarioVersion.state !== SCENARIO_STATE.draft;
 
-        this.isReadonly = this.scenario.state !== SCENARIO_STATE.draft;
+          if (!this.scenarioVersion.data) this.scenarioVersion.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
+          if (typeof this.scenarioVersion.data.mode == 'undefined') this.scenarioVersion.data.mode = SCENARIO_MODE.writing;
 
-        if (!this.scenario.data) this.scenario.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
-        if (typeof this.scenario.data.mode == 'undefined') this.scenario.data.mode = SCENARIO_MODE.writing;
+          this.switchMode(this.scenarioVersion.data.mode || SCENARIO_MODE.writing);
+          if (!this.scenarioVersion.data.scenarioItems.length) {
+            this.scenarioVersion.data.scenarioItems.push({
+              id: 0,
+              from: SCENARIO_ITEM_FROM_CLIENT,
+              text: '',
+              main: true
+            });
+          }
+          if (!this.scenarioVersion.data.contexts) {
+            this.scenarioVersion.data.contexts = [];
+          }
 
-        this.switchMode(this.scenario.data.mode || SCENARIO_MODE.writing);
-        if (!this.scenario.data.scenarioItems.length) {
-          this.scenario.data.scenarioItems.push({
-            id: 0,
-            from: SCENARIO_ITEM_FROM_CLIENT,
-            text: '',
-            main: true
-          });
-        }
-        if (!this.scenario.data.contexts) {
-          this.scenario.data.contexts = [];
-        }
+          this.botService
+            .i18nLabels()
+            .pipe(take(1))
+            .subscribe((results) => {
+              this.i18n = results;
+              this.checkDependencies();
+            });
 
-        this.botService
-          .i18nLabels()
-          .pipe(take(1))
-          .subscribe((results) => {
-            this.i18n = results;
-            this.checkDependencies();
-          });
-      });
+          this.updateScenarioBackup(this.scenarioVersion);
+        });
+    });
+
+    this.scenarioService.getActionHandlers().subscribe((handlers) => {
+      this.avalaibleHandlers = handlers;
+    });
 
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
       this.exit();
@@ -99,7 +112,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   checkDependencies() {
     let deletedIntents = [];
     let deletedAnswers = [];
-    this.scenario.data.scenarioItems.forEach((item) => {
+    this.scenarioVersion.data.scenarioItems.forEach((item) => {
       if (item.intentDefinition?.intentId) {
         const existingIntent: Intent = this.state.findIntentById(item.intentDefinition.intentId);
         if (!existingIntent) {
@@ -128,32 +141,28 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     });
 
     if (deletedIntents.length) {
-      let title = 'The following intents have been removed';
-      let subtitle = '';
-      deletedIntents.forEach((intent) => {
-        subtitle += `• ${intent} `;
-      });
+      let title = 'Intents deleted';
+      let subtitle = 'The following intents have been removed:';
       this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
           title: title,
           subtitle: subtitle,
+          list: deletedIntents,
           actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
         }
       });
     }
 
     if (deletedAnswers.length) {
-      let title = 'The following answers have been removed';
-      let subtitle = '';
-      deletedAnswers.forEach((answer) => {
-        subtitle += `• ${answer} `;
-      });
+      let title = 'Answers deleted';
+      let subtitle = 'The following answers have been removed:';
       this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
           title: title,
           subtitle: subtitle,
+          list: deletedAnswers,
           actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
         }
       });
@@ -174,13 +183,13 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   switchMode(mode): void {
-    this.scenario.data.mode = mode;
+    this.scenarioVersion.data.mode = mode;
   }
 
   save(exit: boolean = false, silent: boolean = false): void {
     if (this.isReadonly) return;
 
-    this.scenarioDesignerService.saveScenario(this.scenarioId, this.scenario).subscribe((data) => {
+    this.scenarioDesignerService.saveScenario(this.scenarioVersion).subscribe((data) => {
       if (!silent) {
         this.toastrService.success(`Scenario successfully saved`, 'Success', {
           duration: 5000,
@@ -192,10 +201,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateScenarioBackup(scenario: Scenario): void {
-    let backup = JSON.parse(JSON.stringify(scenario));
+  updateScenarioBackup(scenario: ScenarioVersion): void {
+    let backup = JSON.parse(stringifiedCleanObject(scenario));
+    delete backup.creationDate;
     delete backup.updateDate;
-    this.scenarioBackup = JSON.stringify(backup);
+    this.scenarioVersionBackup = JSON.stringify(backup);
   }
 
   exit(): void {
@@ -216,10 +226,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   canDeactivate(): boolean {
     if (this.isReadonly) return true;
-    let current = stringifiedCleanScenario(this.scenario);
+    let current = stringifiedCleanObject(this.scenarioVersion);
     let currentParsed = JSON.parse(current);
+    delete currentParsed.creationDate;
     delete currentParsed.updateDate;
-    return this.scenarioBackup == JSON.stringify(currentParsed);
+    return this.scenarioVersionBackup == JSON.stringify(currentParsed);
   }
 }
 

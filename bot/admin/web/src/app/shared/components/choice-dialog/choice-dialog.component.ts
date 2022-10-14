@@ -10,6 +10,7 @@ export class ChoiceDialogComponent implements OnInit {
   @Input() modalStatus: string = 'primary';
   @Input() title: string;
   @Input() subtitle: string;
+  @Input() list?: string[];
   @Input() cancellable: boolean = true;
   @Input() actions: { actionName: string; buttonStatus?: string }[];
 

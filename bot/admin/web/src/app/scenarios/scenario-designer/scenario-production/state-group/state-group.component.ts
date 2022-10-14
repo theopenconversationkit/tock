@@ -4,7 +4,7 @@ import { takeUntil } from 'rxjs/operators';
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { DialogService } from '../../../../core-nlp/dialog.service';
 import { getSmStateParentById } from '../../../commons/utils';
-import { IntentDefinition, MachineState, TickActionDefinition, Transition } from '../../../models';
+import { ScenarioIntentDefinition, MachineState, ScenarioActionDefinition, Transition } from '../../../models';
 import { ScenarioProductionService } from '../scenario-production.service';
 import { ScenarioProductionStateGroupAddComponent } from './state-group-add/state-group-add.component';
 import { ScenarioTransitionComponent } from './transition/transition.component';
@@ -19,8 +19,8 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   @Input() state: MachineState;
   @Input() stateMachine: MachineState;
   @Input() usedNames: string[];
-  @Input() intents: IntentDefinition[];
-  @Input() actions: TickActionDefinition[];
+  @Input() intents: ScenarioIntentDefinition[];
+  @Input() actions: ScenarioActionDefinition[];
   @Input() isReadonly: boolean = false;
 
   @ViewChild('stateWrapper') stateWrapper: ElementRef;

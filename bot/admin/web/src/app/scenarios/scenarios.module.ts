@@ -43,14 +43,13 @@ import { SharedModule } from '../shared-nlp/shared.module';
 import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
 import { ScenarioService } from './services/scenario.service';
 import { ScenarioApiService } from './services/scenario.api.service';
-import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
+import { ScenarioEditComponent } from './scenarios-list/scenario-edit/scenario-edit.component';
 import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
 import { ScenarioImportComponent } from './scenarios-list/scenario-import/scenario-import.component';
 import { ScenarioExportComponent } from './scenarios-list/scenario-export/scenario-export.component';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
-import { ScenariosResolver } from './scenarios.resolver';
 import { ScenarioDesignerService } from './scenario-designer/scenario-designer.service';
 
 @NgModule({
@@ -107,7 +106,7 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
     ScenarioExportComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, ScenariosResolver, NlpService, ScenarioDesignerService],
+  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, NlpService, ScenarioDesignerService],
   entryComponents: []
 })
 export class ScenariosModule {

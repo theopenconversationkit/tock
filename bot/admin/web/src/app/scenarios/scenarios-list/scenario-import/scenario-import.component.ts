@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NbToastrService } from '@nebular/theme';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -6,13 +6,24 @@ import { catchError, first } from 'rxjs/operators';
 
 import { readFileAsText } from '../../../shared/utils';
 import { FileValidators } from '../../../shared/validators';
-import { Scenario, SCENARIO_STATE } from '../../models';
+import { ScenarioGroup, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
-import { StateService } from '../../../core-nlp/state.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { deepCopy } from '../../commons/utils';
 
-type JsonFile = { filename: string; data: Scenario };
+enum nameConflictResolution {
+  new = 'new',
+  add = 'add'
+}
+
+type ScenarioGroupImport = ScenarioGroup & {
+  _addOrChangeName?: 'notYetDetermined' | nameConflictResolution;
+  _newName?: string;
+  _targetScenarioGroupId?: string;
+};
+
+type JsonFile = { filename: string; data: ScenarioGroupImport };
 
 @Component({
   selector: 'tock-scenario-import',
@@ -20,7 +31,10 @@ type JsonFile = { filename: string; data: Scenario };
   styleUrls: ['./scenario-import.component.scss']
 })
 export class ScenarioImportComponent {
+  @Input() scenariosGroups!: ScenarioGroup[];
   @Output() onClose = new EventEmitter<boolean>();
+
+  readonly nameConflictResolution = nameConflictResolution;
 
   private filesToImport: JsonFile[] = [];
 
@@ -44,12 +58,7 @@ export class ScenarioImportComponent {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
 
-  constructor(
-    private dialogService: DialogService,
-    private toastrService: NbToastrService,
-    private stateService: StateService,
-    private scenarioService: ScenarioService
-  ) {}
+  constructor(private dialogService: DialogService, private toastrService: NbToastrService, private scenarioService: ScenarioService) {}
 
   close(): Observable<any> {
     const validAction = 'yes';
@@ -89,21 +98,44 @@ export class ScenarioImportComponent {
 
       const jsons: JsonFile[] = [];
       await Promise.all(readers).then((values) => {
-        values.forEach((result) => {
-          if (typeof result.data === 'string') {
-            let importJson: Scenario;
-            try {
-              importJson = JSON.parse(result.data);
-            } catch (error) {
-              filesNameWithWrongFormat.push(result.fileName);
-              return;
+        values.forEach((result: { fileName: string; data: string }) => {
+          try {
+            let scenarioGroup: ScenarioGroupImport = JSON.parse(result.data);
+
+            // backward compatibility : import of old scenarios export format
+            if (scenarioGroup.name && scenarioGroup['data']?.scenarioItems) {
+              console.log('BACKWARD COMPATIBILITY IMPORT');
+              type LegacyScenarioFormat = ScenarioGroupImport & { data: any };
+              const scenarioGroupCopy = deepCopy(scenarioGroup) as LegacyScenarioFormat;
+              scenarioGroup = {
+                name: scenarioGroupCopy.name,
+                description: scenarioGroupCopy.description,
+                category: scenarioGroupCopy.category,
+                tags: scenarioGroupCopy.tags,
+                versions: [
+                  {
+                    data: scenarioGroupCopy.data,
+                    state: SCENARIO_STATE.draft,
+                    comment: ''
+                  }
+                ]
+              };
             }
-            if (!importJson.data?.scenarioItems) {
-              filesNameWithWrongFormat.push(result.fileName);
+            // backward compatibility end
+            else if (scenarioGroup.name && scenarioGroup.versions?.length) {
+              scenarioGroup.versions.forEach((scenarioVersion: ScenarioVersion) => {
+                if (!scenarioVersion.data?.scenarioItems || !scenarioVersion.data?.mode) {
+                  filesNameWithWrongFormat.push(result.fileName);
+                }
+              });
             } else {
-              jsons.push({ filename: result.fileName, data: importJson });
+              filesNameWithWrongFormat.push(result.fileName);
             }
-          } else {
+
+            if (!filesNameWithWrongFormat.includes(result.fileName)) {
+              jsons.push({ filename: result.fileName, data: scenarioGroup });
+            }
+          } catch (error) {
             filesNameWithWrongFormat.push(result.fileName);
           }
         });
@@ -130,18 +162,92 @@ export class ScenarioImportComponent {
     this.isImportSubmitted = true;
 
     if (this.canSaveImport && this.filesToImport) {
-      this.importAllScenarios(this.filesToImport);
+      this.checkScenarioGroupsNamesConflicts();
     }
+  }
+
+  scenarioGroupNameConflictToResolve;
+
+  nameConflictForm: FormGroup = new FormGroup(
+    {
+      addOrChangeName: new FormControl(null, Validators.required),
+      newGroupName: new FormControl('', this.isGroupNameUnic.bind(this))
+    },
+    {
+      validators: [this.newGroupNameValidation]
+    }
+  );
+
+  get addOrChangeName(): FormControl {
+    return this.nameConflictForm.get('addOrChangeName') as FormControl;
+  }
+  get newGroupName(): FormControl {
+    return this.nameConflictForm.get('newGroupName') as FormControl;
+  }
+
+  isGroupNameUnic(c: FormControl) {
+    if (!this.scenariosGroups) return null;
+
+    if (this.scenariosGroups.find((sg) => sg.name === c.value?.trim()))
+      return { custom: 'This name is already used by an existing scenario group' };
+    return null;
+  }
+
+  get canResolveConflict(): boolean {
+    return this.nameConflictForm.valid;
+  }
+
+  newGroupNameValidation(formGroup: FormGroup) {
+    if (formGroup.value.addOrChangeName === nameConflictResolution.new) {
+      return Validators.required(formGroup.get('newGroupName'))
+        ? {
+            custom: 'A new name is required'
+          }
+        : null;
+    }
+    return null;
+  }
+
+  checkScenarioGroupsNamesConflicts() {
+    this.scenarioGroupNameConflictToResolve = undefined;
+
+    for (let index = 0; index < this.filesToImport.length; index++) {
+      const file = this.filesToImport[index];
+      const existingGroup = this.scenariosGroups.find((sg) => sg.name === file.data.name);
+      if (existingGroup) {
+        if (!file.data._addOrChangeName || file.data._addOrChangeName === 'notYetDetermined') {
+          this.nameConflictForm.reset();
+          file.data._targetScenarioGroupId = existingGroup.id;
+          file.data._addOrChangeName = 'notYetDetermined';
+          this.scenarioGroupNameConflictToResolve = file;
+          return;
+        }
+      }
+    }
+    this.importAllScenarios(this.filesToImport);
+  }
+
+  resolveConflict() {
+    if (this.nameConflictForm.value.addOrChangeName === nameConflictResolution.add) {
+      this.scenarioGroupNameConflictToResolve.data._addOrChangeName = nameConflictResolution.add;
+    } else {
+      this.scenarioGroupNameConflictToResolve.data._addOrChangeName = nameConflictResolution.new;
+      this.scenarioGroupNameConflictToResolve.data._newName = this.nameConflictForm.value.newGroupName;
+    }
+
+    this.checkScenarioGroupsNamesConflicts();
   }
 
   importAllScenarios(importJsons: JsonFile[]): void {
     this.loading = true;
 
-    forkJoin(importJsons.map((json: JsonFile) => this.importScenario(json)))
+    forkJoin(importJsons.map((json: JsonFile) => this.importOrAddScenario(json)))
       .pipe(first())
       .subscribe((res: []) => {
         this.loading = false;
-        this.importFilesInError = res.filter((r) => typeof r === 'string');
+
+        let flattenRes = [].concat(...res);
+        this.importFilesInError = flattenRes.filter((r) => typeof r === 'string');
 
         if (!this.importFilesInError.length) {
           this.onClose.emit(true);
@@ -163,19 +269,47 @@ export class ScenarioImportComponent {
       });
   }
 
-  importScenario(json: JsonFile): Observable<Scenario | string> {
+  importOrAddScenario(json: JsonFile): Observable<(ScenarioGroup | ScenarioVersion | string)[]> {
     delete json.data.id;
-    delete json.data.applicationId;
-    delete json.data.createDate;
+    delete json.data.creationDate;
     delete json.data.updateDate;
-    delete json.data.sagaId;
+    json.data.versions.forEach((version) => {
+      if (version.state === SCENARIO_STATE.current) {
+        version.state = SCENARIO_STATE.draft;
+        version.comment += ` ${SCENARIO_STATE.current}`;
+      }
+      delete version.id;
+      delete version.creationDate;
+      delete version.updateDate;
+    });
 
-    json.data.state = SCENARIO_STATE.draft;
-    json.data.applicationId = this.stateService.currentApplication._id;
+    if (!json.data._addOrChangeName) {
+      return forkJoin([
+        this.scenarioService.importScenarioGroup(json.data).pipe(
+          first(),
+          catchError((_err) => of(json.filename))
+        )
+      ]);
+    } else if (json.data._addOrChangeName === nameConflictResolution.new) {
+      json.data.name = json.data._newName;
+      return forkJoin([
+        this.scenarioService.importScenarioGroup(json.data).pipe(
+          first(),
+          catchError((_err) => of(json.filename))
+        )
+      ]);
+    } else if (json.data._addOrChangeName === nameConflictResolution.add) {
+      let versionsPosts: Observable<ScenarioVersion | string>[] = [];
+      json.data.versions.forEach((version) => {
+        versionsPosts.push(
+          this.scenarioService.postScenarioVersion(json.data._targetScenarioGroupId, version).pipe(
+            first(),
+            catchError((_err) => of(json.filename))
+          )
+        );
+      });
 
-    return this.scenarioService.postScenario(json.data).pipe(
-      first(),
-      catchError((_err) => of(json.filename))
-    );
+      return forkJoin(versionsPosts);
+    }
   }
 }

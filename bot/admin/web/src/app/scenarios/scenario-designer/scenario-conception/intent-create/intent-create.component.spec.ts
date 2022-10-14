@@ -5,7 +5,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { EMPTY } from 'rxjs';
 import { StateService } from '../../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../../shared/test-shared.module';
-import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
+import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
 import { IntentCreateComponent } from './intent-create.component';
 
 const scenario = {
@@ -14,7 +14,7 @@ const scenario = {
   category: 'scenarios',
   tags: ['testing'],
   applicationId: '62558f21b318632c9200b567',
-  createDate: '2022-08-17T09:57:14.428Z',
+  creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
   description: '',
   data: {
@@ -43,7 +43,7 @@ const scenario = {
   state: 'draft' as SCENARIO_STATE
 };
 function getScenarioMock() {
-  return JSON.parse(JSON.stringify(scenario)) as Scenario;
+  return JSON.parse(JSON.stringify(scenario)) as ScenarioVersion;
 }
 
 describe('IntentCreateComponent', () => {

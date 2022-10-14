@@ -7,7 +7,7 @@
       ghost
       shape="round"
       nbTooltip="Export scenarios dumps"
-      [disabled]="!configurations?.length || !sagas.length"
+      [disabled]="!configurations?.length || !scenariosGroups.length"
       (click)="openExportScenario()"
     >
       <nb-icon icon="download-outline"></nb-icon>
@@ -26,7 +26,7 @@
       nbButton
       status="primary"
       [disabled]="!configurations?.length"
-      (click)="addOrEditScenario()"
+      (click)="addOrEditScenarioGroup()"
     >
       <nb-icon icon="plus-outline"></nb-icon>
       Create
@@ -43,12 +43,12 @@
   >
     <tock-scenario-filters
       class="d-block mb-2"
-      (onFilter)="filterSagas($event)"
+      (onFilter)="filterScenariosGroups($event)"
     ></tock-scenario-filters>
 
     <div
       class="d-flex justify-content-end mb-2"
-      *ngIf="!loading.list && paginatedSagas?.length"
+      *ngIf="!loading.list && paginatedScenariosGroups?.length"
     >
       <tock-pagination
         [pagination]="pagination"
@@ -61,20 +61,20 @@
       [nbSpinner]="loading.list"
     >
       <tock-no-data-found
-        *ngIf="!loading.list && !paginatedSagas.length"
+        *ngIf="!loading.list && !paginatedScenariosGroups.length"
         title="No Scenario found"
         message="You may create a new one using above button &#34;Create&#34;."
       ></tock-no-data-found>
 
       <tock-scenario-list-simple
-        *ngIf="!loading.list && paginatedSagas.length"
+        *ngIf="!loading.list && paginatedScenariosGroups.length"
         [nbSpinner]="loading.delete"
-        [sagas]="paginatedSagas"
-        [selectedScenario]="scenarioEdit"
-        (onDeleteSaga)="askDeleteSaga($event)"
-        (onEdit)="editSaga($event)"
-        (onDuplicate)="askDuplicationDescription($event)"
-        (onDelete)="delete($event)"
+        [scenariosGroups]="paginatedScenariosGroups"
+        [selectedScenarioGroup]="scenarioGroupEdit"
+        (onDeleteScenarioGroup)="askDeleteScenarioGroup($event)"
+        (onEditScenarioGroup)="addOrEditScenarioGroup($event)"
+        (onDuplicateScenarioVersion)="askDuplicationScenarioVersion($event)"
+        (onDeleteScenarioVersion)="askDeleteScenarioVersion($event)"
         (onOrderBy)="orderBy($event)"
       ></tock-scenario-list-simple>
     </div>
@@ -85,15 +85,16 @@
     *ngIf="isSidePanelOpen.edit"
     class="aside"
     [loading]="loading.edit"
-    [scenario]="scenarioEdit"
+    [scenarioGroup]="scenarioGroupEdit"
     (onClose)="closeSidePanel('edit')"
-    (onSave)="saveScenario($event)"
+    (onSave)="saveScenarioGroup($event)"
   ></tock-scenario-edit>
 
   <tock-scenario-import
     #scenarioImportComponent
     *ngIf="isSidePanelOpen.import"
     class="aside"
+    [scenariosGroups]="scenariosGroups"
     (onClose)="closeSidePanel('import')"
   ></tock-scenario-import>
 
@@ -101,7 +102,7 @@
     #scenarioExportComponent
     *ngIf="isSidePanelOpen.export"
     class="aside"
-    [sagas]="sagas"
+    [scenariosGroups]="scenariosGroups"
     (onClose)="closeSidePanel('export')"
   ></tock-scenario-export>
 </section>
@@ -109,7 +110,7 @@
 <ng-template #duplicationModal>
   <nb-card>
     <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-      Duplicate a scenario
+      Duplicate a scenario version
       <button
         nbButton
         ghost
@@ -126,20 +127,20 @@
         (submit)="duplicationSubmit()"
       >
         <tock-form-control
-          label="Version description"
-          name="description"
+          label="Version comment"
+          name="comment"
           required="true"
-          [controls]="description"
+          [controls]="comment"
           [showError]="isDuplicationSubmitted"
           [hasMargin]="false"
         >
           <textarea
             nbInput
-            formControlName="description"
+            formControlName="comment"
             fullWidth
-            id="description"
+            id="comment"
             type="text"
-            placeholder="Enter a description"
+            placeholder="Enter a comment"
             autofocusElement
           ></textarea>
         </tock-form-control>

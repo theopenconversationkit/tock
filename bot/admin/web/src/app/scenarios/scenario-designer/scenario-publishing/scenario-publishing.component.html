@@ -1,5 +1,5 @@
 <nb-card>
-  <nb-card-body>
+  <nb-card-body *ngIf="avalaibleHandlers">
     <div *ngIf="dependencies">
       <ng-container *ngFor="let intentJobsType of [dependencies.intentsToCreate, dependencies.intentsToUpdate]">
         <div *ngIf="intentJobsType.length">
@@ -84,19 +84,27 @@
           </div>
         </div>
       </ng-container>
+    </div>
 
-      <div
-        *ngIf="!processingDependencies"
-        class="text-center mt-3"
+    <div
+      *ngIf="!isReadonly && !isScenarioUnPublishable() && !processingDependencies"
+      class="text-center mt-3"
+    >
+      <button
+        nbButton
+        status="danger"
+        (click)="processDependencies()"
       >
-        <button
-          nbButton
-          status="danger"
-          (click)="processDependencies()"
-        >
-          Publish scenario
-        </button>
-      </div>
+        Publish scenario
+      </button>
+    </div>
+
+    <div
+      *ngIf="isScenarioUnPublishable()"
+      class="text-danger text-center my-3"
+    >
+      <h4 class="text-danger">This scenario is not publishable</h4>
+      {{ isScenarioUnPublishable() }}
     </div>
 
     <div *ngIf="tickStoryErrors">
@@ -107,7 +115,7 @@
           *ngFor="let error of tickStoryErrors"
           class="text-danger"
         >
-          {{ error }}
+          {{ error.message }}
         </li>
       </ul>
     </div>
@@ -117,8 +125,14 @@
       You will be redirected in a few seconds...
     </div>
 
-    <div *ngIf="isReadonly">
-      This scenario is read-only. No changes can be made to it and it cannot be published.
+    <div
+      *ngIf="isReadonly"
+      class="text-danger text-center"
+    >
+      <h4 class="text-danger">This scenario is read-only</h4>
+      It corresponds to a published TickStory.
+      <br />
+      No changes can be made to it and it cannot be published.
       <br />
       If you wish to modify it, please make a copy first.
     </div>

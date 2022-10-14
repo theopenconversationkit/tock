@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { Scenario, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../models';
+import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../models';
 import { ModeStepperComponent } from './mode-stepper.component';
 
 const scenarioWriting = {
@@ -15,7 +15,7 @@ const scenarioWriting = {
   category: 'scenarios',
   tags: ['testing'],
   applicationId: '62558f21b318632c9200b567',
-  createDate: '2022-08-17T09:57:14.428Z',
+  creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
   description: '',
   data: {
@@ -32,7 +32,7 @@ const scenarioCasting = {
   category: 'scenarios',
   tags: ['testing'],
   applicationId: '62558f21b318632c9200b567',
-  createDate: '2022-08-17T09:57:14.428Z',
+  creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
   description: '',
   data: {
@@ -52,7 +52,7 @@ const scenarioProduction = {
   category: 'scenarios',
   tags: ['testing'],
   applicationId: '62558f21b318632c9200b567',
-  createDate: '2022-08-17T09:57:14.428Z',
+  creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
   description: '',
   data: {
@@ -89,7 +89,7 @@ const scenarioPublishing = {
   category: 'scenarios',
   tags: ['testing'],
   applicationId: '62558f21b318632c9200b567',
-  createDate: '2022-08-17T09:57:14.428Z',
+  creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
   description: '',
   data: {
@@ -193,7 +193,7 @@ describe('ModeStepperComponent', () => {
       },
       {
         description: 'scenario mode production',
-        scenario: scenarioCasting as Scenario,
+        scenario: scenarioCasting as ScenarioVersion,
         mode: SCENARIO_MODE.production,
         stepPassed: { writing: true, casting: true, production: false, publishing: false },
         buttonClass: {
@@ -205,7 +205,7 @@ describe('ModeStepperComponent', () => {
       },
       {
         description: 'scenario mode publishing',
-        scenario: scenarioProduction as Scenario,
+        scenario: scenarioProduction as ScenarioVersion,
         mode: SCENARIO_MODE.publishing,
         stepPassed: { writing: true, casting: true, production: true, publishing: false },
         buttonClass: {
@@ -217,7 +217,7 @@ describe('ModeStepperComponent', () => {
       },
       {
         description: 'scenario mode publishing valid',
-        scenario: scenarioPublishing as Scenario,
+        scenario: scenarioPublishing as ScenarioVersion,
         mode: SCENARIO_MODE.publishing,
         stepPassed: { writing: true, casting: true, production: true, publishing: false },
         buttonClass: {
@@ -263,7 +263,7 @@ describe('ModeStepperComponent', () => {
   });
 
   it('should switch to mode casting if step is valid', () => {
-    component.scenario = scenarioCasting as Scenario;
+    component.scenario = scenarioCasting as ScenarioVersion;
 
     spyOn(component.modeSwitch, 'emit');
     const buttonCasting = fixture.debugElement.query(By.css('[data-testid="step-ctrl-casting"]'));
@@ -283,7 +283,7 @@ describe('ModeStepperComponent', () => {
   });
 
   it('should switch to mode production if step is valid', () => {
-    component.scenario = scenarioProduction as Scenario;
+    component.scenario = scenarioProduction as ScenarioVersion;
 
     spyOn(component.modeSwitch, 'emit');
     const buttonProduction = fixture.debugElement.query(By.css('[data-testid="step-ctrl-production"]'));
@@ -303,7 +303,7 @@ describe('ModeStepperComponent', () => {
   });
 
   it('should switch to mode publishing if step is valid', () => {
-    component.scenario = scenarioPublishing as Scenario;
+    component.scenario = scenarioPublishing as ScenarioVersion;
 
     spyOn(component.modeSwitch, 'emit');
     const buttonPublishing = fixture.debugElement.query(By.css('[data-testid="step-ctrl-publishing"]'));

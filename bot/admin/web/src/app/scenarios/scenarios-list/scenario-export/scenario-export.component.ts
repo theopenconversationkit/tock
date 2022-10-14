@@ -1,11 +1,8 @@
-import { DatePipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-
 import { StateService } from '../../../core-nlp/state.service';
-import { normalizedSnakeCase } from '../../commons/utils';
-import { exportJsonDump } from '../../../shared/utils';
-import { Saga, Scenario, SCENARIO_STATE } from '../../models';
+import { ExportableScenarioGroup, ScenarioGroup, SCENARIO_STATE } from '../../models';
+import { ScenarioService } from '../../services/scenario.service';
 
 @Component({
   selector: 'tock-scenario-export',
@@ -13,59 +10,46 @@ import { Saga, Scenario, SCENARIO_STATE } from '../../models';
   styleUrls: ['./scenario-export.component.scss']
 })
 export class ScenarioExportComponent {
-  @Input() sagas: Saga[];
+  @Input() scenariosGroups: ScenarioGroup[];
   @Output() onClose = new EventEmitter<boolean>();
 
   form: FormGroup = new FormGroup({
     allOrCurrentOnly: new FormControl('one')
   });
 
-  constructor(protected state: StateService, private datePipe: DatePipe) {}
+  constructor(protected state: StateService, private scenarioService: ScenarioService) {}
 
   export(): void {
+    let exportableGroups: ExportableScenarioGroup[] = [];
     const mode = this.form.value.allOrCurrentOnly;
+
     if (mode === 'all') {
-      this.sagas.forEach((saga) => {
-        saga.scenarios.forEach((scenario) => {
-          this.download(scenario);
-        });
+      this.scenariosGroups.forEach((group) => {
+        exportableGroups.push({ id: group.id, versions: group.versions.map((v) => v.id) });
       });
     } else {
-      let exportables = [];
-      this.sagas.forEach((saga) => {
-        let current = saga.scenarios.find((scenario) => scenario.state === SCENARIO_STATE.current);
-        if (current) exportables.push(current);
-        else {
-          const drafts = saga.scenarios.filter((scenario) => scenario.state === SCENARIO_STATE.draft);
+      this.scenariosGroups.forEach((group) => {
+        let current = group.versions.find((scenarioVersion) => scenarioVersion.state === SCENARIO_STATE.current);
+        if (current) {
+          exportableGroups.push({ id: group.id, versions: [current.id] });
+        } else {
+          const drafts = group.versions.filter((scenarioVersion) => scenarioVersion.state === SCENARIO_STATE.draft);
           if (drafts.length) {
-            exportables.push(
-              drafts.sort((a, b) => {
-                return new Date(b.createDate).getTime() - new Date(a.createDate).getTime();
-              })[0]
-            );
+            let latest = drafts.sort((a, b) => {
+              return new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime();
+            })[0];
+            exportableGroups.push({ id: group.id, versions: [latest.id] });
           } else {
-            exportables.push(saga.scenarios[saga.scenarios.length - 1]);
+            let residual = group.versions[group.versions.length - 1];
+            exportableGroups.push({ id: group.id, versions: [residual.id] });
           }
         }
       });
-      exportables.forEach((scenario) => {
-        this.download(scenario);
-      });
     }
 
-    this.onClose.emit(true);
-  }
+    this.scenarioService.loadScenariosAndDownload(this.scenariosGroups, exportableGroups);
 
-  download(scenario: Scenario): void {
-    const fileName = [
-      this.state.currentApplication.name,
-      'SCENARIO',
-      normalizedSnakeCase(scenario.name),
-      scenario.state,
-      this.datePipe.transform(scenario.createDate, 'yyyy-MM-dd')
-    ].join('_');
-
-    exportJsonDump(scenario, fileName);
+    this.close();
   }
 
   close(): void {

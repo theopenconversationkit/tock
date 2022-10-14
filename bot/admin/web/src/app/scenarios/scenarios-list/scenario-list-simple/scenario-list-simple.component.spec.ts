@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-
-import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
-import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../shared/test-shared.module';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+
+import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
+import { ScenarioService } from '../../services/scenario.service';
+import { StateService } from '../../../core-nlp/state.service';
+import { TestSharedModule } from '../../../shared/test-shared.module';
 
 describe('ScenarioListSimpleComponent', () => {
   let component: ScenarioListSimpleComponent;
@@ -15,6 +16,10 @@ describe('ScenarioListSimpleComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ScenarioListSimpleComponent],
       providers: [
+        {
+          provide: ScenarioService,
+          useValue: {}
+        },
         {
           provide: StateService,
           useValue: { currentApplication: { name: 'TestApplicationName' } }
@@ -30,7 +35,7 @@ describe('ScenarioListSimpleComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ScenarioListSimpleComponent);
     component = fixture.componentInstance;
-    component.sagas = [];
+    component.scenariosGroups = [];
     fixture.detectChanges();
   });
 

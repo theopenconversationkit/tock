@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { IntentDefinition, MachineState, TickActionDefinition, Transition } from '../../../../models';
+import { ScenarioIntentDefinition, MachineState, ScenarioActionDefinition, Transition } from '../../../../models';
 import { ScenarioProductionService } from '../../scenario-production.service';
 
 @Component({
@@ -14,8 +14,8 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   @Output() removeTransition = new EventEmitter();
   @Input() transition: Transition;
   @Input() parentState: MachineState;
-  @Input() intents: IntentDefinition[];
-  @Input() actions: TickActionDefinition[];
+  @Input() intents: ScenarioIntentDefinition[];
+  @Input() actions: ScenarioActionDefinition[];
   @Input() isReadonly: boolean = false;
 
   constructor(public elementRef: ElementRef, private scenarioProductionService: ScenarioProductionService) {

@@ -3,14 +3,14 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
 import {
-  Scenario,
   ScenarioItem,
   ScenarioItemFrom,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
-  TickContext
-} from '../../models/scenario.model';
+  ScenarioContext,
+  ScenarioVersionExtended
+} from '../../models';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from 'src/app/core-nlp/state.service';
@@ -28,8 +28,9 @@ const CANVAS_TRANSITION_TIMING = 300;
 })
 export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
-  @Input() scenario: Scenario;
+  @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
+  @Input() readonly avalaibleHandlers: string[];
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
@@ -60,17 +61,19 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   contextsPanelDisplayed: boolean = true;
 
-  getContextEntityColor(context: TickContext): string {
+  getContextEntityColor(context: ScenarioContext): string {
     if (context.entityType) return entityColor(qualifiedRole(context.entityType, context.entityRole));
   }
 
-  getContextEntityContrast(context: TickContext): string {
+  getContextEntityContrast(context: ScenarioContext): string {
     if (context.entityType) return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
 
   addContext(): void {
     const modal = this.dialogService.openDialog(ContextCreateComponent, {
-      context: {}
+      context: {
+        scenario: this.scenario
+      }
     });
     const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((contextDef) => {
       this.scenario.data.contexts.push({
@@ -83,7 +86,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  confirmDeleteContext(context: TickContext): void {
+  confirmDeleteContext(context: ScenarioContext): void {
     const deleteAction = 'delete';
     const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
@@ -99,7 +102,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteContext(context: TickContext): void {
+  deleteContext(context: ScenarioContext): void {
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
         item.tickActionDefinition.inputContextNames = item.tickActionDefinition.inputContextNames.filter((icn) => icn != context.name);
@@ -109,7 +112,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     this.scenario.data.contexts = this.scenario.data.contexts.filter((ctx) => ctx !== context);
   }
 
-  isContextUsed(context: TickContext): boolean {
+  isContextUsed(context: ScenarioContext): boolean {
     let isInput;
     let isOutput;
     const actionsDefinitions = getScenarioActionDefinitions(this.scenario);

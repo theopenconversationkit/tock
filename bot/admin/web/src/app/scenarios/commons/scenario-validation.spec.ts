@@ -1,4 +1,12 @@
-import { IntentDefinition, Scenario, ScenarioItem, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, TickActionDefinition } from '../models';
+import {
+  ScenarioIntentDefinition,
+  ScenarioVersion,
+  ScenarioItem,
+  ScenarioItemFrom,
+  SCENARIO_MODE,
+  SCENARIO_STATE,
+  ScenarioActionDefinition
+} from '../models';
 import { isStepValid, SCENARIO_STEPS_ERRORS } from './scenario-validation';
 
 const scenario = {
@@ -7,7 +15,7 @@ const scenario = {
   category: 'scenarios',
   tags: ['testing'],
   applicationId: '11111111111111111',
-  createDate: '2022-08-17T09:57:14.428Z',
+  creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
   description: '',
   data: {
@@ -20,7 +28,7 @@ const scenario = {
 
 describe('scenario-validation', () => {
   it('Should detect step validity', () => {
-    let scenarioCopy: Scenario = JSON.parse(JSON.stringify(scenario));
+    let scenarioCopy: ScenarioVersion = JSON.parse(JSON.stringify(scenario));
     const scenarioItems = scenarioCopy.data.scenarioItems;
 
     let res = isStepValid(scenarioCopy, SCENARIO_MODE.casting);
@@ -48,7 +56,7 @@ describe('scenario-validation', () => {
     };
     expect(res).toEqual(expected, 'Client interventions must have intent defined');
 
-    scenarioItems[0].intentDefinition = { name: 'MainIntent' } as IntentDefinition;
+    scenarioItems[0].intentDefinition = { name: 'MainIntent' } as ScenarioIntentDefinition;
 
     res = isStepValid(scenarioCopy, SCENARIO_MODE.production);
     expected = {
@@ -61,7 +69,7 @@ describe('scenario-validation', () => {
       name: 'BOT_RESPONSE1',
       inputContextNames: ['TEST_CONTEXT'],
       outputContextNames: []
-    } as TickActionDefinition;
+    } as ScenarioActionDefinition;
 
     res = isStepValid(scenarioCopy, SCENARIO_MODE.production);
     expected = {
@@ -78,7 +86,7 @@ describe('scenario-validation', () => {
         name: 'BOT_RESPONSE2',
         inputContextNames: [],
         outputContextNames: ['TEST_CONTEXT', 'TEST_CONTEXT2']
-      } as TickActionDefinition
+      } as ScenarioActionDefinition
     });
 
     res = isStepValid(scenarioCopy, SCENARIO_MODE.production);

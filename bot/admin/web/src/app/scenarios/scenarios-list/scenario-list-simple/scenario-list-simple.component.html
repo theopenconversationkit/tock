@@ -29,31 +29,34 @@
 </div>
 
 <nb-accordion
+  *ngFor="let scenarioGroup of scenariosGroups"
   class="mb-2"
-  *ngFor="let saga of sagas"
+  [class.selected]="selectedScenarioGroup?.id === scenarioGroup.id"
 >
-  <!-- [class.selected]="selectedScenario?.id === scenario.id" -->
-  <nb-accordion-item>
+  <nb-accordion-item
+    [expanded]="scenarioGroup._expanded"
+    (collapsedChange)="onScenarioGroupCollapsedChange(scenarioGroup, $event)"
+  >
     <nb-accordion-item-header>
       <div class="grid-columns">
         <div>
           <div class="font-weight-bold initial-capitalize">
-            {{ saga.name }}
+            {{ scenarioGroup.name }}
           </div>
           <span class="text-muted truncate">
-            {{ saga.description }}
+            {{ scenarioGroup.description }}
           </span>
         </div>
 
-        <div class="initial-capitalize">
-          {{ saga.category }}
+        <div class="text-truncate text-wrap initial-capitalize">
+          {{ scenarioGroup.category }}
         </div>
 
-        <div>
-          <nb-tag-list>
+        <div class="text-truncate text-wrap">
+          <nb-tag-list *ngIf="scenarioGroup.tags?.length">
             <nb-tag
               appearance="filled"
-              *ngFor="let tag of saga.tags"
+              *ngFor="let tag of scenarioGroup.tags"
               [text]="tag"
               status="basic"
               size="tiny"
@@ -62,77 +65,96 @@
         </div>
 
         <div>
+          <nb-toggle
+            [disabled]="!scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.current)"
+            nbTooltip="Activate or deactivate this tick story"
+          ></nb-toggle>
+        </div>
+
+        <div>
           <button
             nbButton
             ghost
             shape="round"
-            nbTooltip="Designer"
-            (click)="design($event, saga)"
+            nbTooltip="Open latest version"
+            (click)="design($event, scenarioGroup)"
           >
-            <nb-icon [icon]="sagaHasDraft(saga) ? 'color-palette-outline' : 'eye-outline'"></nb-icon>
+            <nb-icon
+              [icon]="scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.draft) ? 'color-palette-outline' : 'eye-outline'"
+            ></nb-icon>
           </button>
-          <!-- <button
-              nbButton
-              ghost
-              shape="round"
-              nbTooltip="Edit"
-              (click)="edit($event, saga)"
-            >
-              <nb-icon icon="edit-outline"></nb-icon>
-            </button> -->
           <button
             nbButton
             ghost
             shape="round"
-            nbTooltip="Delete scenarios saga and corresponding story"
-            (click)="deleteSaga($event, saga)"
+            nbTooltip="Edit scenario group"
+            (click)="editScenarioGroup($event, scenarioGroup)"
+          >
+            <nb-icon icon="edit-outline"></nb-icon>
+          </button>
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Delete scenarios group and corresponding story"
+            (click)="deleteScenarioGroup($event, scenarioGroup)"
           >
             <nb-icon icon="trash-2-outline"></nb-icon>
           </button>
         </div>
       </div>
     </nb-accordion-item-header>
+
     <nb-accordion-item-body>
-      <div class="grid-accordion-item-body grid-accordion-item-body-header gap-1">
+      <div class="grid-accordion-item-body grid-accordion-item-body-header text-nowrap gap-1">
         <span>Creation date</span>
-        <span>Last updated date</span>
+        <span>Update date</span>
         <span>Status</span>
-        <span>Version description</span>
+        <span>Version comment</span>
       </div>
       <div
         class="grid-accordion-item-body gap-1"
-        *ngFor="let scenario of saga.scenarios"
+        *ngFor="let scenarioVersion of scenarioGroup.versions"
       >
         <div>
+          <span class="d-inline d-sm-none text-muted">Creation date : </span>
           <span
-            [ngClass]="{ 'font-weight-bold': scenario.state === SCENARIO_STATE.current }"
-            [nbTooltip]="scenario.createDate | date: 'y/MM/dd HH:mm:ss'"
+            [ngClass]="{ 'font-weight-bold': scenarioVersion.state === SCENARIO_STATE.current }"
+            [nbTooltip]="scenarioVersion.creationDate | date: 'y/MM/dd HH:mm:ss'"
           >
-            {{ scenario.createDate | date: 'y/MM/dd' }}
+            {{ scenarioVersion.creationDate | date: 'y/MM/dd' }}
           </span>
         </div>
         <div>
+          <span class="d-inline d-sm-none text-muted">Update date : </span>
           <span
-            [ngClass]="{ 'font-weight-bold': scenario.state === SCENARIO_STATE.current }"
-            [nbTooltip]="scenario.updateDate | date: 'y/MM/dd HH:mm:ss'"
+            [ngClass]="{ 'font-weight-bold': scenarioVersion.state === SCENARIO_STATE.current }"
+            [nbTooltip]="scenarioVersion.updateDate | date: 'y/MM/dd HH:mm:ss'"
           >
-            {{ scenario.updateDate | date: 'y/MM/dd' }}
+            {{ scenarioVersion.updateDate | date: 'y/MM/dd' }}
           </span>
         </div>
         <div
           class="d-flex"
-          [ngClass]="{ 'font-weight-bold': scenario.state === SCENARIO_STATE.current }"
+          [ngClass]="{ 'font-weight-bold': scenarioVersion.state === SCENARIO_STATE.current }"
         >
-          {{ scenario.state }}
+          <span class="d-inline d-sm-none text-muted">Status : </span>
+          <span>
+            {{ scenarioVersion.state }}
+          </span>
           <nb-icon
-            *ngIf="scenario.state === SCENARIO_STATE.current"
+            *ngIf="scenarioVersion.state === SCENARIO_STATE.current"
             status="success"
             icon="checkmark-outline"
             class="min-width-1em"
           ></nb-icon>
         </div>
-        <div class="text-muted font-italic truncate">
-          {{ scenario.description }}
+
+        <div class="text-muted truncate">
+          <span class="d-inline d-sm-none text-muted">Version comment : </span>
+          <span class="font-italic">
+            {{ scenarioVersion.comment }}
+          </span>
         </div>
 
         <div class="d-flex align-items-start">
@@ -140,10 +162,10 @@
             nbButton
             ghost
             shape="round"
-            nbTooltip="Open scenario"
-            [routerLink]="'./' + scenario.id"
+            nbTooltip="Open scenario version"
+            [routerLink]="'./' + scenarioGroup.id + '/' + scenarioVersion.id"
           >
-            <nb-icon [icon]="scenario.state === SCENARIO_STATE.draft ? 'color-palette-outline' : 'eye-outline'"></nb-icon>
+            <nb-icon [icon]="scenarioVersion.state === SCENARIO_STATE.draft ? 'color-palette-outline' : 'eye-outline'"></nb-icon>
           </button>
 
           <button
@@ -151,7 +173,7 @@
             ghost
             shape="round"
             nbTooltip="Copy and edit a new version"
-            (click)="duplicate(scenario)"
+            (click)="duplicate(scenarioGroup, scenarioVersion)"
           >
             <nb-icon icon="copy-outline"></nb-icon>
           </button>
@@ -160,8 +182,8 @@
             nbButton
             ghost
             shape="round"
-            nbTooltip="Export scenario"
-            (click)="download(scenario)"
+            nbTooltip="Export scenario version"
+            (click)="download(scenarioGroup, scenarioVersion)"
           >
             <nb-icon icon="download-outline"></nb-icon>
           </button>
@@ -170,8 +192,8 @@
             nbButton
             ghost
             shape="round"
-            nbTooltip="Delete"
-            (click)="delete($event, scenario)"
+            nbTooltip="Delete scenario version"
+            (click)="deleteScenarioVersion($event, scenarioGroup, scenarioVersion)"
           >
             <nb-icon icon="trash-2-outline"></nb-icon>
           </button>

@@ -43,10 +43,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer
   ) {
-    iconRegistry.addSvgIcon(
-      'logo',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg')
-    );
+    iconRegistry.addSvgIcon('logo', sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
     this.auth.addListener(this);
   }
 
@@ -89,12 +86,6 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
-        title: 'Settings',
-        icon: 'settings-outline',
-        link: '/configuration',
-        hidden: !this.state.hasRole(UserRole.admin)
-      },
-      {
         title: 'FAQ Training',
         icon: {
           icon: 'school',
@@ -123,6 +114,12 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         icon: 'color-palette-outline',
         link: '/build/i18n',
         hidden: this.state.hasRole(UserRole.botUser) || !this.state.hasRole(UserRole.faqBotUser)
+      },
+      {
+        title: 'Settings',
+        icon: 'settings-outline',
+        link: '/configuration',
+        hidden: !this.state.hasRole(UserRole.admin)
       }
     ];
   }

@@ -1,27 +1,29 @@
-import { ParseQuery, Sentence } from '../../model/nlp';
+import { Sentence } from '../../model/nlp';
+import { TempSentence } from './designer.model';
 
-export interface Saga {
-  sagaId: string;
+export interface ScenarioGroup {
+  id?: string;
   name: string;
-  description: string;
-  category: string;
-  tags: string[];
-  scenarios: Scenario[];
-}
-
-export interface Scenario {
-  id: string | null;
-  sagaId?: string | null;
-  name: string;
-  category?: string;
-  tags?: Array<string>;
-  createDate: string;
-  updateDate?: string;
   description?: string;
-  data?: ScenarioData;
-  applicationId: string;
-  state: SCENARIO_STATE;
+  category?: string;
+  tags: string[];
+  creationDate?: string;
+  updateDate?: string;
+  versions: ScenarioVersion[];
 }
+
+export type ScenarioGroupExtended = ScenarioGroup & { _expanded?: boolean };
+
+export interface ScenarioVersion {
+  id?: string;
+  creationDate?: string;
+  updateDate?: string;
+  data?: ScenarioData;
+  state: SCENARIO_STATE;
+  comment?: string;
+}
+
+export type ScenarioVersionExtended = ScenarioVersion & { _name?: string; _scenarioGroupId?: string };
 
 export enum SCENARIO_STATE {
   draft = 'DRAFT',
@@ -37,7 +39,7 @@ export enum SCENARIO_MODE {
 }
 export interface ScenarioData {
   scenarioItems: ScenarioItem[];
-  contexts?: TickContext[];
+  contexts?: ScenarioContext[];
   stateMachine?: MachineState;
   mode: SCENARIO_MODE;
 }
@@ -56,11 +58,11 @@ export interface ScenarioItem {
   final?: boolean;
   main?: boolean;
 
-  intentDefinition?: IntentDefinition;
-  tickActionDefinition?: TickActionDefinition;
+  intentDefinition?: ScenarioIntentDefinition;
+  tickActionDefinition?: ScenarioActionDefinition;
 }
 
-export interface IntentDefinition {
+export interface ScenarioIntentDefinition {
   label: string;
   name: string;
   category?: string;
@@ -71,11 +73,11 @@ export interface IntentDefinition {
   primary?: boolean;
 }
 
-export interface TickActionDefinition {
+export interface ScenarioActionDefinition {
   name: string;
   description?: string;
-  inputContextNames?: TickContextName[];
-  outputContextNames?: TickContextName[];
+  inputContextNames?: ScenarioContextName[];
+  outputContextNames?: ScenarioContextName[];
   handler?: string;
   answer?: string;
   answerId?: string;
@@ -85,9 +87,9 @@ export interface TickActionDefinition {
 
 export type EntityTypeName = string;
 export type EntityRole = string;
-export type TickContextName = string;
-export interface TickContext {
-  name: TickContextName;
+export type ScenarioContextName = string;
+export interface ScenarioContext {
+  name: ScenarioContextName;
   entityType?: EntityTypeName;
   entityRole?: EntityRole;
   type: 'string';
@@ -100,61 +102,4 @@ export interface MachineState {
   on?: { [key: string]: string };
 }
 
-export interface Transition {
-  name: string;
-  target: string;
-}
-
-export class TempSentence extends ParseQuery {
-  public classification: TempClassification;
-
-  constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public query: string,
-    public checkExistingQuery: boolean,
-    public state?: string
-  ) {
-    super(namespace, applicationName, language, query, checkExistingQuery);
-    this.classification = { entities: [] };
-  }
-}
-export interface TempEntity {
-  type: string;
-  role: string;
-  start: number;
-  end: number;
-  entityColor: string;
-  qualifiedRole?: string;
-  subEntities: any[];
-}
-export interface TempClassification {
-  entities: TempEntity[];
-  intentId?: string;
-}
-
-export interface DependencyUpdateJob {
-  type: 'creation' | 'update';
-  done: boolean;
-  data: ScenarioItem;
-}
-
-export interface IntegrityCheckResult {
-  valid: boolean;
-  reason?: string;
-}
-
-export interface TickStory {
-  name: string;
-  botId: string;
-  storyId: string;
-  description: string;
-  sagaId: string;
-  mainIntent: string;
-  primaryIntents: string[];
-  secondaryIntents: string[];
-  contexts: TickContext[];
-  actions: TickActionDefinition[];
-  stateMachine: MachineState;
-}
+export type ExportableScenarioGroup = { id: string; versions: string[] };

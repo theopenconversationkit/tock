@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { Filter, Scenario } from '../../models';
+import { Filter, ScenarioVersion } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 
 @Component({

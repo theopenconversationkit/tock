@@ -13,12 +13,13 @@ import {
 } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { ScenarioItem, TempSentence, TickContext } from '../../../models';
+import { ScenarioItem, TempSentence, ScenarioContext, ScenarioVersionExtended } from '../../../models';
 import { Token } from '../../../../sentence-analysis/highlight/highlight.component';
 import { EntityDefinition, Intent, Sentence } from '../../../../model/nlp';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { SentenceEditComponent } from './sentence/sentence-edit.component';
+import { deepCopy } from '../../../commons/utils';
 
 export type SentenceExtended = Sentence & { _tokens?: Token[] };
 export type TempSentenceExtended = TempSentence & { _tokens?: Token[] };
@@ -31,10 +32,14 @@ export type TempSentenceExtended = TempSentence & { _tokens?: Token[] };
 export class IntentEditComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
+  @Input() scenario: ScenarioVersionExtended;
   @Input() item: ScenarioItem;
-  @Input() contexts: TickContext[];
+  @Input() contexts: ScenarioContext[];
+  @Input() isReadonly: boolean;
+
   @Output() saveModifications = new EventEmitter();
   @Output() onRemoveDefinition = new EventEmitter();
+
   @ViewChildren(SentenceEditComponent) sentencesComponents: QueryList<SentenceEditComponent>;
   @ViewChild('addSentenceInput') addSentenceInput: ElementRef;
 
@@ -44,13 +49,13 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form.patchValue({ primary: this.item.intentDefinition.primary });
-    if (this.item.main) {
+    if (this.item.main || this.isReadonly) {
       this.form.get('primary').disable();
     }
 
     if (this.item.intentDefinition?.sentences?.length) {
       this.item.intentDefinition?.sentences.forEach((sentence) => {
-        const clone = JSON.parse(JSON.stringify(sentence));
+        const clone = deepCopy(sentence);
         this.sentences.push(new FormControl(clone));
       });
     }

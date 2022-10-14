@@ -1,25 +1,22 @@
+import { DatePipe } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { ApplicationService } from '../../core-nlp/applications.service';
 
-import { Scenario, SCENARIO_MODE, SCENARIO_STATE } from '../models';
+import { ScenarioGroup } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 import { ScenarioService } from './scenario.service';
 
-const mockScenarios: Scenario[] = [
+const mockScenarios: ScenarioGroup[] = [
   {
     id: '1',
     name: 'Scenario 1',
     description: 'Description 1',
     category: '',
     tags: ['tag1', ''],
-    createDate: '12/01/1980',
+    creationDate: '12/01/1980',
     updateDate: null,
-    data: {
-      mode: SCENARIO_MODE.writing,
-      scenarioItems: []
-    },
-    applicationId: '1',
-    state: SCENARIO_STATE.draft
+    versions: []
   },
   {
     id: '2',
@@ -27,14 +24,9 @@ const mockScenarios: Scenario[] = [
     description: 'Description 2',
     category: 'default',
     tags: ['test'],
-    createDate: '01/01/1970',
+    creationDate: '01/01/1970',
     updateDate: '01/01/1970',
-    data: {
-      mode: SCENARIO_MODE.writing,
-      scenarioItems: []
-    },
-    applicationId: '1',
-    state: SCENARIO_STATE.draft
+    versions: []
   },
   {
     id: '3',
@@ -42,13 +34,8 @@ const mockScenarios: Scenario[] = [
     description: 'Description 3',
     category: null,
     tags: ['tag1', 'tag2'],
-    createDate: '01/01/1970',
-    data: {
-      mode: SCENARIO_MODE.writing,
-      scenarioItems: []
-    },
-    applicationId: '1',
-    state: SCENARIO_STATE.draft
+    creationDate: '01/01/1970',
+    versions: []
   },
   {
     id: '4',
@@ -56,13 +43,8 @@ const mockScenarios: Scenario[] = [
     description: 'Description 4',
     category: 'scenario',
     tags: [],
-    createDate: '12/01/1980',
-    data: {
-      mode: SCENARIO_MODE.writing,
-      scenarioItems: []
-    },
-    applicationId: '1',
-    state: SCENARIO_STATE.draft
+    creationDate: '12/01/1980',
+    versions: []
   },
   {
     id: '5',
@@ -70,34 +52,28 @@ const mockScenarios: Scenario[] = [
     description: 'Description 5',
     category: 'scenario',
     tags: null,
-    createDate: '12/01/1980',
-    data: {
-      mode: SCENARIO_MODE.writing,
-      scenarioItems: []
-    },
-    applicationId: '1',
-    state: SCENARIO_STATE.draft
+    creationDate: '12/01/1980',
+    versions: []
   }
 ];
 
 const initialState = {
   loaded: false,
   loading: false,
-  scenarios: [],
-  sagas: [],
+  scenariosGroups: [],
   tags: [],
   categories: []
 };
 
-const newScenario: Scenario = {
+const newScenario: ScenarioGroup = {
   id: null,
-  createDate: '12/01/1980',
+  creationDate: '12/01/1980',
   name: 'New scenario',
-  applicationId: '1',
-  state: SCENARIO_STATE.draft
+  tags: [],
+  versions: []
 };
 
-const updatedScenario: Scenario = {
+const updatedScenario: ScenarioGroup = {
   ...mockScenarios[1],
   category: 'new category',
   description: 'Description updated',
@@ -107,10 +83,10 @@ const updatedScenario: Scenario = {
 describe('ScenarioService', () => {
   let service: ScenarioService;
   const mockedScenarioApiService: jasmine.SpyObj<ScenarioApiService> = jasmine.createSpyObj('ScenarioApiService', [
-    'getScenarios',
-    'postScenario',
-    'putScenario',
-    'deleteScenario'
+    'getScenariosGroups',
+    'postScenarioGroup',
+    'updateScenarioGroup',
+    'deleteScenarioGroup'
   ]);
 
   beforeEach(() => {
@@ -120,7 +96,21 @@ describe('ScenarioService', () => {
           provide: ScenarioApiService,
           useValue: mockedScenarioApiService
         },
-        { provide: ScenarioService, useClass: ScenarioService }
+        { provide: ScenarioService, useClass: ScenarioService },
+        {
+          provide: ApplicationService,
+          useValue: {
+            retrieveCurrentApplication: () => {
+              name: 'testApp';
+            }
+          }
+        },
+        {
+          provide: DatePipe,
+          useValue: {
+            transform: (date) => date
+          }
+        }
       ]
     });
     service = TestBed.inject(ScenarioService);
@@ -134,34 +124,34 @@ describe('ScenarioService', () => {
     expect(service.getState()).toEqual(initialState);
   });
 
-  it('should populate the state with the result when loading scenarios successfully', (done) => {
-    mockedScenarioApiService.getScenarios.and.returnValue(of(mockScenarios));
+  it('should populate the state with the result when loading scenarios groups successfully', (done) => {
+    mockedScenarioApiService.getScenariosGroups.and.returnValue(of(mockScenarios));
 
     expect(service.getState()).toEqual(initialState);
 
-    service.getScenarios().subscribe(() => {
+    service.getScenariosGroups().subscribe(() => {
       const state = service.getState();
-      expect(mockedScenarioApiService.getScenarios).toHaveBeenCalled();
+      expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
       expect(state.loaded).toBeTrue();
-      expect(state.scenarios).toHaveSize(mockScenarios.length);
-      expect(state.scenarios).toEqual(mockScenarios);
+      expect(state.scenariosGroups).toHaveSize(mockScenarios.length);
+      expect(state.scenariosGroups).toEqual(mockScenarios);
       expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
       expect(state.categories).toEqual(['default', 'scenario']);
       done();
     });
   });
 
-  it('should not update state when loading scenarios fails', (done) => {
-    mockedScenarioApiService.getScenarios.and.returnValue(throwError(new Error()));
+  it('should not update state when loading scenarios groups fails', (done) => {
+    mockedScenarioApiService.getScenariosGroups.and.returnValue(throwError(new Error()));
 
     expect(service.getState()).toEqual(initialState);
 
-    service.getScenarios().subscribe({
+    service.getScenariosGroups().subscribe({
       error: () => {
         const state = service.getState();
-        expect(mockedScenarioApiService.getScenarios).toHaveBeenCalled();
+        expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
         expect(state.loaded).toBeFalse();
-        expect(state.scenarios).toHaveSize(0);
+        expect(state.scenariosGroups).toHaveSize(0);
         expect(state.tags).toHaveSize(0);
         expect(state.categories).toHaveSize(0);
         done();
@@ -169,34 +159,34 @@ describe('ScenarioService', () => {
     });
   });
 
-  it('should add a new scenario in the state and update tags and categories cache when published successfully', (done) => {
-    mockedScenarioApiService.postScenario.and.returnValue(of({ ...newScenario, id: '1' }));
+  it('should add a new scenario group in the state and update tags and categories cache when published successfully', (done) => {
+    mockedScenarioApiService.postScenarioGroup.and.returnValue(of({ ...newScenario, id: '1' }));
 
     expect(service.getState()).toEqual(initialState);
-    service.setScenariosData(mockScenarios);
+    service.setScenariosGroupsData(mockScenarios);
 
-    service.postScenario(newScenario).subscribe(() => {
+    service.postScenarioGroup(newScenario).subscribe(() => {
       const state = service.getState();
-      expect(mockedScenarioApiService.postScenario).toHaveBeenCalledWith(newScenario);
-      expect(state.scenarios).toHaveSize(mockScenarios.length + 1);
-      expect(state.scenarios).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
+      expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalledWith(newScenario);
+      expect(state.scenariosGroups).toHaveSize(mockScenarios.length + 1);
+      expect(state.scenariosGroups).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
       expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
       expect(state.categories).toEqual(['default', 'scenario']);
       done();
     });
   });
 
-  it('should not update state when post scenario fails', (done) => {
-    mockedScenarioApiService.postScenario.and.returnValue(throwError(new Error()));
+  it('should not update state when post scenario group fails', (done) => {
+    mockedScenarioApiService.postScenarioGroup.and.returnValue(throwError(new Error()));
 
     expect(service.getState()).toEqual(initialState);
 
-    service.postScenario(newScenario).subscribe({
+    service.postScenarioGroup(newScenario).subscribe({
       error: () => {
         const state = service.getState();
-        expect(mockedScenarioApiService.postScenario).toHaveBeenCalled();
+        expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalled();
         expect(state.loaded).toBeFalse();
-        expect(state.scenarios).toHaveSize(0);
+        expect(state.scenariosGroups).toHaveSize(0);
         expect(state.tags).toHaveSize(0);
         expect(state.categories).toHaveSize(0);
         done();
@@ -204,45 +194,45 @@ describe('ScenarioService', () => {
     });
   });
 
-  it('should update an existing scenario and update tags and categories cache from the state when the scenario is successfully updated', (done) => {
-    mockedScenarioApiService.putScenario.and.returnValue(of(updatedScenario));
+  it('should update an existing scenario group and update tags and categories cache from the state when the scenario group is successfully updated', (done) => {
+    mockedScenarioApiService.updateScenarioGroup.and.returnValue(of(updatedScenario));
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
 
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
     const state = service.getState();
 
-    expect(state.scenarios).toHaveSize(mockScenariosCopy.length);
-    expect(state.scenarios.find((s) => s.id === '2')).not.toEqual(updatedScenario);
+    expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+    expect(state.scenariosGroups.find((s) => s.id === '2')).not.toEqual(updatedScenario);
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.putScenario('2', updatedScenario).subscribe(() => {
-      expect(mockedScenarioApiService.putScenario).toHaveBeenCalled();
-      expect(state.scenarios).toHaveSize(mockScenariosCopy.length);
-      expect(state.scenarios.find((s) => s.id === '2')).toEqual(updatedScenario);
+    service.updateScenarioGroup(updatedScenario).subscribe(() => {
+      expect(mockedScenarioApiService.updateScenarioGroup).toHaveBeenCalled();
+      expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+      expect(state.scenariosGroups.find((s) => s.id === '2')).toEqual(updatedScenario);
       expect(state.tags).toEqual(['JCVD forever', 'new tag', 'tag1', 'tag2', 'test']);
       expect(state.categories).toEqual(['new category', 'scenario']);
       done();
     });
   });
 
-  it('should not update state when put scenario fails', (done) => {
-    mockedScenarioApiService.putScenario.and.returnValue(throwError(new Error()));
+  it('should not update state when put scenario group fails', (done) => {
+    mockedScenarioApiService.updateScenarioGroup.and.returnValue(throwError(new Error()));
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
 
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
     const state = service.getState();
 
-    expect(state.scenarios).toHaveSize(mockScenariosCopy.length);
-    expect(state.scenarios).toEqual(mockScenarios);
+    expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+    expect(state.scenariosGroups).toEqual(mockScenarios);
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.putScenario('2', updatedScenario).subscribe({
+    service.updateScenarioGroup(updatedScenario).subscribe({
       error: () => {
-        expect(mockedScenarioApiService.putScenario).toHaveBeenCalled();
-        expect(state.scenarios).toHaveSize(mockScenariosCopy.length);
-        expect(state.scenarios.find((s) => s.id === '2')).not.toEqual(updatedScenario);
+        expect(mockedScenarioApiService.updateScenarioGroup).toHaveBeenCalled();
+        expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+        expect(state.scenariosGroups.find((s) => s.id === '2')).not.toEqual(updatedScenario);
         expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
         expect(state.categories).toEqual(['default', 'scenario']);
         done();
@@ -250,40 +240,40 @@ describe('ScenarioService', () => {
     });
   });
 
-  it('should remove an existing scenario and update tags and categories cache from the state when the scenario is successfully deleted', (done) => {
-    mockedScenarioApiService.deleteScenario.and.returnValue(of({}));
+  it('should remove an existing scenario group and update tags and categories cache from the state when the scenario group is successfully deleted', (done) => {
+    mockedScenarioApiService.deleteScenarioGroup.and.returnValue(of(false));
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
     const state = service.getState();
 
-    expect(state.scenarios.length).toBe(mockScenariosCopy.length);
+    expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.deleteScenario('2').subscribe(() => {
-      expect(mockedScenarioApiService.deleteScenario).toHaveBeenCalled();
-      expect(state.scenarios.length).toBe(--mockScenariosCopy.length);
-      expect(state.scenarios.find((s) => s.id === '2')).toBe(undefined);
+    service.deleteScenarioGroup('2').subscribe(() => {
+      expect(mockedScenarioApiService.deleteScenarioGroup).toHaveBeenCalled();
+      expect(state.scenariosGroups.length).toBe(--mockScenariosCopy.length);
+      expect(state.scenariosGroups.find((s) => s.id === '2')).toBe(undefined);
       expect(state.tags).toEqual(['tag1', 'tag2']);
       expect(state.categories).toEqual(['scenario']);
       done();
     });
   });
 
-  it('should not update state when delete scenario fails', (done) => {
-    mockedScenarioApiService.deleteScenario.and.returnValue(throwError(new Error()));
+  it('should not update state when delete scenario group fails', (done) => {
+    mockedScenarioApiService.deleteScenarioGroup.and.returnValue(throwError(new Error()));
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
     const state = service.getState();
 
-    expect(state.scenarios.length).toBe(mockScenariosCopy.length);
+    expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
     expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
     expect(state.categories).toEqual(['default', 'scenario']);
 
-    service.deleteScenario('2').subscribe({
+    service.deleteScenarioGroup('2').subscribe({
       error: () => {
-        expect(mockedScenarioApiService.deleteScenario).toHaveBeenCalled();
-        expect(state.scenarios.length).toBe(mockScenariosCopy.length);
+        expect(mockedScenarioApiService.deleteScenarioGroup).toHaveBeenCalled();
+        expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
         expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
         expect(state.categories).toEqual(['default', 'scenario']);
         done();
@@ -291,52 +281,52 @@ describe('ScenarioService', () => {
     });
   });
 
-  it('should build an array of unique categories not falsy sorted alphabetically from scenarios', () => {
+  it('should build an array of unique categories not falsy sorted alphabetically from scenarios groups', () => {
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
 
     expect(service.getState().categories).toEqual([]);
 
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().categories).toEqual(['default', 'scenario']);
 
     mockScenariosCopy.push({ ...newScenario, category: 'new category' });
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().categories).toEqual(['default', 'new category', 'scenario']);
 
     mockScenariosCopy.splice(1, 1);
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().categories).toEqual(['new category', 'scenario']);
 
     mockScenariosCopy[mockScenariosCopy.length - 1].category = 'updated category';
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().categories).toEqual(['scenario', 'updated category']);
   });
 
-  it('should build an array of unique tags not falsy sorted alphabetically from scenarios', () => {
+  it('should build an array of unique tags not falsy sorted alphabetically from scenarios groups', () => {
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
 
     expect(service.getState().tags).toEqual([]);
 
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().tags).toEqual(['tag1', 'tag2', 'test']);
 
     mockScenariosCopy.push({ ...newScenario, tags: ['new tag', 'abc'] });
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().tags).toEqual(['abc', 'new tag', 'tag1', 'tag2', 'test']);
 
     mockScenariosCopy.splice(1, 1);
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().tags).toEqual(['abc', 'new tag', 'tag1', 'tag2']);
 
     mockScenariosCopy[mockScenariosCopy.length - 1].tags = ['zyx', 'abc'];
-    service.setScenariosData(mockScenariosCopy);
+    service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().tags).toEqual(['abc', 'tag1', 'tag2', 'zyx']);
   });

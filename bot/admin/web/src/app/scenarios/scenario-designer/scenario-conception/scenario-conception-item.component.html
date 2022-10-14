@@ -10,7 +10,12 @@
     class="arrow-top-right"
     *ngIf="shouldShowArrowTop('right')"
   ></div>
-  <div class="arrow"></div>
+  <div
+    class="arrow"
+    *ngIf="shouldShowArrowTop('left') || shouldShowArrowTop('right')"
+  >
+    <div class="arrow-line"></div>
+  </div>
 </div>
 
 <div
@@ -39,6 +44,7 @@
         *ngIf="item.from == SCENARIO_ITEM_FROM_CLIENT"
       />
       <img
+        nbTooltip="Change this item in client intervention"
         src="assets/images/scenario-client.svg"
         *ngIf="item.from != SCENARIO_ITEM_FROM_CLIENT && mode == SCENARIO_MODE.writing && !isReadonly"
       />
@@ -62,6 +68,7 @@
         *ngIf="item.from == SCENARIO_ITEM_FROM_BOT"
       />
       <img
+        nbTooltip="Change this item in bot intervention"
         src="assets/images/scenario-bot.svg"
         *ngIf="item.from != SCENARIO_ITEM_FROM_BOT && mode == SCENARIO_MODE.writing && !isReadonly"
       />
@@ -109,7 +116,7 @@
                 <li
                   *ngFor="let sentence of item.intentDefinition.sentences"
                   class="ellipsis"
-                  [title]="sentence"
+                  [title]="sentence.query"
                 >
                   {{ sentence.query }}
                 </li>
@@ -118,7 +125,7 @@
                 <li
                   *ngFor="let sentence of item.intentDefinition._sentences"
                   class="ellipsis text-muted"
-                  [title]="sentence"
+                  [title]="sentence.text"
                 >
                   {{ sentence.text }}
                 </li>
@@ -131,6 +138,7 @@
           <div
             class="ellipsis font-weight-bold"
             data-testid="item-action-definition-details"
+            nbTooltip="ACTION NAME : {{ item.tickActionDefinition.name }}"
           >
             {{ item.tickActionDefinition.name }}
           </div>
@@ -138,17 +146,29 @@
           <div
             *ngIf="item.tickActionDefinition.inputContextNames?.length"
             class="tiny-text ellipsis"
+            nbTooltip="ACTION INPUTS : {{ item.tickActionDefinition.inputContextNames.join(' & ') }}"
           >
-            <strong>INPUT</strong>
+            <strong>INPUTS</strong>
             <span *ngFor="let inputCtx of item.tickActionDefinition.inputContextNames">
               {{ inputCtx }}
             </span>
           </div>
+
+          <div
+            *ngIf="item.tickActionDefinition.handler"
+            class="tiny-text ellipsis"
+            nbTooltip="ACTION HANDLER : {{ item.tickActionDefinition.handler }}"
+          >
+            <strong>HANDLER</strong>
+            {{ item.tickActionDefinition.handler }}
+          </div>
+
           <div
             *ngIf="item.tickActionDefinition.outputContextNames?.length"
             class="tiny-text ellipsis"
+            nbTooltip="ACTION OUTPUTS : {{ item.tickActionDefinition.outputContextNames.join(' | ') }}"
           >
-            <strong>OUTPUT</strong>
+            <strong>OUTPUTS</strong>
             <span *ngFor="let inputCtx of item.tickActionDefinition.outputContextNames">
               {{ inputCtx }}
             </span>
@@ -157,6 +177,7 @@
           <div
             *ngIf="item.tickActionDefinition.answer"
             class="tiny-text"
+            nbTooltip="ANSWER : {{ item.tickActionDefinition.answer }}"
           >
             <strong>ANSWER</strong>
             {{ item.tickActionDefinition.answer }}
@@ -170,58 +191,26 @@
             nbButton
             size="tiny"
             status="info"
-            *ngIf="mode == SCENARIO_MODE.writing && itemCanHaveAnswer() && item.from === SCENARIO_ITEM_FROM_CLIENT && !isReadonly"
-            (click)="answering()"
-            nbTooltip="Add a bot intervention"
-            style="padding-left: 5px"
-            data-testid="item-intent-answer"
-          >
-            <nb-icon
-              icon="plus-outline"
-              class="mr-1"
-            ></nb-icon>
-            Bot intervention
-          </button>
-
-          <button
-            nbButton
-            size="tiny"
-            status="info"
-            *ngIf="mode == SCENARIO_MODE.writing && itemCanHaveAnswer() && item.from === SCENARIO_ITEM_FROM_BOT && !isReadonly"
-            (click)="answering()"
-            nbTooltip="Add a client intervention"
-            style="padding-left: 5px"
-            data-testid="item-action-answer"
-          >
-            <nb-icon
-              icon="plus-outline"
-              class="mr-1"
-            ></nb-icon>
-            Client intervention
-          </button>
-
-          <button
-            nbButton
-            size="tiny"
-            status="info"
-            *ngIf="mode == SCENARIO_MODE.casting && item.from == SCENARIO_ITEM_FROM_CLIENT && item.text?.length && !isReadonly"
+            *ngIf="mode == SCENARIO_MODE.casting && item.from == SCENARIO_ITEM_FROM_CLIENT && item.text?.length"
             (click)="manageIntent()"
             nbTooltip="Intent infos and edition"
             data-testid="item-define-intent"
           >
-            Define intent
+            <span *ngIf="!isReadonly">Define intent</span>
+            <span *ngIf="isReadonly">View intent</span>
           </button>
 
           <button
             nbButton
             size="tiny"
             status="info"
-            *ngIf="mode == SCENARIO_MODE.casting && item.from == SCENARIO_ITEM_FROM_BOT && item.text?.length && !isReadonly"
+            *ngIf="mode == SCENARIO_MODE.casting && item.from == SCENARIO_ITEM_FROM_BOT && item.text?.length"
             (click)="manageAction()"
             nbTooltip="Action infos and edition"
             data-testid="item-define-action"
           >
-            Define action
+            <span *ngIf="!isReadonly">Define action</span>
+            <span *ngIf="isReadonly">View action</span>
           </button>
 
           <button
@@ -269,11 +258,25 @@
     </div>
   </div>
 
-  <div
-    class="arrow-wrapper"
-    *ngIf="itemHasSeveralChildren()"
-  >
-    <div class="arrow"></div>
+  <div class="arrow-wrapper">
+    <div class="arrow">
+      <div
+        class="arrow-line long"
+        *ngIf="!itemHasNoChildren()"
+      ></div>
+
+      <button
+        class="add-control pointer"
+        *ngIf="mode == SCENARIO_MODE.writing && itemCanHaveAnswer() && !isReadonly"
+        data-testid="item-answer"
+      >
+        <nb-icon
+          icon="plus-circle-outline"
+          (click)="answering()"
+          [nbTooltip]="item.from === SCENARIO_ITEM_FROM_CLIENT ? 'Add a bot intervention' : 'Add a client intervention'"
+        ></nb-icon>
+      </button>
+    </div>
   </div>
 
   <div class="card-row">
@@ -281,12 +284,13 @@
       <div class="card-col">
         <scenario-conception-item
           [isReadonly]="isReadonly"
-          [itemId]="childItem.id"
+          [item]="childItem"
           [parentId]="item.id"
           [contexts]="contexts"
           [selectedItem]="selectedItem"
           [mode]="mode"
           [scenario]="scenario"
+          [avalaibleHandlers]="avalaibleHandlers"
         ></scenario-conception-item>
       </div>
     </ng-container>

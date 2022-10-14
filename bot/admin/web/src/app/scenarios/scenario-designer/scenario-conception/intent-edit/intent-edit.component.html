@@ -53,7 +53,7 @@
         </span>
 
         <nb-icon
-          *ngIf="!isLabelASentence()"
+          *ngIf="!isLabelASentence() && !isReadonly"
           icon="arrowhead-down-outline"
           status="basic"
           nbTooltip="Use label as a question"
@@ -92,8 +92,10 @@
           class="sentences-list-item p-0 d-flex justify-content-between align-items-start"
         >
           <scenario-sentence-edit
+            [scenario]="scenario"
             [sentence]="sentence"
             [contexts]="contexts"
+            [isReadonly]="isReadonly"
             [contextsEntities]="contextsEntities"
             [allEntities]="entitiesCache"
             (componentActivated)="componentActivated($event)"
@@ -117,8 +119,10 @@
             class="sentences-list-item p-0 d-flex justify-content-between text-muted"
           >
             <scenario-sentence-edit
+              [scenario]="scenario"
               [sentence]="sentence"
               [contexts]="contexts"
+              [isReadonly]="isReadonly"
               [contextsEntities]="contextsEntities"
               [allEntities]="entitiesCache"
               (componentActivated)="componentActivated($event)"
@@ -130,7 +134,10 @@
       </ul>
     </div>
 
-    <div class="d-flex mt-2">
+    <div
+      class="d-flex mt-2"
+      *ngIf="!isReadonly"
+    >
       <input
         #addSentenceInput
         nbInput
@@ -163,9 +170,11 @@
       size="small"
       (click)="cancel()"
     >
-      Cancel
+      <span *ngIf="!isReadonly">Cancel</span>
+      <span *ngIf="isReadonly">Close</span>
     </button>
     <button
+      *ngIf="!isReadonly"
       nbButton
       size="small"
       status="danger"
@@ -176,6 +185,7 @@
     </button>
 
     <button
+      *ngIf="!isReadonly"
       nbButton
       size="small"
       status="primary"
