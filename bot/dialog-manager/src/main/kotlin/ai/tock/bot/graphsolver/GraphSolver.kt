@@ -18,7 +18,6 @@ package ai.tock.bot.graphsolver
 import ai.tock.bot.bean.TickAction
 import jep.SharedInterpreter
 import mu.KotlinLogging
-import java.util.*
 
 /**
  * Class that handles the call to the Clyngor python library
@@ -26,6 +25,9 @@ import java.util.*
 object GraphSolver {
 
     private val logger = KotlinLogging.logger {}
+    private const val pythonPath = "/tmp/python"
+    private const val pythonScriptPath = "$pythonPath/script"
+    private const val pythonLogPath = "$pythonPath/log"
 
     fun solve(
         actions: Set<TickAction>,
@@ -47,16 +49,12 @@ object GraphSolver {
             objective.outputContextNames.toList())
 
         val results = SharedInterpreter().use { interp ->
-            // TODO : find other way to get resource path
-            // car sur AWS, j'ai eu ça :
-            // jep.JepException: Invalid file: /file:/maven/tock-bot-dialog-manager-22.3.2-dialog-manager-v1-SNAPSHOT.jar!/python/graph-solver.py
-            val pythonResourcePath =
-                System.getenv("python_scripts") ?: this.javaClass.classLoader.getResource("python")
+            interp.set("pythonScriptPath", pythonScriptPath)
+            interp.set("pythonLogPath", pythonLogPath)
 
-            interp.set("pythonResourcePath", pythonResourcePath)
-            interp.runScript("$pythonResourcePath/graph-solver.py")
+            interp.runScript("$pythonScriptPath/graph-solver.py")
             interp.invoke(
-                "callClyngo",
+                "callClyngor",
                 botActions,
                 target,
                 availableContexts,

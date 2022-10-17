@@ -102,7 +102,7 @@
       "description": "desc",
       "handler": null,
       "answerId": "app_tick_Fin de la Story, clean les contextes",
-      "inputContextNames": [ "RESOLVE_LIMIT_DONE" ],
+      "inputContextNames": [ "RESOLVE_LIMIT_DONE", "CONTEXT_TECH" ],
       "outputContextNames": [],
       "final": true
     }
@@ -135,6 +135,9 @@
     },
     {
       "name": "RESOLVE_LIMIT_DONE"
+    },
+    {
+      "name": "CONTEXT_TECH"
     }
   ],
   "stateMachine": {
@@ -211,5 +214,16 @@
     },
     "initial": "Global",
     "on": {}
-  }
+  },
+  "intentsContexts": [
+    {
+      "intentName": "i_preciser_destination",
+      "associations": [
+        {
+          "actionName": "S_SHOW_MSG_CANNOT_CHANGE_LIMIT",
+          "contextNames": ["CONTEXT_TECH"]
+        }
+      ]
+    }
+  ]
 }

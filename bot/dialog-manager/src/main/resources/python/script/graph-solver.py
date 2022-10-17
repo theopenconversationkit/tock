@@ -16,8 +16,6 @@ from collections import defaultdict
 import clyngor
 import biseau
 
-RESOURCE_PATH = pythonResourcePath
-
 class BotAction:
     def __init__(self, uid, dependencies, products):
         self.uid = uid
@@ -44,28 +42,28 @@ def create_whole_graph_asp(bot_actions, target:BotAction=None, available_context
     return ''.join(atom + '.\n' for atom in atoms)
 
 def reduce_graph_asp(graph):
-    answers = tuple(clyngor.solve(RESOURCE_PATH+'/action-reducer.lp', inline=graph))
+    answers = tuple(clyngor.solve(pythonScriptPath+'/action-reducer.lp', inline=graph))
     assert len(answers) == 1, answers
     ret = clyngor.utils.answer_set_to_str(answers[0], atom_end='.')
     return ret
 
 def solve_graph_asp(graph, priorities):
-    answers = clyngor.solve(RESOURCE_PATH+'/action-resolver.lp', options='--opt-mode=optN', inline=graph, delete_tempfile=False, constants=dict(priorities))
-    print('COMMAND:', answers.command)
+    answers = clyngor.solve(pythonScriptPath+'/action-resolver.lp', options='--opt-mode=optN', inline=graph, delete_tempfile=False, constants=dict(priorities))
+    #print('COMMAND:', answers.command)
     solution = None
     opt_answers = clyngor.opt_models_from_clyngor_answers(answers.by_predicate)
     solutions = []
     for idx, answer in enumerate(opt_answers, start=1):
         solution = tuple(e for e, in answer['exec'])
-        print(f'ANSWER {idx}:', solution)
+        #print(f'ANSWER {idx}:', solution)
         solutions.append(frozenset(s.strip('"') for s in solution))
     return solutions
 
-def callClyngo(bot_actions, target:BotAction=None, available_contexts=set(), ran_handlers=set()):
+def callClyngor(bot_actions, target:BotAction=None, available_contexts=set(), ran_handlers=set()):
     graph = create_whole_graph_asp(bot_actions, target, available_contexts, ran_handlers)
-    save_graph_asp(graph, RESOURCE_PATH+'/action-graph-full-new.png')
+    save_graph_asp(graph, pythonLogPath+'/action-graph-full-new.png')
     graph = reduce_graph_asp(graph)
-    save_graph_asp(graph, RESOURCE_PATH+'/action-graph-reduced-new.png')
+    save_graph_asp(graph, pythonLogPath+'/action-graph-reduced-new.png')
     candidate_uids = solve_graph_asp(graph, {
         'raw_context': 10,
         'branch_length': 8,
@@ -83,6 +81,8 @@ def save_graph_asp(graph:str, outfile:str):
     shape(H,rectangle):- handler(H).
     color(X,white) :- node(X) ; not handler(X) ; not enabled(X).
     color(X,green) :- enabled(X).
+    color(X,green) :- already_used(X).
+    color(X,red) :- target(X).
     obj_property(edge,arrowhead,vee).
     % Representation of handler discrimation by the profile.
     annot(upper,H,L) :- discriminate(_,H,S,L) ; S>0.
@@ -91,5 +91,5 @@ def save_graph_asp(graph:str, outfile:str):
     annot(lower,H,labelfontcolor,"red") :- discriminate(_,H,S,_) ; S<0.
     """
     biseau.compile_to_single_image(graph + ASP_BISEAU_RULES, outfile=outfile)
-    print(f'ActionResolver: {outfile} saved.')
+    #print(f'ActionResolver: {outfile} saved.')
 

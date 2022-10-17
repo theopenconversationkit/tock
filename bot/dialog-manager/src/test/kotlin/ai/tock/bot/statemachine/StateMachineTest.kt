@@ -220,27 +220,4 @@ class StateMachineTest: DialogManagerTest() {
         assertTrue(stateMachine.containsTransition("i_book_physical_or_tel_3"))
     }
 
-    // TODO MASS : a retirer
-    @Test fun getNext2() {
-        val root = getStateMachineFromFile("xstate-prob")
-        val stateMachine = StateMachine(root)
-
-        val global = root.states?.get("Global")!!
-        val enrolementMobile = global?.states?.get("ENROLEMENT_MOBILE")!!
-        val demanderChangementMobile = enrolementMobile?.states?.get("DEMANDER_CHANGEMENT_MOBILE")!!
-        val demanderAccesAncienMobile = enrolementMobile?.states?.get("DEMANDER_ACCES_ANCIEN_MOBILE")!!
-        val procedureEnrolement = enrolementMobile?.states?.get("PROCEDURE_ENROLEMENT")!!
-        val redirectionAssistant = enrolementMobile?.states?.get("REDIRECTION_ASSISTANT")!!
-
-        assertNull(stateMachine.getNext("root","bonjourJeSouhaiteraisAssocierMonTelephoneALApplication"))
-        assertNotNull(stateMachine.getNext("Global","bonjourJeSouhaiteraisAssocierMonTelephoneALApplication"))
-        assertEquals(demanderChangementMobile, stateMachine.getNext("Global","bonjourJeSouhaiteraisAssocierMonTelephoneALApplication"))
-        assertEquals(demanderAccesAncienMobile, stateMachine.getNext("DEMANDER_CHANGEMENT_MOBILE","accept"))
-
-        // Existing State
-//        assertEquals(sShowProcedureBookMeeting, stateMachine.getNext("Global", "i_ask_book_visio"))
-//        assertEquals(sShowProcedureBookMeeting, stateMachine.getNext("S_BOOK_MEETING", "i_book_physical_or_tel"))
-//        assertEquals(sAskChannel, stateMachine.getNext("S_BOOK_MEETING", "i_book_physical_or_tel_2"))
-//        assertEquals(sShowProcedureBookMeeting4, stateMachine.getNext("S_BOOK_MEETING", "i_book_physical_or_tel_4"))
-    }
 }

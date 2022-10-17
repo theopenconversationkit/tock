@@ -85,13 +85,10 @@ class ScenarioServiceImpl : ScenarioService {
     override fun importManyScenarioVersion(scenarioVersions: List<ScenarioVersion>): List<ScenarioVersion> {
         // Check consistency
         checkScenarioVersionsToImport(scenarioVersions)
-
         // All versions have a same scenarioGroupId, so we get the first one
         val scenarioGroupId = scenarioVersions.first().scenarioGroupId.toString()
-
         // Find and check existence of scenario group
         findOneScenarioGroup(scenarioGroupId)
-
         // Create versions
         return scenarioVersionService.createMany(scenarioVersions)
     }
@@ -140,10 +137,6 @@ class ScenarioServiceImpl : ScenarioService {
             throw ScenarioVersionBadStateException()
         }
 
-        // Update the scenario version
-        val scenarioVersionUpdated = scenarioVersionService.updateOne(scenarioVersion)
-        logger.info { "Updating of the scenario version <id:${scenarioVersion._id}>" }
-
         // The given scenario version is CURRENT
         if(scenarioVersion.isCurrent()){
             // Get the CURRENT version in database if exists
@@ -156,6 +149,10 @@ class ScenarioServiceImpl : ScenarioService {
                 logger.info { "Archiving of the old current version of scenario group <id:${scenarioVersion.scenarioGroupId}>" }
             }
         }
+
+        // Update the scenario version
+        val scenarioVersionUpdated = scenarioVersionService.updateOne(scenarioVersion)
+        logger.info { "Updating of the scenario version <id:${scenarioVersion._id}>" }
 
         return scenarioVersionUpdated
     }

@@ -25,6 +25,7 @@ data class TickAction(
     // val trigger: String? = null, pour gérer les events
     val inputContextNames: Set<String>,
     val outputContextNames: Set<String>,
+    val proceed: Boolean = false,
     val final: Boolean
 ){
     /**

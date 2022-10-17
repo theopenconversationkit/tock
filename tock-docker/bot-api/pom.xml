@@ -61,25 +61,6 @@
                                                 <source>logback.xml</source>
                                                 <outputDirectory>.</outputDirectory>
                                             </file>
-                                            <file>
-                                                <source>requirements.txt</source>
-                                                <outputDirectory>.</outputDirectory>
-                                            </file>
-     <!-- TODO à améliorer-->
-     <!-- Problème d'accès aux ressources  -->
-     <!-- jep.JepException: Invalid file: /file:/maven/tock-bot-dialog-manager-22.3.2-dialog-manager-v1-SNAPSHOT.jar!/python/graph-solver.py -->
-                                            <file>
-                                                <source>python/action-reducer.lp</source>
-                                                <outputDirectory>./python/</outputDirectory>
-                                            </file>
-                                            <file>
-                                                <source>python/action-resolver.lp</source>
-                                                <outputDirectory>./python/</outputDirectory>
-                                            </file>
-                                            <file>
-                                                <source>python/graph-solver.py</source>
-                                                <outputDirectory>./python/</outputDirectory>
-                                            </file>
                                         </files>
                                     </inline>
                                 </assembly>
@@ -92,23 +73,12 @@
                                 </env>
                                 <runCmds>
                                     <run>apt-get update</run>
-                                    <run>apt-get install -y curl wget openjdk-11-jdk</run>
-                                    <run>python3 -m venv virtual_environment</run>
-                                    <run>apt-get install gcc -y</run>
-                                    <run>source virtual_environment/bin/activate</run>
-    <!--
-       TODO MASS :
-       J'ai commenté la création des graphes PNG, car
-       jep.JepException: <class 'FileNotFoundError'>: 2
-        at /usr/local/lib/python3.8/site-packages/pydot.create(pydot.py:1933)
-        at /usr/local/lib/python3.8/site-packages/biseau/dot_writer.dot_to_png(dot_writer.py:109)
-        at /usr/local/lib/python3.8/site-packages/biseau/core.compile_to_single_image(core.py:122)
-        at /maven/python/graph-solver.save_graph_asp(graph-solver.py:93)
-        at /maven/python/graph-solver.callClyngo(graph-solver.py:66)
-    
-       TODO MASS : Check les requirements.txt, il manque peut etre un module
-    -->
-                                    <run>pip3 install -r maven/requirements.txt</run>
+                                    <run>apt-get install -y curl wget openjdk-11-jdk gcc unzip graphviz</run>
+                                    <run>unzip /maven/tock-bot-dialog-manager-${project.version}.jar -d /maven/tock-bot-dialog-manager-${project.version}</run>
+                                    <run>mv /maven/tock-bot-dialog-manager-${project.version}/python /tmp</run>
+                                    <run>rm -r /maven/tock-bot-dialog-manager-${project.version}</run>
+                                    <run>pip3 install -r /tmp/python/install/requirements.txt</run>
+                                    <run>mkdir /tmp/python/log</run>
                                 </runCmds>
                                 <cmd>
                                     <shell>java $JAVA_ARGS -Dfile.encoding=UTF-8 -Dlogback.configurationFile='file:///maven/logback.xml' -cp '/maven/*' ai.tock.bot.api.service.StartBotApiKt</shell>

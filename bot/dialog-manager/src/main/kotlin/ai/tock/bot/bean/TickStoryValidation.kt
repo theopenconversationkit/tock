@@ -50,7 +50,7 @@ object TickStoryValidation {
         return errors
     }
 
-    fun validateTickIntentAssociationContexts(tickStory: TickStory): List<String> {
+    fun validateDeclaredIntentContexts(tickStory: TickStory): List<String> {
         val errors = mutableListOf<String>()
         with(tickStory) {
             // For each TickIntentAssociation, the context used must be declared,
@@ -132,10 +132,11 @@ object TickStoryValidation {
     fun validateInputOutputContexts(tickStory: TickStory): List<String> {
         val errors = mutableListOf<String>()
 
-        val outputContext: (TickAction)->Set<String> = { it.outputContextNames }
-        val inputContext: (TickAction)->Set<String> = { it.inputContextNames }
+        val intentContexts = getIntentContexts(tickStory)
+        val outputContext: (TickAction)->Set<String> = { it.outputContextNames.union(intentContexts) }
+        val inputContext: (TickAction)->Set<String> = { it.inputContextNames.union(intentContexts) }
 
-        // For each context declared as output to an action,
+        // For each context declared as output to an action (or intent),
         // there must be at least one other action requiring the same context as input.
         errors.addAll(
             validateContexts(tickStory.actions, inputContext, outputContext).map {
@@ -144,7 +145,7 @@ object TickStoryValidation {
         )
 
         // For each context declared as input to an action,
-        // there must be at least one other action producing the same context as output.
+        // there must be at least one other action (or intent) producing the same context as output.
         errors.addAll(
             validateContexts(tickStory.actions, outputContext, inputContext).map {
                 "Output context ${it.first} of action ${it.second} not found in input contexts of others"
@@ -152,6 +153,13 @@ object TickStoryValidation {
         )
 
         return errors
+    }
+
+    private fun getIntentContexts(tickStory: TickStory): Set<String> {
+        return tickStory.intentsContexts
+            .flatMap { it.associations }
+            .flatMap { it.contextNames }
+            .toSet()
     }
 
     private fun validateContexts(actions: Set<TickAction>,
@@ -166,10 +174,11 @@ object TickStoryValidation {
     }
 
 
-    fun validateDeclaredContexts(tickStory: TickStory): List<String> {
+    fun validateDeclaredActionContexts(tickStory: TickStory): List<String> {
         val errors = mutableListOf<String>()
         tickStory.actions
-            .flatMap { it.inputContextNames.union(it.outputContextNames) }.toSet()
+            .flatMap { it.inputContextNames.union(it.outputContextNames) }
+            .toSet()
             .minus(tickStory.contexts.map { it.name }.toSet())
             .forEach {
                 errors.add("Action context $it not found in declared contexts")
@@ -206,12 +215,12 @@ object TickStoryValidation {
 
         // Consistency of contexts :
         errors.addAll(validateInputOutputContexts(tick))
-        errors.addAll(validateDeclaredContexts(tick))
+        errors.addAll(validateDeclaredActionContexts(tick))
 
         // Consistency of tick intents :
         errors.addAll(validateTickIntentNames(tick))
-        errors.addAll(validateTickIntentAssociationContexts(tick))
         errors.addAll(validateTickIntentAssociationActions(tick))
+        errors.addAll(validateDeclaredIntentContexts(tick))
 
         // Consistency of names :
         errors.addAll(validateNames(tick))

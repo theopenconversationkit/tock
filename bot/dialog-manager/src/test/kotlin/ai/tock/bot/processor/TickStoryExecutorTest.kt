@@ -24,6 +24,8 @@ import ai.tock.bot.processor.bean.UserDialog
 import ai.tock.bot.sender.TickSenderDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import mu.KLogger
+import mu.KotlinLogging
 import org.junit.jupiter.api.Test
 import java.io.File
 import kotlin.test.assertEquals
@@ -33,6 +35,8 @@ class TickStoryExecutorTest {
 
     // TODO : how to inject a specific ActionHandlersRepository ?
     // TODO MASS : WIP
+
+    private val logger: KLogger = KotlinLogging.logger {}
 
     @Test fun testAllDataSet(){
 
@@ -83,9 +87,7 @@ class TickStoryExecutorTest {
             message = "${dialog.id} has failed !"
         )
 
-
-        // TODO MASS : LOGGER
-        println("${dialog.id} -> SUCCESS")
+        logger.info { "${dialog.id} -> SUCCESS" }
 
         return if(isFinal) TickSession() else newTickSession
     }

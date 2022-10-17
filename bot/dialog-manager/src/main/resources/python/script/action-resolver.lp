@@ -45,7 +45,7 @@ reached(P) :- handler(H) ; reached(H) ; link(H,P).
 
 % A handler is enabled if *all* of its predecessors (contexts) are enabled,
 %  and if it is not a free context.
-reached(H) :- reached(C): link(C,H) ; handler(H) ; link(_,H).
+reached(H) :- reached(C): link(C,H), enabled(C) ; handler(H) ; link(_,H).
 
 % Discard models that do not reach targets.
 :- not reached(T) ; target(T).

@@ -54,13 +54,6 @@ class TickStoryProcessor(
     private fun getInitialState() =
         stateMachine.getInitial("root")?.id ?: error("Initial state not found")
 
-    /**
-     * Update current state to default
-     */
-    private fun updateCurrentStateToDefault() { 
-        currentState = getInitialState() 
-    }
-
     private fun createStackFormList(elements: List<String>): Stack<String> {
         val stack = Stack<String>()
         elements.forEach(stack::push)
@@ -69,7 +62,7 @@ class TickStoryProcessor(
     /**
      * Execute a given tick action id
      */
-    private fun execute(actionName: String): Pair<Boolean, Boolean> {
+    private fun execute(actionName: String): TickAction {
         val action = getTickAction(actionName)
         debugInput(action)
 
@@ -90,7 +83,7 @@ class TickStoryProcessor(
         debugOutput(action)
         ranHandlers.add(action.name)
 
-        return Pair(action.isSilent(),  action.final)
+        return action
     }
 
 
@@ -130,13 +123,11 @@ class TickStoryProcessor(
     fun process (tickUserAction : TickUserAction?): Pair<TickSession, Boolean> {
         logger.debug("objectivesStack: $objectivesStack")
 
-        logger.info { "1 - $objectivesStack" }
-
         val primaryObjective: String = if(tickUserAction != null) {
             updateContexts(tickUserAction)
 
             // Call to state machine to get the next state
-            val objectiveTemp = getStateMachineNextState(tickUserAction).checkNotCurrentStateObjectif()
+            val objectiveTemp = getStateMachineNextState(tickUserAction).checkNotCurrentStateObjective()
             objectivesStack.pushIfNotOnTop(objectiveTemp)
             objectiveTemp
         } else {
@@ -157,29 +148,26 @@ class TickStoryProcessor(
         // TODO : A faire avec la JIRA DERCBOT-300  (voir commentaire sur la revue de code)
 
         // Execute the action corresponding of secondary objective.
-        val (isSilent, isFinal) = execute(secondaryObjective)
+        val executedAction = execute(secondaryObjective)
 
         // Update the current state
         updateCurrentState(primaryObjective, secondaryObjective)
 
-        logger.info { "primaryObjective - $primaryObjective" }
-        logger.info { "secondaryObjective - $secondaryObjective" }
-        logger.info { "currentState - $currentState" }
-
-
-        logger.info { "2 - $objectivesStack" }
-
         // TODO MASS : Code à reprendre avec la JIRA des events
-        contextNames.get(sousObjectifKey)?.let {
+        contextNames[sousObjectifKey]?.let {
             objectivesStack.push(it)
             contextNames.remove(sousObjectifKey)
         }
 
-        logger.info { "3 - $objectivesStack" }
-
-        // If the action is silent, then we restart the processing again, otherwise we send the results
-        return if(isSilent) process(null)
-        else Pair(TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList()), isFinal)
+        // If the action is silent or if it should proceed, then we restart the processing again, otherwise we send the results
+        return if(executedAction.isSilent() || executedAction.proceed){
+            process(null)
+        }
+        else {
+            Pair(
+                TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList()),
+                executedAction.final)
+        }
     }
 
     private fun updateCurrentState(primaryObjective: String, secondaryObjective: String) {
@@ -196,14 +184,14 @@ class TickStoryProcessor(
 
     private fun getStateMachineNextState(tickUserAction : TickUserAction): String {
         val nextState = stateMachine.getNext(currentState, tickUserAction.intentName)
-        return nextState?.id.checkNotNullObjectif()
+        return nextState?.id.checkNotNullObjective()
     }
 
-    private var checkNotNullObjectif: String?.() -> String = {
+    private var checkNotNullObjective: String?.() -> String = {
         this ?: error("Next state not found")
     }
 
-    private var checkNotCurrentStateObjectif: String.() -> String = {
+    private var checkNotCurrentStateObjective: String.() -> String = {
         // Next state equals to current state if actions.size == 1
         if(this == currentState && configuration.actions.size > 1) {
             error("Next state shouldn't be equals to the current state")
@@ -248,7 +236,7 @@ class TickStoryProcessor(
             ?.associations
             ?.firstOrNull { it.actionName == ranHandlers.last() }
             ?.contextNames
-            ?.associate { it to null }
+            ?.associateWith { null }
             ?: emptyMap()
         )
     }

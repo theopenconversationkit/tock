@@ -30,7 +30,7 @@
       "description": "description",
       "handler": null,
       "answerId": "answerId",
-      "inputContextNames": [],
+      "inputContextNames": ["CONTEXT_3"],
       "outputContextNames": ["CONTEXT_2"],
       "final": false
     },
@@ -70,6 +70,9 @@
     },
     {
       "name": "CONTEXT_2"
+    },
+    {
+      "name": "CONTEXT_3"
     }
   ],
   "stateMachine": {
@@ -145,7 +148,7 @@
       "associations": [
         {
           "actionName": "ACTION_2",
-          "contextNames": ["CONTEXT_2"]
+          "contextNames": ["CONTEXT_3"]
         }
       ]
     }

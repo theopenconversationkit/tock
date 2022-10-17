@@ -43,5 +43,5 @@ interface StoryService {
      */
     fun deleteStoryByStoryId(namespace: String, botId: String, storyId: String): Boolean
 
-    // TODO MASS : Migrate all story methods here (ex BotAdminService)
+    // FIXME : Migrate all story methods here
 }
