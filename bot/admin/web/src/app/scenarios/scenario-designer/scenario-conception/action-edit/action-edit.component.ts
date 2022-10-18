@@ -8,7 +8,7 @@ import { ScenarioVersion, ScenarioItem, ScenarioContext } from '../../../models'
 import { getContrastYIQ, getScenarioActionDefinitions, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 
-const ENTITY_NAME_MINLENGTH = 5;
+const ACTION_OR_CONTEXT_NAME_MINLENGTH = 5;
 
 @Component({
   selector: 'scenario-action-edit',
@@ -32,7 +32,11 @@ export class ActionEditComponent implements OnInit {
   isSubmitted: boolean = false;
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH), this.isActionNameUnic()]),
+    name: new FormControl(undefined, [
+      Validators.required,
+      Validators.minLength(ACTION_OR_CONTEXT_NAME_MINLENGTH),
+      this.isActionNameUnic()
+    ]),
     description: new FormControl(),
     handler: new FormControl(),
     answer: new FormControl(),
@@ -194,9 +198,9 @@ export class ActionEditComponent implements OnInit {
 
     if (!ctxName) return;
 
-    if (ctxName.length < ENTITY_NAME_MINLENGTH) {
+    if (ctxName.length < ACTION_OR_CONTEXT_NAME_MINLENGTH) {
       this[`${wich}ContextsAddError`] = {
-        errors: { minlength: { requiredLength: ENTITY_NAME_MINLENGTH } }
+        errors: { minlength: { requiredLength: ACTION_OR_CONTEXT_NAME_MINLENGTH } }
       };
       return;
     }

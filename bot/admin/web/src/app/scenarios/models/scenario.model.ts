@@ -71,6 +71,7 @@ export interface ScenarioIntentDefinition {
   sentences?: TempSentence[];
   _sentences?: Sentence[];
   primary?: boolean;
+  outputContextNames?: ScenarioContextName[];
 }
 
 export interface ScenarioActionDefinition {

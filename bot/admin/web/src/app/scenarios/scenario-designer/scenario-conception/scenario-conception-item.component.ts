@@ -219,6 +219,10 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         if (ctxIndex >= 0) this.contexts.splice(ctxIndex, 1, ctxEntity);
         else this.contexts.push(ctxEntity);
       });
+
+      this.checkAndAddNewContexts(intentDef.outputContextNames);
+      this.item.intentDefinition.outputContextNames = intentDef.outputContextNames;
+
       modal.close();
     });
 

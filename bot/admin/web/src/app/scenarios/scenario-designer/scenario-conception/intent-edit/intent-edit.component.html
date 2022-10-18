@@ -56,7 +56,7 @@
           *ngIf="!isLabelASentence() && !isReadonly"
           icon="arrowhead-down-outline"
           status="basic"
-          nbTooltip="Use label as a question"
+          nbTooltip="Use label as a sentence"
           class="pointer valign-middle"
           (click)="copyLabelToSentences()"
         ></nb-icon>
@@ -84,7 +84,7 @@
 
     <hr class="my-2" />
 
-    <strong> Questions matching this Intent :</strong>
+    <strong> Sentences matching this Intent :</strong>
     <div class="questions mt-1">
       <ul class="sentences-list">
         <li
@@ -144,7 +144,7 @@
         fullWidth
         id="newQuestion"
         type="text"
-        placeholder="Add a new question formulation and press enter"
+        placeholder="Add a new sentenceformulation and press enter"
         (keyup.enter)="addSentence()"
         autofocusElement
       />
@@ -160,6 +160,90 @@
       >
         Add
       </button>
+    </div>
+
+    <div
+      *ngIf="!primary.value"
+      class="mt-3"
+    >
+      <hr class="my-3" />
+
+      <tock-form-control
+        *ngIf="!isReadonly"
+        label="Output contexts"
+        name="outputContexts"
+        [controls]="outputContextsAddError"
+        [showError]="true"
+      >
+        <nb-list class="contexts-list">
+          <nb-list-item
+            *ngFor="let outputContext of outputContextNames.value"
+            class="p-2 d-flex justify-content-between"
+          >
+            <div class="ellipsis font-weight-bold">
+              {{ outputContext }}
+            </div>
+
+            <ng-container *ngFor="let context of getContextByName(outputContext)">
+              <span
+                *ngIf="context?.entityType"
+                nbTooltip="Entity associated with the context"
+                class="entity"
+                [style.background]="getContextEntityColor(context)"
+                [style.color]="getContextEntityContrast(context)"
+              >
+                {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
+              </span>
+            </ng-container>
+
+            <nb-icon
+              *ngIf="!isReadonly"
+              icon="trash-2-outline"
+              status="danger"
+              class="min-width-1em ml-2 pointer"
+              nbTooltip="Remove this context from outputs"
+              (click)="removeContext('output', outputContext)"
+            ></nb-icon>
+          </nb-list-item>
+        </nb-list>
+
+        <div class="d-flex mt-2">
+          <input
+            #addContextInput
+            nbInput
+            fullWidth
+            id="newContext"
+            type="text"
+            placeholder="Add an output context and press enter"
+            (keyup)="resetContextsAddErrors()"
+            (keyup.enter)="addContext()"
+            autocomplete="off"
+            [nbAutocomplete]="outputContextsAutocomplete"
+            (focus)="updateContextsAutocompleteValues()"
+            (keyup)="updateContextsAutocompleteValues($event)"
+          />
+          <nb-autocomplete #outputContextsAutocomplete>
+            <nb-option
+              *ngFor="let option of contextsAutocompleteValues | async"
+              [value]="option"
+            >
+              {{ option }}
+            </nb-option>
+          </nb-autocomplete>
+
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="small"
+            class="ml-1"
+            [disabled]="!addContextInput.value.length"
+            (click)="addContext()"
+          >
+            Add
+          </button>
+        </div>
+      </tock-form-control>
     </div>
   </nb-card-body>
 

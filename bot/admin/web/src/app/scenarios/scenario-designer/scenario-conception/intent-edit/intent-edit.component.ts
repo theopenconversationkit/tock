@@ -15,14 +15,16 @@ import { NbDialogRef } from '@nebular/theme';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { ScenarioItem, TempSentence, ScenarioContext, ScenarioVersionExtended } from '../../../models';
 import { Token } from '../../../../sentence-analysis/highlight/highlight.component';
-import { EntityDefinition, Intent, Sentence } from '../../../../model/nlp';
+import { entityColor, EntityDefinition, Intent, qualifiedName, qualifiedRole, Sentence } from '../../../../model/nlp';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { SentenceEditComponent } from './sentence/sentence-edit.component';
-import { deepCopy } from '../../../commons/utils';
+import { deepCopy, getContrastYIQ, getScenarioActionDefinitions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 
 export type SentenceExtended = Sentence & { _tokens?: Token[] };
 export type TempSentenceExtended = TempSentence & { _tokens?: Token[] };
+
+const CONTEXT_NAME_MINLENGTH = 5;
 
 @Component({
   selector: 'scenario-intent-edit',
@@ -42,6 +44,9 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   @ViewChildren(SentenceEditComponent) sentencesComponents: QueryList<SentenceEditComponent>;
   @ViewChild('addSentenceInput') addSentenceInput: ElementRef;
+  @ViewChild('addContextInput') addContextInput: ElementRef;
+
+  private qualifiedName = qualifiedName;
 
   constructor(public dialogRef: NbDialogRef<IntentEditComponent>, protected state: StateService) {}
 
@@ -68,6 +73,12 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.contexts.forEach((ctx) => {
       this.contextsEntities.push(new FormControl(ctx));
     });
+
+    if (this.item.intentDefinition?.outputContextNames?.length) {
+      this.item.intentDefinition.outputContextNames.forEach((contextName) => {
+        this.outputContextNames.push(new FormControl(contextName));
+      });
+    }
 
     this.collectAllEntities();
   }
@@ -125,7 +136,8 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   form: FormGroup = new FormGroup({
     sentences: new FormArray([]),
     contextsEntities: new FormArray([]),
-    primary: new FormControl(false)
+    primary: new FormControl(false),
+    outputContextNames: new FormArray([])
   });
 
   get sentences(): FormArray {
@@ -134,6 +146,9 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   get contextsEntities(): FormArray {
     return this.form.get('contextsEntities') as FormArray;
   }
+  get outputContextNames(): FormArray {
+    return this.form.get('outputContextNames') as FormArray;
+  }
 
   get primary(): FormControl {
     return this.form.get('primary') as FormControl;
@@ -141,8 +156,6 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   dissociateIntent() {
     this.onRemoveDefinition.emit();
-    // delete this.item.intentDefinition;
-    // this.cancel();
   }
 
   addSentence(sentenceString?) {
@@ -210,6 +223,84 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   pushUnicEntity(entities, entity) {
     if (entities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) return;
     entities.push(entity);
+  }
+
+  contextsAutocompleteValues: Observable<string[]>;
+
+  updateContextsAutocompleteValues(event?: KeyboardEvent): void {
+    let results = this.contexts.map((ctx) => ctx.name);
+
+    results = results.filter((r: string) => {
+      return !this.outputContextNames.value.includes(r);
+    });
+
+    if (event) {
+      const targetEvent = event.target as HTMLInputElement;
+      results = results.filter((ctxName: string) => ctxName.includes(targetEvent.value.toUpperCase()));
+    }
+
+    this.contextsAutocompleteValues = of(results);
+  }
+
+  outputContextsAddError: any = {};
+
+  resetContextsAddErrors(): void {
+    this.outputContextsAddError = {};
+  }
+
+  addContext(): void {
+    const eventTarget = this.addContextInput.nativeElement as HTMLInputElement;
+    const ctxName = normalizedSnakeCaseUpper(eventTarget.value);
+
+    this.resetContextsAddErrors();
+
+    if (!ctxName) return;
+
+    if (ctxName.length < CONTEXT_NAME_MINLENGTH) {
+      this.outputContextsAddError = {
+        errors: { minlength: { requiredLength: CONTEXT_NAME_MINLENGTH } }
+      };
+      return;
+    }
+
+    const actions = getScenarioActionDefinitions(this.scenario);
+
+    if (actions.find((act) => act.name === ctxName)) {
+      this.outputContextsAddError = { errors: { custom: 'A context cannot have the same name as an action' } };
+      return;
+    }
+
+    if (this.outputContextNames.value.find((ctx: string) => ctx == ctxName)) {
+      this.outputContextsAddError = {
+        errors: { custom: `This output context is already associated with this intent` }
+      };
+      return;
+    }
+
+    this.outputContextNames.push(new FormControl(ctxName));
+    eventTarget.value = '';
+    this.form.markAsDirty();
+  }
+
+  removeContext(contextName: string): void {
+    this.outputContextNames.removeAt(this.outputContextNames.value.findIndex((ctx: string) => ctx === contextName));
+    this.form.markAsDirty();
+  }
+
+  getContextByName(context: string): ScenarioContext[] {
+    return [
+      this.contexts.find((ctx) => {
+        return ctx.name == context;
+      })
+    ];
+  }
+
+  getContextEntityColor(context: ScenarioContext): string | undefined {
+    if (context.entityType) return entityColor(qualifiedRole(context.entityType, context.entityRole));
+  }
+
+  getContextEntityContrast(context: ScenarioContext): string | undefined {
+    if (context.entityType) return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
 
   save() {

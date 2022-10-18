@@ -65,6 +65,10 @@ Scenarios list
 
 Scenario designer :
 
+        Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
+
+        La sauvegarde du scenario supprimant les expandos commencant par un underscore, on perd les _sentences d'intent préalablement récupérées...
+
         Deux handlers sont susceptibles de porter le meme nom avec des variations de casse
 
         #DONE Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication

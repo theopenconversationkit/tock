@@ -93,6 +93,9 @@ export class ScenarioApiService {
       );
   }
 
+  // TODO : Import many versions as once
+  // "/bot/:$botId/scenarios/import/groups/:$groupId/versions"
+
   updateScenarioVersion(scenarioGroupId: string, scenarioVersion: ScenarioVersion): Observable<ScenarioVersion> {
     return this.applicationService
       .retrieveCurrentApplication()

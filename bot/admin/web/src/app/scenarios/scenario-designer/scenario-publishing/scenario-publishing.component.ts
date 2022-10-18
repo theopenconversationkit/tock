@@ -11,7 +11,7 @@ import { UserInterfaceType } from '../../../core/model/configuration';
 import { ClassifiedEntity, Intent, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
-import { getScenarioActionDefinitions, getScenarioActions, getScenarioIntents } from '../../commons/utils';
+import { getScenarioActionDefinitions, getScenarioActions, getScenarioIntentDefinitions, getScenarioIntents } from '../../commons/utils';
 import {
   ScenarioItem,
   SCENARIO_ITEM_FROM_BOT,
@@ -341,6 +341,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   postTickStory(): void {
     this.tickStoryErrors = undefined;
     const story = this.compileTickStory();
+
     this.scenarioService.postTickStory(story).subscribe(
       (res) => {
         // Successful save. We pass the scenario state to "current" and save it
@@ -360,7 +361,11 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       },
       (error) => {
         // Errors have occurred, let's inform the user.
-        this.tickStoryErrors = error.error?.errors ? error.error?.errors : [{ messagte: 'An unknown error occured' }];
+        this.tickStoryErrors = error.error?.errors
+          ? error.error?.errors
+          : typeof error === 'string'
+          ? [{ message: error }]
+          : [{ message: 'An unknown error occured' }];
       }
     );
   }
@@ -380,6 +385,58 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       }
     });
 
+    const intentsContexts = [];
+    intents.forEach((intent) => {
+      if (intent.intentDefinition.outputContextNames?.length) {
+        let parentAction = this.scenario.data.scenarioItems.find((item) => item.id === intent.parentIds[0]);
+        let intentAlreadyPresent = intentsContexts.find((ic) => ic.intentName === intent.intentDefinition.name);
+
+        if (!intentAlreadyPresent) {
+          intentsContexts.push({
+            intentName: intent.intentDefinition.name,
+            associations: [
+              {
+                actionName: parentAction.tickActionDefinition.name,
+                contextNames: intent.intentDefinition.outputContextNames
+              }
+            ]
+          });
+        } else {
+          intentAlreadyPresent.associations.push({
+            actionName: parentAction.tickActionDefinition.name,
+            contextNames: intent.intentDefinition.outputContextNames
+          });
+        }
+      }
+    });
+
+    /*
+    intentsContexts: [
+      {
+          intentName: "oui",
+          associations: [
+              {
+                  actionName: "toto1",
+                  contextNames: [ "111" ]
+              },
+              {
+                  actionName: "toto2",
+                  contextNames: [ "222" ]
+              }
+          ]
+      },
+      {
+          intentName: "bbb",
+          associations: [
+              {
+                  actionName: "toto3",
+                  contextNames: [ "333" ]
+              }
+          ]
+      }
+    ]
+    */
+
     let tickStory: TickStory = {
       botId: this.state.currentApplication.name,
       storyId: this.scenario._scenarioGroupId,
@@ -390,7 +447,8 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       secondaryIntents: secondaryIntents,
       contexts: this.scenario.data.contexts,
       actions: [],
-      stateMachine: this.scenario.data.stateMachine
+      stateMachine: this.scenario.data.stateMachine,
+      intentsContexts: intentsContexts
     };
 
     tickStory.actions = getScenarioActionDefinitions(this.scenario);
