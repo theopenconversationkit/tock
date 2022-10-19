@@ -49,9 +49,10 @@
       </nb-select>
 
       <nb-checkbox
+        class="lineHeight-0"
+        formControlName="enabled"
         [checked]="enabled.value"
         [indeterminate]="enabled.value === null"
-        formControlName="enabled"
         (checkedChange)="enabledCheckChanged()"
       >
         Active

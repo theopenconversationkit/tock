@@ -93,6 +93,11 @@
               class="story-type"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="feature.story.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
+            ></nb-icon>
             <span class="story-label">{{ feature.story.name }}</span>
           </nb-select-label>
           <nb-option
@@ -114,6 +119,11 @@
               *ngIf="s.isScriptAnswer()"
               class="story-type"
               icon="code"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
             ></nb-icon>
             {{ s.name }}
           </nb-option>
@@ -147,6 +157,11 @@
               class="story-type"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="feature.switchToStory.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
+            ></nb-icon>
             <span class="story-label">{{ feature.switchToStory.name }}</span>
           </nb-select-label>
           <nb-option class="story-label">No Redirection</nb-option>
@@ -169,6 +184,11 @@
               *ngIf="s.isScriptAnswer()"
               class="story-type"
               icon="code"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
             ></nb-icon>
             <span class="story-label">{{ s.name }}</span>
           </nb-option>
@@ -202,6 +222,11 @@
               class="story-type"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="feature.endWithStory.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
+            ></nb-icon>
             <span class="story-label">{{ feature.endWithStory.name }}</span>
           </nb-select-label>
           <nb-option>No Ending</nb-option>
@@ -225,6 +250,11 @@
               class="story-type"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="s.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
+            ></nb-icon>
             <span class="story-label">{{ s.name }}</span>
           </nb-option>
         </nb-select>
@@ -245,8 +275,7 @@
         <nb-card-header style="position: relative">
           <nb-badge
             [text]="
-              (!disabledFeatures ? 0 : !disabledFeatures.length ? 0 : disabledFeatures.length)
-                | i18nPlural: rulesPluralMapping['rule']
+              (!disabledFeatures ? 0 : !disabledFeatures.length ? 0 : disabledFeatures.length) | i18nPlural: rulesPluralMapping['rule']
             "
             [status]="disabledFeatures.length < 1 ? 'success' : 'info'"
             position="top left"
@@ -281,6 +310,11 @@
                   *ngIf="f.story.isScriptAnswer()"
                   class="story-type"
                   icon="code"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isTickAnswer()"
+                  class="story-type"
+                  icon="film-outline"
                 ></nb-icon>
                 {{ f.story.name }}
               </div>
@@ -343,9 +377,7 @@
             position="top left"
           ></nb-badge>
           <span nbTooltip="Forwarding Stories (to Other Stories)">Redirection</span>
-          <tock-info-button
-            message="Rules used to redirect a given story to other stories."
-          ></tock-info-button>
+          <tock-info-button message="Rules used to redirect a given story to other stories."></tock-info-button>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="!redirectedFeatures || redirectedFeatures.length < 1">
@@ -374,6 +406,11 @@
                   *ngIf="f.story.isScriptAnswer()"
                   class="story-type"
                   icon="code"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isTickAnswer()"
+                  class="story-type"
+                  icon="film-outline"
                 ></nb-icon>
                 {{ f.story.name }}
               </div>
@@ -417,6 +454,11 @@
                     class="story-type"
                     icon="code"
                   ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.switchToStory.isTickAnswer()"
+                    class="story-type"
+                    icon="film-outline"
+                  ></nb-icon>
                   <span class="story-label">{{ f.switchToStory.name }}</span>
                 </div>
               </div>
@@ -456,17 +498,12 @@
       <nb-card>
         <nb-card-header style="position: relative">
           <nb-badge
-            [text]="
-              (!endingFeatures ? 0 : !endingFeatures.length ? 0 : endingFeatures.length)
-                | i18nPlural: rulesPluralMapping['rule']
-            "
+            [text]="(!endingFeatures ? 0 : !endingFeatures.length ? 0 : endingFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
             [status]="endingFeatures.length < 1 ? 'success' : 'info'"
             position="top left"
           ></nb-badge>
           <span nbTooltip="Ending Stories (with Other Stories)">Ending</span>
-          <tock-info-button
-            message="Rules used to end stories with other stories."
-          ></tock-info-button>
+          <tock-info-button message="Rules used to end stories with other stories."></tock-info-button>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="!endingFeatures || endingFeatures.length < 1">
@@ -495,6 +532,11 @@
                   *ngIf="f.story.isScriptAnswer()"
                   class="story-type"
                   icon="code"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isTickAnswer()"
+                  class="story-type"
+                  icon="film-outline"
                 ></nb-icon>
                 {{ f.story.name }}
               </div>
@@ -537,6 +579,11 @@
                     *ngIf="f.endWithStory.isScriptAnswer()"
                     class="story-type"
                     icon="code"
+                  ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.endWithStory.isTickAnswer()"
+                    class="story-type"
+                    icon="film-outline"
                   ></nb-icon>
                   <span class="story-label">{{ f.endWithStory.name }}</span>
                 </div>

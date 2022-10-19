@@ -29,8 +29,6 @@ Scenarios list
 
         Proposer le fait qu'il existe ou pas une version current dans les critères de filtre
 
-        Déplacer le rep scenario-edit dans scenarios-list
-
         Permettre de classer les scenarios par date de creation / modification ?
 
         A la suppression d'un scenarioGroup avec tickStory, ne devrait-on pas s'occuper du nettoyage des intents et answers attachées au scenario ?
@@ -38,6 +36,8 @@ Scenarios list
         Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
 
         Storer au niveau du state l'index de pagination. On conserverais ainsi la derniere page affichée au retour du designer ce qui serait sympa
+
+        #DONE Déplacer le rep scenario-edit dans scenarios-list
 
         #DONE Ajouter l'applicationId au get des scenarios
 
