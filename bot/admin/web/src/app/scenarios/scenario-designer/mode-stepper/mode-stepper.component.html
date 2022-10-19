@@ -19,6 +19,8 @@
         *ngIf="!hasStepError(step.mode)"
         class="error"
         icon="alert-circle-outline"
+        [nbTooltip]="getStepErrorTooltip(step.mode)"
+        (click)="$event.stopPropagation(); displayNotMetConditionToAccesNextStage(step.mode)"
       ></nb-icon>
     </div>
     <div class="label-index">

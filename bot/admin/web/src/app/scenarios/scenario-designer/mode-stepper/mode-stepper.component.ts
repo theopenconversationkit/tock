@@ -24,18 +24,35 @@ export class ModeStepperComponent {
 
   constructor(private dialogService: DialogService) {}
 
+  getStepErrorTooltip(mode: SCENARIO_MODE) {
+    if (this.mode === mode) return 'Not all conditions are met to pass this stage';
+    return 'Not all conditions are met to access this stage';
+  }
+
+  displayNotMetConditionToAccesNextStage(mode: SCENARIO_MODE) {
+    const currentStageIndex = this.steps.findIndex((s) => s.mode === mode);
+    const nextStage = this.steps[currentStageIndex + 1];
+    let title;
+    if (this.mode === mode) title = 'At least one condition is not met to pass this stage';
+
+    this.displayFirstNotMetCondition(nextStage?.mode || mode, title);
+  }
+
+  displayFirstNotMetCondition(mode: SCENARIO_MODE, title = 'At least one condition is not met to access this stage') {
+    let reason = this.getStepSequenceValidity(mode);
+    this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: title,
+        subtitle: reason,
+        modalStatus: 'danger',
+        actions: [{ actionName: 'ok', buttonStatus: 'default' }]
+      }
+    });
+  }
+
   switchMode(mode: SCENARIO_MODE) {
     if (!this.isStepSequenceValid(mode)) {
-      let reason = this.getStepSequenceValidity(mode);
-
-      this.dialogService.openDialog(ChoiceDialogComponent, {
-        context: {
-          title: `At least one condition is not met to access this stage`,
-          subtitle: reason,
-          modalStatus: 'danger',
-          actions: [{ actionName: 'ok', buttonStatus: 'default' }]
-        }
-      });
+      this.displayFirstNotMetCondition(mode);
     } else {
       this.modeSwitch.emit(mode);
     }
