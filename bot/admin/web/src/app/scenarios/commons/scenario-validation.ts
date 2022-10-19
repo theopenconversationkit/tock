@@ -22,6 +22,8 @@ export const SCENARIO_STEPS_ERRORS = {
     `For each context declared as output to an action, there must be at least one other action requiring the same context as input. The context "${txt}" was not found as an input of any other action.`,
   intent_output_context_should_exist_as_action_input: (txt: string) =>
     `For each context declared as output to an intent, there must be at least one action requiring the same context as input. The context "${txt}" was not found as an input of any action.`,
+  intents_should_have_at_least_one_sentence: (txt: string) =>
+    `All intents must have at least one sentence. The intent "${txt}" have no sentence defined.`,
   statemachine_should_be_defined: () => 'A valid state machine must be defined',
   intents_should_be_transitions: (txt: string) =>
     `For each defined intent there must be a transition with the same name in the state machine. No transition found for the intent "${txt}".`,
@@ -100,7 +102,7 @@ function checkScenarioItemsIntegrity(scenario: ScenarioVersion): IntegrityCheckR
         return actDef !== actionDef && actDef.outputContextNames!.includes(inputContext);
       });
       const intentsOutputContext = intentDefinitions.find((intDef) => {
-        return intDef.outputContextNames!.includes(inputContext);
+        return intDef.outputContextNames?.includes(inputContext);
       });
       if (!actionsOutputContext && !intentsOutputContext) {
         return {
@@ -129,7 +131,7 @@ function checkScenarioItemsIntegrity(scenario: ScenarioVersion): IntegrityCheckR
     const intentDef = intentDefinitions[index];
 
     // For each context declared as the output of an intent, there must be at least one action requiring this same context as input
-    for (let outCtxIndex = 0; outCtxIndex < intentDef.outputContextNames!.length; outCtxIndex++) {
+    for (let outCtxIndex = 0; outCtxIndex < intentDef.outputContextNames?.length; outCtxIndex++) {
       const outputContext = intentDef.outputContextNames![outCtxIndex];
       const inputContext = actionsDefinitions.find((actDef) => {
         return actDef.inputContextNames!.includes(outputContext);
@@ -140,6 +142,14 @@ function checkScenarioItemsIntegrity(scenario: ScenarioVersion): IntegrityCheckR
           reason: SCENARIO_STEPS_ERRORS.intent_output_context_should_exist_as_action_input(outputContext)
         };
       }
+    }
+
+    // intents must have at least one sentence
+    if (!intentDef.sentences?.length && !intentDef._sentences?.length) {
+      return {
+        valid: false,
+        reason: SCENARIO_STEPS_ERRORS.intents_should_have_at_least_one_sentence(intentDef.name)
+      };
     }
   }
 

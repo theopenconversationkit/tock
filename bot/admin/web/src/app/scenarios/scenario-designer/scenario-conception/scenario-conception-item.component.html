@@ -120,7 +120,7 @@
 
           <div
             class="sentences mb-2"
-            [nbSpinner]="utterancesLoading"
+            [nbSpinner]="item._sentencesLoading"
           >
             <strong *ngIf="item.intentDefinition.sentences?.length || item.intentDefinition._sentences?.length">SENTENCES</strong>
             <div class="questions">

@@ -257,8 +257,10 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     if (dropped.parentIds.includes(targetId)) return;
     if (this.isInFiliation(targeted, dropped)) return;
 
-    if (this.findItemChild(dropped)) dropped.parentIds = [targetId];
-    else dropped.parentIds.push(targetId);
+    // duplication désactivée
+    // if (this.findItemChild(dropped)) dropped.parentIds = [targetId];
+    // else dropped.parentIds.push(targetId);
+    dropped.parentIds = [targetId];
   }
 
   isInFiliation(parent: ScenarioItem, child: ScenarioItem): boolean {
