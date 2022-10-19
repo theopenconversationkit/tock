@@ -68,7 +68,7 @@ export class FaqManagementEditComponent implements OnChanges {
   });
 
   getControlLengthIndicatorClass(controlName: string): string {
-    return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-muted';
+    return this.form.controls[controlName].value.length > this.controlsMaxLength[controlName] ? 'text-danger' : 'text-mitigated';
   }
 
   get answer(): FormControl {

@@ -13,9 +13,10 @@ import {
 } from '@nebular/theme';
 import { of } from 'rxjs';
 
-import { TestSharedModule } from '../../../shared/test-shared.module';
+import { TestSharedModule } from '../../../shared/testing/test-shared.module';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioFiltersComponent } from './scenario-filters.component';
+import { SpyOnCustomMatchers } from '../../../shared/testing/matchers/custom-matchers';
 
 describe('ScenarioFiltersComponent', () => {
   let component: ScenarioFiltersComponent;
@@ -50,6 +51,7 @@ describe('ScenarioFiltersComponent', () => {
   });
 
   beforeEach(() => {
+    jasmine.addMatchers(SpyOnCustomMatchers);
     fixture = TestBed.createComponent(ScenarioFiltersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -108,6 +110,25 @@ describe('ScenarioFiltersComponent', () => {
     expect(onFilterSpy).not.toHaveBeenCalled();
 
     tick(500);
-    expect(onFilterSpy).toHaveBeenCalledOnceWith({ search: 'test', tags: [] });
+    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({ search: 'test', tags: [] });
+
+    onFilterSpy.calls.reset();
+    tick(600);
+
+    expect(onFilterSpy).not.toHaveBeenCalled();
+
+    component.form.patchValue({ tags: ['test'] });
+    fixture.detectChanges();
+
+    tick(400);
+    expect(onFilterSpy).not.toHaveBeenCalled();
+
+    tick(500);
+    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({ search: 'test', tags: ['test'] });
+
+    onFilterSpy.calls.reset();
+    tick(600);
+
+    expect(onFilterSpy).not.toHaveBeenCalled();
   }));
 });

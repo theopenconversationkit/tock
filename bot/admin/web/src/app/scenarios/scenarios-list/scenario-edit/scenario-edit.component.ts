@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 
 import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { ScenarioGroup, ScenarioVersion } from '../../models';
+import { ScenarioGroup } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 
 @Component({

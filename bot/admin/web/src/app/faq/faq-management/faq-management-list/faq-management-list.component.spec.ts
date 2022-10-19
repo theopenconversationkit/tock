@@ -3,7 +3,7 @@ import { NbButtonModule, NbCardModule, NbDialogRef, NbIconModule, NbTagModule, N
 import { of } from 'rxjs';
 
 import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../shared/test-shared.module';
+import { TestSharedModule } from '../../../shared/testing/test-shared.module';
 import { FaqManagementListComponent } from './faq-management-list.component';
 import { FaqDefinitionExtended } from '../faq-management.component';
 import { DialogService } from '../../../core-nlp/dialog.service';

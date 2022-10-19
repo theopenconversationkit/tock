@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbIconModule } from '@nebular/theme';
 import { of } from 'rxjs';
 
-import { TestSharedModule } from '../../../shared/test-shared.module';
+import { TestSharedModule } from '../../../shared/testing/test-shared.module';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../models';
 import { ModeStepperComponent } from './mode-stepper.component';
@@ -143,7 +143,7 @@ const scenarioPublishing = {
   state: 'draft' as SCENARIO_STATE
 };
 
-describe('ModeStepperComponent', () => {
+xdescribe('ModeStepperComponent', () => {
   let component: ModeStepperComponent;
   let fixture: ComponentFixture<ModeStepperComponent>;
 

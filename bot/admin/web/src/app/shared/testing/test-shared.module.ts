@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { NbThemeModule } from '@nebular/theme';
 
-import { AutofocusDirective } from './directives';
+import { AutofocusDirective } from '../directives';
 
 @NgModule({
   declarations: [AutofocusDirective],

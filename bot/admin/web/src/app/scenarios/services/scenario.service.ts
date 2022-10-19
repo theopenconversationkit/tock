@@ -46,6 +46,7 @@ export class ScenarioService {
   getState(): ScenarioState {
     return this._state.getValue();
   }
+
   setState(state: ScenarioState): void {
     return this._state.next(state);
   }
@@ -137,7 +138,7 @@ export class ScenarioService {
     );
   }
 
-  grabScenarioVersionWithData(scenarioGroupId: string, scenarioVersionId: string): Observable<ScenarioVersion> {
+  private grabScenarioVersionWithData(scenarioGroupId: string, scenarioVersionId: string): Observable<ScenarioVersion> {
     return this.scenarioApiService
       .getScenarioVersion(scenarioGroupId, scenarioVersionId)
       .pipe(tap((scenarioVersionData) => this.setScenarioVersionData(scenarioGroupId, scenarioVersionData)));
@@ -288,11 +289,11 @@ export class ScenarioService {
     return this.scenarioApiService.postTickStory(tickStory);
   }
 
-  updateCategoriesCache(scenarios: ScenarioGroupExtended[]): string[] {
+  private updateCategoriesCache(scenarios: ScenarioGroupExtended[]): string[] {
     return [...new Set([...scenarios.map((v) => v.category)])].sort().filter((c) => c);
   }
 
-  updateTagsCache(scenarios: ScenarioGroupExtended[]): string[] {
+  private updateTagsCache(scenarios: ScenarioGroupExtended[]): string[] {
     return [
       ...new Set(
         <string>[].concat.apply(

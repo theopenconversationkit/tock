@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
 import { EMPTY } from 'rxjs';
 import { StateService } from '../../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../../shared/test-shared.module';
+import { TestSharedModule } from '../../../../shared/testing/test-shared.module';
 import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
 import { IntentCreateComponent } from './intent-create.component';
 

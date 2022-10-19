@@ -23,9 +23,10 @@ import { of } from 'rxjs';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../shared/test-shared.module';
+import { TestSharedModule } from '../../../shared/testing/test-shared.module';
 import { FaqManagementEditComponent, FaqTabs } from './faq-management-edit.component';
 import { FormControlComponent } from '../../../shared/components';
+import { DelayDirective } from '../../../shared/directives';
 import { FaqDefinitionExtended } from '../faq-management.component';
 import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../../model/nlp';
 
@@ -139,7 +140,7 @@ describe('FaqManagementEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FaqManagementEditComponent, FormControlComponent],
+      declarations: [FaqManagementEditComponent, FormControlComponent, DelayDirective],
       imports: [
         TestSharedModule,
         NbAlertModule,
