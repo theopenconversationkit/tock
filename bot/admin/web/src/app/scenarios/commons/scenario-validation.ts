@@ -17,9 +17,11 @@ export const SCENARIO_STEPS_ERRORS = {
   bot_intervention_should_have_action: (txt: string) =>
     `An action must be defined for each bot intervention. The "${txt}" bot intervention does not have an action defined.`,
   input_context_should_exist_as_output: (txt: string) =>
-    `For each context declared as input to an action, there must be at least one other action producing the same context as output. The context "${txt}" was not found as an output of any other action.`,
+    `For each context declared as input to an action, there must be at least one other action or one intent producing this same context as output. The context "${txt}" was not found as an output of any other action or intent.`,
   output_context_should_exist_as_input: (txt: string) =>
     `For each context declared as output to an action, there must be at least one other action requiring the same context as input. The context "${txt}" was not found as an input of any other action.`,
+  intent_output_context_should_exist_as_action_input: (txt: string) =>
+    `For each context declared as output to an intent, there must be at least one action requiring the same context as input. The context "${txt}" was not found as an input of any action.`,
   statemachine_should_be_defined: () => 'A valid state machine must be defined',
   intents_should_be_transitions: (txt: string) =>
     `For each defined intent there must be a transition with the same name in the state machine. No transition found for the intent "${txt}".`,
@@ -67,7 +69,7 @@ export function isStepValid(scenario: ScenarioVersion, step: SCENARIO_MODE): Int
       }
     }
 
-    const StoryValidity = checkStoryIntegrity(scenario);
+    const StoryValidity = checkScenarioItemsIntegrity(scenario);
     if (!StoryValidity.valid) return StoryValidity;
   }
 
@@ -85,19 +87,22 @@ export function isStepValid(scenario: ScenarioVersion, step: SCENARIO_MODE): Int
   return { valid: true };
 }
 
-function checkStoryIntegrity(scenario: ScenarioVersion): IntegrityCheckResult {
+function checkScenarioItemsIntegrity(scenario: ScenarioVersion): IntegrityCheckResult {
   const actionsDefinitions = getScenarioActionDefinitions(scenario);
+  const intentDefinitions = getScenarioIntentDefinitions(scenario);
 
   for (let index = 0; index < actionsDefinitions.length; index++) {
     const actionDef = actionsDefinitions[index];
-
-    // For each context declared as input to an action, there must be at least one action producing this same context as output from another action
-    for (let index = 0; index < actionDef.inputContextNames!.length; index++) {
-      const inputContext = actionDef.inputContextNames![index];
-      let outputContext = actionsDefinitions.find((actDef) => {
+    // For each context declared as input to an action, there must be at least one action or one intent producing this same context as output from another action
+    for (let inCtxIndex = 0; inCtxIndex < actionDef.inputContextNames!.length; inCtxIndex++) {
+      const inputContext = actionDef.inputContextNames![inCtxIndex];
+      const actionsOutputContext = actionsDefinitions.find((actDef) => {
         return actDef !== actionDef && actDef.outputContextNames!.includes(inputContext);
       });
-      if (!outputContext) {
+      const intentsOutputContext = intentDefinitions.find((intDef) => {
+        return intDef.outputContextNames!.includes(inputContext);
+      });
+      if (!actionsOutputContext && !intentsOutputContext) {
         return {
           valid: false,
           reason: SCENARIO_STEPS_ERRORS.input_context_should_exist_as_output(inputContext)
@@ -106,15 +111,33 @@ function checkStoryIntegrity(scenario: ScenarioVersion): IntegrityCheckResult {
     }
 
     // For each context declared at the output of an action, there must be at least one action requiring this same context at the input of another action
-    for (let index = 0; index < actionDef.outputContextNames!.length; index++) {
-      const outputContext = actionDef.outputContextNames![index];
-      let inputContext = actionsDefinitions.find((actDef) => {
+    for (let outCtxIndex = 0; outCtxIndex < actionDef.outputContextNames!.length; outCtxIndex++) {
+      const outputContext = actionDef.outputContextNames![outCtxIndex];
+      const inputContext = actionsDefinitions.find((actDef) => {
         return actDef !== actionDef && actDef.inputContextNames!.includes(outputContext);
       });
       if (!inputContext) {
         return {
           valid: false,
           reason: SCENARIO_STEPS_ERRORS.output_context_should_exist_as_input(outputContext)
+        };
+      }
+    }
+  }
+
+  for (let index = 0; index < intentDefinitions.length; index++) {
+    const intentDef = intentDefinitions[index];
+
+    // For each context declared as the output of an intent, there must be at least one action requiring this same context as input
+    for (let outCtxIndex = 0; outCtxIndex < intentDef.outputContextNames!.length; outCtxIndex++) {
+      const outputContext = intentDef.outputContextNames![outCtxIndex];
+      const inputContext = actionsDefinitions.find((actDef) => {
+        return actDef.inputContextNames!.includes(outputContext);
+      });
+      if (!inputContext) {
+        return {
+          valid: false,
+          reason: SCENARIO_STEPS_ERRORS.intent_output_context_should_exist_as_action_input(outputContext)
         };
       }
     }
