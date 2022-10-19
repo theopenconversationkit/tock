@@ -15,7 +15,13 @@ import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
-import { getContrastYIQ, getScenarioActionDefinitions, getSmTransitionParentsByname, removeSmStateById } from '../../commons/utils';
+import {
+  getContrastYIQ,
+  getScenarioActionDefinitions,
+  getScenarioIntentDefinitions,
+  getSmTransitionParentsByname,
+  removeSmStateById
+} from '../../commons/utils';
 import { ContextCreateComponent } from './context-create/context-create.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
@@ -108,6 +114,9 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
         item.tickActionDefinition.inputContextNames = item.tickActionDefinition.inputContextNames.filter((icn) => icn != context.name);
         item.tickActionDefinition.outputContextNames = item.tickActionDefinition.outputContextNames.filter((icn) => icn != context.name);
       }
+      if (item.from == SCENARIO_ITEM_FROM_CLIENT && item.intentDefinition && item.intentDefinition.outputContextNames) {
+        item.intentDefinition.outputContextNames = item.intentDefinition.outputContextNames.filter((icn) => icn != context.name);
+      }
     });
     this.scenario.data.contexts = this.scenario.data.contexts.filter((ctx) => ctx !== context);
   }
@@ -124,6 +133,14 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
         isOutput = true;
       }
     });
+
+    const intentDefinitions = getScenarioIntentDefinitions(this.scenario);
+    intentDefinitions.forEach((intentDef) => {
+      if (intentDef.outputContextNames?.find((ctxName) => ctxName === context.name)) {
+        isOutput = true;
+      }
+    });
+
     return isInput && isOutput;
   }
 

@@ -108,9 +108,21 @@
           </div>
 
           <div
+            *ngIf="item.intentDefinition.outputContextNames?.length"
+            class="tiny-text ellipsis"
+            nbTooltip="INTENT OUTPUTS : {{ item.intentDefinition.outputContextNames.join(' | ') }}"
+          >
+            <strong>OUTPUTS</strong>
+            <span *ngFor="let outputCtx of item.intentDefinition.outputContextNames">
+              {{ outputCtx }}
+            </span>
+          </div>
+
+          <div
             class="sentences mb-2"
             [nbSpinner]="utterancesLoading"
           >
+            <strong *ngIf="item.intentDefinition.sentences?.length || item.intentDefinition._sentences?.length">SENTENCES</strong>
             <div class="questions">
               <ul>
                 <li
@@ -169,8 +181,8 @@
             nbTooltip="ACTION OUTPUTS : {{ item.tickActionDefinition.outputContextNames.join(' | ') }}"
           >
             <strong>OUTPUTS</strong>
-            <span *ngFor="let inputCtx of item.tickActionDefinition.outputContextNames">
-              {{ inputCtx }}
+            <span *ngFor="let outputCtx of item.tickActionDefinition.outputContextNames">
+              {{ outputCtx }}
             </span>
           </div>
 

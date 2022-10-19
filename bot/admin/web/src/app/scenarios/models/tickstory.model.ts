@@ -11,4 +11,10 @@ export interface TickStory {
   contexts: ScenarioContext[];
   actions: ScenarioActionDefinition[];
   stateMachine: MachineState;
+  intentsContexts: intentsContext[];
+}
+
+export interface intentsContext {
+  intentName: string;
+  associations: { actionName: string; contextNames: string[] }[];
 }
