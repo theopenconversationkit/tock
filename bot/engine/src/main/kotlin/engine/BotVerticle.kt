@@ -161,9 +161,7 @@ internal class BotVerticle(
     }
 
     override fun detailedHealthcheck(): (RoutingContext) -> Unit = detailedHealthcheck(
-        listOf(
-            Pair("nlp_client", { BotRepository.nlpClient.healthcheck() })
-        ),
+        BotRepository.detailedHealthcheckTasks,
         selfCheck = { BotRepository.botsInstalled }
     )
 
