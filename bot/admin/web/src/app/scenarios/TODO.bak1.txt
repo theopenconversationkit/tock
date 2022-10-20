@@ -1,0 +1,154 @@
+global
+
+        A voir avec la SNCF sur la maj des paquets ou possibilité de créer un fichier de définition de déclaration en attendant "xxx.d.ts" avec les fonctions attendues
+          - mettre @types/nodes vers minimum 17.0.29
+          - permet de bénéficier de la fonction structuredClone (présent dans les navigateurs récent ou node 17)
+          - évite les problématiques liées JSON.parse(JSON.stringify(xxx)) à savoir
+            • problème de performance
+            • disaparition des types (ne déclenche pas d'erreur avec les types non supportés)
+            • disparition de données dans certain cas
+          - déplacer la fonction "deepClone" du fichier scenarios/commons/utils.ts vers shared/utils/utils.ts
+          - remplacer les JSON.parse(JSON.stringify(xxx)) par l'appel deepClone pour ne gérer qu'une seule fois le remplacement de la fonction ?
+
+        Créer un composant partagé input avec autocomplétion ?
+
+shared
+        Export: proposer la possibilité de sauvegarder l'ensemble des exports dans un fichier .zip plutôt que de sauvegarder un à un chaque scenarioGroup
+
+        Import: faut-il préciser les erreurs correspondantes à un mauvais contenu du fichier ? (A voir à l'usage)
+
+        #DONE Import: que se passe t'il lorsque le scenarioGroup importé à le même nom que l'un déjà présent dans la liste ?
+
+        #DONE Import: utiliser le nouvel endpoint pour créer un scenarioGroup avec la / les versions lorsqu'il sera disponible
+
+        #DONE (espacement déjà géré avec la class gap-1 qui est présente dans la refacto de la faq) Regarder le prblm du bouton close de ChoiceDialogComponent quand le modalStatus n'est pas primary. Voir aussi l'espacement des boutons
+
+Scenarios list
+
+        Réparer method design quand toutes les versions sont ARCHIVE
+
+        Régler le souci d'appel au endpoint de get de scenarioGroups quand l'application courante n'a pas de configuration
+
+        Proposer le fait qu'il existe ou pas une version current dans les critères de filtre
+
+        Permettre de classer les scenarios par date de creation / modification ?
+
+        A la suppression d'un scenarioGroup avec tickStory, ne devrait-on pas s'occuper du nettoyage des intents et answers attachées au scenario ?
+
+        Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
+
+        Storer au niveau du state l'index de pagination. On conserverais ainsi la derniere page affichée au retour du designer ce qui serait sympa
+
+        #DONE Déplacer le rep scenario-edit dans scenarios-list
+
+        #DONE Ajouter l'applicationId au get des scenarios
+
+        #DONE Permettre coté back l'édition des champs name, description, category et tags quel que soit le state des scenarios
+                Une fois fait, refacto scenarioListComponent.edit : scenarioListComponent.edit disparait au profit de scenarioListComponent.editSaga, scenarioListComponent.scenarioEdit disparait au profit de scenarioListComponent.sagaEdit etc...
+
+                ScenarioEditComponent ne devrait il pas etre autonome pour dialoguer avec scenarioService ?
+
+        #DONE Besoin d'un champ supplementaire du genre versionComment coté back ?
+
+        #DONE Supprimer la TickStory à la suppression d'un scenario "current". Adapter le warning pour signaler que la story va également être supprimée
+
+        #DONE (Le back s'en occupe) Suppression de saga => un endpoint de suppression de tickStory est necessaire
+
+        #DONE scenario-import : deporter les appels api dans le composant de facon à pouvoir afficher le détail en cas d'erreurs
+                Changement de logique, l'export et l'import ne sont plus affiché dans une boite de dialogue mais directement en tant que panel (comme création / édition de scénario) afin d'être cohérent entre les écrans
+
+        #DONE Adapter la pagination à l'affichage par saga.
+
+        #DONE Import de scenario
+
+        #DONE scenario.state : draft | current | archive ? Seul draft est éditable. current & archive == freezed. Conséquence : au sein d'une même saga deux scenarios ne peuvent être current simultanement.
+
+        #DONE Tock studio menu et titre de la vue scenarios-list : Scenarios management => Scenarios Management
+
+Scenario designer :
+
+        Gérer les streams multiples de la subsciption à getScenarioVersion au chargement du designer qui entraine de multiples affichages des modales
+
+        Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
+
+        La sauvegarde du scenario supprimant les expandos commencant par un underscore, on perd les _sentences d'intent préalablement récupérées...
+
+        Deux handlers sont susceptibles de porter le meme nom avec des variations de casse
+
+        #DONE Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
+
+        #DONE Au chargement checker l'existence des answersId référencées. Pour celles qui n'existent plus, supprimer le answerId pour permettre à nouveau le post à la publication
+
+        #DONE Checker l'existence des intentIds référencées au chargement du designer. On ne peut pas dependre du fait que l'utilisateur soit passé par l'onglet Casting pour le laisser afficher la vue Publishing
+
+        #DONE Faire fonctionner le designer en mode read-only si scenario.state n'est pas "draft". Désactiver les shortcuts. En publishing afficher un message expliquant la situation selon qui'on est en current ou en archive
+
+        #DONE Transformer en directive/composant? les fonctions de zoom et drag de canvas des vues casting et production ?
+
+        #DONE Gérer l'init du designer quand l'id du scenario demandé n'existe pas. Actuellement l'appel à scenarioService.getScenario ne répond jamais et la page reste vide sans alerter l'utilisateur et sans re-router vers scenarios-list
+
+        #DONE A l'ouverture des modals positionner mettre le focus sur le 1er champ à renseigner
+
+        #DONE Adapter les css au mode nuit
+
+        WRITING :
+
+                Désactiver la duplication par drag&drop
+
+                ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => A discuter avec Mohamed
+
+                #DONE Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
+
+                #DONE Au changement de from d'un scenarioItem, supprimer les eventuelles intentDefinition et tickActionDefinition existantes
+
+                #DONE Mettre à jours la state machine lorsqu'on supprime ou change le type de from d'un item qui était déjà référencé dans la state machine
+
+        CONCEPTION :
+
+                Imposer l'existence d'au moins une sentence (existante ou à créer) par intent pour passer à la production
+
+                Internationalisation des answers. Pour le moment seul la i18n d'interfaceType textChat et de locale currentLocale est définie
+
+                ??? Quid des sharedIntents ?
+
+                #DONE Intent avec intnetdefinition manquante mais affichage pas en accord ???
+
+                #DONE intent-edit : rafraichir context nouvellement créé dans liste des contexts associables à une entity
+
+                #DONE intent-create : vértifier les conflits de nom. L'intent doit avoir un nom qui n'existe ni dans les intents connues du serveur, ni dans les intents définies (et encore à créer) du scenario. L'intent ne doit pas non plus avoir un name == nameFromQualifiedName(Intent.unknown)
+
+                #DONE Mettre à jours la state machine lorsqu'on passe une intent de primary à non primary et vice versa (nb passer de non primary à primary n'a à priori pas d'impact sur la SM)
+
+                #DONE action-edit : Vérifier que le name fourni ne correspond pas à une autre action existante. Si oui bloquer la validation et informer l'utimisateur
+
+                #DONE intent-edit : Définir comment on store l'ajout ou la suppression d'entity à une sentence appartenant à une intent existante en base. Implications sur le fonctionnement de l'étape publishing
+
+                #DONE Quand on veux renommer une actionDefinition, vérifier les conflits de nom
+
+                #DONE Mettre à jours la state machine lorsqu'on renomme un item qui était déjà référencé
+
+                #DONE Mettre à jours la state machine lorsqu'on supprime la definition d'un item qui était déjà référencé
+
+                #DONE Permettre de flaguer une intent secondaire comme également primaire
+
+        PRODUCTION :
+
+                #DONE Revoir getAllSmTransitions (utilisé par drawPaths) puisque qu'une intent peut donner lieu à plusieurs transitions
+
+                #DONE Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
+
+        PUBLISHING :
+
+                Régler le souci de detection de dependances à updater quand on recharge un scenario sauvegardé sur le mode publishing
+
+                ??? Intent : c'est quoi les mandatoryStates ?
+
+                #DONE Problème de mise à jour du state local une fois la plublication effectuée avec succès
+
+                #DONE Regle d'intégrité : Pour chaque action déclarant exécuter du code métier on doit trouver une classe portant le nom du handler déclaré dans l'action => A étudier
+
+                #DONE Lors de l'envoi de la tick story, rajouter le sagaId associé
+
+                #DONE A la modification d'une answer existante, faire un update plutot qu'un post
+
+                #DONE Comment le front fait-il pour créer une secondary intent ?

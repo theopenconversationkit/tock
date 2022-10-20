@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
@@ -16,6 +15,8 @@ import {
   ScenarioContext,
   ScenarioVersionExtended
 } from '../../models';
+import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioDesignerService } from '../scenario-designer.service';
 import { ActionEditComponent } from './action-edit/action-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
@@ -46,13 +47,11 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
 
-  utterancesLoading = true;
-
   constructor(
     private scenarioConceptionService: ScenarioConceptionService,
     private dialogService: DialogService,
     protected state: StateService,
-    private nlp: NlpService
+    private scenarioDesignerService: ScenarioDesignerService
   ) {
     this.scenarioConceptionService.scenarioDesignerItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'focusItem') this.focusItem(evt.item);
@@ -64,29 +63,11 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     this.draggable = {
       data: this.item.id
     };
-
-    if (this.item.intentDefinition?.intentId) {
-      this.collectIntentUtterances();
-    } else {
-      this.utterancesLoading = false;
-    }
   }
 
   ngAfterViewInit(): void {
     this.itemCard.nativeElement.addEventListener('mousedown', function (event) {
       event.stopPropagation();
-    });
-  }
-
-  collectIntentUtterances() {
-    const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
-      intentId: this.item.intentDefinition.intentId
-    });
-
-    const nlpSubscription = this.nlp.searchSentences(searchQuery).subscribe((sentencesResearch) => {
-      this.item.intentDefinition._sentences = sentencesResearch.rows;
-      this.utterancesLoading = false;
-      nlpSubscription.unsubscribe();
     });
   }
 
@@ -147,21 +128,23 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   searchIntent(): void {
     const modal = this.dialogService.openDialog(IntentsSearchComponent, {
       context: {
-        intentSentence: this.item.text
+        intentSentence: this.item.text,
+        scenarioDesignerService: this.scenarioDesignerService
       }
     });
+
     modal.componentRef.instance.createNewIntentEvent.pipe(take(1)).subscribe(() => {
       this.createIntent();
       modal.close();
     });
-    const useIntentEvent = modal.componentRef.instance.useIntentEvent.pipe(take(1)).subscribe((intent) => {
+
+    modal.componentRef.instance.useIntentEvent.pipe(take(1)).subscribe((intent) => {
       this.setItemIntentDefinition(intent);
-      // useIntentEvent.unsubscribe();
       modal.close();
     });
   }
 
-  setItemIntentDefinition(intentDef) {
+  setItemIntentDefinition(intentDef): void {
     this.item.intentDefinition = {
       label: intentDef.label,
       name: intentDef.name,
@@ -170,8 +153,10 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       intentId: intentDef._id,
       primary: this.item.main
     };
-    this.utterancesLoading = true;
-    this.collectIntentUtterances();
+
+    this.scenarioDesignerService.grabIntentSentences(this.item).subscribe(() => {
+      this.editIntent();
+    });
   }
 
   createIntent(): void {

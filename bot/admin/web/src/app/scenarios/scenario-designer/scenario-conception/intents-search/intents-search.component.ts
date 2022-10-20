@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
-import { ScenarioConceptionService } from '../scenario-conception-service.service';
+import { ScenarioDesignerService } from '../../scenario-designer.service';
 
 @Component({
   selector: 'scenario-intents-search',
@@ -16,15 +16,11 @@ import { ScenarioConceptionService } from '../scenario-conception-service.servic
 export class IntentsSearchComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() intentSentence: string;
+  @Input() scenarioDesignerService: ScenarioDesignerService;
   @Output() createNewIntentEvent = new EventEmitter();
   @Output() useIntentEvent = new EventEmitter();
 
-  constructor(
-    public dialogRef: NbDialogRef<IntentsSearchComponent>,
-    protected state: StateService,
-    private nlp: NlpService,
-    private scenarioConceptionService: ScenarioConceptionService
-  ) {}
+  constructor(public dialogRef: NbDialogRef<IntentsSearchComponent>, protected state: StateService, private nlp: NlpService) {}
 
   loading: boolean = true;
   title: string = 'Searching existing intents';
@@ -80,7 +76,7 @@ export class IntentsSearchComponent implements OnInit, OnDestroy {
   }
 
   searchIntents() {
-    const searchQuery: SearchQuery = this.scenarioConceptionService.createSearchIntentsQuery({
+    const searchQuery: SearchQuery = this.scenarioDesignerService.createSearchIntentsQuery({
       searchString: this.intentSentence
     });
 

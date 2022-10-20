@@ -1,9 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-
-import { StateService } from '../../../core-nlp/state.service';
-import { PaginatedQuery } from '../../../model/commons';
-import { SearchQuery } from '../../../model/nlp';
 import { OffsetPosition } from '../../../shared/canvas/models';
 import { ScenarioItem } from '../../models/scenario.model';
 
@@ -12,24 +8,6 @@ import { ScenarioItem } from '../../models/scenario.model';
 })
 export class ScenarioConceptionService {
   public scenarioDesignerItemsCommunication = new Subject<any>();
-  constructor(protected state: StateService) {}
-
-  createSearchIntentsQuery(params: { searchString?: string; intentId?: string }): SearchQuery {
-    const cursor: number = 0;
-    const pageSize: number = 50;
-    const mark = null;
-    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
-    return new SearchQuery(
-      paginatedQuery.namespace,
-      paginatedQuery.applicationName,
-      paginatedQuery.language,
-      paginatedQuery.start,
-      paginatedQuery.size,
-      paginatedQuery.searchMark,
-      params.searchString || null,
-      params.intentId || null
-    );
-  }
 
   /*
     COMMUNICATION BETWEEN MAIN COMPONENT AND ITEMS COMPONENT

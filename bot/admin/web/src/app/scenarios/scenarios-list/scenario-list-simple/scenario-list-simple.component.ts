@@ -66,8 +66,8 @@ export class ScenarioListSimpleComponent {
       })[0];
     } else {
       const current = scenarioGroup.versions.filter((scn) => scn.state === SCENARIO_STATE.current);
-      if (current) {
-        scenarioToOpen = current[0];
+      if (current.length) {
+        scenarioToOpen = current[current.length - 1];
       } else {
         scenarioToOpen = scenarioGroup.versions[scenarioGroup.versions.length - 1];
       }

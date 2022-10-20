@@ -100,7 +100,6 @@ export class ScenarioService {
 
   getScenarioVersion(scenarioGroupId: string, scenarioVersionId: string): Observable<ScenarioVersionExtended | never> {
     let scenarioGroupInfo: ScenarioGroupExtended;
-
     return this.getScenariosGroups().pipe(
       switchMap(() => this.state$),
       map((data) => data.scenariosGroups.find((sg) => sg.id === scenarioGroupId)),

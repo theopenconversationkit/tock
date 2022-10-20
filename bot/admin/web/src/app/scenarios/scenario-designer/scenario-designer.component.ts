@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
-import { takeUntil, take } from 'rxjs/operators';
+import { takeUntil, take, distinctUntilChanged } from 'rxjs/operators';
 import {
   ScenarioVersion,
   ScenarioVersionExtended,
@@ -10,7 +10,7 @@ import {
   SCENARIO_STATE
 } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
-import { ActivatedRoute, CanDeactivate, Router } from '@angular/router';
+import { ActivatedRoute, CanDeactivate } from '@angular/router';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
@@ -62,10 +62,13 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.route.params.pipe(takeUntil(this.destroy)).subscribe((routeParams) => {
       this.scenarioService
         .getScenarioVersion(routeParams.scenarioGroupId, routeParams.scenarioVersionId)
-        .pipe(takeUntil(this.destroy))
+        .pipe(
+          distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+          takeUntil(this.destroy)
+        )
         .subscribe((scenarioVersionExt: ScenarioVersionExtended) => {
           if (scenarioVersionExt === null) {
-            return this.informNoScenarioFound();
+            return this.informScenarioNotFound();
           }
 
           this.scenarioVersion = deepCopy(scenarioVersionExt);
@@ -116,12 +119,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       if (item.intentDefinition?.intentId) {
         const existingIntent: Intent = this.state.findIntentById(item.intentDefinition.intentId);
         if (!existingIntent) {
-          // console.log(
-          //   'AN INTENT HAS BEEN REMOVED !!! Deleting the lapsed intentId : ' +
-          //     item.intentDefinition.intentId
-          // );
+          // The intent has been removed. We delete the lapsed intentId
           delete item.intentDefinition.intentId;
           deletedIntents.push(item.intentDefinition.label || item.intentDefinition.name);
+        } else {
+          this.scenarioDesignerService.grabIntentSentences(item);
         }
       }
 
@@ -130,10 +132,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           return ans._id === item.tickActionDefinition.answerId;
         });
         if (!existingAnswer) {
-          // console.log(
-          //   'AN ANSWER HAS BEEN REMOVED !!! Deleting the lapsed answerId : ' +
-          //     item.tickActionDefinition.answerId
-          // );
+          // The answer has been removed. We delete the lapsed answerId
           delete item.tickActionDefinition.answerId;
           deletedAnswers.push(item.tickActionDefinition.answer);
         }
@@ -169,7 +168,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
   }
 
-  informNoScenarioFound() {
+  informScenarioNotFound() {
     const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
         title: `No scenario found`,
@@ -226,11 +225,14 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
   canDeactivate(): boolean {
     if (this.isReadonly) return true;
-    let current = stringifiedCleanObject(this.scenarioVersion);
-    let currentParsed = JSON.parse(current);
-    delete currentParsed.creationDate;
-    delete currentParsed.updateDate;
-    return this.scenarioVersionBackup == JSON.stringify(currentParsed);
+    if (this.scenarioVersion) {
+      let current = stringifiedCleanObject(this.scenarioVersion);
+      let currentParsed = JSON.parse(current);
+      delete currentParsed.creationDate;
+      delete currentParsed.updateDate;
+      return this.scenarioVersionBackup == JSON.stringify(currentParsed);
+    }
+    return true;
   }
 }
 
