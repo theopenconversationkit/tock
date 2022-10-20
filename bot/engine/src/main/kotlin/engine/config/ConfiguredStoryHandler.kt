@@ -27,7 +27,6 @@ import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep.Step
-import ai.tock.bot.bean.TickSession
 import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
@@ -38,19 +37,13 @@ import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.nlp.api.client.model.Entity
-import ai.tock.bot.bean.TickUserAction
-import ai.tock.bot.engine.config.tickstory.TickSenderBotBus
-import ai.tock.bot.engine.config.tickstory.TickStoryHandler
-import ai.tock.bot.engine.dialog.TickState
+import ai.tock.bot.engine.config.tickstory.TickAnswerHandler
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import mu.KotlinLogging
-import ai.tock.bot.processor.TickStoryProcessor
-import java.time.Instant
 
 /**
  *
@@ -126,7 +119,7 @@ internal class ConfiguredStoryHandler(
         removeAskAgainProcess(bus)
         answerContainer.send(bus)
 
-        switchStoryIfEnding(null, bus)
+        switchStoryIfEnding(null, bus, answerContainer.findCurrentAnswer() is TickAnswerConfiguration)
 
         // Restrict next intents if defined in story settings:
 
@@ -177,9 +170,11 @@ internal class ConfiguredStoryHandler(
 
     private fun switchStoryIfEnding(
         step: StoryDefinitionConfigurationStep?,
-        bus: BotBus
+        bus: BotBus,
+        isTickAnswerConfiguration: Boolean  = false
     ) {
-        if (!isMissingMandatoryEntities(bus) && bus.story.definition.steps.isEmpty() || step?.hasNoChildren == true) {
+        if (!isTickAnswerConfiguration && (!isMissingMandatoryEntities(bus) && bus.story.definition.steps.isEmpty() || step?.hasNoChildren == true)
+            || (isTickAnswerConfiguration && bus.dialog.tickStates[bus.story.definition.id]!!.finished)) { // TODO !!
             configuration.findEnabledEndWithStoryId(bus.applicationId)
                 ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.applicationId) }
                 ?.let {
@@ -258,7 +253,7 @@ internal class ConfiguredStoryHandler(
      * A tick story handler
      */
     private fun BotBus.handleTickAnswer(container: StoryDefinitionAnswersContainer, configuration: TickAnswerConfiguration) {
-        TickStoryHandler.handle(this, container, configuration)
+        TickAnswerHandler.handle(this, container, configuration)
     }
 
 

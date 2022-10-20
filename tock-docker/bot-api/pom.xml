@@ -23,11 +23,15 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-docker</artifactId>
-        <version>22.9.1-SNAPSHOT</version>
+        <version>22.9.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-docker-bot-api</artifactId>
     <packaging>pom</packaging>
+
+    <properties>
+        <dialog-manager>tock-bot-dialog-manager-core-${project.version}</dialog-manager>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -74,9 +78,9 @@
                                 <runCmds>
                                     <run>apt-get update</run>
                                     <run>apt-get install -y curl wget openjdk-11-jdk gcc unzip graphviz</run>
-                                    <run>unzip /maven/tock-bot-dialog-manager-${project.version}.jar -d /maven/tock-bot-dialog-manager-${project.version}</run>
-                                    <run>mv /maven/tock-bot-dialog-manager-${project.version}/python /tmp</run>
-                                    <run>rm -r /maven/tock-bot-dialog-manager-${project.version}</run>
+                                    <run>unzip /maven/${dialog-manager}.jar -d /maven/${dialog-manager}</run>
+                                    <run>mv /maven/${dialog-manager}/python /tmp</run>
+                                    <run>rm -r /maven/${dialog-manager}</run>
                                     <run>pip3 install -r /tmp/python/install/requirements.txt</run>
                                     <run>mkdir /tmp/python/log</run>
                                 </runCmds>

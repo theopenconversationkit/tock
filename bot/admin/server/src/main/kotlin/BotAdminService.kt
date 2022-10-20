@@ -44,6 +44,7 @@ import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
+import ai.tock.bot.admin.model.BotTickAnswerConfiguration
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
@@ -64,6 +65,9 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
+import ai.tock.bot.bean.TickAction
+import ai.tock.bot.bean.TickContext
+import ai.tock.bot.bean.TickIntent
 import ai.tock.bot.bean.TickStoryValidation
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -302,7 +306,9 @@ object BotAdminService {
     }
 
     fun exportStories(namespace: String, applicationName: String): List<StoryDefinitionConfigurationDump> =
-        findStories(namespace, applicationName).map { StoryDefinitionConfigurationDump(it) }
+        findStories(namespace, applicationName)
+            .filterNot { AnswerConfigurationType.tick == it.currentType }
+            .map { StoryDefinitionConfigurationDump(it) }
 
     fun exportStory(
         namespace: String,
@@ -515,6 +521,15 @@ object BotAdminService {
                     answers?.find { it.answerType == script } as? ScriptAnswerConfiguration
                 )
             is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
+            is BotTickAnswerConfiguration -> TickAnswerConfiguration(
+                stateMachine = this.stateMachine,
+                primaryIntents = this.primaryIntents,
+                secondaryIntents = this.secondaryIntents,
+                contexts = this.contexts,
+                actions = this.actions,
+                intentsContexts = this.intentsContexts,
+                debug = this.debug
+            )
             else -> error("unsupported type $this")
         }
 
