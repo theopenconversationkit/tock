@@ -150,49 +150,49 @@
           <div
             class="ellipsis font-weight-bold"
             data-testid="item-action-definition-details"
-            nbTooltip="ACTION NAME : {{ item.tickActionDefinition.name }}"
+            nbTooltip="ACTION NAME : {{ item.actionDefinition.name }}"
           >
-            {{ item.tickActionDefinition.name }}
+            {{ item.actionDefinition.name }}
           </div>
 
           <div
-            *ngIf="item.tickActionDefinition.inputContextNames?.length"
+            *ngIf="item.actionDefinition.inputContextNames?.length"
             class="tiny-text ellipsis"
-            nbTooltip="ACTION INPUTS : {{ item.tickActionDefinition.inputContextNames.join(' & ') }}"
+            nbTooltip="ACTION INPUTS : {{ item.actionDefinition.inputContextNames.join(' & ') }}"
           >
             <strong>INPUTS</strong>
-            <span *ngFor="let inputCtx of item.tickActionDefinition.inputContextNames">
+            <span *ngFor="let inputCtx of item.actionDefinition.inputContextNames">
               {{ inputCtx }}
             </span>
           </div>
 
           <div
-            *ngIf="item.tickActionDefinition.handler"
+            *ngIf="item.actionDefinition.handler"
             class="tiny-text ellipsis"
-            nbTooltip="ACTION HANDLER : {{ item.tickActionDefinition.handler }}"
+            nbTooltip="ACTION HANDLER : {{ item.actionDefinition.handler }}"
           >
             <strong>HANDLER</strong>
-            {{ item.tickActionDefinition.handler }}
+            {{ item.actionDefinition.handler }}
           </div>
 
           <div
-            *ngIf="item.tickActionDefinition.outputContextNames?.length"
+            *ngIf="item.actionDefinition.outputContextNames?.length"
             class="tiny-text ellipsis"
-            nbTooltip="ACTION OUTPUTS : {{ item.tickActionDefinition.outputContextNames.join(' | ') }}"
+            nbTooltip="ACTION OUTPUTS : {{ item.actionDefinition.outputContextNames.join(' | ') }}"
           >
             <strong>OUTPUTS</strong>
-            <span *ngFor="let outputCtx of item.tickActionDefinition.outputContextNames">
+            <span *ngFor="let outputCtx of item.actionDefinition.outputContextNames">
               {{ outputCtx }}
             </span>
           </div>
 
           <div
-            *ngIf="item.tickActionDefinition.answer"
+            *ngIf="item.actionDefinition.answer"
             class="tiny-text"
-            nbTooltip="ANSWER : {{ item.tickActionDefinition.answer }}"
+            nbTooltip="ANSWER : {{ item.actionDefinition.answer }}"
           >
             <strong>ANSWER</strong>
-            {{ item.tickActionDefinition.answer }}
+            {{ item.actionDefinition.answer }}
           </div>
         </ng-container>
       </div>

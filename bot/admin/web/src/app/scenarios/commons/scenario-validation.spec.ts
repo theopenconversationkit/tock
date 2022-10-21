@@ -65,7 +65,7 @@ describe('scenario-validation', () => {
     };
     expect(res).toEqual(expected, 'Bot interventions must have action defined');
 
-    scenarioItems[1].tickActionDefinition = {
+    scenarioItems[1].actionDefinition = {
       name: 'BOT_RESPONSE1',
       inputContextNames: ['TEST_CONTEXT'],
       outputContextNames: []
@@ -82,7 +82,7 @@ describe('scenario-validation', () => {
       id: 2,
       from: 'bot' as ScenarioItemFrom,
       text: 'Bot response2',
-      tickActionDefinition: {
+      actionDefinition: {
         name: 'BOT_RESPONSE2',
         inputContextNames: [],
         outputContextNames: ['TEST_CONTEXT', 'TEST_CONTEXT2']
@@ -96,7 +96,7 @@ describe('scenario-validation', () => {
     };
     expect(res).toEqual(expected, 'Output context must exist as input');
 
-    scenarioItems[1].tickActionDefinition.inputContextNames.push('TEST_CONTEXT2');
+    scenarioItems[1].actionDefinition.inputContextNames.push('TEST_CONTEXT2');
 
     res = isStepValid(scenarioCopy, SCENARIO_MODE.publishing);
     expected = {

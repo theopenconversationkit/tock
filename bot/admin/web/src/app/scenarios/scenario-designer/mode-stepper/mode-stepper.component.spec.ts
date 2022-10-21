@@ -69,13 +69,13 @@ const scenarioProduction = {
         id: 1,
         text: 'action1',
         from: 'bot',
-        tickActionDefinition: { name: 'action1', inputContextNames: [], outputContextNames: [] }
+        actionDefinition: { name: 'action1', inputContextNames: [], outputContextNames: [] }
       },
       {
         id: 2,
         text: 'action2',
         from: 'bot',
-        tickActionDefinition: { name: 'action2', inputContextNames: [], outputContextNames: [] }
+        actionDefinition: { name: 'action2', inputContextNames: [], outputContextNames: [] }
       }
     ],
     contexts: []
@@ -106,7 +106,7 @@ const scenarioPublishing = {
         id: 1,
         text: 'action1',
         from: 'bot',
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'action1',
           inputContextNames: [],
           outputContextNames: ['test']
@@ -116,7 +116,7 @@ const scenarioPublishing = {
         id: 2,
         text: 'action2',
         from: 'bot',
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'action2',
           inputContextNames: ['test'],
           outputContextNames: []

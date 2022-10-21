@@ -58,26 +58,12 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     }
   }
 
-  isScenarioUnPublishable() {
-    let unPublishable;
-
-    const actionDefs = getScenarioActionDefinitions(this.scenario);
-    const expectedHandlers = actionDefs.filter((ad) => ad.handler).map((ad) => ad.handler);
-    let unImplementedHandlers = [];
-    expectedHandlers.forEach((eh) => {
-      if (!this.avalaibleHandlers.includes(eh)) {
-        unImplementedHandlers.push(eh);
-      }
-    });
-
-    if (unImplementedHandlers.length) {
-      unPublishable = `The following handlers are not yet implemented on the server side : ${unImplementedHandlers.join(', ')}`;
-    }
-
-    return unPublishable;
-  }
-
-  dependencies: { [key: string]: DependencyUpdateJob[] };
+  dependencies: { [key: string]: DependencyUpdateJob[] } = {
+    intentsToCreate: [],
+    intentsToUpdate: [],
+    answersToCreate: [],
+    answersToUpdate: []
+  };
 
   getJobsType(jobs: DependencyUpdateJob[]): string {
     return jobs[0].type;
@@ -88,13 +74,6 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   }
 
   checkDependencies(): void {
-    this.dependencies = {
-      intentsToCreate: [],
-      intentsToUpdate: [],
-      answersToCreate: [],
-      answersToUpdate: []
-    };
-
     getScenarioIntents(this.scenario).forEach((intent) => {
       if (!intent.intentDefinition.intentId) {
         this.dependencies.intentsToCreate.push({
@@ -112,13 +91,13 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     });
 
     getScenarioActions(this.scenario).forEach((action) => {
-      if (action.tickActionDefinition.answer && !action.tickActionDefinition.answerId) {
+      if (action.actionDefinition.answer && !action.actionDefinition.answerId) {
         this.dependencies.answersToCreate.push({
           type: 'creation',
           done: false,
           data: action
         });
-      } else if (action.tickActionDefinition.answerUpdate) {
+      } else if (action.actionDefinition.answerUpdate) {
         this.dependencies.answersToUpdate.push({
           type: 'update',
           done: false,
@@ -126,6 +105,25 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  isScenarioUnPublishable() {
+    let unPublishable;
+
+    const actionDefs = getScenarioActionDefinitions(this.scenario);
+    const expectedHandlers = actionDefs.filter((ad) => ad.handler).map((ad) => ad.handler);
+    let unImplementedHandlers = [];
+    expectedHandlers.forEach((eh) => {
+      if (!this.avalaibleHandlers.includes(eh)) {
+        unImplementedHandlers.push(eh);
+      }
+    });
+
+    if (unImplementedHandlers.length) {
+      unPublishable = `The following handlers are not yet implemented on the server side : ${unImplementedHandlers.join(', ')}`;
+    }
+
+    return unPublishable;
   }
 
   processingDependencies: boolean;
@@ -280,11 +278,11 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   }
 
   processAnswer(answerTask: DependencyUpdateJob): void {
-    if (!answerTask.data.tickActionDefinition.answerId) {
+    if (!answerTask.data.actionDefinition.answerId) {
       return this.postNewAnswer(answerTask);
     }
 
-    if (answerTask.data.tickActionDefinition.answerUpdate) {
+    if (answerTask.data.actionDefinition.answerUpdate) {
       return this.patchAnswer(answerTask);
     }
 
@@ -294,17 +292,17 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
   patchAnswer(answerTask: DependencyUpdateJob): void {
     let i18nLabel: I18nLabel = this.i18n.labels.find((i) => {
-      return i._id === answerTask.data.tickActionDefinition.answerId;
+      return i._id === answerTask.data.actionDefinition.answerId;
     });
 
     let i18n = i18nLabel.i18n.find((i) => {
       return i.interfaceType === UserInterfaceType.textChat && i.locale === this.state.currentLocale;
     });
-    i18n.label = answerTask.data.tickActionDefinition.answer;
+    i18n.label = answerTask.data.actionDefinition.answer;
 
     this.botService.saveI18nLabel(i18nLabel).subscribe(
       (result) => {
-        delete answerTask.data.tickActionDefinition.answerUpdate;
+        delete answerTask.data.actionDefinition.answerUpdate;
         this.processAnswer(answerTask);
       },
       (error) => {
@@ -314,10 +312,10 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   }
 
   postNewAnswer(answerTask: DependencyUpdateJob): void {
-    let request = new CreateI18nLabelRequest('scenario', answerTask.data.tickActionDefinition.answer, this.state.currentLocale);
+    let request = new CreateI18nLabelRequest('scenario', answerTask.data.actionDefinition.answer, this.state.currentLocale);
     this.botService.createI18nLabel(request).subscribe(
       (answer) => {
-        answerTask.data.tickActionDefinition.answerId = answer._id;
+        answerTask.data.actionDefinition.answerId = answer._id;
         this.processAnswer(answerTask);
       },
       (error) => {
@@ -396,14 +394,14 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
             intentName: intent.intentDefinition.name,
             associations: [
               {
-                actionName: parentAction.tickActionDefinition.name,
+                actionName: parentAction.actionDefinition.name,
                 contextNames: intent.intentDefinition.outputContextNames
               }
             ]
           });
         } else {
           intentAlreadyPresent.associations.push({
-            actionName: parentAction.tickActionDefinition.name,
+            actionName: parentAction.actionDefinition.name,
             contextNames: intent.intentDefinition.outputContextNames
           });
         }

@@ -106,8 +106,8 @@ export function getScenarioActions(scenario: ScenarioVersion): ScenarioItem[] {
 
 export function getScenarioActionDefinitions(scenario: ScenarioVersion): ScenarioActionDefinition[] {
   return getScenarioActions(scenario)
-    .filter((item) => item.tickActionDefinition)
-    .map((item) => item.tickActionDefinition);
+    .filter((item) => item.actionDefinition)
+    .map((item) => item.actionDefinition);
 }
 
 export function getSmTransitionByName(name: string, group: MachineState): string {

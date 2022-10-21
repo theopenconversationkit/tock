@@ -57,20 +57,23 @@
 ></scenario-mode-stepper>
 
 <scenario-conception
-  *ngIf="scenarioVersion?.data.mode === SCENARIO_MODE.writing || scenarioVersion?.data.mode === SCENARIO_MODE.casting"
+  *ngIf="
+    initialDependenciesCheckDone &&
+    (scenarioVersion?.data.mode === SCENARIO_MODE.writing || scenarioVersion?.data.mode === SCENARIO_MODE.casting)
+  "
   [scenario]="scenarioVersion"
   [isReadonly]="isReadonly"
   [avalaibleHandlers]="avalaibleHandlers"
 ></scenario-conception>
 
 <scenario-production
-  *ngIf="scenarioVersion?.data.mode === SCENARIO_MODE.production"
+  *ngIf="initialDependenciesCheckDone && scenarioVersion?.data.mode === SCENARIO_MODE.production"
   [scenario]="scenarioVersion"
   [isReadonly]="isReadonly"
 ></scenario-production>
 
 <scenario-publishing
-  *ngIf="scenarioVersion?.data.mode === SCENARIO_MODE.publishing"
+  *ngIf="initialDependenciesCheckDone && scenarioVersion?.data.mode === SCENARIO_MODE.publishing"
   [scenario]="scenarioVersion"
   [isReadonly]="isReadonly"
   [avalaibleHandlers]="avalaibleHandlers"

@@ -84,17 +84,17 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((actionDef) => {
       this.checkAndAddNewContexts(actionDef.inputContextNames);
       this.checkAndAddNewContexts(actionDef.outputContextNames);
-      if (this.scenario.data.stateMachine && this.item.tickActionDefinition && this.item.tickActionDefinition.name !== actionDef.name) {
-        renameSmStateById(this.item.tickActionDefinition.name, actionDef.name, this.scenario.data.stateMachine);
+      if (this.scenario.data.stateMachine && this.item.actionDefinition && this.item.actionDefinition.name !== actionDef.name) {
+        renameSmStateById(this.item.actionDefinition.name, actionDef.name, this.scenario.data.stateMachine);
       }
 
-      if (this.item.tickActionDefinition?.answerId) {
-        if (this.item.tickActionDefinition.answer !== actionDef.answer) {
+      if (this.item.actionDefinition?.answerId) {
+        if (this.item.actionDefinition.answer !== actionDef.answer) {
           actionDef.answerUpdate = true;
         }
       }
 
-      this.item.tickActionDefinition = actionDef;
+      this.item.actionDefinition = actionDef;
 
       modal.close();
     });
@@ -218,7 +218,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   itemHasDefinition() {
-    return this.item.intentDefinition || this.item.tickActionDefinition;
+    return this.item.intentDefinition || this.item.actionDefinition;
   }
 
   selectItem(): void {
@@ -277,13 +277,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         // to ensure backward compatibility with the early stages of the project
         delete this.item.intentDefinition;
       }
-    } else if (this.item.tickActionDefinition) {
+    } else if (this.item.actionDefinition) {
       if (this.item.from === SCENARIO_ITEM_FROM_BOT) {
         alertMessage =
           'This bot intervention already has an action definition. By deleting the intervention, this definition will be lost. Are you sure you want to continue?';
       } else {
         // to ensure backward compatibility with the early stages of the project
-        delete this.item.tickActionDefinition;
+        delete this.item.actionDefinition;
       }
     }
 
@@ -332,13 +332,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         // to ensure backward compatibility with the early stages of the project
         delete this.item.intentDefinition;
       }
-    } else if (this.item.tickActionDefinition) {
+    } else if (this.item.actionDefinition) {
       if (this.item.from === SCENARIO_ITEM_FROM_BOT) {
         alertMessage =
           'This bot intervention already has an action definition. By changing the type of the intervention, this definition will be removed. Are you sure you want to continue?';
       } else {
         // to ensure backward compatibility with the early stages of the project
-        delete this.item.tickActionDefinition;
+        delete this.item.actionDefinition;
       }
     }
 

@@ -30,7 +30,7 @@ const scenarioMock = {
         text: 'action1',
         from: 'bot' as ScenarioItemFrom,
         parentIds: [0],
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'ACTION1',
           inputContextNames: [],
           outputContextNames: ['TEST']
@@ -41,7 +41,7 @@ const scenarioMock = {
         text: 'action2',
         from: 'bot' as ScenarioItemFrom,
         parentIds: [0, 1],
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'ACTION2',
           inputContextNames: ['TEST'],
           outputContextNames: ['CONTEXT2'],
@@ -139,7 +139,7 @@ describe('ActionEditComponent', () => {
 
   it('Should not accept existing action name as name', () => {
     let modifItem = getScenarioMock().data.scenarioItems[2];
-    modifItem.tickActionDefinition.name = 'action1';
+    modifItem.actionDefinition.name = 'action1';
     component.item = modifItem;
     component.ngOnInit();
     expect(component.name.valid).not.toBeTruthy();
