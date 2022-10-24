@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbAlertModule, NbIconModule } from '@nebular/theme';
 
-import { TestSharedModule } from '../../test-shared.module';
+import { TestSharedModule } from '../../testing/test-shared.module';
 
 import { NoBotConfigurationComponent } from './no-bot-configuration.component';
 

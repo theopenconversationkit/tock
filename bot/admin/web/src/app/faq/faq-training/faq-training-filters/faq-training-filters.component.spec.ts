@@ -10,7 +10,7 @@ import {
   NbTooltipModule
 } from '@nebular/theme';
 
-import { TestSharedModule } from '../../../shared/test-shared.module';
+import { TestSharedModule } from '../../../shared/testing/test-shared.module';
 import { FaqTrainingFiltersComponent } from './faq-training-filters.component';
 
 describe('FaqTrainingFiltersComponent', () => {

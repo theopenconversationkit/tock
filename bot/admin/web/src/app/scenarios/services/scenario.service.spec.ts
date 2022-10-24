@@ -124,162 +124,180 @@ describe('ScenarioService', () => {
     expect(service.getState()).toEqual(initialState);
   });
 
-  it('should populate the state with the result when loading scenarios groups successfully', (done) => {
-    mockedScenarioApiService.getScenariosGroups.and.returnValue(of(mockScenarios));
+  describe('#getScenariosGroups', () => {
+    it('should populate the state with the result when loading scenarios groups successfully', (done) => {
+      mockedScenarioApiService.getScenariosGroups.and.returnValue(of(mockScenarios));
 
-    expect(service.getState()).toEqual(initialState);
+      expect(service.getState()).toEqual(initialState);
 
-    service.getScenariosGroups().subscribe(() => {
+      service.getScenariosGroups().subscribe(() => {
+        const state = service.getState();
+        expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
+        expect(state.loaded).toBeTrue();
+        expect(state.scenariosGroups).toHaveSize(mockScenarios.length);
+        expect(state.scenariosGroups).toEqual(mockScenarios);
+        expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+        expect(state.categories).toEqual(['default', 'scenario']);
+        done();
+      });
+    });
+
+    it('should not update state when loading scenarios groups fails', (done) => {
+      mockedScenarioApiService.getScenariosGroups.and.returnValue(throwError(new Error()));
+
+      expect(service.getState()).toEqual(initialState);
+
+      service.getScenariosGroups().subscribe({
+        error: () => {
+          const state = service.getState();
+          expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
+          expect(state.loaded).toBeFalse();
+          expect(state.scenariosGroups).toHaveSize(0);
+          expect(state.tags).toHaveSize(0);
+          expect(state.categories).toHaveSize(0);
+          done();
+        }
+      });
+    });
+  });
+
+  describe('#postScenarioGroup', () => {
+    it('should add a new scenario group in the state and update tags and categories cache when published successfully', (done) => {
+      mockedScenarioApiService.postScenarioGroup.and.returnValue(of({ ...newScenario, id: '1' }));
+
+      expect(service.getState()).toEqual(initialState);
+      service.setScenariosGroupsData(mockScenarios);
+
+      service.postScenarioGroup(newScenario).subscribe(() => {
+        const state = service.getState();
+        expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalledWith(newScenario);
+        expect(state.scenariosGroups).toHaveSize(mockScenarios.length + 1);
+        expect(state.scenariosGroups).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
+        expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+        expect(state.categories).toEqual(['default', 'scenario']);
+        done();
+      });
+    });
+
+    it('should not update state when post scenario group fails', (done) => {
+      mockedScenarioApiService.postScenarioGroup.and.returnValue(throwError(new Error()));
+
+      expect(service.getState()).toEqual(initialState);
+
+      service.postScenarioGroup(newScenario).subscribe({
+        error: () => {
+          const state = service.getState();
+          expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalled();
+          expect(state.loaded).toBeFalse();
+          expect(state.scenariosGroups).toHaveSize(0);
+          expect(state.tags).toHaveSize(0);
+          expect(state.categories).toHaveSize(0);
+          done();
+        }
+      });
+    });
+  });
+
+  describe('#updateScenarioGroup', () => {
+    it('should update an existing scenario group and update tags and categories cache from the state when the scenario group is successfully updated', (done) => {
+      mockedScenarioApiService.updateScenarioGroup.and.returnValue(of(updatedScenario));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+
+      service.setScenariosGroupsData(mockScenariosCopy);
       const state = service.getState();
-      expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
-      expect(state.loaded).toBeTrue();
-      expect(state.scenariosGroups).toHaveSize(mockScenarios.length);
+
+      expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+      expect(state.scenariosGroups.find((s) => s.id === '2')).not.toEqual(updatedScenario);
+      expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+      expect(state.categories).toEqual(['default', 'scenario']);
+
+      service.updateScenarioGroup(updatedScenario).subscribe(() => {
+        expect(mockedScenarioApiService.updateScenarioGroup).toHaveBeenCalled();
+        expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+        expect(state.scenariosGroups.find((s) => s.id === '2')).toEqual(updatedScenario);
+        expect(state.tags).toEqual(['JCVD forever', 'new tag', 'tag1', 'tag2', 'test']);
+        expect(state.categories).toEqual(['new category', 'scenario']);
+        done();
+      });
+    });
+
+    it('should not update state when put scenario group fails', (done) => {
+      mockedScenarioApiService.updateScenarioGroup.and.returnValue(throwError(new Error()));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
+
+      expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
       expect(state.scenariosGroups).toEqual(mockScenarios);
       expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
       expect(state.categories).toEqual(['default', 'scenario']);
-      done();
+
+      service.updateScenarioGroup(updatedScenario).subscribe({
+        error: () => {
+          expect(mockedScenarioApiService.updateScenarioGroup).toHaveBeenCalled();
+          expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+          expect(state.scenariosGroups.find((s) => s.id === '2')).not.toEqual(updatedScenario);
+          expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+          expect(state.categories).toEqual(['default', 'scenario']);
+          done();
+        }
+      });
     });
   });
 
-  it('should not update state when loading scenarios groups fails', (done) => {
-    mockedScenarioApiService.getScenariosGroups.and.returnValue(throwError(new Error()));
-
-    expect(service.getState()).toEqual(initialState);
-
-    service.getScenariosGroups().subscribe({
-      error: () => {
-        const state = service.getState();
-        expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
-        expect(state.loaded).toBeFalse();
-        expect(state.scenariosGroups).toHaveSize(0);
-        expect(state.tags).toHaveSize(0);
-        expect(state.categories).toHaveSize(0);
-        done();
-      }
-    });
-  });
-
-  it('should add a new scenario group in the state and update tags and categories cache when published successfully', (done) => {
-    mockedScenarioApiService.postScenarioGroup.and.returnValue(of({ ...newScenario, id: '1' }));
-
-    expect(service.getState()).toEqual(initialState);
-    service.setScenariosGroupsData(mockScenarios);
-
-    service.postScenarioGroup(newScenario).subscribe(() => {
+  describe('#deleteScenarioGroup', () => {
+    it('should remove an existing scenario group and update tags and categories cache from the state when the scenario group is successfully deleted', (done) => {
+      mockedScenarioApiService.deleteScenarioGroup.and.returnValue(of(false));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
       const state = service.getState();
-      expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalledWith(newScenario);
-      expect(state.scenariosGroups).toHaveSize(mockScenarios.length + 1);
-      expect(state.scenariosGroups).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
+
+      expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
       expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
       expect(state.categories).toEqual(['default', 'scenario']);
-      done();
-    });
-  });
 
-  it('should not update state when post scenario group fails', (done) => {
-    mockedScenarioApiService.postScenarioGroup.and.returnValue(throwError(new Error()));
-
-    expect(service.getState()).toEqual(initialState);
-
-    service.postScenarioGroup(newScenario).subscribe({
-      error: () => {
-        const state = service.getState();
-        expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalled();
-        expect(state.loaded).toBeFalse();
-        expect(state.scenariosGroups).toHaveSize(0);
-        expect(state.tags).toHaveSize(0);
-        expect(state.categories).toHaveSize(0);
-        done();
-      }
-    });
-  });
-
-  it('should update an existing scenario group and update tags and categories cache from the state when the scenario group is successfully updated', (done) => {
-    mockedScenarioApiService.updateScenarioGroup.and.returnValue(of(updatedScenario));
-    const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
-
-    service.setScenariosGroupsData(mockScenariosCopy);
-    const state = service.getState();
-
-    expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
-    expect(state.scenariosGroups.find((s) => s.id === '2')).not.toEqual(updatedScenario);
-    expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
-    expect(state.categories).toEqual(['default', 'scenario']);
-
-    service.updateScenarioGroup(updatedScenario).subscribe(() => {
-      expect(mockedScenarioApiService.updateScenarioGroup).toHaveBeenCalled();
-      expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
-      expect(state.scenariosGroups.find((s) => s.id === '2')).toEqual(updatedScenario);
-      expect(state.tags).toEqual(['JCVD forever', 'new tag', 'tag1', 'tag2', 'test']);
-      expect(state.categories).toEqual(['new category', 'scenario']);
-      done();
-    });
-  });
-
-  it('should not update state when put scenario group fails', (done) => {
-    mockedScenarioApiService.updateScenarioGroup.and.returnValue(throwError(new Error()));
-    const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
-
-    service.setScenariosGroupsData(mockScenariosCopy);
-    const state = service.getState();
-
-    expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
-    expect(state.scenariosGroups).toEqual(mockScenarios);
-    expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
-    expect(state.categories).toEqual(['default', 'scenario']);
-
-    service.updateScenarioGroup(updatedScenario).subscribe({
-      error: () => {
-        expect(mockedScenarioApiService.updateScenarioGroup).toHaveBeenCalled();
-        expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
-        expect(state.scenariosGroups.find((s) => s.id === '2')).not.toEqual(updatedScenario);
-        expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
-        expect(state.categories).toEqual(['default', 'scenario']);
-        done();
-      }
-    });
-  });
-
-  it('should remove an existing scenario group and update tags and categories cache from the state when the scenario group is successfully deleted', (done) => {
-    mockedScenarioApiService.deleteScenarioGroup.and.returnValue(of(false));
-    const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
-    service.setScenariosGroupsData(mockScenariosCopy);
-    const state = service.getState();
-
-    expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
-    expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
-    expect(state.categories).toEqual(['default', 'scenario']);
-
-    service.deleteScenarioGroup('2').subscribe(() => {
-      expect(mockedScenarioApiService.deleteScenarioGroup).toHaveBeenCalled();
-      expect(state.scenariosGroups.length).toBe(--mockScenariosCopy.length);
-      expect(state.scenariosGroups.find((s) => s.id === '2')).toBe(undefined);
-      expect(state.tags).toEqual(['tag1', 'tag2']);
-      expect(state.categories).toEqual(['scenario']);
-      done();
-    });
-  });
-
-  it('should not update state when delete scenario group fails', (done) => {
-    mockedScenarioApiService.deleteScenarioGroup.and.returnValue(throwError(new Error()));
-    const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
-    service.setScenariosGroupsData(mockScenariosCopy);
-    const state = service.getState();
-
-    expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
-    expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
-    expect(state.categories).toEqual(['default', 'scenario']);
-
-    service.deleteScenarioGroup('2').subscribe({
-      error: () => {
+      service.deleteScenarioGroup('2').subscribe(() => {
         expect(mockedScenarioApiService.deleteScenarioGroup).toHaveBeenCalled();
-        expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
-        expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
-        expect(state.categories).toEqual(['default', 'scenario']);
+        expect(state.scenariosGroups.length).toBe(--mockScenariosCopy.length);
+        expect(state.scenariosGroups.find((s) => s.id === '2')).toBe(undefined);
+        expect(state.tags).toEqual(['tag1', 'tag2']);
+        expect(state.categories).toEqual(['scenario']);
         done();
-      }
+      });
+    });
+
+    it('should not update state when delete scenario group fails', (done) => {
+      mockedScenarioApiService.deleteScenarioGroup.and.returnValue(throwError(new Error()));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
+
+      expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
+      expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+      expect(state.categories).toEqual(['default', 'scenario']);
+
+      service.deleteScenarioGroup('2').subscribe({
+        error: () => {
+          expect(mockedScenarioApiService.deleteScenarioGroup).toHaveBeenCalled();
+          expect(state.scenariosGroups.length).toBe(mockScenariosCopy.length);
+          expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+          expect(state.categories).toEqual(['default', 'scenario']);
+          done();
+        }
+      });
     });
   });
+
+  describe('#getScenarioVersion', () => {});
+
+  describe('#importScenarioGroup', () => {});
+
+  describe('#postScenarioVersion', () => {});
+
+  describe('#updateScenarioVersion', () => {});
+
+  describe('#deleteScenarioVersion', () => {});
 
   it('should build an array of unique categories not falsy sorted alphabetically from scenarios groups', () => {
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));

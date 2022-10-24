@@ -5,7 +5,9 @@
 >
   <label
     *ngIf="label"
+    class="font-weight-bold text-mitigated"
     [class.required]="required"
+    [class.hasError]="showError && !!controls.errors"
     [for]="name"
     data-testid="label"
   >

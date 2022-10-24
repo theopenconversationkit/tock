@@ -40,6 +40,7 @@
 @include media-breakpoint-up(sm) {
   .grid-accordion-item-body {
     grid-template-columns: minmax(5rem, 1fr) minmax(5rem, 1fr) minmax(5rem, 1fr) minmax(5rem, 4fr) minmax(10rem, auto);
+
     &-header {
       display: grid;
     }
