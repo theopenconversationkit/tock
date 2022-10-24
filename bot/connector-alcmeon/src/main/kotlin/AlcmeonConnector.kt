@@ -50,7 +50,6 @@ class AlcmeonConnector(
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
             router.get("$path/description")
-                .handler(authorisationHandler)
                 .handler { context -> context.response().end(description) }
             router.post("$path/start")
                 .handler(authorisationHandler)
