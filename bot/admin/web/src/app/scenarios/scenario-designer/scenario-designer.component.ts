@@ -23,6 +23,7 @@ import { ChoiceDialogComponent } from '../../shared/components';
 import { Intent } from '../../model/nlp';
 import { BotService } from '../../bot/bot-service';
 import { I18nLabels } from '../../bot/model/i18n';
+import { isEqual } from 'lodash-es';
 
 @Component({
   selector: 'scenario-designer',
@@ -39,6 +40,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   isReadonly: boolean = false;
   i18n: I18nLabels;
   avalaibleHandlers: string[];
+  initialDependenciesCheckDone: boolean = false;
 
   readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
@@ -63,7 +65,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       this.scenarioService
         .getScenarioVersion(routeParams.scenarioGroupId, routeParams.scenarioVersionId)
         .pipe(
-          distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+          distinctUntilChanged((a, b) => isEqual(a, b)),
           takeUntil(this.destroy)
         )
         .subscribe((scenarioVersionExt: ScenarioVersionExtended) => {
@@ -79,6 +81,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           if (typeof this.scenarioVersion.data.mode == 'undefined') this.scenarioVersion.data.mode = SCENARIO_MODE.writing;
 
           this.switchMode(this.scenarioVersion.data.mode || SCENARIO_MODE.writing);
+
           if (!this.scenarioVersion.data.scenarioItems.length) {
             this.scenarioVersion.data.scenarioItems.push({
               id: 0,
@@ -90,6 +93,15 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           if (!this.scenarioVersion.data.contexts) {
             this.scenarioVersion.data.contexts = [];
           }
+
+          // backward compatibility update
+          this.scenarioVersion.data.scenarioItems.forEach((item) => {
+            if (item['tickActionDefinition']) {
+              item.actionDefinition = item['tickActionDefinition'];
+              delete item['tickActionDefinition'];
+            }
+          });
+          // backward compatibility update
 
           this.botService
             .i18nLabels()
@@ -127,14 +139,14 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (item.tickActionDefinition?.answerId) {
+      if (item.actionDefinition?.answerId) {
         let existingAnswer = this.i18n.labels.find((ans) => {
-          return ans._id === item.tickActionDefinition.answerId;
+          return ans._id === item.actionDefinition.answerId;
         });
         if (!existingAnswer) {
           // The answer has been removed. We delete the lapsed answerId
-          delete item.tickActionDefinition.answerId;
-          deletedAnswers.push(item.tickActionDefinition.answer);
+          delete item.actionDefinition.answerId;
+          deletedAnswers.push(item.actionDefinition.answer);
         }
       }
     });
@@ -166,6 +178,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         }
       });
     }
+
+    this.initialDependenciesCheckDone = true;
   }
 
   informScenarioNotFound() {
@@ -181,7 +195,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     });
   }
 
-  switchMode(mode): void {
+  switchMode(mode: SCENARIO_MODE): void {
     this.scenarioVersion.data.mode = mode;
   }
 
@@ -226,11 +240,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   canDeactivate(): boolean {
     if (this.isReadonly) return true;
     if (this.scenarioVersion) {
-      let current = stringifiedCleanObject(this.scenarioVersion);
-      let currentParsed = JSON.parse(current);
-      delete currentParsed.creationDate;
-      delete currentParsed.updateDate;
-      return this.scenarioVersionBackup == JSON.stringify(currentParsed);
+      const current = JSON.parse(stringifiedCleanObject(this.scenarioVersion));
+      delete current.creationDate;
+      delete current.updateDate;
+      return isEqual(JSON.parse(this.scenarioVersionBackup), current);
     }
     return true;
   }

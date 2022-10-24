@@ -59,7 +59,7 @@ export interface ScenarioItem {
   main?: boolean;
 
   intentDefinition?: ScenarioIntentDefinition;
-  tickActionDefinition?: ScenarioActionDefinition;
+  actionDefinition?: ScenarioActionDefinition;
 }
 
 export interface ScenarioIntentDefinition {

@@ -38,7 +38,7 @@ const scenarioMock = {
         text: 'action1',
         from: 'bot',
         parentIds: [0],
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'action1',
           inputContextNames: [],
           outputContextNames: ['test']
@@ -49,7 +49,7 @@ const scenarioMock = {
         text: 'action2',
         from: 'bot',
         parentIds: [0, 1],
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'action2',
           inputContextNames: ['test'],
           outputContextNames: []
@@ -178,18 +178,18 @@ describe('ScenarioConceptionComponent', () => {
     component.deleteContext(component.scenario.data.contexts[0]);
     const expected = getScenarioMock().data;
     expected.contexts = [];
-    expected.scenarioItems[1].tickActionDefinition.inputContextNames = [];
-    expected.scenarioItems[1].tickActionDefinition.outputContextNames = [];
-    expected.scenarioItems[2].tickActionDefinition.inputContextNames = [];
-    expected.scenarioItems[2].tickActionDefinition.outputContextNames = [];
+    expected.scenarioItems[1].actionDefinition.inputContextNames = [];
+    expected.scenarioItems[1].actionDefinition.outputContextNames = [];
+    expected.scenarioItems[2].actionDefinition.inputContextNames = [];
+    expected.scenarioItems[2].actionDefinition.outputContextNames = [];
     expect(component.scenario.data).toEqual(expected);
   });
 
   it('Should detect if a context is fully used', () => {
     expect(component.isContextUsed(component.scenario.data.contexts[0])).toBeTruthy();
 
-    component.scenario.data.scenarioItems[1].tickActionDefinition.inputContextNames = [];
-    component.scenario.data.scenarioItems[1].tickActionDefinition.outputContextNames = [];
+    component.scenario.data.scenarioItems[1].actionDefinition.inputContextNames = [];
+    component.scenario.data.scenarioItems[1].actionDefinition.outputContextNames = [];
     expect(component.isContextUsed(component.scenario.data.contexts[0])).toBeFalsy();
   });
 
@@ -233,7 +233,7 @@ describe('ScenarioConceptionComponent', () => {
 
     component.changeItemType(component.scenario.data.scenarioItems[2], SCENARIO_ITEM_FROM_CLIENT);
     expect(component.scenario.data.scenarioItems[2].from).toEqual('client');
-    expect(component.scenario.data.scenarioItems[2].tickActionDefinition).toBeUndefined();
+    expect(component.scenario.data.scenarioItems[2].actionDefinition).toBeUndefined();
     expect(component.scenario.data.stateMachine.states.Global.states['action2']).toBeUndefined();
   });
 

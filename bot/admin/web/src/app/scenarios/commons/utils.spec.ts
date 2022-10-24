@@ -96,7 +96,7 @@ describe('Scenarios Utils', () => {
         scenarioItems: [
           { from: 'bot' },
           { from: 'client' },
-          { from: 'client', tickActionDefinition: { attr: 'test' } },
+          { from: 'client', actionDefinition: { attr: 'test' } },
           { from: 'bot', intentDefinition: { attr: 'test' } },
           { from: 'client', intentDefinition: { attr: 'test1' } },
           { from: 'client', intentDefinition: { attr: 'test2' } },
@@ -128,12 +128,12 @@ describe('Scenarios Utils', () => {
     const scenario = {
       data: {
         scenarioItems: [
-          { from: 'bot', tickActionDefinition: { attr: 'test1' } },
-          { from: 'client', tickActionDefinition: { attr: 'test' } },
+          { from: 'bot', actionDefinition: { attr: 'test1' } },
+          { from: 'client', actionDefinition: { attr: 'test' } },
           { from: 'bot', intentDefinition: { attr: 'test' } },
           { from: 'client', intentDefinition: { attr: 'test' } },
           { from: 'client', intentDefinition: { attr: 'test' } },
-          { from: 'bot', tickActionDefinition: { attr: 'test2' } },
+          { from: 'bot', actionDefinition: { attr: 'test2' } },
           { from: 'bot' }
         ]
       }

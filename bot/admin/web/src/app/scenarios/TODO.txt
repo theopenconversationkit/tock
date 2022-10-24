@@ -35,9 +35,9 @@ Scenarios list
 
 Scenario designer :
 
-        Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
-
         Deux handlers sont susceptibles de porter le meme nom avec des variations de casse
+
+        #DONE Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
 
         #DONE Gérer les streams multiples de la subsciption à getScenarioVersion au chargement du designer qui entraine de multiples affichages des modales
 
@@ -63,8 +63,9 @@ Scenario designer :
 
         PUBLISHING :
 
-                Régler le souci de detection de dependances à updater quand on recharge un scenario sauvegardé sur le mode publishing
-
                 ??? Intent : c'est quoi les mandatoryStates ?
+
+                #DONE Régler le souci de detection de dependances à updater quand on recharge un scenario sauvegardé sur le mode publishing
+
 
                

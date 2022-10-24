@@ -43,7 +43,7 @@ const scenarioMock = {
         text: 'action1',
         from: 'bot' as ScenarioItemFrom,
         parentIds: [0],
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'action1',
           inputContextNames: [],
           outputContextNames: ['test']
@@ -54,7 +54,7 @@ const scenarioMock = {
         text: 'action2',
         from: 'bot' as ScenarioItemFrom,
         parentIds: [0, 1],
-        tickActionDefinition: {
+        actionDefinition: {
           name: 'action2',
           inputContextNames: ['test'],
           outputContextNames: [],
@@ -170,28 +170,6 @@ xdescribe('ScenarioConceptionItemComponent', () => {
     expect(component.draggable.data).toEqual(2);
   });
 
-  // it('Should not collect existing utterances on init if item is not an intent', () => {
-  //   spyOn(component, 'collectIntentUtterances');
-  //   // item is not an intent => should not collect
-  //   expect(component.collectIntentUtterances).not.toHaveBeenCalled();
-  // });
-
-  // it('Should not collect existing utterances on init if item has no intenId defined', () => {
-  //   spyOn(component, 'collectIntentUtterances');
-  //   // item is an intent but has no intentId defined => should not collect
-  //   component.item = getScenarioMock().data.scenarioItems[0];
-  //   component.ngOnInit();
-  //   expect(component.collectIntentUtterances).not.toHaveBeenCalled();
-  // });
-
-  // it('Should collect existing utterances on init if item has intenId defined', () => {
-  //   spyOn(component, 'collectIntentUtterances');
-  //   // item is an intent and has an intentId defined => should collect
-  //   component.item = getScenarioMock().data.scenarioItems[3];
-  //   component.ngOnInit();
-  //   expect(component.collectIntentUtterances).toHaveBeenCalled();
-  // });
-
   it('Should handle correctly ActionEditComponent.saveModifications return', () => {
     const modifications = {
       name: 'RenamedAction',
@@ -219,7 +197,7 @@ xdescribe('ScenarioConceptionItemComponent', () => {
     ]);
 
     expect(component.scenario.data.stateMachine.states.Global.states.RenamedAction).toBeTruthy();
-    expect(component.item.tickActionDefinition.answerUpdate).toBeTruthy();
+    expect(component.item.actionDefinition.answerUpdate).toBeTruthy();
   });
 
   it('Should handle correctly ActionEditComponent.deleteDefinition return', () => {
@@ -286,21 +264,6 @@ xdescribe('ScenarioConceptionItemComponent', () => {
 
     expect(component['dialogService'].openDialog).toHaveBeenCalled();
     expect(component.setItemIntentDefinition).toHaveBeenCalledWith(intentDef);
-  });
-
-  describe('setItemIntentDefinition', () => {
-    // it('Should collect intent utterances after beeing called', () => {
-    //   spyOn(component, 'collectIntentUtterances');
-    //   const intentDef = {
-    //     label: 'test',
-    //     name: 'name',
-    //     category: 'category',
-    //     description: 'category',
-    //     _id: 'id'
-    //   };
-    //   component.setItemIntentDefinition(intentDef);
-    //   expect(component.collectIntentUtterances).toHaveBeenCalled();
-    // });
   });
 
   it('Should handle correctly createIntent => createIntentEvent call', () => {
@@ -405,7 +368,7 @@ xdescribe('ScenarioConceptionItemComponent', () => {
         close: () => {},
         onClose: of('delete')
       } as NbDialogRef<any>);
-      delete component.item.tickActionDefinition;
+      delete component.item.actionDefinition;
       component.delete();
       expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
     });
@@ -433,7 +396,7 @@ xdescribe('ScenarioConceptionItemComponent', () => {
         close: () => {},
         onClose: of('delete')
       } as NbDialogRef<any>);
-      delete component.item.tickActionDefinition;
+      delete component.item.actionDefinition;
       component.switchItemType(SCENARIO_ITEM_FROM_CLIENT);
       expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
     });
@@ -487,7 +450,7 @@ xdescribe('ScenarioConceptionItemComponent', () => {
 
     let details = fixture.debugElement.query(By.css('[data-testid="item-action-definition-details"]'));
     expect(details).not.toBeNull();
-    expect(details.nativeElement.textContent.trim()).toEqual(scenarioMock.data.scenarioItems[1].tickActionDefinition.name);
+    expect(details.nativeElement.textContent.trim()).toEqual(scenarioMock.data.scenarioItems[1].actionDefinition.name);
 
     component.item = getScenarioMock().data.scenarioItems[4];
     component.ngOnInit();

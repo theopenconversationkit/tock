@@ -63,7 +63,7 @@ export function isStepValid(scenario: ScenarioVersion, step: SCENARIO_MODE): Int
           reason: SCENARIO_STEPS_ERRORS.client_intervention_should_have_intent(item.text)
         };
       }
-      if (item.from === SCENARIO_ITEM_FROM_BOT && !item.tickActionDefinition) {
+      if (item.from === SCENARIO_ITEM_FROM_BOT && !item.actionDefinition) {
         return {
           valid: false,
           reason: SCENARIO_STEPS_ERRORS.bot_intervention_should_have_action(item.text)

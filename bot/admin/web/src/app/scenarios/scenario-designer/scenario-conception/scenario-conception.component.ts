@@ -110,9 +110,9 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   deleteContext(context: ScenarioContext): void {
     this.scenario.data.scenarioItems.forEach((item) => {
-      if (item.from == SCENARIO_ITEM_FROM_BOT && item.tickActionDefinition) {
-        item.tickActionDefinition.inputContextNames = item.tickActionDefinition.inputContextNames.filter((icn) => icn != context.name);
-        item.tickActionDefinition.outputContextNames = item.tickActionDefinition.outputContextNames.filter((icn) => icn != context.name);
+      if (item.from == SCENARIO_ITEM_FROM_BOT && item.actionDefinition) {
+        item.actionDefinition.inputContextNames = item.actionDefinition.inputContextNames.filter((icn) => icn != context.name);
+        item.actionDefinition.outputContextNames = item.actionDefinition.outputContextNames.filter((icn) => icn != context.name);
       }
       if (item.from == SCENARIO_ITEM_FROM_CLIENT && item.intentDefinition && item.intentDefinition.outputContextNames) {
         item.intentDefinition.outputContextNames = item.intentDefinition.outputContextNames.filter((icn) => icn != context.name);
@@ -185,7 +185,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (targetType === SCENARIO_ITEM_FROM_CLIENT && item.tickActionDefinition) {
+    if (targetType === SCENARIO_ITEM_FROM_CLIENT && item.actionDefinition) {
       if (this.scenario.data.stateMachine) {
         this.removeItemDefinition(item);
       }
@@ -206,10 +206,10 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       delete item.intentDefinition;
     }
 
-    if (item.tickActionDefinition) {
-      removeSmStateById(item.tickActionDefinition.name, this.scenario.data.stateMachine);
+    if (item.actionDefinition) {
+      removeSmStateById(item.actionDefinition.name, this.scenario.data.stateMachine);
 
-      delete item.tickActionDefinition;
+      delete item.actionDefinition;
     }
   }
 

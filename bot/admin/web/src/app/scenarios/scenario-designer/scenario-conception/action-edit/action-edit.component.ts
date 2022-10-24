@@ -72,15 +72,15 @@ export class ActionEditComponent implements OnInit {
   constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {}
 
   ngOnInit(): void {
-    this.form.patchValue(this.item.tickActionDefinition);
+    this.form.patchValue(this.item.actionDefinition);
 
-    if (this.item.tickActionDefinition?.inputContextNames?.length) {
-      this.item.tickActionDefinition.inputContextNames.forEach((contextName) => {
+    if (this.item.actionDefinition?.inputContextNames?.length) {
+      this.item.actionDefinition.inputContextNames.forEach((contextName) => {
         this.inputContextNames.push(new FormControl(contextName));
       });
     }
-    if (this.item.tickActionDefinition?.outputContextNames?.length) {
-      this.item.tickActionDefinition.outputContextNames.forEach((contextName) => {
+    if (this.item.actionDefinition?.outputContextNames?.length) {
+      this.item.actionDefinition.outputContextNames.forEach((contextName) => {
         this.outputContextNames.push(new FormControl(contextName));
       });
     }
@@ -108,8 +108,8 @@ export class ActionEditComponent implements OnInit {
 
       const allOtherActionDefinitionNames = getScenarioActions(this.scenario)
         .filter((action) => action !== this.item)
-        .filter((item) => item.tickActionDefinition)
-        .map((action) => action.tickActionDefinition.name);
+        .filter((item) => item.actionDefinition)
+        .map((action) => action.actionDefinition.name);
 
       if (allOtherActionDefinitionNames.includes(formatedValue)) {
         return { custom: 'This name is already used by another action' };
