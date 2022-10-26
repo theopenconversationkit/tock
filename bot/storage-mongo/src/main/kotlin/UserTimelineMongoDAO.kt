@@ -44,6 +44,7 @@ import ai.tock.bot.mongo.ClientIdCol_.Companion.UserIds
 import ai.tock.bot.mongo.DialogCol_.Companion.GroupId
 import ai.tock.bot.mongo.DialogCol_.Companion.PlayerIds
 import ai.tock.bot.mongo.DialogCol_.Companion.Stories
+import ai.tock.bot.mongo.DialogCol_.Companion.Test
 import ai.tock.bot.mongo.DialogCol_.Companion._id
 import ai.tock.bot.mongo.DialogTextCol_.Companion.Date
 import ai.tock.bot.mongo.DialogTextCol_.Companion.DialogId
@@ -69,13 +70,16 @@ import com.github.salomonbrys.kodein.instance
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
+import java.time.Instant
+import java.time.Instant.now
+import java.time.ZoneOffset
+import java.util.concurrent.TimeUnit.DAYS
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.type
-import org.litote.kmongo.`in`
 import org.litote.kmongo.addEachToSet
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.aggregate
@@ -92,6 +96,7 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
+import org.litote.kmongo.`in`
 import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lt
@@ -106,10 +111,6 @@ import org.litote.kmongo.sort
 import org.litote.kmongo.toId
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
-import java.time.Instant
-import java.time.Instant.now
-import java.time.ZoneOffset
-import java.util.concurrent.TimeUnit.DAYS
 
 /**
  *
@@ -154,8 +155,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 indexOptions = IndexOptions()
                     .expireAfter(longProperty("tock_bot_timeline_index_ttl_days", 365), DAYS)
             )
+            userTimelineCol.ensureIndex(
+                Namespace,
+                ApplicationIds,
+                UserTimelineCol_.UserPreferences.test,
+                LastUpdateDate
+            )
             dialogCol.ensureIndex(PlayerIds.id, Namespace)
             dialogCol.ensureIndex(PlayerIds.clientId)
+            dialogCol.ensureIndex(ApplicationIds, Test, DialogCol_.LastUpdateDate)
             dialogCol.ensureIndex(
                 DialogCol_.LastUpdateDate,
                 indexOptions = ttlIndexOptions
@@ -170,8 +178,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             )
             dialogCol.ensureIndex(GroupId)
 
-            dialogTextCol.ensureIndex(Text)
-            dialogTextCol.ensureIndex(Text)
             dialogTextCol.ensureUniqueIndex(Text, DialogId)
             dialogTextCol.ensureIndex(
                 Date,
@@ -263,6 +269,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                 saveNlpStats(it.toActionId(), dialog.id, it.nlpStats!!)
                             }
                         }
+
                         is SendSentence -> {
                             if (it.messages.isNotEmpty()) {
                                 saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
@@ -271,6 +278,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                 saveNlpStats(it.toActionId(), dialog.id, it.nlpStats!!)
                             }
                         }
+
                         else -> {
                             /*do nothing*/
                         }
@@ -527,7 +535,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val count = c.countDocuments(filter)
             return if (count > start) {
                 val list = c.find(filter)
-                    .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).map { it.toUserReport() }.toList()
+                    .skip(start.toInt())
+                    .limit(size)
+                    .descendingSort(LastUpdateDate)
+                    .map { it.toUserReport() }
+                    .toList()
                 UserReportQueryResult(count, start, start + list.size, list)
             } else {
                 UserReportQueryResult(0, 0, 0, emptyList())
