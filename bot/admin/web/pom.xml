@@ -151,7 +151,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install -d --loglevel warn</arguments>
+              <arguments>install -d --loglevel warn --force</arguments>
             </configuration>
           </execution>
           <execution>

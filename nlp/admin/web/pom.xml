@@ -78,7 +78,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>run-script mavenbuild --loglevel warn</arguments>
+              <arguments>run-script mavenbuild --loglevel warn --force</arguments>
             </configuration>
           </execution>
         </executions>
