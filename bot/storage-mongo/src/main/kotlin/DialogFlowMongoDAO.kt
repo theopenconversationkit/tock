@@ -96,6 +96,7 @@ import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
 import org.litote.kmongo.dateToString
+import org.litote.kmongo.deleteMany
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -115,6 +116,7 @@ import org.litote.kmongo.match
 import org.litote.kmongo.ne
 import org.litote.kmongo.project
 import org.litote.kmongo.projection
+import org.litote.kmongo.save
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 import org.litote.kmongo.size
@@ -174,6 +176,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         ConnectorType,
                         ActionType,
                         HourOfDay,
+                        indexOptions = IndexOptions().name("index")
                     )
                 } catch (e: Exception) {
                     logger.error(e)
@@ -207,13 +210,24 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 }
             }
 
+    private const val defaultConfKey = "default"
 
-    private const val currentProcessedLevel = 1
+    private val currentProcessedLevelCol =
+        MongoBotConfiguration.database.getCollection<DialogFlowConfiguration>("flow_configuration")
+
+    internal const val currentProcessedLevel = 1
 
     private val crawlStats: Boolean = booleanProperty("tock_dialog_flow_crawl_stats", true)
 
     override fun initFlowStatCrawl() {
         if (crawlStats) {
+            val conf = currentProcessedLevelCol.findOneById(defaultConfKey)
+            if(conf?.currentProcessedLevel != currentProcessedLevel) {
+                flowTransitionStatsDateAggregationCol.deleteMany()
+                flowTransitionStatsDialogAggregationCol.deleteMany()
+                flowTransitionStatsUserAggregationCol.deleteMany()
+                currentProcessedLevelCol.save(DialogFlowConfiguration(defaultConfKey, currentProcessedLevel))
+            }
             val executor = Executors.newSingleThreadExecutor()
             Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
                 {

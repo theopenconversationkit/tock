@@ -71,7 +71,7 @@ internal data class DialogFlowStateTransitionStatCol(
     val text: String?,
     val locale: Locale? = null,
     val date: Instant = now(),
-    val processedLevel: Int = 1,
+    val processedLevel: Int = DialogFlowMongoDAO.currentProcessedLevel,
 )
 
 @Data(internal = true)
@@ -129,4 +129,11 @@ internal data class DialogFlowAggregateApplicationIdResult(
     val applicationId: Id<BotApplicationConfiguration>,
     val date: LocalDateTime,
     val count: Int = 0,
+)
+
+@Data(internal = true)
+@JacksonData(internal = true)
+internal data class DialogFlowConfiguration(
+    val _id : String,
+    val currentProcessedLevel: Int = DialogFlowMongoDAO.currentProcessedLevel
 )
