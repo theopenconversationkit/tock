@@ -1,3 +1,7 @@
+test
+        Virer les dépendances protractor et @types/jasminewd2, protractor n'étant pas utilisé dans le projet et n'est plus préconisé par angular
+          - A faire en même temps qu'une possible implémentation de cypress ?
+
 global
 
         A voir avec la SNCF sur la maj des paquets ou possibilité de créer un fichier de définition de déclaration en attendant "xxx.d.ts" avec les fonctions attendues
@@ -59,7 +63,7 @@ Scenario designer :
 
         PRODUCTION :
 
-                
+
 
         PUBLISHING :
 
@@ -68,4 +72,3 @@ Scenario designer :
                 #DONE Régler le souci de detection de dependances à updater quand on recharge un scenario sauvegardé sur le mode publishing
 
 
-               

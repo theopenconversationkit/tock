@@ -1,18 +1,17 @@
 <nb-card class="mb-0">
   <nb-card-header class="d-flex justify-content-between gap-1">
     Filters
-    <div class="actions">
-      <button
-        *ngIf="isFiltered"
-        nbButton
-        nbTooltip="Clear all filters"
-        ghost
-        shape="round"
-        (click)="clearFilters()"
-      >
-        <nb-icon icon="close-outline"></nb-icon>
-      </button>
-    </div>
+    <button
+      *ngIf="isFiltered"
+      nbButton
+      nbTooltip="Clear all filters"
+      ghost
+      shape="round"
+      (click)="clearFilters()"
+      data-testid="clear-button"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
   </nb-card-header>
   <nb-card-body>
     <form

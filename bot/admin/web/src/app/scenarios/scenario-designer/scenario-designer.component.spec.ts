@@ -50,7 +50,7 @@ describe('ScenarioDesignerComponent', () => {
         {
           provide: ScenarioDesignerService,
           useValue: {
-            scenarioDesignerCommunication: of({ type: 'updateScenarioBackup' })
+            scenarioDesignerCommunication: of({ type: 'updateScenarioBackup', data: testScenario })
           }
         },
         { provide: DialogService, useValue: {} },

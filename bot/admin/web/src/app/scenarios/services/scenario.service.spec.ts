@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { ApplicationService } from '../../core-nlp/applications.service';
 
 import { ScenarioGroup } from '../models';
@@ -130,16 +131,19 @@ describe('ScenarioService', () => {
 
       expect(service.getState()).toEqual(initialState);
 
-      service.getScenariosGroups().subscribe(() => {
-        const state = service.getState();
-        expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
-        expect(state.loaded).toBeTrue();
-        expect(state.scenariosGroups).toHaveSize(mockScenarios.length);
-        expect(state.scenariosGroups).toEqual(mockScenarios);
-        expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
-        expect(state.categories).toEqual(['default', 'scenario']);
-        done();
-      });
+      service
+        .getScenariosGroups()
+        .pipe(first())
+        .subscribe(() => {
+          const state = service.getState();
+          expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
+          expect(state.loaded).toBeTrue();
+          expect(state.scenariosGroups).toHaveSize(mockScenarios.length);
+          expect(state.scenariosGroups).toEqual(mockScenarios);
+          expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+          expect(state.categories).toEqual(['default', 'scenario']);
+          done();
+        });
     });
 
     it('should not update state when loading scenarios groups fails', (done) => {
@@ -289,15 +293,35 @@ describe('ScenarioService', () => {
     });
   });
 
-  describe('#getScenarioVersion', () => {});
+  describe('#getScenarioVersion', () => {
+    it('should populate the state with the result when loading scenario version successfully', () => {});
 
-  describe('#importScenarioGroup', () => {});
+    it('should not update state when loading scenarios groups fails', () => {});
+  });
 
-  describe('#postScenarioVersion', () => {});
+  describe('#importScenarioGroup', () => {
+    it('should add a new scenario group in the state and update tags and categories cache when imported successfully', () => {});
 
-  describe('#updateScenarioVersion', () => {});
+    it('should not update state when import scenario group fails', () => {});
+  });
 
-  describe('#deleteScenarioVersion', () => {});
+  describe('#postScenarioVersion', () => {
+    it('should add a new scenario version of a scenario group in the state when published successfully', () => {});
+
+    it('should not update state when post scenario version fails', () => {});
+  });
+
+  describe('#updateScenarioVersion', () => {
+    it('should update an existing scenario version of a scenario group from the state when the scenario version is successfully updated', () => {});
+
+    it('should not update state when put scenario version fails', () => {});
+  });
+
+  describe('#deleteScenarioVersion', () => {
+    it('should remove an existing scenario version of a scenario group from the state when the scenario version is successfully deleted', () => {});
+
+    it('should not update state when delete scenario version fails', () => {});
+  });
 
   it('should build an array of unique categories not falsy sorted alphabetically from scenarios groups', () => {
     const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));

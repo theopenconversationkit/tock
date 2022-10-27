@@ -11,11 +11,9 @@ import { FaqFilter } from '../../models';
   styleUrls: ['./faq-management-filters.component.scss']
 })
 export class FaqManagementFiltersComponent implements OnInit, OnDestroy {
-  @Input()
-  tagsCache: string[];
+  @Input() tagsCache: string[];
 
-  @Output()
-  onFilter = new EventEmitter<FaqFilter>();
+  @Output() onFilter = new EventEmitter<FaqFilter>();
 
   subscription = new Subscription();
 
@@ -38,7 +36,7 @@ export class FaqManagementFiltersComponent implements OnInit, OnDestroy {
   }
 
   get isFiltered(): boolean {
-    return this.search.value || this.tags.value?.length || this.enabled.value !== null;
+    return this.search.value || !!this.tags.value.length || this.enabled.value !== null;
   }
 
   ngOnInit(): void {
