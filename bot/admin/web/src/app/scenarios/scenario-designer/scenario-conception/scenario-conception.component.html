@@ -97,6 +97,18 @@
       >
         Add context
       </button>
+      <button
+        *ngIf="contextsPanelDisplayed && scenario.data.contexts?.length"
+        class="mt-1"
+        nbButton
+        size="tiny"
+        fullWidth
+        status="basic"
+        nbTooltip="Display the graph of contexts constraints"
+        (click)="displayGraph()"
+      >
+        Graph of constraints
+      </button>
     </div>
   </div>
   <div

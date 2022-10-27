@@ -4,6 +4,12 @@ test
 
 global
 
+        Créer une version maison de nbTooltip qui puisse faire de l'affichage multiligne (en fournissant par exemple nbTooltip="['Ligne 1','Ligne 2']" ) et pouvant avoir un delai d'affichage au mouseover (exemple qqchose comme nbTooltipTrigger="hover:500") ? Cherry on the cake : pouvoir formatter partiellement le contenu text (partiellement au sein d'une ligne) à minima avec du bold
+
+        Trouver un moyen de masquer le footer de l'app quand on est dans le designer 
+        
+        npmrc pour indiquer le registry par defaut
+
         A voir avec la SNCF sur la maj des paquets ou possibilité de créer un fichier de définition de déclaration en attendant "xxx.d.ts" avec les fonctions attendues
           - mettre @types/nodes vers minimum 17.0.29
           - permet de bénéficier de la fonction structuredClone (présent dans les navigateurs récent ou node 17)
@@ -16,6 +22,7 @@ global
 
         Créer un composant partagé input avec autocomplétion ?
 
+
 Back
         
         Suppression des tickStories en 500
@@ -23,6 +30,9 @@ Back
         Export des tickStories en 500
 
 Shared
+
+        Composant Canvas : limiter le "scope" du zoom aux dimensions du canvas. Eviter que le canvas ne se retrouve propulsé trop à l'extérieur de la vieBox du canvas wrapper à la suite de zooms et de zooms
+
         Export: proposer la possibilité de sauvegarder l'ensemble des exports dans un fichier .zip plutôt que de sauvegarder un à un chaque scenarioGroup
 
         Import: faut-il préciser les erreurs correspondantes à un mauvais contenu du fichier ? (A voir à l'usage)
@@ -47,6 +57,8 @@ Scenarios list
 
 Scenario designer :
 
+        Petit souci de breakpoint au niveau des boutons Cancel, Save, Save & exit. Avec un titre de scenario long, ils passent sous le titre du scenario autour de 1000px alors que le titre pourrait tout a fait etre en ellipsis
+
         Deux handlers sont susceptibles de porter le meme nom avec des variations de casse
 
         #DONE Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
@@ -54,6 +66,15 @@ Scenario designer :
         #DONE Gérer les streams multiples de la subsciption à getScenarioVersion au chargement du designer qui entraine de multiples affichages des modales
 
         #DONE La sauvegarde du scenario supprimant les expandos commencant par un underscore, on perd les _sentences d'intent préalablement récupérées...
+
+        CONTEXT GRAPH :
+
+                Variables de scenario-conception-item.component.scss : Trouver des noms moins orientés arbre de scenario et remonter le tout au niveau supérieur. On va sans doute vouloir partager ces variables avec le module de test pour y afficher le graph
+                
+                #DONE Partager les variables de couleur avec le reste du module
+
+                #DONE Résoudre decalage affichage svg viewBox sous firefox
+
 
         WRITING :
 
@@ -71,7 +92,7 @@ Scenario designer :
 
         PRODUCTION :
 
-
+                Corriger bug sur changement de source transition : # manquant
 
         PUBLISHING :
 

@@ -174,3 +174,9 @@ nb-dialog-container {
     max-width: 40vw;
   }
 }
+
+.full-width-dialog {
+  nb-dialog-container {
+    min-width: 95vw;
+  }
+}

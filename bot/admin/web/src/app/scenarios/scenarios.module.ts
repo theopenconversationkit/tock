@@ -51,6 +51,7 @@ import { ScenarioExportComponent } from './scenarios-list/scenario-export/scenar
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
 import { ScenarioDesignerService } from './scenario-designer/scenario-designer.service';
+import { ContextsGraphComponent } from './scenario-designer/contexts-graph/contexts-graph.component';
 
 @NgModule({
   imports: [
@@ -103,7 +104,8 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
     ScenarioProductionStateGroupAddComponent,
     ScenarioTransitionComponent,
     ScenarioImportComponent,
-    ScenarioExportComponent
+    ScenarioExportComponent,
+    ContextsGraphComponent
   ],
   exports: [],
   providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, NlpService, ScenarioDesignerService],

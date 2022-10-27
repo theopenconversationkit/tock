@@ -39,7 +39,6 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
 
-  @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
