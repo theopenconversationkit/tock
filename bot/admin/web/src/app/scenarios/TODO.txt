@@ -12,12 +12,20 @@ global
 
         Créer un composant partagé input avec autocomplétion ?
 
-shared
+Back
+        
+        Suppression des tickStories en 500
+
+        Export des tickStories en 500
+
+Shared
         Export: proposer la possibilité de sauvegarder l'ensemble des exports dans un fichier .zip plutôt que de sauvegarder un à un chaque scenarioGroup
 
         Import: faut-il préciser les erreurs correspondantes à un mauvais contenu du fichier ? (A voir à l'usage)
 
 Scenarios list
+
+        Proposer l'option d'inclure l'entrainement des intents (sentences) dans l'export des scenarios
 
         Régler le souci d'appel au endpoint de get de scenarioGroups quand l'application courante n'a pas de configuration
 

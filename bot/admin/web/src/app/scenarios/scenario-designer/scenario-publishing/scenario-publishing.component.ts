@@ -11,6 +11,7 @@ import { UserInterfaceType } from '../../../core/model/configuration';
 import { ClassifiedEntity, Intent, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
+import { isStepValid } from '../../commons/scenario-validation';
 import { getScenarioActionDefinitions, getScenarioActions, getScenarioIntentDefinitions, getScenarioIntents } from '../../commons/utils';
 import {
   ScenarioItem,
@@ -20,7 +21,8 @@ import {
   DependencyUpdateJob,
   SCENARIO_STATE,
   TickStory,
-  ScenarioVersionExtended
+  ScenarioVersionExtended,
+  SCENARIO_MODE
 } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioDesignerService } from '../scenario-designer.service';
@@ -75,7 +77,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
   checkDependencies(): void {
     getScenarioIntents(this.scenario).forEach((intent) => {
-      if (!intent.intentDefinition.intentId) {
+      if (!intent.intentDefinition.intentId && intent.intentDefinition.sentences?.length) {
         this.dependencies.intentsToCreate.push({
           type: 'creation',
           done: false,
@@ -110,17 +112,28 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   isScenarioUnPublishable() {
     let unPublishable;
 
-    const actionDefs = getScenarioActionDefinitions(this.scenario);
-    const expectedHandlers = actionDefs.filter((ad) => ad.handler).map((ad) => ad.handler);
-    let unImplementedHandlers = [];
-    expectedHandlers.forEach((eh) => {
-      if (!this.avalaibleHandlers.includes(eh)) {
-        unImplementedHandlers.push(eh);
-      }
-    });
+    const isPublishingStepValid =
+      isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
+      isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
+      isStepValid(this.scenario, SCENARIO_MODE.publishing).valid;
 
-    if (unImplementedHandlers.length) {
-      unPublishable = `The following handlers are not yet implemented on the server side : ${unImplementedHandlers.join(', ')}`;
+    if (!isPublishingStepValid) {
+      unPublishable = 'At least one of the previous steps requires your attention';
+    }
+
+    if (!unPublishable) {
+      const actionDefs = getScenarioActionDefinitions(this.scenario);
+      const expectedHandlers = actionDefs.filter((ad) => ad.handler).map((ad) => ad.handler);
+      let unImplementedHandlers = [];
+      expectedHandlers.forEach((eh) => {
+        if (!this.avalaibleHandlers.includes(eh)) {
+          unImplementedHandlers.push(eh);
+        }
+      });
+
+      if (unImplementedHandlers.length) {
+        unPublishable = `The following handlers are not yet implemented on the server side : ${unImplementedHandlers.join(', ')}`;
+      }
     }
 
     return unPublishable;
