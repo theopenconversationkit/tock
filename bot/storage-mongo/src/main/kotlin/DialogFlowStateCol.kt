@@ -71,7 +71,7 @@ internal data class DialogFlowStateTransitionStatCol(
     val text: String?,
     val locale: Locale? = null,
     val date: Instant = now(),
-    val processedLevel: Int = DialogFlowMongoDAO.currentProcessedLevel,
+    val processedLevel: Int = 0,
 )
 
 @Data(internal = true)

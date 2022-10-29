@@ -215,7 +215,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     private val currentProcessedLevelCol =
         MongoBotConfiguration.database.getCollection<DialogFlowConfiguration>("flow_configuration")
 
-    internal const val currentProcessedLevel = 1
+    internal const val currentProcessedLevel = 2
 
     private val crawlStats: Boolean = booleanProperty("tock_dialog_flow_crawl_stats", true)
 
