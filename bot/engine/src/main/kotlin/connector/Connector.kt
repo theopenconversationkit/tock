@@ -26,6 +26,8 @@ import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.bot.engine.user.UserState
+import java.time.Duration
 
 /**
  * A connector connects bots to users via a dedicated interface (like Messenger, Google Assistant, Slack... ).
@@ -93,6 +95,12 @@ interface Connector {
         errorListener: (Throwable) -> Unit = {}
     ): Unit =
         throw UnsupportedOperationException("Connector $connectorType does not support notification")
+
+    /**
+     * if true, profile is not loaded twice, except that [refreshProfile] is called periodically.
+     * if false, profile is loaded for each request.
+     */
+    val persistProfileLoaded: Boolean get() = true
 
     /**
      * Load user preferences - default implementation returns null.

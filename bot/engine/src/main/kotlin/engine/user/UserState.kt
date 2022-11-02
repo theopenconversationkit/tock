@@ -25,12 +25,12 @@ import java.time.Instant.now
  * The user state.
  */
 data class UserState(
-    /** The user creation date. **/
-    val creationDate: Instant = now(),
-    /**
-     * The flag for this user - useful to store basic information about this user.
-     */
-    val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf()
+        /** The user creation date. **/
+        val creationDate: Instant = now(),
+        /**
+         * The flag for this user - useful to store basic information about this user.
+         */
+        val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf()
 ) {
 
     companion object {
@@ -38,6 +38,9 @@ data class UserState(
         private const val PROFILE_REFRESHED_FLAG = "tock_profile_refreshed"
         private const val BOT_DISABLED_FLAG = "tock_bot_disabled"
 
+        /**
+         * Default refresh profile duration.
+         */
         private val refreshDuration: Long = longProperty("tock_bot_refresh_profil_duration_in_minutes", 60 * 24 * 5)
         private val disabledDuration: Long = longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5)
     }
@@ -62,9 +65,9 @@ data class UserState(
         set(value) {
             if (value)
                 setFlag(
-                    PROFILE_REFRESHED_FLAG,
-                    refreshDuration,
-                    value.toString()
+                        PROFILE_REFRESHED_FLAG,
+                        refreshDuration,
+                        "true"
                 )
             else removeFlag(PROFILE_REFRESHED_FLAG)
         }
@@ -74,17 +77,17 @@ data class UserState(
         set(value) {
             if (value)
                 setFlag(
-                    BOT_DISABLED_FLAG,
-                    disabledDuration,
-                    value.toString()
+                        BOT_DISABLED_FLAG,
+                        disabledDuration,
+                        "true"
                 )
             else removeFlag(BOT_DISABLED_FLAG)
         }
 
     fun getFlag(flag: String): String? {
         val f = flags[flag]
-        return if (f?.isValid() ?: false) {
-            f?.value
+        return if (f?.isValid() == true) {
+            f.value
         } else {
             null
         }
