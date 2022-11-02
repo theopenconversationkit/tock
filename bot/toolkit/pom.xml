@@ -119,7 +119,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jdkVersion>8</jdkVersion>
+                    <jdkVersion>11</jdkVersion>
                     <reportUndocumented>false</reportUndocumented>
                     <sourceDirectories>
                         <dir>${project.basedir}/../toolkit-base/src/main/kotlin</dir>
