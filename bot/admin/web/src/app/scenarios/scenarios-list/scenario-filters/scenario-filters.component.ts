@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { Filter, ScenarioVersion } from '../../models';
+import { Filter } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 
 @Component({
@@ -18,7 +18,7 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
   tagsCache: string[] = [];
 
   form = new FormGroup({
-    search: new FormControl(''),
+    search: new FormControl(),
     tags: new FormControl([])
   });
 
@@ -31,7 +31,7 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
   }
 
   get isFiltered(): boolean {
-    return this.search.value || this.tags.value.length;
+    return this.search.value || !!this.tags.value.length;
   }
 
   constructor(private scenarioService: ScenarioService) {}
@@ -55,7 +55,7 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
   }
 
   clearFilters(): void {
-    this.search.reset('');
+    this.search.reset();
     this.tags.reset([]);
   }
 }

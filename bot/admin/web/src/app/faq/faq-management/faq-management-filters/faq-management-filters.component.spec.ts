@@ -7,6 +7,7 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbOptionModule,
   NbSelectModule,
   NbTooltipModule
 } from '@nebular/theme';
@@ -14,6 +15,7 @@ import {
 import { TestSharedModule } from '../../../shared/testing/test-shared.module';
 import { FaqFilter } from '../../models';
 import { FaqManagementFiltersComponent } from './faq-management-filters.component';
+import { SpyOnCustomMatchers } from '../../../shared/testing/matchers/custom-matchers';
 
 describe('FaqManagementFiltersComponent', () => {
   let component: FaqManagementFiltersComponent;
@@ -31,12 +33,14 @@ describe('FaqManagementFiltersComponent', () => {
         NbIconModule,
         NbInputModule,
         NbSelectModule,
+        NbOptionModule,
         NbTooltipModule
       ]
     }).compileComponents();
   });
 
   beforeEach(() => {
+    jasmine.addMatchers(SpyOnCustomMatchers);
     fixture = TestBed.createComponent(FaqManagementFiltersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -58,11 +62,30 @@ describe('FaqManagementFiltersComponent', () => {
     expect(onFilterSpy).not.toHaveBeenCalled();
 
     tick(500);
-    expect(onFilterSpy).toHaveBeenCalledWith({
+    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({
       search: 'test',
       tags: [],
       enabled: null
     } as FaqFilter);
+
+    onFilterSpy.calls.reset();
+    tick(600);
+
+    expect(onFilterSpy).not.toHaveBeenCalled();
+
+    component.form.patchValue({ tags: ['test'] });
+    fixture.detectChanges();
+
+    tick(400);
+    expect(onFilterSpy).not.toHaveBeenCalled();
+
+    tick(500);
+    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({ search: 'test', tags: ['test'], enabled: null });
+
+    onFilterSpy.calls.reset();
+    tick(600);
+
+    expect(onFilterSpy).not.toHaveBeenCalled();
   }));
 
   it('should not show clear button when no filters are active', () => {
