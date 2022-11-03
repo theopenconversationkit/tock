@@ -160,7 +160,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           title: title,
           subtitle: subtitle,
           list: deletedIntents,
-          actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
+          actions: [{ actionName: 'Ok', buttonStatus: 'basic' }]
         }
       });
     }
@@ -174,7 +174,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           title: title,
           subtitle: subtitle,
           list: deletedAnswers,
-          actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
+          actions: [{ actionName: 'Ok', buttonStatus: 'basic' }]
         }
       });
     }
@@ -187,7 +187,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       context: {
         title: `No scenario found`,
         subtitle: 'No scenario with this identifier was found',
-        actions: [{ actionName: 'Ok', buttonStatus: 'default' }]
+        actions: [{ actionName: 'Ok', buttonStatus: 'basic' }]
       }
     });
     modal.onClose.subscribe((res) => {

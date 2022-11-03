@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import {saveAs} from 'file-saver-es';
-import {Component, Injectable, OnDestroy, OnInit} from '@angular/core';
-import {BotService} from '../bot-service';
-import {NlpService} from '../../nlp-tabs/nlp.service';
-import {StateService} from '../../core-nlp/state.service';
-import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery} from '../model/story';
-import {Subscription} from 'rxjs';
-import {FileItem, FileUploader, ParsedResponseHeaders} from 'ng2-file-upload';
-import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import {CanDeactivate} from '@angular/router';
-import {LocationStrategy} from '@angular/common';
-import {NbToastrService} from '@nebular/theme';
-import {DialogService} from 'src/app/core-nlp/dialog.service';
+import { LocationStrategy } from '@angular/common';
+import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
+import { CanDeactivate } from '@angular/router';
+import { NbToastrService } from '@nebular/theme';
+import { saveAs } from 'file-saver-es';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { Subscription } from 'rxjs';
+
+import { BotService } from '../bot-service';
+import { NlpService } from '../../nlp-tabs/nlp.service';
+import { StateService } from '../../core-nlp/state.service';
+import { StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery } from '../model/story';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { DialogService } from '../../core-nlp/dialog.service';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 interface TreeNode<T> {
   data: T;
@@ -71,8 +73,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private location: LocationStrategy,
     private backButtonHolder: BackButtonHolder
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     // check if back or forward button is pressed.
@@ -89,37 +90,91 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   editStory(story: StoryDefinitionConfigurationSummary) {
-    this.bot.findStory(story._id).subscribe((s) => {
-      s.selected = true;
-      this.selectedStory = s;
-    });
+    if (story.currentType === 4) {
+      this.dialogService.openDialog(ChoiceDialogComponent, {
+        context: {
+          title: `Edit the story '${story.name}'`,
+          subtitle:
+            'It is not possible to edit a tick story. To modify a tick story, create a new version of the corresponding scenario from the "Scenario Management" entry in the main menu, modify it and publish it.',
+          modalStatus: 'danger',
+          actions: [
+            {
+              actionName: 'ok',
+              buttonStatus: 'basic',
+              ghost: true
+            }
+          ]
+        }
+      });
+    } else {
+      this.bot.findStory(story._id).subscribe((s) => {
+        s.selected = true;
+        this.selectedStory = s;
+      });
+    }
   }
 
   downloadStory(story: StoryDefinitionConfigurationSummary) {
-    setTimeout((_) => {
-      this.bot.exportStory(this.state.currentApplication.name, story.storyId).subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_' + story.storyId + '.json');
-        this.toastrService.show(`Dump provided`, 'Dump', {duration: 3000, status: 'success'});
+    if (story.currentType === 4) {
+      this.dialogService.openDialog(ChoiceDialogComponent, {
+        context: {
+          title: `Export the story '${story.name}'`,
+          subtitle:
+            'It is not possible to export a tick story directly. You can export the corresponding scenario from the "Scenario management" entry in the main menu.',
+          modalStatus: 'danger',
+          actions: [
+            {
+              actionName: 'ok',
+              buttonStatus: 'basic',
+              ghost: true
+            }
+          ]
+        }
       });
-    }, 1);
+    } else {
+      setTimeout((_) => {
+        this.bot.exportStory(this.state.currentApplication.name, story.storyId).subscribe((blob) => {
+          saveAs(blob, this.state.currentApplication.name + '_' + story.storyId + '.json');
+          this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
+        });
+      }, 1);
+    }
   }
 
   deleteStory(story: StoryDefinitionConfigurationSummary) {
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
-      context: {
-        title: `Remove the story '${story.name}'`,
-        subtitle: 'Are you sure?',
-        action: 'Remove'
-      }
-    });
-    dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
-        this.bot.deleteStory(story._id).subscribe((_) => {
-          this.delete(story.storyId);
-          this.toastrService.show(`Story deleted`, 'Delete', {duration: 3000, status: 'success'});
-        });
-      }
-    });
+    if (story.currentType === 4) {
+      this.dialogService.openDialog(ChoiceDialogComponent, {
+        context: {
+          title: `Remove the story '${story.name}'`,
+          subtitle:
+            'It is not possible to delete a tick story from this page. Delete the corresponding scenario version (marked current) from the "Scenario management" entry in the main menu.',
+          modalStatus: 'danger',
+          actions: [
+            {
+              actionName: 'ok',
+              buttonStatus: 'basic',
+              ghost: true
+            }
+          ]
+        }
+      });
+    } else {
+      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+        context: {
+          title: `Remove the story '${story.name}'`,
+          subtitle: 'Are you sure ?',
+          action: 'Remove'
+        }
+      });
+      dialogRef.onClose.subscribe((result) => {
+        if (result === 'remove') {
+          this.bot.deleteStory(story._id).subscribe((_) => {
+            this.delete(story.storyId);
+            this.toastrService.show(`Story deleted`, 'Delete', { duration: 3000, status: 'success' });
+          });
+        }
+      });
+    }
   }
 
   private keepExpandableState() {
@@ -186,12 +241,8 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
           this.nodes = Array.from(sortedMap, ([key, value]) => {
             return {
               expanded:
-                s.length < 100 && (
-                  this.categories.length < 2 ||
-                  this.category != '' ||
-                  this.filter !== '' ||
-                  this.lastExpandableState.get(key) === true
-                ),
+                s.length < 100 &&
+                (this.categories.length < 2 || this.category != '' || this.filter !== '' || this.lastExpandableState.get(key) === true),
               data: {
                 category: key,
                 expandable: true
@@ -210,34 +261,48 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   download() {
-    setTimeout((_) => {
-      this.bot.exportStories(this.state.currentApplication.name).subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_stories.json');
-        this.toastrService.show(`Dump provided`, 'Dump', {duration: 3000, status: 'success'});
-      });
-    }, 1);
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: 'Export the stories',
+        subtitle: 'Tick stories are not directly exportable. They will be ignored during export.',
+        modalStatus: 'danger',
+        actions: [
+          {
+            actionName: 'cancel',
+            buttonStatus: 'basic',
+            ghost: true
+          },
+          {
+            actionName: 'export',
+            buttonStatus: 'primary'
+          }
+        ]
+      }
+    });
+
+    dialogRef.onClose.subscribe((res) => {
+      if (res === 'export') {
+        setTimeout((_) => {
+          this.bot.exportStories(this.state.currentApplication.name).subscribe((blob) => {
+            saveAs(blob, this.state.currentApplication.name + '_stories.json');
+            this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
+          });
+        }, 1);
+      }
+    });
   }
 
   prepareUpload() {
-    this.uploader = new FileUploader({removeAfterUpload: true});
-    this.uploader.onCompleteItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
-      this.toastrService.show(`Dump uploaded`, 'Dump', {duration: 3000, status: 'success'});
+    this.uploader = new FileUploader({ removeAfterUpload: true });
+    this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+      this.toastrService.show(`Dump uploaded`, 'Dump', { duration: 3000, status: 'success' });
       this.state.resetConfiguration();
     };
     this.displayUpload = true;
   }
 
   upload() {
-    this.bot.prepareStoryDumpUploader(
-      this.uploader,
-      this.state.currentApplication.name,
-      this.state.currentLocale
-    );
+    this.bot.prepareStoryDumpUploader(this.uploader, this.state.currentApplication.name, this.state.currentLocale);
     this.uploader.uploadAll();
     this.displayUpload = false;
   }
@@ -250,8 +315,7 @@ export class BackButtonHolder {
 
 @Injectable()
 export class SearchStoryNavigationGuard implements CanDeactivate<any> {
-  constructor(private backButtonHolder: BackButtonHolder) {
-  }
+  constructor(private backButtonHolder: BackButtonHolder) {}
 
   canDeactivate(component: any) {
     // will prevent user from going back

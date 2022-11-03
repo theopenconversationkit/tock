@@ -45,7 +45,7 @@ export class ModeStepperComponent {
         title: title,
         subtitle: reason,
         modalStatus: 'danger',
-        actions: [{ actionName: 'ok', buttonStatus: 'default' }]
+        actions: [{ actionName: 'ok', buttonStatus: 'basic' }]
       }
     });
   }

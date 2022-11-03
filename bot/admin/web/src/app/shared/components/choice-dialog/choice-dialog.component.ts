@@ -12,13 +12,18 @@ export class ChoiceDialogComponent implements OnInit {
   @Input() subtitle: string;
   @Input() list?: string[];
   @Input() cancellable: boolean = true;
-  @Input() actions: { actionName: string; buttonStatus?: string }[];
+  @Input() actions: {
+    actionName: string;
+    buttonStatus?: 'basic' | 'primary' | 'success' | 'info' | 'warning' | 'danger';
+    ghost?: boolean;
+  }[];
 
   constructor(public dialogRef: NbDialogRef<ChoiceDialogComponent>) {}
 
   ngOnInit() {
     this.actions.forEach((actionDef) => {
       if (!actionDef.buttonStatus) actionDef.buttonStatus = 'primary';
+      if (actionDef.ghost == null) actionDef.ghost = false;
     });
   }
 }
