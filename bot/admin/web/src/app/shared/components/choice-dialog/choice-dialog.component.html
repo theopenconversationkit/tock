@@ -27,6 +27,7 @@
       *ngFor="let actionDef of actions"
       nbButton
       size="small"
+      [ghost]="actionDef.ghost"
       [status]="actionDef.buttonStatus"
       (click)="dialogRef.close(actionDef.actionName.toLowerCase())"
     >

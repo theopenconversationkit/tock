@@ -325,7 +325,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         title: `Reset state machine`,
         subtitle: 'Are you sure you want to completely reset this state machine?',
         modalStatus: 'danger',
-        actions: [{ actionName: cancelAction, buttonStatus: 'default' }, { actionName: confirmAction }]
+        actions: [{ actionName: cancelAction, buttonStatus: 'basic' }, { actionName: confirmAction }]
       }
     });
     dialogRef.onClose.subscribe((result) => {

@@ -295,7 +295,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
           title: `Deletion of an intervention`,
           subtitle: alertMessage,
           modalStatus: 'danger',
-          actions: [{ actionName: cancelAction, buttonStatus: 'default' }, { actionName: confirmAction }]
+          actions: [{ actionName: cancelAction, buttonStatus: 'basic' }, { actionName: confirmAction }]
         }
       });
       dialogRef.onClose.subscribe((result) => {
@@ -350,7 +350,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
           title: `Change of intervention type`,
           subtitle: alertMessage,
           modalStatus: 'danger',
-          actions: [{ actionName: cancelAction, buttonStatus: 'default' }, { actionName: confirmAction }]
+          actions: [{ actionName: cancelAction, buttonStatus: 'basic' }, { actionName: confirmAction }]
         }
       });
       dialogRef.onClose.subscribe((result) => {
