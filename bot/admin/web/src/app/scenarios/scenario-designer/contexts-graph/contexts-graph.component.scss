@@ -1,0 +1,115 @@
+@import '../scenario-conception//scenario-conception-item.component.scss';
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
+#modal-body {
+  padding: 0;
+  position: relative;
+
+  #closeButton {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+  }
+}
+
+#canvas-wrapper {
+  overflow: hidden;
+  min-height: 60vh;
+  max-height: 95vh;
+  height: 90vh;
+}
+#canvas {
+  z-index: 1;
+  width: fit-content;
+  height: fit-content;
+  transition: transform 0.3s;
+  transform-origin: 0 0;
+}
+
+.htmlGraph {
+  position: relative;
+  SVG {
+    position: absolute;
+    pointer-events: none;
+  }
+}
+
+$opacityTransition: 0.3s;
+$dimmedOpacity: 0.3;
+
+.node {
+  transition: all $opacityTransition;
+  opacity: 1;
+  position: absolute;
+  user-select: none;
+  text-align: center;
+
+  font-family: Open Sans, sans-serif, monospace;
+  font-size: 1rem;
+  padding: 0.3rem 0.9rem;
+  line-height: 1.55em;
+
+  box-shadow: inset 2px 2px 6px -4px white, inset -2px -2px 6px -5px, 2px 2px 6px -5px;
+  box-sizing: border-box;
+
+  &.action {
+    background-color: $bot-color;
+    color: white;
+    border-radius: 0.15em;
+  }
+  &.context {
+    background-color: $client-color;
+    color: nb-theme(color-basic-600);
+    border-radius: 10rem;
+  }
+
+  &.dimmed {
+    transition: all $opacityTransition;
+    opacity: $dimmedOpacity;
+  }
+
+  &:hover {
+    transition: all $opacityTransition;
+    background-color: $bot-final-color;
+    color: white;
+  }
+}
+
+.svgDoc {
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+  position: absolute;
+
+  .arrow {
+    fill: nb-theme(color-basic-600);
+  }
+
+  .edge {
+    transition: opacity $opacityTransition;
+    opacity: 1;
+    .line {
+      stroke: nb-theme(color-basic-600);
+      stroke-width: 2;
+      fill: none;
+    }
+    &.dimmed {
+      transition: opacity $opacityTransition;
+      opacity: $dimmedOpacity;
+    }
+  }
+}
+
+#dummyContainer {
+  position: absolute;
+  top: -1000rem;
+  left: -1000rem;
+
+  width: fit-content;
+  height: fit-content;
+  DIV {
+    position: initial !important;
+  }
+}

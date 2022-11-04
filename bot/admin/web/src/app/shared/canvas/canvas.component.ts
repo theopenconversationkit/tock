@@ -36,7 +36,12 @@ import {
 export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   @Input() position: OffsetPosition;
   @Input() centerCanvasAtInitialisation: boolean = true;
+  @Input() centerCanvasX: boolean = true;
+  @Input() centerCanvasY: boolean = false;
+
   @Input() fullscreenWrapper: 'current' | 'parent' = 'current';
+
+  @Input() maxScale: number = MAX_SCALE;
 
   private canvasPos = { x: 0, y: 0 };
   private canvasPosOffset = { x: 0, y: 0 };
@@ -108,7 +113,10 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
     const scale = wheelEvent ? wheelEvent.deltaY : actionEvent.scale;
     this.canvasScale += -1 * Math.max(-1, Math.min(1, scale)) * ZOOM_SPEED * this.canvasScale;
 
-    this.canvasScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, this.canvasScale));
+    this.canvasScale = Math.max(MIN_SCALE, Math.min(this.maxScale, this.canvasScale));
+
+    const zoomOneMagnetism = 0.2;
+    if (this.canvasScale >= 1 - zoomOneMagnetism && this.canvasScale <= 1 + zoomOneMagnetism) this.canvasScale = 1;
 
     this.canvasPos.x = -this.canvasPosOffset.x * this.canvasScale + this.pointer.x;
     this.canvasPos.y = -this.canvasPosOffset.y * this.canvasScale + this.pointer.y;
@@ -156,8 +164,12 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   centerCanvas(): void {
     this.throwErrorUndefinedCanvas();
 
-    this.canvasPos.x = ((this.canvas.offsetWidth * this.canvasScale - this.wrapper.offsetWidth) / 2) * -1;
-    this.canvasPos.y = 0;
+    if (this.centerCanvasX) {
+      this.canvasPos.x = ((this.canvas.offsetWidth * this.canvasScale - this.wrapper.offsetWidth) / 2) * -1;
+    }
+    if (this.centerCanvasY && this.canvas.offsetHeight * this.canvasScale < this.wrapper.offsetHeight) {
+      this.canvasPos.y = ((this.canvas.offsetHeight * this.canvasScale - this.wrapper.offsetHeight) / 2) * -1;
+    }
 
     this.canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
   }

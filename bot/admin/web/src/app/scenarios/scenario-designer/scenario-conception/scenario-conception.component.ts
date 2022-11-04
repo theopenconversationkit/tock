@@ -23,6 +23,7 @@ import {
   removeSmStateById
 } from '../../commons/utils';
 import { ContextCreateComponent } from './context-create/context-create.component';
+import { ContextsGraphComponent } from '../contexts-graph/contexts-graph.component';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -394,6 +395,15 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   isItemOnlyChild(item: ScenarioItem): boolean {
     if (!this.getItemBrothers(item).length) return true;
     return false;
+  }
+
+  displayGraph() {
+    this.dialogService.openDialog(ContextsGraphComponent, {
+      context: {
+        scenario: this.scenario
+      },
+      dialogClass: 'full-width-dialog'
+    });
   }
 
   ngOnDestroy(): void {
