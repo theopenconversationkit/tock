@@ -23,7 +23,7 @@
           nbSpinnerStatus="primary"
         >
           <span *ngIf="total > 0">
-            <span *ngIf="total > 10 && !loading">Estimated</span> users : {{ total }}
+            users : {{ formattedTotal() }}
           </span>
           <span *ngIf="total === 0"> No users </span>
           <button

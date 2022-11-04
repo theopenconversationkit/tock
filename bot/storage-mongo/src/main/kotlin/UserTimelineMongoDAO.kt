@@ -59,6 +59,7 @@ import ai.tock.bot.mongo.UserTimelineCol_.Companion.PlayerId
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.defaultCountOptions
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
@@ -68,6 +69,7 @@ import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.longProperty
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.ReadPreference.secondaryPreferred
+import com.mongodb.client.model.CountOptions
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
 import java.time.Instant
@@ -111,6 +113,8 @@ import org.litote.kmongo.sort
 import org.litote.kmongo.toId
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.SECONDS
 
 /**
  *
@@ -532,7 +536,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 )
             logger.debug { "user search query: $filter" }
             val c = userTimelineCol.withReadPreference(secondaryPreferred())
-            val count = c.countDocuments(filter)
+            val count = c.countDocuments(filter, defaultCountOptions)
+            logger.debug { "count: $count" }
             return if (count > start) {
                 val list = c.find(filter)
                     .skip(start.toInt())
@@ -602,7 +607,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             )
             logger.debug("dialog search query: $filter")
             val c = dialogCol.withReadPreference(secondaryPreferred())
-            val count = c.countDocuments(filter)
+            val count = c.countDocuments(filter, defaultCountOptions)
             return if (count > start) {
                 val list = c.find(filter)
                     .skip(start.toInt())

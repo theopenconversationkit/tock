@@ -64,7 +64,7 @@
       </button>
     </h1>
     <h1 *ngIf="total !== 0">
-      <span *ngIf="total > 10">Estimated</span> {{ title }} size : {{ total }}
+      {{ title }} size : {{ formattedTotal()   }}
       <button
         mat-icon-button
         class="button"

@@ -39,6 +39,7 @@ import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Collation
+import com.mongodb.client.model.CountOptions
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
@@ -331,3 +332,8 @@ fun <T> FindIterable<T>.safeCollation(collation: Collation): FindIterable<T> =
 private const val DocumentDBIndexLimitSize = 32
 
 private const val DocumentDBIndexReducedSize = 3
+
+/**
+ * By default, do not count more than 1000000 documents (for large databases)
+ */
+val defaultCountOptions : CountOptions = CountOptions().limit(1000000)

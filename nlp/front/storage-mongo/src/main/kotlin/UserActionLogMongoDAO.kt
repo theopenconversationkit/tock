@@ -23,6 +23,7 @@ import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQueryResult
 import ai.tock.nlp.front.storage.mongo.UserActionLogCol_.Companion.Date
 import ai.tock.nlp.front.storage.mongo.UserActionLogCol_.Companion.Namespace
+import ai.tock.shared.defaultCountOptions
 import ai.tock.shared.error
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.longProperty
@@ -115,7 +116,7 @@ internal object UserActionLogMongoDAO : UserActionLogDAO {
                 and(
                     Namespace eq namespace
                 )
-            val count = col.countDocuments(baseFilter)
+            val count = col.countDocuments(baseFilter, defaultCountOptions)
             return if (count > start) {
                 val list = col.find(baseFilter)
                     .descendingSort(Date)
