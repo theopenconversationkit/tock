@@ -352,7 +352,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
     if (event.dropped.type === 'transitionTarget') {
       let sourceState = getSmStateById(event.dropped.source, this.scenario.data.stateMachine);
-      sourceState.on[event.dropped.name] = event.stateId;
+      sourceState.on[event.dropped.name] = `#${event.stateId}`;
     }
 
     if (event.dropped.type === 'transitionSource') {
@@ -361,7 +361,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       delete initialSourceState.on[event.dropped.name];
       const newSourceState = getSmStateById(event.stateId, this.scenario.data.stateMachine);
       if (!newSourceState.on) newSourceState.on = {};
-      newSourceState.on[event.dropped.name] = target;
+      newSourceState.on[event.dropped.name] = `#${target}`;
     }
 
     this.scenarioProductionService.updateLayout();
