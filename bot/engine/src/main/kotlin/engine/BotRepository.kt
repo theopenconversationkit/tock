@@ -90,6 +90,9 @@ object BotRepository {
     private val connectorServices: MutableSet<ConnectorService> =
         CopyOnWriteArraySet(ServiceLoader.load(ConnectorService::class.java).toList())
 
+    internal val detailedHealthcheckTasks: MutableList<Pair<String, () -> Boolean>> =
+        mutableListOf(Pair("nlp_client") { nlpClient.healthcheck() });
+
     internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
         ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
             forEach {
@@ -103,7 +106,7 @@ object BotRepository {
         ConcurrentHashMap()
 
     private val applicationIdBotApplicationConfigurationMap:
-        ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
+            ConcurrentHashMap<BotApplicationConfigurationKey, BotApplicationConfiguration> = ConcurrentHashMap()
 
     @Volatile
     internal var botsInstalled: Boolean = false
@@ -299,6 +302,14 @@ object BotRepository {
         connectorServices.add(service)
     }
 
+    /**
+     * Register a new task to be check by the detailed healthcheck.
+     * A task as a name and check action that return true if the service is good and false if it's KO.
+     */
+    fun registerDetailedHealtcheckTask(task: Pair<String, () -> Boolean>) {
+        detailedHealthcheckTasks.add(task)
+    }
+
     internal fun getConfigurationByApplicationId(key: BotApplicationConfigurationKey): BotApplicationConfiguration? =
         applicationIdBotApplicationConfigurationMap[key]
 
@@ -433,10 +444,10 @@ object BotRepository {
             // is there a configuration change ?
             if (provider != null &&
                 (
-                    provider.configurationUpdated ||
-                        botConfigurationChanged ||
-                        existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
-                    )
+                        provider.configurationUpdated ||
+                                botConfigurationChanged ||
+                                existingConfsByPath[c.path]?.takeIf { c.equalsWithoutId(it) } == null
+                        )
             ) {
                 val botDefinition = provider.botDefinition()
                 if (botDefinition.namespace == c.namespace) {

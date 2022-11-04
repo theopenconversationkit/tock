@@ -21,7 +21,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>22.9.1-SNAPSHOT</version>
+    <version>22.9.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -36,14 +36,14 @@
         <couroutine>1.6.4</couroutine>
 
         <slf4j>2.0.3</slf4j>
-        <logback>1.4.1</logback>
+        <logback>1.4.4</logback>
 
-        <kotlin-logging>3.0.0</kotlin-logging>
+        <kotlin-logging>3.0.3</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.7.1</kmongo>
+        <kmongo>4.7.2</kmongo>
         <jackson>2.13.4</jackson>
-        <jackson-databind>2.13.4</jackson-databind>
+        <jackson-databind>2.13.4.2</jackson-databind>
         <jackson-module>2.13.4</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
@@ -57,54 +57,54 @@
         <circuitbreaker>1.7.1</circuitbreaker>
         <guava>31.1-jre</guava>
         <google-auth>1.34.1</google-auth>
-        <google-http-client>1.42.2</google-http-client>
+        <google-http-client>1.42.3</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.9.0</commons-csv>
         <commons-text>1.10.0</commons-text>
         <emoji>5.1.1</emoji>
         <commons-codec>1.15</commons-codec>
         <commons-lang>3.12.0</commons-lang>
-        <commonmark>0.19.0</commonmark>
+        <commonmark>0.20.0</commonmark>
         <json>20220924</json>
         <httpclient>4.5.13</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.1.2</google>
-        <aws-sdk>1.12.314</aws-sdk>
-        <pac4j>5.6.0</pac4j>
+        <google>26.1.3</google>
+        <aws-sdk>1.12.331</aws-sdk>
+        <pac4j>5.7.0</pac4j>
         <vertx-pac4j>6.0.1</vertx-pac4j>
 
         <junit-jupiter>5.9.1</junit-jupiter>
 
         <mockk>1.13.2</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.12.17</byte-buddy>
+        <byte-buddy>1.12.18</byte-buddy>
         <atrium>0.15.0</atrium>
 
-        <plugin.surefire>3.0.0-M5</plugin.surefire>
+        <plugin.surefire>3.0.0-M7</plugin.surefire>
         <plugin.source>3.2.1</plugin.source>
-        <plugin.release>3.0.0-M1</plugin.release>
+        <plugin.release>3.0.0-M6</plugin.release>
         <plugin.gpg>3.0.1</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>1.7.10</plugin.dokka>
-        <plugin.assembly>3.3.0</plugin.assembly>
-        <plugin.frontend>1.12.0</plugin.frontend>
-        <plugin.clean>3.1.0</plugin.clean>
-        <plugin.jar>3.2.0</plugin.jar>
-        <plugin.ant>3.0.0</plugin.ant>
-        <plugin.shade>3.2.4</plugin.shade>
-        <plugin.dependency>3.2.0</plugin.dependency>
-        <plugin.resources>3.2.0</plugin.resources>
-        <plugin.deploy>3.0.0-M1</plugin.deploy>
+        <plugin.dokka>1.7.20</plugin.dokka>
+        <plugin.assembly>3.4.2</plugin.assembly>
+        <plugin.frontend>1.12.1</plugin.frontend>
+        <plugin.clean>3.2.0</plugin.clean>
+        <plugin.jar>3.3.0</plugin.jar>
+        <plugin.ant>3.1.0</plugin.ant>
+        <plugin.shade>3.4.1</plugin.shade>
+        <plugin.dependency>3.3.0</plugin.dependency>
+        <plugin.resources>3.3.0</plugin.resources>
+        <plugin.deploy>3.0.0</plugin.deploy>
         <plugin.gitid>4.9.10</plugin.gitid>
-        <plugin.ktlint>1.10.2</plugin.ktlint>
+        <plugin.ktlint>1.15.2</plugin.ktlint>
 
         <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
 
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <node>v16.17.1</node>
+        <node>v16.18.0</node>
     </properties>
 
     <modules>

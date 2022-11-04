@@ -25,7 +25,10 @@ import ai.tock.shared.intProperty
 import ai.tock.shared.property
 import java.util.Locale
 
-internal object WorkerOnAwsBatchProvider : WorkerOnDemandProvider {
+/**
+ * [WorkerOnDemandProvider] aws implementation.
+ */
+object WorkerOnAwsBatchProvider : WorkerOnDemandProvider {
     override val workerOnDemandType: WorkerOnDemandType
         get() = "AWS_BATCH"
 

@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>22.9.1-SNAPSHOT</version>
+        <version>22.9.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>bot-test</artifactId>
@@ -55,7 +55,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jdkVersion>8</jdkVersion>
+                    <jdkVersion>11</jdkVersion>
                     <reportUndocumented>false</reportUndocumented>
                     <sourceDirectories>
                         <dir>${project.basedir}/../test-base/src/main/kotlin</dir>

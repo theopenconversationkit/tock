@@ -16,4 +16,4 @@
 #
 
 mvn release:clean release:prepare -Ddeploy
-mvn release:perform -Ddeploy
+mvn release:perform -Ddeploy -T 2C

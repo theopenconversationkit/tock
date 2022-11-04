@@ -96,6 +96,7 @@ import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
 import org.litote.kmongo.dateToString
+import org.litote.kmongo.deleteMany
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -115,6 +116,7 @@ import org.litote.kmongo.match
 import org.litote.kmongo.ne
 import org.litote.kmongo.project
 import org.litote.kmongo.projection
+import org.litote.kmongo.save
 import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 import org.litote.kmongo.size
@@ -162,26 +164,20 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatDateAggregationCol>("flow_transition_stats_date")
             .apply {
                 try {
-                    // TODO MASS
-                    // 2022-10-13T11:16:32.878 [main] ERROR ai.tock.bot.mongo.DialogFlowMongoDAO - Command failed with error 67 (CannotCreateIndex):
-                    // 'namespace name generated from index name "tock_bot.flow_transition_stats_date.$applicationId_1_date_1_intent_1_storyDefinitionId_1_storyCategory_1_storyType_1_locale_1_configurationName_1_connectorType_1_actionType_1_hourOfDay_1"
-                    // is too long (127 byte max)' on server mongo:27017. The full response is {"operationTime": {"$timestamp": {"t": 1665652592, "i": 7}}, "ok": 0.0, "errmsg":
-                    // "namespace name generated from index name \"tock_bot.flow_transition_stats_date.$applicationId_1_date_1_intent_1_storyDefinitionId_1_storyCategory_1_storyType_1_locale_1_configurationName_1_connectorType_1_actionType_1_hourOfDay_1\"
-                    // is too long (127 byte max)", "code": 67, "codeName": "CannotCreateIndex", "$clusterTime": {"clusterTime": {"$timestamp": {"t": 1665652592, "i": 7}},
-                    // "signature": {"hash": {"$binary": {"base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=", "subType": "00"}}, "keyId": 0}}}
-//                    ensureIndex(
-//                        ApplicationId,
-//                        Date,
-//                        Intent,
-//                        StoryDefinitionId,
-//                        StoryCategory,
-//                        StoryType,
-//                        Locale,
-//                        ConfigurationName,
-//                        ConnectorType,
-//                        ActionType,
-//                        HourOfDay,
-//                    )
+                    ensureIndex(
+                        ApplicationId,
+                        Date,
+                        Intent,
+                        StoryDefinitionId,
+                        StoryCategory,
+                        StoryType,
+                        Locale,
+                        ConfigurationName,
+                        ConnectorType,
+                        ActionType,
+                        HourOfDay,
+                        indexOptions = IndexOptions().name("index")
+                    )
                 } catch (e: Exception) {
                     logger.error(e)
                 }
@@ -214,13 +210,24 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 }
             }
 
+    private const val defaultConfKey = "default"
 
-    private const val currentProcessedLevel = 1
+    private val currentProcessedLevelCol =
+        MongoBotConfiguration.database.getCollection<DialogFlowConfiguration>("flow_configuration")
+
+    internal const val currentProcessedLevel = 2
 
     private val crawlStats: Boolean = booleanProperty("tock_dialog_flow_crawl_stats", true)
 
     override fun initFlowStatCrawl() {
         if (crawlStats) {
+            val conf = currentProcessedLevelCol.findOneById(defaultConfKey)
+            if(conf?.currentProcessedLevel != currentProcessedLevel) {
+                flowTransitionStatsDateAggregationCol.deleteMany()
+                flowTransitionStatsDialogAggregationCol.deleteMany()
+                flowTransitionStatsUserAggregationCol.deleteMany()
+                currentProcessedLevelCol.save(DialogFlowConfiguration(defaultConfKey, currentProcessedLevel))
+            }
             val executor = Executors.newSingleThreadExecutor()
             Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
                 {

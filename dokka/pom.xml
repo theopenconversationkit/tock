@@ -55,7 +55,7 @@
                 </executions>
                 <configuration>
                     <moduleName>tock</moduleName>
-                    <jdkVersion>8</jdkVersion>
+                    <jdkVersion>11</jdkVersion>
                     <reportUndocumented>false</reportUndocumented>
                     <sourceLinks>
                         <link>

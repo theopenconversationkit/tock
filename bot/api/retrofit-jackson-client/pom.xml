@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-bot-api</artifactId>
-        <version>22.9.1-SNAPSHOT</version>
+        <version>22.9.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-retrofit-jackson-client</artifactId>
@@ -70,31 +70,5 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jetbrains.dokka</groupId>
-                <artifactId>dokka-maven-plugin</artifactId>
-                <version>${plugin.dokka}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>dokka</goal>
-                            <goal>javadoc</goal>
-                            <goal>javadocJar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jdkVersion>8</jdkVersion>
-                    <reportUndocumented>false</reportUndocumented>
-                    <sourceDirectories>
-                        <dir>${project.basedir}/../websocket-base/src/main/kotlin</dir>
-                    </sourceDirectories>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

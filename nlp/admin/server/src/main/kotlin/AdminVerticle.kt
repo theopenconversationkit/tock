@@ -1107,11 +1107,12 @@ open class AdminVerticle : WebVerticle() {
                 } else {
                     context.vertx().fileSystem().readFile("$webRoot/index.html") {
                         if (it.succeeded()) {
-                            val result = Buffer.buffer(
-                                it.result()
+                            logger.info { "base href: $baseHref" }
+                            val content = it.result()
                                     .toString(UTF_8)
-                                    .replace("<base href=\"/\">", "<base href=\"$baseHref\">")
-                            )
+                                    .replace("<base href=\"/\"", "<base href=\"$baseHref\"")
+                            logger.debug { "content: $content" }
+                            val result = Buffer.buffer(content)
                             if (!devEnvironment) {
                                 indexContent = result
                             }
