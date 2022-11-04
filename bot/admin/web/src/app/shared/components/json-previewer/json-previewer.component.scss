@@ -5,6 +5,7 @@
 pre {
   padding: 0.5rem;
   margin: 0;
+  overflow: initial;
 
   &.previewer {
     display: flex;
@@ -19,7 +20,7 @@ pre {
     & .lines-container {
       display: flex;
       flex-direction: column;
-      padding-left: 1rem;
+      padding: 0 1rem;
     }
   }
 

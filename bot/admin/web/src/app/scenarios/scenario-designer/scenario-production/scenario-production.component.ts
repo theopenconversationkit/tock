@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -38,6 +38,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
+  @Input() isFullscreen: boolean = false;
+
+  @Output() requestFullscreen = new EventEmitter();
 
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
@@ -324,7 +327,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
         title: `Reset state machine`,
         subtitle: 'Are you sure you want to completely reset this state machine?',
         modalStatus: 'danger',
-        actions: [{ actionName: cancelAction, buttonStatus: 'basic' }, { actionName: confirmAction }]
+        actions: [{ actionName: cancelAction, buttonStatus: 'basic', ghost: true }, { actionName: confirmAction }]
       }
     });
     dialogRef.onClose.subscribe((result) => {
@@ -388,7 +391,8 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   displayStateMachineCode(): void {
     const jsonPreviewerRef = this.dialogService.openDialog(JsonPreviewerComponent, {
-      context: { jsonData: this.scenario.data.stateMachine }
+      context: { jsonData: this.scenario.data.stateMachine },
+      dialogClass: 'full-width-dialog'
     });
 
     jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;
@@ -396,6 +400,10 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   preventDefault(event) {
     event.stopPropagation();
+  }
+
+  toggleFullscreen(_toggle: boolean): void {
+    this.requestFullscreen.emit();
   }
 
   ngOnDestroy(): void {

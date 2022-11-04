@@ -25,7 +25,12 @@ import { Subscription } from 'rxjs';
 import { BotService } from '../bot-service';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { StateService } from '../../core-nlp/state.service';
-import { StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery } from '../model/story';
+import {
+  AnswerConfigurationType,
+  StoryDefinitionConfiguration,
+  StoryDefinitionConfigurationSummary,
+  StorySearchQuery
+} from '../model/story';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../shared/components';
@@ -90,7 +95,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   editStory(story: StoryDefinitionConfigurationSummary) {
-    if (story.currentType === 4) {
+    if (story.currentType === AnswerConfigurationType.tick) {
       this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Edit the story '${story.name}'`,
@@ -115,7 +120,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   downloadStory(story: StoryDefinitionConfigurationSummary) {
-    if (story.currentType === 4) {
+    if (story.currentType === AnswerConfigurationType.tick) {
       this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Export the story '${story.name}'`,
@@ -142,7 +147,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   deleteStory(story: StoryDefinitionConfigurationSummary) {
-    if (story.currentType === 4) {
+    if (story.currentType === AnswerConfigurationType.tick) {
       this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Remove the story '${story.name}'`,
@@ -265,7 +270,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       context: {
         title: 'Export the stories',
         subtitle: 'Tick stories are not directly exportable. They will be ignored during export.',
-        modalStatus: 'danger',
+        modalStatus: 'info',
         actions: [
           {
             actionName: 'cancel',

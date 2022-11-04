@@ -75,9 +75,11 @@
 
   <div
     class="production-canvas-wrapper flex-fill"
-    canvas
+    tock-canvas
     fullscreenWrapper="parent"
     [centerCanvasAtInitialisation]="false"
+    [isFullscreen]="isFullscreen"
+    (onFullscreen)="toggleFullscreen($event)"
   >
     <div
       class="production-canvas"

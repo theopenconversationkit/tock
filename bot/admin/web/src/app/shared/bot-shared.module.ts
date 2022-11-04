@@ -57,7 +57,7 @@ import {
   PaginationComponent
 } from './components';
 
-import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from './directives';
+import { AutofocusDirective, DelayDirective, FullscreenDirective, MouseWheelListnerDirective } from './directives';
 
 @NgModule({
   imports: [
@@ -100,6 +100,7 @@ import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from '
 
     AutofocusDirective,
     DelayDirective,
+    FullscreenDirective,
     MouseWheelListnerDirective
   ],
   exports: [
@@ -121,6 +122,7 @@ import { AutofocusDirective, DelayDirective, MouseWheelListnerDirective } from '
 
     AutofocusDirective,
     DelayDirective,
+    FullscreenDirective,
     MouseWheelListnerDirective,
 
     CanvasModule

@@ -1,8 +1,10 @@
 <div
   class="canvas-wrapper"
   #canvasWrapperElem
-  canvas
+  tock-canvas
   [position]="elementPosition"
+  [isFullscreen]="isFullscreen"
+  (onFullscreen)="toggleFullscreen($event)"
   appMouseWheelListner
 >
   <div

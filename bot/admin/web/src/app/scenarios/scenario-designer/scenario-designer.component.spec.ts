@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { of, Subject } from 'rxjs';
+import { TestSharedModule } from 'src/app/shared/testing/test-shared.module';
 import { BotService } from '../../bot/bot-service';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { StateService } from '../../core-nlp/state.service';
@@ -36,6 +37,7 @@ describe('ScenarioDesignerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ScenarioDesignerComponent],
+      imports: [TestSharedModule],
       providers: [
         {
           provide: ScenarioService,

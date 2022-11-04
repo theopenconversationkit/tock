@@ -5,7 +5,7 @@ import { getScenarioActionDefinitions } from '../../commons/utils';
 import { ScenarioActionDefinition, ScenarioVersionExtended } from '../../models';
 import { svgPathRoundedCorners } from './utils';
 import { Edge, GraphEdge, graphlib, layout, Node } from 'dagre';
-import { OffsetPosition } from '../../../shared/canvas/models';
+import { CanvaAction, OffsetPosition } from '../../../shared/canvas/models';
 
 type GraphNode = Node & { name?: string; actionDef?: ScenarioActionDefinition; type?: string };
 
@@ -27,6 +27,8 @@ export class ContextsGraphComponent implements OnInit {
     offsetTop: 0,
     offsetHeight: 0
   };
+
+  readonly canvaAction: typeof CanvaAction = CanvaAction;
 
   constructor(public dialogRef: NbDialogRef<ContextsGraphComponent>) {}
 
