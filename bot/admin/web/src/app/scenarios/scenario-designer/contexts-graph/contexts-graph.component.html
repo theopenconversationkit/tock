@@ -37,12 +37,7 @@
                 context: node.type === 'context',
                 dimmed: isNodeDimmed(node.name)
               }"
-              [ngStyle]="{
-                'left.px': node.x - node.offsetx,
-                'top.px': node.y - node.offsety,
-                'width.px': node.width,
-                'height.px': node.height
-              }"
+              [style.transform]="'translate(' + (node.x - node.offsetx) + 'px,' + (node.y - node.offsety) + 'px)'"
               [nbTooltip]="getNodeTooltip(node)"
               (mouseenter)="highlight(node)"
               (mouseleave)="highlight()"

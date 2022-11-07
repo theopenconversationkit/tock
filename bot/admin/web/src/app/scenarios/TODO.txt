@@ -5,8 +5,6 @@ test
 global
 
         Créer une version maison de nbTooltip qui puisse faire de l'affichage multiligne (en fournissant par exemple nbTooltip="['Ligne 1','Ligne 2']" ) et pouvant avoir un delai d'affichage au mouseover (exemple qqchose comme nbTooltipTrigger="hover:500") ? Cherry on the cake : pouvoir formatter partiellement le contenu text (partiellement au sein d'une ligne) à minima avec du bold
-
-        Trouver un moyen de masquer le footer de l'app quand on est dans le designer 
         
         npmrc pour indiquer le registry par defaut
 
@@ -22,12 +20,13 @@ global
 
         Créer un composant partagé input avec autocomplétion ?
 
+        DONE : Trouver un moyen de masquer le footer de l'app quand on est dans le designer 
 
 Back
         
-        Suppression des tickStories en 500
+        DONE : Suppression des tickStories en 500
 
-        Export des tickStories en 500
+        DONE : Export des tickStories en 500
 
 Shared
 
