@@ -98,6 +98,7 @@ services:
       - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
       - nlp_duckling_url=http://duckling:8080
       - tock_env=prod
+      - tock_encrypt_pass=p1Vbq54KqLksjgPPmg3ZDv
       - tock_bot_admin_rest_default_base_url=http://bot_api:8080
       - tock_bot_compiler_service_url=http://kotlin_compiler:8080
       - tock_configuration_bot_default_base_url=http://bot_api:8080
@@ -109,6 +110,8 @@ services:
     #      - tock_database_log_level=warn
     ports:
       - "80:8080"
+    volumes:
+      - "tock-tmp:/tmp/python/log"
 
   nlp_api:
     image: tock/nlp_api:$TAG
@@ -121,6 +124,7 @@ services:
       - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
       - nlp_duckling_url=http://duckling:8080
       - tock_env=prod
+      - tock_encrypt_pass=p1Vbq54KqLksjgPPmg3ZDv
       - tock_web_use_default_cors_handler=true
       - tock_web_use_default_cors_handler_with_credentials=false
       - tock_web_use_default_cors_handler_url=*
@@ -148,8 +152,11 @@ services:
     #      - tock_database_log_level=warn
     ports:
       - "8080:8080"
+    volumes:
+      - "tock-tmp:/tmp/python/log"
 
 volumes:
   tockmongo:
   tockmongo2:
   tockmongo3:
+  tock-tmp:

@@ -18,25 +18,43 @@ package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.mapper.ScenarioExceptionManager
+import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioActionHandlerResponse
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioGroup
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioGroupResponse
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersion
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersionResponse
+import ai.tock.bot.admin.mapper.ScenarioMapper.toTickStateResponse
+import ai.tock.bot.admin.model.scenario.ScenarioActionHandlerResponse
+import ai.tock.bot.admin.model.scenario.ScenarioDebugResponse
 import ai.tock.bot.admin.model.scenario.ScenarioGroupRequest
 import ai.tock.bot.admin.model.scenario.ScenarioGroupResponse
 import ai.tock.bot.admin.model.scenario.ScenarioGroupWithVersionsRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionResponse
+import ai.tock.bot.admin.model.scenario.TickStateRequest
+import ai.tock.bot.admin.model.scenario.TickStateResponse
 import ai.tock.bot.admin.service.ScenarioService
+import ai.tock.bot.engine.dialog.TickState
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.handler.ActionHandler
 import ai.tock.bot.handler.ActionHandlersRepository
 import ai.tock.shared.injector
+import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.WebVerticle
 import com.github.salomonbrys.kodein.instance
+import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
+import org.apache.commons.codec.binary.Base64
+import org.litote.kmongo.toId
+import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 
 /**
  * ScenarioVerticle contains all the routes and actions associated with the scenarios
@@ -49,6 +67,11 @@ open class ScenarioVerticle {
     private val botId = "botId"
     private val groupId = "groupId"
     private val versionId = "versionId"
+    private val tickStoryId = "tickStoryId"
+
+    // TODO MASS : WIP DEBUG
+    private val debug    = "/debug/download"
+    private val debugScenarioPath    = "/bot/:$botId/scenarios/debug"
 
     private val importOneScenarioGroupPath    = "/bot/:$botId/scenarios/import/groups"
     private val importManyScenarioVersionPath = "/bot/:$botId/scenarios/import/groups/:$groupId/versions"
@@ -67,6 +90,8 @@ open class ScenarioVerticle {
     private val deleteOneScenarioVersionPath  = "/bot/:$botId/scenarios/groups/:$groupId/versions/:$versionId"
 
     private val getAllActionHandlerPath       = "/bot/:$botId/dialog-manager/action-handlers"
+    private val getAllActionHandlerPathV2     = "/bot/:$botId/dialog-manager/action-handlers-v2"
+    private val getTickStatePath              = "/bot/:$botId/dialog-manager/tick-state"
 
     /**
      * Declaration of routes and their appropriate handlers
@@ -81,11 +106,16 @@ open class ScenarioVerticle {
             blockingJsonPost(createOneScenarioVersionPath, setOf(botUser), handler = createOneScenarioVersion)
 
             // Read
+            //blocking(HttpMethod.GET, debug, setOf(botUser), handler = this::download)
+            blockingJsonGet(debugScenarioPath, setOf(botUser), handler = debugScenario)
+            blockingJsonPost(getTickStatePath, setOf(botUser), handler = getTickState)
+
             blockingJsonGet(getAllScenarioGroupPath, setOf(botUser), handler = getAllScenarioGroup)
             blockingJsonGet(getOneScenarioGroupPath, setOf(botUser), handler = getOneScenarioGroup)
             blockingJsonGet(getOneScenarioVersionPath, setOf(botUser), handler = getOneScenarioVersion)
             blockingJsonGet(getAllScenarioVersionPath, setOf(botUser), handler = getAllScenarioVersion)
             blockingJsonGet(getAllActionHandlerPath, setOf(botUser), handler = getAllActionHandlers)
+            blockingJsonGet(getAllActionHandlerPathV2, setOf(botUser), handler = getAllActionHandlersV2)
 
             // Update
             blockingJsonPut(updateOneScenarioGroupPath, setOf(botUser), handler = updateOneScenarioGroup)
@@ -232,10 +262,49 @@ open class ScenarioVerticle {
     /**
      * Handler to retrieve all action handlers names.
      * When success, return a 200 Http status.
-     * TODO : separate handlers by bot
+     * FIXME : separate handlers by bot
      */
+    @Deprecated("Use the new method 'getAllActionHandlersV2' once developed", level = DeprecationLevel.WARNING)
     private val getAllActionHandlers: (RoutingContext) -> List<String> =
         { _ -> ActionHandlersRepository.getHandlersName() }
+
+    private val getAllActionHandlersV2: (RoutingContext) -> Set<ScenarioActionHandlerResponse> = {
+            _ -> ActionHandlersRepository.getActionHandlers()
+            .map { it.toScenarioActionHandlerResponse() }
+            .toSet()
+        }
+
+    private val debugScenario: (RoutingContext) -> ScenarioDebugResponse =
+        { _ ->
+
+        val inputStream: InputStream = FileInputStream("/tmp/python/log/action-graph-full-new.png")
+        val buffer = ByteArray(8192*4)
+        var bytesRead: Int
+        val output = ByteArrayOutputStream()
+
+        try {
+            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                output.write(buffer, 0, bytesRead)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }finally {
+            inputStream.close()
+        }
+
+        ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
+    }
+
+    private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
+
+    private val getTickState: (RoutingContext, request: TickStateRequest) -> TickStateResponse? = { context, request ->
+            val tickStoryId = context.pathParam(tickStoryId)
+            val namespace = getNamespace(context)
+
+            val userId = "test_${request.botApplicationConfigurationId}_fr_${request.userIdModifier}"
+
+            userTimelineDAO.getLastTickState(namespace, PlayerId(userId))?.toTickStateResponse()
+    }
 
     /**
      * Handler to update one scenario group

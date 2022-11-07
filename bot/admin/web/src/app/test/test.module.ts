@@ -37,6 +37,7 @@ import {
   NbInputModule
 } from '@nebular/theme';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ScenariosModule } from '../scenarios/scenarios.module';
 
 const routes: Routes = [
   {
@@ -84,7 +85,8 @@ export class BotTestRoutingModule {}
     NbTooltipModule,
     NbAccordionModule,
     NbInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ScenariosModule
   ],
   declarations: [
     TestTabsComponent,

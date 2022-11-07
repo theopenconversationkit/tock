@@ -47,7 +47,7 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-dialog-manager</artifactId>
+            <artifactId>tock-bot-dialog-manager-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

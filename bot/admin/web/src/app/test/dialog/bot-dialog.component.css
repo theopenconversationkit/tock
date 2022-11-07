@@ -74,3 +74,20 @@
 #test-saving-accordions input {
   margin: 0 10px 0 10px;
 }
+
+.flex-container {
+  display: flex;
+  align-items: stretch;
+}
+
+.flex-container > div {
+  margin: 10px;
+}
+
+.discussion {
+  width : 900px
+}
+
+.graph {
+  padding-top: 20px;
+}

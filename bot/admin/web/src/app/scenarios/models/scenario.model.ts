@@ -1,6 +1,10 @@
 import { Sentence } from '../../model/nlp';
 import { TempSentence } from './designer.model';
 
+export interface ScenarioDebug {
+  imgBase64: string;
+}
+
 export interface ScenarioGroup {
   id?: string;
   name: string;

@@ -65,10 +65,8 @@
         <module>admin</module>
 
         <module>chatbase</module>
+
         <module>dialog-manager</module>
-        <module>dialog-manager-handler-provider</module>
-        <module>dialog-manager-aumax</module>
-        <module>dialog-manager-joignabilite</module>
 
     </modules>
 

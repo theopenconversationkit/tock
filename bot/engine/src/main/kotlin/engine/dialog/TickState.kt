@@ -23,5 +23,6 @@ data class TickState(
     val contexts: Map<String, String?>,
     val ranHandlers: Set<String>,
     val objectivesStack: List<String>,
-    val init: Instant
+    val init: Instant,
+    val finished : Boolean
 )

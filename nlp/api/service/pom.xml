@@ -34,6 +34,11 @@
             <artifactId>tock-shared</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>${jasypt}</version>
+        </dependency>
+        <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-front-client</artifactId>
         </dependency>

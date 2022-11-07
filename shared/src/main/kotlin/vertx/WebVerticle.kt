@@ -44,6 +44,8 @@ import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.Promise
 import io.vertx.core.Vertx
+import io.vertx.core.file.AsyncFile
+import io.vertx.core.file.OpenOptions
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
@@ -52,6 +54,7 @@ import io.vertx.core.http.HttpMethod.PUT
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
+import io.vertx.core.streams.Pump
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -110,6 +113,24 @@ abstract class WebVerticle : AbstractVerticle() {
             errorHandler(409, defaultErrorHandler(409))
             errorHandler(415, defaultErrorHandler(415))
             errorHandler(500, defaultErrorHandler(500))
+        }
+    }
+
+    // TODO MASS : WIP DEBUG
+    fun download(routingContext: RoutingContext) {
+        sharedVertx.fileSystem().open("/tmp/python/log/action-graph-full-new.png", OpenOptions()) { readEvent ->
+            if (readEvent.failed()) {
+                routingContext.response().setStatusCode(500).end()
+                return@open
+            }
+            val asyncFile: AsyncFile = readEvent.result()
+            routingContext.response().isChunked = true
+            val pump: Pump = Pump.pump(asyncFile, routingContext.response())
+            pump.start()
+            asyncFile.endHandler { aVoid ->
+                asyncFile.close()
+                routingContext.response().end()
+            }
         }
     }
 
@@ -323,6 +344,8 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
+
+        router.route(HttpMethod.GET, "/download").handler(this::download);
 
         router.route(method, "$basePath$path")
             .handler { context ->

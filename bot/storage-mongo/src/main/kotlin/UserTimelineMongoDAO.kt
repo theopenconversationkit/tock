@@ -34,6 +34,7 @@ import ai.tock.bot.engine.dialog.ArchivedEntityValue
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.Snapshot
+import ai.tock.bot.engine.dialog.TickState
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.PlayerType
@@ -685,6 +686,18 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun getLastStoryId(namespace: String, playerId: PlayerId): String? {
         return try {
             loadLastValidDialogCol(namespace, playerId)?.stories?.lastOrNull()?.storyDefinitionId
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
+    }
+
+    // TODO MASS : a améliorer
+    override fun getLastTickState(namespace: String, playerId: PlayerId): TickState? {
+        return try {
+            val lastValidDialog = loadLastValidDialogCol(namespace, playerId)
+            val lastStoryId = lastValidDialog?.stories?.lastOrNull()?.storyDefinitionId
+            lastValidDialog?.tickStates?.get(lastStoryId)
         } catch (e: Exception) {
             logger.error(e)
             null

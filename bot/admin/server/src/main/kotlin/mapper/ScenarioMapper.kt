@@ -16,14 +16,18 @@
 
 package ai.tock.bot.admin.mapper
 
+import ai.tock.bot.admin.model.scenario.ScenarioActionHandlerResponse
 import ai.tock.bot.admin.model.scenario.ScenarioGroupRequest
 import ai.tock.bot.admin.model.scenario.ScenarioGroupResponse
 import ai.tock.bot.admin.model.scenario.ScenarioGroupWithVersionsRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionResponse
 import ai.tock.bot.admin.model.scenario.ScenarioVersionWithoutData
+import ai.tock.bot.admin.model.scenario.TickStateResponse
 import ai.tock.bot.admin.scenario.ScenarioGroup
 import ai.tock.bot.admin.scenario.ScenarioVersion
+import ai.tock.bot.engine.dialog.TickState
+import ai.tock.bot.handler.ActionHandler
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
@@ -138,6 +142,26 @@ object ScenarioMapper {
             data = data,
             state = state,
             comment = comment
+        )
+    }
+
+    // TODO MASS : DOC
+    fun ActionHandler.toScenarioActionHandlerResponse(): ScenarioActionHandlerResponse {
+        return ScenarioActionHandlerResponse(
+            name = name,
+            description = description,
+            inputContexts = inputContexts,
+            outputContexts = outputContexts
+        )
+    }
+
+    // TODO new mapper
+    fun TickState.toTickStateResponse(): TickStateResponse{
+        return TickStateResponse(
+            current = ranHandlers.last(),
+            target = objectivesStack.lastOrNull() ?: ranHandlers.last(),
+            contexts = contexts.keys,
+            actions = ranHandlers
         )
     }
 }

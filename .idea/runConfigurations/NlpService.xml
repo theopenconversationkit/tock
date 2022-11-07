@@ -2,6 +2,7 @@
   <configuration default="false" name="NlpService" type="JetRunConfigurationType">
     <envs>
       <env name="nlpverticle_port" value="8888" />
+      <env name="tock_encrypt_pass" value="test123" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="ai.tock.nlp.api.StartNlpServiceKt" />
     <module name="tock-nlp-api-service" />
@@ -13,7 +14,7 @@
       <option name="IS_IGNORE_MISSING_FILES" value="false" />
       <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
       <ENTRIES>
-        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
       </ENTRIES>
     </extension>
     <method v="2">

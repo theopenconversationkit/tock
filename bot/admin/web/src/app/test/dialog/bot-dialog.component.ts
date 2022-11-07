@@ -29,6 +29,7 @@ import { SentenceFilter } from '../../sentences-scroll/sentences-scroll.componen
 import { NbToastrService } from '@nebular/theme';
 import { AnalyticsService } from '../../analytics/analytics.service';
 import { APP_BASE_HREF } from '@angular/common';
+import { ScenarioService } from 'src/app/scenarios/services/scenario.service';
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -59,6 +60,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   testContext = false;
 
+  imgBase64: String;
+
   constructor(
     public state: StateService,
     private test: TestService,
@@ -66,6 +69,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     private shared: BotSharedService,
     private toastrService: NbToastrService,
     private dialog: MatDialog,
+    private scenarioService: ScenarioService, // TODO MASS : FIX ME !
     @Inject(APP_BASE_HREF) public baseHref: string
   ) {}
 
@@ -134,6 +138,15 @@ export class BotDialogComponent implements OnInit, OnDestroy {
         r.messages.forEach((m) => {
           this.messages.push(new TestMessage(true, m));
         });
+
+        // TODO MASS : FIX ME !
+        (async () => { 
+          await new Promise( resolve => setTimeout(resolve, 250) )
+          this.scenarioService.getScenarioDebug().subscribe((response) => {
+            this.imgBase64 = response.imgBase64;
+          });
+        })();
+
       });
   }
 

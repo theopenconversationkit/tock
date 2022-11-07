@@ -8,6 +8,7 @@ import { exportJsonDump } from '../../shared/utils';
 import { deepCopy, normalizedSnakeCase, stringifiedCleanObject } from '../commons/utils';
 
 import {
+  ScenarioDebug,
   ScenarioVersion,
   TickStory,
   ScenarioVersionExtended,
@@ -283,6 +284,10 @@ export class ScenarioService {
 
   getActionHandlers(): Observable<string[]> {
     return this.scenarioApiService.getActionHandlers();
+  }
+
+  getScenarioDebug(): Observable<ScenarioDebug> {
+    return this.scenarioApiService.getScenarioDebug();
   }
 
   postTickStory(tickStory: TickStory): Observable<TickStory> {

@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Application } from '../../model/application';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { ScenarioGroup, ScenarioVersion, TickStory } from '../models';
+import { ScenarioDebug, ScenarioGroup, ScenarioVersion, TickStory } from '../models';
 
 @Injectable()
 export class ScenarioApiService {
@@ -125,6 +125,17 @@ export class ScenarioApiService {
       .pipe(
         switchMap((currentApplication: Application) =>
           this.rest.get<string[]>(`/bot/${currentApplication.name}/dialog-manager/action-handlers`, (handlers: string[]) => handlers)
+        )
+      );
+  }
+
+  // TODO MASS : do rollback when front debug is ready
+  getScenarioDebug(): Observable<ScenarioDebug> {
+    return this.applicationService
+      .retrieveCurrentApplication()
+      .pipe(
+        switchMap((currentApplication: Application) =>
+          this.rest.get<ScenarioDebug>(`/bot/${currentApplication.name}/scenarios/debug`, (debug: ScenarioDebug) => debug)
         )
       );
   }

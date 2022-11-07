@@ -18,15 +18,14 @@ package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.service.StoryService
 import ai.tock.bot.bean.TickStory
-import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.shared.injector
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.vertx.WebVerticle
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
-
 
 
 class StoryVerticle {
@@ -42,16 +41,15 @@ class StoryVerticle {
     /**
      * Declaration of routes and association to the appropriate handler
      */
-    fun configure(adminVerticle: AdminVerticle) {
+    fun configure(verticle: WebVerticle) {
         logger.info { "configure ScenarioVerticle" }
 
-        with(adminVerticle) {
+        with(verticle) {
             blockingJsonPost(tickURL, setOf(TockUserRole.botUser), handler = createTickStory)
 
             blockingJsonDelete(
                 "$storyURL/:storyDefinitionConfigurationId",
                 setOf(TockUserRole.botUser, TockUserRole.faqBotUser),
-                simpleLogger("Delete Story", { it.path("StoryDefinitionConfigurationId") }),
                 handler = deleteStoryByStoryDefinitionConfigurationId
             )
 
@@ -66,8 +64,10 @@ class StoryVerticle {
     }
 
     private val deleteStoryByStoryDefinitionConfigurationId: (RoutingContext) -> Boolean = { context ->
+        val storyDefinitionConfigurationId = context.pathParam("storyDefinitionConfigurationId")
+        logger.debug { "request to delete story <$storyDefinitionConfigurationId>" }
         val namespace = (context.user() as TockUser).namespace
-        storyService.deleteStoryByStoryDefinitionConfigurationId(namespace, context.pathParam("storyId"))
+        storyService.deleteStoryByStoryDefinitionConfigurationId(namespace, storyDefinitionConfigurationId)
     }
 
 }
