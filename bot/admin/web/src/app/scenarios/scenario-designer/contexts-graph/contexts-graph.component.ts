@@ -254,10 +254,10 @@ export class ContextsGraphComponent implements OnInit {
   }
 
   getNodeAncestors(nodeName: string, stack = { nodes: [], edges: [] }) {
-    const predecessors = this.graph.predecessors(nodeName) as unknown as string[]; // looks like there is an error in graphLib typing. graph.predecessors actualy returns an array of nodes ids
     stack.nodes.push(nodeName);
     const inEdges = this.graph.inEdges(nodeName);
     stack.edges = [...stack.edges, ...inEdges];
+    const predecessors = this.graph.predecessors(nodeName) as unknown as string[]; // looks like there is an error in graphLib typing. graph.predecessors actualy returns an array of nodes ids
     predecessors.forEach((p) => {
       this.getNodeAncestors(p, stack);
     });
@@ -265,10 +265,10 @@ export class ContextsGraphComponent implements OnInit {
   }
 
   getNodeDescendants(nodeName: string, stack = { nodes: [], edges: [] }) {
-    const descendants = this.graph.successors(nodeName) as unknown as string[];
     stack.nodes.push(nodeName);
     const outEdges = this.graph.outEdges(nodeName);
     stack.edges = [...stack.edges, ...outEdges];
+    const descendants = this.graph.successors(nodeName) as unknown as string[];
     descendants.forEach((p) => {
       this.getNodeDescendants(p, stack);
     });

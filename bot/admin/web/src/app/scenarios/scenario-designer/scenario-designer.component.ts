@@ -122,6 +122,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
       this.exit();
     });
+
+    document.getElementById('app-layout-footer').style.display = 'none';
   }
 
   checkDependencies() {
@@ -226,6 +228,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    document.getElementById('app-layout-footer').style.display = 'initial';
     this.destroy.next();
     this.destroy.complete();
   }

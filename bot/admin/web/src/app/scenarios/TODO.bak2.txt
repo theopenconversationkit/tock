@@ -53,19 +53,34 @@ Scenarios list
 
         Storer au niveau du state l'index de pagination. On conserverais ainsi la derniere page affichée au retour du designer ce qui serait sympa
 
+        #DONE Réparer method design quand toutes les versions sont ARCHIVE
+
 Scenario designer :
 
         Petit souci de breakpoint au niveau des boutons Cancel, Save, Save & exit. Avec un titre de scenario long, ils passent sous le titre du scenario autour de 1000px alors que le titre pourrait tout a fait etre en ellipsis
 
         Deux handlers sont susceptibles de porter le meme nom avec des variations de casse
 
+        #DONE Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
+
+        #DONE Gérer les streams multiples de la subsciption à getScenarioVersion au chargement du designer qui entraine de multiples affichages des modales
+
+        #DONE La sauvegarde du scenario supprimant les expandos commencant par un underscore, on perd les _sentences d'intent préalablement récupérées...
+
         CONTEXT GRAPH :
 
                 Variables de scenario-conception-item.component.scss : Trouver des noms moins orientés arbre de scenario et remonter le tout au niveau supérieur. On va sans doute vouloir partager ces variables avec le module de test pour y afficher le graph
                 
+                #DONE Partager les variables de couleur avec le reste du module
+
+                #DONE Résoudre decalage affichage svg viewBox sous firefox
+
+
         WRITING :
 
                 ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => A discuter avec Mohamed
+
+                #DONE Désactiver la duplication par drag&drop
 
         CONCEPTION :
 
@@ -73,7 +88,16 @@ Scenario designer :
 
                 ??? Quid des sharedIntents ?
 
+                #DONE Imposer l'existence d'au moins une sentence (existante ou à créer) par intent pour passer à la production
+
+        PRODUCTION :
+
+                #DONE Corriger bug sur changement de source transition : # manquant
 
         PUBLISHING :
 
                 ??? Intent : c'est quoi les mandatoryStates ?
+
+                #DONE Régler le souci de detection de dependances à updater quand on recharge un scenario sauvegardé sur le mode publishing
+
+
