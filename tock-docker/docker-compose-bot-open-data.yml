@@ -3,25 +3,25 @@ version: '3'
 services:
 
   mongo:
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     volumes:
       - tockmongo:/data/db
     ports:
       - "27017:27017"
-    command: --smallfiles --bind_ip_all --port 27017 --replSet "tock"
+    command: --bind_ip_all --port 27017 --replSet "tock"
 
   mongo2:
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     depends_on:
       - mongo
     volumes:
       - tockmongo2:/data/db
     ports:
       - "27018:27018"
-    command: --smallfiles --bind_ip_all --port 27018 --replSet "tock"
+    command: --bind_ip_all --port 27018 --replSet "tock"
 
   mongo3:
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     depends_on:
       - mongo
       - mongo2
@@ -29,11 +29,11 @@ services:
       - tockmongo3:/data/db
     ports:
       - "27019:27019"
-    command: --smallfiles --bind_ip_all --port 27019 --replSet "tock"
+    command: --bind_ip_all --port 27019 --replSet "tock"
 
   mongo-setup:
     container_name: "mongo-setup"
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     depends_on:
       - "mongo"
       - "mongo2"
@@ -52,7 +52,7 @@ services:
     entrypoint: [ "/scripts/setup.sh" ]
 
   build_worker:
-    image: tock/build_worker:$TAG
+    image: "tock/build_worker:${TAG}"
     depends_on:
       - mongo
       - mongo2
@@ -62,7 +62,7 @@ services:
       - tock_env=prod
 
   duckling:
-    image: tock/duckling:$TAG
+    image: "tock/duckling:${TAG}"
     environment:
       - tock_mongo_url=mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
       - tock_env=prod
@@ -70,7 +70,7 @@ services:
       - "8080"
 
   kotlin_compiler:
-    image: tock/kotlin_compiler:$TAG
+    image: "tock/kotlin_compiler:${TAG}"
     environment:
       - tock_env=prod
       - tock_kotlin_compiler_classpath=/maven
@@ -78,7 +78,7 @@ services:
       - "8080"
 
   admin_web:
-    image: tock/bot_admin_open_data:$TAG
+    image: "tock/bot_admin_open_data:${TAG}"
     depends_on:
       - mongo
       - mongo2
@@ -101,7 +101,7 @@ services:
       - "80:8080"
 
   nlp_api:
-    image: tock/nlp_api:$TAG
+    image: "tock/nlp_api:${TAG}"
     depends_on:
       - mongo
       - mongo2
@@ -121,7 +121,7 @@ services:
       - "8888:8080"
 
   bot_open_data:
-    image: tock/bot_open_data:$TAG
+    image: "tock/bot_open_data:${TAG}"
     depends_on:
       - mongo
       - mongo2

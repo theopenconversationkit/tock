@@ -27,21 +27,22 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <major>21.9-SNAPSHOT</major>
+        <major>22.9-SNAPSHOT</major>
         <latest>latest-SNAPSHOT</latest>
         <tock>22.9.3-SNAPSHOT</tock>
-        <bot-open-data>22.3.1-SNAPSHOT</bot-open-data>
-        <stanford>22.3.1-SNAPSHOT</stanford>
-        <demo>22.3.0</demo>
+        <bot-open-data>22.9.3-SNAPSHOT</bot-open-data>
+        <stanford>22.9.3-SNAPSHOT</stanford>
+        <demo>22.9.0</demo>
 
-        <jackson>2.13.3</jackson>
-        <okhttp>4.9.3</okhttp>
-        <kotlin>1.7.0</kotlin>
+        <jackson>2.13.4</jackson>
+        <jackson-databinding>2.13.4.2</jackson-databinding>
+        <okhttp>4.10.0</okhttp>
+        <kotlin>1.7.20</kotlin>
 
-        <plugin.docker>0.39.1</plugin.docker>
-        <plugin.release>3.0.0-M1</plugin.release>
-        <plugin.resources>3.2.0</plugin.resources>
-        <plugin.assembly>3.3.0</plugin.assembly>
+        <plugin.docker>0.40.2</plugin.docker>
+        <plugin.release>3.0.0-M6</plugin.release>
+        <plugin.resources>3.3.0</plugin.resources>
+        <plugin.assembly>3.4.2</plugin.assembly>
     </properties>
 
     <modules>
@@ -161,7 +162,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson}</version>
+                <version>${jackson-databinding}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -287,7 +288,7 @@
     <repositories>
         <repository>
             <id>maven-snapshots</id>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <layout>default</layout>
             <releases>
                 <enabled>false</enabled>

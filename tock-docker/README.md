@@ -126,3 +126,9 @@ You will need [Maven](https://maven.apache.org/) and [Git](https://git-scm.com/)
     cd tock-docker
     mvn package docker:build
 ```    
+
+## Run Mongo for Apple Silicon
+
+```sh 
+./etc/startMongoOnARM    
+```

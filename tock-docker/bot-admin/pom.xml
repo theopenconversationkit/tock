@@ -70,7 +70,7 @@
                         <image>
                             <name>tock/bot_admin:${project.version}</name>
                             <build>
-                                <from>openjdk:18</from>
+                                <from>openjdk:19</from>
                                 <assembly>
                                     <inline>
                                         <dependencySets>

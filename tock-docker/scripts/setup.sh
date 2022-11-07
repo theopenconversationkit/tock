@@ -9,15 +9,15 @@ port2=${PORT2:-27018}
 port3=${PORT3:-27019}
 
 echo "Waiting for startup.."
-until mongo --host ${mongodb1}:${port1} --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+until mongosh --host ${mongodb1}:${port1} --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
   printf '.'
   sleep 1
 done
-until mongo --host ${mongodb2}:${port2} --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+until mongosh --host ${mongodb2}:${port2} --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
   printf '.'
   sleep 1
 done
-until mongo --host ${mongodb3}:${port3} --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+until mongosh --host ${mongodb3}:${port3} --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
   printf '.'
   sleep 1
 done
@@ -25,7 +25,7 @@ done
 echo "Started.."
 
 echo setup.sh time now: `date +"%T" `
-mongo --host ${mongodb1}:${port1} <<EOF
+mongosh --host ${mongodb1}:${port1} <<EOF
    var cfg = {
         "_id": "${RS}",
         "members": [

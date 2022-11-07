@@ -73,11 +73,17 @@
                                     <arg>-c</arg>
                                 </shell>
                                 <env>
-                                    <JAVA_HOME>/usr/lib/jvm/java-11-openjdk-amd64</JAVA_HOME>
+                                    <JAVA_HOME>/usr/lib/jvm/jdk-19</JAVA_HOME>
                                 </env>
                                 <runCmds>
                                     <run>apt-get update</run>
-                                    <run>apt-get install -y curl wget openjdk-11-jdk gcc unzip graphviz</run>
+                                    <run>apt-get install -y curl wget gcc unzip graphviz</run>
+
+                                    <!-- TODO : use openJDK19 not oracle -->
+                                    <run>wget https://download.oracle.com/java/19/latest/jdk-19_linux-x64_bin.deb</run>
+                                    <run>apt-get -qqy install ./jdk-19_linux-x64_bin.deb</run>
+                                    <run>update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk-19/bin/java 1919</run>
+
                                     <run>unzip /maven/${dialog-manager}.jar -d /maven/${dialog-manager}</run>
                                     <run>mv /maven/${dialog-manager}/python /tmp</run>
                                     <run>rm -r /maven/${dialog-manager}</run>

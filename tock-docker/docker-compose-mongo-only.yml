@@ -3,25 +3,25 @@ version: '3'
 services:
 
   mongo:
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     volumes:
       - tockmongo:/data/db
     ports:
       - "27017:27017"
-    command: --smallfiles --bind_ip_all --port 27017 --replSet "tock"
+    command: --bind_ip_all --port 27017 --replSet "tock"
 
   mongo2:
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     depends_on:
       - mongo
     volumes:
       - tockmongo2:/data/db
     ports:
       - "27018:27018"
-    command: --smallfiles --bind_ip_all --port 27018 --replSet "tock"
+    command: --bind_ip_all --port 27018 --replSet "tock"
 
   mongo3:
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     depends_on:
       - mongo
       - mongo2
@@ -29,11 +29,11 @@ services:
       - tockmongo3:/data/db
     ports:
       - "27019:27019"
-    command: --smallfiles --bind_ip_all --port 27019 --replSet "tock"
+    command: --bind_ip_all --port 27019 --replSet "tock"
 
   mongo-setup:
     container_name: "mongo-setup"
-    image: mongo:3.6.5
+    image: "${PLATFORM}mongo:${MONGO}"
     depends_on:
       - "mongo"
       - "mongo2"
