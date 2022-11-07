@@ -64,7 +64,7 @@ Scenario designer :
                 
         WRITING :
 
-                ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => A discuter avec Mohamed
+                DONE: Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => Non
 
         CONCEPTION :
 

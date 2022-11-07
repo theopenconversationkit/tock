@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Inject, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil, take, distinctUntilChanged } from 'rxjs/operators';
 import {
@@ -24,12 +24,14 @@ import { Intent } from '../../model/nlp';
 import { BotService } from '../../bot/bot-service';
 import { I18nLabels } from '../../bot/model/i18n';
 import { isEqual } from 'lodash-es';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'scenario-designer',
   templateUrl: './scenario-designer.component.html',
   styleUrls: ['./scenario-designer.component.scss']
 })
+@Injectable()
 export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
@@ -53,7 +55,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     protected state: StateService,
     private scenarioDesignerService: ScenarioDesignerService,
     private dialogService: DialogService,
-    private botService: BotService
+    private botService: BotService,
+    @Inject(DOCUMENT) private document: Document
   ) {
     this.scenarioDesignerService.scenarioDesignerCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'updateScenarioBackup') this.updateScenarioBackup(evt.data);
@@ -123,7 +126,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       this.exit();
     });
 
-    document.getElementById('app-layout-footer').style.display = 'none';
+    this.document.getElementById('app-layout-footer').style.display = 'none';
   }
 
   checkDependencies() {
@@ -228,7 +231,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    document.getElementById('app-layout-footer').style.display = 'initial';
+    this.document.getElementById('app-layout-footer').style.display = 'initial';
     this.destroy.next();
     this.destroy.complete();
   }
