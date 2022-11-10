@@ -22,6 +22,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.ArchivedEntityValue
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
+import ai.tock.bot.engine.dialog.LastDialogState
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.dialog.TickState
 import org.litote.kmongo.Id
@@ -129,5 +130,10 @@ interface UserTimelineDAO {
         oldActionsMap: Map<Id<Action>, Action> = emptyMap()
     ): List<ArchivedEntityValue>
 
-    fun getLastTickState(namespace: String, playerId: PlayerId): TickState?
+    /**
+     * Get the last valid dialog state.
+     * @param namespace : the namespace
+     * @param playerId: id of player
+     */
+    fun getLastDialogState(namespace: String, playerId: PlayerId): LastDialogState?
 }

@@ -106,9 +106,8 @@ open class ScenarioVerticle {
             blockingJsonPost(createOneScenarioVersionPath, setOf(botUser), handler = createOneScenarioVersion)
 
             // Read
-            //blocking(HttpMethod.GET, debug, setOf(botUser), handler = this::download)
+            // TODO MASS : a supprimer une fois le debug est ok coté front
             blockingJsonGet(debugScenarioPath, setOf(botUser), handler = debugScenario)
-            blockingJsonPost(getTickStatePath, setOf(botUser), handler = getTickState)
 
             blockingJsonGet(getAllScenarioGroupPath, setOf(botUser), handler = getAllScenarioGroup)
             blockingJsonGet(getOneScenarioGroupPath, setOf(botUser), handler = getOneScenarioGroup)
@@ -293,17 +292,6 @@ open class ScenarioVerticle {
         }
 
         ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
-    }
-
-    private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
-
-    private val getTickState: (RoutingContext, request: TickStateRequest) -> TickStateResponse? = { context, request ->
-            val tickStoryId = context.pathParam(tickStoryId)
-            val namespace = getNamespace(context)
-
-            val userId = "test_${request.botApplicationConfigurationId}_fr_${request.userIdModifier}"
-
-            userTimelineDAO.getLastTickState(namespace, PlayerId(userId))?.toTickStateResponse()
     }
 
     /**

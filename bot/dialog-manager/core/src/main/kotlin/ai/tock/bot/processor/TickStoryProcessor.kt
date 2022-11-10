@@ -193,9 +193,10 @@ class TickStoryProcessor(
         when(primaryObjective){
             secondaryObjective -> {
                 currentState = objectivesStack.pop()
-                if(!objectivesStack.isEmpty()){
-                    currentState = objectivesStack.peek()!!
-                }
+// TODO MASS : A surveiller
+//                if(!objectivesStack.isEmpty()){
+//                    currentState = objectivesStack.peek()!!
+//                }
             }
             else -> currentState = secondaryObjective
         }

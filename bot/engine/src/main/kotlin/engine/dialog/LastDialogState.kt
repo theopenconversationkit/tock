@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.test.model
+package ai.tock.bot.engine.dialog
 
-import ai.tock.bot.connector.rest.client.model.ClientMessage
-import java.util.Locale
-
-/**
- *
- */
-data class BotDialogResponse(
-    val messages: List<ClientMessage>,
-    val userLocale: Locale? = null,
-    val userActionId: String? = null,
-    val hasNlpStats: Boolean = false,
-    val debug: DialogDebugData? = null
+data class LastDialogState(
+    val intentName: String?,
+    val storyId: String?,
+    val tickState: TickState?
 )

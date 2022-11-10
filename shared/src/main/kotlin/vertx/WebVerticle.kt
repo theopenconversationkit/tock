@@ -116,24 +116,6 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    // TODO MASS : WIP DEBUG
-    fun download(routingContext: RoutingContext) {
-        sharedVertx.fileSystem().open("/tmp/python/log/action-graph-full-new.png", OpenOptions()) { readEvent ->
-            if (readEvent.failed()) {
-                routingContext.response().setStatusCode(500).end()
-                return@open
-            }
-            val asyncFile: AsyncFile = readEvent.result()
-            routingContext.response().isChunked = true
-            val pump: Pump = Pump.pump(asyncFile, routingContext.response())
-            pump.start()
-            asyncFile.endHandler { aVoid ->
-                asyncFile.close()
-                routingContext.response().end()
-            }
-        }
-    }
-
     protected val server: HttpServer by lazy {
         sharedVertx.createHttpServer(
             HttpServerOptions()
@@ -344,9 +326,6 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-
-        router.route(HttpMethod.GET, "/download").handler(this::download);
-
         router.route(method, "$basePath$path")
             .handler { context ->
                 val user = context.user()
