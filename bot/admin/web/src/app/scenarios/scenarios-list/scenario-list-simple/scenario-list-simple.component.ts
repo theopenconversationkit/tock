@@ -58,21 +58,7 @@ export class ScenarioListSimpleComponent {
 
   design(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
-    let scenarioToOpen: ScenarioVersion;
-    const drafts = scenarioGroup.versions.filter((scn) => scn.state === SCENARIO_STATE.draft);
-    if (drafts.length) {
-      scenarioToOpen = drafts.sort((a, b) => {
-        return new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime();
-      })[0];
-    } else {
-      const current = scenarioGroup.versions.filter((scn) => scn.state === SCENARIO_STATE.current);
-      if (current.length) {
-        scenarioToOpen = current[current.length - 1];
-      } else {
-        scenarioToOpen = scenarioGroup.versions[scenarioGroup.versions.length - 1];
-      }
-    }
-    this.router.navigateByUrl(`/scenarios/${scenarioGroup.id}/${scenarioToOpen.id}`);
+    this.scenarioService.redirectToDesigner(scenarioGroup);
   }
 
   editScenarioGroup(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {

@@ -1,12 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, forkJoin, iif, merge, Observable, of } from 'rxjs';
 import { map, tap, switchMap, filter, concatMap, take } from 'rxjs/operators';
+
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Application } from '../../model/application';
 import { exportJsonDump } from '../../shared/utils';
 import { deepCopy, normalizedSnakeCase, stringifiedCleanObject } from '../commons/utils';
-
 import {
   ScenarioDebug,
   ScenarioVersion,
@@ -14,7 +15,8 @@ import {
   ScenarioVersionExtended,
   ScenarioGroupExtended,
   ScenarioGroup,
-  ExportableScenarioGroup
+  ExportableScenarioGroup,
+  SCENARIO_STATE
 } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
@@ -39,7 +41,12 @@ export class ScenarioService {
   private _state: BehaviorSubject<ScenarioState>;
   state$: Observable<ScenarioState>;
 
-  constructor(private scenarioApiService: ScenarioApiService, private applicationService: ApplicationService, private datePipe: DatePipe) {
+  constructor(
+    private scenarioApiService: ScenarioApiService,
+    private applicationService: ApplicationService,
+    private datePipe: DatePipe,
+    private router: Router
+  ) {
     this._state = new BehaviorSubject(scenariosInitialState);
     this.state$ = this._state.asObservable();
   }
@@ -329,7 +336,7 @@ export class ScenarioService {
     });
   }
 
-  downloadScenarioGroup(scenarioGroup: ScenarioGroup): void {
+  private downloadScenarioGroup(scenarioGroup: ScenarioGroup): void {
     this.applicationService.retrieveCurrentApplication().subscribe((currentApplication: Application) => {
       const fileName = [
         currentApplication.name,
@@ -340,5 +347,29 @@ export class ScenarioService {
 
       exportJsonDump(JSON.parse(stringifiedCleanObject(scenarioGroup)), fileName);
     });
+  }
+
+  /**
+   * Method to redirect to the designer from a group of scenarios.
+   * We retrieve the last version created in draft status. If there is none, we take the current version, otherwise the last available version.
+   * @param {ScenarioGroup} scenarioGroup
+   */
+  redirectToDesigner(scenarioGroup: ScenarioGroup): void {
+    let scenarioToOpen: ScenarioVersion;
+    const drafts = scenarioGroup.versions.filter((scn) => scn.state === SCENARIO_STATE.draft);
+
+    if (drafts.length) {
+      scenarioToOpen = drafts.sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())[0];
+    } else {
+      const current = scenarioGroup.versions.filter((scn) => scn.state === SCENARIO_STATE.current);
+
+      if (current.length) {
+        scenarioToOpen = current[current.length - 1];
+      } else {
+        scenarioToOpen = scenarioGroup.versions[scenarioGroup.versions.length - 1];
+      }
+    }
+
+    this.router.navigateByUrl(`/scenarios/${scenarioGroup.id}/${scenarioToOpen.id}`);
   }
 }
