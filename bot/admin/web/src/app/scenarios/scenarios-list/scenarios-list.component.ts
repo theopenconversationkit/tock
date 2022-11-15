@@ -312,7 +312,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               status: 'success'
             });
             if (result.redirect) {
-              let versionId: string = newScenarioGroup.versions[0].id;
+              const versionId: string = newScenarioGroup.versions[0].id;
               this.router.navigateByUrl(`/scenarios/${newScenarioGroup.id}/${versionId}`);
             } else {
               this.closeSidePanel('edit');
@@ -334,7 +334,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
               status: 'success'
             });
             if (result.redirect) {
-              this.router.navigateByUrl(`/scenarios/${newScenarioGroup.id}`);
+              this.scenarioService.redirectToDesigner(newScenarioGroup);
             } else {
               this.closeSidePanel('edit');
             }
