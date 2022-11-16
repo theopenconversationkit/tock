@@ -177,7 +177,7 @@ class ScenarioServiceTest {
         val versions = listOf(scenarioVersion1, scenarioVersion2)
         every { scenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)        // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            scenarioService.importManyScenarioVersion(versions)
+            scenarioService.importManyScenarioVersion(namespace, versions)
         }
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
         verify(exactly = 0) { scenarioVersionService.createMany(any())}
@@ -189,7 +189,7 @@ class ScenarioServiceTest {
         every { scenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
         every { scenarioVersionService.createMany(any()) } returnsArgument 0
         // WHEN
-        val result = scenarioService.importManyScenarioVersion(versions)
+        val result = scenarioService.importManyScenarioVersion(namespace, versions)
         // THEN
         assertEquals(result, versions)
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
@@ -230,7 +230,7 @@ class ScenarioServiceTest {
         every { scenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            scenarioService.createOneScenarioVersion(scenarioVersion1)
+            scenarioService.createOneScenarioVersion(namespace, scenarioVersion1)
         }
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
         verify(exactly = 0) { scenarioVersionService.createOne(any()) }
@@ -241,7 +241,7 @@ class ScenarioServiceTest {
         every { scenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
         every { scenarioVersionService.createOne(scenarioVersion1) } returns scenarioVersion1
         // WHEN
-        val result = scenarioService.createOneScenarioVersion(scenarioVersion1)
+        val result = scenarioService.createOneScenarioVersion(namespace, scenarioVersion1)
         assertEquals(scenarioVersion1, result)
         // THEN
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
@@ -252,7 +252,7 @@ class ScenarioServiceTest {
         // GIVEN
         every { scenarioGroupService.findAllByBotId(botId1) } returns emptyList()
         // WHEN
-        val result = scenarioService.findAllScenarioGroupWithVersionsByBotId(botId1)
+        val result = scenarioService.findAllScenarioGroupWithVersionsByBotId(namespace, botId1)
         assertTrue(result.isEmpty())
         // THEN
         verify(exactly = 1) { scenarioGroupService.findAllByBotId(botId1) }
@@ -262,7 +262,7 @@ class ScenarioServiceTest {
         // GIVEN
         every { scenarioGroupService.findAllByBotId(botId1) } returns listOf(scenarioGroup1, scenarioGroup2)
         // WHEN
-        val result = scenarioService.findAllScenarioGroupWithVersionsByBotId(botId1)
+        val result = scenarioService.findAllScenarioGroupWithVersionsByBotId(namespace, botId1)
         assertFalse(result.isEmpty())
         assertNull(result.firstOrNull { group -> group.versions.isEmpty() })
         // THEN
@@ -294,7 +294,7 @@ class ScenarioServiceTest {
         every { scenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            scenarioService.findOneScenarioGroup(groupId1)
+            scenarioService.findOneScenarioGroup(namespace, groupId1)
         }
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
     }
@@ -303,7 +303,7 @@ class ScenarioServiceTest {
         // GIVEN
         every { scenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
         // WHEN
-        val result = scenarioService.findOneScenarioGroup(groupId1)
+        val result = scenarioService.findOneScenarioGroup(namespace, groupId1)
         // THEN
         assertEquals(scenarioGroup1, result)
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
@@ -314,7 +314,7 @@ class ScenarioServiceTest {
         every { scenarioGroupService.updateOne(scenarioGroup1Copy) } throws ScenarioGroupNotFoundException(groupId1)
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            scenarioService.updateOneScenarioGroup(scenarioGroup1Copy)
+            scenarioService.updateOneScenarioGroup(namespace, scenarioGroup1Copy)
         }
         verify(exactly = 0) { scenarioGroupService.updateOne(scenarioGroup1) }
     }
@@ -323,7 +323,7 @@ class ScenarioServiceTest {
         // GIVEN
         every { scenarioGroupService.updateOne(scenarioGroup1Copy) } returns scenarioGroup1Copy
         // WHEN
-        val result = scenarioService.updateOneScenarioGroup(scenarioGroup1Copy)
+        val result = scenarioService.updateOneScenarioGroup(namespace, scenarioGroup1Copy)
         // THEN
         assertEquals(scenarioGroup1Copy, result)
         verify(exactly = 1) { scenarioGroupService.updateOne(scenarioGroup1Copy) }
@@ -428,7 +428,7 @@ class ScenarioServiceTest {
     @Test fun `deleteOneScenarioGroup WHEN the scenario group and its versions exist THEN delete the tick story, the group and its versions and return true`() {
         // GIVEN
         every { scenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
-        every { storyService.deleteStoryByStoryId(namespace, botId1, groupId2) } returns true
+        every { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
         justRun { scenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
         justRun { scenarioGroupService.deleteOneById(groupId1) }
         // WHEN
@@ -437,14 +437,14 @@ class ScenarioServiceTest {
         assertTrue(result)
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
         verify(exactly = 1)  { scenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
-        verify(exactly = 1) { storyService.deleteStoryByStoryId(namespace, botId1, groupId1) }
+        verify(exactly = 1) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
         verify(exactly = 1)  { scenarioGroupService.deleteOneById(groupId1) }
     }
 
     @Test fun `deleteOneScenarioGroup WHEN the scenario group does not exists THEN return false`() {
         // GIVEN
         every { scenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)
-        every { storyService.deleteStoryByStoryId(namespace, botId1, groupId2) } returns true
+        every { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
         justRun { scenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
         justRun { scenarioGroupService.deleteOneById(groupId1) }
         // WHEN
@@ -453,14 +453,14 @@ class ScenarioServiceTest {
         assertFalse(result)
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
         verify(exactly = 0)  { scenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
-        verify(exactly = 0) { storyService.deleteStoryByStoryId(namespace, botId1, groupId1) }
+        verify(exactly = 0) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
         verify(exactly = 0)  { scenarioGroupService.deleteOneById(groupId1) }
     }
 
     @Test fun `deleteOneScenarioGroup WHEN the scenario group versions does not exists THEN return false`() {
         // GIVEN
         every { scenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
-        every { storyService.deleteStoryByStoryId(namespace, botId1, groupId2) } returns true
+        every { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
         every { scenarioVersionService.deleteAllByScenarioGroupId(groupId1) } throws ScenarioVersionNotFoundException()
         justRun { scenarioGroupService.deleteOneById(groupId1) }
         // WHEN
@@ -469,7 +469,7 @@ class ScenarioServiceTest {
         assertFalse(result)
         verify(exactly = 1) { scenarioGroupService.findOneById(groupId1) }
         verify(exactly = 1)  { scenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
-        verify(exactly = 0) { storyService.deleteStoryByStoryId(namespace, botId1, groupId1) }
+        verify(exactly = 0) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
         verify(exactly = 0)  { scenarioGroupService.deleteOneById(groupId1) }
     }
 
@@ -485,7 +485,7 @@ class ScenarioServiceTest {
         // THEN
         assertTrue(result)
         verify(exactly = 1) { scenarioVersionService.findOneById(versionId1) }
-        verify(exactly = 0) { storyService.deleteStoryByStoryId(namespace, botId1, groupId1) }
+        verify(exactly = 0) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
         verify(exactly = 1) { scenarioVersionService.deleteOneById(versionId1) }
         verify(exactly = 1) { scenarioVersionService.countAllByScenarioGroupId(groupId1) }
         verify(exactly = 0) { scenarioGroupService.deleteOneById(groupId1) }
@@ -495,14 +495,14 @@ class ScenarioServiceTest {
         // GIVEN
         every { scenarioVersionService.findOneById(versionId3) } returns scenarioVersion3
         justRun { scenarioVersionService.deleteOneById(versionId3) }
-        every { storyService.deleteStoryByStoryId(namespace, botId1, groupId2) } returns true
+        every { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
         every { scenarioVersionService.countAllByScenarioGroupId(groupId2) } returns 2
         // WHEN
         val result = scenarioService.deleteOneScenarioVersion(namespace, botId1, groupId2, versionId3)
         // THEN
         assertTrue(result)
         verify(exactly = 1) { scenarioVersionService.findOneById(versionId3) }
-        verify(exactly = 1) { storyService.deleteStoryByStoryId(namespace, botId1, groupId2) }
+        verify(exactly = 1) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) }
         verify(exactly = 1) { scenarioVersionService.deleteOneById(versionId3) }
         verify(exactly = 1) { scenarioVersionService.countAllByScenarioGroupId(groupId2) }
         verify(exactly = 0) { scenarioGroupService.deleteOneById(groupId2) }
@@ -519,7 +519,7 @@ class ScenarioServiceTest {
         // THEN
         assertTrue(result)
         verify(exactly = 1) { scenarioVersionService.findOneById(versionId1) }
-        verify(exactly = 0) { storyService.deleteStoryByStoryId(namespace, botId1, groupId1) }
+        verify(exactly = 0) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
         verify(exactly = 1) { scenarioVersionService.deleteOneById(versionId1) }
         verify(exactly = 1) { scenarioVersionService.countAllByScenarioGroupId(groupId1) }
         verify(exactly = 1) { scenarioGroupService.deleteOneById(groupId1) }
@@ -533,7 +533,7 @@ class ScenarioServiceTest {
         // THEN
         assertFalse(result)
         verify(exactly = 1) { scenarioVersionService.findOneById(versionId1) }
-        verify(exactly = 0) { storyService.deleteStoryByStoryId(namespace, botId1, groupId1) }
+        verify(exactly = 0) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
         verify(exactly = 0) { scenarioVersionService.deleteOneById(versionId1) }
         verify(exactly = 0) { scenarioVersionService.countAllByScenarioGroupId(groupId1) }
         verify(exactly = 0) { scenarioGroupService.deleteOneById(groupId1) }
@@ -547,7 +547,7 @@ class ScenarioServiceTest {
         // THEN
         assertFalse(result)
         verify(exactly = 1) { scenarioVersionService.findOneById(versionId1) }
-        verify(exactly = 0) { storyService.deleteStoryByStoryId(namespace, botId1, groupId2) }
+        verify(exactly = 0) { storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) }
         verify(exactly = 0) { scenarioVersionService.deleteOneById(versionId1) }
         verify(exactly = 0) { scenarioVersionService.countAllByScenarioGroupId(groupId1) }
         verify(exactly = 0) { scenarioGroupService.deleteOneById(groupId1) }

@@ -21,5 +21,6 @@ data class ScenarioGroupWithVersionsRequest(
     val category: String? = null,
     val tags: List<String> = emptyList(),
     val description: String? = null,
-    val versions: List<ScenarioVersionRequest> = emptyList()
+    val versions: List<ScenarioVersionRequest> = emptyList(),
+    val enabled: Boolean? = null
 )

@@ -755,7 +755,7 @@ object FaqAdminService {
             )
 
             if (existingStory != null) {
-                storyService.deleteStoryByStoryDefinitionConfigurationId(existingStory.namespace, existingStory._id.toString())
+                storyService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(existingStory.namespace, existingStory._id.toString())
             }
             return true
         }

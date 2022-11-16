@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,5 +20,6 @@ data class ScenarioGroupRequest(
     val name: String,
     val category: String? = null,
     val tags: List<String> = emptyList(),
-    val description: String? = null
+    val description: String? = null,
+    val enabled: Boolean? = null
 )

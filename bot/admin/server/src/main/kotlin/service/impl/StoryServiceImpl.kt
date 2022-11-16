@@ -22,11 +22,10 @@ import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.service.StoryService
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.bean.TickStory
 import ai.tock.bot.bean.TickStoryValidation
 import ai.tock.bot.definition.IntentWithoutNamespace
-import ai.tock.shared.exception.error.ErrorMessage
-import ai.tock.shared.exception.error.ErrorMessageWrapper
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.vertx.WebVerticle
@@ -45,6 +44,13 @@ class StoryServiceImpl: StoryService {
     private val logger: KLogger = KotlinLogging.logger {}
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
 
+    override fun getStoryByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ): StoryDefinitionConfiguration? = storyDefinitionDAO
+        .getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId, storyId)
+
     override fun createTickStory(
         namespace: String,
         tickStory: TickStory
@@ -57,7 +63,25 @@ class StoryServiceImpl: StoryService {
         }
     }
 
-    override fun deleteStoryByStoryDefinitionConfigurationId(namespace: String, storyDefinitionConfigurationId: String): Boolean {
+    override fun updateActivateStoryFeatureByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String,
+        feature: StoryDefinitionConfigurationFeature
+    ): Boolean {
+        val story = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId, storyId)
+        if (story != null) {
+            val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
+            if (botConf != null) {
+                storyDefinitionDAO.save(
+                    story.copy(features = story.features.filterNot { it.isStoryActivation() } + feature))
+            }
+        }
+        return false
+    }
+
+    override fun deleteStoryByNamespaceAndStoryDefinitionConfigurationId(
+        namespace: String, storyDefinitionConfigurationId: String): Boolean {
         val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionConfigurationId.toId())
         if (story != null) {
             val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
@@ -68,8 +92,7 @@ class StoryServiceImpl: StoryService {
         return false
     }
 
-
-    override fun deleteStoryByStoryId(namespace: String, botId: String, storyId: String): Boolean {
+    override fun deleteStoryByNamespaceAndBotIdAndStoryId(namespace: String, botId: String, storyId: String): Boolean {
         val story = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId, storyId)
         if (story != null) {
             val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()

@@ -29,4 +29,5 @@ data class ScenarioGroupResponse(
     val creationDate: ZonedDateTime,
     val updateDate: ZonedDateTime,
     val versions: List<ScenarioVersionWithoutData> = emptyList(),
+    val enabled: Boolean? = null
 )

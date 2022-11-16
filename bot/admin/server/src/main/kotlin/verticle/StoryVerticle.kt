@@ -67,7 +67,7 @@ class StoryVerticle {
         val storyDefinitionConfigurationId = context.pathParam("storyDefinitionConfigurationId")
         logger.debug { "request to delete story <$storyDefinitionConfigurationId>" }
         val namespace = (context.user() as TockUser).namespace
-        storyService.deleteStoryByStoryDefinitionConfigurationId(namespace, storyDefinitionConfigurationId)
+        storyService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(namespace, storyDefinitionConfigurationId)
     }
 
 }

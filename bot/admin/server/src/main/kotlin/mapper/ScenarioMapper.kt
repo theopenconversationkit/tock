@@ -23,10 +23,8 @@ import ai.tock.bot.admin.model.scenario.ScenarioGroupWithVersionsRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionResponse
 import ai.tock.bot.admin.model.scenario.ScenarioVersionWithoutData
-import ai.tock.bot.admin.model.scenario.TickStateResponse
 import ai.tock.bot.admin.scenario.ScenarioGroup
 import ai.tock.bot.admin.scenario.ScenarioVersion
-import ai.tock.bot.engine.dialog.TickState
 import ai.tock.bot.handler.ActionHandler
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -50,6 +48,7 @@ object ScenarioMapper {
             versions = versions.map {
                 it.toScenarioVersionWithoutData()
             },
+            enabled = enabled
         )
     }
 
@@ -88,6 +87,11 @@ object ScenarioMapper {
         return toScenarioGroup(botId, newId<ScenarioGroup>().toString())
     }
 
+    /**
+     * Lambda to map an [ScenarioGroupRequest] to a [ScenarioGroup]
+     * @param botId: id of the bot
+     * @param scenarioGroupId: id of the scenario group
+     */
     fun ScenarioGroupRequest.toScenarioGroup(botId: String, scenarioGroupId: String): ScenarioGroup {
         return ScenarioGroup(
             _id = scenarioGroupId.toId(),
@@ -96,11 +100,15 @@ object ScenarioMapper {
             category = category,
             tags = tags,
             description = description,
-            versions = emptyList()
+            versions = emptyList(),
+            enabled = enabled
         )
     }
 
-
+    /**
+     * Lambda to map an [ScenarioGroupWithVersionsRequest] to a [ScenarioGroup]
+     * @param botId: id of the bot
+     */
     fun ScenarioGroupWithVersionsRequest.toScenarioGroup(botId: String): ScenarioGroup {
         return toScenarioGroup(botId, newId<ScenarioGroup>().toString())
     }
@@ -118,7 +126,8 @@ object ScenarioMapper {
             category = category,
             tags = tags,
             description = description,
-            versions = versions.map { it.toScenarioVersion(scenarioGroupId) }
+            versions = versions.map { it.toScenarioVersion(scenarioGroupId) },
+            enabled = enabled
         )
     }
 
@@ -145,7 +154,9 @@ object ScenarioMapper {
         )
     }
 
-    // TODO MASS : DOC
+    /**
+     * Lambda to map an [ActionHandler] to a [ScenarioActionHandlerResponse]
+     */
     fun ActionHandler.toScenarioActionHandlerResponse(): ScenarioActionHandlerResponse {
         return ScenarioActionHandlerResponse(
             name = name,
@@ -155,13 +166,4 @@ object ScenarioMapper {
         )
     }
 
-    // TODO new mapper
-    fun TickState.toTickStateResponse(): TickStateResponse{
-        return TickStateResponse(
-            current = ranHandlers.last(),
-            target = objectivesStack.lastOrNull() ?: ranHandlers.last(),
-            contexts = contexts.keys,
-            actions = ranHandlers
-        )
-    }
 }

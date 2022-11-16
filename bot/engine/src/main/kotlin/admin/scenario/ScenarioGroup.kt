@@ -32,6 +32,8 @@ data class ScenarioGroup(
     val creationDate: ZonedDateTime = ZonedDateTime.now(),
     val updateDate: ZonedDateTime = ZonedDateTime.now(),
     val versions: List<ScenarioVersion> = emptyList(),
+    @Transient
+    val enabled: Boolean? = null
 )
 
     // TODO MASSS : transient versions

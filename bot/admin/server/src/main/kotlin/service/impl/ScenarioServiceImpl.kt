@@ -25,6 +25,7 @@ import ai.tock.bot.admin.service.ScenarioGroupService
 import ai.tock.bot.admin.service.ScenarioService
 import ai.tock.bot.admin.service.ScenarioVersionService
 import ai.tock.bot.admin.service.StoryService
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.shared.exception.scenario.group.ScenarioGroupAndVersionMismatchException
 import ai.tock.shared.exception.scenario.version.ScenarioVersionsInconsistentException
 import ai.tock.shared.exception.scenario.ScenarioException
@@ -46,12 +47,18 @@ class ScenarioServiceImpl : ScenarioService {
     private val scenarioVersionService: ScenarioVersionService by injector.instance()
     private val storyService: StoryService by injector.instance()
 
-    override fun findAllScenarioGroupWithVersionsByBotId(botId: String): List<ScenarioGroup> {
-        return scenarioGroupService.findAllByBotId(botId)
+    override fun findAllScenarioGroupWithVersionsByBotId(namespace: String, botId: String): List<ScenarioGroup> {
+        // Get scenario group from DB
+        val scenarioGroups = scenarioGroupService.findAllByBotId(botId)
+        // Map a stories features to scenario groups
+        return scenarioGroups.map { mapStoryFeatures(namespace, it) }
     }
 
-    override fun findOneScenarioGroup(scenarioGroupId: String): ScenarioGroup {
-        return scenarioGroupService.findOneById(scenarioGroupId)
+    override fun findOneScenarioGroup(namespace: String, scenarioGroupId: String): ScenarioGroup {
+        // Get scenario group from DB
+        val scenarioGroup = scenarioGroupService.findOneById(scenarioGroupId)
+        // Map a story feature to scenario group
+        return mapStoryFeatures(namespace, scenarioGroup)
     }
 
     override fun findOneScenarioVersion(scenarioGroupId:String, scenarioVersionId: String): ScenarioVersion {
@@ -82,37 +89,20 @@ class ScenarioServiceImpl : ScenarioService {
         return scenarioGroup.copy(versions = scenarioVersions)
     }
 
-    override fun importManyScenarioVersion(scenarioVersions: List<ScenarioVersion>): List<ScenarioVersion> {
+    override fun importManyScenarioVersion(namespace: String, scenarioVersions: List<ScenarioVersion>): List<ScenarioVersion> {
         // Check consistency
         checkScenarioVersionsToImport(scenarioVersions)
         // All versions have a same scenarioGroupId, so we get the first one
         val scenarioGroupId = scenarioVersions.first().scenarioGroupId.toString()
         // Find and check existence of scenario group
-        findOneScenarioGroup(scenarioGroupId)
+        findOneScenarioGroup(namespace, scenarioGroupId)
         // Create versions
         return scenarioVersionService.createMany(scenarioVersions)
     }
 
-    private fun checkScenarioVersionsToImport(scenarioVersions: List<ScenarioVersion>) {
-        // Check scenario group has versions
-        if(scenarioVersions.isEmpty()){
-            throw ScenarioGroupWithoutVersionException()
-        }
-
-        // Check if all versions have the same scenario group id
-        if(scenarioVersions.map { it.scenarioGroupId }.distinct().count() > 1){
-            throw ScenarioVersionsInconsistentException()
-        }
-
-        // Check presence of CURRENT version
-        if(scenarioVersions.count { it.isCurrent() } > 0){
-            throw ScenarioVersionBadStateException("An imported scenario group must not have a current version")
-        }
-    }
-
-    override fun createOneScenarioVersion(scenarioVersion: ScenarioVersion): ScenarioVersion {
+    override fun createOneScenarioVersion(namespace: String, scenarioVersion: ScenarioVersion): ScenarioVersion {
         // Find and check existence of scenario group
-        findOneScenarioGroup(scenarioVersion.scenarioGroupId.toString())
+        findOneScenarioGroup(namespace, scenarioVersion.scenarioGroupId.toString())
 
         if(!scenarioVersion.isDraft()){
             throw ScenarioVersionBadStateException("Only a draft version can be created")
@@ -121,8 +111,19 @@ class ScenarioServiceImpl : ScenarioService {
         return scenarioVersionService.createOne(scenarioVersion)
     }
 
-    override fun updateOneScenarioGroup(scenarioGroup: ScenarioGroup): ScenarioGroup {
-        return scenarioGroupService.updateOne(scenarioGroup)
+    override fun updateOneScenarioGroup(namespace: String, scenarioGroup: ScenarioGroup): ScenarioGroup {
+        val updatedScenarioGroup = scenarioGroupService.updateOne(scenarioGroup)
+
+        scenarioGroup.enabled?.let {
+            storyService.updateActivateStoryFeatureByNamespaceAndBotIdAndStoryId(
+                namespace,
+                scenarioGroup.botId,
+                scenarioGroup._id.toString(),
+                StoryDefinitionConfigurationFeature(enabled = it)
+            )
+        }
+
+        return updatedScenarioGroup.copy(enabled = scenarioGroup.enabled)
     }
 
     override fun updateOneScenarioVersion(scenarioVersion: ScenarioVersion): ScenarioVersion {
@@ -157,17 +158,10 @@ class ScenarioServiceImpl : ScenarioService {
         return scenarioVersionUpdated
     }
 
-    private fun checkConsistencyOfScenarioGroupAndVersion(scenarioGroupId: String, scenarioVersion: ScenarioVersion) {
-        if(scenarioGroupId != scenarioVersion.scenarioGroupId.toString()){
-            logger.error { "The scenario version <id:${scenarioVersion._id}> is not part of the scenario group <id:${scenarioVersion.scenarioGroupId}>" }
-            throw ScenarioGroupAndVersionMismatchException()
-        }
-    }
-
     override fun deleteOneScenarioGroup(namespace: String, botId: String, scenarioGroupId: String): Boolean {
         return try {
             // Find and check existence of scenario group
-            findOneScenarioGroup(scenarioGroupId)
+            findOneScenarioGroup(namespace, scenarioGroupId)
 
             // Delete all versions
             scenarioVersionService.deleteAllByScenarioGroupId(scenarioGroupId)
@@ -219,8 +213,57 @@ class ScenarioServiceImpl : ScenarioService {
 
     }
 
+    private fun mapStoryFeatures(namespace: String, scenarioGroup: ScenarioGroup): ScenarioGroup {
+        val sc = if(scenarioGroup.versions.any(ScenarioVersion::isCurrent)){
+            // If scenario group has a current version, then check tick story
+            scenarioGroup.copy(
+                enabled = storyService
+                    .getStoryByNamespaceAndBotIdAndStoryId(
+                        namespace,
+                        scenarioGroup.botId,
+                        scenarioGroup._id.toString()
+                    )?.let { story ->
+                        with(story.features) {
+                            // If story has no feature, then it is enabled
+                            isEmpty()
+                                // else check story activation feature
+                                .or(firstOrNull { it.isStoryActivation() }?.enabled ?: false)
+                        }
+                    }
+            )
+        } else{
+            scenarioGroup
+        }
+
+        return sc
+    }
+
+    private fun checkScenarioVersionsToImport(scenarioVersions: List<ScenarioVersion>) {
+        // Check scenario group has versions
+        if(scenarioVersions.isEmpty()){
+            throw ScenarioGroupWithoutVersionException()
+        }
+
+        // Check if all versions have the same scenario group id
+        if(scenarioVersions.map { it.scenarioGroupId }.distinct().count() > 1){
+            throw ScenarioVersionsInconsistentException()
+        }
+
+        // Check presence of CURRENT version
+        if(scenarioVersions.count { it.isCurrent() } > 0){
+            throw ScenarioVersionBadStateException("An imported scenario group must not have a current version")
+        }
+    }
+
+    private fun checkConsistencyOfScenarioGroupAndVersion(scenarioGroupId: String, scenarioVersion: ScenarioVersion) {
+        if(scenarioGroupId != scenarioVersion.scenarioGroupId.toString()){
+            logger.error { "The scenario version <id:${scenarioVersion._id}> is not part of the scenario group <id:${scenarioVersion.scenarioGroupId}>" }
+            throw ScenarioGroupAndVersionMismatchException()
+        }
+    }
+
     private fun deleteTickStory(namespace: String, botId: String, scenarioGroupId: String) {
-        storyService.deleteStoryByStoryId(namespace, botId, scenarioGroupId)
+        storyService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId, scenarioGroupId)
         logger.info { "Removal of the tick story <storyId:$scenarioGroupId> corresponding to the current version of the scenario group <id:$scenarioGroupId>" }
     }
 

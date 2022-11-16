@@ -23,7 +23,6 @@ import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioGroup
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioGroupResponse
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersion
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersionResponse
-import ai.tock.bot.admin.mapper.ScenarioMapper.toTickStateResponse
 import ai.tock.bot.admin.model.scenario.ScenarioActionHandlerResponse
 import ai.tock.bot.admin.model.scenario.ScenarioDebugResponse
 import ai.tock.bot.admin.model.scenario.ScenarioGroupRequest
@@ -31,26 +30,17 @@ import ai.tock.bot.admin.model.scenario.ScenarioGroupResponse
 import ai.tock.bot.admin.model.scenario.ScenarioGroupWithVersionsRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionRequest
 import ai.tock.bot.admin.model.scenario.ScenarioVersionResponse
-import ai.tock.bot.admin.model.scenario.TickStateRequest
-import ai.tock.bot.admin.model.scenario.TickStateResponse
 import ai.tock.bot.admin.service.ScenarioService
-import ai.tock.bot.engine.dialog.TickState
-import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.engine.user.UserTimelineDAO
-import ai.tock.bot.handler.ActionHandler
 import ai.tock.bot.handler.ActionHandlersRepository
 import ai.tock.shared.injector
-import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.WebVerticle
 import com.github.salomonbrys.kodein.instance
-import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Base64
-import org.litote.kmongo.toId
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.IOException
@@ -154,7 +144,7 @@ open class ScenarioVerticle {
 
         ScenarioExceptionManager.catch {
             scenarioService
-                .importManyScenarioVersion(request.map { it.toScenarioVersion(groupId) })
+                .importManyScenarioVersion(getNamespace(context), request.map { it.toScenarioVersion(groupId) })
                 .map { it.toScenarioVersionResponse() }
         }
     }
@@ -187,7 +177,7 @@ open class ScenarioVerticle {
         
         ScenarioExceptionManager.catch {
             scenarioService
-                .createOneScenarioVersion(request.toScenarioVersion(groupId))
+                .createOneScenarioVersion(getNamespace(context), request.toScenarioVersion(groupId))
                 .toScenarioVersionResponse()
 
         }
@@ -204,7 +194,7 @@ open class ScenarioVerticle {
 
         ScenarioExceptionManager.catch {
             scenarioService
-                .findAllScenarioGroupWithVersionsByBotId(botId)
+                .findAllScenarioGroupWithVersionsByBotId(getNamespace(context), botId)
                 .map { it.toScenarioGroupResponse() }
         }
     }
@@ -221,7 +211,7 @@ open class ScenarioVerticle {
 
         ScenarioExceptionManager.catch {
             scenarioService
-                .findOneScenarioGroup(groupId)
+                .findOneScenarioGroup(getNamespace(context), groupId)
                 .toScenarioGroupResponse()
         }
     }
@@ -254,7 +244,7 @@ open class ScenarioVerticle {
 
         ScenarioExceptionManager.catch {
             scenarioService
-                .findOneScenarioGroup(groupId).versions.map { it.toScenarioVersionResponse() }
+                .findOneScenarioGroup(getNamespace(context), groupId).versions.map { it.toScenarioVersionResponse() }
         }
     }
 
@@ -306,7 +296,7 @@ open class ScenarioVerticle {
 
         ScenarioExceptionManager.catch {
             scenarioService
-                .updateOneScenarioGroup(request.toScenarioGroup(botId, groupId))
+                .updateOneScenarioGroup(getNamespace(context), request.toScenarioGroup(botId, groupId))
                 .toScenarioGroupResponse()
         }
     }

@@ -26,14 +26,14 @@ interface ScenarioService {
     /**
      * Returns all scenario groups with their scenario versions
      */
-    fun findAllScenarioGroupWithVersionsByBotId(botId: String): List<ScenarioGroup>
+    fun findAllScenarioGroupWithVersionsByBotId(namespace: String, botId: String): List<ScenarioGroup>
 
     /**
      * Returns one scenario group with its scenario versions
      * @param scenarioGroupId: id of the scenario group
      * @throws [ScenarioGroupNotFoundException] if the scenario group was not found
      */
-    fun findOneScenarioGroup(scenarioGroupId: String): ScenarioGroup
+    fun findOneScenarioGroup(namespace: String, scenarioGroupId: String): ScenarioGroup
 
     /**
      * Returns one scenario version
@@ -60,7 +60,7 @@ interface ScenarioService {
      * Import many scenario versions and returns the created scenario versions
      * @param scenarioVersions: a list of scenario versions to import
      */
-    fun importManyScenarioVersion(scenarioVersions: List<ScenarioVersion>): List<ScenarioVersion>
+    fun importManyScenarioVersion(namespace: String, scenarioVersions: List<ScenarioVersion>): List<ScenarioVersion>
 
     /**
      * Create a new scenario version
@@ -68,15 +68,16 @@ interface ScenarioService {
      * @param scenarioVersion: the scenario version to create
      * @throws [ScenarioGroupNotFoundException] if the scenario group of the [scenarioVersion] was not found
      */
-    fun createOneScenarioVersion(scenarioVersion: ScenarioVersion): ScenarioVersion
+    fun createOneScenarioVersion(namespace: String, scenarioVersion: ScenarioVersion): ScenarioVersion
 
     /**
      * Update a given scenario group
      * Returns the updated scenario group
+     * @param namespace: the namespace
      * @param scenarioGroup: the scenario group to update
      * @throws [ScenarioGroupNotFoundException] if the [scenarioGroup] was not found
      */
-    fun updateOneScenarioGroup(scenarioGroup: ScenarioGroup): ScenarioGroup
+    fun updateOneScenarioGroup(namespace: String, scenarioGroup: ScenarioGroup): ScenarioGroup
 
     /**
      * Update a given scenario version

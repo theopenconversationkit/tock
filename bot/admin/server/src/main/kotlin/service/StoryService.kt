@@ -15,6 +15,8 @@
  */
 package ai.tock.bot.admin.service
 
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.bean.TickStory
 
 /**
@@ -23,25 +25,61 @@ import ai.tock.bot.bean.TickStory
 interface StoryService {
 
     /**
+     * Get a tick story
+     * @param namespace : the namespace
+     * @param botId : the id of the bot
+     * @param storyId : functional id of story to delete
+     */
+    fun getStoryByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ): StoryDefinitionConfiguration?
+
+    /**
      * Create a new tick story
      * @param namespace : the namespace
      * @param tickStory : the tick story to create
      */
-    fun createTickStory(namespace: String, tickStory: TickStory)
+    fun createTickStory(
+        namespace: String,
+        tickStory: TickStory
+    )
+
+    /**
+     * Update the activation feature of story
+     * @param namespace : the namespace
+     * @param botId : the id of the bot
+     * @param features : features to add to the story
+     */
+    fun updateActivateStoryFeatureByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String,
+        feature: StoryDefinitionConfigurationFeature
+    ): Boolean
 
     /**
      * Delete a tick story
      * @param namespace : the namespace
      * @param storyDefinitionConfigurationId : technical id of story to delete
      */
-    fun deleteStoryByStoryDefinitionConfigurationId(namespace: String, storyDefinitionConfigurationId: String): Boolean
+    fun deleteStoryByNamespaceAndStoryDefinitionConfigurationId(
+        namespace: String,
+        storyDefinitionConfigurationId: String
+    ): Boolean
 
     /**
      * Delete a tick story
      * @param namespace : the namespace
+     * @param botId : the id of the bot
      * @param storyId : functional id of story to delete
      */
-    fun deleteStoryByStoryId(namespace: String, botId: String, storyId: String): Boolean
+    fun deleteStoryByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ): Boolean
 
     // FIXME : Migrate all story methods here
 }
