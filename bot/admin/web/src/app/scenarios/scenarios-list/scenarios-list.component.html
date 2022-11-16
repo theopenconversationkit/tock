@@ -71,10 +71,11 @@
         [nbSpinner]="loading.delete"
         [scenariosGroups]="paginatedScenariosGroups"
         [selectedScenarioGroup]="scenarioGroupEdit"
-        (onDeleteScenarioGroup)="askDeleteScenarioGroup($event)"
+        (onDeleteScenarioGroup)="deleteScenarioGroup($event)"
         (onEditScenarioGroup)="addOrEditScenarioGroup($event)"
         (onDuplicateScenarioVersion)="askDuplicationScenarioVersion($event)"
-        (onDeleteScenarioVersion)="askDeleteScenarioVersion($event)"
+        (onDeleteScenarioVersion)="deleteScenarioVersion($event)"
+        (onToggleScenarioGroup)="toggleTickScenarioGroup($event)"
         (onOrderBy)="orderBy($event)"
       ></tock-scenario-list-simple>
     </div>

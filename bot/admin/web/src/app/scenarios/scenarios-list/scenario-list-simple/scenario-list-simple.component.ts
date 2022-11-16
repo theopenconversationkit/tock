@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { OrderBy } from '../../../shared/utils';
 import { ScenarioGroupExtended, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
 import { ScenarioService } from '../../services/scenario.service';
+import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { DialogService } from '../../../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-scenario-list-simple',
@@ -19,13 +20,14 @@ export class ScenarioListSimpleComponent {
   @Output() onDeleteScenarioGroup = new EventEmitter<ScenarioGroupExtended>();
   @Output() onDuplicateScenarioVersion = new EventEmitter<{ scenarioGroup: ScenarioGroupExtended; scenarioVersion: ScenarioVersion }>();
   @Output() onDeleteScenarioVersion = new EventEmitter<{ scenarioGroup: ScenarioGroupExtended; scenarioVersion: ScenarioVersion }>();
+  @Output() onToggleScenarioGroup = new EventEmitter<ScenarioGroupExtended>();
   @Output() onOrderBy = new EventEmitter<OrderBy>();
 
   SCENARIO_STATE = SCENARIO_STATE;
   orderBy = 'name';
   orderByReverse = false;
 
-  constructor(protected state: StateService, private router: Router, private scenarioService: ScenarioService) {}
+  constructor(protected state: StateService, private dialogService: DialogService, private scenarioService: ScenarioService) {}
 
   setOrderBy(criteria: string): void {
     if (criteria == this.orderBy) {
@@ -56,24 +58,52 @@ export class ScenarioListSimpleComponent {
     this.scenarioService.patchScenarioGroupState({ id: scenarioGroup.id, _expanded: !scenarioGroup._expanded });
   }
 
-  design(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {
+  design(event: PointerEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
     this.scenarioService.redirectToDesigner(scenarioGroup);
   }
 
-  editScenarioGroup(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {
+  editScenarioGroup(event: PointerEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
     this.onEditScenarioGroup.emit(scenarioGroup);
   }
 
-  deleteScenarioGroup(event: MouseEvent, scenarioGroup: ScenarioGroupExtended): void {
+  deleteScenarioGroup(event: PointerEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
-    this.onDeleteScenarioGroup.emit(scenarioGroup);
+    const deleteAction = 'delete';
+    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: `Delete scenario group "${scenarioGroup.name}"`,
+        subtitle:
+          'Are you sure you want to delete this scenario group and its scenario versions and, if applicable, the corresponding TickStory?',
+        action: deleteAction
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === deleteAction) {
+        this.onDeleteScenarioGroup.emit(scenarioGroup);
+      }
+    });
   }
 
-  deleteScenarioVersion(event: MouseEvent, scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
+  deleteScenarioVersion(event: PointerEvent, scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
     event.stopPropagation();
-    this.onDeleteScenarioVersion.emit({ scenarioGroup: scenarioGroup, scenarioVersion: scenarioVersion });
+    const deleteAction = 'delete';
+    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete scenario version',
+        subtitle:
+          scenarioVersion.state === SCENARIO_STATE.current
+            ? 'Are you sure you want to delete the scenario version and, if applicable, the corresponding TickStory?'
+            : 'Are you sure you want to delete the scenario version ?',
+        action: deleteAction
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === deleteAction) {
+        this.onDeleteScenarioVersion.emit({ scenarioGroup: scenarioGroup, scenarioVersion: scenarioVersion });
+      }
+    });
   }
 
   duplicate(scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
@@ -82,5 +112,27 @@ export class ScenarioListSimpleComponent {
 
   download(scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
     this.scenarioService.loadScenariosAndDownload(this.scenariosGroups, [{ id: scenarioGroup.id, versions: [scenarioVersion.id] }]);
+  }
+
+  toggleTickEnabled(scenarioGroup: ScenarioGroupExtended): void {
+    if (scenarioGroup._hasCurrentVersion) {
+      let action = 'Enable';
+      if (scenarioGroup.enabled) {
+        action = 'Disable';
+      }
+
+      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+        context: {
+          title: `${action} tick story`,
+          subtitle: `Are you sure you want to ${action.toLowerCase()} the tick story associated with this scenario ?`,
+          action: action
+        }
+      });
+      dialogRef.onClose.subscribe((result: string) => {
+        if (result === action.toLowerCase()) {
+          this.onToggleScenarioGroup.emit(scenarioGroup);
+        }
+      });
+    }
   }
 }

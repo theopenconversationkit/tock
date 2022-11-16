@@ -1,24 +1,37 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { DatePipe, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
 import { ScenarioService } from '../../services/scenario.service';
-import { ScenarioGroup, SCENARIO_STATE } from '../../models';
+import { ScenarioGroupExtended, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../shared/testing/test-shared.module';
 import { ScenarioDesignerComponent } from '../../scenario-designer/scenario-designer.component';
 import { ScenariosListComponent } from '../scenarios-list.component';
 import { SpyOnCustomMatchers } from '../../../shared/testing/matchers/custom-matchers';
+import {
+  NbAccordionModule,
+  NbButtonModule,
+  NbDialogRef,
+  NbIconModule,
+  NbSpinnerModule,
+  NbTagModule,
+  NbToggleModule,
+  NbTooltipModule
+} from '@nebular/theme';
+import { DialogService } from 'src/app/core-nlp/dialog.service';
+import { of } from 'rxjs';
 
-const mockScenariosGroups: ScenarioGroup[] = [
+const mockScenariosGroups: ScenarioGroupExtended[] = [
   {
     id: '1',
     name: 'scenario 1',
     tags: [],
+    enabled: true,
     versions: [
       {
         id: 's1v1',
@@ -40,12 +53,14 @@ const mockScenariosGroups: ScenarioGroup[] = [
         state: SCENARIO_STATE.archive,
         creationDate: '01/01/1970'
       }
-    ]
+    ],
+    _hasCurrentVersion: true
   },
   {
     id: '2',
     name: 'scenario 2',
     tags: [],
+    enabled: false,
     versions: [
       {
         id: 's2v1',
@@ -57,12 +72,14 @@ const mockScenariosGroups: ScenarioGroup[] = [
         state: SCENARIO_STATE.current,
         creationDate: '01/02/1970'
       }
-    ]
+    ],
+    _hasCurrentVersion: true
   },
   {
     id: '3',
     name: 'scenario 3',
     tags: [],
+    enabled: false,
     versions: [
       {
         id: 's3v1',
@@ -79,31 +96,36 @@ const mockScenariosGroups: ScenarioGroup[] = [
         state: SCENARIO_STATE.archive,
         creationDate: '01/01/2000'
       }
-    ]
+    ],
+    _hasCurrentVersion: false
   },
   {
     id: '4',
     name: 'scenario 4',
     tags: [],
+    enabled: false,
     versions: [
       {
         id: 's4v1',
         state: SCENARIO_STATE.draft,
         creationDate: '01/01/1970'
       }
-    ]
+    ],
+    _hasCurrentVersion: false
   },
   {
     id: '5',
     name: 'scenario 5',
     tags: [],
+    enabled: false,
     versions: [
       {
         id: 's5v1',
         state: SCENARIO_STATE.draft,
         creationDate: '01/01/1970'
       }
-    ]
+    ],
+    _hasCurrentVersion: false
   }
 ];
 
@@ -120,18 +142,28 @@ describe('ScenarioListSimpleComponent', () => {
           { path: 'scenarios', component: ScenariosListComponent },
           { path: ':scenarioGroupId/:scenarioVersionId', component: ScenarioDesignerComponent },
           { path: 'scenarios/:scenarioGroupId/:scenarioVersionId', component: ScenarioDesignerComponent }
-        ] as Routes)
+        ] as Routes),
+        NbAccordionModule,
+        NbButtonModule,
+        NbIconModule,
+        NbSpinnerModule,
+        NbTagModule,
+        NbToggleModule,
+        NbTooltipModule
       ],
       providers: [
         {
           provide: ScenarioService,
-          useValue: {}
+          useValue: { redirectToDesigner: () => {}, patchScenarioGroupState: () => {} }
         },
         {
           provide: StateService,
           useValue: { currentApplication: { name: 'TestApplicationName' } }
         },
-        { provide: DatePipe }
+        {
+          provide: DialogService,
+          useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) }
+        }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -183,14 +215,75 @@ describe('ScenarioListSimpleComponent', () => {
     expect(component.onEditScenarioGroup.emit).toHaveBeenCalledOnceWith(mockScenariosGroups[0]);
   });
 
-  it('should emit the scenario group when clicking on the delete button of an item', () => {
-    spyOn(component.onDeleteScenarioGroup, 'emit');
-    const listElement = fixture.debugElement.queryAll(By.css('[data-testid="list"]'));
-    const buttonElement: HTMLButtonElement = listElement[0].query(By.css('[data-testid="delete-scenario-group"]')).nativeElement;
+  describe('when click on the button to delete a scenario group', () => {
+    it('should call the method', () => {
+      spyOn(component, 'deleteScenarioGroup');
 
-    buttonElement.click();
+      const listElement = fixture.debugElement.queryAll(By.css('[data-testid="list"]'));
+      const buttonElement: HTMLButtonElement = listElement[0].query(By.css('[data-testid="delete-scenario-group"]')).nativeElement;
 
-    expect(component.onDeleteScenarioGroup.emit).toHaveBeenCalledOnceWith(mockScenariosGroups[0]);
+      buttonElement.click();
+
+      expect(component.deleteScenarioGroup).toHaveBeenCalledOnceWith(new PointerEvent('click'), mockScenariosGroups[0]);
+    });
+
+    it('should emit scenario group when confirmation message is confirmed', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
+      spyOn(component.onDeleteScenarioGroup, 'emit');
+
+      component.deleteScenarioGroup(new PointerEvent('click'), mockScenariosGroups[0]);
+
+      expect(component.onDeleteScenarioGroup.emit).toHaveBeenCalledOnceWith(mockScenariosGroups[0]);
+    });
+
+    it('should not emit scenario group when confirmation message is not confirmed', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component.onDeleteScenarioGroup, 'emit');
+
+      component.deleteScenarioGroup(new PointerEvent('click'), mockScenariosGroups[0]);
+
+      expect(component.onDeleteScenarioGroup.emit).not.toHaveBeenCalledOnceWith(mockScenariosGroups[0]);
+    });
+  });
+
+  describe('when click on the toggle button to activate / deactivate tick story from a scenario group', () => {
+    it('should call the method', () => {
+      spyOn(component, 'toggleTickEnabled');
+
+      const listElement = fixture.debugElement.queryAll(By.css('[data-testid="list"]'));
+      const toggleElement: HTMLElement = listElement[0].query(By.css('[data-testid="toggle-tick"]')).nativeElement;
+
+      toggleElement.dispatchEvent(new Event('mousedown'));
+
+      expect(component.toggleTickEnabled).toHaveBeenCalledOnceWith(mockScenariosGroups[0]);
+    });
+
+    it('should emit faq to disable when confirmation message is confirmed', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('disable') } as NbDialogRef<any>);
+      spyOn(component.onToggleScenarioGroup, 'emit');
+
+      component.toggleTickEnabled(mockScenariosGroups[0]);
+
+      expect(component.onToggleScenarioGroup.emit).toHaveBeenCalledOnceWith(mockScenariosGroups[0]);
+    });
+
+    it('should emit faq to enable when confirmation message is confirmed', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('enable') } as NbDialogRef<any>);
+      spyOn(component.onToggleScenarioGroup, 'emit');
+
+      component.toggleTickEnabled(mockScenariosGroups[1]);
+
+      expect(component.onToggleScenarioGroup.emit).toHaveBeenCalledOnceWith(mockScenariosGroups[1]);
+    });
+
+    it('should not emit faq when confirmation message is not confirmed', () => {
+      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component.onToggleScenarioGroup, 'emit');
+
+      component.toggleTickEnabled(mockScenariosGroups[0]);
+
+      expect(component.onToggleScenarioGroup.emit).not.toHaveBeenCalledOnceWith(mockScenariosGroups[0]);
+    });
   });
 
   describe('redirect to the designer from the scenario group', () => {
@@ -199,39 +292,9 @@ describe('ScenarioListSimpleComponent', () => {
       const listElement = fixture.debugElement.queryAll(By.css('[data-testid="list"]'));
       const buttonElement = listElement[0].query(By.css('[data-testid="open-last-scenario-version"]'));
 
-      buttonElement.triggerEventHandler('click', new MouseEvent('click'));
+      buttonElement.triggerEventHandler('click', new PointerEvent('click'));
 
-      expect(component.design).toHaveBeenCalledOnceWith(new MouseEvent('click'), mockScenariosGroups[0]);
-    });
-
-    [
-      {
-        description: 'should return the last version in draft if there is at least one, regardless of the status of the other versions',
-        mock: mockScenariosGroups[0],
-        expectedResult: '/scenarios/1/s1v2'
-      },
-      {
-        description: 'should return the current published version if it exists and there is no draft version',
-        mock: mockScenariosGroups[1],
-        expectedResult: '/scenarios/2/s2v2'
-      },
-      {
-        description: 'should return last archived version if no version with other status exists',
-        mock: mockScenariosGroups[2],
-        expectedResult: '/scenarios/3/s3v3'
-      }
-    ].forEach((test) => {
-      it(
-        test.description,
-        fakeAsync(() => {
-          const location = TestBed.inject(Location);
-
-          component.design(new MouseEvent('click'), test.mock);
-          tick();
-
-          expect(location.path()).toBe(test.expectedResult);
-        })
-      );
+      expect(component.design).toHaveBeenCalledOnceWith(new PointerEvent('click'), mockScenariosGroups[0]);
     });
   });
 
@@ -279,17 +342,47 @@ describe('ScenarioListSimpleComponent', () => {
       });
     });
 
-    it('should emit the scenario group and the version when clicking on the delete button of an item', () => {
-      spyOn(component.onDeleteScenarioVersion, 'emit');
-      const listElement = fixture.debugElement.query(By.css('[data-testid="list"]'));
-      const versionListElement = listElement.queryAll(By.css('[data-testid="list-versions"]'));
-      const buttonElement: HTMLButtonElement = versionListElement[0].query(By.css('[data-testid="delete-scenario-version"]')).nativeElement;
+    describe('when click on the button to delete a scenario version', () => {
+      it('should call the method', () => {
+        spyOn(component, 'deleteScenarioVersion');
 
-      buttonElement.click();
+        const listElement = fixture.debugElement.query(By.css('[data-testid="list"]'));
+        const versionListElement = listElement.queryAll(By.css('[data-testid="list-versions"]'));
+        const buttonElement: HTMLButtonElement = versionListElement[0].query(
+          By.css('[data-testid="delete-scenario-version"]')
+        ).nativeElement;
 
-      expect(component.onDeleteScenarioVersion.emit).toHaveBeenCalledOnceWith({
-        scenarioGroup: mockScenariosGroups[0],
-        scenarioVersion: mockScenariosGroups[0].versions[0]
+        buttonElement.click();
+
+        expect(component.deleteScenarioVersion).toHaveBeenCalledOnceWith(
+          new PointerEvent('click'),
+          mockScenariosGroups[0],
+          mockScenariosGroups[0].versions[0]
+        );
+      });
+
+      it('should emit scenario group and the version when confirmation message is confirmed', () => {
+        spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
+        spyOn(component.onDeleteScenarioVersion, 'emit');
+
+        component.deleteScenarioVersion(new PointerEvent('click'), mockScenariosGroups[0], mockScenariosGroups[0].versions[0]);
+
+        expect(component.onDeleteScenarioVersion.emit).toHaveBeenCalledOnceWith({
+          scenarioGroup: mockScenariosGroups[0],
+          scenarioVersion: mockScenariosGroups[0].versions[0]
+        });
+      });
+
+      it('should not emit scenario group and the version when confirmation message is not confirmed', () => {
+        spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+        spyOn(component.onDeleteScenarioVersion, 'emit');
+
+        component.deleteScenarioVersion(new PointerEvent('click'), mockScenariosGroups[0], mockScenariosGroups[0].versions[0]);
+
+        expect(component.onDeleteScenarioVersion.emit).not.toHaveBeenCalledOnceWith({
+          scenarioGroup: mockScenariosGroups[0],
+          scenarioVersion: mockScenariosGroups[0].versions[0]
+        });
       });
     });
 

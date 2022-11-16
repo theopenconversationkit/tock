@@ -1,10 +1,10 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import {
   NbButtonModule,
   NbCardModule,
+  NbCheckboxModule,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
@@ -28,6 +28,7 @@ describe('ScenarioFiltersComponent', () => {
         TestSharedModule,
         NbButtonModule,
         NbCardModule,
+        NbCheckboxModule,
         NbFormFieldModule,
         NbIconModule,
         NbInputModule,
@@ -76,9 +77,9 @@ describe('ScenarioFiltersComponent', () => {
    */
   xdescribe('should show clear button when at least one filter is active', () => {
     [
-      { description: 'search active', formValue: { search: 'test', tags: [] } },
-      { description: 'tags active', formValue: { search: '', tags: ['tag1', 'tag2'] } },
-      { description: 'all field active', formValue: { search: 'test', tags: ['tag1', 'tag2'] } }
+      { description: 'search active', formValue: { search: 'test', tags: [], enabled: null } },
+      { description: 'tags active', formValue: { search: '', tags: ['tag1', 'tag2'], enabled: false } },
+      { description: 'all field active', formValue: { search: 'test', tags: ['tag1', 'tag2'], enabled: true } }
     ].forEach((parameter) => {
       it(parameter.description, () => {
         component.form.patchValue(parameter.formValue);
@@ -98,9 +99,9 @@ describe('ScenarioFiltersComponent', () => {
    */
   xdescribe('should clear form when the method is called', () => {
     [
-      { description: 'search active', formValue: { search: 'test', tags: [] } },
-      { description: 'tags active', formValue: { search: '', tags: ['tag1', 'tag2'] } },
-      { description: 'all field active', formValue: { search: 'test', tags: ['tag1', 'tag2'] } }
+      { description: 'search active', formValue: { search: 'test', tags: [], enabled: null } },
+      { description: 'tags active', formValue: { search: '', tags: ['tag1', 'tag2'], enabled: false } },
+      { description: 'all field active', formValue: { search: 'test', tags: ['tag1', 'tag2'], enabled: true } }
     ].forEach((parameter) => {
       it(parameter.description, () => {
         component.form.patchValue(parameter.formValue);
@@ -109,6 +110,7 @@ describe('ScenarioFiltersComponent', () => {
 
         expect(component.search.value).toBeNull();
         expect(component.tags.value).toEqual([]);
+        expect(component.enabled.value).toBeNull();
       });
     });
   });
@@ -125,7 +127,7 @@ describe('ScenarioFiltersComponent', () => {
     expect(onFilterSpy).not.toHaveBeenCalled();
 
     tick(500);
-    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({ search: 'test', tags: [] });
+    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({ search: 'test', tags: [], enabled: null });
 
     onFilterSpy.calls.reset();
     tick(600);
@@ -139,11 +141,26 @@ describe('ScenarioFiltersComponent', () => {
     expect(onFilterSpy).not.toHaveBeenCalled();
 
     tick(500);
-    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({ search: 'test', tags: ['test'] });
+    expect(onFilterSpy).toHaveBeenCalledOnceWithDeepEquality({ search: 'test', tags: ['test'], enabled: null });
 
     onFilterSpy.calls.reset();
     tick(600);
 
     expect(onFilterSpy).not.toHaveBeenCalled();
   }));
+
+  it('should update enabled field when the method is called', () => {
+    // null to true
+    component.enabled.setValue(null);
+    component.enabledCheckChanged();
+    expect(component.enabled.value).toBeTrue();
+
+    // true to false
+    component.enabledCheckChanged();
+    expect(component.enabled.value).toBeFalse();
+
+    // false to null
+    component.enabledCheckChanged();
+    expect(component.enabled.value).toBeNull();
+  });
 });

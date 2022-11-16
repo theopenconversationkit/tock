@@ -4,21 +4,17 @@ import { NbDialogRef, NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { first, take, takeUntil } from 'rxjs/operators';
 
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { Filter, ScenarioGroup, ScenarioVersion, SCENARIO_STATE } from '../models';
+import { Filter, ScenarioGroup, ScenarioGroupExtended, ScenarioGroupUpdate, ScenarioVersion, SCENARIO_STATE } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-
 import { ScenarioEditComponent } from './scenario-edit/scenario-edit.component';
-
 import { OrderBy, orderBy } from '../../shared/utils';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ScenarioImportComponent } from './scenario-import/scenario-import.component';
 import { ScenarioExportComponent } from './scenario-export/scenario-export.component';
-
 import { deepCopy } from '../commons/utils';
 import { Pagination } from '../../shared/components';
 
@@ -61,7 +57,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     total: 0
   };
 
-  private currentFilters: Filter = { search: '', tags: [] };
+  private forceReload: boolean = false;
+  private currentFilters: Filter = { search: '', tags: [], enabled: null };
   private currentOrderByCriteria: OrderBy = {
     criteria: 'name',
     reverse: false,
@@ -75,7 +72,9 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private router: Router,
     protected stateService: StateService
-  ) {}
+  ) {
+    this.forceReload = this.router.getCurrentNavigation().previousNavigation?.finalUrl.toString() === '/build/story-rules';
+  }
 
   ngOnInit() {
     this.botConfigurationService.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
@@ -85,7 +84,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
     this.loading.list = true;
 
-    this.subscribeToScenariosGroups();
+    this.subscribeToScenariosGroups(this.forceReload);
 
     this.stateService.configurationChange.pipe(takeUntil(this.destroy$)).subscribe((_) => {
       this.subscribeToScenariosGroups(true);
@@ -190,69 +189,28 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         copy.state = SCENARIO_STATE.draft;
         copy.comment = this.duplicationForm.value.comment;
 
-        this.scenarioService.postScenarioVersion(this.duplicationScenarioMemo.scenarioGroup.id, copy).subscribe((res) => {
+        this.scenarioService.postScenarioVersion(this.duplicationScenarioMemo.scenarioGroup.id, copy).subscribe((_res) => {
+          this.toastrService.success('Scenario version successfully duplicated', 'Duplicate', { duration: 5000 });
           this.duplicationCancel();
         });
       });
   }
 
-  askDeleteScenarioGroup(scenarioGroup: ScenarioGroup): void {
-    const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
-      context: {
-        title: `Delete scenario group "${scenarioGroup.name}"`,
-        subtitle:
-          'Are you sure you want to delete this scenario group and its scenario versions and, if applicable, the corresponding TickStory?',
-        action: deleteAction
-      }
-    });
-    dialogRef.onClose.subscribe((result) => {
-      if (result === deleteAction) {
-        this.deleteScenarioGroup(scenarioGroup);
-      }
-    });
-  }
-
-  deleteScenarioGroup(scenarioGroup: ScenarioGroup): void {
-    this.loading.delete = true;
+  deleteScenarioGroup(scenarioGroup: ScenarioGroupExtended): void {
+    scenarioGroup._loading = true;
 
     this.scenarioService
       .deleteScenarioGroup(scenarioGroup.id)
       .pipe(first())
       .subscribe({
         next: () => {
-          this.toastrService.success(`Scenario group successfully deleted`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
-          this.loading.delete = false;
+          this.toastrService.success(`Scenario group successfully deleted`, 'Delete', { duration: 5000 });
+          scenarioGroup._loading = false;
         },
         error: () => {
-          this.loading.delete = false;
+          scenarioGroup._loading = false;
         }
       });
-  }
-
-  askDeleteScenarioVersion({ scenarioGroup, scenarioVersion }): void {
-    const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
-      context: {
-        title: 'Delete scenario version',
-        subtitle:
-          scenarioVersion.state === SCENARIO_STATE.current
-            ? 'Are you sure you want to delete the scenario version and, if applicable, the corresponding TickStory?'
-            : 'Are you sure you want to delete the scenario version ?',
-        action: deleteAction
-      }
-    });
-    dialogRef.onClose.subscribe((result) => {
-      if (result === deleteAction) {
-        if (scenarioVersion.id === this.scenarioGroupEdit?.id) {
-          this.closeSidePanel('edit');
-        }
-        this.deleteScenarioVersion(scenarioGroup.id, scenarioVersion.id);
-      }
-    });
   }
 
   closeSidePanel(panel?: 'edit' | 'export' | 'import'): void {
@@ -277,18 +235,15 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     }
   }
 
-  deleteScenarioVersion(scenarioGroupId: string, scenarioVersionId: string): void {
+  deleteScenarioVersion({ scenarioGroup, scenarioVersion }): void {
     this.loading.delete = true;
 
     this.scenarioService
-      .deleteScenarioVersion(scenarioGroupId, scenarioVersionId)
+      .deleteScenarioVersion(scenarioGroup.id, scenarioVersion.id)
       .pipe(first())
       .subscribe({
         next: () => {
-          this.toastrService.success(`Scenario version successfully deleted`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(`Scenario version successfully deleted`, 'Delete', { duration: 5000 });
           this.loading.delete = false;
         },
         error: () => {
@@ -307,10 +262,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (newScenarioGroup) => {
             this.loading.edit = false;
-            this.toastrService.success(`Scenario group successfully created`, 'Success', {
-              duration: 5000,
-              status: 'success'
-            });
+            this.toastrService.success(`Scenario group successfully created`, 'Creation', { duration: 5000 });
+
             if (result.redirect) {
               const versionId: string = newScenarioGroup.versions[0].id;
               this.router.navigateByUrl(`/scenarios/${newScenarioGroup.id}/${versionId}`);
@@ -329,10 +282,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (newScenarioGroup) => {
             this.loading.edit = false;
-            this.toastrService.success(`Scenario group successfully updated`, 'Success', {
-              duration: 5000,
-              status: 'success'
-            });
+            this.toastrService.success(`Scenario group successfully updated`, 'Update', { duration: 5000 });
             if (result.redirect) {
               this.scenarioService.redirectToDesigner(newScenarioGroup);
             } else {
@@ -347,23 +297,22 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   filterScenariosGroups(filters: Filter, resetPaginationStart: boolean = true): void {
-    const { search, tags } = filters;
+    const { search, tags, enabled } = filters;
     this.currentFilters = filters;
 
-    this.filteredScenariosGroups = this.scenariosGroups.filter((scenarioGroup: ScenarioGroup) => {
+    this.filteredScenariosGroups = this.scenariosGroups.filter((scenarioGroup: ScenarioGroupExtended) => {
       if (
         search &&
         !(
           scenarioGroup.name.toUpperCase().includes(search.toUpperCase()) ||
           scenarioGroup.description.toUpperCase().includes(search.toUpperCase())
         )
-      ) {
+      )
         return;
-      }
 
-      if (tags?.length && !scenarioGroup.tags.some((tag) => tags.includes(tag))) {
-        return;
-      }
+      if (tags?.length && !scenarioGroup.tags.some((tag) => tags.includes(tag))) return;
+
+      if (enabled !== null && !(scenarioGroup._hasCurrentVersion && scenarioGroup.enabled === enabled)) return;
 
       return scenarioGroup;
     });
@@ -439,6 +388,38 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     } else {
       this.isSidePanelOpen.import = true;
     }
+  }
+
+  toggleTickScenarioGroup(scenarioGroup: ScenarioGroupExtended): void {
+    const partialScenarioGroup: ScenarioGroupUpdate = {
+      id: scenarioGroup.id,
+      name: scenarioGroup.name,
+      category: scenarioGroup.category,
+      description: scenarioGroup.description,
+      enabled: !scenarioGroup.enabled,
+      tags: scenarioGroup.tags
+    };
+
+    scenarioGroup._loading = true;
+
+    this.scenarioService
+      .updateScenarioGroup(partialScenarioGroup)
+      .pipe(first())
+      .subscribe({
+        next: (updatedScenarioGroup) => {
+          scenarioGroup._loading = false;
+          this.toastrService.success(
+            `The tick story associated with the scenario group "${updatedScenarioGroup.name}" has been correctly ${
+              updatedScenarioGroup.enabled ? 'enabled' : 'disabled'
+            }`,
+            `${updatedScenarioGroup.enabled ? 'Enable' : 'Disable'}`,
+            { duration: 5000 }
+          );
+        },
+        error: () => {
+          scenarioGroup._loading = false;
+        }
+      });
   }
 
   private closeSidePanelCheck(component: ScenarioEditComponent | ScenarioImportComponent, cb: Function): void {

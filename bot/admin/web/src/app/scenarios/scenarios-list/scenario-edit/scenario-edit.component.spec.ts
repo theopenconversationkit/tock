@@ -160,6 +160,7 @@ describe('ScenarioEditComponent', () => {
         name: 'scenario 1',
         category: 'scenario',
         description: 'description',
+        enabled: false,
         tags: []
       } as ScenarioGroup;
       component.scenarioGroup = scenarioGroup;
@@ -182,6 +183,7 @@ describe('ScenarioEditComponent', () => {
         name: 'scenario 1',
         category: 'scenario',
         description: 'description',
+        enabled: false,
         tags: []
       } as ScenarioGroup;
       component.scenarioGroup = scenarioGroup;

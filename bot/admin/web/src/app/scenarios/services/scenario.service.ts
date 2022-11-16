@@ -16,7 +16,8 @@ import {
   ScenarioGroupExtended,
   ScenarioGroup,
   ExportableScenarioGroup,
-  SCENARIO_STATE
+  SCENARIO_STATE,
+  ScenarioGroupUpdate
 } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
@@ -96,6 +97,12 @@ export class ScenarioService {
       filter((state) => !state.loaded && !state.loading),
       tap(() => this.setScenariosGroupsLoading()),
       switchMap(() => this.scenarioApiService.getScenariosGroups()),
+      map((scenariosGroups) => {
+        return scenariosGroups.map((scenarioGroup) => ({
+          ...scenarioGroup,
+          _hasCurrentVersion: this.scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.current)
+        }));
+      }),
       tap((scenariosCollection) => this.setScenariosGroupsData(scenariosCollection)),
       switchMap(() => scenariosState),
       map((state) => state.scenariosGroups)
@@ -165,8 +172,12 @@ export class ScenarioService {
     this.setState(state);
   }
 
-  postScenarioGroup(scenarioGroup: ScenarioGroupExtended): Observable<ScenarioGroupExtended> {
+  postScenarioGroup(scenarioGroup: ScenarioGroup): Observable<ScenarioGroupExtended> {
     return this.scenarioApiService.postScenarioGroup(scenarioGroup).pipe(
+      map((newScenarioGroup) => ({
+        ...newScenarioGroup,
+        _hasCurrentVersion: this.scenarioGroupHasState(newScenarioGroup, SCENARIO_STATE.current)
+      })),
       tap((newScenarioGroup) => {
         const state = this.getState();
         state.scenariosGroups = [...state.scenariosGroups, newScenarioGroup];
@@ -177,8 +188,12 @@ export class ScenarioService {
     );
   }
 
-  importScenarioGroup(scenarioGroup: ScenarioGroupExtended): Observable<ScenarioGroupExtended> {
+  importScenarioGroup(scenarioGroup: ScenarioGroup): Observable<ScenarioGroupExtended> {
     return this.scenarioApiService.importScenarioGroup(scenarioGroup).pipe(
+      map((newScenarioGroup) => ({
+        ...newScenarioGroup,
+        _hasCurrentVersion: this.scenarioGroupHasState(newScenarioGroup, SCENARIO_STATE.current)
+      })),
       tap((newScenarioGroup) => {
         const state = this.getState();
         state.scenariosGroups = [...state.scenariosGroups, newScenarioGroup];
@@ -189,14 +204,16 @@ export class ScenarioService {
     );
   }
 
-  updateScenarioGroup(
-    scenarioGroup: Omit<ScenarioGroupExtended, 'creationDate' | 'updateDate' | 'versions'>
-  ): Observable<ScenarioGroupExtended> {
+  updateScenarioGroup(scenarioGroup: ScenarioGroupUpdate): Observable<ScenarioGroupExtended> {
     const state = this.getState();
     const existingScenarioGroup = state.scenariosGroups.find((s) => s.id === scenarioGroup.id);
     const existingScenarioGroupIndex = state.scenariosGroups.indexOf(existingScenarioGroup);
     if (existingScenarioGroupIndex > -1) {
       return this.scenarioApiService.updateScenarioGroup(scenarioGroup).pipe(
+        map((modifiedScenarioGroup) => ({
+          ...modifiedScenarioGroup,
+          _hasCurrentVersion: this.scenarioGroupHasState(modifiedScenarioGroup, SCENARIO_STATE.current)
+        })),
         tap((modifiedScenarioGroup) => {
           state.scenariosGroups[existingScenarioGroupIndex] = modifiedScenarioGroup;
           state.categories = this.updateCategoriesCache(state.scenariosGroups);
@@ -219,7 +236,7 @@ export class ScenarioService {
     );
   }
 
-  patchScenarioGroupState(scenarioGroupUpdate: Partial<ScenarioGroupExtended>) {
+  patchScenarioGroupState(scenarioGroupUpdate: Partial<ScenarioGroupExtended>): void {
     const state = this.getState();
     const existingScenarioGroup = state.scenariosGroups.find((s) => s.id === scenarioGroupUpdate.id);
     const existingScenarioGroupIndex = state.scenariosGroups.indexOf(existingScenarioGroup);
@@ -277,8 +294,12 @@ export class ScenarioService {
             state.categories = this.updateCategoriesCache(state.scenariosGroups);
             state.tags = this.updateTagsCache(state.scenariosGroups);
           } else {
+            const scenarioGroup = state.scenariosGroups[existingScenarioGroupIndex];
+
             state.scenariosGroups[existingScenarioGroupIndex] = {
               ...existingScenarioGroup,
+              _hasCurrentVersion: this.scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.current),
+              enabled: scenarioGroup._hasCurrentVersion,
               versions: existingScenarioGroup.versions.filter((s) => s.id !== scenarioVersionId)
             };
           }
@@ -347,6 +368,10 @@ export class ScenarioService {
 
       exportJsonDump(JSON.parse(stringifiedCleanObject(scenarioGroup)), fileName);
     });
+  }
+
+  private scenarioGroupHasState(scenarioGroup: ScenarioGroup, state: SCENARIO_STATE): boolean {
+    return !!scenarioGroup.versions.find((scn) => scn.state === state);
   }
 
   /**

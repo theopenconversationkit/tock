@@ -34,6 +34,7 @@
   *ngFor="let scenarioGroup of scenariosGroups"
   class="mb-2"
   [class.selected]="selectedScenarioGroup?.id === scenarioGroup.id"
+  [nbSpinner]="scenarioGroup._loading"
   data-testid="list"
 >
   <nb-accordion-item
@@ -73,8 +74,17 @@
         <div class="d-flex align-items-center">
           <nb-toggle
             class="mr-2"
-            nbTooltip="Activate or deactivate this tick story"
-            [disabled]="!scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.current)"
+            [nbTooltip]="
+              !scenarioGroup._hasCurrentVersion
+                ? 'There is no tick story associated'
+                : scenarioGroup.enabled
+                ? 'Disable this tick story'
+                : 'Enable this tick story'
+            "
+            [disabled]="!scenarioGroup._hasCurrentVersion"
+            [ngModel]="scenarioGroup.enabled"
+            (click)="$event.stopPropagation()"
+            (mousedown)="toggleTickEnabled(scenarioGroup)"
             data-testid="toggle-tick"
           ></nb-toggle>
           <button

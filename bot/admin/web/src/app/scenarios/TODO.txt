@@ -5,7 +5,7 @@ test
 global
 
         Créer une version maison de nbTooltip qui puisse faire de l'affichage multiligne (en fournissant par exemple nbTooltip="['Ligne 1','Ligne 2']" ) et pouvant avoir un delai d'affichage au mouseover (exemple qqchose comme nbTooltipTrigger="hover:500") ? Cherry on the cake : pouvoir formatter partiellement le contenu text (partiellement au sein d'une ligne) à minima avec du bold
-        
+
         npmrc pour indiquer le registry par defaut
 
         A voir avec la SNCF sur la maj des paquets ou possibilité de créer un fichier de définition de déclaration en attendant "xxx.d.ts" avec les fonctions attendues
@@ -20,10 +20,10 @@ global
 
         Créer un composant partagé input avec autocomplétion ?
 
-        DONE : Trouver un moyen de masquer le footer de l'app quand on est dans le designer 
+        DONE : Trouver un moyen de masquer le footer de l'app quand on est dans le designer
 
 Back
-        
+
         DONE : Suppression des tickStories en 500
 
         DONE : Export des tickStories en 500
@@ -48,8 +48,6 @@ Scenarios list
 
         A la suppression d'un scenarioGroup avec tickStory, ne devrait-on pas proposer de nettoyer les intents et answers attachées au scenario ?
 
-        Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
-
         Storer au niveau du state l'index de pagination. On conserverais ainsi la derniere page affichée au retour du designer ce qui serait sympa
 
 Scenario designer :
@@ -61,7 +59,7 @@ Scenario designer :
         CONTEXT GRAPH :
 
                 Variables de scenario-conception-item.component.scss : Trouver des noms moins orientés arbre de scenario et remonter le tout au niveau supérieur. On va sans doute vouloir partager ces variables avec le module de test pour y afficher le graph
-                
+
         WRITING :
 
                 DONE: Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => Non

@@ -1,14 +1,18 @@
-import { DatePipe } from '@angular/common';
-import { TestBed } from '@angular/core/testing';
+import { DatePipe, Location } from '@angular/common';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { Routes } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { ApplicationService } from '../../core-nlp/applications.service';
 
-import { ScenarioGroup } from '../models';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { ScenarioGroup, ScenarioGroupExtended, SCENARIO_STATE } from '../models';
+import { ScenarioDesignerComponent } from '../scenario-designer/scenario-designer.component';
+import { ScenariosListComponent } from '../scenarios-list/scenarios-list.component';
 import { ScenarioApiService } from './scenario.api.service';
 import { ScenarioService } from './scenario.service';
 
-const mockScenarios: ScenarioGroup[] = [
+const mockScenarios: ScenarioGroupExtended[] = [
   {
     id: '1',
     name: 'Scenario 1',
@@ -17,7 +21,30 @@ const mockScenarios: ScenarioGroup[] = [
     tags: ['tag1', ''],
     creationDate: '12/01/1980',
     updateDate: null,
-    versions: []
+    enabled: false,
+    versions: [
+      {
+        id: 's1v1',
+        state: SCENARIO_STATE.draft,
+        creationDate: '01/01/1970'
+      },
+      {
+        id: 's1v2',
+        state: SCENARIO_STATE.draft,
+        creationDate: '02/01/1970'
+      },
+      {
+        id: 's1v3',
+        state: SCENARIO_STATE.current,
+        creationDate: '01/01/1970'
+      },
+      {
+        id: 's1v4',
+        state: SCENARIO_STATE.archive,
+        creationDate: '01/01/1970'
+      }
+    ],
+    _hasCurrentVersion: true
   },
   {
     id: '2',
@@ -27,7 +54,20 @@ const mockScenarios: ScenarioGroup[] = [
     tags: ['test'],
     creationDate: '01/01/1970',
     updateDate: '01/01/1970',
-    versions: []
+    enabled: false,
+    versions: [
+      {
+        id: 's2v1',
+        state: SCENARIO_STATE.archive,
+        creationDate: '01/01/1970'
+      },
+      {
+        id: 's2v2',
+        state: SCENARIO_STATE.current,
+        creationDate: '01/02/1970'
+      }
+    ],
+    _hasCurrentVersion: true
   },
   {
     id: '3',
@@ -36,7 +76,25 @@ const mockScenarios: ScenarioGroup[] = [
     category: null,
     tags: ['tag1', 'tag2'],
     creationDate: '01/01/1970',
-    versions: []
+    enabled: false,
+    versions: [
+      {
+        id: 's3v1',
+        state: SCENARIO_STATE.archive,
+        creationDate: '01/01/1970'
+      },
+      {
+        id: 's3v2',
+        state: SCENARIO_STATE.archive,
+        creationDate: '01/01/1980'
+      },
+      {
+        id: 's3v3',
+        state: SCENARIO_STATE.archive,
+        creationDate: '01/01/2000'
+      }
+    ],
+    _hasCurrentVersion: false
   },
   {
     id: '4',
@@ -45,7 +103,15 @@ const mockScenarios: ScenarioGroup[] = [
     category: 'scenario',
     tags: [],
     creationDate: '12/01/1980',
-    versions: []
+    enabled: false,
+    versions: [
+      {
+        id: 's4v1',
+        state: SCENARIO_STATE.draft,
+        creationDate: '01/01/1970'
+      }
+    ],
+    _hasCurrentVersion: false
   },
   {
     id: '5',
@@ -54,7 +120,15 @@ const mockScenarios: ScenarioGroup[] = [
     category: 'scenario',
     tags: null,
     creationDate: '12/01/1980',
-    versions: []
+    enabled: false,
+    versions: [
+      {
+        id: 's5v1',
+        state: SCENARIO_STATE.draft,
+        creationDate: '01/01/1970'
+      }
+    ],
+    _hasCurrentVersion: false
   }
 ];
 
@@ -70,11 +144,12 @@ const newScenario: ScenarioGroup = {
   id: null,
   creationDate: '12/01/1980',
   name: 'New scenario',
+  enabled: false,
   tags: [],
   versions: []
 };
 
-const updatedScenario: ScenarioGroup = {
+const updatedScenario: ScenarioGroupExtended = {
   ...mockScenarios[1],
   category: 'new category',
   description: 'Description updated',
@@ -92,6 +167,13 @@ describe('ScenarioService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule.withRoutes([
+          { path: 'scenarios', component: ScenariosListComponent },
+          { path: ':scenarioGroupId/:scenarioVersionId', component: ScenarioDesignerComponent },
+          { path: 'scenarios/:scenarioGroupId/:scenarioVersionId', component: ScenarioDesignerComponent }
+        ] as Routes)
+      ],
       providers: [
         {
           provide: ScenarioApiService,
@@ -176,7 +258,7 @@ describe('ScenarioService', () => {
         const state = service.getState();
         expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalledWith(newScenario);
         expect(state.scenariosGroups).toHaveSize(mockScenarios.length + 1);
-        expect(state.scenariosGroups).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
+        expect(state.scenariosGroups).toEqual([...mockScenarios, { ...newScenario, id: '1', _hasCurrentVersion: false }]);
         expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
         expect(state.categories).toEqual(['default', 'scenario']);
         done();
@@ -371,5 +453,35 @@ describe('ScenarioService', () => {
     service.setScenariosGroupsData(mockScenariosCopy);
 
     expect(service.getState().tags).toEqual(['abc', 'tag1', 'tag2', 'zyx']);
+  });
+
+  [
+    {
+      description: 'should return the last version in draft if there is at least one, regardless of the status of the other versions',
+      mock: mockScenarios[0],
+      expectedResult: '/scenarios/1/s1v2'
+    },
+    {
+      description: 'should return the current published version if it exists and there is no draft version',
+      mock: mockScenarios[1],
+      expectedResult: '/scenarios/2/s2v2'
+    },
+    {
+      description: 'should return last archived version if no version with other status exists',
+      mock: mockScenarios[2],
+      expectedResult: '/scenarios/3/s3v3'
+    }
+  ].forEach((test) => {
+    it(
+      test.description,
+      fakeAsync(() => {
+        const location = TestBed.inject(Location);
+
+        service.redirectToDesigner(test.mock);
+        tick();
+
+        expect(location.path()).toBe(test.expectedResult);
+      })
+    );
   });
 });

@@ -137,7 +137,7 @@ export class ScenarioEditComponent implements OnChanges {
     if (this.canSave) {
       this.onSave.emit({
         redirect: redirect,
-        scenarioGroup: { id: this.scenarioGroup.id, ...this.form.value }
+        scenarioGroup: { id: this.scenarioGroup.id, ...this.form.value, enabled: !!this.scenarioGroup.enabled }
       });
     }
   }

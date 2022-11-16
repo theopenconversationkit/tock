@@ -47,6 +47,16 @@
           <span class="initial-capitalize">{{ tag }}</span>
         </nb-option>
       </nb-select>
+
+      <nb-checkbox
+        class="lineHeight-0"
+        formControlName="enabled"
+        [checked]="enabled.value"
+        [indeterminate]="enabled.value === null"
+        (checkedChange)="enabledCheckChanged()"
+      >
+        Tick story active
+      </nb-checkbox>
     </form>
   </nb-card-body>
 </nb-card>
