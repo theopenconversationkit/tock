@@ -1,21 +1,19 @@
-import { DOCUMENT } from '@angular/common';
 import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
-  Inject,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
+  Output,
   SimpleChanges,
   ViewEncapsulation
 } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { NbThemeService, NbToastrService } from '@nebular/theme';
 
 import {
+  CanvaAction,
   ActionZoomEvent,
   CANVAS_TRANSITION_TIMING,
   MAX_SCALE,
@@ -28,64 +26,42 @@ import {
 } from './models';
 
 @Component({
-  selector: '[canvas]',
+  selector: '[tock-canvas]',
   templateUrl: './canvas.component.html',
-  styleUrls: ['./canvas.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class CanvasComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() position: OffsetPosition;
   @Input() centerCanvasAtInitialisation: boolean = true;
   @Input() centerCanvasX: boolean = true;
   @Input() centerCanvasY: boolean = false;
-
-  @Input() fullscreenWrapper: 'current' | 'parent' = 'current';
-
+  @Input() isFullscreen: boolean = false;
   @Input() maxScale: number = MAX_SCALE;
+  @Input() hideActions: Array<CanvaAction> = [];
+
+  @Output() onFullscreen = new EventEmitter<boolean>();
 
   private canvasPos = { x: 0, y: 0 };
   private canvasPosOffset = { x: 0, y: 0 };
   private pointer = { x: 0, y: 0 };
   private canvasScale: number = 1;
   private isDragingCanvas: Position;
-  isFullscreen: boolean = false;
 
   private wrapper: HTMLElement;
   canvas: HTMLElement;
 
-  private subscription: Subscription = new Subscription();
-
-  constructor(
-    @Inject(DOCUMENT) private document: Document,
-    private canvasWrapperElement: ElementRef,
-    private themeService: NbThemeService,
-    private toastrService: NbToastrService
-  ) {}
+  constructor(private canvasWrapperElement: ElementRef) {}
 
   ngOnInit(): void {
     this.wrapper = this.canvasWrapperElement.nativeElement;
     this.wrapper.style.position = 'relative';
     this.wrapper.style.cursor = 'move';
-
-    this.subscription = this.themeService.onThemeChange().subscribe((theme: any) => {
-      if (theme.name === 'default') {
-        if (this.fullscreenWrapper === 'current') this.wrapper.style.backgroundColor = '#edf1f7';
-        else this.wrapper.parentElement.style.backgroundColor = '#edf1f7';
-      } else if (theme.name === 'dark') {
-        if (this.fullscreenWrapper === 'current') this.wrapper.style.backgroundColor = '#151a30';
-        else this.wrapper.parentElement.style.backgroundColor = '#151a30';
-      }
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.canvas && changes.position.currentValue && changes.position.currentValue !== changes.position.previousValue) {
+    if (this.canvas && changes.position?.currentValue && changes.position.currentValue !== changes.position.previousValue) {
       this.centerOnElement(changes.position.currentValue);
     }
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
   }
 
   ngAfterViewInit(): void {
@@ -101,54 +77,42 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
     }, 0);
   }
 
+  private setCanvasTransform(): void {
+    this.canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
+  }
+
   zoomCanvas(wheelEvent?: WheelEvent, actionEvent?: ActionZoomEvent): void {
     this.throwErrorUndefinedCanvas();
     if (!wheelEvent && !actionEvent) throw new Error('No event defined');
 
+    // Get mouse offset
     this.pointer.x = (wheelEvent?.clientX || actionEvent.clientX) - this.wrapper.offsetLeft;
     this.pointer.y = (wheelEvent?.clientY || actionEvent.clientY) - this.wrapper.offsetTop;
+
+    // get the current position of the canvas at the current scale relative to the pointer position
     this.canvasPosOffset.x = (this.pointer.x - this.canvasPos.x) / this.canvasScale;
     this.canvasPosOffset.y = (this.pointer.y - this.canvasPos.y) / this.canvasScale;
 
+    // set new scale
     const scale = wheelEvent ? wheelEvent.deltaY : actionEvent.scale;
     this.canvasScale += -1 * Math.max(-1, Math.min(1, scale)) * ZOOM_SPEED * this.canvasScale;
-
     this.canvasScale = Math.max(MIN_SCALE, Math.min(this.maxScale, this.canvasScale));
 
     const zoomOneMagnetism = 0.2;
     if (this.canvasScale >= 1 - zoomOneMagnetism && this.canvasScale <= 1 + zoomOneMagnetism) this.canvasScale = 1;
 
+    // set new position of the canvas
     this.canvasPos.x = -this.canvasPosOffset.x * this.canvasScale + this.pointer.x;
     this.canvasPos.y = -this.canvasPosOffset.y * this.canvasScale + this.pointer.y;
 
-    this.canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
+    this.setCanvasTransform();
   }
 
   fullscreen(open: boolean): void {
     if (open) {
-      this.openFullscreen();
+      this.onFullscreen.emit(true);
     } else {
-      this.closeFullscreen();
-    }
-  }
-
-  openFullscreen(): void {
-    this.document.body.requestFullscreen();
-
-    if (this.fullscreenWrapper === 'current') this.wrapper.classList.add('wrapperFullscreen');
-    else this.wrapper.parentElement.classList.add('wrapperFullscreen');
-
-    this.canvas.classList.add('canvasFullscreen');
-  }
-
-  closeFullscreen(): void {
-    if (this.fullscreenWrapper === 'current') this.wrapper.classList.remove('wrapperFullscreen');
-    else this.wrapper.parentElement.classList.remove('wrapperFullscreen');
-
-    this.canvas.classList.remove('canvasFullscreen');
-
-    if (this.document.fullscreenElement) {
-      this.document.exitFullscreen();
+      this.onFullscreen.emit(false);
     }
   }
 
@@ -171,7 +135,7 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
       this.canvasPos.y = ((this.canvas.offsetHeight * this.canvasScale - this.wrapper.offsetHeight) / 2) * -1;
     }
 
-    this.canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
+    this.setCanvasTransform();
   }
 
   centerOnElement(position: OffsetPosition): void {
@@ -180,11 +144,37 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
     this.canvasPos.x = position.offsetLeft * this.canvasScale * -1 + (this.wrapper.offsetWidth - position.offsetWidth) / 2;
     this.canvasPos.y = position.offsetTop * this.canvasScale * -1 + (this.wrapper.offsetHeight - position.offsetHeight) / 2;
 
-    this.canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
+    this.setCanvasTransform();
   }
 
   throwErrorUndefinedCanvas(): void {
     if (!this.canvas) throw new Error('The canvas is not defined');
+  }
+
+  resetPosition() {
+    this.canvasScale = 1;
+
+    if (this.position) {
+      this.centerOnElement(this.position);
+    } else {
+      this.throwErrorUndefinedCanvas();
+
+      if (this.centerCanvasX && this.centerCanvasAtInitialisation) {
+        this.canvasPos.x = ((this.canvas.offsetWidth * this.canvasScale - this.wrapper.offsetWidth) / 2) * -1;
+      } else {
+        this.canvasPos.x = 0;
+      }
+
+      if (this.centerCanvasY) {
+        if (this.canvas.offsetHeight * this.canvasScale < this.wrapper.offsetHeight) {
+          this.canvasPos.y = ((this.canvas.offsetHeight * this.canvasScale - this.wrapper.offsetHeight) / 2) * -1;
+        }
+      } else {
+        this.canvasPos.y = 0;
+      }
+
+      this.setCanvasTransform();
+    }
   }
 
   @HostListener('wheel', ['$event'])
@@ -202,6 +192,7 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   @HostListener('mousedown', ['$event'])
   onMouseDownCanvas(event: MouseEvent): void {
     this.throwErrorUndefinedCanvas();
+    event.preventDefault();
 
     if (event.button == 0) {
       this.isDragingCanvas = {
@@ -222,6 +213,7 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   @HostListener('mouseup', ['$event'])
   onMouseUpCanvas(event: MouseEvent): void {
     this.throwErrorUndefinedCanvas();
+    event.preventDefault();
 
     if (event.button == 0) {
       this.isDragingCanvas = undefined;
@@ -237,30 +229,12 @@ export class CanvasComponent implements OnInit, OnChanges, OnDestroy, AfterViewI
   @HostListener('mousemove', ['$event'])
   onMouseMoveCanvas(event: MouseEvent): void {
     if (this.canvas && this.isDragingCanvas && event.button == 0) {
-      let canvas = this.canvas;
       const dx = event.clientX - this.isDragingCanvas.clientX;
       const dy = event.clientY - this.isDragingCanvas.clientY;
       this.canvasPos.x = this.isDragingCanvas.left + dx;
       this.canvasPos.y = this.isDragingCanvas.top + dy;
-      canvas.style.transform = `translate(${this.canvasPos.x}px,${this.canvasPos.y}px) scale(${this.canvasScale},${this.canvasScale})`;
-    }
-  }
 
-  @HostListener('document:fullscreenchange', ['$event'])
-  onFullscreenchange(): void {
-    if (!this.document.fullscreenElement) {
-      this.isFullscreen = false;
-      this.closeFullscreen();
-    } else {
-      this.isFullscreen = true;
+      this.setCanvasTransform();
     }
-  }
-
-  @HostListener('document:fullscreenerror', ['$event'])
-  onFullscreenerror(): void {
-    this.toastrService.danger(`An error has occurred`, 'Error', {
-      duration: 5000,
-      status: 'danger'
-    });
   }
 }

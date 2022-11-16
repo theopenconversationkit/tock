@@ -22,10 +22,11 @@
       *ngIf="!noGraphInScenario"
       #canvasWrapperElem
       id="canvas-wrapper"
-      canvas
+      tock-canvas
       [maxScale]="5"
       [centerCanvasY]="true"
       [position]="canvasPosition"
+      [hideActions]="[canvaAction.fullscreen]"
     >
       <div id="canvas">
         <div class="htmlGraph">

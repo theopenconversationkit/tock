@@ -116,7 +116,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
         subtitle: 'Are you sure you want to delete this action?',
         modalStatus: 'danger',
         actions: [
-          { actionName: cancelAction, buttonStatus: 'basic' },
+          { actionName: cancelAction, buttonStatus: 'basic', ghost: true },
           { actionName: confirmAction, buttonStatus: 'danger' }
         ]
       }
@@ -140,7 +140,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
         subtitle: 'Are you sure you want to delete this transition?',
         modalStatus: 'danger',
         actions: [
-          { actionName: cancelAction, buttonStatus: 'basic' },
+          { actionName: cancelAction, buttonStatus: 'basic', ghost: true },
           { actionName: confirmAction, buttonStatus: 'danger' }
         ]
       }

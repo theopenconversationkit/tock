@@ -2,14 +2,35 @@
 @import '~@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/themes';
 
+:host {
+  --panel-side-margin: -2.25rem;
+  --panel-bottom-margin: -0.75rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0 var(--panel-side-margin) var(--panel-bottom-margin);
+  overflow: hidden;
+  box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+}
+
+@include media-breakpoint-down(md) {
+  :host {
+    --panel-side-margin: -1.5rem;
+    --panel-bottom-margin: -0.5rem;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  :host {
+    --panel-side-margin: -1rem;
+    --panel-bottom-margin: -0rem;
+  }
+}
+
 @include nb-install-component {
   .canvas-wrapper {
     position: relative;
     z-index: 10;
-    margin-left: -1rem;
-    margin-right: -1rem;
-    margin-bottom: 0;
-    height: 75vh;
     overflow: hidden;
 
     .contexts-panel {
@@ -96,8 +117,8 @@
     .canvas {
       z-index: 1;
       padding: 1.5rem;
-      width: 100vw;
-      height: 100vh;
+      width: fit-content;
+      height: fit-content;
       transition: transform 0.3s;
       transform-origin: 0 0;
       .initialItem {
@@ -173,21 +194,5 @@
 
   .font-2rem {
     font-size: 2rem;
-  }
-
-  @include media-breakpoint-up(md) {
-    .canvas-wrapper {
-      margin-left: -1.5rem;
-      margin-right: -1.5rem;
-      margin-bottom: -0.5rem;
-    }
-  }
-
-  @include media-breakpoint-up(lg) {
-    .canvas-wrapper {
-      margin-left: -2.25rem;
-      margin-right: -2.25rem;
-      margin-bottom: -0.75rem;
-    }
   }
 }

@@ -180,3 +180,14 @@ nb-dialog-container {
     min-width: 95vw;
   }
 }
+
+.wrapperFullscreen {
+  position: absolute !important;
+  z-index: 1040 !important;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 1rem;
+}

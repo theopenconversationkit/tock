@@ -1,0 +1,26 @@
+@import '~@nebular/theme/styles/global/_breakpoints.scss';
+
+section {
+  --panel-padding-top: 2.25rem;
+  --navbar-height: 4.75rem;
+  --margin-height: 0.75rem;
+  height: calc(100vh - var(--panel-padding-top) - var(--navbar-height) - var(--margin-height));
+  display: flex;
+  flex-direction: column;
+  &[data-fullscreen='true'] > scenario-conception,
+  &[data-fullscreen='true'] > scenario-production {
+    margin: 0 -1rem -1rem;
+  }
+}
+
+@include media-breakpoint-down(md) {
+  section {
+    --panel-padding-top: 1.25rem;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  section {
+    --panel-padding-top: 0.25rem;
+  }
+}

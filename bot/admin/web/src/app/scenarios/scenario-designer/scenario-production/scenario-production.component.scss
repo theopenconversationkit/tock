@@ -7,9 +7,10 @@
   --panel-padding: 1rem;
   --panel-side-margin: -2.25rem;
   --panel-bottom-margin: -0.75rem;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   margin: 0 var(--panel-side-margin) var(--panel-bottom-margin);
-  height: 75vh;
   overflow: hidden;
   box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
 }
@@ -25,6 +26,10 @@
   :host {
     --panel-side-margin: -1rem;
     --panel-bottom-margin: -0rem;
+  }
+
+  .production-wrapper .production-menu {
+    height: 15rem;
   }
 }
 
@@ -131,6 +136,7 @@
       .production-canvas {
         position: relative;
         width: fit-content;
+        height: fit-content;
         transition: transform 0.3s;
         transform-origin: 0 0;
         padding: 20px;

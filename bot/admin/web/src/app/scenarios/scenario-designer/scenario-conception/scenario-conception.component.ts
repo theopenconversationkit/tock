@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
@@ -37,7 +37,11 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
+  @Input() isFullscreen: boolean = false;
   @Input() readonly avalaibleHandlers: string[];
+
+  @Output() requestFullscreen = new EventEmitter();
+
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
 
@@ -404,6 +408,10 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
       },
       dialogClass: 'full-width-dialog'
     });
+  }
+
+  toggleFullscreen(_toggle: boolean): void {
+    this.requestFullscreen.emit();
   }
 
   ngOnDestroy(): void {

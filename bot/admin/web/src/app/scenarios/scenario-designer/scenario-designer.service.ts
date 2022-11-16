@@ -31,7 +31,10 @@ export class ScenarioDesignerService {
   }
 
   exitDesigner(): void {
-    this.router.navigateByUrl('/scenarios');
+    // the set time out method is used to wait for the exit of the full screen mode if it is active
+    setTimeout(() => {
+      this.router.navigateByUrl('/scenarios');
+    });
   }
 
   updateScenarioBackup(data: ScenarioVersion): void {

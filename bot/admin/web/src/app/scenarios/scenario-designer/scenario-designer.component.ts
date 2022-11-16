@@ -1,6 +1,11 @@
-import { Component, ElementRef, HostListener, Inject, Injectable, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, ElementRef, HostListener, Inject, Injectable, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { ActivatedRoute, CanDeactivate } from '@angular/router';
+import { NbToastrService } from '@nebular/theme';
+import { isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil, take, distinctUntilChanged } from 'rxjs/operators';
+
 import {
   ScenarioVersion,
   ScenarioVersionExtended,
@@ -10,21 +15,16 @@ import {
   SCENARIO_STATE
 } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
-import { ActivatedRoute, CanDeactivate } from '@angular/router';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
-import { NbToastrService } from '@nebular/theme';
-import { StateService } from 'src/app/core-nlp/state.service';
+import { DialogService } from '../../core-nlp/dialog.service';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { StateService } from '../../core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
-
 import { deepCopy, stringifiedCleanObject } from '../commons/utils';
 import { ChoiceDialogComponent } from '../../shared/components';
-
 import { Intent } from '../../model/nlp';
 import { BotService } from '../../bot/bot-service';
 import { I18nLabels } from '../../bot/model/i18n';
-import { isEqual } from 'lodash-es';
-import { DOCUMENT } from '@angular/common';
+import { FullscreenDirective } from '../../shared/directives';
 
 @Component({
   selector: 'scenario-designer',
@@ -36,6 +36,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   destroy = new Subject();
   @ViewChild('canvasWrapperElem') canvasWrapperElem: ElementRef;
   @ViewChild('canvasElem') canvasElem: ElementRef;
+  @ViewChild('fullscreen') fullscreenElem: FullscreenDirective;
 
   scenarioVersion: ScenarioVersionExtended;
   scenarioVersionBackup: string;
@@ -43,6 +44,9 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   i18n: I18nLabels;
   avalaibleHandlers: string[];
   initialDependenciesCheckDone: boolean = false;
+  requestFullscreen?: 'close' | 'open';
+
+  private footer: HTMLElement;
 
   readonly SCENARIO_MODE = SCENARIO_MODE;
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
@@ -56,6 +60,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     private scenarioDesignerService: ScenarioDesignerService,
     private dialogService: DialogService,
     private botService: BotService,
+    private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.scenarioDesignerService.scenarioDesignerCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
@@ -126,7 +131,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
       this.exit();
     });
 
-    this.document.getElementById('app-layout-footer').style.display = 'none';
+    this.footer = this.document.getElementById('app-layout-footer');
+    if (this.footer) {
+      this.renderer.setStyle(this.footer, 'display', 'none');
+    }
   }
 
   checkDependencies() {
@@ -227,11 +235,16 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   exit(): void {
+    if (this.document.fullscreenElement) {
+      this.fullscreenElem.close();
+    }
     this.scenarioDesignerService.exitDesigner();
   }
 
   ngOnDestroy(): void {
-    this.document.getElementById('app-layout-footer').style.display = 'initial';
+    if (this.footer) {
+      this.renderer.setStyle(this.footer, 'display', 'initial');
+    }
     this.destroy.next();
     this.destroy.complete();
   }

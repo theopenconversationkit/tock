@@ -1,81 +1,104 @@
-<div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
-  <h4 class="initial-capitalize">
-    {{ this.scenarioVersion?._name }}
-  </h4>
+<section
+  tock-fullscreen
+  #fullscreen="fullscreen"
+  [attr.data-fullscreen]="fullscreen.isFullscreen"
+>
+  <header>
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
+      <h4 class="initial-capitalize">
+        {{ this.scenarioVersion?._name }}
+      </h4>
 
-  <div class="d-flex flex-wrap header-actions">
-    <button
-      *ngIf="!isReadonly"
-      nbButton
-      ghost
-      status="basic"
-      size="small"
-      (click)="exit()"
-      data-testid="exit-button"
-    >
-      Cancel
-    </button>
-    <button
-      *ngIf="isReadonly"
-      nbButton
-      status="primary"
-      size="small"
-      (click)="exit()"
-      data-testid="exit-button"
-    >
-      Exit
-    </button>
-    <button
-      *ngIf="!isReadonly"
-      nbButton
-      size="small"
-      status="primary"
-      (click)="save()"
-      data-testid="save-button"
-    >
-      Save
-    </button>
-    <button
-      *ngIf="!isReadonly"
-      nbButton
-      size="small"
-      status="primary"
-      (click)="save(true)"
-      data-testid="save-and-exit-button"
-    >
-      Save & exit
-    </button>
-  </div>
-</div>
+      <div class="d-flex flex-wrap header-actions">
+        <button
+          *ngIf="fullscreen.isFullscreen"
+          nbButton
+          ghost
+          status="basic"
+          size="small"
+          (click)="fullscreen.close()"
+        >
+          Leave fullscreen
+        </button>
+        <button
+          *ngIf="!isReadonly"
+          nbButton
+          ghost
+          status="basic"
+          size="small"
+          (click)="exit()"
+          data-testid="exit-button"
+        >
+          Cancel
+        </button>
+        <button
+          *ngIf="isReadonly"
+          nbButton
+          status="primary"
+          size="small"
+          (click)="exit()"
+          data-testid="exit-button"
+        >
+          Exit
+        </button>
+        <button
+          *ngIf="!isReadonly"
+          nbButton
+          size="small"
+          status="primary"
+          (click)="save()"
+          data-testid="save-button"
+        >
+          Save
+        </button>
+        <button
+          *ngIf="!isReadonly"
+          nbButton
+          size="small"
+          status="primary"
+          (click)="save(true)"
+          data-testid="save-and-exit-button"
+        >
+          Save & exit
+        </button>
+      </div>
+    </div>
 
-<scenario-mode-stepper
-  *ngIf="scenarioVersion?.data"
-  class="mb-3"
-  [mode]="scenarioVersion.data.mode"
-  [scenario]="scenarioVersion"
-  (modeSwitch)="switchMode($event)"
-></scenario-mode-stepper>
+    <scenario-mode-stepper
+      *ngIf="scenarioVersion?.data"
+      class="mb-3"
+      [mode]="scenarioVersion.data.mode"
+      [scenario]="scenarioVersion"
+      (modeSwitch)="switchMode($event)"
+    ></scenario-mode-stepper>
+  </header>
 
-<scenario-conception
-  *ngIf="
-    initialDependenciesCheckDone &&
-    (scenarioVersion?.data.mode === SCENARIO_MODE.writing || scenarioVersion?.data.mode === SCENARIO_MODE.casting)
-  "
-  [scenario]="scenarioVersion"
-  [isReadonly]="isReadonly"
-  [avalaibleHandlers]="avalaibleHandlers"
-></scenario-conception>
+  <scenario-conception
+    *ngIf="
+      initialDependenciesCheckDone &&
+      (scenarioVersion?.data.mode === SCENARIO_MODE.writing || scenarioVersion?.data.mode === SCENARIO_MODE.casting)
+    "
+    [scenario]="scenarioVersion"
+    [isReadonly]="isReadonly"
+    [avalaibleHandlers]="avalaibleHandlers"
+    [isFullscreen]="fullscreen.isFullscreen"
+    (requestFullscreen)="fullscreen.toggle()"
+  ></scenario-conception>
 
-<scenario-production
-  *ngIf="initialDependenciesCheckDone && scenarioVersion?.data.mode === SCENARIO_MODE.production"
-  [scenario]="scenarioVersion"
-  [isReadonly]="isReadonly"
-></scenario-production>
+  <scenario-production
+    *ngIf="initialDependenciesCheckDone && scenarioVersion?.data.mode === SCENARIO_MODE.production"
+    [scenario]="scenarioVersion"
+    [isReadonly]="isReadonly"
+    [isFullscreen]="fullscreen.isFullscreen"
+    (requestFullscreen)="fullscreen.toggle()"
+  ></scenario-production>
 
-<scenario-publishing
-  *ngIf="initialDependenciesCheckDone && scenarioVersion?.data.mode === SCENARIO_MODE.publishing"
-  [scenario]="scenarioVersion"
-  [isReadonly]="isReadonly"
-  [avalaibleHandlers]="avalaibleHandlers"
-  [i18n]="i18n"
-></scenario-publishing>
+  <scenario-publishing
+    *ngIf="initialDependenciesCheckDone && scenarioVersion?.data.mode === SCENARIO_MODE.publishing"
+    [scenario]="scenarioVersion"
+    [isReadonly]="isReadonly"
+    [avalaibleHandlers]="avalaibleHandlers"
+    [i18n]="i18n"
+    [isFullscreen]="fullscreen.isFullscreen"
+  ></scenario-publishing>
+</section>
