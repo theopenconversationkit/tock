@@ -52,6 +52,7 @@ import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
+import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
 import ai.tock.nlp.front.shared.user.UserNamespace
 import ai.tock.shared.Executor
 import ai.tock.shared.TOCK_BOT_DATABASE
@@ -1060,6 +1061,31 @@ open class AdminVerticle : WebVerticle() {
             val namespace = context.path("namespace")
             if (front.isNamespaceOwner(context.userLogin, namespace)) {
                 front.deleteNamespace(user, namespace)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/namespaces/shared") {
+            front.getSharableNamespaceConfiguration()
+        }
+
+        blockingJsonGet("/configuration/namespace/:namespace") { context ->
+            val n = context.path("namespace")
+            if (front.isNamespaceOwner(context.userLogin, n)) {
+                front.getNamespaceConfiguration(n)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+            "/configuration/namespace",
+            admin,
+            simpleLogger("Create or Update Namespace")
+        ) { context, conf : NamespaceConfiguration ->
+            if (front.isNamespaceOwner(context.userLogin, conf.namespace)) {
+                front.saveNamespaceConfiguration(conf)
             } else {
                 unauthorized()
             }

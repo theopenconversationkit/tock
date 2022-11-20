@@ -20,7 +20,7 @@ import { Observable, of } from 'rxjs';
 import {
   Application,
   ApplicationImportConfiguration,
-  ModelBuildQueryResult,
+  ModelBuildQueryResult, NamespaceConfiguration,
   NlpApplicationConfiguration,
   UserLogQueryResult,
   UserNamespace
@@ -201,6 +201,18 @@ export class ApplicationService implements OnDestroy {
 
   deleteNamespace(userNamespace: UserNamespace): Observable<boolean> {
     return this.rest.delete(`/namespace/${userNamespace.login}/${userNamespace.namespace}`);
+  }
+
+  saveNamespaceConfiguration(configuration: NamespaceConfiguration): Observable<boolean> {
+    return this.rest.post(`/configuration/namespace`, configuration);
+  }
+
+  getNamespaceConfiguration(namespace: string): Observable<NamespaceConfiguration> {
+    return this.rest.get(`/configuration/namespace/${namespace}`, NamespaceConfiguration.fromJSON);
+  }
+
+  getSharableNamespaceConfiguration(): Observable<NamespaceConfiguration[]> {
+    return this.rest.get(`/configuration/namespaces/shared`, NamespaceConfiguration.fromJSONArray);
   }
 
   prepareSentencesDumpUploader(uploader: FileUploader, full: boolean, name?: string) {

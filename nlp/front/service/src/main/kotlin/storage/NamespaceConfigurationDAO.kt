@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.front.shared.user
+package ai.tock.nlp.front.service.storage
+
+import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
 
 /**
- * A user/namespace relation.
+ *
  */
-data class UserNamespace(
-    /**
-     * The user login
-     */
-    val login: String,
-    /**
-     * The applications namespace
-     */
-    val namespace: String,
-    /**
-     * Is the user owner of the namespace ?
-     */
-    val owner: Boolean = false,
-    /**
-     * Is it the current namespace for the user ?
-     */
-    val current: Boolean = false
-)
+interface NamespaceConfigurationDAO {
+
+    fun saveNamespaceConfiguration(configuration: NamespaceConfiguration)
+
+    fun getNamespaceConfiguration(namespace: String) : NamespaceConfiguration?
+
+    fun getSharableNamespaceConfiguration() : List<NamespaceConfiguration>
+}

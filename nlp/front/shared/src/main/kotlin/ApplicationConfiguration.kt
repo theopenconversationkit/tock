@@ -28,6 +28,7 @@ import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
+import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
 import ai.tock.nlp.front.shared.user.UserNamespace
 import ai.tock.shared.security.UserLogin
 import org.litote.kmongo.Id
@@ -256,4 +257,10 @@ interface ApplicationConfiguration {
      * Returns FaqDefinition by Intent
      */
     fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition?
+
+    fun saveNamespaceConfiguration(configuration: NamespaceConfiguration)
+
+    fun getNamespaceConfiguration(namespace: String) : NamespaceConfiguration?
+
+    fun getSharableNamespaceConfiguration() : List<NamespaceConfiguration>
 }
