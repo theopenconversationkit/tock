@@ -170,7 +170,8 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.user,
       this.filter.allButUser,
       this.filter.maxIntentProbability / 100,
-      this.filter.minIntentProbability / 100
+      this.filter.minIntentProbability / 100,
+      this.filter.configuration
     );
   }
 
@@ -369,7 +370,8 @@ export class SentenceFilter {
     public user?: string,
     public allButUser?: string,
     public maxIntentProbability: number = 100,
-    public minIntentProbability: number = 0
+    public minIntentProbability: number = 0,
+    public configuration?: string
   ) {}
 
   clone(): SentenceFilter {
@@ -387,7 +389,8 @@ export class SentenceFilter {
       this.user,
       this.allButUser,
       this.maxIntentProbability,
-      this.minIntentProbability
+      this.minIntentProbability,
+      this.configuration
     );
   }
 }

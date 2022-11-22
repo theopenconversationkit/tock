@@ -321,6 +321,19 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+
+        blockingJsonGet(
+            "/sentence/configurations/:applicationId",
+            setOf(nlpUser,faqNlpUser)
+        ) { context ->
+            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
+            if (context.organization == front.getApplicationById(id)?.namespace) {
+                front.configurations(id)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost(
             "/application/build/trigger",
             admin,

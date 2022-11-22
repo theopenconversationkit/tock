@@ -95,7 +95,9 @@ data class ClassifiedSentence(
     /**
      * Other intents with significant probabilities.
      */
-    val otherIntentsProbabilities: Map<String, Double> = emptyMap()
+    val otherIntentsProbabilities: Map<String, Double> = emptyMap(),
+
+    val configuration : String? = null
 ) {
 
     constructor(
@@ -104,7 +106,7 @@ data class ClassifiedSentence(
         applicationId: Id<ApplicationDefinition>,
         intentId: Id<IntentDefinition>,
         lastIntentProbability: Double,
-        lastEntityProbability: Double
+        lastEntityProbability: Double,
     ) :
         this(
             result.retainedQuery,
@@ -116,8 +118,31 @@ data class ClassifiedSentence(
             Classification(result, intentId),
             lastIntentProbability,
             lastEntityProbability,
-            otherIntentsProbabilities = result.otherIntentsProbabilities
+            otherIntentsProbabilities = result.otherIntentsProbabilities,
         )
+
+    constructor(
+        result: ParseResult,
+        language: Locale,
+        applicationId: Id<ApplicationDefinition>,
+        intentId: Id<IntentDefinition>,
+        lastIntentProbability: Double,
+        lastEntityProbability: Double,
+        configuration: String?
+    ) :
+            this(
+                result.retainedQuery,
+                language,
+                applicationId,
+                Instant.now(),
+                Instant.now(),
+                ClassifiedSentenceStatus.inbox,
+                Classification(result, intentId),
+                lastIntentProbability,
+                lastEntityProbability,
+                otherIntentsProbabilities = result.otherIntentsProbabilities,
+                configuration = configuration
+            )
 
     /**
      * Build an expression from this sentence.

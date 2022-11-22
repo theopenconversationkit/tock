@@ -54,7 +54,7 @@ internal class LogObfuscationServiceTest {
     fun `entities have to be also obfuscated`() {
         val log = ParseRequestLog(
             "appId".toId(),
-            ParseQuery(listOf("test@test.com"), "test", "test", QueryContext(defaultLocale)),
+            ParseQuery(listOf("test@test.com"), "test", "test", QueryContext(defaultLocale),configuration = null),
             ParseResult(
                 "intent",
                 "namespace",

@@ -41,6 +41,7 @@ import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastEnti
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastIntentProbability
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastUsage
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.NormalizedText
+import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Configuration
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
 import ai.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
@@ -133,7 +134,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val forReview: Boolean = false,
         val reviewComment: String? = null,
         val classifier: UserLogin? = null,
-        val otherIntentsProbabilities: Map<String, Double> = emptyMap()
+        val otherIntentsProbabilities: Map<String, Double> = emptyMap(),
+        val configuration : String? = null
     ) {
 
         constructor(sentence: ClassifiedSentence) :
@@ -155,7 +157,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     sentence.forReview,
                     sentence.reviewComment,
                     sentence.qualifier,
-                    sentence.otherIntentsProbabilities
+                    sentence.otherIntentsProbabilities,
+                    sentence.configuration
                 )
 
         fun toSentence(): ClassifiedSentence =
@@ -175,7 +178,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 forReview,
                 reviewComment,
                 classifier,
-                otherIntentsProbabilities
+                otherIntentsProbabilities,
+                configuration
             )
     }
 
@@ -293,6 +297,14 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         ).filterNotNull()
     }
 
+
+    override fun configurations(applicationId: Id<ApplicationDefinition>): List<String> {
+        return col.distinct(
+            Configuration,
+            and(ApplicationId eq applicationId)
+        ).filterNotNull()
+    }
+
     override fun search(query: SentencesQuery): SentencesQueryResult {
         with(query) {
             val filterBase =
@@ -312,7 +324,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     filterByUser(),
                     filterByAllButUser(),
                     filterMaxIntentProbability(),
-                    filterMinIntentProbability()
+                    filterMinIntentProbability(),
+                    filterConfiguration()
                 )
 
             logger.debug { filterBase.json }
@@ -415,6 +428,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private fun SentencesQuery.filterStatus() =
         if (status.isNotEmpty()) Status `in` status else if (notStatus != null) Status ne notStatus else null
+
+    private fun SentencesQuery.filterConfiguration() = if (configuration == null) null else Configuration eq configuration
 
     private fun SentencesQuery.filterIntent() = if (intentId == null) null else Classification_.intentId eq intentId
 

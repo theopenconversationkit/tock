@@ -27,6 +27,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.EntityValue
+import ai.tock.bot.engine.user.PlayerType
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.Entity
@@ -258,7 +259,8 @@ internal class Nlp : NlpController {
                 NlpQueryState(
                     dialog.state.nextActionState?.states
                         ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
-                )
+                ),
+                configuration =  dialog.playerIds.find { PlayerType.bot.equals(it.type) }?.id
             ).run {
                 var query = this
                 BotRepository.forEachNlpListener {

@@ -197,6 +197,17 @@
               </nb-option>
             </nb-select>
           </div>
+
+          <div class="search-criterion" *ngIf="configurations && configurations.length !== 0">
+            <nb-select placeholder="Configuration" status="primary" [(ngModel)]="filter.configuration" (selectedChange)="search()"
+              style="width: 12rem">
+              <nb-option>Configuration</nb-option>
+              <nb-option *ngFor="let u of configurations" [value]="u">
+                {{ u }}
+              </nb-option>
+            </nb-select>
+          </div>
+
           <div class="search-criterion">
             <input
               nbInput
