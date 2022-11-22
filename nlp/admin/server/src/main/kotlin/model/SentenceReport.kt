@@ -47,7 +47,8 @@ data class SentenceReport(
     var key: String? = null,
     val forReview: Boolean = false,
     val reviewComment: String? = null,
-    val qualifier: UserLogin? = null
+    val qualifier: UserLogin? = null,
+    val configuration : String? = null
 ) {
 
     constructor(
@@ -84,7 +85,8 @@ data class SentenceReport(
             ClassificationReport(sentence),
             forReview = sentence.forReview,
             reviewComment = sentence.reviewComment,
-            qualifier = sentence.qualifier
+            qualifier = sentence.qualifier,
+            configuration = sentence.configuration
         ) {
             if (text != sentence.text) {
                 key = encrypt(sentence.text)

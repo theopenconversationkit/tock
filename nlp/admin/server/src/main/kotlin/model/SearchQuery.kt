@@ -50,7 +50,8 @@ data class SearchQuery(
      */
     val allButUser: String? = null,
     val maxIntentProbability: Float = 1f,
-    val minIntentProbability: Float = 0f
+    val minIntentProbability: Float = 0f,
+    val configuration : String? = null
 ) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
@@ -74,7 +75,8 @@ data class SearchQuery(
             user = user?.takeUnless { it.isBlank() },
             allButUser = allButUser?.takeUnless { it.isBlank() },
             maxIntentProbability = maxIntentProbability,
-            minIntentProbability = minIntentProbability
+            minIntentProbability = minIntentProbability,
+            configuration = configuration
         )
     }
 }

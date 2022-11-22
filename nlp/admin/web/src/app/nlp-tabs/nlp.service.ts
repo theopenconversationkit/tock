@@ -224,4 +224,8 @@ export class NlpService implements OnDestroy {
   findUsers(application: Application): Observable<string[]> {
     return this.rest.get(`/sentence/users/${application._id}`, (i) => i);
   }
+
+  findConfigurations(application: Application): Observable<string[]> {
+    return this.rest.get(`/sentence/configurations/${application._id}`, (i) => i);
+  }
 }

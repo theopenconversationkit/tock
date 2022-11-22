@@ -45,5 +45,9 @@ data class NlpQuery(
      * The query is restricted to the specified intents only.
      * If the set is empty all intents of the application are allowed.
      */
-    val intentsSubset: Set<NlpIntentQualifier> = emptySet()
+    val intentsSubset: Set<NlpIntentQualifier> = emptySet(),
+    /**
+     * Returns the result only for sentences of this configuration.
+     */
+    val configuration : String? = null
 )

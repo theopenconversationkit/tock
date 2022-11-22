@@ -75,6 +75,7 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
                 Dice.newId(),
                 referenceDate = ZonedDateTime.now(UTC).truncatedTo(ChronoUnit.MILLIS)
             )
+        , configuration = null
         ),
         parseResult,
         2,

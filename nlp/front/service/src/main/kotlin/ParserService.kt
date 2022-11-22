@@ -289,7 +289,8 @@ object ParserService : Parser {
                     application._id,
                     intentId,
                     result.intentProbability,
-                    result.entitiesProbability
+                    result.entitiesProbability,
+                    query.configuration
                 )
             }
 
