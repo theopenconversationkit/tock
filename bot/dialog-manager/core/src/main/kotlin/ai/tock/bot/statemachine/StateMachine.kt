@@ -29,38 +29,61 @@ class StateMachine(val root: State) {
     }
 
     init {
-        require(hasNoLoop()) {
-            "The state machine must have no loops"
+        require(hasNoDuplicateStates()) {
+            "One or more duplicate states were detected"
+        }
+        require(hasNoSelfLoops()) {
+            "One or more self-loops were detected"
         }
     }
 
-    private fun getLoopAtNode(id: String, stateMachine: State): State? {
-        if(id == stateMachine.id) return stateMachine
+    private fun hasNoDuplicateStates(): Boolean = !hasDuplicateStates()
 
-        val state = stateMachine.states?.firstNotNullOfOrNull {
-            entry -> if(entry.value.id == id) entry.value else null
+    private fun hasDuplicateStates(): Boolean = getDuplicateStates().isNotEmpty()
+
+    private fun hasNoSelfLoops(): Boolean = !hasSelfLoops()
+
+    private fun hasSelfLoops(): Boolean = getSelfLoops().isNotEmpty()
+
+    private fun getDuplicateStates(): Set<String> {
+        val stateIds = getDuplicateStates(root, true)
+
+        val duplicatedIds = stateIds.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        if(duplicatedIds.isNotEmpty()) {
+            logger.error { "One or more duplicate states were detected : $duplicatedIds" }
         }
-        return state ?: stateMachine.states?.firstNotNullOfOrNull { getLoopAtNode(id, it.value) }
+
+        return duplicatedIds
     }
 
-    private fun getLoopForNode(stateMachine: State): State? {
-        return stateMachine.states?.firstNotNullOfOrNull { getLoopAtNode(stateMachine.id, it.value) }
+    private fun getDuplicateStates(stateMachine: State, isRoot: Boolean = false): List<String> {
+        val ids = getDuplicatedStateAtNode(stateMachine)
+        val childIds = stateMachine.states?.values?.flatMap { getDuplicateStates(it) } ?: emptyList()
+
+        return (if(isRoot) listOf(stateMachine.id) else emptyList()) + ids + childIds
     }
 
-    private fun getLoop(): State? {
-        val state = getLoop(root)
-        if(state != null) logger.warn { "A loop has been detected, caused by ${state.id}" }
-        return state
+    private fun getDuplicatedStateAtNode(stateMachine: State): List<String>
+        = stateMachine.states?.keys?.toList() ?: emptyList()
+
+    // self-loop : transition that connects a state to itself
+    private fun getSelfLoops(): Set<State> {
+        val states = getSelfLoops(root)
+
+        if(states.isNotEmpty()) {
+            logger.error { "One or more self-loops were detected : ${states.map { it.id }}" }
+        }
+
+        return states
     }
 
-    private fun getLoop(stateMachine: State): State? {
-        val state = getLoopForNode(stateMachine)
-        return state ?: stateMachine.states?.firstNotNullOfOrNull { getLoop(it.value) }
+    private fun getSelfLoops(stateMachine: State): Set<State> {
+        val connections = stateMachine.on?.values?.map { it.drop(1) } ?: emptySet()
+        val childLoops = stateMachine.states?.values?.flatMap { getSelfLoops(it) }?.toSet() ?: emptySet()
+
+        return (if(stateMachine.id in connections) setOf(stateMachine) else emptySet()) + childLoops
     }
 
-    private fun hasLoop(): Boolean = getLoop() != null
-
-    private fun hasNoLoop(): Boolean = !hasLoop()
 
     fun getState(id: String): State? = getState(id, root)
 
@@ -97,7 +120,7 @@ class StateMachine(val root: State) {
     private fun getNext(id: String, transition: String, stateMachine: State): State? {
         val currentState = getState(id, stateMachine)
         return currentState?.let {
-            // Drop the first char (#), because the "on" data structure is :
+            // Drop the first char (#), because the "on" field is :
             // "on": { "transition": "#ID", ... }
             when(val nextStateId = currentState.on?.get(transition)?.drop(1)){
                 // Transition not found, continue search transition from parent
@@ -154,7 +177,7 @@ class StateMachine(val root: State) {
     private fun getAllStatesNotGroup(stateMachine: State): Set<String> {
         val ids = mutableSetOf<String>()
 
-        if(stateMachine.states == null || stateMachine.states.isEmpty()){
+        if(stateMachine.states.isNullOrEmpty()){
             ids.add(stateMachine.id)
         } else {
             stateMachine.states.values.forEach {

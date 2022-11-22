@@ -21,17 +21,72 @@ import ai.tock.bot.handler.ActionHandlersProvider
 
 class VirementHandlersProvider: ActionHandlersProvider {
 
-    override fun getActionHandlers(): Map<String, ActionHandler> = emptyMap()
+    override fun getNameSpace() = HandlerNamespace.JOIGNABILITE
 
-    @Deprecated("Use the new method 'getActionHandlers' once developed", level = DeprecationLevel.WARNING)
-    override fun getHandlers(): Map<String, (Map<String, String?>) -> Map<String, String?>> =
-        mapOf(
-            "s_check_transfer" to ::checkTransfer,
-            "s_check_service_available" to ::checkService,
-            "s_show_msg_cannot_change_limit" to ::showMsgCannotChangeLimit,
-            "s_show_msg_can_change_limit" to ::showMsgCanChangeLimit,
-            "s_service_unavailable_redirect" to ::serviceUnavailableRedirect
+    private enum class HandlerId {
+        CHECK_TRANSFER,
+        CHECK_SERVICE_AVAILABLE,
+        SHOW_MSG_CANNOT_CHANGE_LIMIT,
+        SHOW_MSG_CAN_CHANGE_LIMIT,
+        SERVICE_UNAVAILABLE_REDIRECT,
+    }
+
+    private enum class ContextName {
+        MONTANT_VIREMENT,
+        DESTINATION_VIREMENT,
+        LIMIT_EXCEDED,
+        CAN_CHANGE_LIMIT,
+        CANNOT_CHANGE_LIMIT,
+        SERVICE_AVAILABLE,
+        SERVICE_UNAVAILABLE,
+        RESOLVE_LIMIT_DONE
+    }
+
+    override fun getActionHandlers(): Set<ActionHandler> =
+        setOf(
+            createActionHandler(
+                id = HandlerId.CHECK_TRANSFER.name,
+                description = "Check the transfer",
+                inputContexts = setOf(
+                    ContextName.MONTANT_VIREMENT.name,
+                    ContextName.DESTINATION_VIREMENT.name),
+                outputContexts = setOf(
+                    ContextName.LIMIT_EXCEDED.name,
+                    ContextName.CAN_CHANGE_LIMIT.name,
+                    ContextName.CANNOT_CHANGE_LIMIT.name),
+                handler = ::checkTransfer
+            ),
+            createActionHandler(
+                id = HandlerId.CHECK_SERVICE_AVAILABLE.name,
+                description = "Check availability of the service",
+                outputContexts = setOf(
+                    ContextName.SERVICE_AVAILABLE.name,
+                    ContextName.SERVICE_UNAVAILABLE.name),
+                handler = ::checkService
+            ),
+            createActionHandler(
+                id = HandlerId.SHOW_MSG_CAN_CHANGE_LIMIT.name,
+                description = "Shows a message that the limit can be changed",
+                outputContexts = setOf(
+                    ContextName.RESOLVE_LIMIT_DONE.name),
+                handler = { mapOf(ContextName.RESOLVE_LIMIT_DONE.name to null) }
+            ),
+            createActionHandler(
+                id = HandlerId.SHOW_MSG_CANNOT_CHANGE_LIMIT.name,
+                description = "Shows a message that the limit cannot be changed",
+                outputContexts = setOf(
+                    ContextName.RESOLVE_LIMIT_DONE.name),
+                handler = { mapOf(ContextName.RESOLVE_LIMIT_DONE.name to null) }
+            ),
+            createActionHandler(
+                id = HandlerId.SERVICE_UNAVAILABLE_REDIRECT.name,
+                description = "Redirect to human",
+                outputContexts = setOf(
+                    ContextName.RESOLVE_LIMIT_DONE.name),
+                handler = { mapOf(ContextName.RESOLVE_LIMIT_DONE.name to null) }
+            )
         )
+
 
     var serviceAvailable = false
 
@@ -63,17 +118,5 @@ class VirementHandlersProvider: ActionHandlersProvider {
         serviceAvailable = !serviceAvailable
 
         return outputContexts.toMap()
-    }
-
-    private fun showMsgCannotChangeLimit(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("RESOLVE_LIMIT_DONE" to null)
-    }
-
-    private fun showMsgCanChangeLimit(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("RESOLVE_LIMIT_DONE" to null)
-    }
-
-    private fun serviceUnavailableRedirect(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("RESOLVE_LIMIT_DONE" to null)
     }
 }

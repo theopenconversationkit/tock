@@ -21,7 +21,7 @@ import java.time.Instant
 data class TickSession(
     val currentState: String? = null,
     val contexts: Map<String, String?> = emptyMap(),
-    val ranHandlers: Set<String> = emptySet(),
+    val ranHandlers: List<String> = emptyList(),
     val objectivesStack: List<String> = emptyList(),
     val init: Instant = Instant.now()
 )

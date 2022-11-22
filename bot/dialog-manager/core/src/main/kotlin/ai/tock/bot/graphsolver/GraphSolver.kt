@@ -30,7 +30,7 @@ object GraphSolver {
     private const val pythonLogPath = "$pythonPath/log"
 
     fun solve(
-        currentState: String,
+        currentState: String?,
         actions: Set<TickAction>,
         contexts: Map<String, String?>,
         objective: TickAction,
@@ -51,11 +51,6 @@ object GraphSolver {
             objective.inputContextNames.toList(),
             objective.outputContextNames.toList()
         )
-        val current = PyAction(
-            currentState,
-            emptyList(),
-            emptyList(),
-        )
 
         val results = SharedInterpreter().use { interp ->
             interp.set("pythonScriptPath", pythonScriptPath)
@@ -64,7 +59,7 @@ object GraphSolver {
             interp.runScript("$pythonScriptPath/graph-solver.py")
             interp.invoke(
                 "callClyngor",
-                current,
+                currentState,
                 botActions,
                 target,
                 availableContexts,

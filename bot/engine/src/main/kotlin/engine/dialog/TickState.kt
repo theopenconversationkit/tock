@@ -21,7 +21,7 @@ import java.time.Instant
 data class TickState(
     val currentState: String,
     val contexts: Map<String, String?>,
-    val ranHandlers: Set<String>,
+    val ranHandlers: List<String>,
     val objectivesStack: List<String>,
     val init: Instant,
     val finished : Boolean

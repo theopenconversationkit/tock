@@ -16,16 +16,33 @@
 
 package ai.tock.bot.handler
 
+import ai.tock.bot.HandlerNamespace
+
 /**
  * A handlers provider
  */
 interface ActionHandlersProvider {
 
     /**
-     * Get all handlers
+     * Get all action handlers
      */
-    @Deprecated("Use the new method 'getActionHandlers' once developed", level = DeprecationLevel.WARNING)
-    fun getHandlers(): Map<String, (Map<String, String?>) -> Map<String, String?>>
+    fun getActionHandlers(): Set<ActionHandler>
 
-    fun getActionHandlers(): Map<String, ActionHandler>
+    fun getNameSpace(): HandlerNamespace
+
+    fun createActionHandler(
+        id: String,
+        description: String? = null,
+        inputContexts: Set<String> = emptySet(),
+        outputContexts: Set<String> = emptySet(),
+        handler: (Map<String, String?>) -> Map<String, String?> = { emptyMap() }): ActionHandler {
+        return ActionHandler(
+            id = id,
+            namespace = getNameSpace(),
+            description = description,
+            inputContexts = inputContexts,
+            outputContexts = outputContexts,
+            handler = handler
+        )
+    }
 }

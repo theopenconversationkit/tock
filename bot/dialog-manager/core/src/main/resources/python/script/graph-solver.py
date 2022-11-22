@@ -24,7 +24,8 @@ class BotAction:
 
 def create_whole_graph_asp(current, bot_actions, target:BotAction=None, available_contexts=set(), ran_handlers=set()):
     atoms = [f'target("{target.uid}")'] if target else []
-    atoms.append(f'current("{current.uid}")')
+    if current:
+        atoms.append(f'current("{current}")')
     # create the nodes and edges
     for action in bot_actions:
         for product in action.products:
@@ -82,8 +83,8 @@ def save_graph_asp(graph:str, outfile:str):
     shape(H,rectangle):- handler(H).
     color(X,white) :- node(X) ; not handler(X) ; not enabled(X).
     color(X,green) :- enabled(X).
-    color(X,green) :- already_used(X).
-    color(X,blue) :- current(X); not target(X).
+    color(X,green) :- already_used(X); not target(X); not current(X).
+    color(X,cyan) :- current(X).
     color(X,red) :- target(X); not current(X).
     obj_property(edge,arrowhead,vee).
     % Representation of handler discrimation by the profile.

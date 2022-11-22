@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.verticle
 
+import ai.tock.bot.HandlerNamespace
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.mapper.ScenarioExceptionManager
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioActionHandlerResponse
@@ -79,9 +80,7 @@ open class ScenarioVerticle {
     private val deleteOneScenarioGroupPath    = "/bot/:$botId/scenarios/groups/:$groupId"
     private val deleteOneScenarioVersionPath  = "/bot/:$botId/scenarios/groups/:$groupId/versions/:$versionId"
 
-    private val getAllActionHandlerPath       = "/bot/:$botId/dialog-manager/action-handlers"
-    private val getAllActionHandlerPathV2     = "/bot/:$botId/dialog-manager/action-handlers-v2"
-    private val getTickStatePath              = "/bot/:$botId/dialog-manager/tick-state"
+    private val getAllActionHandlerPath     = "/bot/:$botId/dialog-manager/action-handlers"
 
     /**
      * Declaration of routes and their appropriate handlers
@@ -104,7 +103,6 @@ open class ScenarioVerticle {
             blockingJsonGet(getOneScenarioVersionPath, setOf(botUser), handler = getOneScenarioVersion)
             blockingJsonGet(getAllScenarioVersionPath, setOf(botUser), handler = getAllScenarioVersion)
             blockingJsonGet(getAllActionHandlerPath, setOf(botUser), handler = getAllActionHandlers)
-            blockingJsonGet(getAllActionHandlerPathV2, setOf(botUser), handler = getAllActionHandlersV2)
 
             // Update
             blockingJsonPut(updateOneScenarioGroupPath, setOf(botUser), handler = updateOneScenarioGroup)
@@ -249,19 +247,19 @@ open class ScenarioVerticle {
     }
 
     /**
-     * Handler to retrieve all action handlers names.
+     * Handler to retrieve all action handlers.
      * When success, return a 200 Http status.
-     * FIXME : separate handlers by bot
      */
-    @Deprecated("Use the new method 'getAllActionHandlersV2' once developed", level = DeprecationLevel.WARNING)
-    private val getAllActionHandlers: (RoutingContext) -> List<String> =
-        { _ -> ActionHandlersRepository.getHandlersName() }
+    private val getAllActionHandlers: (RoutingContext) -> Set<ScenarioActionHandlerResponse> = { context ->
+        val botId = context.pathParam(botId)
+        checkBotConfiguration(context, botId)
 
-    private val getAllActionHandlersV2: (RoutingContext) -> Set<ScenarioActionHandlerResponse> = {
-            _ -> ActionHandlersRepository.getActionHandlers()
+        ActionHandlersRepository
+            .getActionHandlers(
+                HandlerNamespace.find(getNamespace(context)))
             .map { it.toScenarioActionHandlerResponse() }
             .toSet()
-        }
+    }
 
     private val debugScenario: (RoutingContext) -> ScenarioDebugResponse =
         { _ ->

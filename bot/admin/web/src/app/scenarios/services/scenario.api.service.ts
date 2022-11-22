@@ -124,7 +124,7 @@ export class ScenarioApiService {
       .retrieveCurrentApplication()
       .pipe(
         switchMap((currentApplication: Application) =>
-          this.rest.get<string[]>(`/bot/${currentApplication.name}/dialog-manager/action-handlers`, (handlers: string[]) => handlers)
+          this.rest.get<string[]>(`/bot/${currentApplication.name}/dialog-manager/action-handlers`, (handlers: any[]) => handlers.map(h => h.name) )
         )
       );
   }

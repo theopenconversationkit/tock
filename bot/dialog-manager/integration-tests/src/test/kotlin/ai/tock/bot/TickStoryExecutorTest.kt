@@ -49,7 +49,7 @@ class TickStoryExecutorTest {
     }
 
     @Test fun testUnique(){
-        testGeneric("joignabilite", "prise-rdv")
+        testGeneric("max", "activation-carte")
     }
 
     private fun testGeneric(group: String, name: String){
@@ -103,7 +103,7 @@ class TickStoryExecutorTest {
                 .inputStream()
         )
         // Validate a tick story configuration
-        assertTrue { TickStoryValidation.validateTickStory(tickStory).isEmpty() }
+        assertTrue("The configuration of tick story <$group/$name> is not correct !") { TickStoryValidation.validateTickStory(tickStory).isEmpty() }
 
         return tickStory
     }

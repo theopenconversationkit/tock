@@ -21,35 +21,204 @@ import ai.tock.bot.handler.ActionHandlersProvider
 
 class SADeclarationBrisDeGlace: ActionHandlersProvider {
 
-    override fun getActionHandlers(): Map<String, ActionHandler> = emptyMap()
+    override fun getNameSpace() = HandlerNamespace.AVENIR_ASSURANCE
 
-    @Deprecated("Use the new method 'getActionHandlers' once developed", level = DeprecationLevel.WARNING)
-    override fun getHandlers(): Map<String, (Map<String, String?>) -> Map<String, String?>> =
-        mapOf(
-            "handler_get_contract_by_immat" to ::handlerGetContractByImmat,
-            "handler_set_resolve_verif_tel" to ::handlerSetResolveVerifTel,
-            "handler_set_resolve_sinistre" to ::handlerSetResolveSinistre,
-            "handler_set_client_identification_ok" to ::handlerSetClientIdentificationOk,
-            "handler_should_check_phone_and_mail" to ::handlerShouldCheckPhoneAndMail,
-            "handler_confirm_verif_mail_and_tel" to ::handlerConfirmVerifMailAndTel,
-            "HANDLER_VERIFIER_LES_DEUX" to ::handlerVerifierLesDeux,
-            "handler_validate_check_mail" to ::handlerValidateCheckMail,
-            "handler_resolve_oui_non_maj_tel" to ::handlerResolveOuiNonMajTel,
-            "handler_resolve_oui_non_confirm_maj_tel" to ::handlerResolveOuiNonConfirmMajTel,
-            "handler_resolve_oui_non_maj_mail" to ::handlerResolveOuiNonMajMail,
-            "handler_save_new_mail" to ::handlerSaveNewMail,
-            "handler_resolve_verif_mail" to ::handlerResolveVerifMail,
-            "handler_create_sinistre" to ::handlerCreateSinistre,
-            "handler_get_client_infos_by_contract" to ::handlerGetClientInfosByContract,
-            "handler_send_partenaires" to ::handlerSendPartenaires,
-            "handler_validate_check_tel" to ::handlerValidateCheckTel,
-            "handler_update_client_phone" to ::handlerUpdateClientPhone,
-            "handler_validate_confirm_maj_tel" to ::handlerValidateConfirmMajTel,
-            "action_fictive" to :: actionFictive,
-            "setEndResolveTel" to :: setEndResolveTel,
-            "setEndResolveMail" to :: setEndResolveMail,
-            "handler_check_besoin_verif_tel" to ::handlerCheckBesoinVerifTel,
-            "handler_check_besoin_verif_mail" to :: handlerCheckBesoinVerifMail
+    enum class HandlerId {
+        GET_CONTRACT_BY_IMMAT,
+        SET_RESOLVE_VERIF_TEL,
+        SET_RESOLVE_SINISTRE,
+        SET_CLIENT_IDENTIFICATION_OK,
+        SHOULD_CHECK_PHONE_AND_MAIL,
+        CONFIRM_VERIF_MAIL_AND_TEL,
+        VERIFIER_LES_DEUX,
+        VALIDATE_CHECK_MAIL,
+        RESOLVE_OUI_NON_MAJ_TEL,
+        RESOLVE_OUI_NON_CONFIRM_MAJ_TEL,
+        RESOLVE_OUI_NON_MAJ_MAIL,
+        SAVE_NEW_MAIL,
+        RESOLVE_VERIF_MAIL,
+        CREATE_SINISTRE,
+        GET_CLIENT_INFOS_BY_CONTRACT,
+        SEND_PARTENAIRES,
+        VALIDATE_CHECK_TEL,
+        UPDATE_CLIENT_PHONE,
+        VALIDATE_CONFIRM_MAJ_TEL,
+        SET_END_RESOLVE_TEL,
+        SET_END_RESOLVE_MAIL,
+        CHECK_BESOIN_VERIF_TEL,
+        CHECK_BESOIN_VERIF_MAIL,
+    }
+    enum class ContextName {
+        BESOIN_VERIFIER_TEL,
+        BESOIN_VERIFIER_MAIL,
+        BESOIN_VERIFIER_MAIL_ET_TEL,
+        BESOIN_VERIFIER_LES_DEUX,
+
+        RESOLVE_VERIF_TEL,
+        RESOLVE_VERIF_MAIL,
+        RESOLVE_VALIDATE_CLIENT_PHONE,
+        RESOLVE_VALIDATE_CLIENT_EMAIL,
+
+        END_RESOLVE_TEL,
+        END_RESOLVE_MAIL,
+
+        IMMATRICULATION,
+        NUM_CONTRAT,
+        NUM_DOSSIER_SINISTRE,
+        VILLE_SINISTRE,
+        NOM_CLIENT,
+        LABEL_VEHICULE,
+
+        IDENT_CLIENT_OK,
+        SHOULD_RESOLVE_OUI_NON_TEL,
+        SHOULD_RESOLVE_ON_CONFIRM_MAJ_TEL,
+        SHOULD_RESOLVE_ON_MAJ_MAIL,
+
+        TEL_KO,
+        MAIL_KO,
+        NEW_TEL,
+        REFUSE_UPDATE_TEL,
+
+        RESOLVE_SINISTRE,
+    }
+
+    override fun getActionHandlers(): Set<ActionHandler> =
+        setOf(
+            createActionHandler(
+                id = HandlerId.GET_CONTRACT_BY_IMMAT.name,
+                description = "Get contract",
+                inputContexts = setOf(ContextName.IMMATRICULATION.name),
+                outputContexts = setOf(ContextName.NUM_CONTRAT.name),
+                handler = ::handlerGetContractByImmat
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.SET_RESOLVE_VERIF_TEL,
+                setOf(ContextName.RESOLVE_VERIF_TEL)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.SET_RESOLVE_SINISTRE,
+                setOf(ContextName.RESOLVE_SINISTRE)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.SET_END_RESOLVE_TEL,
+                setOf(ContextName.END_RESOLVE_TEL)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.SET_END_RESOLVE_MAIL,
+                setOf(ContextName.END_RESOLVE_MAIL)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.SET_CLIENT_IDENTIFICATION_OK,
+                setOf(ContextName.IDENT_CLIENT_OK)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.VALIDATE_CHECK_TEL,
+                setOf(ContextName.SHOULD_RESOLVE_OUI_NON_TEL)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.VALIDATE_CONFIRM_MAJ_TEL,
+                setOf(ContextName.SHOULD_RESOLVE_ON_CONFIRM_MAJ_TEL)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.VALIDATE_CHECK_MAIL,
+                setOf(ContextName.SHOULD_RESOLVE_ON_MAJ_MAIL)
+            ),
+            createActionHandler(
+                id = HandlerId.CHECK_BESOIN_VERIF_TEL.name,
+                outputContexts = setOf(
+                    ContextName.BESOIN_VERIFIER_TEL.name,
+                    ContextName.RESOLVE_VERIF_TEL.name
+                ),
+                handler = ::handlerCheckBesoinVerifTel
+            ),
+            createActionHandler(
+                id = HandlerId.CHECK_BESOIN_VERIF_MAIL.name,
+                outputContexts = setOf(
+                    ContextName.BESOIN_VERIFIER_MAIL.name,
+                    ContextName.RESOLVE_VERIF_MAIL.name
+                ),
+                handler = ::handlerCheckBesoinVerifMail
+            ),
+            createActionHandler(
+                id = HandlerId.UPDATE_CLIENT_PHONE.name,
+                outputContexts = setOf(
+                    ContextName.RESOLVE_VERIF_TEL.name
+                ),
+                handler = ::handlerUpdateClientPhone
+            ),
+            createActionHandler(
+                id = HandlerId.SHOULD_CHECK_PHONE_AND_MAIL.name,
+                outputContexts = setOf(
+                    ContextName.BESOIN_VERIFIER_MAIL_ET_TEL.name,
+                    ContextName.END_RESOLVE_MAIL.name,
+                    ContextName.END_RESOLVE_TEL.name
+                ),
+                handler = ::handlerShouldCheckPhoneAndMail
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.CONFIRM_VERIF_MAIL_AND_TEL,
+                setOf(ContextName.BESOIN_VERIFIER_LES_DEUX)
+            ),
+            createActionHandlerThatJustSetsContexts(
+                HandlerId.VERIFIER_LES_DEUX,
+                setOf(
+                    ContextName.BESOIN_VERIFIER_TEL,
+                    ContextName.BESOIN_VERIFIER_MAIL
+                )
+            ),
+            createActionHandler(
+                id = HandlerId.SAVE_NEW_MAIL.name,
+                outputContexts = setOf(ContextName.SHOULD_RESOLVE_ON_MAJ_MAIL.name),
+                handler = ::handlerSaveNewMail
+            ),
+            createActionHandler(
+                id = HandlerId.RESOLVE_OUI_NON_MAJ_TEL.name,
+                outputContexts = setOf(
+                    ContextName.RESOLVE_VERIF_TEL.name,
+                    ContextName.TEL_KO.name
+                ),
+                handler = ::handlerResolveOuiNonMajTel
+            ),
+            createActionHandler(
+                id = HandlerId.RESOLVE_OUI_NON_CONFIRM_MAJ_TEL.name,
+                outputContexts = setOf(
+                    ContextName.NEW_TEL.name,
+                    ContextName.REFUSE_UPDATE_TEL.name
+                ),
+                handler = ::handlerResolveOuiNonConfirmMajTel
+            ),
+            createActionHandler(
+                id = HandlerId.RESOLVE_OUI_NON_MAJ_MAIL.name,
+                outputContexts = setOf(
+                    ContextName.RESOLVE_VERIF_MAIL.name,
+                    ContextName.MAIL_KO.name
+                ),
+                handler = ::handlerResolveOuiNonMajMail
+            ),
+            createActionHandler(
+                id = HandlerId.SEND_PARTENAIRES.name,
+                inputContexts = setOf(ContextName.VILLE_SINISTRE.name),
+                outputContexts = setOf(ContextName.RESOLVE_SINISTRE.name),
+                handler = ::handlerSendPartenaires
+            ),
+            createActionHandler(
+                id = HandlerId.RESOLVE_VERIF_MAIL.name,
+                outputContexts = setOf(ContextName.RESOLVE_VERIF_MAIL.name),
+                handler = ::handlerResolveVerifMail
+            ),
+            createActionHandler(
+                id = HandlerId.CREATE_SINISTRE.name,
+                outputContexts = setOf(ContextName.NUM_DOSSIER_SINISTRE.name),
+                handler = ::handlerCreateSinistre
+            ),
+            createActionHandler(
+                id = HandlerId.GET_CLIENT_INFOS_BY_CONTRACT.name,
+                outputContexts = setOf(
+                    ContextName.NOM_CLIENT.name,
+                    ContextName.LABEL_VEHICULE.name,
+                ),
+                handler = ::handlerGetClientInfosByContract
+            ),
         )
 
 
@@ -63,8 +232,7 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
         } else {
             outputContexts.put("RESOLVE_VERIF_TEL", "true")
         }
-
-
+        
         besoinVerifTel = !besoinVerifTel
         return outputContexts.toMap()
     }
@@ -82,20 +250,7 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
         besoinVerifMail = !besoinVerifMail
         return outputContexts.toMap()
     }
-
-    private fun actionFictive(contexts: Map<String, String?>): Map<String, String?> {
-        // Nothing to do
-        return mapOf()
-    }
-
-    private fun setEndResolveTel(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("END_RESOLVE_TEL" to null)
-    }
-
-    private fun setEndResolveMail(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("END_RESOLVE_MAIL" to null)
-    }
-
+    
 
     private fun handlerGetContractByImmat(contexts: Map<String, String?>): Map<String, String?> {
         val immat = contexts.get("IMMATRICULATION")
@@ -104,19 +259,9 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
         return mapOf("NUM_CONTRAT" to "74125825")
     }
 
-    private fun handlerSetClientIdentificationOk(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("IDENT_CLIENT_OK" to "true")
-    }
+   
 
-    private fun handlerConfirmVerifMailAndTel(contexts: Map<String, String?>): Map<String, String?> {
-        val outputContexts = mutableMapOf<String, String?>()
 
-        //outputContexts.put("BESOIN_VERIFIER_TEL", "true")
-        //outputContexts.put("BESOIN_VERIFIER_MAIL", "true")
-        outputContexts.put("BESOIN_VERIFIER_LES_DEUX", "true")
-
-        return outputContexts.toMap()
-    }
 
     private fun handlerVerifierLesDeux(contexts: Map<String, String?>): Map<String, String?> {
         val outputContexts = mutableMapOf<String, String?>()
@@ -142,17 +287,7 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
         return outputContexts.toMap()
     }
 
-    private fun handlerValidateCheckTel(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("SHOULD_RESOLVE_OUI_NON_TEL" to "true")
-    }
 
-    private fun handlerValidateConfirmMajTel(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("SHOULD_RESOLVE_ON_CONFIRM_MAJ_TEL" to "true")
-    }
-
-    private fun handlerValidateCheckMail(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("SHOULD_RESOLVE_ON_MAJ_MAIL" to "true")
-    }
 
     var validateONMajTel = true
     //Besoin d'avoir l'intent en input pour vérifier si le client a dit oui ou non
@@ -249,11 +384,15 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
         return mapOf("RESOLVE_SINISTRE" to "true")
     }
 
-    private fun handlerSetResolveVerifTel(contexts: Map<String, String?>): Map<String, String?> {
-        return mapOf("RESOLVE_VERIF_TEL" to "true")
-    }
-
     private fun handlerSetResolveSinistre(contexts: Map<String, String?>): Map<String, String?> {
         return mapOf("RESOLVE_SINISTRE" to "true")
     }
+
+    private fun createActionHandlerThatJustSetsContexts(handlerId : HandlerId, contexts: Set<ContextName>) =
+        createActionHandler(
+            id = handlerId.name,
+            description = "Handler that just sets <${contexts.map { it.name }.joinToString(", ")}>",
+            outputContexts = contexts.map { it.name }.toSet(),
+            handler = { contexts.associate { it.name to null } }
+        )
 }

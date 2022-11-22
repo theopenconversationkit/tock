@@ -15,8 +15,16 @@
  */
 
 package ai.tock.bot
+// TODO MASS : configuration to persist in the database
+enum class HandlerNamespace(val key: String, val shared: Boolean = false) {
+    DEV_TOOLS(key = "dev-tools", shared = true),
+    MAX(key = "max", shared = true),
+    AVENIR_ASSURANCE(key = "avenir-assurance", shared = true),
+    JOIGNABILITE(key = "joignabilite", shared = true),
+    UNKNOWN(key = "UNKNOWN");
 
-enum class ContextName {
-    RESOLVE_MAX,
-    RESOLVE_ACTIVATION
+    companion object {
+        fun find(namespace: String): HandlerNamespace =
+            HandlerNamespace.values().firstOrNull{ it.key == namespace } ?: UNKNOWN
+    }
 }

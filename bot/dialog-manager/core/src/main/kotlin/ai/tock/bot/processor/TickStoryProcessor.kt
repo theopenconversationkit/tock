@@ -43,7 +43,7 @@ class TickStoryProcessor(
 
     private var contextNames = session.contexts.toMutableMap()
     private var objectivesStack = createStackFormList(session.objectivesStack)
-    private var ranHandlers = session.ranHandlers.toMutableSet()
+    private var ranHandlers = session.ranHandlers.toMutableList()
     private val stateMachine: StateMachine = StateMachine(configuration.stateMachine)
     private var currentState = session.currentState ?: getGlobalState()
 
@@ -57,7 +57,7 @@ class TickStoryProcessor(
             updateContexts(tickUserAction)
 
             // Call to state machine to get the next state
-            val objectiveTemp = getStateMachineNextState(tickUserAction).checkNotCurrentStateObjective()
+            val objectiveTemp = getStateMachineNextState(tickUserAction)
             objectivesStack.pushIfNotOnTop(objectiveTemp)
             objectiveTemp
         } else {
@@ -68,11 +68,11 @@ class TickStoryProcessor(
         // Call to clyngor to get the secondary objective.
         // Randomly choose one among the multiple results
         val secondaryObjective = GraphSolver.solve(
-            ranHandlers.lastOrNull() ?: "INIT", // TODO MASS supp INIT
+            ranHandlers.lastOrNull(),
             configuration.actions,
             contextNames,
             getTickAction(primaryObjective),
-            ranHandlers
+            ranHandlers.toSet()
         ).random()
 
         // TODO : End of recursion if tickUserAction = null and (primaryObjective,secondaryObjective) = last(primaryObjective,secondaryObjective)
@@ -86,11 +86,11 @@ class TickStoryProcessor(
 
         // TODO MASS à supprimer une fois le debug front est ok: c'est juste pour MAJ le graph
         GraphSolver.solve(
-            ranHandlers.last(),
+            ranHandlers.lastOrNull(),
             configuration.actions,
             contextNames,
             getTickAction(primaryObjective),
-            ranHandlers
+            ranHandlers.toSet()
         ).random()
 
 
@@ -137,11 +137,15 @@ class TickStoryProcessor(
         }
 
         // invoke handler if provided
-        action.handler?.let{
-            contextNames.putAll(ActionHandlersRepository.invoke(it, contextNames))
+        if(!action.handler.isNullOrBlank()){
+            contextNames.putAll(
+                ActionHandlersRepository.invoke(action.handler, contextNames)
+            )
         }
 
         debugOutput(action)
+
+        // Add action name to already executed handlers
         ranHandlers.add(action.name)
 
         return action
@@ -150,8 +154,6 @@ class TickStoryProcessor(
     /**
      * Debug the input and output contexts of the actions
      */
-    // TODO : to be improved to comply with all types of connector
-    // TODO : frontend : make a component for debug messages
     private fun getDebugMessage(action: TickAction, type: String): String {
         val contexts = contextNames.map { (key, value) -> "$key : $value" }.joinToString(" | ")
         val message = "[DEBUG] ${action.name} : $type CONTEXTS [ $contexts ]"
@@ -185,10 +187,6 @@ class TickStoryProcessor(
         when(primaryObjective){
             secondaryObjective -> {
                 currentState = objectivesStack.pop()
-// TODO MASS : A surveiller
-//                if(!objectivesStack.isEmpty()){
-//                    currentState = objectivesStack.peek()!!
-//                }
             }
             else -> currentState = secondaryObjective
         }
@@ -196,20 +194,20 @@ class TickStoryProcessor(
 
     private fun getStateMachineNextState(tickUserAction : TickUserAction): String {
         val nextState = stateMachine.getNext(currentState, tickUserAction.intentName)
-        return nextState?.id.checkNotNullObjective()
-    }
 
-    private var checkNotNullObjective: String?.() -> String = {
-        this ?: error("Next state not found")
-    }
-
-    private var checkNotCurrentStateObjective: String.() -> String = {
-        if(this == currentState) {
-            error("Next state shouldn't be equals to the current state <$currentState>")
-        } else {
-            this
+        nextState?.let {
+            if(it.id == currentState && isADirectTransition(tickUserAction.intentName)){
+                error("Next state shouldn't be equals to the current state <$currentState>")
+            }
         }
+
+        // if no state was found, then keep the current state
+        return nextState?.id ?: currentState
     }
+
+    // Check if a transition is a father-son transition
+    private fun isADirectTransition(transition: String): Boolean
+            = stateMachine.getState(currentState)?.on?.get(transition) != null
 
     private fun Stack<String>.pushIfNotOnTop(element: String) {
         if(this.isEmpty() || this.peek() != element) {
@@ -245,7 +243,14 @@ class TickStoryProcessor(
             .intentsContexts
             .firstOrNull { it.intentName == intentName }
             ?.associations
-            ?.firstOrNull { it.actionName == ranHandlers.last() }
+            ?.firstOrNull { it.actionName == ranHandlers.last {
+                // skip the unknown action
+                actionName -> actionName !in
+                    configuration
+                        .actions
+                        .filter {action -> action.unknown }
+                        .map { action -> action.name }
+            }}
             ?.contextNames
             ?.associateWith { null }
             ?: emptyMap()
