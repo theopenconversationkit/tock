@@ -47,80 +47,7 @@ class TickStoryProcessor(
     private val stateMachine: StateMachine = StateMachine(configuration.stateMachine)
     private var currentState = session.currentState ?: getGlobalState()
 
-    private val sousObjectifKey = "SOUS-OBJECTIF"
-
-    /**
-     * Call a state machine to get the Global state if it exists, or throws error exception
-     */
-    private fun getGlobalState() =
-        stateMachine.getState("Global")?.id ?: error("Global state not found <Global>")
-
-    private fun createStackFormList(elements: List<String>): Stack<String> {
-        val stack = Stack<String>()
-        elements.forEach(stack::push)
-        return stack
-    }
-    /**
-     * Execute a given tick action id
-     */
-    private fun execute(actionName: String): TickAction {
-        val action = getTickAction(actionName)
-        debugInput(action)
-
-        // send answer if provided
-        action.answerId?.let {
-            if(endingStoryRuleExists && action.final || configuration.debug || action.isSilent()) {
-                sender.sendById(it)
-            } else {
-                sender.endById(it)
-            }
-        }
-
-        // invoke handler if provided
-        action.handler?.let{
-            contextNames.putAll(ActionHandlersRepository.invoke(it, contextNames))
-        }
-
-        debugOutput(action)
-        ranHandlers.add(action.name)
-
-        return action
-    }
-
-
-    /**
-     * Debug the input and output contexts of the actions
-     */
-    // TODO : to be improved to comply with all types of connector
-    // TODO : frontend : make a component for debug messages
-    private fun getDebugMessage(action: TickAction, type: String): String {
-        val contexts = contextNames.map { (key, value) -> "$key : $value" }.joinToString(" | ")
-        val message = "[DEBUG] ${action.name} : $type CONTEXTS [ $contexts ]"
-
-        logger.info { message }
-
-        return message
-    }
-
-    private fun debugInput(action: TickAction) {
-        if(configuration.debug) {
-            sender.sendPlainText(getDebugMessage(action, "INPUT"))
-        }
-    }
-
-    private fun debugOutput(action: TickAction) {
-        if(configuration.debug) {
-            sender.sendPlainText(getDebugMessage(action, "OUTPUT"))
-            sender.sendPlainText()
-            if(!action.isSilent()){
-                if(endingStoryRuleExists && action.final){
-                    sender.sendPlainText("---")
-                }else{
-                    sender.endPlainText("---")
-                }
-            }
-        }
-    }
+  //  private val sousObjectifKey = "SOUS-OBJECTIF"
 
     /**
      * the main function to process the user action
@@ -168,24 +95,91 @@ class TickStoryProcessor(
             ranHandlers
         ).random()
 
-        // Dercbot 329 - Handle event if exists
-//        executedAction.trigger?.let {
-//            process(TickUserAction(intentName = it))
-//        }
-        // TODO MASS : Code à reprendre avec la JIRA des events
-        contextNames[sousObjectifKey]?.let {
-            objectivesStack.push(it)
-            contextNames.remove(sousObjectifKey)
-        }
 
-        // If the action is silent or if it should proceed, then we restart the processing again, otherwise we send the results
-        return if(executedAction.isSilent() || executedAction.proceed){
+
+        // If the action has a trigger, the process method should be called with a new [TickUserAction] that have an intent corresponding to the trigger
+        // Else If the action is silent or if it should proceed, then we restart the processing again, otherwise we send the results
+        return  if (executedAction.trigger != null) {
+            process(TickUserAction(intentName = executedAction.trigger, emptyMap()))
+        } else  if(executedAction.isSilent() || executedAction.proceed){
             process(null)
-        }
-        else {
+        } else {
             Pair(
                 TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList()),
                 executedAction.final)
+        }
+
+    }
+
+    /**
+     * Call a state machine to get the Global state if it exists, or throws error exception
+     */
+    private fun getGlobalState() =
+        stateMachine.getState("Global")?.id ?: error("Global state not found <Global>")
+
+    private fun createStackFormList(elements: List<String>): Stack<String> {
+        val stack = Stack<String>()
+        elements.forEach(stack::push)
+        return stack
+    }
+    /**
+     * Execute a given tick action id
+     */
+    private fun execute(actionName: String): TickAction {
+        val action = getTickAction(actionName)
+        debugInput(action)
+
+        // send answer if provided
+        action.answerId?.let {
+            if(endingStoryRuleExists && action.final || configuration.debug || action.isSilent()) {
+                sender.sendById(it)
+            } else {
+                sender.endById(it)
+            }
+        }
+
+        // invoke handler if provided
+        action.handler?.let{
+            contextNames.putAll(ActionHandlersRepository.invoke(it, contextNames))
+        }
+
+        debugOutput(action)
+        ranHandlers.add(action.name)
+
+        return action
+    }
+
+    /**
+     * Debug the input and output contexts of the actions
+     */
+    // TODO : to be improved to comply with all types of connector
+    // TODO : frontend : make a component for debug messages
+    private fun getDebugMessage(action: TickAction, type: String): String {
+        val contexts = contextNames.map { (key, value) -> "$key : $value" }.joinToString(" | ")
+        val message = "[DEBUG] ${action.name} : $type CONTEXTS [ $contexts ]"
+
+        logger.info { message }
+
+        return message
+    }
+
+    private fun debugInput(action: TickAction) {
+        if(configuration.debug) {
+            sender.sendPlainText(getDebugMessage(action, "INPUT"))
+        }
+    }
+
+    private fun debugOutput(action: TickAction) {
+        if(configuration.debug) {
+            sender.sendPlainText(getDebugMessage(action, "OUTPUT"))
+            sender.sendPlainText()
+            if(!action.isSilent()){
+                if(endingStoryRuleExists && action.final){
+                    sender.sendPlainText("---")
+                }else{
+                    sender.endPlainText("---")
+                }
+            }
         }
     }
 
@@ -259,7 +253,6 @@ class TickStoryProcessor(
             ?: emptyMap()
         )
     }
-
 
 
     /**

@@ -52,7 +52,7 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
             "handler_check_besoin_verif_mail" to :: handlerCheckBesoinVerifMail
         )
 
-    private val sousObjectifKey = "SOUS-OBJECTIF"
+
     var besoinVerifTel = true
 
     private fun handlerCheckBesoinVerifTel(contexts: Map<String, String?>): Map<String, String?> {
@@ -64,7 +64,7 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
             outputContexts.put("RESOLVE_VERIF_TEL", "true")
         }
 
-        outputContexts.put(sousObjectifKey, "RESOLVE_VALIDATE_CLIENT_PHONE")
+
         besoinVerifTel = !besoinVerifTel
         return outputContexts.toMap()
     }
@@ -80,7 +80,6 @@ class SADeclarationBrisDeGlace: ActionHandlersProvider {
         }
 
         besoinVerifMail = !besoinVerifMail
-        outputContexts.put(sousObjectifKey, "RESOLVE_VALIDATE_CLIENT_EMAIL")
         return outputContexts.toMap()
     }
 

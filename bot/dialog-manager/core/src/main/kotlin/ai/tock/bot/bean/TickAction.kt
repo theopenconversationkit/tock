@@ -22,15 +22,15 @@ data class TickAction(
     val description: String? = null,
     val answerId: String? = null,
     val handler: String? = null,
-    // val trigger: String? = null, pour gérer les events
+    val trigger: String? = null,
     val inputContextNames: Set<String>,
     val outputContextNames: Set<String>,
     val proceed: Boolean = false,
     val final: Boolean
 ){
     /**
-     * The action is silent only if the handler is provided
+     * The action is silent only if a handler or a trigger is provided
      */
     @java.beans.Transient
-    fun isSilent() = handler != null
+    fun isSilent() = handler != null || trigger != null
 }
