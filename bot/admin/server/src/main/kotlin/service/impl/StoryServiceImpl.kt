@@ -25,8 +25,6 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.bean.TickStory
 import ai.tock.bot.bean.TickStoryValidation
 import ai.tock.bot.definition.IntentWithoutNamespace
-import ai.tock.shared.exception.error.ErrorMessage
-import ai.tock.shared.exception.error.ErrorMessageWrapper
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.vertx.WebVerticle
@@ -99,6 +97,7 @@ class StoryServiceImpl: StoryService {
                         story.stateMachine,
                         story.primaryIntents,
                         story.secondaryIntents,
+                        story.triggers,
                         story.contexts,
                         story.actions,
                         story.intentsContexts,

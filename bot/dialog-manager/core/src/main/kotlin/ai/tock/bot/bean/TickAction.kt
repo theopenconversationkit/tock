@@ -32,5 +32,5 @@ data class TickAction(
      * The action is silent only if a handler or a trigger is provided
      */
     @java.beans.Transient
-    fun isSilent() = handler != null || trigger != null
+    fun isSilent() = handler != null || trigger != null || proceed
 }

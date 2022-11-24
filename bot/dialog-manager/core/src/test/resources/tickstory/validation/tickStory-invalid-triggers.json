@@ -46,18 +46,17 @@
             },
             "initial": "ACTION_1",
             "on": {
-              "secondaryIntents_1-test": "#ACTION_2",
-              "secondaryIntents_2-test": "#ACTION_3"
+              "secondaryIntents_1": "#ACTION_2",
+              "secondaryIntents_2": "#ACTION_3"
             }
           }
         },
         "initial": "INTRODUCTION",
         "on": {
-          "mainIntent-test": "#GROUP_1",
-          "primaryIntents_1-test": "#INTRODUCTION",
-          "primaryIntents_2-test": "#HELLO",
-          "primaryIntents_3-test": "#BYE",
-          "trigger-test": "#BYE"
+          "mainIntent": "#GROUP_1",
+          "primaryIntents_1": "#INTRODUCTION",
+          "primaryIntents_2": "#HELLO",
+          "primaryIntents_3": "#BYE"
         }
       }
     },

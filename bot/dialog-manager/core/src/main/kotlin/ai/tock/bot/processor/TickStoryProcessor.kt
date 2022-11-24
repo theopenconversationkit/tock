@@ -47,8 +47,6 @@ class TickStoryProcessor(
     private val stateMachine: StateMachine = StateMachine(configuration.stateMachine)
     private var currentState = session.currentState ?: getGlobalState()
 
-  //  private val sousObjectifKey = "SOUS-OBJECTIF"
-
     /**
      * the main function to process the user action
      */
@@ -101,7 +99,7 @@ class TickStoryProcessor(
         // Else If the action is silent or if it should proceed, then we restart the processing again, otherwise we send the results
         return  if (executedAction.trigger != null) {
             process(TickUserAction(intentName = executedAction.trigger, emptyMap()))
-        } else  if(executedAction.isSilent() || executedAction.proceed){
+        } else  if(executedAction.isSilent()){
             process(null)
         } else {
             Pair(
