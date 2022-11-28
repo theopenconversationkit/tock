@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbButtonModule, NbCardModule, NbDialogRef, NbIconModule, NbInputModule, NbToggleModule, NbTooltipModule } from '@nebular/theme';
+
 import { StateService } from '../../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../../shared/testing/test-shared.module';
+import { TestSharedModule } from '../../../../../testing/test-shared.module';
 import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
 import { IntentEditComponent } from './intent-edit.component';
 

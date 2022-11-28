@@ -9,6 +9,7 @@ export interface TickStory {
   primaryIntents: string[];
   secondaryIntents: string[];
   contexts: ScenarioContext[];
+  triggers: string[];
   actions: ScenarioActionDefinition[];
   stateMachine: MachineState;
   intentsContexts: intentsContext[];

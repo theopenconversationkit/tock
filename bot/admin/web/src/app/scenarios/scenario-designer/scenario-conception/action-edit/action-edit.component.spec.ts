@@ -129,6 +129,7 @@ describe('ActionEditComponent', () => {
       name: 'ACTION2',
       description: null,
       handler: null,
+      trigger: null,
       answer: 'action2 answer',
       answerId: '456',
       inputContextNames: ['TEST'],

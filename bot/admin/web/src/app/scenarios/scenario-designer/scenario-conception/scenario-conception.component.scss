@@ -1,119 +1,41 @@
-@import '~@nebular/theme/styles/global/_breakpoints.scss';
 @import '~@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/themes';
 
-:host {
-  --panel-side-margin: -2.25rem;
-  --panel-bottom-margin: -0.75rem;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  margin: 0 var(--panel-side-margin) var(--panel-bottom-margin);
-  overflow: hidden;
-  box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
-}
+:host ::ng-deep nb-accordion nb-accordion-item {
+  background-color: inherit;
 
-@include media-breakpoint-down(md) {
-  :host {
-    --panel-side-margin: -1.5rem;
-    --panel-bottom-margin: -0.5rem;
-  }
-}
-
-@include media-breakpoint-down(sm) {
-  :host {
-    --panel-side-margin: -1rem;
-    --panel-bottom-margin: -0rem;
+  nb-accordion-item-body .item-body,
+  nb-accordion-item-header {
+    padding: 0.5rem 1rem;
   }
 }
 
 @include nb-install-component {
-  .canvas-wrapper {
-    position: relative;
-    z-index: 10;
-    overflow: hidden;
-    height: inherit;
+  nb-list {
+    @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+  }
+}
 
-    .contexts-panel {
-      position: absolute;
-      z-index: 5;
-      background-color: nb-theme(background-basic-color-1);
-      box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1), 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
-      width: 2rem;
-      border-bottom-right-radius: 0.5rem;
-      transition: width 0.2s;
+.list-item {
+  display: grid;
+  grid-template-columns: minmax(auto, 1rem) minmax(5rem, 1fr) minmax(auto, 1rem);
+  align-items: start;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
 
-      .panel-header-wrapper {
-        display: flex;
-        justify-content: flex-end;
-        padding: 0.5rem 0 0 0;
-        .panel-header {
-          width: 100%;
-          padding: 0.5rem;
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
-          margin-right: -0.2rem;
-          .chevron-left {
-            display: none;
-          }
-          .chevron-right {
-            display: block;
-            margin-right: 0.15rem;
-          }
-        }
-      }
+  .entity {
+    border-radius: 0.45rem;
+    padding: 0rem 0.3rem 0rem 0.3rem;
+    font-size: 0.7rem;
+    line-height: 1.25rem;
+    max-width: fit-content;
+    overflow-wrap: break-word;
+  }
+}
 
-      .contexts-list {
-        display: none;
-        overflow-y: auto;
-        max-height: 30rem;
-
-        .context-name {
-          max-width: 12rem;
-        }
-
-        .entity {
-          border-radius: 0.45rem;
-          padding: 0rem 0.3rem 0rem 0.3rem;
-          font-size: 0.7rem;
-          display: inline-block;
-          line-height: 1.25rem;
-        }
-      }
-
-      .addContextButton {
-        display: none;
-      }
-
-      &.displayed {
-        width: 17rem;
-
-        .panel-header-wrapper {
-          justify-content: flex-start;
-          padding: 0.5rem;
-          .panel-header {
-            writing-mode: initial;
-            text-orientation: initial;
-            .chevron-left {
-              display: block;
-            }
-            .chevron-right {
-              display: none;
-            }
-          }
-        }
-
-        .contexts-list {
-          @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
-
-          display: block;
-        }
-        .addContextButton {
-          display: inherit;
-          margin: 1rem;
-        }
-      }
-    }
+@include nb-install-component {
+  .conception-canvas-wrapper {
+    height: 100%;
 
     .canvas {
       z-index: 1;
@@ -191,9 +113,5 @@
         }
       }
     }
-  }
-
-  .font-2rem {
-    font-size: 2rem;
   }
 }

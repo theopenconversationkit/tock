@@ -15,7 +15,7 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   @Input() transition: Transition;
   @Input() parentState: MachineState;
   @Input() intents: ScenarioIntentDefinition[];
-  @Input() actions: ScenarioActionDefinition[];
+  // @Input() actions: ScenarioActionDefinition[];
   @Input() isReadonly: boolean = false;
 
   constructor(public elementRef: ElementRef, private scenarioProductionService: ScenarioProductionService) {
@@ -40,7 +40,11 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   intent;
   ngOnInit(): void {
     this.intent = this.intents.find((i) => {
-      return i.name === this.transition.name;
+      if (typeof i === 'string') {
+        return i === this.transition.name;
+      } else {
+        return i.name === this.transition.name;
+      }
     });
   }
 
@@ -52,7 +56,7 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   }
 
   getIntentTooltip(): string {
-    return this.intent.label ? this.intent.label : this.intent.name;
+    return typeof this.intent === 'string' ? this.intent : this.intent.label ? this.intent.label : this.intent.name;
   }
 
   setTransitionTop(): void {

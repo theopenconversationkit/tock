@@ -9,7 +9,6 @@ import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
 
@@ -295,11 +294,15 @@ export class FaqManagementEditComponent implements OnChanges {
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Cancel ${this.faq?.id ? 'edit' : 'create'} faq`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: validAction, buttonStatus: 'danger' }
+          ],
+          modalStatus: 'danger'
         }
       });
       dialogRef.onClose.subscribe((result) => {

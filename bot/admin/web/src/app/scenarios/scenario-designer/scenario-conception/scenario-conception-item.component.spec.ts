@@ -1,9 +1,9 @@
-import { ScenarioConceptionItemComponent } from './scenario-conception-item.component';
-import { ScenarioConceptionService } from './scenario-conception-service.service';
+import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { StateService } from '../../../core-nlp/state.service';
+import { EMPTY, of } from 'rxjs';
+import { NbDialogRef } from '@nebular/theme';
+
 import {
   ScenarioIntentDefinition,
   ScenarioVersion,
@@ -14,10 +14,12 @@ import {
   TempSentence,
   ScenarioContext
 } from '../../models';
+import { ScenarioConceptionItemComponent } from './scenario-conception-item.component';
+import { ScenarioConceptionService } from './scenario-conception-service.service';
+import { ScenarioDesignerService } from '../scenario-designer.service';
+import { DialogService } from '../../../core-nlp/dialog.service';
+import { StateService } from '../../../core-nlp/state.service';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
-import { EMPTY, of } from 'rxjs';
-import { NbDialogRef } from '@nebular/theme';
-import { By } from '@angular/platform-browser';
 
 const scenarioMock = {
   id: '62fcbb7ae4d25c16a44071a1',
@@ -105,7 +107,7 @@ function getScenarioMock() {
   return JSON.parse(JSON.stringify(scenarioMock)) as ScenarioVersion;
 }
 
-xdescribe('ScenarioConceptionItemComponent', () => {
+describe('ScenarioConceptionItemComponent', () => {
   let component: ScenarioConceptionItemComponent;
   let fixture: ComponentFixture<ScenarioConceptionItemComponent>;
   let scenarioConceptionService: ScenarioConceptionService;
@@ -119,7 +121,8 @@ xdescribe('ScenarioConceptionItemComponent', () => {
           useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) }
         },
         { provide: StateService, useValue: {} },
-        { provide: NlpService, useValue: {} }
+        { provide: NlpService, useValue: {} },
+        { provide: ScenarioDesignerService, useValue: {} }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

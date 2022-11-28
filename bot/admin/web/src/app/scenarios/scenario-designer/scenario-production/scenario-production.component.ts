@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -9,7 +9,8 @@ import {
   ScenarioVersionExtended,
   SCENARIO_ITEM_FROM_BOT,
   SCENARIO_ITEM_FROM_CLIENT,
-  ScenarioActionDefinition
+  ScenarioActionDefinition,
+  ScenarioTriggerDefinition
 } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
 import { SVG } from '@svgdotjs/svg.js';
@@ -25,6 +26,12 @@ import {
   removeSmStateById
 } from '../../commons/utils';
 import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
+
+type ScenarioDefinition = {
+  actions: ScenarioActionDefinition[];
+  intents: ScenarioIntentDefinition[];
+  triggers: ScenarioTriggerDefinition[];
+};
 
 const TRANSITION_COLOR = '#006fd6';
 const TRANSITION_COLOR_HOVERED = '#42aaff';
@@ -47,6 +54,14 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_CLIENT = SCENARIO_ITEM_FROM_CLIENT;
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
+  isSidePanelOpen: boolean = true;
+  transitionsDefinition: (ScenarioTriggerDefinition | ScenarioIntentDefinition)[] = [];
+  scenarioDefinition: ScenarioDefinition = {
+    actions: [],
+    intents: [],
+    triggers: []
+  };
+
   constructor(private scenarioProductionService: ScenarioProductionService, private dialogService: DialogService) {
     this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'itemDropped') {
@@ -66,6 +81,13 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.scenario.data.stateMachine) this.initStateMachine();
+
+    this.scenarioDefinition = {
+      actions: this.getScenarioActionDefinitions(),
+      intents: this.getScenarioIntentDefinitions(),
+      triggers: this.getScenarioTriggerDefinition()
+    };
+    this.transitionsDefinition = [...this.scenarioDefinition.intents, ...this.scenarioDefinition.triggers];
   }
 
   ngAfterViewInit(): void {
@@ -276,6 +298,14 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
+  getScenarioTriggerDefinition(): ScenarioTriggerDefinition[] {
+    const triggers = getScenarioActionDefinitions(this.scenario)
+      .filter((a) => a.trigger)
+      .map((a) => a.trigger);
+
+    return [...new Set(triggers)];
+  }
+
   collectAllUsedNames(): string[] {
     let names = new Set<string>();
     getScenarioActionDefinitions(this.scenario).forEach((a) => names.add(a.name));
@@ -339,6 +369,11 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
+  private formatTransitionName(transition: string): string {
+    const expected = /^#[^#].*/;
+    return transition.match(expected) ? transition : `#${transition}`;
+  }
+
   itemDropped(event) {
     if (event.dropped.type === 'action') {
       let target = getSmStateById(event.stateId, this.scenario.data.stateMachine);
@@ -349,13 +384,14 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
     if (event.dropped.type === 'intent') {
       let parent = getSmStateParentById(event.stateId, this.scenario.data.stateMachine);
+
       if (parent) {
-        parent.on[event.dropped.name] = `#${event.stateId}`;
+        parent.on[event.dropped.name] = this.formatTransitionName(event.stateId);
       }
     }
     if (event.dropped.type === 'transitionTarget') {
       let sourceState = getSmStateById(event.dropped.source, this.scenario.data.stateMachine);
-      sourceState.on[event.dropped.name] = `#${event.stateId}`;
+      sourceState.on[event.dropped.name] = this.formatTransitionName(event.stateId);
     }
 
     if (event.dropped.type === 'transitionSource') {
@@ -364,7 +400,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       delete initialSourceState.on[event.dropped.name];
       const newSourceState = getSmStateById(event.stateId, this.scenario.data.stateMachine);
       if (!newSourceState.on) newSourceState.on = {};
-      newSourceState.on[event.dropped.name] = `#${target}`;
+      newSourceState.on[event.dropped.name] = this.formatTransitionName(target);
     }
 
     this.scenarioProductionService.updateLayout();
@@ -404,6 +440,10 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
 
   toggleFullscreen(_toggle: boolean): void {
     this.requestFullscreen.emit();
+  }
+
+  sidePanelChange(status: 'open' | 'close'): void {
+    this.isSidePanelOpen = status === 'open';
   }
 
   ngOnDestroy(): void {

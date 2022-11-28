@@ -1,6 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+
 import { ScenarioConceptionService } from './scenario-conception-service.service';
 import {
   ScenarioItem,
@@ -12,7 +13,6 @@ import {
   ScenarioVersionExtended
 } from '../../models';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { ConfirmDialogComponent } from 'src/app/shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 import {
@@ -24,6 +24,8 @@ import {
 } from '../../commons/utils';
 import { ContextCreateComponent } from './context-create/context-create.component';
 import { ContextsGraphComponent } from '../contexts-graph/contexts-graph.component';
+import { TriggerCreateComponent } from './trigger-create/trigger-create.component';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 const CANVAS_TRANSITION_TIMING = 300;
 
@@ -70,7 +72,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  contextsPanelDisplayed: boolean = true;
+  isSidePanelOpen: boolean = true;
 
   getContextEntityColor(context: ScenarioContext): string {
     if (context.entityType) return entityColor(qualifiedRole(context.entityType, context.entityRole));
@@ -78,6 +80,50 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   getContextEntityContrast(context: ScenarioContext): string {
     if (context.entityType) return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
+  }
+
+  addTrigger(): void {
+    const modal = this.dialogService.openDialog(TriggerCreateComponent, {
+      context: {
+        scenarioVersion: this.scenario
+      }
+    });
+
+    const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((trigger: string) => {
+      this.scenario.data.triggers.push(trigger);
+
+      validate.unsubscribe();
+      modal.close();
+    });
+  }
+
+  confirmDeleteTrigger(trigger: string): void {
+    const deleteAction = 'delete';
+    const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+      context: {
+        title: `Delete event`,
+        subtitle: 'Are you sure you want to delete this event?',
+        modalStatus: 'danger',
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: deleteAction, buttonStatus: 'danger' }
+        ]
+      }
+    });
+    modal.onClose.subscribe((res) => {
+      if (res == deleteAction) {
+        this.deleteTrigger(trigger);
+      }
+    });
+  }
+
+  deleteTrigger(trigger: string): void {
+    this.scenario.data.scenarioItems.forEach((item) => {
+      if (item.from == SCENARIO_ITEM_FROM_BOT && item.actionDefinition && item.actionDefinition.trigger === trigger) {
+        item.actionDefinition.trigger = null;
+      }
+    });
+    this.scenario.data.triggers = this.scenario.data.triggers.filter((tgg) => tgg !== trigger);
   }
 
   addContext(): void {
@@ -99,11 +145,15 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   confirmDeleteContext(context: ScenarioContext): void {
     const deleteAction = 'delete';
-    const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
+    const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `You're about to delete a context`,
-        subtitle: 'Are you sure?',
-        action: deleteAction
+        title: `Delete context`,
+        subtitle: 'Are you sure you want to delete this context?',
+        modalStatus: 'danger',
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: deleteAction, buttonStatus: 'danger' }
+        ]
       }
     });
     modal.onClose.subscribe((res) => {
@@ -147,6 +197,16 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
 
     return isInput && isOutput;
+  }
+
+  isTriggerUsed(trigger: string): boolean {
+    const actionsDefinitions = getScenarioActionDefinitions(this.scenario);
+
+    for (let action of actionsDefinitions) {
+      if (action.trigger === trigger) return true;
+    }
+
+    return false;
   }
 
   getNextItemId(): number {
@@ -412,6 +472,10 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   toggleFullscreen(_toggle: boolean): void {
     this.requestFullscreen.emit();
+  }
+
+  sidePanelChange(status: 'open' | 'close'): void {
+    this.isSidePanelOpen = status === 'open';
   }
 
   ngOnDestroy(): void {

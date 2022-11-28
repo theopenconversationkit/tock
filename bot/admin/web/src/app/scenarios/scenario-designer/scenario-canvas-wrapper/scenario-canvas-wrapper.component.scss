@@ -1,0 +1,63 @@
+@import '~@nebular/theme/styles/global/_breakpoints.scss';
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
+:host {
+  --panel-width: 2rem;
+  height: 100%;
+}
+
+.main {
+  height: inherit;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+  transition: grid-template-columns 0.3s;
+
+  &.column {
+    grid-template-columns: var(--panel-width) 1fr;
+  }
+
+  &.displayed {
+    --panel-width: 15rem;
+  }
+}
+
+.canvas-wrapper {
+  overflow: hidden;
+  box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
+}
+
+@include nb-install-component {
+  .menu {
+    @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow: auto;
+
+    hr {
+      margin: 0 auto;
+      width: 90%;
+      border-color: nb-theme(color-basic-transparent-400);
+    }
+
+    &-body {
+      @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+      overflow: auto;
+      flex: 1;
+    }
+
+    &-footer {
+      text-align: right;
+
+      & .sidePanelIndicator nb-icon {
+        transition: 0.3s;
+
+        &.rotate {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+}

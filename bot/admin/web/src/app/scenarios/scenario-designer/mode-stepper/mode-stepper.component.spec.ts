@@ -4,39 +4,30 @@ import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbIconModule } from '@nebular/theme';
 import { of } from 'rxjs';
 
-import { TestSharedModule } from '../../../shared/testing/test-shared.module';
+import { Sentence } from '../../../model/nlp';
+import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../models';
+import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, TempSentence } from '../../models';
 import { ModeStepperComponent } from './mode-stepper.component';
 
-const scenarioWriting = {
+const scenarioWriting: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
-  name: 'testing scenario',
-  category: 'scenarios',
-  tags: ['testing'],
-  applicationId: '62558f21b318632c9200b567',
   creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
-  description: '',
   data: {
-    mode: 'writing' as SCENARIO_MODE,
+    mode: SCENARIO_MODE.writing,
     scenarioItems: [{ id: 0, from: 'client' as ScenarioItemFrom, text: 'Main intent', main: true }],
     contexts: []
   },
   state: 'draft' as SCENARIO_STATE
 };
 
-const scenarioCasting = {
+const scenarioCasting: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
-  name: 'testing scenario',
-  category: 'scenarios',
-  tags: ['testing'],
-  applicationId: '62558f21b318632c9200b567',
   creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
-  description: '',
   data: {
-    mode: 'writing' as SCENARIO_MODE,
+    mode: SCENARIO_MODE.casting,
     scenarioItems: [
       { id: 0, from: 'client' as ScenarioItemFrom, text: 'Main intent', main: true },
       { id: 1, text: 'test1', from: 'bot' }
@@ -46,24 +37,19 @@ const scenarioCasting = {
   state: 'draft' as SCENARIO_STATE
 };
 
-const scenarioProduction = {
+const scenarioProduction: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
-  name: 'testing scenario',
-  category: 'scenarios',
-  tags: ['testing'],
-  applicationId: '62558f21b318632c9200b567',
   creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
-  description: '',
   data: {
-    mode: 'writing' as SCENARIO_MODE,
+    mode: SCENARIO_MODE.production,
     scenarioItems: [
       {
         id: 0,
         from: 'client' as ScenarioItemFrom,
         text: 'Main intent',
         main: true,
-        intentDefinition: { name: 'intent1', label: 'intent1' }
+        intentDefinition: { name: 'intent1', label: 'intent1', sentences: [{} as TempSentence], _sentences: [{} as Sentence] }
       },
       {
         id: 1,
@@ -83,24 +69,24 @@ const scenarioProduction = {
   state: 'draft' as SCENARIO_STATE
 };
 
-const scenarioPublishing = {
+const scenarioPublishing: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
-  name: 'testing scenario',
-  category: 'scenarios',
-  tags: ['testing'],
-  applicationId: '62558f21b318632c9200b567',
   creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
-  description: '',
   data: {
-    mode: 'writing' as SCENARIO_MODE,
+    mode: SCENARIO_MODE.publishing,
     scenarioItems: [
       {
         id: 0,
         from: 'client' as ScenarioItemFrom,
         text: 'Main intent',
         main: true,
-        intentDefinition: { name: 'intent1', label: 'intent1' }
+        intentDefinition: {
+          name: 'intent1',
+          label: 'intent1',
+          sentences: [{} as TempSentence],
+          _sentences: [{} as Sentence]
+        }
       },
       {
         id: 1,
@@ -143,7 +129,7 @@ const scenarioPublishing = {
   state: 'draft' as SCENARIO_STATE
 };
 
-xdescribe('ModeStepperComponent', () => {
+describe('ModeStepperComponent', () => {
   let component: ModeStepperComponent;
   let fixture: ComponentFixture<ModeStepperComponent>;
 
@@ -171,6 +157,7 @@ xdescribe('ModeStepperComponent', () => {
     [
       {
         description: 'scenario mode writing',
+        scenario: scenarioWriting,
         mode: SCENARIO_MODE.writing,
         stepPassed: { writing: false, casting: false, production: false, publishing: false },
         buttonClass: {
@@ -182,6 +169,7 @@ xdescribe('ModeStepperComponent', () => {
       },
       {
         description: 'scenario mode casting',
+        scenario: scenarioWriting,
         mode: SCENARIO_MODE.casting,
         stepPassed: { writing: true, casting: false, production: false, publishing: false },
         buttonClass: {
@@ -193,7 +181,7 @@ xdescribe('ModeStepperComponent', () => {
       },
       {
         description: 'scenario mode production',
-        scenario: scenarioCasting as ScenarioVersion,
+        scenario: scenarioCasting,
         mode: SCENARIO_MODE.production,
         stepPassed: { writing: true, casting: true, production: false, publishing: false },
         buttonClass: {
@@ -205,7 +193,7 @@ xdescribe('ModeStepperComponent', () => {
       },
       {
         description: 'scenario mode publishing',
-        scenario: scenarioProduction as ScenarioVersion,
+        scenario: scenarioProduction,
         mode: SCENARIO_MODE.publishing,
         stepPassed: { writing: true, casting: true, production: true, publishing: false },
         buttonClass: {
@@ -217,7 +205,7 @@ xdescribe('ModeStepperComponent', () => {
       },
       {
         description: 'scenario mode publishing valid',
-        scenario: scenarioPublishing as ScenarioVersion,
+        scenario: scenarioPublishing,
         mode: SCENARIO_MODE.publishing,
         stepPassed: { writing: true, casting: true, production: true, publishing: false },
         buttonClass: {
@@ -229,6 +217,10 @@ xdescribe('ModeStepperComponent', () => {
       }
     ].forEach((test) => {
       it(test.description, () => {
+        component.scenario = test.scenario;
+        component.mode = test.mode;
+        fixture.detectChanges();
+
         const buttonWriting: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="step-ctrl-writing"]')).nativeElement;
         const buttonCasting: HTMLButtonElement = fixture.debugElement.query(By.css('[data-testid="step-ctrl-casting"]')).nativeElement;
         const buttonProduction: HTMLButtonElement = fixture.debugElement.query(
@@ -238,9 +230,6 @@ xdescribe('ModeStepperComponent', () => {
           By.css('[data-testid="step-ctrl-publishing"]')
         ).nativeElement;
 
-        if (test.scenario) component.scenario = test.scenario;
-        component.mode = test.mode;
-        fixture.detectChanges();
         expect(component.isStepPassed(SCENARIO_MODE.writing)).toBe(test.stepPassed.writing);
         expect(component.isStepPassed(SCENARIO_MODE.casting)).toBe(test.stepPassed.casting);
         expect(component.isStepPassed(SCENARIO_MODE.production)).toBe(test.stepPassed.production);
