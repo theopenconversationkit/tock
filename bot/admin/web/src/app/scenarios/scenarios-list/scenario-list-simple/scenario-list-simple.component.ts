@@ -115,7 +115,7 @@ export class ScenarioListSimpleComponent {
   }
 
   toggleTickEnabled(scenarioGroup: ScenarioGroupExtended): void {
-    if (scenarioGroup._hasCurrentVersion) {
+    if (scenarioGroup.enabled !== null) {
       let action = 'Enable';
       if (scenarioGroup.enabled) {
         action = 'Disable';

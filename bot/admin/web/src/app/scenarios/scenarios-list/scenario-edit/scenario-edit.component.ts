@@ -135,9 +135,11 @@ export class ScenarioEditComponent implements OnChanges {
     this.isSubmitted = true;
 
     if (this.canSave) {
+      const enabled = typeof this.scenarioGroup.enabled === 'boolean' ? this.scenarioGroup.enabled : null;
+
       this.onSave.emit({
         redirect: redirect,
-        scenarioGroup: { id: this.scenarioGroup.id, ...this.form.value, enabled: !!this.scenarioGroup.enabled }
+        scenarioGroup: { id: this.scenarioGroup.id, ...this.form.value, enabled }
       });
     }
   }

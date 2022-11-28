@@ -13,11 +13,11 @@ export interface ScenarioGroup {
   tags: string[];
   creationDate?: string;
   updateDate?: string;
-  enabled: boolean;
+  enabled?: boolean;
   versions: ScenarioVersion[];
 }
 
-export type ScenarioGroupExtended = ScenarioGroup & { _expanded?: boolean; _hasCurrentVersion: boolean; _loading?: boolean };
+export type ScenarioGroupExtended = ScenarioGroup & { _expanded?: boolean; _loading?: boolean };
 
 export type ScenarioGroupUpdate = Omit<ScenarioGroup, 'creationDate' | 'updateDate' | 'versions'>;
 

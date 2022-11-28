@@ -312,7 +312,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
       if (tags?.length && !scenarioGroup.tags.some((tag) => tags.includes(tag))) return;
 
-      if (enabled !== null && !(scenarioGroup._hasCurrentVersion && scenarioGroup.enabled === enabled)) return;
+      if (enabled !== null && !(scenarioGroup.enabled === enabled)) return;
 
       return scenarioGroup;
     });

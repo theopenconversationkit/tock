@@ -43,8 +43,7 @@ const mockScenarios: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.archive,
         creationDate: '01/01/1970'
       }
-    ],
-    _hasCurrentVersion: true
+    ]
   },
   {
     id: '2',
@@ -66,8 +65,7 @@ const mockScenarios: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.current,
         creationDate: '01/02/1970'
       }
-    ],
-    _hasCurrentVersion: true
+    ]
   },
   {
     id: '3',
@@ -93,8 +91,7 @@ const mockScenarios: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.archive,
         creationDate: '01/01/2000'
       }
-    ],
-    _hasCurrentVersion: false
+    ]
   },
   {
     id: '4',
@@ -110,8 +107,7 @@ const mockScenarios: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.draft,
         creationDate: '01/01/1970'
       }
-    ],
-    _hasCurrentVersion: false
+    ]
   },
   {
     id: '5',
@@ -127,8 +123,7 @@ const mockScenarios: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.draft,
         creationDate: '01/01/1970'
       }
-    ],
-    _hasCurrentVersion: false
+    ]
   }
 ];
 
@@ -258,7 +253,7 @@ describe('ScenarioService', () => {
         const state = service.getState();
         expect(mockedScenarioApiService.postScenarioGroup).toHaveBeenCalledWith(newScenario);
         expect(state.scenariosGroups).toHaveSize(mockScenarios.length + 1);
-        expect(state.scenariosGroups).toEqual([...mockScenarios, { ...newScenario, id: '1', _hasCurrentVersion: false }]);
+        expect(state.scenariosGroups).toEqual([...mockScenarios, { ...newScenario, id: '1' }]);
         expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
         expect(state.categories).toEqual(['default', 'scenario']);
         done();

@@ -53,8 +53,7 @@ const mockScenariosGroups: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.archive,
         creationDate: '01/01/1970'
       }
-    ],
-    _hasCurrentVersion: true
+    ]
   },
   {
     id: '2',
@@ -72,8 +71,7 @@ const mockScenariosGroups: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.current,
         creationDate: '01/02/1970'
       }
-    ],
-    _hasCurrentVersion: true
+    ]
   },
   {
     id: '3',
@@ -96,8 +94,7 @@ const mockScenariosGroups: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.archive,
         creationDate: '01/01/2000'
       }
-    ],
-    _hasCurrentVersion: false
+    ]
   },
   {
     id: '4',
@@ -110,8 +107,7 @@ const mockScenariosGroups: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.draft,
         creationDate: '01/01/1970'
       }
-    ],
-    _hasCurrentVersion: false
+    ]
   },
   {
     id: '5',
@@ -124,8 +120,7 @@ const mockScenariosGroups: ScenarioGroupExtended[] = [
         state: SCENARIO_STATE.draft,
         creationDate: '01/01/1970'
       }
-    ],
-    _hasCurrentVersion: false
+    ]
   }
 ];
 

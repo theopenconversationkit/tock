@@ -75,13 +75,13 @@
           <nb-toggle
             class="mr-2"
             [nbTooltip]="
-              !scenarioGroup._hasCurrentVersion
+              scenarioGroup.enabled === null
                 ? 'There is no tick story associated'
                 : scenarioGroup.enabled
                 ? 'Disable this tick story'
                 : 'Enable this tick story'
             "
-            [disabled]="!scenarioGroup._hasCurrentVersion"
+            [disabled]="scenarioGroup.enabled === null"
             [ngModel]="scenarioGroup.enabled"
             (click)="$event.stopPropagation()"
             (mousedown)="toggleTickEnabled(scenarioGroup)"
