@@ -19,7 +19,8 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
 
   form = new FormGroup({
     search: new FormControl(),
-    tags: new FormControl([])
+    tags: new FormControl([]),
+    enabled: new FormControl(null)
   });
 
   get search(): FormControl {
@@ -30,8 +31,12 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
     return this.form.get('tags') as FormControl;
   }
 
+  get enabled(): FormControl {
+    return this.form.get('enabled') as FormControl;
+  }
+
   get isFiltered(): boolean {
-    return this.search.value || !!this.tags.value.length;
+    return this.search.value || !!this.tags.value.length || this.enabled.value !== null;
   }
 
   constructor(private scenarioService: ScenarioService) {}
@@ -57,5 +62,20 @@ export class ScenarioFiltersComponent implements OnInit, OnDestroy {
   clearFilters(): void {
     this.search.reset();
     this.tags.reset([]);
+    this.enabled.reset(null);
+  }
+
+  enabledCheckChanged() {
+    switch (this.enabled.value) {
+      case null:
+        this.enabled.setValue(true);
+        break;
+      case true:
+        this.enabled.setValue(false);
+        break;
+      case false:
+        this.enabled.setValue(null);
+        break;
+    }
   }
 }

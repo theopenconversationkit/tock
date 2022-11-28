@@ -112,6 +112,7 @@ export class ScenarioImportComponent {
                 description: scenarioGroupCopy.description,
                 category: scenarioGroupCopy.category,
                 tags: scenarioGroupCopy.tags,
+                enabled: scenarioGroupCopy.enabled,
                 versions: [
                   {
                     data: scenarioGroupCopy.data,
