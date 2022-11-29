@@ -551,7 +551,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 faqDefinitionDAO.deleteFaqDefinitionById(eq(faqId))
                 intentDAO.getIntentById(any())
                 i18nDAO.deleteByNamespaceAndId(any(), any())
-                storyService.deleteStoryByStoryDefinitionConfigurationId(any(), any())
+                storyService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(any(), any())
             }
         }
 
