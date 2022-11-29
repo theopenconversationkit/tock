@@ -69,7 +69,7 @@ class TickStoryValidationTest : DialogManagerTest() {
             assertTrue { errors.containsAll(expectedErrors) }
         }
 
-        @Test fun invalidTrgiggers() {
+        @Test fun invalidTriggers() {
             val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-triggers")
             val errors = TickStoryValidation.validateTriggers(tickStory)
 
