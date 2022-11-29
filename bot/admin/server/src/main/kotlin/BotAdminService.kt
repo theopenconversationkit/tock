@@ -51,7 +51,6 @@ import ai.tock.bot.admin.model.DialogFlowRequest
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.bean.TickStory
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
@@ -65,10 +64,6 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
-import ai.tock.bot.bean.TickAction
-import ai.tock.bot.bean.TickContext
-import ai.tock.bot.bean.TickIntent
-import ai.tock.bot.bean.TickStoryValidation
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.dialog.DialogFlowDAO
@@ -92,13 +87,11 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
-import ai.tock.shared.withoutNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
-import com.mongodb.MongoWriteException
 import java.time.Instant
 import java.util.Locale
 import mu.KotlinLogging
@@ -525,6 +518,7 @@ object BotAdminService {
                 stateMachine = this.stateMachine,
                 primaryIntents = this.primaryIntents,
                 secondaryIntents = this.secondaryIntents,
+                triggers = this.triggers,
                 contexts = this.contexts,
                 actions = this.actions,
                 intentsContexts = this.intentsContexts,

@@ -6,6 +6,7 @@
   "mainIntent": "i_probleme_virement",
   "primaryIntents": [],
   "secondaryIntents": [ "i_preciser_montant", "i_preciser_destination", "farewell", "greetings"],
+  "triggers": ["e_trigger"],
   "actions" : [
     {
       "name": "INTRODUCTION",
@@ -208,7 +209,8 @@
         "on": {
           "i_probleme_virement": "#S_TRANSFER_MANAGEMENT",
           "greetings": "#HELLO",
-          "farewell": "#BYE"
+          "farewell": "#BYE",
+          "e_trigger": "#BYE"
         }
       }
     },

@@ -122,6 +122,7 @@ class StoryServiceImpl: StoryService {
                         story.stateMachine,
                         story.primaryIntents,
                         story.secondaryIntents,
+                        story.triggers,
                         story.contexts,
                         story.actions,
                         story.intentsContexts,

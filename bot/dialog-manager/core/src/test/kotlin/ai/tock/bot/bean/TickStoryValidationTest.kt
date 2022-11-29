@@ -43,22 +43,44 @@ class TickStoryValidationTest : DialogManagerTest() {
             assertTrue { errors.isEmpty() }
         }
 
+        @Test
+        fun validTriggers() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-valid-triggers")
+            val errors = TickStoryValidation.validateTriggers(tickStory)
+
+            assertTrue { errors.isEmpty() }
+        }
+
         @Test fun invalidIntents() {
             val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-intents")
             val errors = TickStoryValidation.validateIntents(tickStory)
 
-            val expectedErrors = setOf(
-                "Intent mainIntent not found in StateMachine",
-                "Intent primaryIntents_1 not found in StateMachine",
-                "Intent primaryIntents_2 not found in StateMachine",
-                "Intent primaryIntents_3 not found in StateMachine",
-                "Intent secondaryIntents_1 not found in StateMachine",
-                "Intent secondaryIntents_2 not found in StateMachine")
+
+            val expectedErrors = listOf(
+                "mainIntent",
+                "primaryIntents_1",
+                "primaryIntents_2",
+                "primaryIntents_3",
+                "secondaryIntents_1",
+                "secondaryIntents_2"
+            ).map { TickStoryValidation.MessageProvider.INTENT_NOT_FOUND(it) }
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
         }
 
+        @Test fun invalidTriggers() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-triggers")
+            val errors = TickStoryValidation.validateTriggers(tickStory)
+
+
+            val expectedErrors = listOf(
+                "e_trigger"
+            ).map { TickStoryValidation.MessageProvider.TRIGGER_NOT_FOUND(it) }
+
+            assertEquals(expectedErrors.size, errors.size)
+            assertTrue { errors.containsAll(expectedErrors) }
+        }
         @Test fun validTransitions() {
             val tickStory = getTickStoryFromFile("validation", "tickStory-valid-transitions")
             val errors = TickStoryValidation.validateTransitions(tickStory)
@@ -71,13 +93,14 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateTransitions(tickStory)
 
             val expectedErrors = setOf(
-                "Transition mainIntent-test not found in TickStory intents",
-                "Transition primaryIntents_1-test not found in TickStory intents",
-                "Transition primaryIntents_2-test not found in TickStory intents",
-                "Transition primaryIntents_3-test not found in TickStory intents",
-                "Transition secondaryIntents_1-test not found in TickStory intents",
-                "Transition secondaryIntents_2-test not found in TickStory intents"
-            )
+                "mainIntent-test",
+                "primaryIntents_1-test",
+                "primaryIntents_2-test",
+                "primaryIntents_3-test",
+                "secondaryIntents_1-test",
+                "secondaryIntents_2-test",
+                "trigger-test"
+            ).map { TickStoryValidation.MessageProvider.TRANSITION_NOT_FOUND(it) }
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -97,12 +120,12 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateActions(tickStory)
 
             val expectedErrors = setOf(
-                "Action HELLO-TEST not found in StateMachine",
-                "Action BYE-TEST not found in StateMachine",
-                "Action INTRODUCTION-TEST not found in StateMachine",
-                "Action ACTION_1-TEST not found in StateMachine",
-                "Action ACTION_2-TEST not found in StateMachine",
-                "Action ACTION_3-TEST not found in StateMachine")
+                "HELLO-TEST",
+                "BYE-TEST",
+                "INTRODUCTION-TEST",
+                "ACTION_1-TEST",
+                "ACTION_2-TEST",
+                "ACTION_3-TEST").map { TickStoryValidation.MessageProvider.ACTION_NOT_FOUND(it) }
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -120,12 +143,12 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateStates(tickStory)
 
             val expectedErrors = setOf(
-                "State HELLO not found in TickStory actions",
-                "State BYE not found in TickStory actions",
-                "State INTRODUCTION not found in TickStory actions",
-                "State ACTION_1 not found in TickStory actions",
-                "State ACTION_2 not found in TickStory actions",
-                "State ACTION_3 not found in TickStory actions")
+                "HELLO",
+                "BYE",
+                "INTRODUCTION",
+                "ACTION_1",
+                "ACTION_2",
+                "ACTION_3").map { TickStoryValidation.MessageProvider.STATE_NOT_FOUND(it) }
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -150,8 +173,9 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateActionHandlers(tickStory)
 
             val expectedErrors = setOf(
-                "Action handler BYE_handler-TEST not found in handlers repository",
-                "Action handler ACTION_2_handler-TEST not found in handlers repository")
+                "BYE_handler-TEST",
+                "ACTION_2_handler-TEST")
+                .map { TickStoryValidation.MessageProvider.ACTION_HANDLER_NOT_FOUND(it) }
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -171,8 +195,9 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateInputOutputContexts(tickStory)
 
             val expectedErrors = setOf(
-                "Input context CONTEXT_4 of action ACTION_2 not found in output contexts of others",
-                "Output context CONTEXT_5 of action ACTION_3 not found in input contexts of others")
+                TickStoryValidation.MessageProvider.INPUT_CTX_NOT_FOUND("CONTEXT_4" to "ACTION_2"),
+                TickStoryValidation.MessageProvider.OUTPUT_CTX_NOT_FOUND("CONTEXT_5" to "ACTION_3")
+            )
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -190,7 +215,7 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateDeclaredActionContexts(tickStory)
 
             val expectedErrors = setOf(
-                "Action context CONTEXT_3 not found in declared contexts")
+                TickStoryValidation.MessageProvider.ACTION_CTX_NOT_FOUND("CONTEXT_3"))
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -210,8 +235,8 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateNames(tickStory)
 
             val expectedErrors = setOf(
-                "The same name CONTEXT_1 is used for Action handler and context",
-                "The same name INTRODUCTION is used for Action handler and context")
+                "CONTEXT_1",
+                "INTRODUCTION").map { TickStoryValidation.MessageProvider.ACTION_HANDLER_CTX_NAME_CONFLICT(it) }
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -233,9 +258,9 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateTickIntentNames(tickStory)
 
             val expectedErrors = setOf(
-                "Intent primaryIntents_1 is not secondary, it cannot be associated to contexts",
-                "Intent secondaryIntents_3 is not secondary, it cannot be associated to contexts"
-            )
+                "primaryIntents_1",
+                "secondaryIntents_3"
+            ).map { TickStoryValidation.MessageProvider.NOT_SECONDARY_INTENT_ASSOCIATED_TO_CTX(it) }
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
@@ -255,7 +280,7 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateTickIntentAssociationActions(tickStory)
 
             val expectedErrors = setOf(
-                "Intent association action ACTION_20 not found in declared actions",
+                TickStoryValidation.MessageProvider.INTENT_ACTION_ASSOCIATION_NOT_FOUND("ACTION_20"),
             )
 
             assertEquals(expectedErrors.size, errors.size)
@@ -276,7 +301,7 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateDeclaredIntentContexts(tickStory)
 
             val expectedErrors = setOf(
-                "Intent association context CONTEXT_3 not found in declared contexts",
+                TickStoryValidation.MessageProvider.INTENT_CTX_ASSOCIATION_NOT_FOUND("CONTEXT_3"),
             )
 
             assertEquals(expectedErrors.size, errors.size)

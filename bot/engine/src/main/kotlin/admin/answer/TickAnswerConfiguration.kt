@@ -25,6 +25,7 @@ import ai.tock.bot.statemachine.State
 data class TickAnswerConfiguration(val stateMachine: State,
                                    val primaryIntents: Set<String>,
                                    val secondaryIntents: Set<String>,
+                                   val triggers: Set<String>,
                                    val contexts: Set<TickContext>,
                                    val actions: Set<TickAction>,
                                    val intentsContexts: Set<TickIntent>,
