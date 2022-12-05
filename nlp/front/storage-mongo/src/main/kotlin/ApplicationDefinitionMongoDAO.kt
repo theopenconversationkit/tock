@@ -23,8 +23,10 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Namespac
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import ai.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.error
 import ai.tock.shared.watch
 import com.mongodb.client.MongoCollection
+import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
@@ -39,9 +41,15 @@ import org.litote.kmongo.save
  */
 internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
 
+    private val logger = KotlinLogging.logger {}
+
     private val col: MongoCollection<ApplicationDefinition> by lazy {
         val c = database.getCollection<ApplicationDefinition>()
-        c.ensureUniqueIndex(Name, Namespace)
+        try {
+            c.ensureUniqueIndex(Name, Namespace)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
         c
     }
     private val asyncCol by lazy {

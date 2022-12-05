@@ -177,7 +177,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         ConnectorType,
                         ActionType,
                         HourOfDay,
-                        indexOptions = IndexOptions().name("index")
+                        indexOptions = IndexOptions().name("flow_stats_date_index")
                     )
                 } catch (e: Exception) {
                     logger.error(e)
