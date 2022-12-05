@@ -97,13 +97,14 @@ open class BotAdminVerticle : AdminVerticle() {
     override fun configureServices() {
         initTranslator()
         dialogFlowDAO.initFlowStatCrawl()
+
         super.configureServices()
     }
 
     private fun <R> measureTimeMillis(context: RoutingContext, function: () -> R): R {
         val before = System.currentTimeMillis()
         val result = function()
-        logger.debug { "${context.normalisedPath()} took ${System.currentTimeMillis() - before} ms." }
+        logger.debug { "${context.normalizedPath()} took ${System.currentTimeMillis() - before} ms." }
         return result
     }
 
