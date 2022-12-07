@@ -16,7 +16,6 @@ import {
 } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from '../../core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
 import { deepCopy, stringifiedCleanObject } from '../commons/utils';
@@ -100,6 +99,9 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           }
           if (!this.scenarioVersion.data.contexts) {
             this.scenarioVersion.data.contexts = [];
+          }
+          if (!this.scenarioVersion.data.triggers) {
+            this.scenarioVersion.data.triggers = [];
           }
 
           // backward compatibility update
@@ -278,11 +280,15 @@ export class ScenarioDesignerNavigationGuard implements CanDeactivate<any> {
     if (!canDeactivate) {
       const subject = new Subject<boolean>();
       const dialogResponseVerb = 'Exit';
-      const modal = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `You're about to leave without saving the changes`,
           subtitle: 'Are you sure?',
-          action: dialogResponseVerb
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: dialogResponseVerb, buttonStatus: 'danger' }
+          ],
+          modalStatus: 'danger'
         }
       });
       modal.onClose.subscribe((res) => {

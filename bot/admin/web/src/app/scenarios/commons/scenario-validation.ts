@@ -27,8 +27,10 @@ export const SCENARIO_STEPS_ERRORS = {
   statemachine_should_be_defined: () => 'A valid state machine must be defined',
   intents_should_be_transitions: (txt: string) =>
     `For each defined intent there must be a transition with the same name in the state machine. No transition found for the intent "${txt}".`,
-  transitions_should_be_intents: (txt: string) =>
-    `For each transition in the state machine there must be a defined intent with the same name. No intent found for the transition "${txt}".`,
+  triggers_should_be_transitions: (txt: string) =>
+    `For each defined event there must be a transition with the same name in the state machine. No transition found for the event "${txt}".`,
+  transitions_should_be_intents_or_triggers: (txt: string) =>
+    `For each transition in the state machine there must be a defined intent or event with the same name. No intent / event found for the transition "${txt}".`,
   actions_should_be_states: (txt: string) =>
     `For each defined action there must be a state with the same name in the state machine. No state found for the action "${txt}".`,
   states_should_be_actions: (txt: string) =>
@@ -160,6 +162,9 @@ function checkStateMachineIntegrity(scenario: ScenarioVersion): IntegrityCheckRe
   const stateMachine = scenario.data!.stateMachine;
 
   const intentDefinitions = getScenarioIntentDefinitions(scenario);
+  // We create an array of unique values and delete the undefined elements
+  const triggerDefinitions = [...new Set(getScenarioActionDefinitions(scenario).map((a) => a.trigger))].filter((trigger) => trigger);
+
   // For each intention (primary and secondary) declared in the TickStory we must find a transition with the same name in the state machine
   for (let index = 0; index < intentDefinitions.length; index++) {
     const intentDef = intentDefinitions[index];
@@ -172,14 +177,30 @@ function checkStateMachineIntegrity(scenario: ScenarioVersion): IntegrityCheckRe
     }
   }
 
-  const transitionsNames = getAllSmTransitionNames(scenario.data!.stateMachine!);
-  // For each transition in the state machine we must find an intention of the same name in the TickStory
-  for (let index = 0; index < transitionsNames.length; index++) {
-    const transName = transitionsNames[index];
-    if (!intentDefinitions.find((intDef) => intDef.name === transName)) {
+  // For each trigger declared in the TickStory we must find a transition with the same name in the state machine
+  for (let index = 0; index < triggerDefinitions.length; index++) {
+    const triggerDef = triggerDefinitions[index];
+    const transition = getSmTransitionByName(triggerDef, scenario.data!.stateMachine!);
+
+    if (!transition) {
       return {
         valid: false,
-        reason: SCENARIO_STEPS_ERRORS.transitions_should_be_intents(transName)
+        reason: SCENARIO_STEPS_ERRORS.triggers_should_be_transitions(triggerDef)
+      };
+    }
+  }
+
+  const transitionsNames = getAllSmTransitionNames(scenario.data!.stateMachine!);
+  // For each transition in the state machine we must find an intention or a trigger of the same name in the TickStory
+  for (let index = 0; index < transitionsNames.length; index++) {
+    const transName = transitionsNames[index];
+    if (
+      !intentDefinitions.find((intDef) => intDef.name === transName) &&
+      !triggerDefinitions.find((triggerDef) => triggerDef === transName)
+    ) {
+      return {
+        valid: false,
+        reason: SCENARIO_STEPS_ERRORS.transitions_should_be_intents_or_triggers(transName)
       };
     }
   }

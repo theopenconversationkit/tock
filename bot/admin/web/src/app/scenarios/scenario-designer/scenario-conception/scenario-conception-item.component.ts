@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
-import { NlpService } from 'src/app/nlp-tabs/nlp.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
 import {
@@ -15,7 +14,6 @@ import {
   ScenarioContext,
   ScenarioVersionExtended
 } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 import { ActionEditComponent } from './action-edit/action-edit.component';
 import { IntentCreateComponent } from './intent-create/intent-create.component';
@@ -82,6 +80,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       }
     });
     modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((actionDef) => {
+      this.checkAndAddNewTrigger(actionDef.trigger);
       this.checkAndAddNewContexts(actionDef.inputContextNames);
       this.checkAndAddNewContexts(actionDef.outputContextNames);
       if (this.scenario.data.stateMachine && this.item.actionDefinition && this.item.actionDefinition.name !== actionDef.name) {
@@ -104,6 +103,10 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
 
       modal.close();
     });
+  }
+
+  private checkAndAddNewTrigger(trigger: string): void {
+    if (trigger && !this.scenario.data.triggers.includes(trigger)) this.scenario.data.triggers = [...this.scenario.data.triggers, trigger];
   }
 
   checkAndAddNewContexts(contextNames) {
@@ -152,6 +155,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       description: intentDef.description,
       intentId: intentDef._id,
       primary: this.item.main
+      // isEvent: false
     };
 
     this.scenarioDesignerService.grabIntentSentences(this.item).subscribe(() => {
@@ -350,7 +354,10 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
           title: `Change of intervention type`,
           subtitle: alertMessage,
           modalStatus: 'danger',
-          actions: [{ actionName: cancelAction, buttonStatus: 'basic' }, { actionName: confirmAction }]
+          actions: [
+            { actionName: cancelAction, buttonStatus: 'basic', ghost: true },
+            { actionName: confirmAction, buttonStatus: 'danger' }
+          ]
         }
       });
       dialogRef.onClose.subscribe((result) => {

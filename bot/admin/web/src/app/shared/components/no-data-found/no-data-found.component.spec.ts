@@ -3,7 +3,7 @@ import { By } from '@angular/platform-browser';
 import { NbCardModule } from '@nebular/theme';
 
 import { NoDataFoundComponent } from './no-data-found.component';
-import { TestSharedModule } from '../../testing/test-shared.module';
+import { TestSharedModule } from '../../../../testing/test-shared.module';
 
 describe('NoDataFoundComponent', () => {
   let component: NoDataFoundComponent;

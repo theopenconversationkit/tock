@@ -1,95 +1,109 @@
-<div
-  class="canvas-wrapper"
-  #canvasWrapperElem
-  tock-canvas
-  [position]="elementPosition"
-  [isFullscreen]="isFullscreen"
-  (onFullscreen)="toggleFullscreen($event)"
-  appMouseWheelListner
+<tock-scenario-canvas-wrapper
+  [hasSidePanel]="scenario.data.mode === SCENARIO_MODE.casting"
+  (onSidePanelChange)="sidePanelChange($event)"
 >
-  <div
-    *ngIf="scenario.data.mode == SCENARIO_MODE.casting"
-    class="contexts-panel pointer"
-    [ngClass]="{ displayed: contextsPanelDisplayed }"
-    appMouseWheelListner
-    (onMouseWheel)="stopPropagation($event, false)"
+  <nb-accordion
+    multi
+    menu-body
   >
-    <div class="panel-header-wrapper">
-      <div
-        class="panel-header d-flex justify-content-between"
-        (click)="contextsPanelDisplayed = !contextsPanelDisplayed"
-      >
-        <div class="font-weight-bold">Contexts</div>
-
-        <nb-icon
-          class="chevron-right"
-          icon="chevron-right-outline"
-        ></nb-icon>
-
-        <nb-icon
-          class="chevron-left"
-          icon="chevron-left-outline"
-        ></nb-icon>
-      </div>
-    </div>
-
-    <div class="contexts-list">
-      <nb-list>
-        <nb-list-item
+    <nb-accordion-item expanded>
+      <nb-accordion-item-header>Contexts</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
           *ngIf="!scenario.data.contexts.length"
-          class="d-block justify-content-between text-mitigated font-italic"
+          class="menu-item-no-data"
         >
-          No context defined yet
-        </nb-list-item>
+          No context defined
+        </div>
 
-        <nb-list-item
-          *ngFor="let context of scenario.data.contexts"
-          class="d-block py-2"
-        >
-          <div class="d-flex justify-content-between">
+        <nb-list *ngIf="scenario.data.contexts.length">
+          <nb-list-item
+            *ngFor="let context of scenario.data.contexts"
+            class="list-item"
+          >
             <div>
-              <div
-                class="ellipsis context-name"
-                [title]="context.name"
-              >
-                <nb-icon
-                  icon="checkmark-outline"
-                  status="success"
-                  *ngIf="isContextUsed(context)"
-                  nbTooltip="This context is correctly defined as the output context of at least one action and the input context of at least one other action"
-                ></nb-icon>
-                {{ context.name }}
+              <nb-icon
+                *ngIf="isContextUsed(context)"
+                nbTooltip="This context is correctly defined as the output context of at least one action and the input context of at least one other action"
+                icon="checkmark-outline"
+                status="success"
+              ></nb-icon>
+            </div>
+
+            <div class="d-flex flex-column">
+              <div class="ellipsis">
+                <span [nbTooltip]="context.name">{{ context.name }}</span>
               </div>
 
               <div
                 *ngIf="context.entityType"
                 nbTooltip="Entity associated with the context"
+                class="entity"
+                [style.background]="getContextEntityColor(context)"
+                [style.color]="getContextEntityContrast(context)"
               >
-                <span
-                  class="entity"
-                  [style.background]="getContextEntityColor(context)"
-                  [style.color]="getContextEntityContrast(context)"
-                >
+                <span>
                   {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
                 </span>
               </div>
             </div>
             <nb-icon
               *ngIf="!isReadonly"
+              class="pointer ml-2"
+              nbTooltip="Delete"
+              status="danger"
+              icon="trash-2-outline"
+              (click)="confirmDeleteContext(context)"
+            ></nb-icon>
+          </nb-list-item>
+        </nb-list>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+    <nb-accordion-item>
+      <nb-accordion-item-header>Events</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngIf="!scenario.data.triggers?.length"
+          class="menu-item-no-data"
+        >
+          No event defined
+        </div>
+
+        <nb-list *ngIf="scenario.data.triggers?.length">
+          <nb-list-item
+            *ngFor="let trigger of scenario.data.triggers"
+            class="list-item"
+          >
+            <div>
+              <nb-icon
+                *ngIf="isTriggerUsed(trigger)"
+                nbTooltip="This event is associated with at least one action"
+                icon="checkmark-outline"
+                status="success"
+              ></nb-icon>
+            </div>
+
+            <div class="ellipsis">
+              <span [nbTooltip]="trigger">{{ trigger }}</span>
+            </div>
+
+            <nb-icon
+              *ngIf="!isReadonly"
               icon="trash-2-outline"
               status="danger"
-              (click)="confirmDeleteContext(context)"
               class="pointer ml-2"
-              nbTooltip="Delete this context"
+              nbTooltip="Delete"
+              (click)="confirmDeleteTrigger(trigger)"
             ></nb-icon>
-          </div>
-        </nb-list-item>
-      </nb-list>
-    </div>
-
-    <div class="addContextButton">
+          </nb-list-item>
+        </nb-list>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+  </nb-accordion>
+  <div menu-actions>
+    <div [class.d-none]="!isSidePanelOpen">
       <button
-        *ngIf="!isReadonly && contextsPanelDisplayed"
+        *ngIf="!isReadonly && isSidePanelOpen"
         nbButton
         size="tiny"
         fullWidth
@@ -100,7 +114,19 @@
         Add context
       </button>
       <button
-        *ngIf="contextsPanelDisplayed && scenario.data.contexts?.length"
+        class="mt-1"
+        *ngIf="!isReadonly && isSidePanelOpen"
+        nbButton
+        size="tiny"
+        fullWidth
+        status="info"
+        nbTooltip="Add a new event to the scenario"
+        (click)="addTrigger()"
+      >
+        Add Event
+      </button>
+      <button
+        *ngIf="isSidePanelOpen && scenario.data.contexts?.length"
         class="mt-1"
         nbButton
         size="tiny"
@@ -112,30 +138,80 @@
         Graph of constraints
       </button>
     </div>
+    <div [class.d-none]="isSidePanelOpen">
+      <button
+        *ngIf="!isReadonly"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Add context"
+        (click)="addContext()"
+      >
+        <nb-icon icon="plus-outline"></nb-icon>
+      </button>
+      <button
+        class="mt-1"
+        *ngIf="!isReadonly"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Add Event"
+        (click)="addEvent()"
+      >
+        <nb-icon icon="activity-outline"></nb-icon>
+      </button>
+      <button
+        *ngIf="scenario.data.contexts?.length"
+        class="mt-1"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Graph of constraints"
+        (click)="displayGraph()"
+      >
+        <nb-icon icon="map-outline"></nb-icon>
+      </button>
+    </div>
   </div>
   <div
-    class="canvas cursor-move"
-    #canvasElem
-    id="canvas"
+    canvas-wrapper
+    class="conception-canvas-wrapper flex-fill"
+    #canvasWrapperElem
+    tock-canvas
+    [position]="elementPosition"
+    [isFullscreen]="isFullscreen"
+    (onFullscreen)="toggleFullscreen($event)"
+    appMouseWheelListner
   >
-    <div class="card-row">
-      <div class="card-col">
-        <scenario-conception-item
-          *ngIf="scenario?.data.scenarioItems.length"
-          [isReadonly]="isReadonly"
-          [item]="scenario.data.scenarioItems[0]"
-          [contexts]="scenario.data.contexts"
-          [selectedItem]="selectedItem"
-          [mode]="scenario.data.mode"
-          [scenario]="scenario"
-          [avalaibleHandlers]="avalaibleHandlers"
-          (onSelectElement)="handleSeletedElement($event)"
-        ></scenario-conception-item>
+    <div
+      class="canvas"
+      #canvasElem
+      id="canvas"
+    >
+      <div class="card-row">
+        <div class="card-col">
+          <scenario-conception-item
+            *ngIf="scenario?.data.scenarioItems.length"
+            [isReadonly]="isReadonly"
+            [item]="scenario.data.scenarioItems[0]"
+            [contexts]="scenario.data.contexts"
+            [selectedItem]="selectedItem"
+            [mode]="scenario.data.mode"
+            [scenario]="scenario"
+            [avalaibleHandlers]="avalaibleHandlers"
+            (onSelectElement)="handleSeletedElement($event)"
+          ></scenario-conception-item>
+        </div>
       </div>
     </div>
   </div>
-  <div class="canvas-shader"></div>
-</div>
+</tock-scenario-canvas-wrapper>
 
 <div
   class="chat-wrapper"

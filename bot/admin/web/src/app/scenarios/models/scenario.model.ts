@@ -47,6 +47,7 @@ export enum SCENARIO_MODE {
 export interface ScenarioData {
   scenarioItems: ScenarioItem[];
   contexts?: ScenarioContext[];
+  triggers?: ScenarioTriggerDefinition[];
   stateMachine?: MachineState;
   mode: SCENARIO_MODE;
 }
@@ -81,12 +82,15 @@ export interface ScenarioIntentDefinition {
   outputContextNames?: ScenarioContextName[];
 }
 
+export type ScenarioTriggerDefinition = string;
+
 export interface ScenarioActionDefinition {
   name: string;
   description?: string;
   inputContextNames?: ScenarioContextName[];
   outputContextNames?: ScenarioContextName[];
   handler?: string;
+  trigger?: ScenarioTriggerDefinition;
   answer?: string;
   answerId?: string;
   answerUpdate?: true;
@@ -102,6 +106,7 @@ export interface ScenarioContext {
   entityRole?: EntityRole;
   type: 'string';
 }
+
 export interface MachineState {
   id: string;
   type?: string;

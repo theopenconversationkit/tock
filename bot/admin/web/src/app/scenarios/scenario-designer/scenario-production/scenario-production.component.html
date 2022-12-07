@@ -1,61 +1,84 @@
-<div class="production-wrapper">
-  <div class="production-menu">
-    <div class="intents-wrapper">
-      <strong>Intents</strong>
-      <div class="intents-list mt-2">
+<tock-scenario-canvas-wrapper (onSidePanelChange)="sidePanelChange($event)">
+  <nb-accordion
+    multi
+    menu-body
+  >
+    <nb-accordion-item expanded>
+      <nb-accordion-item-header>Actions</nb-accordion-item-header>
+      <nb-accordion-item-body>
         <div
+          *ngFor="let action of scenarioDefinition.actions"
+          class="action p-2 my-1 unselectable"
+          [ngClass]="{ disabled: isActionInUse(action), isReadonly: isReadonly }"
+          [nbTooltip]="getActionTooltip(action)"
+          dndHandle
+          dndType="action"
+          [dndDraggable]="{ type: 'action', name: action.name }"
+          [dndDisableIf]="isActionInUse(action) || isReadonly"
+        >
+          <div class="ellipsis">{{ action.name }}</div>
+        </div>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+
+    <nb-accordion-item>
+      <nb-accordion-item-header>Intents</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngFor="let intent of scenarioDefinition.intents"
           class="intent d-flex my-1 unselectable"
-          *ngFor="let intent of getScenarioIntentDefinitions()"
           [ngClass]="{ disabled: !isIntentDraggable(intent), isReadonly: isReadonly }"
           [nbTooltip]="getIntentTooltip(intent)"
+          dndHandle
           [dndDraggable]="{ type: 'intent', name: intent.name }"
           [dndType]="getDraggableIntentType(intent)"
-          dndHandle
           [dndDisableIf]="!isIntentDraggable(intent) || isReadonly"
         >
           <nb-icon
             *ngIf="intent.primary"
             icon="award-outline"
-            class="valign-middle mr-1"
-            style="margin-left: -5px; height: 1em"
           ></nb-icon>
-          <div class="ellipsis">
+          <span class="ellipsis">
             {{ intent.name }}
+          </span>
+        </div>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+
+    <nb-accordion-item>
+      <nb-accordion-item-header>Events</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngIf="!scenarioDefinition.triggers.length"
+          class="menu-item-no-data"
+        >
+          No event defined
+        </div>
+        <div *ngIf="scenarioDefinition.triggers.length">
+          <div
+            *ngFor="let trigger of scenarioDefinition.triggers"
+            class="event d-flex my-1 unselectable"
+            [ngClass]="{ isReadonly: isReadonly }"
+            [nbTooltip]="trigger"
+            dndHandle
+            dndType="intent"
+            [dndDraggable]="{ type: 'intent', name: trigger }"
+            [dndDisableIf]="isReadonly"
+          >
+            <span class="ellipsis">{{ trigger }}</span>
           </div>
         </div>
-      </div>
-    </div>
-
-    <hr class="m-0" />
-
-    <div class="actions-wrapper">
-      <strong>Actions</strong>
-      <div class="actions-list mt-2">
-        <div
-          class="action p-2 my-1 unselectable"
-          *ngFor="let action of getScenarioActionDefinitions()"
-          [ngClass]="{ disabled: isActionInUse(action), isReadonly: isReadonly }"
-          [nbTooltip]="getActionTooltip(action)"
-          [dndDraggable]="{ type: 'action', name: action.name }"
-          dndHandle
-          dndType="action"
-          [dndDisableIf]="isActionInUse(action) || isReadonly"
-        >
-          <div class="ellipsis">{{ action.name }}</div>
-        </div>
-      </div>
-    </div>
-
-    <hr class="m-0" />
-
-    <div class="user-actions-wrapper">
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+  </nb-accordion>
+  <div menu-actions>
+    <div [class.d-none]="!isSidePanelOpen">
       <button
         (click)="displayStateMachineCode()"
         fullWidth
         nbButton
         size="tiny"
         status="primary"
-        class="mt-1"
       >
         Display state machine code
       </button>
@@ -71,12 +94,36 @@
         Reset state machine
       </button>
     </div>
+    <div [class.d-none]="isSidePanelOpen">
+      <button
+        (click)="displayStateMachineCode()"
+        nbButton
+        class="mt-1"
+        ghost
+        shape="round"
+        size="small"
+        nbTooltip="Display state machine code"
+      >
+        <nb-icon icon="code-outline"></nb-icon>
+      </button>
+      <button
+        *ngIf="!isReadonly"
+        (click)="resetStateMachine()"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Reset state machine"
+      >
+        <nb-icon icon="refresh-outline"></nb-icon>
+      </button>
+    </div>
   </div>
-
   <div
+    canvas-wrapper
     class="production-canvas-wrapper flex-fill"
     tock-canvas
-    fullscreenWrapper="parent"
     [centerCanvasAtInitialisation]="false"
     [isFullscreen]="isFullscreen"
     (onFullscreen)="toggleFullscreen($event)"
@@ -90,8 +137,8 @@
         [state]="scenario.data.stateMachine.states.Global"
         [stateMachine]="scenario.data.stateMachine"
         [usedNames]="collectAllUsedNames()"
-        [intents]="getScenarioIntentDefinitions()"
-        [actions]="getScenarioActionDefinitions()"
+        [intents]="transitionsDefinition"
+        [actions]="scenarioDefinition.actions"
       ></scenario-state-group>
 
       <ng-container *ngFor="let handler of pathHandlers">
@@ -126,4 +173,4 @@
       </ng-container>
     </div>
   </div>
-</div>
+</tock-scenario-canvas-wrapper>

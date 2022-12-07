@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { DialogService } from '../../../../core-nlp/dialog.service';
 import { getSmStateParentById } from '../../../commons/utils';

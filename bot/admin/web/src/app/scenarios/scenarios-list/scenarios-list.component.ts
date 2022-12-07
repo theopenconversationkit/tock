@@ -73,7 +73,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     private router: Router,
     protected stateService: StateService
   ) {
-    this.forceReload = this.router.getCurrentNavigation().previousNavigation?.finalUrl.toString() === '/build/story-rules';
+    this.forceReload = !this.router.getCurrentNavigation().previousNavigation?.finalUrl.toString().includes('/scenarios');
   }
 
   ngOnInit() {

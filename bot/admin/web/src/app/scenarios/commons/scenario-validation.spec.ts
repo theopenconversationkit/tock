@@ -131,7 +131,7 @@ describe('scenario-validation', () => {
     res = isStepValid(scenarioCopy, SCENARIO_MODE.publishing);
     expected = {
       valid: false,
-      reason: SCENARIO_STEPS_ERRORS.transitions_should_be_intents('TestTransition1')
+      reason: SCENARIO_STEPS_ERRORS.transitions_should_be_intents_or_triggers('TestTransition1')
     };
     expect(res).toEqual(expected, 'All SM transitions must correspond to intents');
 

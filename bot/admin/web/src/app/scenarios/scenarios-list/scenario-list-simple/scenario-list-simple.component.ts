@@ -4,8 +4,8 @@ import { OrderBy } from '../../../shared/utils';
 import { ScenarioGroupExtended, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
 import { ScenarioService } from '../../services/scenario.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../../core-nlp/dialog.service';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 @Component({
   selector: 'tock-scenario-list-simple',
@@ -71,12 +71,16 @@ export class ScenarioListSimpleComponent {
   deleteScenarioGroup(event: PointerEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
     const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
         title: `Delete scenario group "${scenarioGroup.name}"`,
         subtitle:
           'Are you sure you want to delete this scenario group and its scenario versions and, if applicable, the corresponding TickStory?',
-        action: deleteAction
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: deleteAction, buttonStatus: 'danger' }
+        ],
+        modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
@@ -89,14 +93,18 @@ export class ScenarioListSimpleComponent {
   deleteScenarioVersion(event: PointerEvent, scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
     event.stopPropagation();
     const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
         title: 'Delete scenario version',
         subtitle:
           scenarioVersion.state === SCENARIO_STATE.current
             ? 'Are you sure you want to delete the scenario version and, if applicable, the corresponding TickStory?'
             : 'Are you sure you want to delete the scenario version ?',
-        action: deleteAction
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: deleteAction, buttonStatus: 'danger' }
+        ],
+        modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
@@ -121,11 +129,11 @@ export class ScenarioListSimpleComponent {
         action = 'Disable';
       }
 
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `${action} tick story`,
           subtitle: `Are you sure you want to ${action.toLowerCase()} the tick story associated with this scenario ?`,
-          action: action
+          actions: [{ actionName: 'cancel', buttonStatus: 'basic', ghost: true }, { actionName: action }]
         }
       });
       dialogRef.onClose.subscribe((result: string) => {

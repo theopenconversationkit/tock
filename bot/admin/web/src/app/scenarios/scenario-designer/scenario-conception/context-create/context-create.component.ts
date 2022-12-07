@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
-import { Subject } from 'rxjs';
+
 import { normalizedSnakeCaseUpper, getScenarioActionDefinitions } from '../../../commons/utils';
 import { ScenarioVersionExtended } from '../../../models';
 
@@ -13,8 +13,6 @@ const ENTITY_NAME_MINLENGTH = 5;
   styleUrls: ['./context-create.component.scss']
 })
 export class ContextCreateComponent {
-  destroy = new Subject();
-
   @Input() scenario: ScenarioVersionExtended;
   @Output() validate = new EventEmitter();
 
@@ -66,10 +64,5 @@ export class ContextCreateComponent {
 
   cancel(): void {
     this.dialogRef.close();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy.next();
-    this.destroy.complete();
   }
 }

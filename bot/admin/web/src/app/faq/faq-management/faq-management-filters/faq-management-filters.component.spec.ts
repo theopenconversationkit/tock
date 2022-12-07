@@ -12,10 +12,10 @@ import {
   NbTooltipModule
 } from '@nebular/theme';
 
-import { TestSharedModule } from '../../../shared/testing/test-shared.module';
+import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqFilter } from '../../models';
 import { FaqManagementFiltersComponent } from './faq-management-filters.component';
-import { SpyOnCustomMatchers } from '../../../shared/testing/matchers/custom-matchers';
+import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
 
 describe('FaqManagementFiltersComponent', () => {
   let component: FaqManagementFiltersComponent;

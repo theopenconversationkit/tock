@@ -8,31 +8,11 @@ global
 
         npmrc pour indiquer le registry par defaut
 
-        A voir avec la SNCF sur la maj des paquets ou possibilité de créer un fichier de définition de déclaration en attendant "xxx.d.ts" avec les fonctions attendues
-          - mettre @types/nodes vers minimum 17.0.29
-          - permet de bénéficier de la fonction structuredClone (présent dans les navigateurs récent ou node 17)
-          - évite les problématiques liées JSON.parse(JSON.stringify(xxx)) à savoir
-            • problème de performance
-            • disaparition des types (ne déclenche pas d'erreur avec les types non supportés)
-            • disparition de données dans certain cas
-          - déplacer la fonction "deepClone" du fichier scenarios/commons/utils.ts vers shared/utils/utils.ts
-          - remplacer les JSON.parse(JSON.stringify(xxx)) par l'appel deepClone pour ne gérer qu'une seule fois le remplacement de la fonction ?
-
         Créer un composant partagé input avec autocomplétion ?
-
-        DONE : Trouver un moyen de masquer le footer de l'app quand on est dans le designer
-
-Back
-
-        DONE : Suppression des tickStories en 500
-
-        DONE : Export des tickStories en 500
 
 Shared
 
         Composant Canvas : limiter le "scope" du zoom aux dimensions du canvas. Eviter que le canvas ne se retrouve propulsé trop à l'extérieur de la vieBox du canvas wrapper à la suite de zooms et de zooms
-
-        Export: proposer la possibilité de sauvegarder l'ensemble des exports dans un fichier .zip plutôt que de sauvegarder un à un chaque scenarioGroup
 
         Import: faut-il préciser les erreurs correspondantes à un mauvais contenu du fichier ? (A voir à l'usage)
 
@@ -41,8 +21,6 @@ Scenarios list
         Proposer l'option d'inclure l'entrainement des intents (sentences) dans l'export des scenarios
 
         Régler le souci d'appel au endpoint de get de scenarioGroups quand l'application courante n'a pas de configuration
-
-        Proposer le fait qu'il existe ou pas une version current dans les critères de filtre
 
         Permettre de classer les scenarios par date de creation / modification ?
 
@@ -59,10 +37,6 @@ Scenario designer :
         CONTEXT GRAPH :
 
                 Variables de scenario-conception-item.component.scss : Trouver des noms moins orientés arbre de scenario et remonter le tout au niveau supérieur. On va sans doute vouloir partager ces variables avec le module de test pour y afficher le graph
-
-        WRITING :
-
-                DONE: Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => Non
 
         CONCEPTION :
 

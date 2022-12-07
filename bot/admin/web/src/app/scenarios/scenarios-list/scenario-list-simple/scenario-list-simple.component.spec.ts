@@ -9,10 +9,10 @@ import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioGroupExtended, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../shared/testing/test-shared.module';
+import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { ScenarioDesignerComponent } from '../../scenario-designer/scenario-designer.component';
 import { ScenariosListComponent } from '../scenarios-list.component';
-import { SpyOnCustomMatchers } from '../../../shared/testing/matchers/custom-matchers';
+import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
 import {
   NbAccordionModule,
   NbButtonModule,

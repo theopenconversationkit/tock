@@ -4,11 +4,12 @@ import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 import { of, Subject } from 'rxjs';
-import { TestSharedModule } from 'src/app/shared/testing/test-shared.module';
+
+import { TestSharedModule } from '../../../testing/test-shared.module';
 import { BotService } from '../../bot/bot-service';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { StateService } from '../../core-nlp/state.service';
-import { ScenarioVersion, ScenarioVersionExtended, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models';
+import { ScenarioVersionExtended, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { ScenarioDesignerComponent } from './scenario-designer.component';
 import { ScenarioDesignerService } from './scenario-designer.service';
@@ -25,7 +26,8 @@ const testScenario: ScenarioVersionExtended = {
         main: true
       }
     ],
-    contexts: []
+    contexts: [],
+    triggers: []
   },
   state: SCENARIO_STATE.draft
 };

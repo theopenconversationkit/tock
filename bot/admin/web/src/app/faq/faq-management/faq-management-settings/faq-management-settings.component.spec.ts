@@ -17,7 +17,7 @@ import { BotService } from '../../../bot/bot-service';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { FormControlComponent } from '../../../shared/components';
-import { TestSharedModule } from '../../../shared/testing/test-shared.module';
+import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqService } from '../../services/faq.service';
 import { FaqManagementSettingsComponent } from './faq-management-settings.component';
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';

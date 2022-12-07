@@ -9,8 +9,8 @@ import { FileValidators } from '../../../shared/validators';
 import { ScenarioGroup, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { deepCopy } from '../../commons/utils';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 enum nameConflictResolution {
   new = 'new',
@@ -63,11 +63,15 @@ export class ScenarioImportComponent {
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.importForm.dirty) {
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Cancel import scenario${this.filesToImport.length > 1 ? 's' : ''}`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: validAction, buttonStatus: 'danger' }
+          ],
+          modalStatus: 'danger'
         }
       });
       dialogRef.onClose.subscribe((result) => {

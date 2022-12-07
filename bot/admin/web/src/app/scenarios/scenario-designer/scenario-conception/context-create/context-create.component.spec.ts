@@ -2,7 +2,8 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
-import { TestSharedModule } from '../../../../shared/testing/test-shared.module';
+
+import { TestSharedModule } from '../../../../../testing/test-shared.module';
 import { ContextCreateComponent } from './context-create.component';
 
 describe('ContextCreateComponent', () => {
@@ -30,13 +31,6 @@ describe('ContextCreateComponent', () => {
 
   it('Should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('Should destroy', () => {
-    expect(component.ngOnDestroy).toBeDefined();
-    expect(component.destroy.isStopped).toBeFalsy();
-    component.ngOnDestroy();
-    expect(component.destroy.isStopped).toBeTruthy();
   });
 
   it('Should format name in snake case on blur', () => {

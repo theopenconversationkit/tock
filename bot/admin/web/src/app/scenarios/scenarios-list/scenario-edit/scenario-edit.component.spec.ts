@@ -8,7 +8,7 @@ import { DialogService } from '../../../core-nlp/dialog.service';
 import { ScenarioGroup } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioEditComponent } from './scenario-edit.component';
-import { SpyOnCustomMatchers } from '../../../shared/testing/matchers/custom-matchers';
+import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
 
 class MockScenarioService {
   getState() {

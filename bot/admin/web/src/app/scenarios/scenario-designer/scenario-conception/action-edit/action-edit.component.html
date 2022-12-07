@@ -83,6 +83,42 @@
         </tock-form-control>
       </div>
 
+      <tock-form-control
+        label="Api handler"
+        name="handler"
+        [controls]="handler"
+        [showError]="isSubmitted"
+      >
+        <input
+          *ngIf="!isReadonly"
+          nbInput
+          formControlName="handler"
+          fullWidth
+          id="handler"
+          type="text"
+          tock-delay
+          placeholder="Enter handler class name"
+          autocomplete="off"
+          [nbAutocomplete]="handlersAutocomplete"
+          (focus)="updateHandlersAutocompleteValues()"
+          (keyup)="updateHandlersAutocompleteValues($event)"
+        />
+        <nb-autocomplete #handlersAutocomplete>
+          <nb-option
+            *ngFor="let option of handlersAutocompleteValues | async"
+            [value]="option"
+          >
+            {{ option }}
+          </nb-option>
+        </nb-autocomplete>
+        <span
+          *ngIf="isReadonly"
+          class="text-mitigated"
+        >
+          {{ handler.value }}
+        </span>
+      </tock-form-control>
+
       <div>
         <tock-form-control
           *ngIf="!isReadonly"
@@ -180,42 +216,6 @@
       </div>
 
       <tock-form-control
-        label="Api handler"
-        name="handler"
-        [controls]="handler"
-        [showError]="isSubmitted"
-      >
-        <input
-          *ngIf="!isReadonly"
-          nbInput
-          formControlName="handler"
-          fullWidth
-          id="handler"
-          type="text"
-          tock-delay
-          placeholder="Enter handler class name"
-          autocomplete="off"
-          [nbAutocomplete]="handlersAutocomplete"
-          (focus)="updateHandlersAutocompleteValues()"
-          (keyup)="updateHandlersAutocompleteValues($event)"
-        />
-        <nb-autocomplete #handlersAutocomplete>
-          <nb-option
-            *ngFor="let option of handlersAutocompleteValues | async"
-            [value]="option"
-          >
-            {{ option }}
-          </nb-option>
-        </nb-autocomplete>
-        <span
-          *ngIf="isReadonly"
-          class="text-mitigated"
-        >
-          {{ handler.value }}
-        </span>
-      </tock-form-control>
-
-      <tock-form-control
         label="Answer"
         name="answer"
         [controls]="answer"
@@ -235,6 +235,42 @@
           class="text-mitigated"
         >
           {{ answer.value }}
+        </span>
+      </tock-form-control>
+
+      <tock-form-control
+        label="Event"
+        name="trigger"
+        [controls]="trigger"
+        [showError]="isSubmitted"
+      >
+        <input
+          *ngIf="!isReadonly"
+          nbInput
+          formControlName="trigger"
+          fullWidth
+          id="trigger"
+          type="text"
+          tock-delay
+          placeholder="Add an event"
+          autocomplete="off"
+          [nbAutocomplete]="triggersAutocomplete"
+          (focus)="updateTriggersAutocompleteValues()"
+          (keyup)="updateTriggersAutocompleteValues($event)"
+        />
+        <nb-autocomplete #triggersAutocomplete>
+          <nb-option
+            *ngFor="let option of triggersAutocompleteValues | async"
+            [value]="option"
+          >
+            {{ option }}
+          </nb-option>
+        </nb-autocomplete>
+        <span
+          *ngIf="isReadonly"
+          class="text-mitigated"
+        >
+          {{ trigger }}
         </span>
       </tock-form-control>
 

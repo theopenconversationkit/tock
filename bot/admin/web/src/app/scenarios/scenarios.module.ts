@@ -52,6 +52,8 @@ import { NlpService } from '../nlp-tabs/nlp.service';
 import { ScenarioFiltersComponent } from './scenarios-list/scenario-filters/scenario-filters.component';
 import { ScenarioDesignerService } from './scenario-designer/scenario-designer.service';
 import { ContextsGraphComponent } from './scenario-designer/contexts-graph/contexts-graph.component';
+import { ScenarioCanvasWrapperComponent } from './scenario-designer/scenario-canvas-wrapper/scenario-canvas-wrapper.component';
+import { TriggerCreateComponent } from './scenario-designer/scenario-conception/trigger-create/trigger-create.component';
 
 @NgModule({
   imports: [
@@ -105,7 +107,9 @@ import { ContextsGraphComponent } from './scenario-designer/contexts-graph/conte
     ScenarioTransitionComponent,
     ScenarioImportComponent,
     ScenarioExportComponent,
-    ContextsGraphComponent
+    ContextsGraphComponent,
+    ScenarioCanvasWrapperComponent,
+    TriggerCreateComponent
   ],
   exports: [],
   providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, NlpService, ScenarioDesignerService],

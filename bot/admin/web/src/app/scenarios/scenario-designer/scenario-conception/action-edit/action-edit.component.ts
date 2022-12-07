@@ -43,7 +43,8 @@ export class ActionEditComponent implements OnInit {
     answerId: new FormControl(),
     inputContextNames: new FormArray([]),
     outputContextNames: new FormArray([]),
-    final: new FormControl(false)
+    final: new FormControl(false),
+    trigger: new FormControl(undefined, [this.actionHasHandler()])
   });
 
   get canSave(): boolean {
@@ -67,6 +68,9 @@ export class ActionEditComponent implements OnInit {
   }
   get outputContextNames(): FormArray {
     return this.form.get('outputContextNames') as FormArray;
+  }
+  get trigger(): FormControl {
+    return this.form.get('trigger') as FormControl;
   }
 
   constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {}
@@ -100,7 +104,7 @@ export class ActionEditComponent implements OnInit {
     }
   }
 
-  isActionNameUnic(): ValidatorFn {
+  private isActionNameUnic(): ValidatorFn {
     return (c: FormControl): ValidationErrors | null => {
       if (!c.value || !this.scenario) return null;
 
@@ -119,6 +123,14 @@ export class ActionEditComponent implements OnInit {
         return { custom: 'Action cannot have the same name as a context' };
 
       return null;
+    };
+  }
+
+  private actionHasHandler(): ValidatorFn {
+    return (c: FormControl): ValidationErrors | null => {
+      if (!c.value) return null;
+
+      return c.value && !this.handler.value ? { custom: 'An event can only be positioned on an action with a handler' } : null;
     };
   }
 
@@ -152,6 +164,19 @@ export class ActionEditComponent implements OnInit {
     }
 
     this.handlersAutocompleteValues = of(results);
+  }
+
+  triggersAutocompleteValues: Observable<string[]>;
+
+  updateTriggersAutocompleteValues(event?: KeyboardEvent): void {
+    let results = this.scenario.data.triggers || [];
+
+    if (event) {
+      const targetEvent = event.target as HTMLInputElement;
+      results = results.filter((evt: string) => evt.includes(targetEvent.value.trim().toLowerCase()));
+    }
+
+    this.triggersAutocompleteValues = of(results);
   }
 
   contextsAutocompleteValues: Observable<string[]>;
@@ -264,7 +289,12 @@ export class ActionEditComponent implements OnInit {
 
   save(): void {
     this.isSubmitted = true;
-    if (this.canSave) this.saveModifications.emit(this.form.value);
+
+    if (this.canSave) {
+      if (this.handler.value === '') this.handler.setValue(null);
+
+      this.saveModifications.emit(this.form.value);
+    }
   }
 
   cancel(): void {

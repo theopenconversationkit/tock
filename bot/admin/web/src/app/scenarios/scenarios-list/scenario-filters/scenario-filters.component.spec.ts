@@ -13,10 +13,10 @@ import {
 } from '@nebular/theme';
 import { of } from 'rxjs';
 
-import { TestSharedModule } from '../../../shared/testing/test-shared.module';
+import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioFiltersComponent } from './scenario-filters.component';
-import { SpyOnCustomMatchers } from '../../../shared/testing/matchers/custom-matchers';
+import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
 
 describe('ScenarioFiltersComponent', () => {
   let component: ScenarioFiltersComponent;
