@@ -2,7 +2,10 @@
   [hasSidePanel]="scenario.data.mode === SCENARIO_MODE.casting"
   (onSidePanelChange)="sidePanelChange($event)"
 >
-  <nb-accordion menu-body>
+  <nb-accordion
+    multi
+    menu-body
+  >
     <nb-accordion-item expanded>
       <nb-accordion-item-header>Contexts</nb-accordion-item-header>
       <nb-accordion-item-body>
