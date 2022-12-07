@@ -4,10 +4,19 @@
 :host ::ng-deep nb-accordion nb-accordion-item {
   background-color: inherit;
 
+  &:not(:first-child) {
+    border-top: 1px solid nb-theme(color-basic-transparent-400);
+  }
+
   nb-accordion-item-body .item-body,
   nb-accordion-item-header {
     padding: 0.5rem 1rem;
   }
+}
+
+.menu-item-no-data {
+  font-size: small;
+  text-align: center;
 }
 
 @include nb-install-component {

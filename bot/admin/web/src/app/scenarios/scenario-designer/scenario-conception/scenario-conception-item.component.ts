@@ -80,6 +80,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       }
     });
     modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((actionDef) => {
+      this.checkAndAddNewTrigger(actionDef.trigger);
       this.checkAndAddNewContexts(actionDef.inputContextNames);
       this.checkAndAddNewContexts(actionDef.outputContextNames);
       if (this.scenario.data.stateMachine && this.item.actionDefinition && this.item.actionDefinition.name !== actionDef.name) {
@@ -102,6 +103,10 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
 
       modal.close();
     });
+  }
+
+  private checkAndAddNewTrigger(trigger: string): void {
+    if (trigger && !this.scenario.data.triggers.includes(trigger)) this.scenario.data.triggers = [...this.scenario.data.triggers, trigger];
   }
 
   checkAndAddNewContexts(contextNames) {

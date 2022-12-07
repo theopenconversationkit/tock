@@ -4,10 +4,19 @@
 :host ::ng-deep nb-accordion nb-accordion-item {
   background-color: inherit;
 
+  &:not(:first-child) {
+    border-top: 1px solid nb-theme(color-basic-transparent-400);
+  }
+
   nb-accordion-item-body .item-body,
   nb-accordion-item-header {
     padding: 0.5rem 1rem;
   }
+}
+
+.menu-item-no-data {
+  font-size: small;
+  text-align: center;
 }
 
 @include nb-install-component {
@@ -48,16 +57,6 @@
         width: 1px;
         margin: auto;
       }
-    }
-
-    .canvas-shader {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      pointer-events: none;
-      box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
     }
   }
 

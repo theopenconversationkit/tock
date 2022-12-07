@@ -121,9 +121,20 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.from == SCENARIO_ITEM_FROM_BOT && item.actionDefinition && item.actionDefinition.trigger === trigger) {
         item.actionDefinition.trigger = null;
+
+        this.removeTriggerTransitionInStateMachine(trigger);
       }
     });
     this.scenario.data.triggers = this.scenario.data.triggers.filter((tgg) => tgg !== trigger);
+  }
+
+  private removeTriggerTransitionInStateMachine(trigger: string): void {
+    if (this.scenario.data.stateMachine) {
+      const transitionsParents = getSmTransitionParentsByname(trigger, this.scenario.data.stateMachine);
+      transitionsParents.forEach((parent) => {
+        delete parent.on[trigger];
+      });
+    }
   }
 
   addContext(): void {

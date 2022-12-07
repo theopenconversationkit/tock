@@ -45,12 +45,12 @@
     <nb-accordion-item>
       <nb-accordion-item-header>Events</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <nb-alert
+        <div
           *ngIf="!scenarioDefinition.triggers.length"
-          outline="info"
+          class="menu-item-no-data"
         >
           No event defined
-        </nb-alert>
+        </div>
         <div *ngIf="scenarioDefinition.triggers.length">
           <div
             *ngFor="let trigger of scenarioDefinition.triggers"

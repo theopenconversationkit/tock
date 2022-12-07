@@ -6,12 +6,12 @@
     <nb-accordion-item expanded>
       <nb-accordion-item-header>Contexts</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <nb-alert
+        <div
           *ngIf="!scenario.data.contexts.length"
-          outline="info"
+          class="menu-item-no-data"
         >
           No context defined
-        </nb-alert>
+        </div>
 
         <nb-list *ngIf="scenario.data.contexts.length">
           <nb-list-item
@@ -59,12 +59,12 @@
     <nb-accordion-item>
       <nb-accordion-item-header>Events</nb-accordion-item-header>
       <nb-accordion-item-body>
-        <nb-alert
+        <div
           *ngIf="!scenario.data.triggers?.length"
-          outline="info"
+          class="menu-item-no-data"
         >
           No event defined
-        </nb-alert>
+        </div>
 
         <nb-list *ngIf="scenario.data.triggers?.length">
           <nb-list-item
@@ -207,7 +207,6 @@
         </div>
       </div>
     </div>
-    <div class="canvas-shader"></div>
   </div>
 </tock-scenario-canvas-wrapper>
 

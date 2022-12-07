@@ -13,6 +13,7 @@
   grid-template-rows: 1fr;
   grid-template-columns: 1fr;
   transition: grid-template-columns 0.3s;
+  border-top: 1px solid nb-theme(color-basic-transparent-400);
 
   &.column {
     grid-template-columns: var(--panel-width) 1fr;
@@ -25,6 +26,10 @@
 
 .canvas-wrapper {
   overflow: hidden;
+}
+
+.canvas-wrapper,
+.menu {
   box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
 }
 
@@ -35,10 +40,11 @@
     flex-direction: column;
     gap: 0.5rem;
     overflow: auto;
+    border-right: 1px solid nb-theme(color-basic-transparent-400);
 
     hr {
       margin: 0 auto;
-      width: 90%;
+      width: 100%;
       border-color: nb-theme(color-basic-transparent-400);
     }
 
