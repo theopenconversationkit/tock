@@ -124,6 +124,7 @@ internal object TockKMongoConfiguration {
                                     val nanoseconds = DecimalUtils.extractNanosecondDecimal(b, seconds)
                                     Duration.ofSeconds(seconds, nanoseconds.toLong())
                                 }
+
                                 is Duration -> e
                                 else -> error("unsupported duration $e")
                             }
@@ -245,7 +246,9 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    generateIndexName(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    if (indexOptions.name == null) {
+        generateIndexName(ascending(*properties), indexOptions = indexOptions)?.also { indexOptions.name(it) }
+    }
     return ensureIndex(*properties, indexOptions = indexOptions)
 }
 
@@ -253,7 +256,9 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    generateIndexName(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    if (indexOptions.name == null) {
+        generateIndexName(ascending(*properties), indexOptions = indexOptions)?.also { indexOptions.name(it) }
+    }
     return ensureUniqueIndex(*properties, indexOptions = indexOptions)
 }
 
@@ -261,7 +266,9 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     keys: Bson,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    generateIndexName(keys, indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    if (indexOptions.name == null) {
+        generateIndexName(keys, indexOptions = indexOptions)?.also { indexOptions.name(it) }
+    }
     return ensureIndex(keys, indexOptions = indexOptions)
 }
 
@@ -269,7 +276,9 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     keys: String,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    generateIndexName(KMongoUtil.toBson(keys), indexOptions = indexOptions)?.let { indexOptions.name(it) }
+    if (indexOptions.name == null) {
+        generateIndexName(KMongoUtil.toBson(keys), indexOptions = indexOptions)?.also { indexOptions.name(it) }
+    }
     return ensureIndex(keys, indexOptions = indexOptions)
 }
 
@@ -344,4 +353,4 @@ private const val DocumentDBIndexReducedSize = 3
 /**
  * By default, do not count more than 1000000 documents (for large databases)
  */
-val defaultCountOptions : CountOptions = CountOptions().limit(1000000)
+val defaultCountOptions: CountOptions = CountOptions().limit(1000000)
