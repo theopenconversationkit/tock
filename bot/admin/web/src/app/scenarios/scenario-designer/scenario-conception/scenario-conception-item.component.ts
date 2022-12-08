@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
@@ -48,9 +48,9 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
 
   constructor(
     private scenarioConceptionService: ScenarioConceptionService,
-    private dialogService: DialogService,
     protected state: StateService,
-    private scenarioDesignerService: ScenarioDesignerService
+    private scenarioDesignerService: ScenarioDesignerService,
+    private nbDialogService: NbDialogService
   ) {
     this.scenarioConceptionService.scenarioDesignerItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'focusItem') this.focusItem(evt.item);
@@ -71,7 +71,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   manageAction() {
-    const modal = this.dialogService.openDialog(ActionEditComponent, {
+    const modal = this.nbDialogService.open(ActionEditComponent, {
       context: {
         item: this.item,
         contexts: this.contexts,
@@ -130,10 +130,9 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   searchIntent(): void {
-    const modal = this.dialogService.openDialog(IntentsSearchComponent, {
+    const modal = this.nbDialogService.open(IntentsSearchComponent, {
       context: {
-        intentSentence: this.item.text,
-        scenarioDesignerService: this.scenarioDesignerService
+        intentSentence: this.item.text
       }
     });
 
@@ -165,7 +164,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   createIntent(): void {
-    const modal = this.dialogService.openDialog(IntentCreateComponent, {
+    const modal = this.nbDialogService.open(IntentCreateComponent, {
       context: {
         item: this.item,
         scenario: this.scenario
@@ -181,7 +180,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   editIntent(): void {
-    const modal = this.dialogService.openDialog(IntentEditComponent, {
+    const modal = this.nbDialogService.open(IntentEditComponent, {
       context: {
         item: this.item,
         contexts: this.contexts,
@@ -295,7 +294,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     if (alertMessage) {
       const cancelAction = 'cancel';
       const confirmAction = 'delete';
-      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Deletion of an intervention`,
           subtitle: alertMessage,
@@ -350,7 +349,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     if (alertMessage) {
       const cancelAction = 'cancel';
       const confirmAction = 'change';
-      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Change of intervention type`,
           subtitle: alertMessage,

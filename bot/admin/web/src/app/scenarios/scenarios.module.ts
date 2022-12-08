@@ -8,6 +8,7 @@ import {
   NbButtonModule,
   NbCardModule,
   NbContextMenuModule,
+  NbDialogModule,
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
@@ -84,7 +85,8 @@ import { TriggerCreateComponent } from './scenario-designer/scenario-conception/
     NbContextMenuModule,
     NbAlertModule,
     NbStepperModule,
-    NbRadioModule
+    NbRadioModule,
+    NbDialogModule.forChild()
   ],
   declarations: [
     ScenariosListComponent,

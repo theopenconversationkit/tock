@@ -16,6 +16,8 @@ export const SCENARIO_STEPS_ERRORS = {
     `An intent must be defined for each client intervention. The "${txt}" client intervention does not have an intent defined.`,
   bot_intervention_should_have_action: (txt: string) =>
     `An action must be defined for each bot intervention. The "${txt}" bot intervention does not have an action defined.`,
+  context_should_exist_as_output: (txt: string) =>
+    `For each context declared, there must be at least one action or one intent producing this same context as output. The context "${txt}" was not found as an output of any action or intent.`,
   input_context_should_exist_as_output: (txt: string) =>
     `For each context declared as input to an action, there must be at least one other action or one intent producing this same context as output. The context "${txt}" was not found as an output of any other action or intent.`,
   output_context_should_exist_as_input: (txt: string) =>
@@ -94,6 +96,25 @@ export function isStepValid(scenario: ScenarioVersion, step: SCENARIO_MODE): Int
 function checkScenarioItemsIntegrity(scenario: ScenarioVersion): IntegrityCheckResult {
   const actionsDefinitions = getScenarioActionDefinitions(scenario);
   const intentDefinitions = getScenarioIntentDefinitions(scenario);
+
+  // For each context declared, there must be at least one action or one intent producing this same context as output.
+  for (let index = 0; index < scenario.data.contexts.length; index++) {
+    const context = scenario.data.contexts[index];
+    for (let actionIndex = 0; actionIndex < actionsDefinitions.length; actionIndex++) {
+      const actionsOutputContext = actionsDefinitions.find((actDef) => {
+        return actDef.outputContextNames!.includes(context.name);
+      });
+      const intentsOutputContext = intentDefinitions.find((intDef) => {
+        return intDef.outputContextNames?.includes(context.name);
+      });
+      if (!actionsOutputContext && !intentsOutputContext) {
+        return {
+          valid: false,
+          reason: SCENARIO_STEPS_ERRORS.context_should_exist_as_output(context.name)
+        };
+      }
+    }
+  }
 
   for (let index = 0; index < actionsDefinitions.length; index++) {
     const actionDef = actionsDefinitions[index];

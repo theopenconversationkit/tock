@@ -115,4 +115,4 @@ export interface MachineState {
   on?: { [key: string]: string };
 }
 
-export type ExportableScenarioGroup = { id: string; versions: string[] };
+export type ExportableScenarioGroup = { id: string; versionsIds: string[]; group?: ScenarioGroup };

@@ -119,7 +119,7 @@ export class ScenarioListSimpleComponent {
   }
 
   download(scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
-    this.scenarioService.loadScenariosAndDownload(this.scenariosGroups, [{ id: scenarioGroup.id, versions: [scenarioVersion.id] }]);
+    this.scenarioService.loadScenariosAndDownload(this.scenariosGroups, [{ id: scenarioGroup.id, versionsIds: [scenarioVersion.id] }]);
   }
 
   toggleTickEnabled(scenarioGroup: ScenarioGroupExtended): void {
