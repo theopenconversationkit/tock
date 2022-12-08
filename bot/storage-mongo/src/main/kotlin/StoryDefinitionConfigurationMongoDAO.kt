@@ -61,12 +61,13 @@ import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.`in`
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
-import org.litote.kmongo.projection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.regex
 import org.litote.kmongo.save
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
+import org.litote.kmongo.*
+import org.bson.Document
 
 /**
  *
@@ -177,26 +178,41 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
     override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> =
         col.withDocumentClass<StoryDefinitionConfigurationSummary>()
-            .find(
-                Namespace eq request.namespace,
-                BotId eq request.botId,
-                if (request.category.isNullOrBlank()) null else Category eq request.category,
-                request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "i") },
-                if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
-            )
-            .projection(
-                StoryDefinitionConfigurationSummary::_id,
-                StoryDefinitionConfigurationSummary::storyId,
-                StoryDefinitionConfigurationSummary::botId,
-                StoryDefinitionConfigurationSummary::intent,
-                StoryDefinitionConfigurationSummary::currentType,
-                StoryDefinitionConfigurationSummary::name,
-                StoryDefinitionConfigurationSummary::category,
-                StoryDefinitionConfigurationSummary::description
+            .aggregate<StoryDefinitionConfigurationSummary>(
+                lookup("story_configuration_history", StoryDefinitionConfigurationSummary::storyId.name, "conf.storyId", "history"),
+                match(
+                    Namespace eq request.namespace,
+                    BotId eq request.botId,
+                    if (request.category.isNullOrBlank()) Document() else Category eq request.category,
+                    or(
+                        request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "gmix") }?:Document(),
+                        request.textSearch?.takeUnless { it.isBlank() }?.let { Intent.name_.regex(allowDiacriticsInRegexp(it.trim()), "gmix") }?:Document(),
+                        request.textSearch?.takeUnless { it.isBlank() }?.let { StoryId.regex(allowDiacriticsInRegexp(it.trim()), "gmix") }?:Document()
+                    ),
+
+                    if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else Document()
+                ),
+                unwind("\$history"),
+                sort(Document("history.date", -1L)),
+                // The goal of this group is to take the last edited date
+                group(
+                    id = StoryDefinitionConfigurationSummary::_id,
+                    // Since we duplicate these fields with unwind we just take the first one when we regroup, it is needed because it won't take the field without that
+                    StoryDefinitionConfigurationSummary::storyId first StoryDefinitionConfigurationSummary::storyId,
+                    StoryDefinitionConfigurationSummary::botId first StoryDefinitionConfigurationSummary::botId,
+                    StoryDefinitionConfigurationSummary::intent first StoryDefinitionConfigurationSummary::intent,
+                    StoryDefinitionConfigurationSummary::currentType first StoryDefinitionConfigurationSummary::currentType,
+                    StoryDefinitionConfigurationSummary::name first StoryDefinitionConfigurationSummary::name,
+                    StoryDefinitionConfigurationSummary::category first StoryDefinitionConfigurationSummary::category,
+                    StoryDefinitionConfigurationSummary::description first StoryDefinitionConfigurationSummary::description,
+                    // We sort by history.date so when we regroup the first field with a specific _id has the most recent date
+                    StoryDefinitionConfigurationSummary::lastEdited first "\$history.date"
+                ),
+                sort( ascending(StoryDefinitionConfigurationSummary::name) ),
             )
             .safeCollation(Collation.builder().locale(defaultLocale.language).build())
-            .sort(ascending(StoryDefinitionConfigurationSummary::name))
             .toList()
+
 
     override fun save(story: StoryDefinitionConfiguration) {
         val previous = col.findOneById(story._id)

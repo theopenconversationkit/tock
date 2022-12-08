@@ -35,6 +35,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeseriali
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
+import com.mongodb.client.AggregateIterable
 import com.mongodb.client.FindIterable
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoDatabase
@@ -123,7 +124,6 @@ internal object TockKMongoConfiguration {
                                     val nanoseconds = DecimalUtils.extractNanosecondDecimal(b, seconds)
                                     Duration.ofSeconds(seconds, nanoseconds.toLong())
                                 }
-
                                 is Duration -> e
                                 else -> error("unsupported duration $e")
                             }
@@ -245,9 +245,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    if (indexOptions.name == null) {
-        generateIndexName(ascending(*properties), indexOptions = indexOptions)?.also { indexOptions.name(it) }
-    }
+    generateIndexName(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureIndex(*properties, indexOptions = indexOptions)
 }
 
@@ -255,9 +253,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureUniqueIndex(
     vararg properties: kotlin.reflect.KProperty<*>,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    if (indexOptions.name == null) {
-        generateIndexName(ascending(*properties), indexOptions = indexOptions)?.also { indexOptions.name(it) }
-    }
+    generateIndexName(ascending(*properties), indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureUniqueIndex(*properties, indexOptions = indexOptions)
 }
 
@@ -265,9 +261,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     keys: Bson,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    if (indexOptions.name == null) {
-        generateIndexName(keys, indexOptions = indexOptions)?.also { indexOptions.name(it) }
-    }
+    generateIndexName(keys, indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureIndex(keys, indexOptions = indexOptions)
 }
 
@@ -275,9 +269,7 @@ fun <T> com.mongodb.client.MongoCollection<T>.ensureIndex(
     keys: String,
     indexOptions: IndexOptions = IndexOptions()
 ): String {
-    if (indexOptions.name == null) {
-        generateIndexName(KMongoUtil.toBson(keys), indexOptions = indexOptions)?.also { indexOptions.name(it) }
-    }
+    generateIndexName(KMongoUtil.toBson(keys), indexOptions = indexOptions)?.let { indexOptions.name(it) }
     return ensureIndex(keys, indexOptions = indexOptions)
 }
 
@@ -338,6 +330,13 @@ fun <T> FindIterable<T>.safeCollation(collation: Collation): FindIterable<T> =
         collation(collation)
     }
 
+fun <T> AggregateIterable<T>.safeCollation(collation: Collation): AggregateIterable<T> =
+    if (isDocumentDB()) {
+        this
+    } else {
+        collation(collation)
+    }
+
 private const val DocumentDBIndexLimitSize = 32
 
 private const val DocumentDBIndexReducedSize = 3
@@ -345,4 +344,4 @@ private const val DocumentDBIndexReducedSize = 3
 /**
  * By default, do not count more than 1000000 documents (for large databases)
  */
-val defaultCountOptions: CountOptions = CountOptions().limit(1000000)
+val defaultCountOptions : CountOptions = CountOptions().limit(1000000)

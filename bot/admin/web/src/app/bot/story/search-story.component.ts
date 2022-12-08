@@ -19,7 +19,7 @@ import {Component, Injectable, OnDestroy, OnInit} from '@angular/core';
 import {BotService} from '../bot-service';
 import {NlpService} from '../../nlp-tabs/nlp.service';
 import {StateService} from '../../core-nlp/state.service';
-import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery} from '../model/story';
+import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery, AnswerConfigurationType, IntentName} from '../model/story';
 import {Subscription} from 'rxjs';
 import {FileItem, FileUploader, ParsedResponseHeaders} from 'ng2-file-upload';
 import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -27,6 +27,7 @@ import {CanDeactivate} from '@angular/router';
 import {LocationStrategy} from '@angular/common';
 import {NbToastrService} from '@nebular/theme';
 import {DialogService} from 'src/app/core-nlp/dialog.service';
+import {I18nLabel} from '../model/i18n'
 
 interface TreeNode<T> {
   data: T;
@@ -47,15 +48,18 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   categoryColumn = 'Story';
   intentColumn = 'Main Intent';
   descriptionColumn = 'Description';
+  lastEditedColumn = 'Last Edited';
   actionsColumn = 'Actions';
-  allColumns = [this.categoryColumn, this.intentColumn, this.descriptionColumn, this.actionsColumn];
+  allColumns = [this.categoryColumn, this.intentColumn, this.descriptionColumn, this.lastEditedColumn, this.actionsColumn];
   nodes: TreeNode<any>[];
   private lastExpandableState: Map<string, boolean> = new Map<string, boolean>();
+  dateFormat = 'dd/MM/yyyy HH:mm'
 
   filter: string = '';
   category: string = '';
   onlyConfigured: boolean = true;
   loading: boolean = false;
+  sortedByDate: boolean = false;
   lastFilter: string = this.filter;
 
   displayUpload: boolean = false;
@@ -182,7 +186,13 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
             }
           });
 
-          this.stories = s;
+          this.stories = s.sort((a, b) => {
+            let fa = a.lastEdited, fb = b.lastEdited;
+            if (fa < fb) { return 1; }
+            if (fa > fb) { return -1; }
+            return 0;
+           });
+
           this.nodes = Array.from(sortedMap, ([key, value]) => {
             return {
               expanded:
