@@ -75,7 +75,7 @@ class ScenarioServiceImpl : ScenarioService {
         // Init the first draft version
         val scenarioVersion = scenarioVersionService.createOne(initDraftScenarioVersion(scenarioGroup._id))
         // Associate the version to the group
-        return scenarioGroup.copy(versions = listOf(scenarioVersion))
+        return scenarioGroup.copy(versions = listOf(scenarioVersion), enabled = false)
     }
 
     override fun importOneScenarioGroup(scenarioGroup: ScenarioGroup): ScenarioGroup {
@@ -86,7 +86,7 @@ class ScenarioServiceImpl : ScenarioService {
         // Create versions
         val scenarioVersions = scenarioVersionService.createMany(scenarioGroup.versions)
         // Associate the versions to the group
-        return scenarioGroup.copy(versions = scenarioVersions)
+        return scenarioGroup.copy(versions = scenarioVersions, enabled = false)
     }
 
     override fun importManyScenarioVersion(namespace: String, scenarioVersions: List<ScenarioVersion>): List<ScenarioVersion> {
