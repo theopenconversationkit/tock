@@ -3,10 +3,10 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { ScenarioGroup } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 @Component({
   selector: 'tock-scenario-edit',
@@ -112,11 +112,15 @@ export class ScenarioEditComponent implements OnChanges {
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Cancel ${this.scenarioGroup?.id ? 'edit' : 'create'} scenario`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: validAction, buttonStatus: 'danger' }
+          ],
+          modalStatus: 'danger'
         }
       });
       dialogRef.onClose.subscribe((result) => {

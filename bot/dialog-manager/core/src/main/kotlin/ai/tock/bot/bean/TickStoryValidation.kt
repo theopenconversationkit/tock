@@ -72,6 +72,10 @@ object TickStoryValidation {
             "Action context $it not found in declared contexts"
         }
 
+        val DECLARED_CTX_NOT_FOUND : (String) -> String =  {
+            "Declared context $it not found in actions"
+        }
+
         val ACTION_HANDLER_CTX_NAME_CONFLICT: (String) -> String = {
             "The same name $it is used for Action handler and context"
         }
@@ -79,17 +83,15 @@ object TickStoryValidation {
     }
 
     fun validateIntents(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             val sm = StateMachine(stateMachine)
             // For each intent (primary and secondary) declared in the TickStory,
             // we must find a transition with the same name in the state machine
             val allIntents = listOf(mainIntent).union(primaryIntents).union(secondaryIntents)
             allIntents
                 .filterNot { sm.containsTransition(it) }
-                .forEach { errors.add(MessageProvider.INTENT_NOT_FOUND(it)) }
+                .map { MessageProvider.INTENT_NOT_FOUND(it) }
         }
-        return errors
     }
 
     /**
@@ -104,94 +106,80 @@ object TickStoryValidation {
     }
 
     fun validateTickIntentNames(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             // For each TickIntent, the Intent used must be secondary,
             intentsContexts
                 .map { it.intentName }
                 .filterNot { it in secondaryIntents }
-                .forEach { errors.add(MessageProvider.NOT_SECONDARY_INTENT_ASSOCIATED_TO_CTX(it)) }
+                .map { MessageProvider.NOT_SECONDARY_INTENT_ASSOCIATED_TO_CTX(it) }
         }
-        return errors
     }
 
     fun validateDeclaredIntentContexts(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             // For each TickIntentAssociation, the context used must be declared,
             intentsContexts
                 .flatMap { it.associations }
                 .flatMap { it.contextNames }
                 .filterNot { contextName -> contextName in contexts.map { it.name } }
-                .forEach { errors.add(MessageProvider.INTENT_CTX_ASSOCIATION_NOT_FOUND(it)) }
+                .map { MessageProvider.INTENT_CTX_ASSOCIATION_NOT_FOUND(it) }
         }
-        return errors
     }
 
     fun validateTickIntentAssociationActions(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             // For each TickIntentAssociation, the action used must be declared,
             intentsContexts
                 .flatMap { it.associations }
                 .map { it.actionName }
                 .filterNot { actionName -> actionName in actions.map { it.name } }
-                .forEach { errors.add(MessageProvider.INTENT_ACTION_ASSOCIATION_NOT_FOUND(it)) }
+                .map { MessageProvider.INTENT_ACTION_ASSOCIATION_NOT_FOUND(it) }
         }
-        return errors
     }
 
     fun validateTransitions(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             val sm = StateMachine(stateMachine)
             // For each transition in the state machine,
-            // we must find an intent of the same name in the TickStory
+            // we must find an intent or trigger with the same name in the TickStory
             val allIntents = listOf(mainIntent).union(primaryIntents).union(secondaryIntents).union(triggers)
             sm.getAllTransitions()
                 .filterNot { allIntents.contains(it) }
-                .forEach { errors.add(MessageProvider.TRANSITION_NOT_FOUND(it)) }
+                .map { MessageProvider.TRANSITION_NOT_FOUND(it) }
         }
-        return errors
     }
 
     fun validateActions(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             val sm = StateMachine(stateMachine)
             // For each action declared in the TickStory,
             // we must find a state with the same name in the state machine
             actions
                 .filter { sm.getState(it.name) == null }
-                .forEach { errors.add(MessageProvider.ACTION_NOT_FOUND(it.name)) }
+                .map { MessageProvider.ACTION_NOT_FOUND(it.name) }
         }
-        return errors
     }
 
     fun validateStates(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             val sm = StateMachine(stateMachine)
             // For each state of the state machine that is not a grouping state,
             // there must be an action of the same name in the TickStory
             sm.getAllStatesNotGroup()
                 .filterNot { state -> actions.any { it.name == state } }
-                .forEach { errors.add(MessageProvider.STATE_NOT_FOUND(it)) }
+                .map { MessageProvider.STATE_NOT_FOUND(it) }
         }
-        return errors
     }
 
     fun validateActionHandlers(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             // For each action declaring to execute business code,
             // we must find a class bearing the name of the handler declared in the action
             actions
                 .filter { !it.handler.isNullOrBlank() }
                 .filterNot { ActionHandlersRepository.contains(it.handler!!) }
-                .forEach { errors.add(MessageProvider.ACTION_HANDLER_NOT_FOUND(it.handler!!)) }
+                .map { MessageProvider.ACTION_HANDLER_NOT_FOUND(it.handler!!) }
         }
-        return errors
     }
 
     fun validateInputOutputContexts(tickStory: TickStory): List<String> {
@@ -238,30 +226,39 @@ object TickStoryValidation {
         }
     }
 
-
     fun validateDeclaredActionContexts(tickStory: TickStory): List<String> {
         val errors = mutableListOf<String>()
-        tickStory.actions
+
+        val contextsUsed = tickStory.actions
             .flatMap { it.inputContextNames.union(it.outputContextNames) }
             .toSet()
-            .minus(tickStory.contexts.map { it.name }.toSet())
-            .forEach {
-                errors.add(MessageProvider.ACTION_CTX_NOT_FOUND(it))
-            }
+        val contextDeclared = tickStory.contexts
+            .map { it.name }
+            .toSet()
+
+        errors.addAll(
+            contextsUsed
+                .minus(contextDeclared)
+                .map { MessageProvider.ACTION_CTX_NOT_FOUND(it) }
+        )
+
+        errors.addAll(
+            contextDeclared
+                .minus(contextsUsed)
+                .map { MessageProvider.DECLARED_CTX_NOT_FOUND(it) }
+        )
 
         return errors
     }
 
     fun validateNames(tickStory: TickStory): List<String> {
-        val errors = mutableListOf<String>()
-        with(tickStory) {
+        return with(tickStory) {
             // Context names could not be used for Action handler name
             contexts
                 .map { it.name }
                 .intersect(actions.map { it.name }.toSet())
-                .forEach { errors.add(MessageProvider.ACTION_HANDLER_CTX_NAME_CONFLICT(it)) }
+                .map { MessageProvider.ACTION_HANDLER_CTX_NAME_CONFLICT(it) }
         }
-        return errors
     }
 
     fun validateTickStory(tick: TickStory): Set<String> {

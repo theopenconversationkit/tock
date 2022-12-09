@@ -16,12 +16,14 @@
 
 package ai.tock.bot.handler
 
+import ai.tock.bot.HandlerNamespace
+
 data class ActionHandler(
-    val name: String,
-    val description: String? = null,
-    val inputContexts: Set<String> = emptySet(),
-    val outputContexts: Set<String> = emptySet(),
-    val handler: (Map<String, String?>) -> Map<String, String?> = { emptyMap() }
-    // val shared: Boolean,
-    // val client: String,
+    val id: String,
+    val namespace: HandlerNamespace,
+    val name: String = "${namespace.key}:${id.lowercase()}",
+    val description: String?,
+    val inputContexts: Set<String>,
+    val outputContexts: Set<String>,
+    val handler: (Map<String, String?>) -> Map<String, String?>
 )

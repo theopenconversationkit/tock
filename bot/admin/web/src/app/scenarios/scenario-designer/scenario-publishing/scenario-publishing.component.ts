@@ -457,6 +457,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       primaryIntents: primaryIntents,
       secondaryIntents: secondaryIntents,
       contexts: this.scenario.data.contexts,
+      triggers: this.scenario.data.triggers,
       actions: [],
       stateMachine: this.scenario.data.stateMachine,
       intentsContexts: intentsContexts

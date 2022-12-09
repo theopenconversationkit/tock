@@ -215,7 +215,8 @@ class TickStoryValidationTest : DialogManagerTest() {
             val errors = TickStoryValidation.validateDeclaredActionContexts(tickStory)
 
             val expectedErrors = setOf(
-                TickStoryValidation.MessageProvider.ACTION_CTX_NOT_FOUND("CONTEXT_3"))
+                TickStoryValidation.MessageProvider.ACTION_CTX_NOT_FOUND("CONTEXT_3"),
+                TickStoryValidation.MessageProvider.DECLARED_CTX_NOT_FOUND("CONTEXT_20"))
 
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }

@@ -1,162 +1,110 @@
-@import '~@nebular/theme/styles/global/_breakpoints.scss';
 @import '~@nebular/theme/styles/theming';
 @import '~@nebular/theme/styles/themes';
 
-:host {
-  --panel-with: 15rem;
-  --panel-padding: 1rem;
-  --panel-side-margin: -2.25rem;
-  --panel-bottom-margin: -0.75rem;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  margin: 0 var(--panel-side-margin) var(--panel-bottom-margin);
-  overflow: hidden;
-  box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
-}
+:host ::ng-deep nb-accordion nb-accordion-item {
+  background-color: inherit;
 
-@include media-breakpoint-down(md) {
-  :host {
-    --panel-side-margin: -1.5rem;
-    --panel-bottom-margin: -0.5rem;
+  &:not(:first-child) {
+    border-top: 1px solid nb-theme(color-basic-transparent-400);
+  }
+
+  nb-accordion-item-body .item-body,
+  nb-accordion-item-header {
+    padding: 0.5rem 1rem;
   }
 }
 
-@include media-breakpoint-down(sm) {
-  :host {
-    --panel-side-margin: -1rem;
-    --panel-bottom-margin: -0rem;
-  }
-
-  .production-wrapper .production-menu {
-    height: 15rem;
-  }
-}
-
-.production-wrapper {
-  height: inherit;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr;
-
-  .production-menu {
-    height: auto;
-    overflow: auto;
-    padding: var(--panel-padding);
-    display: grid;
-    grid-template-columns: minmax(var(--panel-with), 1fr) auto minmax(var(--panel-with), 1fr) auto var(--panel-with);
-    grid-template-rows: var(--panel-with);
-    grid-gap: 0.5rem;
-    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
-  }
-}
-
-@include media-breakpoint-up(lg) {
-  .production-wrapper {
-    grid-template-columns: var(--panel-with) 1fr;
-    grid-template-rows: 1fr;
-
-    .production-menu {
-      padding: var(--panel-padding) 0;
-      grid-template-columns: minmax(calc(var(--panel-with) - var(--panel-padding)));
-      grid-template-rows: minmax(auto, 1fr) auto minmax(auto, 1fr) auto auto;
-    }
-  }
+.menu-item-no-data {
+  font-size: small;
+  text-align: center;
 }
 
 @include nb-install-component {
-  .production-wrapper {
-    .production-menu {
-      @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+  nb-accordion {
+    .intent,
+    .action,
+    .event {
+      padding: 0.2rem 0.6rem;
+      cursor: move;
 
-      .intents-wrapper strong,
-      .intents-list,
-      .actions-wrapper strong,
-      .actions-list,
-      .user-actions-wrapper {
-        padding: 0 var(--panel-padding);
+      &.disabled {
+        cursor: not-allowed;
       }
 
-      .intents-wrapper,
-      .actions-wrapper {
+      &.isReadonly {
+        cursor: default;
+      }
+
+      & :first-child {
         overflow: hidden;
-        display: flex;
-        flex-direction: column;
-
-        .intents-list,
-        .actions-list {
-          @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
-
-          overflow: auto;
-          font-size: 0.8rem;
-          scrollbar-gutter: stable;
-
-          .intent,
-          .action {
-            padding: 0.2rem 0.6rem;
-            cursor: move;
-
-            &.disabled {
-              cursor: not-allowed;
-            }
-
-            &.isReadonly {
-              cursor: default;
-            }
-          }
-        }
-      }
-
-      .intents-wrapper .intents-list .intent {
-        background-color: nb-theme(color-info-active);
-        color: nb-theme(text-control-color);
-        border-radius: 1rem;
-
-        &.disabled {
-          background-color: nb-theme(color-info-disabled);
-          color: nb-theme(text-basic-color);
-        }
-      }
-
-      .actions-wrapper .actions-list .action {
-        background-color: nb-theme(color-basic-700);
-        color: nb-theme(text-control-color);
-        border-radius: 0.25rem;
-
-        &.disabled {
-          background-color: nb-theme(color-basic-transparent-600);
-          color: nb-theme(text-basic-color);
-        }
       }
     }
 
-    .production-canvas-wrapper {
-      overflow: hidden;
-      box-shadow: inset 2px 2px 5px rgba($color: #000000, $alpha: 0.1);
-      .production-canvas {
-        position: relative;
-        width: fit-content;
-        height: fit-content;
-        transition: transform 0.3s;
-        transform-origin: 0 0;
-        padding: 20px;
+    .intent {
+      background-color: nb-theme(color-info-active);
+      color: nb-theme(text-control-color);
+      border-radius: 1rem;
 
-        .pathHandler {
-          position: absolute;
-          z-index: 1;
-          border-radius: 100%;
-          width: 20px;
-          height: 20px;
-          background-color: none;
+      &.disabled {
+        background-color: nb-theme(color-info-disabled);
+        color: nb-theme(text-basic-color);
+      }
+
+      & nb-icon {
+        overflow: initial;
+        flex: initial;
+      }
+    }
+
+    .event {
+      background-color: nb-theme(color-success-active);
+      color: nb-theme(text-control-color);
+      border-radius: 1rem;
+
+      &.disabled {
+        background-color: nb-theme(color-success-disabled);
+        color: nb-theme(text-basic-color);
+      }
+    }
+
+    .action {
+      background-color: nb-theme(color-basic-700);
+      color: nb-theme(text-control-color);
+      border-radius: 0.25rem;
+
+      &.disabled {
+        background-color: nb-theme(color-basic-transparent-600);
+        color: nb-theme(text-basic-color);
+      }
+    }
+  }
+
+  .production-canvas-wrapper {
+    height: 100%;
+
+    .production-canvas {
+      position: relative;
+      width: fit-content;
+      height: fit-content;
+      transition: transform 0.3s;
+      transform-origin: 0 0;
+      padding: 20px;
+
+      .pathHandler {
+        position: absolute;
+        z-index: 1;
+        border-radius: 100%;
+        width: 20px;
+        height: 20px;
+        background-color: none;
+        nb-icon {
+          display: none;
+        }
+        &:hover {
+          background-color: nb-theme(color-info-active);
+          color: white;
           nb-icon {
-            display: none;
-          }
-          &:hover {
-            background-color: nb-theme(color-info-active);
-            color: white;
-            nb-icon {
-              display: inline;
-            }
+            display: inline;
           }
         }
       }

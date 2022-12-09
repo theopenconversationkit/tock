@@ -1,11 +1,11 @@
-<div *ngFor="let step of steps; let i = index; let f = first; let l = last">
+<div *ngFor="let step of steps; let i = index; let l = last">
   <button
     nbButton
     ghost
     size="small"
     shape="round"
     class="step"
-    [ngClass]="{ valid: f || isStepSequenceValid(step.mode), selected: mode === step.mode }"
+    [ngClass]="{ valid: isStepSequenceValid(step.mode), selected: mode === step.mode }"
     (click)="switchMode(step.mode)"
     [attr.data-testid]="'step-ctrl-' + step.mode"
   >

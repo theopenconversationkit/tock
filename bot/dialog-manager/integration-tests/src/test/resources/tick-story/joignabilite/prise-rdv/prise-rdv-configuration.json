@@ -16,12 +16,12 @@
       "name": "PROVOSER_LA_PRISE_DU_RDV_VIA_LE_SITE_",
       "description": "provoser la prise du rdv via le site",
       "answerId": "app_scenario_Vous devez être équipé afin de pouvoir faire un rdv en visio.\nVous pouvez toujours prendre un rdv par téléphone ou en caisse ici_1",
-      "handler": "handler_set_resolve_max",
+      "handler": "joignabilite:set_resolve_rdv",
       "inputContextNames": [
         "MATOS_KO"
       ],
       "outputContextNames": [
-        "RESOLVE_MAX"
+        "RESOLVE_RDV"
       ],
       "proceed": false,
       "final": false
@@ -32,7 +32,7 @@
       "answerId": "app_scenario_Fin objectif prise de rdv",
       "handler": null,
       "inputContextNames": [
-        "RESOLVE_MAX"
+        "RESOLVE_RDV"
       ],
       "outputContextNames": [],
       "proceed": false,
@@ -42,12 +42,12 @@
       "name": "AFFICHER_LIEN_RDV_CAISSE",
       "description": "AFFICHER_LIEN_RDV_CAISSE",
       "answerId": "app_scenario_Vous pouvez prendre rdv en caisse en vous connectant à votre espace client ici_1",
-      "handler": "handler_set_resolve_max",
+      "handler": "joignabilite:set_resolve_rdv",
       "inputContextNames": [
         "RDV_CAISSE"
       ],
       "outputContextNames": [
-        "RESOLVE_MAX"
+        "RESOLVE_RDV"
       ],
       "proceed": false,
       "final": false
@@ -70,12 +70,12 @@
       "name": "AFFICHER_LIEN_RDV_TEL",
       "description": "Envoi du lien vers la prise de rdv sur le site client",
       "answerId": "app_scenario_Vous pouvez prendre rdv sur le site web",
-      "handler": "handler_set_resolve_max",
+      "handler": "joignabilite:set_resolve_rdv",
       "inputContextNames": [
         "RDV_TEL"
       ],
       "outputContextNames": [
-        "RESOLVE_MAX"
+        "RESOLVE_RDV"
       ],
       "proceed": false,
       "final": false
@@ -84,12 +84,12 @@
       "name": "REDIRECTION_HUMAIN",
       "description": "Rediriger vers un conseiller pour la prise de rdv",
       "answerId": "app_scenario_Je vais vous mettre en relation avec un humain_1",
-      "handler": "handler_set_resolve_max",
+      "handler": "joignabilite:set_resolve_rdv",
       "inputContextNames": [
         "MATOS_OK"
       ],
       "outputContextNames": [
-        "RESOLVE_MAX"
+        "RESOLVE_RDV"
       ],
       "proceed": false,
       "final": false
@@ -127,7 +127,7 @@
       "entityRole": "rdv_tel"
     },
     {
-      "name": "RESOLVE_MAX",
+      "name": "RESOLVE_RDV",
       "entityType": null,
       "entityRole": null
     },

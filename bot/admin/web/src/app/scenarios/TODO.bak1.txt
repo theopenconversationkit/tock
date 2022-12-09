@@ -1,22 +1,4 @@
-global
-
-        A voir avec la SNCF sur la maj des paquets ou possibilité de créer un fichier de définition de déclaration en attendant "xxx.d.ts" avec les fonctions attendues
-          - mettre @types/nodes vers minimum 17.0.29
-          - permet de bénéficier de la fonction structuredClone (présent dans les navigateurs récent ou node 17)
-          - évite les problématiques liées JSON.parse(JSON.stringify(xxx)) à savoir
-            • problème de performance
-            • disaparition des types (ne déclenche pas d'erreur avec les types non supportés)
-            • disparition de données dans certain cas
-          - déplacer la fonction "deepClone" du fichier scenarios/commons/utils.ts vers shared/utils/utils.ts
-          - remplacer les JSON.parse(JSON.stringify(xxx)) par l'appel deepClone pour ne gérer qu'une seule fois le remplacement de la fonction ?
-
-        Créer un composant partagé input avec autocomplétion ?
-
 shared
-        Export: proposer la possibilité de sauvegarder l'ensemble des exports dans un fichier .zip plutôt que de sauvegarder un à un chaque scenarioGroup
-
-        Import: faut-il préciser les erreurs correspondantes à un mauvais contenu du fichier ? (A voir à l'usage)
-
         #DONE Import: que se passe t'il lorsque le scenarioGroup importé à le même nom que l'un déjà présent dans la liste ?
 
         #DONE Import: utiliser le nouvel endpoint pour créer un scenarioGroup avec la / les versions lorsqu'il sera disponible
@@ -25,19 +7,7 @@ shared
 
 Scenarios list
 
-        Réparer method design quand toutes les versions sont ARCHIVE
-
-        Régler le souci d'appel au endpoint de get de scenarioGroups quand l'application courante n'a pas de configuration
-
-        Proposer le fait qu'il existe ou pas une version current dans les critères de filtre
-
-        Permettre de classer les scenarios par date de creation / modification ?
-
-        A la suppression d'un scenarioGroup avec tickStory, ne devrait-on pas s'occuper du nettoyage des intents et answers attachées au scenario ?
-
-        Activation/desactivation tickStory => quelle mécanique ? Modification des rules des primary intents + flag au niveau scenario ?
-
-        Storer au niveau du state l'index de pagination. On conserverais ainsi la derniere page affichée au retour du designer ce qui serait sympa
+        #DONE Réparer method design quand toutes les versions sont ARCHIVE
 
         #DONE Déplacer le rep scenario-edit dans scenarios-list
 
@@ -67,13 +37,13 @@ Scenarios list
 
 Scenario designer :
 
-        Gérer les streams multiples de la subsciption à getScenarioVersion au chargement du designer qui entraine de multiples affichages des modales
+        #DONE Trouver un moyen de masquer le footer de l'app quand on est dans le designer
 
-        Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
+        #DONE Gérer les streams multiples de la subsciption à getScenarioVersion au chargement du designer qui entraine de multiples affichages des modales
 
-        La sauvegarde du scenario supprimant les expandos commencant par un underscore, on perd les _sentences d'intent préalablement récupérées...
+        #DONE Renommage de ScenarioItem.tickActionDefinition en ScenarioItem.actionDefinition avec compatibilité descendante
 
-        Deux handlers sont susceptibles de porter le meme nom avec des variations de casse
+        #DONE La sauvegarde du scenario supprimant les expandos commencant par un underscore, on perd les _sentences d'intent préalablement récupérées...
 
         #DONE Mettre en place un mecanisme pour l'update des answers existantes mais dont le texte à été modifié dans le designer depuis la derniere publication
 
@@ -91,11 +61,17 @@ Scenario designer :
 
         #DONE Adapter les css au mode nuit
 
+        CONTEXT GRAPH :
+
+                #DONE Partager les variables de couleur avec le reste du module
+
+                #DONE Résoudre decalage affichage svg viewBox sous firefox
+
         WRITING :
 
-                Désactiver la duplication par drag&drop
+                #DONE => non ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => A discuter avec Mohamed
 
-                ??? Ne faut-il pas bloquer le passage à Casting si toutes les branches ne sont pas marquées comme finales ? => A discuter avec Mohamed
+                #DONE Désactiver la duplication par drag&drop
 
                 #DONE Desactiver les drag&drop et raccourcis clavier en dehors du mode writing
 
@@ -105,11 +81,7 @@ Scenario designer :
 
         CONCEPTION :
 
-                Imposer l'existence d'au moins une sentence (existante ou à créer) par intent pour passer à la production
-
-                Internationalisation des answers. Pour le moment seul la i18n d'interfaceType textChat et de locale currentLocale est définie
-
-                ??? Quid des sharedIntents ?
+                #DONE Imposer l'existence d'au moins une sentence (existante ou à créer) par intent pour passer à la production
 
                 #DONE Intent avec intnetdefinition manquante mais affichage pas en accord ???
 
@@ -137,11 +109,10 @@ Scenario designer :
 
                 #DONE Revoir la structuration html/css du panel de gauche (liste des intents et actions et boutons de fonctionnalité). La hauteur des différents blocks a été vite faite (en pourcentages) et doit être reprise pour fonctionner avec des résolutions plus basses
 
+                #DONE Corriger bug sur changement de source transition : # manquant
+
         PUBLISHING :
-
-                Régler le souci de detection de dependances à updater quand on recharge un scenario sauvegardé sur le mode publishing
-
-                ??? Intent : c'est quoi les mandatoryStates ?
+                #DONE Régler le souci de detection de dependances à updater quand on recharge un scenario sauvegardé sur le mode publishing
 
                 #DONE Problème de mise à jour du state local une fois la plublication effectuée avec succès
 

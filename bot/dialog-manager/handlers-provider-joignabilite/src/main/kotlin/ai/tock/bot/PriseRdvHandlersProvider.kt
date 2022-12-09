@@ -21,15 +21,24 @@ import ai.tock.bot.handler.ActionHandlersProvider
 
 class PriseRdvHandlersProvider: ActionHandlersProvider {
 
-    override fun getActionHandlers(): Map<String, ActionHandler> = emptyMap()
+    override fun getNameSpace() = HandlerNamespace.JOIGNABILITE
 
-    @Deprecated("Use the new method 'getActionHandlers' once developed", level = DeprecationLevel.WARNING)
-    override fun getHandlers(): Map<String, (Map<String, String?>) -> Map<String, String?>> =
-        mapOf(
-            "set_resolve_rdv" to ::setResolveRdv,
+    private enum class HandlerId {
+        SET_RESOLVE_RDV
+    }
+
+    private enum class ContextName {
+        RESOLVE_RDV
+    }
+
+    override fun getActionHandlers(): Set<ActionHandler> =
+        setOf(
+            createActionHandler(
+                id = HandlerId.SET_RESOLVE_RDV.name,
+                description = "Set ${ContextName.RESOLVE_RDV.name} context",
+                outputContexts = setOf(ContextName.RESOLVE_RDV.name),
+                handler = { mapOf(ContextName.RESOLVE_RDV.name to null) }
+            )
         )
-
-    private fun setResolveRdv(contexts: Map<String, String?>): Map<String, String?> =
-        mapOf("RESOLVE_RDV" to null)
 
 }

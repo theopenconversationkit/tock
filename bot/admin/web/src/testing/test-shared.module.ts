@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { NbThemeModule } from '@nebular/theme';
 
-import { AutofocusDirective, FullscreenDirective } from '../directives';
+import { AutofocusDirective, FullscreenDirective } from '../app/shared/directives';
 
 @NgModule({
   declarations: [AutofocusDirective, FullscreenDirective],

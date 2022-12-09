@@ -16,14 +16,13 @@
 
 package ai.tock.bot.handler
 
+import ai.tock.bot.HandlerNamespace
 import ai.tock.bot.provider.SupportedActionHandlersProvider
 
 /**
  * A handler repository, it contains all available handlers
  */
 object ActionHandlersRepository {
-    private val handlers =
-        mutableMapOf<String, (Map<String, String?>) -> Map<String, String?>>()
 
     private val actionHandlers =
         mutableMapOf<String, ActionHandler>()
@@ -38,37 +37,25 @@ object ActionHandlersRepository {
      * Subscription of handlers provider
      */
     private fun subscribe(provider: ActionHandlersProvider) {
-        provider.getHandlers().forEach(::add)
         provider.getActionHandlers().forEach(::add)
     }
 
     /**
      * Add a handler if it does not exist, or throws error exception
      */
-    private fun add(handlerName: String, handlerCallback: (Map<String, String?>) -> Map<String, String?>) {
-        if(handlers.contains(handlerName)) {
-            error("Handler <$handlerName> already exists")
+    private fun add(actionHandler: ActionHandler) {
+        if(actionHandlers.contains(actionHandler.name)) {
+            error("Action handler <${actionHandler.name}> already exists")
         }
 
-        handlers[handlerName] = handlerCallback
-    }
-
-    /**
-     * Add a handler if it does not exist, or throws error exception
-     */
-    private fun add(handlerName: String, actionHandler: ActionHandler) {
-        if(actionHandlers.contains(handlerName)) {
-            error("Action handler <$handlerName> already exists")
-        }
-
-        actionHandlers[handlerName] = actionHandler
+        actionHandlers[actionHandler.name] = actionHandler
     }
 
     /**
      * Invoke a handler if it exists, or throws error exception
      */
     fun invoke(handlerName: String, contexts: Map<String, String?>): Map<String, String?> {
-        val handlerCallback = handlers[handlerName]
+        val handlerCallback = actionHandlers[handlerName]?.handler
         handlerCallback ?: error("TickAction handler <$handlerName> not found")
 
         return handlerCallback.invoke(contexts)
@@ -77,12 +64,12 @@ object ActionHandlersRepository {
     /**
      * Checks if the map handlers contains the given handler name.
      */
-    fun contains(handlerName: String) = handlers.contains(handlerName)
+    fun contains(handlerName: String) = actionHandlers.contains(handlerName)
 
     /**
-     * Get handlers name
+     * Get action handlers
      */
-    @Deprecated("Use the new method 'getActionHandlers' once developed", level = DeprecationLevel.WARNING)
-    fun getHandlersName(): List<String> = handlers.keys.toList()
-    fun getActionHandlers(): Set<ActionHandler> = actionHandlers.values.toSet()
+    fun getActionHandlers(namespace: HandlerNamespace): Set<ActionHandler> {
+        return actionHandlers.values.filter { it.namespace == namespace || it.namespace.shared }.toSet()
+    }
 }

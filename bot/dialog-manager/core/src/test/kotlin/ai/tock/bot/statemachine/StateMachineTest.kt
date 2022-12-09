@@ -26,23 +26,13 @@ import kotlin.test.assertTrue
 
 class StateMachineTest: DialogManagerTest() {
 
-    /**
-     * Given a state machine
-     * When has a loop - caused by a relation father/son -
-     * Then throw IllegalArgumentException
-     */
-    @Test fun infinityLoopFatherSon() {
-        val root = getStateMachineFromFile("xstate-infinityLoop-father-son")
+    @Test fun `given state machine when has duplicate states then throw IllegalArgumentException`(){
+        val root = getStateMachineFromFile("xstate-invalid-duplicate-states")
         assertThrows<IllegalArgumentException> { StateMachine(root) }
     }
 
-    /**
-     * Given a state machine
-     * When has a loop - caused by a relation father/grandson -
-     * Then throw IllegalArgumentException
-     */
-    @Test fun infinityLoopFatherGrandson() {
-        val root = getStateMachineFromFile("xstate-infinityLoop-father-grandson")
+    @Test fun `given state machine when has self-loop states then throw IllegalArgumentException`(){
+        val root = getStateMachineFromFile("xstate-invalid-self-loop")
         assertThrows<IllegalArgumentException> { StateMachine(root) }
     }
 

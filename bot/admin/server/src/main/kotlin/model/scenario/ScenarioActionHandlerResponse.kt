@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.model.scenario
 
+import ai.tock.bot.HandlerNamespace
 import com.fasterxml.jackson.annotation.JsonInclude
 
 @JsonInclude(JsonInclude.Include.ALWAYS)

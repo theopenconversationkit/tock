@@ -6,17 +6,12 @@
   dndDragoverClass="dragHover"
   (dndDrop)="onDrop($event)"
 >
-  <div
-    class="stateGroup-header cursor-default"
-    [nbTooltip]="getActionTooltip()"
-  >
+  <div class="stateGroup-header cursor-default">
     <span class="text-nowrap">
       <nb-icon
         *ngIf="state.id !== 'root' && isInitialParentState()"
         icon="flash-outline"
         status="primary"
-        class="valign-middle"
-        style="margin-left: -5px"
         nbTooltip="Initial action"
       ></nb-icon>
 
@@ -24,33 +19,37 @@
         *ngIf="state.id !== 'root' && !isInitialParentState() && !isReadonly"
         icon="flash-outline"
         status="basic"
-        class="valign-middle pointer"
-        style="margin-left: -5px"
+        class="pointer"
         (click)="setActionInitial()"
         nbTooltip="Define this action as the initial action of its parent container"
       ></nb-icon>
+
+      <nb-icon
+        icon="info-outline"
+        [nbTooltip]="getActionTooltip()"
+      ></nb-icon>
+
       {{ state.id }}
 
       <nb-icon
         *ngIf="getNextActionError()"
         icon="alert-triangle-outline"
         status="danger"
-        class="valign-middle mx-2"
         [nbTooltip]="getNextActionError()"
       ></nb-icon>
     </span>
 
-    <div class="d-flex">
+    <div>
       <nb-icon
         *ngIf="!isReadonly && state.states && state.id !== 'root'"
-        class="pointer ml-1"
+        class="pointer"
         icon="plus-circle-outline"
         nbTooltip="Add a state group"
         (click)="addStateGroup()"
       ></nb-icon>
       <nb-icon
         *ngIf="!isReadonly && state.id !== 'root' && state.id !== 'Global'"
-        class="pointer ml-1"
+        class="pointer"
         icon="minus-circle-outline"
         nbTooltip="Remove this state"
         (click)="removeState()"

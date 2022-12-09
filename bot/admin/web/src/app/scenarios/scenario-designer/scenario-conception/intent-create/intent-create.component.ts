@@ -59,16 +59,21 @@ export class IntentCreateComponent implements OnInit {
       isNotUnic = true;
       errorString = `The string "${nameFromQualifiedName(Intent.unknown)}" is not allowed as an intent name`;
     } else {
-      const allIntentDefs = getScenarioIntentDefinitions(this.scenario);
-      const nameExistInScenario = allIntentDefs.find((intentDef) => intentDef.name === c.value);
-      if (nameExistInScenario) {
+      if (this.scenario.data.triggers?.find((trigger) => trigger === c.value)) {
         isNotUnic = true;
-        errorString = 'This name is already used by another intent of this scenario';
+        errorString = 'There is already an event with the same name';
       } else {
-        const intentAlreadyExist = this.state.intentExists(c.value);
-        if (intentAlreadyExist) {
+        const allIntentDefs = getScenarioIntentDefinitions(this.scenario);
+        const nameExistInScenario = allIntentDefs.find((intentDef) => intentDef.name === c.value);
+        if (nameExistInScenario) {
           isNotUnic = true;
-          errorString = 'This name is already used by an existing intent of this or another application';
+          errorString = 'This name is already used by another intent of this scenario';
+        } else {
+          const intentAlreadyExist = this.state.intentExists(c.value);
+          if (intentAlreadyExist) {
+            isNotUnic = true;
+            errorString = 'This name is already used by an existing intent of this or another application';
+          }
         }
       }
     }

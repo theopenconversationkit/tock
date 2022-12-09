@@ -7,7 +7,7 @@ import { of, Subject } from 'rxjs';
 import { StateService } from '../../core-nlp/state.service';
 import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
-import { TestSharedModule } from '../../shared/testing/test-shared.module';
+import { TestSharedModule } from '../../../testing/test-shared.module';
 import { Action } from '../models';
 import { FaqTrainingComponent, SentenceExtended } from './faq-training.component';
 

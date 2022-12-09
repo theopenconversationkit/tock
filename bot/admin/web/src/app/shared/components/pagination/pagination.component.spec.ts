@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbIconModule, NbSelectComponent, NbSelectModule, NbTooltipModule } from '@nebular/theme';
 
-import { TestSharedModule } from '../../testing/test-shared.module';
+import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { Pagination, PaginationComponent } from './pagination.component';
 
 describe('PaginationComponent', () => {

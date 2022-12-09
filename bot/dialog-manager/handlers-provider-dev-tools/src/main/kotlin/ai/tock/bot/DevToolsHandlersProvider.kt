@@ -24,25 +24,21 @@ import ai.tock.bot.handler.ActionHandlersProvider
  */
 class DevToolsHandlersProvider: ActionHandlersProvider {
 
-    override fun getActionHandlers(): Map<String, ActionHandler> = emptyMap()
+    override fun getNameSpace() = HandlerNamespace.DEV_TOOLS
 
-    @Deprecated("Use the new method 'getActionHandlers' once developed", level = DeprecationLevel.WARNING)
-    override fun getHandlers(): Map<String, (Map<String, String?>) -> Map<String, String?>> {
-        val genericHandlers = (1..10).associate {
-            "dev_tools_set_context_$it" to ::setContext.invoke(it)
-        }
-
-        val doNothing : (Map<String, String?>) -> Map<String, String?> = { emptyMap() }
-
-        val customHandlers = mapOf(
-            "dev_tools_do_nothing" to doNothing,
-        )
-
-        return genericHandlers.plus(customHandlers)
-    }
-
-    private fun setContext(id: Int): (Map<String, String?>) -> Map<String, String?> {
-        return { mapOf("DEV_CONTEXT_$id" to null) }
-    }
-
+    override fun getActionHandlers(): Set<ActionHandler> =
+        (1..10).map {counter ->
+            createActionHandler(
+                id = "set_context_$counter",
+                description = "Handler that just sets <DEV_CONTEXT_$counter>",
+                outputContexts = setOf("DEV_CONTEXT_$counter"),
+                handler = { mapOf("DEV_CONTEXT_$counter" to null) }
+            )
+        }.plus(
+            createActionHandler(
+                id = "do_nothing",
+                description = "Handler who does nothing. It is used to force the next round",
+                handler = { emptyMap() }
+            )
+        ).toSet()
 }

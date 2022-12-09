@@ -12,22 +12,26 @@
         "S_BOOK_MEETING": {
           "id": "S_BOOK_MEETING",
           "states": {
-            "S_BOOK_MEETING": {
-              "id": "S_BOOK_MEETING",
+            "S_ASK_CHANNEL": {
+              "id": "S_ASK_CHANNEL",
               "states": {}
             },
             "S_SHOW_PROCEDURE_BOOK_MEETING": {
               "id": "S_SHOW_PROCEDURE_BOOK_MEETING",
-              "states": {}
+              "states": {},
+              "on": {
+                "transition": "#S_SHOW_PROCEDURE_BOOK_MEETING"
+              }
             },
             "S_SHOW_PROCEDURE_BOOK_MEETING_2": {
-              "id": "S_SHOW_PROCEDURE_BOOK_MEETING_3",
+              "id": "S_SHOW_PROCEDURE_BOOK_MEETING_2",
               "states": {}
             }
           },
           "initial": "S_SHOW_PROCEDURE_BOOK_MEETING",
           "on": {
-            "i_book_physical_or_tel" : "#S_SHOW_PROCEDURE_BOOK_MEETING"
+            "i_book_physical_or_tel" : "#S_SHOW_PROCEDURE_BOOK_MEETING",
+            "i_book_physical_or_tel_4" : "#S_SHOW_PROCEDURE_BOOK_MEETING_4"
           }
         },
         "S_BOOK_MEETING_2": {
@@ -43,6 +47,10 @@
             "i_book_physical_or_tel_3" : "#S_SHOW_PROCEDURE_BOOK_MEETING_3",
             "i_book_physical_or_tel_2" : "#S_SHOW_PROCEDURE_BOOK_MEETING"
           }
+        },
+        "S_SHOW_PROCEDURE_BOOK_MEETING_4": {
+          "id": "S_SHOW_PROCEDURE_BOOK_MEETING_4",
+          "states": {}
         }
       },
       "initial": "INTRODUCTION",
