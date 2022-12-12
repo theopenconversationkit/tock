@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.bean
+package ai.tock.bot.bean.unknown
 
-import ai.tock.bot.bean.unknown.UnknownAnswerConfig
-import ai.tock.bot.statemachine.State
 import java.util.TreeSet
 
 /**
- * The tick story
+ * TickUnknownConfiguration
  */
 @kotlinx.serialization.Serializable
-data class TickStory(
-    val id: String? = null,
-    val botId: String,
-    val storyId: String,
-    val name: String,
-    val description: String,
-    val stateMachine: State,
-    val mainIntent: String,
-    val primaryIntents: Set<String>,
-    val secondaryIntents: Set<String>,
-    val triggers: Set<String> = emptySet(),
-    val contexts: Set<TickContext>,
-    val actions: Set<TickAction>,
-    val intentsContexts: Set<TickIntent> = emptySet(),
-    val unknownAnswerConfigs: Set<UnknownAnswerConfig> = TreeSet(),
-    val debug: Boolean = false
-)
+data class TickUnknownConfiguration(
+    val unknownAnswerConfigs: Set<UnknownAnswerConfig> = TreeSet()
+){
+    fun unknownIntents() = unknownAnswerConfigs.map { it.intent.value }.distinct()
+}
+
+
+
+
 

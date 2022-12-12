@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.dialog
 
+import ai.tock.bot.bean.unknown.UnknownHandlingStep
 import java.time.Instant
 
 data class TickState(
@@ -24,5 +25,6 @@ data class TickState(
     val ranHandlers: List<String>,
     val objectivesStack: List<String>,
     val init: Instant,
+    val unknownHandlingStep: UnknownHandlingStep?,
     val finished : Boolean
 )

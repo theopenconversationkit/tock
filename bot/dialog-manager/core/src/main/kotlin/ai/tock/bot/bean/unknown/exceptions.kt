@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.bean
+package ai.tock.bot.bean.unknown
 
-import ai.tock.bot.bean.unknown.TickUnknownConfiguration
-import ai.tock.bot.statemachine.State
+/**
+ * Exceptions related to unknown intent handling
+ */
+sealed class UnknownHandlingException(override val message: String) : Exception(message)
 
-@kotlinx.serialization.Serializable
-data class TickConfiguration (
-    val stateMachine: State,
-    val contexts: Set<TickContext>,
-    val actions: Set<TickAction>,
-    val intentsContexts: Set<TickIntent>,
-    val unknownHandleConfiguration: TickUnknownConfiguration,
-    val debug: Boolean
-)
+class RetryExceededError : UnknownHandlingException(RETRY_NB_EXCEEDED_MSG)
+class ConfigMismatchedError: UnknownHandlingException(CONFIG_MISMATCHED_MSG)

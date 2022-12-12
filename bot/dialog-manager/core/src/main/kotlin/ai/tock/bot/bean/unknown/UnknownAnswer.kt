@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.bean
+package ai.tock.bot.bean.unknown
 
-import ai.tock.bot.bean.unknown.TickUnknownConfiguration
-import ai.tock.bot.statemachine.State
-
+/**
+ * Answer returned by the bot when an unknown intent is detected
+ */
 @kotlinx.serialization.Serializable
-data class TickConfiguration (
-    val stateMachine: State,
-    val contexts: Set<TickContext>,
-    val actions: Set<TickAction>,
-    val intentsContexts: Set<TickIntent>,
-    val unknownHandleConfiguration: TickUnknownConfiguration,
-    val debug: Boolean
+data class UnknownAnswer(
+    /*
+    Answer text
+    */
+    val text: String,
+    /*
+    Permitted retry number; 2 by default
+     */
+    val retryNb: Int = DEFAULT_RETRY_NB
 )
