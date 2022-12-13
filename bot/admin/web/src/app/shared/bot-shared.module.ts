@@ -38,13 +38,15 @@ import {
   NbPopoverModule,
   NbButtonModule,
   NbButtonGroupModule,
-  NbAlertModule
+  NbAlertModule,
+  NbAutocompleteModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 import { CanvasModule } from './canvas/canvas.module';
 import {
+  AutocompleteInputComponent,
   ChatUiComponent,
   ChatUiMessageComponent,
   ChoiceDialogComponent,
@@ -65,6 +67,7 @@ import { AutofocusDirective, DelayDirective, FullscreenDirective, MouseWheelList
     SharedModule,
     MomentModule,
     NbAlertModule,
+    NbAutocompleteModule,
     NbCalendarRangeModule,
     NbCardModule,
     NbSelectModule,
@@ -76,6 +79,7 @@ import { AutofocusDirective, DelayDirective, FullscreenDirective, MouseWheelList
     CanvasModule
   ],
   declarations: [
+    AutocompleteInputComponent,
     BotMessageComponent,
     SentenceElementComponent,
     BotMessageSentenceComponent,
@@ -104,6 +108,7 @@ import { AutofocusDirective, DelayDirective, FullscreenDirective, MouseWheelList
     MouseWheelListnerDirective
   ],
   exports: [
+    AutocompleteInputComponent,
     BotMessageComponent,
     DisplayDialogComponent,
     SelectBotComponent,

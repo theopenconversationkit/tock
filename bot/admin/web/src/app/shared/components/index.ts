@@ -1,3 +1,4 @@
+export * from './autocomplete-input/autocomplete-input.component';
 export * from './chat-ui/chat-ui.component';
 export * from './chat-ui/chat-ui-message/chat-ui-message.component';
 export * from './choice-dialog/choice-dialog.component';
