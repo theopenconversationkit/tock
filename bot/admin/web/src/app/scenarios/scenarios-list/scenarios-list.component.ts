@@ -57,7 +57,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     total: 0
   };
 
-  private forceReload: boolean = false;
+  //private forceReload: boolean = false;
   private currentFilters: Filter = { search: '', tags: [], enabled: null };
   private currentOrderByCriteria: OrderBy = {
     criteria: 'name',
@@ -73,7 +73,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     private router: Router,
     protected stateService: StateService
   ) {
-    this.forceReload = !this.router.getCurrentNavigation().previousNavigation?.finalUrl.toString().includes('/scenarios');
+    //this.forceReload = !this.router.getCurrentNavigation().previousNavigation?.finalUrl.toString().includes('/scenarios');
   }
 
   ngOnInit() {
@@ -84,7 +84,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
     this.loading.list = true;
 
-    this.subscribeToScenariosGroups(this.forceReload);
+    this.subscribeToScenariosGroups();
 
     this.stateService.configurationChange.pipe(takeUntil(this.destroy$)).subscribe((_) => {
       this.subscribeToScenariosGroups(true);

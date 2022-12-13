@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Application } from '../../model/application';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { ScenarioDebug, ScenarioGroup, ScenarioVersion, TickStory } from '../models';
+import { Handler, ScenarioDebug, ScenarioGroup, ScenarioVersion, TickStory } from '../models';
 
 @Injectable()
 export class ScenarioApiService {
@@ -119,12 +119,14 @@ export class ScenarioApiService {
       );
   }
 
-  getActionHandlers(): Observable<string[]> {
+  getActionHandlers(): Observable<Handler[]> {
     return this.applicationService
       .retrieveCurrentApplication()
       .pipe(
         switchMap((currentApplication: Application) =>
-          this.rest.get<string[]>(`/bot/${currentApplication.name}/dialog-manager/action-handlers`, (handlers: any[]) => handlers.map(h => h.name) )
+          this.rest.get<Handler[]>(`/bot/${currentApplication.name}/dialog-manager/action-handlers`, (handlers: Handler[]) =>
+            handlers.map((h) => h)
+          )
         )
       );
   }

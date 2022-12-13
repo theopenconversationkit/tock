@@ -17,7 +17,8 @@ import {
   ScenarioGroup,
   ExportableScenarioGroup,
   SCENARIO_STATE,
-  ScenarioGroupUpdate
+  ScenarioGroupUpdate,
+  Handler
 } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
@@ -292,7 +293,7 @@ export class ScenarioService {
     }
   }
 
-  getActionHandlers(): Observable<string[]> {
+  getActionHandlers(): Observable<Handler[]> {
     return this.scenarioApiService.getActionHandlers();
   }
 

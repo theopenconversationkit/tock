@@ -10,7 +10,8 @@ import {
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
   ScenarioContext,
-  ScenarioVersionExtended
+  ScenarioVersionExtended,
+  Handler
 } from '../../models';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
@@ -40,7 +41,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
   @Input() isFullscreen: boolean = false;
-  @Input() readonly avalaibleHandlers: string[];
+  @Input() readonly avalaibleHandlers: Handler[];
 
   @Output() requestFullscreen = new EventEmitter();
 

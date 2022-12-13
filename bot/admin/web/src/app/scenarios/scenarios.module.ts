@@ -21,6 +21,7 @@ import {
   NbTreeGridModule
 } from '@nebular/theme';
 
+import { ScenariosResolver } from './scenarios.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import { ScenarioDesignerNavigationGuard, ScenarioDesignerComponent } from './scenario-designer/scenario-designer.component';
 import { ScenarioConceptionItemComponent } from './scenario-designer/scenario-conception/scenario-conception-item.component';
@@ -112,7 +113,7 @@ import { TriggerCreateComponent } from './scenario-designer/scenario-conception/
     TriggerCreateComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, NlpService, ScenarioDesignerService],
+  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, ScenariosResolver, NlpService, ScenarioDesignerService],
   entryComponents: []
 })
 export class ScenariosModule {

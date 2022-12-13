@@ -9,6 +9,7 @@ import { ScenarioGroup } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioEditComponent } from './scenario-edit.component';
 import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
+import { AutocompleteInputComponent, FormControlComponent } from '../../../shared/components';
 
 class MockScenarioService {
   getState() {
@@ -33,7 +34,7 @@ describe('ScenarioEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ScenarioEditComponent],
+      declarations: [ScenarioEditComponent, AutocompleteInputComponent, FormControlComponent],
       imports: [ReactiveFormsModule],
       providers: [
         { provide: DialogService, useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) } },
@@ -200,15 +201,12 @@ describe('ScenarioEditComponent', () => {
     });
   });
 
-  it('should populate the categories array for the autocompletion with the elements stored in the state of the scenario when the component is initialized', (done) => {
+  it('should populate the categories array for the autocompletion with the elements stored in the state of the scenario when the component is initialized', () => {
     component.ngOnChanges({ scenarioGroup: new SimpleChange(null, null, true) });
     fixture.detectChanges();
 
-    component.categoriesAutocompleteValues.subscribe((v) => {
-      expect(v).toHaveSize(2);
-      expect(v).toEqual(['category 1', 'category 2']);
-      done();
-    });
+    expect(component.categories).toHaveSize(2);
+    expect(component.categories).toEqual(['category 1', 'category 2']);
   });
 
   it('should populate the tags array for the autocompletion with the elements stored in the state of the scenario when the component is initialized', (done) => {

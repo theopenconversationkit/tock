@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { ApplicationResolver } from '../core-nlp/application.resolver';
+import { ScenariosResolver } from './scenarios.resolver';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import { ScenarioDesignerNavigationGuard, ScenarioDesignerComponent } from './scenario-designer/scenario-designer.component';
@@ -11,7 +12,8 @@ const routes: Routes = [
     path: '',
     canActivate: [AuthGuard],
     resolve: {
-      application: ApplicationResolver
+      application: ApplicationResolver,
+      scenarios: ScenariosResolver
     },
     children: [
       {
