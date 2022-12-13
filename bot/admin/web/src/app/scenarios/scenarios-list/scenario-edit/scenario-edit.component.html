@@ -45,25 +45,12 @@
         [controls]="category"
         [showError]="isSubmitted"
       >
-        <input
-          nbInput
+        <tock-autocomplete-input
           formControlName="category"
-          fullWidth
-          id="category"
-          type="text"
           placeholder="Select category"
-          autocomplete="off"
-          [nbAutocomplete]="categoryAutocomplete"
-          (keyup)="updateCategoriesAutocompleteValues($event)"
-        />
-        <nb-autocomplete #categoryAutocomplete>
-          <nb-option
-            *ngFor="let option of categoriesAutocompleteValues | async"
-            [value]="option"
-          >
-            <span class="initial-capitalize">{{ option }}</span>
-          </nb-option>
-        </nb-autocomplete>
+          name="category"
+          [options]="categories"
+        ></tock-autocomplete-input>
       </tock-form-control>
 
       <tock-form-control

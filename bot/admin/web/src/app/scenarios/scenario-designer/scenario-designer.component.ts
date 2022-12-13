@@ -24,6 +24,7 @@ import { Intent } from '../../model/nlp';
 import { BotService } from '../../bot/bot-service';
 import { I18nLabels } from '../../bot/model/i18n';
 import { FullscreenDirective } from '../../shared/directives';
+import { Handler } from '../models';
 
 @Component({
   selector: 'scenario-designer',
@@ -41,7 +42,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   scenarioVersionBackup: string;
   isReadonly: boolean = false;
   i18n: I18nLabels;
-  avalaibleHandlers: string[];
+  avalaibleHandlers: Handler[];
   initialDependenciesCheckDone: boolean = false;
   requestFullscreen?: 'close' | 'open';
 

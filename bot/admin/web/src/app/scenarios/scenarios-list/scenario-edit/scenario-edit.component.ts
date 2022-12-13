@@ -51,6 +51,7 @@ export class ScenarioEditComponent implements OnChanges {
 
   constructor(private dialogService: DialogService, private scenarioService: ScenarioService) {}
 
+  categories: string[];
   categoriesAutocompleteValues: Observable<string[]>;
   tagsAutocompleteValues: Observable<string[]>;
 
@@ -73,14 +74,8 @@ export class ScenarioEditComponent implements OnChanges {
       }
     }
 
-    this.categoriesAutocompleteValues = of([...this.scenarioService.getState().categories]);
+    this.categories = [...this.scenarioService.getState().categories];
     this.tagsAutocompleteValues = of([...this.scenarioService.getState().tags]);
-  }
-
-  updateCategoriesAutocompleteValues(event: any): void {
-    this.categoriesAutocompleteValues = of(
-      this.scenarioService.getState().categories.filter((category) => category.toLowerCase().includes(event.target.value.toLowerCase()))
-    );
   }
 
   updateTagsAutocompleteValues(event: any): void {

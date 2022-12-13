@@ -12,7 +12,8 @@ import {
   SCENARIO_ITEM_FROM_CLIENT,
   SCENARIO_MODE,
   ScenarioContext,
-  ScenarioVersionExtended
+  ScenarioVersionExtended,
+  Handler
 } from '../../models';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 import { ActionEditComponent } from './action-edit/action-edit.component';
@@ -40,7 +41,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   @Input() mode: string;
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean = false;
-  @Input() readonly avalaibleHandlers: string[];
+  @Input() readonly avalaibleHandlers: Handler[];
 
   @ViewChild('itemCard', { read: ElementRef }) itemCard: ElementRef<HTMLInputElement>;
   @ViewChild('itemTextarea', { read: ElementRef }) itemTextarea: ElementRef<HTMLInputElement>;
