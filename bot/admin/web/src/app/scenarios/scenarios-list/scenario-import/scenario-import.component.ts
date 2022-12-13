@@ -278,6 +278,7 @@ export class ScenarioImportComponent {
     delete json.data.id;
     delete json.data.creationDate;
     delete json.data.updateDate;
+    delete json.data.enabled;
     json.data.versions.forEach((version) => {
       if (version.state === SCENARIO_STATE.current) {
         version.state = SCENARIO_STATE.draft;

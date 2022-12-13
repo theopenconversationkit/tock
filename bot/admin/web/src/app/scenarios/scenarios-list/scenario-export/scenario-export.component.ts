@@ -25,23 +25,23 @@ export class ScenarioExportComponent {
 
     if (mode === 'all') {
       this.scenariosGroups.forEach((group) => {
-        exportableGroups.push({ id: group.id, versions: group.versions.map((v) => v.id) });
+        exportableGroups.push({ id: group.id, versionsIds: group.versions.map((v) => v.id) });
       });
     } else {
       this.scenariosGroups.forEach((group) => {
         let current = group.versions.find((scenarioVersion) => scenarioVersion.state === SCENARIO_STATE.current);
         if (current) {
-          exportableGroups.push({ id: group.id, versions: [current.id] });
+          exportableGroups.push({ id: group.id, versionsIds: [current.id] });
         } else {
           const drafts = group.versions.filter((scenarioVersion) => scenarioVersion.state === SCENARIO_STATE.draft);
           if (drafts.length) {
             let latest = drafts.sort((a, b) => {
               return new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime();
             })[0];
-            exportableGroups.push({ id: group.id, versions: [latest.id] });
+            exportableGroups.push({ id: group.id, versionsIds: [latest.id] });
           } else {
             let residual = group.versions[group.versions.length - 1];
-            exportableGroups.push({ id: group.id, versions: [residual.id] });
+            exportableGroups.push({ id: group.id, versionsIds: [residual.id] });
           }
         }
       });

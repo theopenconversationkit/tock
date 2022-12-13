@@ -158,6 +158,11 @@ export class RestService {
         rest.router.navigateByUrl('/login');
         return NEVER;
       }
+      // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side
+      if (returnErrorOn400 && e.status === 400) {
+        return observableThrowError(error);
+      }
+
       errMsg = e.status === 400 ? e.statusText || '' : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
       // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side

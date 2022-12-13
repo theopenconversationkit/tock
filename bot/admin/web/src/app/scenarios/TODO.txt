@@ -44,6 +44,9 @@ Scenario designer :
 
                 ??? Quid des sharedIntents ?
 
+        PRODUCTION :
+
+                Sauvegarde depuis production produit des erreurs js au mouse move
 
         PUBLISHING :
 

@@ -5,7 +5,11 @@ import { BehaviorSubject, forkJoin, iif, merge, Observable, of } from 'rxjs';
 import { map, tap, switchMap, filter, concatMap, take } from 'rxjs/operators';
 
 import { ApplicationService } from '../../core-nlp/applications.service';
+import { StateService } from '../../core-nlp/state.service';
 import { Application } from '../../model/application';
+import { PaginatedQuery } from '../../model/commons';
+import { Intent, SearchQuery, SentencesResult } from '../../model/nlp';
+import { NlpService } from '../../nlp-tabs/nlp.service';
 import { exportJsonDump } from '../../shared/utils';
 import { deepCopy, normalizedSnakeCase, stringifiedCleanObject } from '../commons/utils';
 import {
@@ -18,7 +22,8 @@ import {
   ExportableScenarioGroup,
   SCENARIO_STATE,
   ScenarioGroupUpdate,
-  Handler
+  Handler,
+  TempSentence
 } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
@@ -47,7 +52,9 @@ export class ScenarioService {
     private scenarioApiService: ScenarioApiService,
     private applicationService: ApplicationService,
     private datePipe: DatePipe,
-    private router: Router
+    private router: Router,
+    protected state: StateService,
+    private nlp: NlpService
   ) {
     this._state = new BehaviorSubject(scenariosInitialState);
     this.state$ = this._state.asObservable();
@@ -322,21 +329,90 @@ export class ScenarioService {
       .filter((t) => t);
   }
 
+  createSearchIntentsQuery(params: { searchString?: string; intentId?: string }): SearchQuery {
+    const cursor: number = 0;
+    const pageSize: number = 50;
+    const mark = null;
+    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
+    return new SearchQuery(
+      paginatedQuery.namespace,
+      paginatedQuery.applicationName,
+      paginatedQuery.language,
+      paginatedQuery.start,
+      paginatedQuery.size,
+      paginatedQuery.searchMark,
+      params.searchString || null,
+      params.intentId || null
+    );
+  }
+
   loadScenariosAndDownload(scenariosGroups: ScenarioGroup[], exportableGroups: ExportableScenarioGroup[]): void {
-    const loaders: Observable<ScenarioVersionExtended>[] = [];
-    exportableGroups.forEach((group) => {
-      group.versions.forEach((versionId) => {
-        loaders.push(this.getScenarioVersion(group.id, versionId).pipe(take(1)));
+    const scenariosLoaders: Observable<ScenarioVersionExtended>[] = [];
+    const sentencesLoaders: Observable<SentencesResult>[] = [];
+
+    exportableGroups.forEach((exportableGroup: ExportableScenarioGroup) => {
+      exportableGroup.versionsIds.forEach((versionId: string) => {
+        scenariosLoaders.push(this.getScenarioVersion(exportableGroup.id, versionId).pipe(take(1)));
       });
     });
 
-    forkJoin(loaders).subscribe(() => {
-      exportableGroups.forEach((group) => {
-        const scenarioGroup = scenariosGroups.find((g) => g.id === group.id);
-        const copy = deepCopy(scenarioGroup);
-        copy.versions = copy.versions.filter((v) => group.versions.includes(v.id));
-        this.downloadScenarioGroup(copy);
+    forkJoin(scenariosLoaders).subscribe(() => {
+      const listedIntentIds: string[] = [];
+      exportableGroups.forEach((exportableGroup: ExportableScenarioGroup) => {
+        const scenarioGroup: ScenarioGroup = scenariosGroups.find((g) => g.id === exportableGroup.id);
+        exportableGroup.group = deepCopy(scenarioGroup);
+        exportableGroup.group.versions = exportableGroup.group.versions.filter((v) => exportableGroup.versionsIds.includes(v.id));
+
+        exportableGroup.group.versions.forEach((version: ScenarioVersion) => {
+          version.data.scenarioItems.forEach((item) => {
+            if (item.intentDefinition?.intentId) {
+              const existingIntent: Intent = this.state.findIntentById(item.intentDefinition.intentId);
+
+              if (existingIntent) {
+                if (!listedIntentIds.includes(item.intentDefinition.intentId)) {
+                  listedIntentIds.push(item.intentDefinition.intentId);
+                  const searchQuery: SearchQuery = this.createSearchIntentsQuery({
+                    intentId: item.intentDefinition.intentId
+                  });
+
+                  sentencesLoaders.push(this.nlp.searchSentences(searchQuery).pipe(take(1)));
+                }
+              }
+            }
+          });
+        });
       });
+
+      if (!sentencesLoaders.length) {
+        exportableGroups.forEach((exportableGroup) => {
+          this.downloadScenarioGroup(exportableGroup.group);
+        });
+      } else {
+        forkJoin(sentencesLoaders).subscribe((results: SentencesResult[]) => {
+          results.forEach((sentencesResults: SentencesResult) => {
+            sentencesResults.rows.forEach((sentence) => {
+              exportableGroups.forEach((exportableGroup) => {
+                exportableGroup.versionsIds.forEach((versionId) => {
+                  const version: ScenarioVersion = exportableGroup.group.versions.find((v) => v.id === versionId);
+                  version.data.scenarioItems.forEach((item) => {
+                    const intentId = item.intentDefinition?.intentId;
+                    if (intentId === sentence.classification.intentId) {
+                      const app = this.state.currentApplication;
+                      item.intentDefinition.sentences.push(
+                        new TempSentence(app.namespace, app.name, sentence.language, sentence.text, false, '')
+                      );
+                    }
+                  });
+                });
+              });
+            });
+          });
+
+          exportableGroups.forEach((exportableGroup) => {
+            this.downloadScenarioGroup(exportableGroup.group);
+          });
+        });
+      }
     });
   }
 

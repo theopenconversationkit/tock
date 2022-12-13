@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { tap, take, share } from 'rxjs/operators';
 import { StateService } from '../../core-nlp/state.service';
-import { PaginatedQuery } from '../../model/commons';
 import { SearchQuery, SentencesResult } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { stringifiedCleanObject } from '../commons/utils';
@@ -44,37 +43,30 @@ export class ScenarioDesignerService {
     });
   }
 
-  createSearchIntentsQuery(params: { searchString?: string; intentId?: string }): SearchQuery {
-    const cursor: number = 0;
-    const pageSize: number = 50;
-    const mark = null;
-    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
-    return new SearchQuery(
-      paginatedQuery.namespace,
-      paginatedQuery.applicationName,
-      paginatedQuery.language,
-      paginatedQuery.start,
-      paginatedQuery.size,
-      paginatedQuery.searchMark,
-      params.searchString || null,
-      params.intentId || null
-    );
-  }
-
   grabIntentSentences(item: ScenarioItemExtended): Observable<SentencesResult> {
     if (!item.intentDefinition?.intentId) return;
 
     item._sentencesLoading = true;
-    const searchQuery: SearchQuery = this.createSearchIntentsQuery({
+    const searchQuery: SearchQuery = this.scenarioService.createSearchIntentsQuery({
       intentId: item.intentDefinition.intentId
     });
 
-    const nlpSubscription = this.nlp.searchSentences(searchQuery).pipe(take(1), share());
+    const sentenceSubscription = this.nlp.searchSentences(searchQuery).pipe(take(1), share());
 
-    nlpSubscription.subscribe((sentencesResearch) => {
+    sentenceSubscription.subscribe((sentencesResearch) => {
+      // In the case where the scenario comes from an export=>import, all the sentences have been preserved in the tempSentences. But if the sentences exist on the current application, we can delete them. Since they already exist, we won't have to recreate them.
+      sentencesResearch.rows.forEach((sentence) => {
+        let existingTempSentenceIndex = item.intentDefinition.sentences.findIndex(
+          (s) => s.language === sentence.language && s.query === sentence.text
+        );
+        if (existingTempSentenceIndex >= 0) {
+          item.intentDefinition.sentences.splice(existingTempSentenceIndex, 1);
+        }
+      });
+
       item.intentDefinition._sentences = sentencesResearch.rows;
       item._sentencesLoading = false;
     });
-    return nlpSubscription;
+    return sentenceSubscription;
   }
 }

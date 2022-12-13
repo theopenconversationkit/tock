@@ -1,8 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
-import { of, Subject } from 'rxjs';
-import { take, timeout } from 'rxjs/operators';
-
+import { Subject } from 'rxjs';
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest, I18nLabel, I18nLabels } from '../../../bot/model/i18n';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -12,7 +10,7 @@ import { ClassifiedEntity, Intent, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
 import { isStepValid } from '../../commons/scenario-validation';
-import { getScenarioActionDefinitions, getScenarioActions, getScenarioIntentDefinitions, getScenarioIntents } from '../../commons/utils';
+import { getScenarioActionDefinitions, getScenarioActions, getScenarioIntents } from '../../commons/utils';
 import {
   ScenarioItem,
   SCENARIO_ITEM_FROM_BOT,
