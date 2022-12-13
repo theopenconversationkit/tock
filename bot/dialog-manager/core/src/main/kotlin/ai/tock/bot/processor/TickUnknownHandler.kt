@@ -60,7 +60,7 @@ object TickUnknownHandler {
                                 increment the repeated property of the step by calling the again() method on it
                             Else set the step to null and return the exitAction of the answerConfig
                             */
-                            if (answerConfig.unknownAnswer.retryNb > step.repeated)
+                            if (answerConfig.retryNb > step.repeated)
                                 UnknownHandleResult(handlingStep = step.increment())
                             else
                                 answerConfig.exitAction?.let { UnknownHandleResult(exitAction = it) } ?: throw RetryExceededError()
@@ -72,7 +72,7 @@ object TickUnknownHandler {
                         UnknownHandleResult(handlingStep = UnknownHandlingStep(1, answerConfig))
                         )
                     .also { result ->
-                        result.handlingStep?.let { step -> sender.sendById(step.answerConfig.unknownAnswer.text) }
+                        result.handlingStep?.let { step -> sender.sendById(step.answerConfig.answerId) }
                     }
             } ?: UnknownHandleResult()
 

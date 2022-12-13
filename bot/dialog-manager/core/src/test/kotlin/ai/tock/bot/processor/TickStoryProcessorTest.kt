@@ -389,16 +389,12 @@ internal class TickStoryProcessorTest {
         val answerConfig1 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 1"
-            )
+            answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 2"
-            )
+            answerId ="unknown 2"
         )
         val produceProcessor: TSupplier<TickStoryProcessor> = {
             TickStoryProcessor(
@@ -473,9 +469,9 @@ internal class TickStoryProcessorTest {
 
             assertFalse { it.second }
 
-            assertEquals(answerConfig2.unknownAnswer.text, msgCapture.captured)
+            assertEquals(answerConfig2.answerId, msgCapture.captured)
 
-            verify(exactly = 1) { sender.sendById(answerConfig2.unknownAnswer.text) }
+            verify(exactly = 1) { sender.sendById(answerConfig2.answerId) }
         }
 
         TestCase<TickStoryProcessor, Pair<TickSession, Boolean>>("process when executedAction with no trigger and no handler")
@@ -514,16 +510,12 @@ internal class TickStoryProcessorTest {
         val answerConfig1 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 1"
-            )
+            answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 2"
-            )
+            answerId ="unknown 2"
         )
         val produceProcessor: TSupplier<TickStoryProcessor> = {
             TickStoryProcessor(
@@ -598,7 +590,7 @@ internal class TickStoryProcessorTest {
 
             assertFalse(msgCapture.isCaptured)
 
-            verify(exactly = 0) { sender.sendById(answerConfig2.unknownAnswer.text) }
+            verify(exactly = 0) { sender.sendById(answerConfig2.answerId) }
         }
 
         TestCase<TickStoryProcessor, Pair<TickSession, Boolean>>("process when executedAction with no trigger and no handler")
@@ -638,16 +630,12 @@ internal class TickStoryProcessorTest {
         val answerConfig1 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 1"
-            )
+            answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 2"
-            )
+            answerId ="unknown 2"
         )
         val produceProcessor: TSupplier<TickStoryProcessor> = {
             TickStoryProcessor(
@@ -725,9 +713,9 @@ internal class TickStoryProcessorTest {
 
             assertFalse { it.second }
 
-            assertEquals(answerConfig2.unknownAnswer.text, msgCapture.captured)
+            assertEquals(answerConfig2.answerId, msgCapture.captured)
 
-            verify(exactly = 1) { sender.sendById(answerConfig2.unknownAnswer.text) }
+            verify(exactly = 1) { sender.sendById(answerConfig2.answerId) }
         }
 
         TestCase<TickStoryProcessor, Pair<TickSession, Boolean>>("process when executedAction with no trigger and no handler")
@@ -764,16 +752,12 @@ internal class TickStoryProcessorTest {
         val answerConfig1 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 1"
-            )
+            answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 2"
-            )
+            answerId ="unknown 2"
         )
         val produceProcessor: TSupplier<TickStoryProcessor> = {
             TickStoryProcessor(
@@ -860,17 +844,13 @@ internal class TickStoryProcessorTest {
         val answerConfig1 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 1"
-            )
+            answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
             intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
             exitAction = StateIds.STATE_3.value,
-            unknownAnswer = UnknownAnswer(
-                text = "unknown 2"
-            )
+            answerId ="unknown 2"
         )
         val produceProcessor: TSupplier<TickStoryProcessor> = {
             TickStoryProcessor(
@@ -943,7 +923,7 @@ internal class TickStoryProcessorTest {
 
             assertTrue { it.second }
 
-            verify(exactly = 0) { sender.sendById(answerConfig2.unknownAnswer.text) }
+            verify(exactly = 0) { sender.sendById(answerConfig2.answerId) }
         }
 
         TestCase<TickStoryProcessor, Pair<TickSession, Boolean>>("process when executedAction with no trigger and no handler")

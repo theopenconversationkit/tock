@@ -24,7 +24,7 @@ data class UnknownAnswerConfig(
     /*
     Detected unknown intent
     */
-    val intent: UnknownIntent,
+    val intent: UnknownIntent = UnknownIntent(),
     /*
     Handled action name
     */
@@ -34,9 +34,14 @@ data class UnknownAnswerConfig(
      */
     val exitAction: String? = null,
     /*
-    The answer expected when an unknown intent is detected for the associated action
-    */
-    val unknownAnswer: UnknownAnswer
+     Answer text
+     */
+    val answerId: String,
+    /*
+    Permitted retry number; 2 by default
+     */
+    val retryNb: Int = DEFAULT_RETRY_NB
+
 ): Comparable<UnknownAnswerConfig> {
 
     /**
