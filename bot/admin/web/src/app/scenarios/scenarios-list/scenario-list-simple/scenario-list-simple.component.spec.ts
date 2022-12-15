@@ -4,6 +4,18 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Location } from '@angular/common';
 import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+import {
+  NbAccordionModule,
+  NbButtonModule,
+  NbDialogRef,
+  NbDialogService,
+  NbIconModule,
+  NbSpinnerModule,
+  NbTagModule,
+  NbToggleModule,
+  NbTooltipModule
+} from '@nebular/theme';
 
 import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
 import { ScenarioService } from '../../services/scenario.service';
@@ -13,18 +25,6 @@ import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { ScenarioDesignerComponent } from '../../scenario-designer/scenario-designer.component';
 import { ScenariosListComponent } from '../scenarios-list.component';
 import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
-import {
-  NbAccordionModule,
-  NbButtonModule,
-  NbDialogRef,
-  NbIconModule,
-  NbSpinnerModule,
-  NbTagModule,
-  NbToggleModule,
-  NbTooltipModule
-} from '@nebular/theme';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
-import { of } from 'rxjs';
 
 const mockScenariosGroups: ScenarioGroupExtended[] = [
   {
@@ -156,8 +156,8 @@ describe('ScenarioListSimpleComponent', () => {
           useValue: { currentApplication: { name: 'TestApplicationName' } }
         },
         {
-          provide: DialogService,
-          useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) }
+          provide: NbDialogService,
+          useValue: { open: () => ({ onClose: (val: any) => of(val) }) }
         }
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -223,7 +223,7 @@ describe('ScenarioListSimpleComponent', () => {
     });
 
     it('should emit scenario group when confirmation message is confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
       spyOn(component.onDeleteScenarioGroup, 'emit');
 
       component.deleteScenarioGroup(new PointerEvent('click'), mockScenariosGroups[0]);
@@ -232,7 +232,7 @@ describe('ScenarioListSimpleComponent', () => {
     });
 
     it('should not emit scenario group when confirmation message is not confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component.onDeleteScenarioGroup, 'emit');
 
       component.deleteScenarioGroup(new PointerEvent('click'), mockScenariosGroups[0]);
@@ -254,7 +254,7 @@ describe('ScenarioListSimpleComponent', () => {
     });
 
     it('should emit faq to disable when confirmation message is confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('disable') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('disable') } as NbDialogRef<any>);
       spyOn(component.onToggleScenarioGroup, 'emit');
 
       component.toggleTickEnabled(mockScenariosGroups[0]);
@@ -263,7 +263,7 @@ describe('ScenarioListSimpleComponent', () => {
     });
 
     it('should emit faq to enable when confirmation message is confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('enable') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('enable') } as NbDialogRef<any>);
       spyOn(component.onToggleScenarioGroup, 'emit');
 
       component.toggleTickEnabled(mockScenariosGroups[1]);
@@ -272,7 +272,7 @@ describe('ScenarioListSimpleComponent', () => {
     });
 
     it('should not emit faq when confirmation message is not confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component.onToggleScenarioGroup, 'emit');
 
       component.toggleTickEnabled(mockScenariosGroups[0]);
@@ -357,7 +357,7 @@ describe('ScenarioListSimpleComponent', () => {
       });
 
       it('should emit scenario group and the version when confirmation message is confirmed', () => {
-        spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
+        spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
         spyOn(component.onDeleteScenarioVersion, 'emit');
 
         component.deleteScenarioVersion(new PointerEvent('click'), mockScenariosGroups[0], mockScenariosGroups[0].versions[0]);
@@ -369,7 +369,7 @@ describe('ScenarioListSimpleComponent', () => {
       });
 
       it('should not emit scenario group and the version when confirmation message is not confirmed', () => {
-        spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+        spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
         spyOn(component.onDeleteScenarioVersion, 'emit');
 
         component.deleteScenarioVersion(new PointerEvent('click'), mockScenariosGroups[0], mockScenariosGroups[0].versions[0]);

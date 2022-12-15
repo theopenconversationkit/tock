@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
+import { NbDialogService, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { ScenarioGroup } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
@@ -49,7 +48,7 @@ export class ScenarioEditComponent implements OnChanges {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
-  constructor(private dialogService: DialogService, private scenarioService: ScenarioService) {}
+  constructor(private nbDialogService: NbDialogService, private scenarioService: ScenarioService) {}
 
   categories: string[];
   categoriesAutocompleteValues: Observable<string[]>;
@@ -107,7 +106,7 @@ export class ScenarioEditComponent implements OnChanges {
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Cancel ${this.scenarioGroup?.id ? 'edit' : 'create'} scenario`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',

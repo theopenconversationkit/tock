@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { ChoiceDialogComponent } from '../../../../shared/components';
-import { DialogService } from '../../../../core-nlp/dialog.service';
 import { getSmStateParentById } from '../../../commons/utils';
 import { ScenarioIntentDefinition, MachineState, ScenarioActionDefinition, Transition } from '../../../models';
 import { ScenarioProductionService } from '../scenario-production.service';
@@ -31,7 +31,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
 
   constructor(
     private scenarioProductionService: ScenarioProductionService,
-    private dialogService: DialogService,
+    private nbDialogService: NbDialogService,
     private cd: ChangeDetectorRef
   ) {
     this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
@@ -98,7 +98,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   }
 
   addStateGroup(): void {
-    const modal = this.dialogService.openDialog(ScenarioProductionStateGroupAddComponent, {
+    const modal = this.nbDialogService.open(ScenarioProductionStateGroupAddComponent, {
       context: { usedNames: this.usedNames }
     });
     const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((result) => {
@@ -111,7 +111,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   removeState(): void {
     const cancelAction = 'cancel';
     const confirmAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Delete action`,
         subtitle: 'Are you sure you want to delete this action?',
@@ -135,7 +135,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   removeTransition(transition: Transition): void {
     const cancelAction = 'cancel';
     const confirmAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Delete transition`,
         subtitle: 'Are you sure you want to delete this transition?',

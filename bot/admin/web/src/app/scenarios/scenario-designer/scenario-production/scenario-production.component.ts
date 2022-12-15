@@ -1,8 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { SVG } from '@svgdotjs/svg.js';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DialogService } from '../../../core-nlp/dialog.service';
-import { ChoiceDialogComponent } from '../../../shared/components';
+
+import { ChoiceDialogComponent, JsonPreviewerComponent } from '../../../shared/components';
 import {
   ScenarioIntentDefinition,
   MachineState,
@@ -13,7 +14,6 @@ import {
   ScenarioTriggerDefinition
 } from '../../models';
 import { ScenarioProductionService } from './scenario-production.service';
-import { SVG } from '@svgdotjs/svg.js';
 import {
   getSmTransitionByName,
   getScenarioActionDefinitions,
@@ -25,7 +25,7 @@ import {
   getAllSmStatesNames,
   removeSmStateById
 } from '../../commons/utils';
-import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
+import { NbDialogService } from '@nebular/theme';
 
 type ScenarioDefinition = {
   actions: ScenarioActionDefinition[];
@@ -62,7 +62,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     triggers: []
   };
 
-  constructor(private scenarioProductionService: ScenarioProductionService, private dialogService: DialogService) {
+  constructor(private scenarioProductionService: ScenarioProductionService, private nbDialogService: NbDialogService) {
     this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'itemDropped') {
         this.itemDropped(evt);
@@ -352,7 +352,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   resetStateMachine() {
     const cancelAction = 'cancel';
     const confirmAction = 'reset';
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Reset state machine`,
         subtitle: 'Are you sure you want to completely reset this state machine?',
@@ -426,7 +426,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   }
 
   displayStateMachineCode(): void {
-    const jsonPreviewerRef = this.dialogService.openDialog(JsonPreviewerComponent, {
+    const jsonPreviewerRef = this.nbDialogService.open(JsonPreviewerComponent, {
       context: { jsonData: this.scenario.data.stateMachine },
       dialogClass: 'full-width-dialog'
     });

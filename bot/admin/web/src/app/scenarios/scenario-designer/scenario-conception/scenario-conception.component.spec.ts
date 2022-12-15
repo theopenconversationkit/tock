@@ -1,9 +1,7 @@
 import { ScenarioConceptionComponent } from './scenario-conception.component';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { StateService } from '../../../core-nlp/state.service';
 import {
   ScenarioVersion,
   ScenarioItem,
@@ -13,6 +11,9 @@ import {
   SCENARIO_MODE,
   SCENARIO_STATE
 } from '../../models';
+import { NbDialogService } from '@nebular/theme';
+
+import { StateService } from '../../../core-nlp/state.service';
 
 const scenarioMock = {
   id: '62fcbb7ae4d25c16a44071a1',
@@ -87,7 +88,7 @@ describe('ScenarioConceptionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ScenarioConceptionComponent],
-      providers: [ScenarioConceptionService, { provide: DialogService, useValue: {} }, { provide: StateService, useValue: {} }],
+      providers: [ScenarioConceptionService, { provide: NbDialogService, useValue: {} }, { provide: StateService, useValue: {} }],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 

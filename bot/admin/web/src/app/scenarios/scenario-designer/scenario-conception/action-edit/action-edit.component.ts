@@ -43,6 +43,7 @@ export class ActionEditComponent implements OnInit {
     description: new FormControl(),
     handler: new FormControl(),
     answer: new FormControl(),
+    answerId: new FormControl(),
     inputContextNames: new FormArray([]),
     outputContextNames: new FormArray([]),
     final: new FormControl(false),

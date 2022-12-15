@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError, first } from 'rxjs/operators';
 
@@ -8,7 +8,6 @@ import { readFileAsText } from '../../../shared/utils';
 import { FileValidators } from '../../../shared/validators';
 import { ScenarioGroup, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { deepCopy } from '../../commons/utils';
 import { ChoiceDialogComponent } from '../../../shared/components';
 
@@ -58,12 +57,12 @@ export class ScenarioImportComponent {
     return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
   }
 
-  constructor(private dialogService: DialogService, private toastrService: NbToastrService, private scenarioService: ScenarioService) {}
+  constructor(private nbDialogService: NbDialogService, private toastrService: NbToastrService, private scenarioService: ScenarioService) {}
 
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.importForm.dirty) {
-      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Cancel import scenario${this.filesToImport.length > 1 ? 's' : ''}`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',

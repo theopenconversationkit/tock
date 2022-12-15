@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
 
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { isStepValid } from '../../commons/scenario-validation';
 import { ScenarioVersion, SCENARIO_MODE } from '../../models';
@@ -22,7 +22,7 @@ export class ModeStepperComponent {
     { mode: SCENARIO_MODE.publishing, label: 'Publishing', icon: 'film-outline' }
   ];
 
-  constructor(private dialogService: DialogService) {}
+  constructor(private nbDialogService: NbDialogService) {}
 
   getStepErrorTooltip(mode: SCENARIO_MODE) {
     if (this.mode === mode) return 'Not all conditions are met to pass this stage';
@@ -40,7 +40,7 @@ export class ModeStepperComponent {
 
   displayFirstNotMetCondition(mode: SCENARIO_MODE, title = 'At least one condition is not met to access this stage') {
     let reason = this.getStepSequenceValidity(mode);
-    this.dialogService.openDialog(ChoiceDialogComponent, {
+    this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: title,
         subtitle: reason,

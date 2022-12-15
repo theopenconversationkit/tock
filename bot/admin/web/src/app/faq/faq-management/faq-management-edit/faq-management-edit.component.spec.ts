@@ -10,6 +10,7 @@ import {
   NbCardModule,
   NbCheckboxModule,
   NbDialogRef,
+  NbDialogService,
   NbFormFieldModule,
   NbIconModule,
   NbSelectModule,
@@ -20,7 +21,6 @@ import {
 } from '@nebular/theme';
 import { of } from 'rxjs';
 
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../../testing/test-shared.module';
@@ -159,7 +159,7 @@ describe('FaqManagementEditComponent', () => {
       ],
       providers: [
         { provide: StateService, useClass: MockState },
-        { provide: DialogService, useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) } },
+        { provide: NbDialogService, useValue: { open: () => ({ onClose: (val: any) => of(val) }) } },
         { provide: NlpService, useClass: NlpServiceMock }
       ]
     }).compileComponents();
@@ -455,36 +455,36 @@ describe('FaqManagementEditComponent', () => {
 
   describe('#close', () => {
     it('should call the onClose method without displaying a confirmation request message when the form is not dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       component.close();
 
-      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component['nbDialogService'].open).not.toHaveBeenCalled();
       expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
     });
 
     it('should call the onClose method after displaying a confirmation request message and confirm when the form is dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       // To display the confirmation message, the form must have been modified
       component.form.markAsDirty();
       component.close();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
     });
 
     it('should not call the onClose method after displaying a confirmation request message and cancel when the form is dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       // To display the confirmation message, the form must have been modified
       component.form.markAsDirty();
       component.close();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.onClose.emit).not.toHaveBeenCalled();
     });
   });
@@ -554,7 +554,7 @@ describe('FaqManagementEditComponent', () => {
     it('should not call the save method when creating a new faq if the intent already exists in another application after displaying an info message and canceling', () => {
       spyOn(StateService, 'intentExistsInApp').and.returnValue(false);
       spyOn(component['state'], 'intentExistsInOtherApplication').and.returnValue(true);
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of(undefined) } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of(undefined) } as NbDialogRef<any>);
       spyOn(component, 'save');
       const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
       faq.id = undefined;
@@ -571,7 +571,7 @@ describe('FaqManagementEditComponent', () => {
     it('should call the save method when creating a new faq if the intent already exists in another application after displaying an info message and share intent', () => {
       spyOn(StateService, 'intentExistsInApp').and.returnValue(false);
       spyOn(component['state'], 'intentExistsInOtherApplication').and.returnValue(true);
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('Share the intent') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('Share the intent') } as NbDialogRef<any>);
       spyOn(component, 'save');
       const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
       faq.id = undefined;
@@ -587,7 +587,7 @@ describe('FaqManagementEditComponent', () => {
     it('should call the save method when creating a new faq if the intent already exists in another application after displaying an info message and create new intent', () => {
       spyOn(StateService, 'intentExistsInApp').and.returnValue(false);
       spyOn(component['state'], 'intentExistsInOtherApplication').and.returnValue(true);
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('Create a new intent') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('Create a new intent') } as NbDialogRef<any>);
       spyOn(component, 'save');
       const faq: FaqDefinitionExtended = JSON.parse(JSON.stringify(mockFaq));
       faq.id = undefined;

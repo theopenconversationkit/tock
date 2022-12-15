@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -13,7 +14,6 @@ import {
   ScenarioVersionExtended,
   Handler
 } from '../../models';
-import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 import {
@@ -57,7 +57,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   constructor(
     private scenarioConceptionService: ScenarioConceptionService,
     protected state: StateService,
-    private dialogService: DialogService
+    private nbDialogService: NbDialogService
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +84,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   }
 
   addTrigger(): void {
-    const modal = this.dialogService.openDialog(TriggerCreateComponent, {
+    const modal = this.nbDialogService.open(TriggerCreateComponent, {
       context: {
         scenarioVersion: this.scenario
       }
@@ -100,7 +100,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   confirmDeleteTrigger(trigger: string): void {
     const deleteAction = 'delete';
-    const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const modal = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Delete event`,
         subtitle: 'Are you sure you want to delete this event?',
@@ -139,7 +139,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   }
 
   addContext(): void {
-    const modal = this.dialogService.openDialog(ContextCreateComponent, {
+    const modal = this.nbDialogService.open(ContextCreateComponent, {
       context: {
         scenario: this.scenario
       }
@@ -157,7 +157,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   confirmDeleteContext(context: ScenarioContext): void {
     const deleteAction = 'delete';
-    const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const modal = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Delete context`,
         subtitle: 'Are you sure you want to delete this context?',
@@ -474,7 +474,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
   }
 
   displayGraph() {
-    this.dialogService.openDialog(ContextsGraphComponent, {
+    this.nbDialogService.open(ContextsGraphComponent, {
       context: {
         scenario: this.scenario
       },
