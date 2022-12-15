@@ -9,19 +9,15 @@ import {
 } from '../models';
 import { isStepValid, SCENARIO_STEPS_ERRORS } from './scenario-validation';
 
-const scenario = {
+const scenario: ScenarioVersion = {
   id: '1111111111111111111111',
-  name: 'testing scenario',
-  category: 'scenarios',
-  tags: ['testing'],
-  applicationId: '11111111111111111',
   creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
-  description: '',
   data: {
     mode: 'writing' as SCENARIO_MODE,
     scenarioItems: [{ id: 0, from: 'client' as ScenarioItemFrom, text: 'Main intent', main: true }] as ScenarioItem[],
-    contexts: []
+    contexts: [],
+    triggers: []
   },
   state: 'draft' as SCENARIO_STATE
 };
@@ -36,7 +32,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.one_intervention_at_least()
     };
-    expect(res).toEqual(expected, 'Should have one client and one bot interventions');
+    expect(res).withContext('Should have one client and one bot interventions').toEqual(expected);
 
     scenarioItems.push({ id: 1, from: 'bot' as ScenarioItemFrom, text: '' });
 
@@ -45,7 +41,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.interventions_text_must_be_filled()
     };
-    expect(res).toEqual(expected, 'Interventions text must be filled');
+    expect(res).withContext('Interventions text must be filled').toEqual(expected);
 
     scenarioItems[1].text = 'Bot response1';
 
@@ -54,7 +50,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.client_intervention_should_have_intent('Main intent')
     };
-    expect(res).toEqual(expected, 'Client interventions must have intent defined');
+    expect(res).withContext('Client interventions must have intent defined').toEqual(expected);
 
     scenarioItems[0].intentDefinition = { name: 'MainIntent' } as ScenarioIntentDefinition;
 
@@ -63,7 +59,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.bot_intervention_should_have_action('Bot response1')
     };
-    expect(res).toEqual(expected, 'Bot interventions must have action defined');
+    expect(res).withContext('Bot interventions must have action defined').toEqual(expected);
 
     scenarioItems[1].actionDefinition = {
       name: 'BOT_RESPONSE1',
@@ -76,7 +72,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.input_context_should_exist_as_output('TEST_CONTEXT')
     };
-    expect(res).toEqual(expected, 'Input context must exist as output');
+    expect(res).withContext('Input context must exist as output').toEqual(expected);
 
     scenarioItems.push({
       id: 2,
@@ -94,7 +90,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.output_context_should_exist_as_input('TEST_CONTEXT2')
     };
-    expect(res).toEqual(expected, 'Output context must exist as input');
+    expect(res).withContext('Output context must exist as input').toEqual(expected);
 
     scenarioItems[1].actionDefinition.inputContextNames.push('TEST_CONTEXT2');
 
@@ -103,7 +99,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.statemachine_should_be_defined()
     };
-    expect(res).toEqual(expected, 'Statemachine should be defined');
+    expect(res).withContext('Statemachine should be defined').toEqual(expected);
 
     scenarioCopy.data.stateMachine = {
       id: 'root',
@@ -124,7 +120,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.intents_should_be_transitions('MainIntent')
     };
-    expect(res).toEqual(expected, 'All intents must be referenced in SM as transitions');
+    expect(res).withContext('All intents must be referenced in SM as transitions').toEqual(expected);
 
     stateMachine.states.Global['on'] = { MainIntent: 'test', TestTransition1: 'test' };
 
@@ -133,7 +129,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.transitions_should_be_intents_or_triggers('TestTransition1')
     };
-    expect(res).toEqual(expected, 'All SM transitions must correspond to intents');
+    expect(res).withContext('All SM transitions must correspond to intents').toEqual(expected);
 
     delete stateMachine.states.Global['on'].TestTransition1;
 
@@ -142,7 +138,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.actions_should_be_states('BOT_RESPONSE1')
     };
-    expect(res).toEqual(expected, 'All actions must exist in SM as states');
+    expect(res).withContext('All actions must exist in SM as states').toEqual(expected);
 
     stateMachine.states.Global.states = {
       BOT_RESPONSE1: {
@@ -162,7 +158,7 @@ describe('scenario-validation', () => {
       valid: false,
       reason: SCENARIO_STEPS_ERRORS.states_should_be_actions('TEST')
     };
-    expect(res).toEqual(expected, 'All SM states must correspond to actions');
+    expect(res).withContext('All SM states must correspond to actions').toEqual(expected);
 
     delete stateMachine.states.Global.states.TEST;
 
@@ -170,6 +166,6 @@ describe('scenario-validation', () => {
     expected = {
       valid: true
     };
-    expect(res).toEqual(expected, 'All steps are ok, validation passed');
+    expect(res).withContext('All steps are ok, validation passed').toEqual(expected);
   });
 });

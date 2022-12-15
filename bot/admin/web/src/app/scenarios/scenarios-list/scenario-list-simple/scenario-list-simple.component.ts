@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
 
 import { OrderBy } from '../../../shared/utils';
 import { ScenarioGroupExtended, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
 import { ScenarioService } from '../../services/scenario.service';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 
 @Component({
@@ -27,7 +27,7 @@ export class ScenarioListSimpleComponent {
   orderBy = 'name';
   orderByReverse = false;
 
-  constructor(protected state: StateService, private dialogService: DialogService, private scenarioService: ScenarioService) {}
+  constructor(protected state: StateService, private nbDialogService: NbDialogService, private scenarioService: ScenarioService) {}
 
   setOrderBy(criteria: string): void {
     if (criteria == this.orderBy) {
@@ -71,7 +71,7 @@ export class ScenarioListSimpleComponent {
   deleteScenarioGroup(event: PointerEvent, scenarioGroup: ScenarioGroupExtended): void {
     event.stopPropagation();
     const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Delete scenario group "${scenarioGroup.name}"`,
         subtitle:
@@ -93,7 +93,7 @@ export class ScenarioListSimpleComponent {
   deleteScenarioVersion(event: PointerEvent, scenarioGroup: ScenarioGroupExtended, scenarioVersion: ScenarioVersion): void {
     event.stopPropagation();
     const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: 'Delete scenario version',
         subtitle:
@@ -129,7 +129,7 @@ export class ScenarioListSimpleComponent {
         action = 'Disable';
       }
 
-      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `${action} tick story`,
           subtitle: `Are you sure you want to ${action.toLowerCase()} the tick story associated with this scenario ?`,

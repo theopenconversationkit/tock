@@ -8,8 +8,6 @@ global
 
         npmrc pour indiquer le registry par defaut
 
-        Créer un composant partagé input avec autocomplétion ?
-
 Shared
 
         Composant Canvas : limiter le "scope" du zoom aux dimensions du canvas. Eviter que le canvas ne se retrouve propulsé trop à l'extérieur de la vieBox du canvas wrapper à la suite de zooms et de zooms

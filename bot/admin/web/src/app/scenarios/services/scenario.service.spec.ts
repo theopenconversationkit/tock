@@ -11,6 +11,8 @@ import { ScenarioDesignerComponent } from '../scenario-designer/scenario-designe
 import { ScenariosListComponent } from '../scenarios-list/scenarios-list.component';
 import { ScenarioApiService } from './scenario.api.service';
 import { ScenarioService } from './scenario.service';
+import { StateService } from '../../core-nlp/state.service';
+import { NlpService } from '../../nlp-tabs/nlp.service';
 
 const mockScenarios: ScenarioGroupExtended[] = [
   {
@@ -188,6 +190,14 @@ describe('ScenarioService', () => {
           useValue: {
             transform: (date) => date
           }
+        },
+        {
+          provide: StateService,
+          useValue: {}
+        },
+        {
+          provide: NlpService,
+          useValue: {}
         }
       ]
     });

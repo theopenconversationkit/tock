@@ -2,10 +2,9 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 
 import { BotService } from '../../../bot/bot-service';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../../bot/model/story';
 import { StateService } from '../../../core-nlp/state.service';
 import { Settings } from '../../models';
@@ -48,7 +47,7 @@ export class FaqManagementSettingsComponent implements OnInit {
     private botService: BotService,
     private stateService: StateService,
     private faqService: FaqService,
-    private dialogService: DialogService,
+    private nbDialogService: NbDialogService,
     private toastrService: NbToastrService
   ) {}
 
@@ -115,7 +114,7 @@ export class FaqManagementSettingsComponent implements OnInit {
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Cancel edit settings`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
@@ -144,7 +143,7 @@ export class FaqManagementSettingsComponent implements OnInit {
     if (this.canSave) {
       if (!this.satisfactionEnabled.value) {
         const validAction = 'yes';
-        const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+        const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
           context: {
             title: `Disable satisfaction`,
             subtitle: 'This will disable the satisfaction question for all FAQs. Do you confirm ?',

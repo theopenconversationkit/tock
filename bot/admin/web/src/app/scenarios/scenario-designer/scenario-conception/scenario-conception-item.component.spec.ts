@@ -2,7 +2,7 @@ import { By } from '@angular/platform-browser';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { EMPTY, of } from 'rxjs';
-import { NbDialogRef } from '@nebular/theme';
+import { NbDialogRef, NbDialogService } from '@nebular/theme';
 
 import {
   ScenarioIntentDefinition,
@@ -17,7 +17,6 @@ import {
 import { ScenarioConceptionItemComponent } from './scenario-conception-item.component';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
 import { ScenarioDesignerService } from '../scenario-designer.service';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 
@@ -117,8 +116,8 @@ describe('ScenarioConceptionItemComponent', () => {
       providers: [
         ScenarioConceptionService,
         {
-          provide: DialogService,
-          useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) }
+          provide: NbDialogService,
+          useValue: { open: () => ({ onClose: (val: any) => of(val) }) }
         },
         { provide: StateService, useValue: {} },
         { provide: NlpService, useValue: {} },
@@ -180,14 +179,14 @@ describe('ScenarioConceptionItemComponent', () => {
       inputContextNames: ['context1'],
       outputContextNames: ['context1', 'context2']
     };
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+    spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { saveModifications: of(modifications), deleteDefinition: of() } }
     } as NbDialogRef<any>);
 
     component.manageAction();
 
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(component.contexts).toEqual([
       {
         name: 'context1',
@@ -205,14 +204,14 @@ describe('ScenarioConceptionItemComponent', () => {
 
   it('Should handle correctly ActionEditComponent.deleteDefinition return', () => {
     spyOn(scenarioConceptionService, 'removeItemDefinition');
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+    spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { saveModifications: EMPTY, deleteDefinition: of(true) } }
     } as NbDialogRef<any>);
 
     component.manageAction();
     fixture.detectChanges();
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(scenarioConceptionService.removeItemDefinition).toHaveBeenCalled();
   });
 
@@ -238,14 +237,14 @@ describe('ScenarioConceptionItemComponent', () => {
 
   it('Should handle correctly searchIntent => createNewIntentEvent call', () => {
     spyOn(component, 'createIntent');
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+    spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { useIntentEvent: EMPTY, createNewIntentEvent: of(true) } }
     } as NbDialogRef<any>);
 
     component.searchIntent();
 
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(component.createIntent).toHaveBeenCalled();
   });
 
@@ -258,14 +257,14 @@ describe('ScenarioConceptionItemComponent', () => {
       _id: 'id'
     };
     spyOn(component, 'setItemIntentDefinition');
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+    spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { useIntentEvent: of(intentDef), createNewIntentEvent: EMPTY } }
     } as NbDialogRef<any>);
 
     component.searchIntent();
 
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(component.setItemIntentDefinition).toHaveBeenCalledWith(intentDef);
   });
 
@@ -279,14 +278,14 @@ describe('ScenarioConceptionItemComponent', () => {
     } as ScenarioIntentDefinition;
 
     spyOn(component, 'editIntent');
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+    spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { createIntentEvent: of(intentDef) } }
     } as NbDialogRef<any>);
 
     component.createIntent();
 
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(component.item.intentDefinition).toEqual(intentDef);
     expect(component.editIntent).toHaveBeenCalled();
   });
@@ -312,7 +311,7 @@ describe('ScenarioConceptionItemComponent', () => {
       primary: false
     };
 
-    spyOn(component['dialogService'], 'openDialog').and.returnValue({
+    spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { saveModifications: of(intentDef) } }
     } as NbDialogRef<any>);
@@ -322,7 +321,7 @@ describe('ScenarioConceptionItemComponent', () => {
 
     component.editIntent();
 
-    expect(component['dialogService'].openDialog).toHaveBeenCalled();
+    expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(component.item.intentDefinition.sentences).toEqual(intentDef.sentences);
     expect(component.item.intentDefinition.primary).toEqual(intentDef.primary);
     expect(component.scenario.data.stateMachine.states.Global.on).toEqual({});
@@ -356,24 +355,24 @@ describe('ScenarioConceptionItemComponent', () => {
 
   describe('delete', () => {
     it('Should confirm before deleting if item has definition', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      spyOn(component['nbDialogService'], 'open').and.returnValue({
         close: () => {},
         onClose: of('delete')
       } as NbDialogRef<any>);
 
       component.delete();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
     });
 
     it('Should not confirm before deleting if item has no definition', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      spyOn(component['nbDialogService'], 'open').and.returnValue({
         close: () => {},
         onClose: of('delete')
       } as NbDialogRef<any>);
       delete component.item.actionDefinition;
       component.delete();
-      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component['nbDialogService'].open).not.toHaveBeenCalled();
     });
   });
 
@@ -384,24 +383,24 @@ describe('ScenarioConceptionItemComponent', () => {
 
   describe('switchItemType', () => {
     it('Should confirm before changing type of an item if it has definition', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      spyOn(component['nbDialogService'], 'open').and.returnValue({
         close: () => {},
         onClose: of('delete')
       } as NbDialogRef<any>);
 
       component.switchItemType(SCENARIO_ITEM_FROM_CLIENT);
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
     });
 
     it('Should not confirm before changing type of an item if it has no definition', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({
+      spyOn(component['nbDialogService'], 'open').and.returnValue({
         close: () => {},
         onClose: of('delete')
       } as NbDialogRef<any>);
       delete component.item.actionDefinition;
       component.switchItemType(SCENARIO_ITEM_FROM_CLIENT);
-      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component['nbDialogService'].open).not.toHaveBeenCalled();
     });
   });
 

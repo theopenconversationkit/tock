@@ -1,9 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest, I18nLabel, I18nLabels } from '../../../bot/model/i18n';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { UserInterfaceType } from '../../../core/model/configuration';
 import { ClassifiedEntity, Intent, SentenceStatus } from '../../../model/nlp';
@@ -46,7 +45,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     private nlp: NlpService,
     private scenarioDesignerService: ScenarioDesignerService,
     private botService: BotService,
-    private dialogService: DialogService,
+    private nbDialogService: NbDialogService,
     private scenarioService: ScenarioService,
     private toastrService: NbToastrService
   ) {}
@@ -338,7 +337,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   previewTickStory(): void {
     const story = this.compileTickStory();
 
-    const jsonPreviewerRef = this.dialogService.openDialog(JsonPreviewerComponent, {
+    const jsonPreviewerRef = this.nbDialogService.open(JsonPreviewerComponent, {
       context: { jsonData: story }
     });
     jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;

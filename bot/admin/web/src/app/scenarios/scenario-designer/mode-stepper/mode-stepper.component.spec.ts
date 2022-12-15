@@ -1,12 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NbButtonModule, NbIconModule } from '@nebular/theme';
+import { NbButtonModule, NbDialogService, NbIconModule } from '@nebular/theme';
 import { of } from 'rxjs';
 
 import { Sentence } from '../../../model/nlp';
 import { TestSharedModule } from '../../../../testing/test-shared.module';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, TempSentence } from '../../models';
 import { ModeStepperComponent } from './mode-stepper.component';
 
@@ -17,7 +16,8 @@ const scenarioWriting: ScenarioVersion = {
   data: {
     mode: SCENARIO_MODE.writing,
     scenarioItems: [{ id: 0, from: 'client' as ScenarioItemFrom, text: 'Main intent', main: true }],
-    contexts: []
+    contexts: [],
+    triggers: []
   },
   state: 'draft' as SCENARIO_STATE
 };
@@ -32,7 +32,8 @@ const scenarioCasting: ScenarioVersion = {
       { id: 0, from: 'client' as ScenarioItemFrom, text: 'Main intent', main: true },
       { id: 1, text: 'test1', from: 'bot' }
     ],
-    contexts: []
+    contexts: [],
+    triggers: []
   },
   state: 'draft' as SCENARIO_STATE
 };
@@ -64,7 +65,8 @@ const scenarioProduction: ScenarioVersion = {
         actionDefinition: { name: 'action2', inputContextNames: [], outputContextNames: [] }
       }
     ],
-    contexts: []
+    contexts: [],
+    triggers: []
   },
   state: 'draft' as SCENARIO_STATE
 };
@@ -110,6 +112,7 @@ const scenarioPublishing: ScenarioVersion = {
       }
     ],
     contexts: [],
+    triggers: [],
     stateMachine: {
       id: 'root',
       type: 'parallel',
@@ -137,7 +140,7 @@ describe('ModeStepperComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ModeStepperComponent],
       imports: [TestSharedModule, NbButtonModule, NbIconModule],
-      providers: [{ provide: DialogService, useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) } }],
+      providers: [{ provide: NbDialogService, useValue: { open: () => ({ onClose: (val: any) => of(val) }) } }],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });

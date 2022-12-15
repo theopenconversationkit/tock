@@ -1,10 +1,9 @@
 import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NbDialogRef, NbToastrService } from '@nebular/theme';
+import { NbDialogRef, NbDialogService, NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { first, take, takeUntil } from 'rxjs/operators';
 
-import { DialogService } from '../../core-nlp/dialog.service';
 import { Filter, ScenarioGroup, ScenarioGroupExtended, ScenarioGroupUpdate, ScenarioVersion, SCENARIO_STATE } from '../models';
 import { ScenarioService } from '../services/scenario.service';
 import { StateService } from '../../core-nlp/state.service';
@@ -67,7 +66,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
 
   constructor(
     private botConfigurationService: BotConfigurationService,
-    private dialogService: DialogService,
+    private nbDialogService: NbDialogService,
     private scenarioService: ScenarioService,
     private toastrService: NbToastrService,
     private router: Router,
@@ -159,7 +158,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   duplicationScenarioMemo: { scenarioGroup: ScenarioGroup; scenarioVersion: ScenarioVersion };
   askDuplicationScenarioVersion({ scenarioGroup, scenarioVersion }): void {
     this.duplicationScenarioMemo = { scenarioGroup, scenarioVersion };
-    this.duplicationDialogRef = this.dialogService.openDialog(this.duplicationModal);
+    this.duplicationDialogRef = this.nbDialogService.open(this.duplicationModal);
   }
 
   duplicationCancel(): void {

@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, ElementRef, HostListener, Inject, Injectable, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute, CanDeactivate } from '@angular/router';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { isEqual } from 'lodash-es';
 import { Subject } from 'rxjs';
 import { takeUntil, take, distinctUntilChanged } from 'rxjs/operators';
@@ -15,7 +15,6 @@ import {
   SCENARIO_STATE
 } from '../models/scenario.model';
 import { ScenarioService } from '../services/scenario.service';
-import { DialogService } from '../../core-nlp/dialog.service';
 import { StateService } from '../../core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
 import { deepCopy, stringifiedCleanObject } from '../commons/utils';
@@ -58,7 +57,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     protected state: StateService,
     private scenarioDesignerService: ScenarioDesignerService,
-    private dialogService: DialogService,
+    private nbDialogService: NbDialogService,
     private botService: BotService,
     private renderer: Renderer2,
     @Inject(DOCUMENT) private document: Document
@@ -170,7 +169,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     if (deletedIntents.length) {
       let title = 'Intents deleted';
       let subtitle = 'The following intents have been removed:';
-      this.dialogService.openDialog(ChoiceDialogComponent, {
+      this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
           title: title,
@@ -184,7 +183,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     if (deletedAnswers.length) {
       let title = 'Answers deleted';
       let subtitle = 'The following answers have been removed:';
-      this.dialogService.openDialog(ChoiceDialogComponent, {
+      this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
           title: title,
@@ -199,7 +198,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   informScenarioNotFound() {
-    const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const modal = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `No scenario found`,
         subtitle: 'No scenario with this identifier was found',
@@ -273,7 +272,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 
 @Injectable()
 export class ScenarioDesignerNavigationGuard implements CanDeactivate<any> {
-  constructor(private dialogService: DialogService) {}
+  constructor(private nbDialogService: NbDialogService) {}
 
   canDeactivate(component: any) {
     const canDeactivate = component.canDeactivate();
@@ -281,7 +280,7 @@ export class ScenarioDesignerNavigationGuard implements CanDeactivate<any> {
     if (!canDeactivate) {
       const subject = new Subject<boolean>();
       const dialogResponseVerb = 'Exit';
-      const modal = this.dialogService.openDialog(ChoiceDialogComponent, {
+      const modal = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `You're about to leave without saving the changes`,
           subtitle: 'Are you sure?',

@@ -3,8 +3,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { FaqDefinitionExtended } from '../faq-management.component';
 import { StateService } from '../../../core-nlp/state.service';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
+import { NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-faq-management-list',
@@ -19,7 +19,7 @@ export class FaqManagementListComponent {
   @Output() onDelete = new EventEmitter<FaqDefinitionExtended>();
   @Output() onEnable = new EventEmitter<FaqDefinitionExtended>();
 
-  constructor(private state: StateService, private dialogService: DialogService) {}
+  constructor(private state: StateService, private nbDialogService: NbDialogService) {}
 
   toggleEnabled(faq: FaqDefinitionExtended) {
     let action = 'Enable';
@@ -27,7 +27,7 @@ export class FaqManagementListComponent {
       action = 'Disable';
     }
 
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `${action} faq "${faq.title}"`,
         subtitle: `Are you sure you want to ${action.toLowerCase()} this faq ?`,
@@ -47,7 +47,7 @@ export class FaqManagementListComponent {
 
   delete(faq: FaqDefinitionExtended): void {
     const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Delete faq "${faq.title}"`,
         subtitle: 'Are you sure you want to delete this faq ?',

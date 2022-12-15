@@ -15,10 +15,10 @@ import {
   ViewContainerRef
 } from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
-import { NbContextMenuDirective } from '@nebular/theme';
+import { NbContextMenuDirective, NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DialogService } from '../../../../../core-nlp/dialog.service';
+
 import { StateService } from '../../../../../core-nlp/state.service';
 import { ClassifiedEntity, EntityDefinition, qualifiedName, qualifiedRole, Sentence } from '../../../../../model/nlp';
 import { CreateEntityDialogComponent } from '../../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
@@ -54,7 +54,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   constructor(
     protected state: StateService,
-    private dialogService: DialogService,
+    private nbDialogService: NbDialogService,
     public overlay: Overlay,
     public viewContainerRef: ViewContainerRef
   ) {}
@@ -122,7 +122,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   }
 
   addContext(token): void {
-    const modal = this.dialogService.openDialog(ContextCreateComponent, {
+    const modal = this.nbDialogService.open(ContextCreateComponent, {
       context: {
         scenario: this.scenario
       }
@@ -366,7 +366,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
   callEntitiesModal(event: MouseEvent): void {
     event.stopPropagation();
-    const modal = this.dialogService.openDialog(CreateEntityDialogComponent, {
+    const modal = this.nbDialogService.open(CreateEntityDialogComponent, {
       context: {}
     });
     modal.onClose.pipe(takeUntil(this.destroy)).subscribe((res) => {

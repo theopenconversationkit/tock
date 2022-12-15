@@ -2,12 +2,11 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { of, Subject } from 'rxjs';
 
 import { TestSharedModule } from '../../../testing/test-shared.module';
 import { BotService } from '../../bot/bot-service';
-import { DialogService } from '../../core-nlp/dialog.service';
 import { StateService } from '../../core-nlp/state.service';
 import { ScenarioVersionExtended, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models';
 import { ScenarioService } from '../services/scenario.service';
@@ -57,7 +56,7 @@ describe('ScenarioDesignerComponent', () => {
             scenarioDesignerCommunication: of({ type: 'updateScenarioBackup', data: testScenario })
           }
         },
-        { provide: DialogService, useValue: {} },
+        { provide: NbDialogService, useValue: {} },
         {
           provide: BotService,
           useValue: {

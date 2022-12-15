@@ -1,10 +1,9 @@
 import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NbDialogRef } from '@nebular/theme';
+import { NbDialogRef, NbDialogService } from '@nebular/theme';
 import { of } from 'rxjs';
 
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { ScenarioGroup } from '../../models';
 import { ScenarioService } from '../../services/scenario.service';
 import { ScenarioEditComponent } from './scenario-edit.component';
@@ -37,7 +36,7 @@ describe('ScenarioEditComponent', () => {
       declarations: [ScenarioEditComponent, AutocompleteInputComponent, FormControlComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        { provide: DialogService, useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) } },
+        { provide: NbDialogService, useValue: { open: () => ({ onClose: (val: any) => of(val) }) } },
         { provide: ScenarioService, useClass: MockScenarioService }
       ],
       schemas: [NO_ERRORS_SCHEMA]
@@ -103,36 +102,36 @@ describe('ScenarioEditComponent', () => {
 
   describe('#close', () => {
     it('should call the onClose method without displaying a confirmation request message when the form is not dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       component.close();
 
-      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component['nbDialogService'].open).not.toHaveBeenCalled();
       expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
     });
 
     it('should call the onClose method after displaying a confirmation request message and confirm when the form is dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       // To display the confirmation message, the form must have been modified
       component.form.markAsDirty();
       component.close();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
     });
 
     it('should not call the onClose method after displaying a confirmation request message and cancel when the form is dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       // To display the confirmation message, the form must have been modified
       component.form.markAsDirty();
       component.close();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.onClose.emit).not.toHaveBeenCalled();
     });
   });
