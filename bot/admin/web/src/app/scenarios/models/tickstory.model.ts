@@ -13,6 +13,15 @@ export interface TickStory {
   actions: ScenarioActionDefinition[];
   stateMachine: MachineState;
   intentsContexts: intentsContext[];
+  unknownAnswerConfigs: unknownAnswerConfig[];
+}
+
+export interface unknownAnswerConfig {
+  exitAction?: string;
+  action: string;
+  intent: string;
+  answerId: string;
+  retryNb: number;
 }
 
 export interface intentsContext {

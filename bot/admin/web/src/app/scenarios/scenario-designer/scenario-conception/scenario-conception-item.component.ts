@@ -13,7 +13,8 @@ import {
   SCENARIO_MODE,
   ScenarioContext,
   ScenarioVersionExtended,
-  Handler
+  Handler,
+  ScenarioActionDefinition
 } from '../../models';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 import { ActionEditComponent } from './action-edit/action-edit.component';
@@ -80,7 +81,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         isReadonly: this.isReadonly
       }
     });
-    modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((actionDef) => {
+    modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((actionDef: ScenarioActionDefinition) => {
       this.checkAndAddNewTrigger(actionDef.trigger);
       this.checkAndAddNewContexts(actionDef.inputContextNames);
       this.checkAndAddNewContexts(actionDef.outputContextNames);
@@ -92,6 +93,16 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         if (this.item.actionDefinition.answer !== actionDef.answer) {
           actionDef.answerUpdate = true;
         }
+      }
+
+      actionDef.unknownAnswers = actionDef.unknownAnswers.filter((ua) => ua.answer?.trim().length > 0);
+      if (actionDef.unknownAnswerId) {
+        actionDef.unknownAnswers.forEach((ua) => {
+          const storedAnswer = this.item.actionDefinition.unknownAnswers?.find((sua) => sua.locale === ua.locale);
+          if (storedAnswer && storedAnswer.answer !== ua.answer) {
+            ua.answerUpdate = true;
+          }
+        });
       }
 
       this.item.actionDefinition = actionDef;

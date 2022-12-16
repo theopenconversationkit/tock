@@ -17,169 +17,318 @@
       [formGroup]="form"
       (submit)="save()"
     >
-      <tock-form-control
-        label="Name"
-        name="name"
-        required="true"
-        [controls]="name"
-        [showError]="isSubmitted"
-      >
-        <input
-          *ngIf="!isReadonly"
-          nbInput
-          autofocusElement
-          formControlName="name"
-          fullWidth
-          id="name"
-          type="text"
-          placeholder="Enter endpoint name"
-          (blur)="formatActionName()"
-          data-testid="name"
-        />
-        <span
-          *ngIf="isReadonly"
-          class="text-mitigated"
-        >
-          {{ name.value }}
-        </span>
-      </tock-form-control>
-
-      <div class="position-relative">
-        <div
-          *ngIf="!isReadonly"
-          class="position-absolute"
-          style="left: 50%"
-        >
-          <nb-icon
-            icon="arrowhead-up-outline"
-            status="basic"
-            nbTooltip="Use description as action name"
-            class="pointer"
-            (click)="copyDescToName()"
-          ></nb-icon>
-        </div>
-
+      <div id="formTopSection">
         <tock-form-control
-          label="Description"
-          name="description"
-          [controls]="description"
+          label="Name"
+          name="name"
+          required="true"
+          [controls]="name"
           [showError]="isSubmitted"
         >
-          <textarea
+          <input
             *ngIf="!isReadonly"
             nbInput
-            formControlName="description"
+            autofocusElement
+            formControlName="name"
             fullWidth
-            id="description"
-            placeholder="Enter description"
-            rows="4"
-          ></textarea>
+            id="name"
+            type="text"
+            placeholder="Enter endpoint name"
+            (blur)="formatActionName()"
+            data-testid="name"
+          />
           <span
             *ngIf="isReadonly"
             class="text-mitigated"
           >
-            {{ description.value }}
+            {{ name.value }}
           </span>
         </tock-form-control>
-      </div>
 
-      <tock-form-control
-        label="Api handler"
-        name="handler"
-        [controls]="handler"
-        [showError]="isSubmitted"
-      >
-        <tock-autocomplete-input
-          *ngIf="!isReadonly"
-          formControlName="handler"
-          placeholder="Enter handler class name"
-          name="handler"
-          [options]="handlers"
-        ></tock-autocomplete-input>
-        <span
-          *ngIf="isReadonly"
-          class="text-mitigated"
-        >
-          {{ handler.value }}
-        </span>
-      </tock-form-control>
+        <div class="position-relative">
+          <div
+            *ngIf="!isReadonly"
+            class="position-absolute"
+            style="left: 50%"
+          >
+            <nb-icon
+              icon="arrowhead-up-outline"
+              status="basic"
+              nbTooltip="Use description as action name"
+              class="pointer"
+              (click)="copyDescToName()"
+            ></nb-icon>
+          </div>
 
-      <div>
+          <tock-form-control
+            label="Description"
+            name="description"
+            [controls]="description"
+            [showError]="isSubmitted"
+          >
+            <textarea
+              *ngIf="!isReadonly"
+              nbInput
+              formControlName="description"
+              fullWidth
+              id="description"
+              placeholder="Enter description"
+              rows="4"
+            ></textarea>
+            <span
+              *ngIf="isReadonly"
+              class="text-mitigated"
+            >
+              {{ description.value }}
+            </span>
+          </tock-form-control>
+        </div>
+
         <tock-form-control
-          *ngIf="!isReadonly"
-          label="Input contexts"
-          name="inputContexts"
-          [controls]="inputContextsAddError"
-          [showError]="true"
+          label="Api handler"
+          name="handler"
+          [controls]="handler"
+          [showError]="isSubmitted"
         >
-          <div class="d-flex">
-            <div class="w-100">
-              <!-- <tock-autocomplete-input
+          <tock-autocomplete-input
+            *ngIf="!isReadonly"
+            formControlName="handler"
+            placeholder="Enter handler class name"
+            name="handler"
+            [options]="handlers"
+          ></tock-autocomplete-input>
+          <span
+            *ngIf="isReadonly"
+            class="text-mitigated"
+          >
+            {{ handler.value }}
+          </span>
+        </tock-form-control>
+
+        <div>
+          <tock-form-control
+            *ngIf="!isReadonly"
+            label="Input contexts"
+            name="inputContexts"
+            [controls]="inputContextsAddError"
+            [showError]="true"
+          >
+            <div class="d-flex">
+              <div class="w-100">
+                <!-- <tock-autocomplete-input
                 *ngIf="!isReadonly"
                 placeholder="Add an input context and press enter"
                 name="inputContexts"
                 [options]="contextsValues"
                 (onKeyup)="resetContextsAddErrors(); addInputContext($event, 'input')"
               ></tock-autocomplete-input> -->
-              <input
-                #inputContextsInput
-                nbInput
-                fullWidth
-                id="inputContexts"
-                type="text"
-                placeholder="Add an input context and press enter"
-                (keyup)="resetContextsAddErrors()"
-                (keyup.enter)="addContext('input')"
-                autocomplete="off"
-                [nbAutocomplete]="inputContextsAutocomplete"
-                (focus)="updateContextsAutocompleteValues()"
-                (keyup)="updateContextsAutocompleteValues($event)"
-              />
-              <nb-autocomplete
-                #inputContextsAutocomplete
-                optionsListClass="option-list--break-word"
-              >
-                <nb-option
-                  *ngFor="let option of contextsAutocompleteValues | async"
-                  [value]="option"
+                <input
+                  #inputContextsInput
+                  nbInput
+                  fullWidth
+                  id="inputContexts"
+                  type="text"
+                  placeholder="Add an input context and press enter"
+                  (keyup)="resetContextsAddErrors()"
+                  (keyup.enter)="addContext('input')"
+                  autocomplete="off"
+                  [nbAutocomplete]="inputContextsAutocomplete"
+                  (focus)="updateContextsAutocompleteValues()"
+                  (keyup)="updateContextsAutocompleteValues($event)"
+                />
+                <nb-autocomplete
+                  #inputContextsAutocomplete
+                  optionsListClass="option-list--break-word"
                 >
-                  {{ option }}
-                </nb-option>
-              </nb-autocomplete>
-            </div>
-
-            <button
-              type="button"
-              nbButton
-              ghost
-              size="small"
-              class="ml-1"
-              [disabled]="!inputContextsInput.value.length"
-              (click)="addContext('input')"
-            >
-              Add
-            </button>
-          </div>
-        </tock-form-control>
-
-        <label
-          *ngIf="isReadonly"
-          class="font-weight-bold text-mitigated"
-        >
-          Input contexts
-        </label>
-
-        <nb-list class="contexts-list">
-          <nb-list-item
-            *ngFor="let inputContext of inputContextNames.value"
-            class="p-2 d-flex justify-content-between"
-          >
-            <div class="d-flex flex-wrap justify-content-between w-100 mr-2">
-              <div class="ellipsis font-weight-bold">
-                {{ inputContext }}
+                  <nb-option
+                    *ngFor="let option of contextsAutocompleteValues | async"
+                    [value]="option"
+                  >
+                    {{ option }}
+                  </nb-option>
+                </nb-autocomplete>
               </div>
 
-              <ng-container *ngFor="let context of getContextByName(inputContext)">
+              <button
+                type="button"
+                nbButton
+                ghost
+                size="small"
+                class="ml-1"
+                [disabled]="!inputContextsInput.value.length"
+                (click)="addContext('input')"
+              >
+                Add
+              </button>
+            </div>
+          </tock-form-control>
+
+          <label
+            *ngIf="isReadonly"
+            class="font-weight-bold text-mitigated"
+          >
+            Input contexts
+          </label>
+
+          <nb-list class="contexts-list">
+            <nb-list-item
+              *ngFor="let inputContext of inputContextNames.value"
+              class="p-2 d-flex justify-content-between"
+            >
+              <div class="d-flex flex-wrap justify-content-between w-100 mr-2">
+                <div class="ellipsis font-weight-bold">
+                  {{ inputContext }}
+                </div>
+
+                <ng-container *ngFor="let context of getContextByName(inputContext)">
+                  <span
+                    *ngIf="context?.entityType"
+                    nbTooltip="Entity associated with the context"
+                    class="entity"
+                    [style.background]="getContextEntityColor(context)"
+                    [style.color]="getContextEntityContrast(context)"
+                  >
+                    {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
+                  </span>
+                </ng-container>
+              </div>
+
+              <nb-icon
+                *ngIf="!isReadonly"
+                icon="trash-2-outline"
+                status="danger"
+                (click)="removeContext('input', inputContext)"
+                class="min-width-1em ml-2 pointer"
+                nbTooltip="Remove this context from inputs"
+              ></nb-icon>
+            </nb-list-item>
+          </nb-list>
+        </div>
+
+        <div>
+          <nb-icon
+            *ngIf="!isReadonly"
+            icon="arrowhead-right-outline"
+            status="basic"
+            nbTooltip="Use description as answer"
+            class="pointer"
+            (click)="copyDescToAnswer()"
+          ></nb-icon>
+        </div>
+
+        <tock-form-control
+          label="Answer"
+          name="answer"
+          [controls]="answer"
+          [showError]="isSubmitted"
+        >
+          <textarea
+            *ngIf="!isReadonly"
+            nbInput
+            formControlName="answer"
+            fullWidth
+            id="answer"
+            placeholder="Enter answer"
+            rows="4"
+          ></textarea>
+          <span
+            *ngIf="isReadonly"
+            class="text-mitigated"
+          >
+            {{ answer.value }}
+          </span>
+        </tock-form-control>
+
+        <tock-form-control
+          label="Event"
+          name="trigger"
+          [controls]="trigger"
+          [showError]="isSubmitted"
+        >
+          <tock-autocomplete-input
+            *ngIf="!isReadonly"
+            formControlName="trigger"
+            placeholder="Add an event"
+            name="trigger"
+            keyLabel="name"
+            [options]="triggers"
+          ></tock-autocomplete-input>
+          <span
+            *ngIf="isReadonly"
+            class="text-mitigated"
+          >
+            {{ trigger.value }}
+          </span>
+        </tock-form-control>
+
+        <div>
+          <tock-form-control
+            *ngIf="!isReadonly"
+            label="Output contexts"
+            name="outputContexts"
+            [controls]="outputContextsAddError"
+            [showError]="true"
+          >
+            <div class="d-flex">
+              <div class="w-100">
+                <input
+                  #outputContextsInput
+                  nbInput
+                  fullWidth
+                  id="outputContexts"
+                  type="text"
+                  placeholder="Add an output context and press enter"
+                  (keyup)="resetContextsAddErrors()"
+                  (keyup.enter)="addContext('output')"
+                  autocomplete="off"
+                  [nbAutocomplete]="outputContextsAutocomplete"
+                  (focus)="updateContextsAutocompleteValues()"
+                  (keyup)="updateContextsAutocompleteValues($event)"
+                />
+                <nb-autocomplete
+                  #outputContextsAutocomplete
+                  optionsListClass="option-list--break-word"
+                >
+                  <nb-option
+                    *ngFor="let option of contextsAutocompleteValues | async"
+                    [value]="option"
+                  >
+                    {{ option }}
+                  </nb-option>
+                </nb-autocomplete>
+              </div>
+
+              <button
+                type="button"
+                nbButton
+                ghost
+                size="small"
+                class="ml-1"
+                [disabled]="!outputContextsInput.value.length"
+                (click)="addContext('output')"
+              >
+                Add
+              </button>
+            </div>
+          </tock-form-control>
+
+          <label
+            *ngIf="isReadonly"
+            class="font-weight-bold text-mitigated"
+          >
+            Output contexts
+          </label>
+
+          <nb-list class="contexts-list">
+            <nb-list-item
+              *ngFor="let outputContext of outputContextNames.value"
+              class="p-2 d-flex justify-content-between"
+            >
+              <div class="ellipsis font-weight-bold">
+                {{ outputContext }}
+              </div>
+
+              <ng-container *ngFor="let context of getContextByName(outputContext)">
                 <span
                   *ngIf="context?.entityType"
                   nbTooltip="Entity associated with the context"
@@ -190,165 +339,51 @@
                   {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
                 </span>
               </ng-container>
-            </div>
 
-            <nb-icon
-              *ngIf="!isReadonly"
-              icon="trash-2-outline"
-              status="danger"
-              (click)="removeContext('input', inputContext)"
-              class="min-width-1em ml-2 pointer"
-              nbTooltip="Remove this context from inputs"
-            ></nb-icon>
-          </nb-list-item>
-        </nb-list>
+              <nb-icon
+                *ngIf="!isReadonly"
+                icon="trash-2-outline"
+                status="danger"
+                class="min-width-1em ml-2 pointer"
+                nbTooltip="Remove this context from outputs"
+                (click)="removeContext('output', outputContext)"
+              ></nb-icon>
+            </nb-list-item>
+          </nb-list>
+        </div>
       </div>
 
-      <div>
-        <nb-icon
-          *ngIf="!isReadonly"
-          icon="arrowhead-right-outline"
-          status="basic"
-          nbTooltip="Use description as answer"
-          class="pointer"
-          (click)="copyDescToAnswer()"
-        ></nb-icon>
-      </div>
+      <div id="formBottomSection">
+        <label class="font-weight-bold text-mitigated"> Question for unknown answer </label>
 
-      <tock-form-control
-        label="Answer"
-        name="answer"
-        [controls]="answer"
-        [showError]="isSubmitted"
-      >
-        <textarea
-          *ngIf="!isReadonly"
-          nbInput
-          formControlName="answer"
-          fullWidth
-          id="answer"
-          placeholder="Enter answer"
-          rows="4"
-        ></textarea>
-        <span
-          *ngIf="isReadonly"
-          class="text-mitigated"
-        >
-          {{ answer.value }}
-        </span>
-      </tock-form-control>
+        <small class="d-block text-muted mb-2">Enter the question to ask the user if their answer was not understood.</small>
 
-      <tock-form-control
-        label="Event"
-        name="trigger"
-        [controls]="trigger"
-        [showError]="isSubmitted"
-      >
-        <tock-autocomplete-input
-          *ngIf="!isReadonly"
-          formControlName="trigger"
-          placeholder="Add an event"
-          name="trigger"
-          keyLabel="name"
-          [options]="triggers"
-        ></tock-autocomplete-input>
-        <span
-          *ngIf="isReadonly"
-          class="text-mitigated"
-        >
-          {{ trigger.value }}
-        </span>
-      </tock-form-control>
-
-      <div>
-        <tock-form-control
-          *ngIf="!isReadonly"
-          label="Output contexts"
-          name="outputContexts"
-          [controls]="outputContextsAddError"
-          [showError]="true"
-        >
-          <div class="d-flex">
-            <div class="w-100">
-              <input
-                #outputContextsInput
+        <ng-container>
+          <ng-container *ngFor="let localeAnswerDef of unknownAnswers.value; let i = index">
+            <tock-form-control
+              name="answer"
+              [boldLabel]="false"
+              label="{{ state.localeName(localeAnswerDef.locale) }}"
+            >
+              <textarea
+                *ngIf="!isReadonly"
                 nbInput
                 fullWidth
-                id="outputContexts"
-                type="text"
-                placeholder="Add an output context and press enter"
-                (keyup)="resetContextsAddErrors()"
-                (keyup.enter)="addContext('output')"
-                autocomplete="off"
-                [nbAutocomplete]="outputContextsAutocomplete"
-                (focus)="updateContextsAutocompleteValues()"
-                (keyup)="updateContextsAutocompleteValues($event)"
-              />
-              <nb-autocomplete
-                #outputContextsAutocomplete
-                optionsListClass="option-list--break-word"
-              >
-                <nb-option
-                  *ngFor="let option of contextsAutocompleteValues | async"
-                  [value]="option"
-                >
-                  {{ option }}
-                </nb-option>
-              </nb-autocomplete>
-            </div>
+                rows="2"
+                placeholder="Enter question in {{ state.localeName(localeAnswerDef.locale) }}"
+                [(ngModel)]="localeAnswerDef.answer"
+                [ngModelOptions]="{ standalone: true }"
+              ></textarea>
 
-            <button
-              type="button"
-              nbButton
-              ghost
-              size="small"
-              class="ml-1"
-              [disabled]="!outputContextsInput.value.length"
-              (click)="addContext('output')"
-            >
-              Add
-            </button>
-          </div>
-        </tock-form-control>
-
-        <label
-          *ngIf="isReadonly"
-          class="font-weight-bold text-mitigated"
-        >
-          Output contexts
-        </label>
-
-        <nb-list class="contexts-list">
-          <nb-list-item
-            *ngFor="let outputContext of outputContextNames.value"
-            class="p-2 d-flex justify-content-between"
-          >
-            <div class="ellipsis font-weight-bold">
-              {{ outputContext }}
-            </div>
-
-            <ng-container *ngFor="let context of getContextByName(outputContext)">
               <span
-                *ngIf="context?.entityType"
-                nbTooltip="Entity associated with the context"
-                class="entity"
-                [style.background]="getContextEntityColor(context)"
-                [style.color]="getContextEntityContrast(context)"
+                *ngIf="isReadonly"
+                class="text-mitigated"
               >
-                {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
+                {{ localeAnswerDef.answer }}
               </span>
-            </ng-container>
-
-            <nb-icon
-              *ngIf="!isReadonly"
-              icon="trash-2-outline"
-              status="danger"
-              class="min-width-1em ml-2 pointer"
-              nbTooltip="Remove this context from outputs"
-              (click)="removeContext('output', outputContext)"
-            ></nb-icon>
-          </nb-list-item>
-        </nb-list>
+            </tock-form-control>
+          </ng-container>
+        </ng-container>
       </div>
     </form>
   </nb-card-body>

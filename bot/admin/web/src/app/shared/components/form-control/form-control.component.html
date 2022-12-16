@@ -5,7 +5,7 @@
 >
   <label
     *ngIf="label"
-    class="font-weight-bold text-mitigated"
+    [ngClass]="{ 'font-weight-bold': boldLabel, 'text-mitigated': true }"
     [class.required]="required"
     [class.hasError]="showError && !!controls.errors"
     [for]="name"

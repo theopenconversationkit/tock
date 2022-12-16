@@ -7,7 +7,7 @@
 }
 
 @include nb-install-component {
-  form {
+  #formTopSection {
     display: grid;
     grid-template-columns: minmax(5rem, 80vw);
 
@@ -24,7 +24,7 @@
   }
 
   @include media-breakpoint-up(sm) {
-    form {
+    #formTopSection {
       grid-template-columns: minmax(5rem, 20rem) auto minmax(5rem, 20rem);
       column-gap: 0.5rem;
       grid-template-rows: auto auto auto auto;
@@ -53,4 +53,11 @@
   font-size: 0.7rem;
   display: inline-block;
   line-height: 1.25rem;
+}
+
+@include nb-install-component {
+  #formBottomSection {
+    border-top: 1px solid nb-theme(border-basic-color-3);
+    padding-top: 1rem;
+  }
 }

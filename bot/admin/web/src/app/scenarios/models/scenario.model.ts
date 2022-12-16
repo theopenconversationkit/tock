@@ -94,7 +94,15 @@ export interface ScenarioActionDefinition {
   answer?: string;
   answerId?: string;
   answerUpdate?: true;
+  unknownAnswers?: scenarioAnswer[];
+  unknownAnswerId?: string;
   final?: boolean;
+}
+
+export interface scenarioAnswer {
+  answer: string;
+  locale: string;
+  answerUpdate?: true;
 }
 
 export type EntityTypeName = string;

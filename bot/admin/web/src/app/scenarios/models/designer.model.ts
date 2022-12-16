@@ -1,5 +1,5 @@
 import { ParseQuery } from '../../model/nlp';
-import { ScenarioItem } from './scenario.model';
+import { scenarioAnswer, ScenarioItem } from './scenario.model';
 
 export class TempSentence extends ParseQuery {
   public classification: TempClassification;
@@ -43,5 +43,6 @@ export interface IntegrityCheckResult {
 export interface DependencyUpdateJob {
   type: 'creation' | 'update';
   done: boolean;
-  data: ScenarioItem;
+  item: ScenarioItem;
+  answer?: scenarioAnswer
 }
