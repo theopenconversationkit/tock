@@ -16,9 +16,8 @@
 
 package ai.tock.bot.connector.whatsapp.model.send
 
-/**
- *
- */
-enum class WhatsAppBotMessageType {
-    audio, contact, document, hsm, image, location, text, template, interactive
-}
+internal data class WhatsAppSendBotMessageInteractiveMessage(
+    val interactive: WhatsAppBotInteractive,
+    override val recipientType: WhatsAppBotRecipientType,
+    override val to: String
+) : WhatsAppSendBotMessage(WhatsAppBotMessageType.interactive)
