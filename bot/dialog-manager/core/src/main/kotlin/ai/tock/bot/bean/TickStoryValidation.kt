@@ -80,6 +80,10 @@ object TickStoryValidation {
             "The same name $it is used for Action handler and context"
         }
 
+        val UNKLNOW_ACTION_NOT_FOUND : (String) -> String =  {
+            "Action $it defined for unkown configuration is not found in StateMachine"
+        }
+
     }
 
     fun validateIntents(tickStory: TickStory): List<String> {
@@ -261,6 +265,11 @@ object TickStoryValidation {
         }
     }
 
+    fun validateUnknownConfigs(tickStory: TickStory) : List<String> = tickStory.unknownAnswerConfigs
+        .filterNot { tickStory.actions.map { act -> act.name }.contains(it.action) }
+        .map { it.action }
+        .map { MessageProvider.UNKLNOW_ACTION_NOT_FOUND(it) }
+
     fun validateTickStory(tick: TickStory): Set<String> {
         val errors = mutableSetOf<String>()
 
@@ -287,6 +296,8 @@ object TickStoryValidation {
 
         // Consistency of names :
         errors.addAll(validateNames(tick))
+
+        errors.addAll(validateUnknownConfigs(tick))
 
         return errors
     }
