@@ -31,14 +31,13 @@ internal object WebhookActionConverter {
         request: MessageRequest,
         applicationId: String
     ): Event {
-        val userId = request.idConversation
-
-        val playerId = PlayerId(userId, PlayerType.user)
+        val playerId = PlayerId(request.idConversation, PlayerType.user)
+        val recipientId = PlayerId(request.idConversation, PlayerType.bot)
         return SendSentence(
-                    playerId,
-                    applicationId,
-                    playerId,
-                    request.message.payload.value
-                )
+            playerId,
+            applicationId,
+            recipientId,
+            request.message.payload.value
+        )
     }
 }
