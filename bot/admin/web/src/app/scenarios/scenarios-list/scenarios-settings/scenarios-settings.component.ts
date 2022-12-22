@@ -1,89 +1,77 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable, of, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
+import { Observable, of, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { BotService } from '../../../bot/bot-service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../../bot/model/story';
 import { StateService } from '../../../core-nlp/state.service';
-import { Settings } from '../../models';
-import { FaqService } from '../../services/faq.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
+import { Settings } from '../../models';
+import { ScenarioSettingsService } from '../../services';
 
 @Component({
-  selector: 'tock-faq-management-settings',
-  templateUrl: './faq-management-settings.component.html',
-  styleUrls: ['./faq-management-settings.component.scss']
+  selector: 'tock-scenarios-settings',
+  templateUrl: './scenarios-settings.component.html',
+  styleUrls: ['./scenarios-settings.component.scss']
 })
-export class FaqManagementSettingsComponent implements OnInit {
+export class ScenariosSettingsComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter<boolean>();
 
-  private readonly destroy$: Subject<boolean> = new Subject();
+  private destroy$ = new Subject();
+
   loading: boolean = false;
   isSubmitted: boolean = false;
 
   availableStories: StoryDefinitionConfigurationSummary[] = [];
 
   form = new FormGroup({
-    satisfactionEnabled: new FormControl(false),
-    satisfactionStoryId: new FormControl({ value: null, disabled: true })
+    actionRepetitionNumber: new FormControl(undefined, [Validators.required, Validators.min(0)]),
+    redirectStoryId: new FormControl(undefined, Validators.required)
   });
 
-  get satisfactionEnabled(): FormControl {
-    return this.form.get('satisfactionEnabled') as FormControl;
+  get actionRepetitionNumber(): FormControl {
+    return this.form.get('actionRepetitionNumber') as FormControl;
   }
 
-  get satisfactionStoryId(): FormControl {
-    return this.form.get('satisfactionStoryId') as FormControl;
+  get redirectStoryId(): FormControl {
+    return this.form.get('redirectStoryId') as FormControl;
   }
 
   get canSave(): boolean {
-    return this.form.valid;
+    return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
   constructor(
     private botService: BotService,
-    private stateService: StateService,
-    private faqService: FaqService,
     private nbDialogService: NbDialogService,
-    private toastrService: NbToastrService
+    private toastrService: NbToastrService,
+    private scenarioSettingsService: ScenarioSettingsService,
+    private stateService: StateService
   ) {}
 
   ngOnInit(): void {
-    this.satisfactionEnabled.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
-      if (!value) {
-        this.satisfactionStoryId.reset();
-        this.satisfactionStoryId.disable();
-        this.satisfactionStoryId.clearValidators();
-        this.form.updateValueAndValidity();
-      } else {
-        this.satisfactionStoryId.setValidators(Validators.required);
-        this.satisfactionStoryId.enable();
-        this.form.updateValueAndValidity();
-      }
-    });
-
     this.getStories();
     this.getSettings();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(true);
+    this.destroy$.next();
     this.destroy$.complete();
   }
 
   getSettings(): void {
     this.loading = true;
 
-    this.faqService
+    this.scenarioSettingsService
       .getSettings(this.stateService.currentApplication._id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (settings: Settings) => {
           this.form.patchValue({
-            satisfactionEnabled: settings.satisfactionEnabled,
-            satisfactionStoryId: settings.satisfactionStoryId
+            actionRepetitionNumber: settings.actionRepetitionNumber,
+            redirectStoryId: settings.redirectStoryId
           });
           this.loading = false;
         },
@@ -94,6 +82,7 @@ export class FaqManagementSettingsComponent implements OnInit {
   }
 
   getStories(): void {
+    // voir pour spécifier une catégorie "satisfaction" afin d'éviter de mettre une taille de 10.000
     this.botService
       .searchStories(
         new StorySearchQuery(
@@ -140,42 +129,21 @@ export class FaqManagementSettingsComponent implements OnInit {
     this.isSubmitted = true;
 
     if (this.canSave) {
-      if (!this.satisfactionEnabled.value) {
-        const validAction = 'yes';
-        const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
-          context: {
-            title: `Disable satisfaction`,
-            subtitle: 'This will disable the satisfaction question for all FAQs. Do you confirm ?',
-            actions: [{ actionName: 'cancel', buttonStatus: 'basic', ghost: true }, { actionName: validAction }],
-            cancellable: false
-          }
-        });
-        dialogRef.onClose.subscribe((result) => {
-          if (result === validAction) {
-            this.saveSettings(this.form.value as Settings);
-          }
-        });
-      } else {
-        this.saveSettings(this.form.value as Settings);
-      }
+      this.saveSettings(this.form.value as Settings);
     }
   }
 
   saveSettings(settings: Settings): void {
     this.loading = true;
 
-    this.faqService
+    this.scenarioSettingsService
       .saveSettings(this.stateService.currentApplication._id, settings)
-      .pipe(take(1))
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.loading = false;
-          this.form.reset();
           this.close();
-          this.toastrService.success(`Settings successfully updated`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(`Settings successfully updated`, 'Success');
         },
         error: () => {
           this.loading = false;

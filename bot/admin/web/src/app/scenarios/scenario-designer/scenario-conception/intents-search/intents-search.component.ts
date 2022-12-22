@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { StateService } from 'src/app/core-nlp/state.service';
 import { SearchQuery } from 'src/app/model/nlp';
 import { NlpService } from 'src/app/nlp-tabs/nlp.service';
-import { ScenarioService } from '../../../services/scenario.service';
+import { ScenarioService } from '../../../services';
 
 @Component({
   selector: 'scenario-intents-search',

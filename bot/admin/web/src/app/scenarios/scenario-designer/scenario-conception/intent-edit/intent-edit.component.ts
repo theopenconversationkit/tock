@@ -19,7 +19,8 @@ import { entityColor, EntityDefinition, Intent, qualifiedName, qualifiedRole, Se
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
 import { SentenceEditComponent } from './sentence/sentence-edit.component';
-import { deepCopy, getContrastYIQ, getScenarioActionDefinitions, normalizedSnakeCaseUpper } from '../../../commons/utils';
+import { getContrastYIQ, getScenarioActionDefinitions, normalizedSnakeCaseUpper } from '../../../commons/utils';
+import { deepCopy } from '../../../../shared/utils';
 
 export type SentenceExtended = Sentence & { _tokens?: Token[] };
 export type TempSentenceExtended = TempSentence & { _tokens?: Token[] };

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ScenarioDesignerService } from './scenario-designer.service';
-import { ScenarioService } from '../services/scenario.service';
+import { ScenarioService } from '../services';
 import { Router } from '@angular/router';
 
 describe('ScenarioDesignerService', () => {

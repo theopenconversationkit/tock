@@ -21,6 +21,7 @@ import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqService } from '../../services/faq.service';
 import { FaqManagementSettingsComponent } from './faq-management-settings.component';
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';
+import { NbDialogServiceMock, NbToastrServiceMock, StateServiceMock } from '../../../../testing/classMocked';
 
 const mockStories = [
   { _id: '1', name: 'story 1', category: 'category' } as StoryDefinitionConfigurationSummary,
@@ -46,16 +47,6 @@ class FaqServiceMock {
   }
 }
 
-class StateServiceMock {
-  currentApplication = {
-    namespace: 'namespace/test',
-    name: 'test',
-    _id: '1'
-  };
-
-  currentLocal = 'fr';
-}
-
 describe('FaqManagementSettingsComponent', () => {
   let component: FaqManagementSettingsComponent;
   let fixture: ComponentFixture<FaqManagementSettingsComponent>;
@@ -77,8 +68,8 @@ describe('FaqManagementSettingsComponent', () => {
         { provide: BotService, useClass: BotServiceMock },
         { provide: StateService, useClass: StateServiceMock },
         { provide: FaqService, useClass: FaqServiceMock },
-        { provide: NbDialogService, useValue: { open: () => ({ onClose: (val: any) => of(val) }) } },
-        { provide: NbToastrService, useValue: {} }
+        { provide: NbDialogService, useClass: NbDialogServiceMock },
+        { provide: NbToastrService, useClass: NbToastrServiceMock }
       ]
     }).compileComponents();
   });

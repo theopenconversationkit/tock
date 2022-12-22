@@ -14,7 +14,7 @@ import {
 import { of } from 'rxjs';
 
 import { TestSharedModule } from '../../../../testing/test-shared.module';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 import { ScenarioFiltersComponent } from './scenario-filters.component';
 import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
 

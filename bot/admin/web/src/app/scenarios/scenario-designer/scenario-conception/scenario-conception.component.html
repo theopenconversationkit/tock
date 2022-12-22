@@ -108,7 +108,7 @@
         size="tiny"
         fullWidth
         status="info"
-        nbTooltip="Add a new context to the scenario"
+        nbTooltip="Add context"
         (click)="addContext()"
       >
         Add context
@@ -120,7 +120,7 @@
         size="tiny"
         fullWidth
         status="info"
-        nbTooltip="Add a new event to the scenario"
+        nbTooltip="Add event"
         (click)="addTrigger()"
       >
         Add Event
@@ -132,7 +132,7 @@
         size="tiny"
         fullWidth
         status="basic"
-        nbTooltip="Display the graph of contexts constraints"
+        nbTooltip="Graph of contexts constraints"
         (click)="displayGraph()"
       >
         Graph of constraints
@@ -160,7 +160,7 @@
         ghost
         class="mt-1"
         nbTooltip="Add Event"
-        (click)="addEvent()"
+        (click)="addTrigger()"
       >
         <nb-icon icon="activity-outline"></nb-icon>
       </button>
@@ -172,7 +172,7 @@
         size="small"
         ghost
         class="mt-1"
-        nbTooltip="Graph of constraints"
+        nbTooltip="Graph of contexts constraints"
         (click)="displayGraph()"
       >
         <nb-icon icon="map-outline"></nb-icon>

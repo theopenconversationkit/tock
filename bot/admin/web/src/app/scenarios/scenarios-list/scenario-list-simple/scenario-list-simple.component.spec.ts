@@ -18,13 +18,14 @@ import {
 } from '@nebular/theme';
 
 import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 import { ScenarioGroupExtended, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { ScenarioDesignerComponent } from '../../scenario-designer/scenario-designer.component';
 import { ScenariosListComponent } from '../scenarios-list.component';
 import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
+import { NbDialogServiceMock, StateServiceMock } from '../../../../testing/classMocked';
 
 const mockScenariosGroups: ScenarioGroupExtended[] = [
   {
@@ -151,14 +152,8 @@ describe('ScenarioListSimpleComponent', () => {
           provide: ScenarioService,
           useValue: { redirectToDesigner: () => {}, patchScenarioGroupState: () => {} }
         },
-        {
-          provide: StateService,
-          useValue: { currentApplication: { name: 'TestApplicationName' } }
-        },
-        {
-          provide: NbDialogService,
-          useValue: { open: () => ({ onClose: (val: any) => of(val) }) }
-        }
+        { provide: StateService, useClass: StateServiceMock },
+        { provide: NbDialogService, useClass: NbDialogServiceMock }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

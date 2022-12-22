@@ -5,9 +5,10 @@ import { NbDialogRef, NbDialogService } from '@nebular/theme';
 import { of } from 'rxjs';
 
 import { ScenarioGroup } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 import { ScenarioEditComponent } from './scenario-edit.component';
 import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
+import { NbDialogServiceMock } from '../../../../testing/classMocked';
 import { AutocompleteInputComponent, FormControlComponent } from '../../../shared/components';
 
 class MockScenarioService {
@@ -36,7 +37,7 @@ describe('ScenarioEditComponent', () => {
       declarations: [ScenarioEditComponent, AutocompleteInputComponent, FormControlComponent],
       imports: [ReactiveFormsModule],
       providers: [
-        { provide: NbDialogService, useValue: { open: () => ({ onClose: (val: any) => of(val) }) } },
+        { provide: NbDialogService, useClass: NbDialogServiceMock },
         { provide: ScenarioService, useClass: MockScenarioService }
       ],
       schemas: [NO_ERRORS_SCHEMA]

@@ -7,8 +7,8 @@ import { catchError, first } from 'rxjs/operators';
 import { readFileAsText } from '../../../shared/utils';
 import { FileValidators } from '../../../shared/validators';
 import { ScenarioGroup, ScenarioVersion, SCENARIO_STATE } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
-import { deepCopy } from '../../commons/utils';
+import { ScenarioService } from '../../services';
+import { deepCopy } from '../../../shared/utils';
 import { ChoiceDialogComponent } from '../../../shared/components';
 
 enum nameConflictResolution {

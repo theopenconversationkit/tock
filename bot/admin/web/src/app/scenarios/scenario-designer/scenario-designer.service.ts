@@ -7,7 +7,7 @@ import { SearchQuery, SentencesResult } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { stringifiedCleanObject } from '../commons/utils';
 import { ScenarioItem, ScenarioVersion, ScenarioVersionExtended } from '../models';
-import { ScenarioService } from '../services/scenario.service';
+import { ScenarioService } from '../services';
 
 export type ScenarioItemExtended = ScenarioItem & { _sentencesLoading?: boolean };
 

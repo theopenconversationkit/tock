@@ -7,6 +7,8 @@ import {
   NbAutocompleteModule,
   NbButtonModule,
   NbCardModule,
+  NbChatModule,
+  NbCheckboxModule,
   NbContextMenuModule,
   NbDialogModule,
   NbFormFieldModule,
@@ -21,7 +23,9 @@ import {
   NbTooltipModule,
   NbTreeGridModule
 } from '@nebular/theme';
+import { DndModule } from 'ngx-drag-drop';
 
+import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenariosResolver } from './scenarios.resolver';
 import { ScenariosListComponent } from './scenarios-list/scenarios-list.component';
 import { ScenarioDesignerNavigationGuard, ScenarioDesignerComponent } from './scenario-designer/scenario-designer.component';
@@ -39,14 +43,9 @@ import { ScenarioStateGroupComponent } from './scenario-designer/scenario-produc
 import { ScenarioProductionStateGroupAddComponent } from './scenario-designer/scenario-production/state-group/state-group-add/state-group-add.component';
 import { ScenarioTransitionComponent } from './scenario-designer/scenario-production/state-group/transition/transition.component';
 import { ScenarioPublishingComponent } from './scenario-designer/scenario-publishing/scenario-publishing.component';
-import { DndModule } from 'ngx-drag-drop';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SharedModule } from '../shared-nlp/shared.module';
-import { NbChatModule, NbCheckboxModule } from '@nebular/theme';
-import { ScenarioService } from './services/scenario.service';
-import { ScenarioApiService } from './services/scenario.api.service';
 import { ScenarioEditComponent } from './scenarios-list/scenario-edit/scenario-edit.component';
-import { ScenariosRoutingModule } from './scenarios-routing.module';
 import { ScenarioListSimpleComponent } from './scenarios-list/scenario-list-simple/scenario-list-simple.component';
 import { ScenarioImportComponent } from './scenarios-list/scenario-import/scenario-import.component';
 import { ScenarioExportComponent } from './scenarios-list/scenario-export/scenario-export.component';
@@ -56,6 +55,8 @@ import { ScenarioDesignerService } from './scenario-designer/scenario-designer.s
 import { ContextsGraphComponent } from './scenario-designer/contexts-graph/contexts-graph.component';
 import { ScenarioCanvasWrapperComponent } from './scenario-designer/scenario-canvas-wrapper/scenario-canvas-wrapper.component';
 import { TriggerCreateComponent } from './scenario-designer/scenario-conception/trigger-create/trigger-create.component';
+import { ScenariosSettingsComponent } from './scenarios-list/scenarios-settings/scenarios-settings.component';
+import { ScenarioApiService, ScenarioService, ScenarioSettingsService } from './services';
 
 @NgModule({
   imports: [
@@ -112,10 +113,19 @@ import { TriggerCreateComponent } from './scenario-designer/scenario-conception/
     ScenarioExportComponent,
     ContextsGraphComponent,
     ScenarioCanvasWrapperComponent,
-    TriggerCreateComponent
+    TriggerCreateComponent,
+    ScenariosSettingsComponent
   ],
   exports: [],
-  providers: [ScenarioService, ScenarioApiService, ScenarioDesignerNavigationGuard, ScenariosResolver, NlpService, ScenarioDesignerService],
+  providers: [
+    ScenarioService,
+    ScenarioApiService,
+    ScenarioSettingsService,
+    ScenarioDesignerNavigationGuard,
+    ScenariosResolver,
+    NlpService,
+    ScenarioDesignerService
+  ],
   entryComponents: []
 })
 export class ScenariosModule {

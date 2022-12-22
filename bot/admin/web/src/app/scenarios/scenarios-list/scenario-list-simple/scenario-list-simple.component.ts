@@ -4,7 +4,7 @@ import { NbDialogService } from '@nebular/theme';
 import { OrderBy } from '../../../shared/utils';
 import { ScenarioGroupExtended, ScenarioVersion, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 import { ChoiceDialogComponent } from '../../../shared/components';
 
 @Component({

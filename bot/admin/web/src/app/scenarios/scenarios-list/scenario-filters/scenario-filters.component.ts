@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { Filter } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 
 @Component({
   selector: 'tock-scenario-filters',
