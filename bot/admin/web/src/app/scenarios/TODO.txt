@@ -37,6 +37,10 @@ Scenario designer :
                 Variables de scenario-conception-item.component.scss : Trouver des noms moins orientés arbre de scenario et remonter le tout au niveau supérieur. On va sans doute vouloir partager ces variables avec le module de test pour y afficher le graph
 
         CONCEPTION :
+        
+                Popup intent revoir l'affichage pour des noms et labels longs
+
+                Popup actions. Revoir l'affichage des valeurs en read only, notament pour les non renseignées
 
                 Internationalisation des answers. Pour le moment seul la i18n d'interfaceType textChat et de locale currentLocale est définie
 

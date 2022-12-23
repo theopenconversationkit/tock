@@ -108,7 +108,20 @@ describe('ActionEditComponent', () => {
           provide: NbDialogRef,
           useValue: {}
         },
-        { provide: StateService, useValue: { user: { organization: 'org' } } }
+        {
+          provide: StateService,
+          useValue: {
+            user: {
+              organization: 'org'
+            },
+            currentApplication: {
+              supportedLocales: ['fr']
+            },
+            localeName: () => {
+              return 'french';
+            }
+          }
+        }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
@@ -134,7 +147,8 @@ describe('ActionEditComponent', () => {
       answerId: '456',
       inputContextNames: ['TEST'],
       outputContextNames: ['CONTEXT2'],
-      final: false
+      final: false,
+      unknownAnswers: [{ locale: 'fr' }]
     });
   });
 

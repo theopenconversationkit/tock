@@ -31,6 +31,7 @@ export class ActionEditComponent implements OnInit {
 
   handlers: string[] = [];
   triggers: string[] = [];
+  supportedLocales: string[] = [];
 
   isSubmitted: boolean = false;
 
@@ -47,7 +48,8 @@ export class ActionEditComponent implements OnInit {
     inputContextNames: new FormArray([]),
     outputContextNames: new FormArray([]),
     final: new FormControl(false),
-    trigger: new FormControl(undefined, [this.actionHasHandler()])
+    trigger: new FormControl(undefined, [this.actionHasHandler()]),
+    unknownAnswers: new FormArray([])
   });
 
   get canSave(): boolean {
@@ -75,8 +77,13 @@ export class ActionEditComponent implements OnInit {
   get trigger(): FormControl {
     return this.form.get('trigger') as FormControl;
   }
+  get unknownAnswers(): FormArray {
+    return this.form.get('unknownAnswers') as FormArray;
+  }
 
-  constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {}
+  constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {
+    this.supportedLocales = state.currentApplication.supportedLocales;
+  }
 
   ngOnInit(): void {
     this.form.patchValue(this.item.actionDefinition);
@@ -109,6 +116,20 @@ export class ActionEditComponent implements OnInit {
     this.handlers = this.avalaibleHandlers.map((handler) => handler.name);
     this.triggers = this.scenario.data.triggers || [];
     // this.contextsValues = this.contexts.map((c) => c.name);
+
+    let existingUnknownAnswersLocales = []
+    this.item.actionDefinition?.unknownAnswers?.forEach(ua=>{
+      this.unknownAnswers.push(new FormControl(ua));
+      existingUnknownAnswersLocales.push(ua.locale)
+    })
+
+    this.supportedLocales.forEach(sl=>{
+      if(!existingUnknownAnswersLocales.includes(sl)){
+        this.unknownAnswers.push(new FormControl({
+          locale:sl
+        }));
+      }
+    })
   }
 
   private isActionNameUnic(): ValidatorFn {
