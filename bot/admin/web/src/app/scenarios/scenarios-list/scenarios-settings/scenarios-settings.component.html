@@ -23,7 +23,7 @@
     <nb-card-body>
       <tock-form-control
         label="Number of repetitions"
-        name="story"
+        name="actionRepetitionNumber"
         [controls]="actionRepetitionNumber"
         [showError]="isSubmitted"
         [required]="true"
@@ -31,21 +31,23 @@
         <input
           autofocusElement
           nbInput
+          id="actionRepetitionNumber"
           type="number"
           formControlName="actionRepetitionNumber"
           [fullWidth]="true"
-          min="2"
+          min="0"
         />
       </tock-form-control>
 
       <tock-form-control
         label="Select story"
-        name="story"
+        name="redirectStoryId"
         [controls]="redirectStoryId"
         [showError]="isSubmitted"
-        [required]="true"
+        [required]="actionRepetitionNumber.value > 0"
       >
         <nb-select
+          id="redirectStoryId"
           placeholder="Select story"
           formControlName="redirectStoryId"
           [fullWidth]="true"

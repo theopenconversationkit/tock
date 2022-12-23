@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';
 import { BotService } from '../../../bot/bot-service';
-import { Settings } from '../../models';
+import { ScenarioSettings } from '../../models';
 import { ScenarioSettingsService } from '../../services';
 import { ScenariosSettingsComponent } from './scenarios-settings.component';
 import { StateService } from '../../../core-nlp/state.service';
@@ -23,7 +23,7 @@ import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FormControlComponent } from '../../../shared/components';
 import { NbDialogServiceMock, NbToastrServiceMock, StateServiceMock } from '../../../../testing/classMocked';
 
-const mock: { stories: StoryDefinitionConfigurationSummary[]; settings: Settings } = {
+const mock: { stories: StoryDefinitionConfigurationSummary[]; settings: ScenarioSettings } = {
   stories: [
     { _id: '1', name: 'story 1', category: 'category' } as StoryDefinitionConfigurationSummary,
     { _id: '2', name: 'story 2', category: 'category' } as StoryDefinitionConfigurationSummary,
@@ -111,17 +111,26 @@ describe('ScenariosSettingsComponent', () => {
     expect(component.actionRepetitionNumber.valid).toBeTrue();
   });
 
-  it('should associate validators to the satisfaction story id field', () => {
+  it('should associate validators to the satisfaction story id field and enble it when the number of repetition is upper than 0', () => {
     // initialize the field
     component.redirectStoryId.setValue(null);
 
-    expect(component.redirectStoryId.valid).toBeFalse();
+    // set actionRepetitionNumber to 0
+    component.actionRepetitionNumber.setValue(0);
+    expect(component.form.valid).toBeTrue();
+    expect(component.redirectStoryId.disabled).toBeTrue();
+    expect(component.redirectStoryId.errors).toBeFalsy();
 
-    // redirectStoryId is required
+    // set actionRepetitionNumber to a value upper than 0
+    component.actionRepetitionNumber.setValue(2);
+    expect(component.form.valid).toBeFalse();
+    expect(component.redirectStoryId.enabled).toBeTrue();
     expect(component.redirectStoryId.errors.required).toBeTruthy();
 
     // set redirectStoryId to something correct
+    component.actionRepetitionNumber.setValue(2);
     component.redirectStoryId.setValue('test');
+    expect(component.form.valid).toBeTrue();
     expect(component.redirectStoryId.errors).toBeFalsy();
     expect(component.redirectStoryId.valid).toBeTrue();
   });

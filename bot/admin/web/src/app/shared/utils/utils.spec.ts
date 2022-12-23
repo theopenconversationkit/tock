@@ -21,7 +21,7 @@ describe('OrderBy', () => {
     });
   });
 
-  it('should return type error if the array not contain only objects', () => {
+  it('should return a type error if the array does not contain only objects', () => {
     const array = [{ name: 'a' }, { name: 'b' }, 'a'];
 
     expect(() => {

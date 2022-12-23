@@ -2,11 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { first } from 'rxjs/operators';
 
-import { ScenarioSettingsState, Settings } from '../models';
+import { ScenarioSettingsState, ScenarioSettings } from '../models';
 import { ScenarioSettingsService } from './scenario-settings.service';
 import { ScenarioApiService } from './scenario.api.service';
 
-const mock: { settings: Settings; initialState: ScenarioSettingsState; applicationId: string } = {
+const mock: { settings: ScenarioSettings; initialState: ScenarioSettingsState; applicationId: string } = {
   settings: {
     actionRepetitionNumber: 4,
     redirectStoryId: '1'

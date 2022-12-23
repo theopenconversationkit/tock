@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Application } from '../../model/application';
 import { RestService } from '../../core-nlp/rest/rest.service';
-import { Handler, ScenarioDebug, ScenarioGroup, ScenarioVersion, Settings, TickStory } from '../models';
+import { Handler, ScenarioDebug, ScenarioGroup, ScenarioVersion, ScenarioSettings, TickStory } from '../models';
 
 @Injectable()
 export class ScenarioApiService {
@@ -146,11 +146,11 @@ export class ScenarioApiService {
     return this.rest.post<TickStory, TickStory>('/bot/story/tick', tickStory, null, null, true);
   }
 
-  getSettings(applicationId: string): Observable<Settings> {
-    return this.rest.get<Settings>(`/scenarios/settings/${applicationId}`, (settings: Settings) => settings);
+  getSettings(applicationId: string): Observable<ScenarioSettings> {
+    return this.rest.get<ScenarioSettings>(`/scenarios/settings/${applicationId}`, (settings: ScenarioSettings) => settings);
   }
 
-  saveSettings(applicationId: string, settings: Settings): Observable<Settings> {
-    return this.rest.post<Settings, Settings>(`/scenarios/settings/${applicationId}`, settings);
+  saveSettings(applicationId: string, settings: ScenarioSettings): Observable<ScenarioSettings> {
+    return this.rest.post<ScenarioSettings, ScenarioSettings>(`/scenarios/settings/${applicationId}`, settings);
   }
 }

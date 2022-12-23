@@ -2,13 +2,13 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { Observable, of, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 
 import { BotService } from '../../../bot/bot-service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../../bot/model/story';
 import { StateService } from '../../../core-nlp/state.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
-import { Settings } from '../../models';
+import { ScenarioSettings } from '../../models';
 import { ScenarioSettingsService } from '../../services';
 
 @Component({
@@ -27,8 +27,8 @@ export class ScenariosSettingsComponent implements OnInit, OnDestroy {
   availableStories: StoryDefinitionConfigurationSummary[] = [];
 
   form = new FormGroup({
-    actionRepetitionNumber: new FormControl(undefined, [Validators.required, Validators.min(0)]),
-    redirectStoryId: new FormControl(undefined, Validators.required)
+    actionRepetitionNumber: new FormControl(2, [Validators.required, Validators.min(0)]),
+    redirectStoryId: new FormControl({ value: null, disabled: false })
   });
 
   get actionRepetitionNumber(): FormControl {
@@ -52,6 +52,19 @@ export class ScenariosSettingsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.actionRepetitionNumber.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+      if (value === 0) {
+        this.redirectStoryId.reset();
+        this.redirectStoryId.disable();
+        this.redirectStoryId.clearValidators();
+        this.form.updateValueAndValidity();
+      } else {
+        this.redirectStoryId.setValidators(Validators.required);
+        this.redirectStoryId.enable();
+        this.form.updateValueAndValidity();
+      }
+    });
+
     this.getStories();
     this.getSettings();
   }
@@ -66,9 +79,9 @@ export class ScenariosSettingsComponent implements OnInit, OnDestroy {
 
     this.scenarioSettingsService
       .getSettings(this.stateService.currentApplication._id)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(take(1))
       .subscribe({
-        next: (settings: Settings) => {
+        next: (settings: ScenarioSettings) => {
           this.form.patchValue({
             actionRepetitionNumber: settings.actionRepetitionNumber,
             redirectStoryId: settings.redirectStoryId
@@ -93,7 +106,7 @@ export class ScenariosSettingsComponent implements OnInit, OnDestroy {
           10000
         )
       )
-      .pipe(takeUntil(this.destroy$))
+      .pipe(take(1))
       .subscribe((stories: StoryDefinitionConfigurationSummary[]) => {
         this.availableStories = stories.filter((story) => story.category !== 'faq');
       });
@@ -129,16 +142,16 @@ export class ScenariosSettingsComponent implements OnInit, OnDestroy {
     this.isSubmitted = true;
 
     if (this.canSave) {
-      this.saveSettings(this.form.value as Settings);
+      this.saveSettings(this.form.value as ScenarioSettings);
     }
   }
 
-  saveSettings(settings: Settings): void {
+  saveSettings(settings: ScenarioSettings): void {
     this.loading = true;
 
     this.scenarioSettingsService
       .saveSettings(this.stateService.currentApplication._id, settings)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(take(1))
       .subscribe({
         next: () => {
           this.loading = false;

@@ -1,7 +1,17 @@
 <div class="text-danger">
   <small *ngIf="field?.errors?.required">This field is required</small>
-  <small *ngIf="field?.errors?.minlength">This field must contain at least {{ field?.errors?.minlength.requiredLength }} characters</small>
-  <small *ngIf="field?.errors?.maxlength">This field is limited to {{ field?.errors?.maxlength.requiredLength }} characters</small>
+  <small *ngIf="field?.errors?.minlength">
+    This field must contain at least {{ field?.errors?.minlength.requiredLength }} character<span
+      *ngIf="field?.errors?.minlength.requiredLength > 1"
+      >s</span
+    >
+  </small>
+  <small *ngIf="field?.errors?.maxlength">
+    This field is limited to {{ field?.errors?.maxlength.requiredLength }} character<span
+      *ngIf="field?.errors?.maxlength.requiredLength > 1"
+      >s</span
+    >
+  </small>
   <small *ngIf="field?.errors?.min">The minimum value is {{ field?.errors?.min.min }}</small>
   <small *ngIf="field?.errors?.max">The maximum value is {{ field?.errors?.max.max }}</small>
   <small *ngIf="field?.errors?.filesNameWithWrongType">

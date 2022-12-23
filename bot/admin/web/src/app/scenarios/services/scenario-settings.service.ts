@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 
-import { ScenarioSettingsState, Settings } from '../models';
+import { ScenarioSettingsState, ScenarioSettings } from '../models';
 import { ScenarioApiService } from './scenario.api.service';
 
 const scenariosSettingsInitialState: ScenarioSettingsState = {
@@ -36,14 +36,14 @@ export class ScenarioSettingsService {
   /**
    * Retrieves global scenario settings from the server and stores them in a local state. If the parameters are already present in the local state, they are used and no new call to the server is made
    * @param {string} applicationId
-   * @returns {Observable<Settings>}
+   * @returns {Observable<ScenarioSettings>}
    */
-  getSettings(applicationId: string): Observable<Settings> {
+  getSettings(applicationId: string): Observable<ScenarioSettings> {
     const scenarioSettignsState = this.state$;
     const notLoaded = scenarioSettignsState.pipe(
       filter((state: ScenarioSettingsState) => !state.loaded),
       switchMap(() => this.scenarioApiService.getSettings(applicationId)),
-      tap((settings: Settings) =>
+      tap((settings: ScenarioSettings) =>
         this.setState({
           loaded: true,
           settings
@@ -63,12 +63,12 @@ export class ScenarioSettingsService {
   /**
    * Save global scenario settings. If the backup to the server is successful, the state is updated
    * @param {string} applicationId
-   * @param {Settings} settings
-   * @returns {Observable<Settings>}
+   * @param {ScenarioSettings} settings
+   * @returns {Observable<ScenarioSettings>}
    */
-  saveSettings(applicationId: string, settings: Settings): Observable<Settings> {
+  saveSettings(applicationId: string, settings: ScenarioSettings): Observable<ScenarioSettings> {
     return this.scenarioApiService.saveSettings(applicationId, settings).pipe(
-      tap((settings: Settings) => {
+      tap((settings: ScenarioSettings) => {
         this.setState({
           ...this.getState(),
           settings
