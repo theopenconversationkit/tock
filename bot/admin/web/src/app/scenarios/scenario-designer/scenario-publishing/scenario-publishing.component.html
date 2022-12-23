@@ -94,12 +94,9 @@
             The <span *ngIf="unknownAnswerJobsType.length > 1">{{ unknownAnswerJobsType.length }}</span> following question<span
               *ngIf="unknownAnswerJobsType.length > 1"
               >s</span
-            >
-            for an unknown answer
-
+            >for an unknown answer
             <span *ngIf="!areAllJobsTypeDone(unknownAnswerJobsType)"> will be </span>
             <span *ngIf="areAllJobsTypeDone(unknownAnswerJobsType)"> have been </span>
-
             <span *ngIf="getJobsType(unknownAnswerJobsType) == 'creation'"> created </span>
             <span *ngIf="getJobsType(unknownAnswerJobsType) == 'update'"> updated </span>
           </h5>
@@ -109,10 +106,6 @@
               *ngFor="let item of unknownAnswerJobsType"
               class="col-12 col-md-6 mb-2 d-flex break-word"
             >
-              <!-- <pre>
-                {{ item | json }}
-              </pre> -->
-
               <nb-icon
                 icon="checkmark-outline"
                 status="success"

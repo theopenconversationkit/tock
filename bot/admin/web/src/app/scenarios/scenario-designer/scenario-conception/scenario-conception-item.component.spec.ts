@@ -177,11 +177,12 @@ describe('ScenarioConceptionItemComponent', () => {
       name: 'RenamedAction',
       answer: 'Modified answer',
       inputContextNames: ['context1'],
-      outputContextNames: ['context1', 'context2']
+      outputContextNames: ['context1', 'context2'],
+      unknownAnswers: []
     };
     spyOn(component['nbDialogService'], 'open').and.returnValue({
-      close: () => {},
-      componentRef: { instance: { saveModifications: of(modifications), deleteDefinition: of() } }
+      componentRef: { instance: { saveModifications: of(modifications), deleteDefinition: of() } },
+      close: () => {}
     } as NbDialogRef<any>);
 
     component.manageAction();

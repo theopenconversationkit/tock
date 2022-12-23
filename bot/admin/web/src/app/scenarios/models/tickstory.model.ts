@@ -17,11 +17,8 @@ export interface TickStory {
 }
 
 export interface unknownAnswerConfig {
-  exitAction?: string;
   action: string;
-  intent: string;
   answerId: string;
-  retryNb: number;
 }
 
 export interface intentsContext {

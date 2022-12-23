@@ -1,5 +1,5 @@
 import { ParseQuery } from '../../model/nlp';
-import { scenarioAnswer, ScenarioItem } from './scenario.model';
+import { ScenarioAnswer, ScenarioItem } from './scenario.model';
 
 export class TempSentence extends ParseQuery {
   public classification: TempClassification;
@@ -44,5 +44,5 @@ export interface DependencyUpdateJob {
   type: 'creation' | 'update';
   done: boolean;
   item: ScenarioItem;
-  answer?: scenarioAnswer
+  answer?: ScenarioAnswer;
 }

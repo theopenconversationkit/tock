@@ -94,12 +94,12 @@ export interface ScenarioActionDefinition {
   answer?: string;
   answerId?: string;
   answerUpdate?: true;
-  unknownAnswers?: scenarioAnswer[];
+  unknownAnswers?: ScenarioAnswer[];
   unknownAnswerId?: string;
   final?: boolean;
 }
 
-export interface scenarioAnswer {
+export interface ScenarioAnswer {
   answer: string;
   locale: string;
   answerUpdate?: true;

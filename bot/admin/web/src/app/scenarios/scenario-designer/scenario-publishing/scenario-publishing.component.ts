@@ -370,15 +370,6 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     } else {
       return this.patchUnknownAnswer(answerTask);
     }
-
-    // if (!answerTask.item.actionDefinition.unknownAnswerId) {
-    //   return this.postNewUnknownAnswer(answerTask);
-    // }
-    // if (answerTask.answer.answerUpdate) {
-    //   return this.patchUnknownAnswer(answerTask);
-    // }
-    // answerTask.done = true;
-    // this.processDependencies();
   }
 
   postNewUnknownAnswer(answerTask: DependencyUpdateJob): void {
@@ -515,6 +506,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     actionsDefinitions.forEach((actionDefinition) => {
       if (actionDefinition.unknownAnswerId) {
         unknownAnswerConfigs.push({
+          intent: 'unknown',
           action: actionDefinition.name,
           answerId: actionDefinition.unknownAnswerId
         });
