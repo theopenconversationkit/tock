@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+
 import { StateService } from '../../../core-nlp/state.service';
 import { ExportableScenarioGroup, ScenarioGroup, SCENARIO_STATE } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 
 @Component({
   selector: 'tock-scenario-export',

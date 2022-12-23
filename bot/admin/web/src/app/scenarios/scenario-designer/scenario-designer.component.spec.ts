@@ -9,7 +9,7 @@ import { TestSharedModule } from '../../../testing/test-shared.module';
 import { BotService } from '../../bot/bot-service';
 import { StateService } from '../../core-nlp/state.service';
 import { ScenarioVersionExtended, SCENARIO_ITEM_FROM_CLIENT, SCENARIO_MODE, SCENARIO_STATE } from '../models';
-import { ScenarioService } from '../services/scenario.service';
+import { ScenarioService } from '../services';
 import { ScenarioDesignerComponent } from './scenario-designer.component';
 import { ScenarioDesignerService } from './scenario-designer.service';
 

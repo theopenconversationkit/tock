@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 
 import { ScenarioGroup } from './models';
-import { ScenarioService } from './services/scenario.service';
+import { ScenarioService } from './services';
 
 @Injectable()
 export class ScenariosResolver implements Resolve<ScenarioGroup[]> {

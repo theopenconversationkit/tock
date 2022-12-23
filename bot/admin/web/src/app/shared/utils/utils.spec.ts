@@ -1,20 +1,32 @@
 import { orderBy } from './utils';
 
 describe('OrderBy', () => {
-  it('should return type error if the argument is not an array', () => {
-    [undefined, null, '', 'a', 'aaaaaa', 0, 1, 15, true, false].forEach((arg: any) => {
-      expect(() => {
-        orderBy(arg, '');
-      }).toThrowError('invalid array argument. The parameter must be an array');
+  describe('should return type error if the argument is not an array', () => {
+    [undefined, null, '', 'a', 'aaaaaa', 0, 1, 15, true, false].forEach((arg: any, i: number) => {
+      it(`sort ${i}`, () => {
+        expect(() => {
+          orderBy(arg, '');
+        }).toThrowError('invalid array argument. The parameter must be an array');
+      });
     });
   });
 
-  it('should return type error if the field is not empty', () => {
-    [undefined, null, ''].forEach((arg) => {
-      expect(() => {
-        orderBy([], arg);
-      }).toThrowError('the field parameter cannot be empty');
+  describe('should return type error if the field is not empty', () => {
+    [undefined, null, ''].forEach((arg: any, i: number) => {
+      it(`sort ${i}`, () => {
+        expect(() => {
+          orderBy([], arg);
+        }).toThrowError('the field parameter cannot be empty');
+      });
     });
+  });
+
+  it('should return a type error if the array does not contain only objects', () => {
+    const array = [{ name: 'a' }, { name: 'b' }, 'a'];
+
+    expect(() => {
+      orderBy(array, 'name');
+    }).toThrowError('invalid array argument. The array must contain only objects');
   });
 
   describe('should sort array by default in ascending order with an existing field', () => {

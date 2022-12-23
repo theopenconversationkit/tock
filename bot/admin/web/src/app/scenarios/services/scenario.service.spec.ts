@@ -6,7 +6,7 @@ import { of, throwError } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import { ApplicationService } from '../../core-nlp/applications.service';
-import { ScenarioGroup, ScenarioGroupExtended, SCENARIO_STATE } from '../models';
+import { ScenarioGroupExtended, ScenarioVersion, SCENARIO_MODE, SCENARIO_STATE } from '../models';
 import { ScenarioDesignerComponent } from '../scenario-designer/scenario-designer.component';
 import { ScenariosListComponent } from '../scenarios-list/scenarios-list.component';
 import { ScenarioApiService } from './scenario.api.service';
@@ -129,6 +129,42 @@ const mockScenarios: ScenarioGroupExtended[] = [
   }
 ];
 
+const mockScenarioVersion: ScenarioVersion = {
+  state: SCENARIO_STATE.draft,
+  id: 's5v1',
+  creationDate: '01/02/1970',
+  comment: 'version 1',
+  data: { mode: SCENARIO_MODE.writing, scenarioItems: [] }
+};
+
+const newScenarioVersion: ScenarioVersion = {
+  state: SCENARIO_STATE.draft,
+  id: null,
+  creationDate: '01/02/2000',
+  comment: 'version 2',
+  data: { mode: SCENARIO_MODE.writing, scenarioItems: [] }
+};
+
+const updateScenarioVersion: ScenarioVersion = {
+  state: SCENARIO_STATE.draft,
+  id: 's5v1',
+  creationDate: '01/02/1970',
+  updateDate: '01/02/1977',
+  comment: 'version 1',
+  data: { mode: SCENARIO_MODE.writing, scenarioItems: [{ from: 'client', id: 1, text: 'test' }] }
+};
+
+const importScenarioGroup: ScenarioGroupExtended = {
+  name: 'import',
+  tags: ['import'],
+  category: 'import',
+  versions: [
+    {
+      state: SCENARIO_STATE.draft
+    }
+  ]
+};
+
 const initialState = {
   loaded: false,
   loading: false,
@@ -137,7 +173,7 @@ const initialState = {
   categories: []
 };
 
-const newScenario: ScenarioGroup = {
+const newScenario: ScenarioGroupExtended = {
   id: null,
   creationDate: '12/01/1980',
   name: 'New scenario',
@@ -159,7 +195,12 @@ describe('ScenarioService', () => {
     'getScenariosGroups',
     'postScenarioGroup',
     'updateScenarioGroup',
-    'deleteScenarioGroup'
+    'deleteScenarioGroup',
+    'getScenarioVersion',
+    'postScenarioVersion',
+    'updateScenarioVersion',
+    'deleteScenarioVersion',
+    'importScenarioGroup'
   ]);
 
   beforeEach(() => {
@@ -381,33 +422,224 @@ describe('ScenarioService', () => {
   });
 
   describe('#getScenarioVersion', () => {
-    it('should populate the state with the result when loading scenario version successfully', () => {});
+    it('should populate the state with the result when loading scenario version successfully', (done) => {
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      const mockScenarioVersionCopy = JSON.parse(JSON.stringify(mockScenarioVersion));
+      mockedScenarioApiService.getScenarioVersion.and.returnValue(of(mockScenarioVersionCopy));
+      service.setScenariosGroupsData(mockScenariosCopy);
 
-    it('should not update state when loading scenarios groups fails', () => {});
+      service
+        .getScenarioVersion('5', 's5v1')
+        .pipe(first())
+        .subscribe(() => {
+          const state = service.getState();
+          const version = state.scenariosGroups.find((s) => s.id === '5').versions[0];
+
+          expect(mockedScenarioApiService.getScenarioVersion).toHaveBeenCalled();
+          expect(version).toEqual(mockScenarioVersion);
+          done();
+        });
+    });
+
+    it('should load all scenario groups if they are not present in the state and populate the state with the result when loading scenario version successfully', (done) => {
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      const mockScenarioVersionCopy = JSON.parse(JSON.stringify(mockScenarioVersion));
+      mockedScenarioApiService.getScenariosGroups.and.returnValue(of(mockScenariosCopy));
+      mockedScenarioApiService.getScenarioVersion.and.returnValue(of(mockScenarioVersionCopy));
+
+      service
+        .getScenarioVersion('5', 's5v1')
+        .pipe(first())
+        .subscribe(() => {
+          const state = service.getState();
+          const version = state.scenariosGroups.find((s) => s.id === '5').versions[0];
+
+          expect(mockedScenarioApiService.getScenariosGroups).toHaveBeenCalled();
+          expect(mockedScenarioApiService.getScenarioVersion).toHaveBeenCalled();
+          expect(version).toEqual(mockScenarioVersion);
+          done();
+        });
+    });
+
+    it('should not update state when loading scenario version fail', (done) => {
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      mockedScenarioApiService.getScenariosGroups.and.returnValue(of(mockScenariosCopy));
+      mockedScenarioApiService.getScenarioVersion.and.returnValue(throwError(new Error()));
+      service.setScenariosGroupsData(mockScenariosCopy);
+
+      service
+        .getScenarioVersion('5', 's5v1')
+        .pipe(first())
+        .subscribe({
+          error: () => {
+            const state = service.getState();
+            const version = state.scenariosGroups.find((s) => s.id === '5').versions[0];
+
+            expect(mockedScenarioApiService.getScenarioVersion).toHaveBeenCalled();
+            expect(version).not.toEqual(mockScenarioVersion);
+            done();
+          }
+        });
+    });
   });
 
   describe('#importScenarioGroup', () => {
-    it('should add a new scenario group in the state and update tags and categories cache when imported successfully', () => {});
+    it('should add a new scenario group in the state and update tags and categories cache when imported successfully', (done) => {
+      mockedScenarioApiService.importScenarioGroup.and.returnValue(of({ ...importScenarioGroup, id: '6' }));
+      service.setScenariosGroupsData(mockScenarios);
 
-    it('should not update state when import scenario group fails', () => {});
+      service.importScenarioGroup(newScenario).subscribe(() => {
+        const state = service.getState();
+        expect(mockedScenarioApiService.importScenarioGroup).toHaveBeenCalled();
+        expect(state.scenariosGroups).toHaveSize(mockScenarios.length + 1);
+        expect(state.scenariosGroups).toEqual([...mockScenarios, { ...importScenarioGroup, id: '6' }]);
+        expect(state.tags).toEqual(['import', 'tag1', 'tag2', 'test']);
+        expect(state.categories).toEqual(['default', 'import', 'scenario']);
+        done();
+      });
+    });
+
+    it('should not update state when import scenario group fails', (done) => {
+      mockedScenarioApiService.importScenarioGroup.and.returnValue(throwError(new Error()));
+      service.setScenariosGroupsData(mockScenarios);
+
+      service.importScenarioGroup(newScenario).subscribe({
+        error: () => {
+          const state = service.getState();
+          expect(mockedScenarioApiService.importScenarioGroup).toHaveBeenCalled();
+          expect(state.scenariosGroups).toHaveSize(mockScenarios.length);
+          expect(state.scenariosGroups).toEqual(mockScenarios);
+          expect(state.tags).toEqual(['tag1', 'tag2', 'test']);
+          expect(state.categories).toEqual(['default', 'scenario']);
+          done();
+        }
+      });
+    });
   });
 
   describe('#postScenarioVersion', () => {
-    it('should add a new scenario version of a scenario group in the state when published successfully', () => {});
+    it('should add a new scenario version of a scenario group in the state when published successfully', (done) => {
+      mockedScenarioApiService.postScenarioVersion.and.returnValue(of({ ...newScenarioVersion, id: 's5v2' }));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
 
-    it('should not update state when post scenario version fails', () => {});
+      expect(state.scenariosGroups[4].versions).toHaveSize(1);
+      expect(state.scenariosGroups[4].versions.find((v) => v.id === 's5v2')).toBeUndefined();
+
+      service.postScenarioVersion('5', newScenarioVersion).subscribe(() => {
+        expect(state.scenariosGroups[4].versions).toHaveSize(2);
+        expect(state.scenariosGroups[4].versions.find((v) => v.id === 's5v2')).toEqual({ ...newScenarioVersion, id: 's5v2' });
+
+        done();
+      });
+    });
+
+    it('should not update state when post scenario version fails', (done) => {
+      mockedScenarioApiService.postScenarioVersion.and.returnValue(throwError(new Error()));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
+
+      expect(state.scenariosGroups[4].versions).toHaveSize(1);
+      expect(state.scenariosGroups[4].versions.find((v) => v.id === 's5v2')).toBeUndefined();
+
+      service.postScenarioVersion('5', newScenarioVersion).subscribe({
+        error: () => {
+          expect(state.scenariosGroups[4].versions).toHaveSize(1);
+          expect(state.scenariosGroups[4].versions.find((v) => v.id === 's5v2')).toBeUndefined();
+          done();
+        }
+      });
+    });
   });
 
   describe('#updateScenarioVersion', () => {
-    it('should update an existing scenario version of a scenario group from the state when the scenario version is successfully updated', () => {});
+    it('should update an existing scenario version of a scenario group from the state when the scenario version is successfully updated', (done) => {
+      mockedScenarioApiService.updateScenarioVersion.and.returnValue(of(updateScenarioVersion));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
 
-    it('should not update state when put scenario version fails', () => {});
+      expect(state.scenariosGroups[4].versions[0].updateDate).toBeUndefined();
+
+      service.updateScenarioVersion('5', updateScenarioVersion).subscribe(() => {
+        expect(state.scenariosGroups[4].versions[0].updateDate).toBeDefined();
+        done();
+      });
+    });
+
+    it('should not update state when put scenario version fails', (done) => {
+      mockedScenarioApiService.updateScenarioVersion.and.returnValue(throwError(new Error()));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
+
+      expect(state.scenariosGroups[4].versions[0].updateDate).toBeUndefined();
+
+      service.updateScenarioVersion('5', updateScenarioVersion).subscribe({
+        error: () => {
+          expect(state.scenariosGroups[4].versions[0].updateDate).toBeUndefined();
+          done();
+        }
+      });
+    });
   });
 
   describe('#deleteScenarioVersion', () => {
-    it('should remove an existing scenario version of a scenario group from the state when the scenario version is successfully deleted', () => {});
+    it('should remove an existing scenario version of a scenario group from the state when the scenario version is successfully deleted', (done) => {
+      mockedScenarioApiService.deleteScenarioVersion.and.returnValue(of(false));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
 
-    it('should not update state when delete scenario version fails', () => {});
+      expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+      expect(state.scenariosGroups[0].versions).toHaveSize(mockScenariosCopy[0].versions.length);
+
+      service.deleteScenarioVersion('1', 's1v1').subscribe(() => {
+        expect(mockedScenarioApiService.deleteScenarioVersion).toHaveBeenCalled();
+        expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+        expect(state.scenariosGroups[0].versions).toHaveSize(3);
+        expect(state.scenariosGroups[0].versions.find((v) => v.id === 's1v1')).toBe(undefined);
+        done();
+      });
+    });
+
+    it('should delete a scenario group when the last scenario version is successfully deleted', (done) => {
+      mockedScenarioApiService.deleteScenarioVersion.and.returnValue(of(false));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
+
+      expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+      expect(state.scenariosGroups[4].versions).toHaveSize(mockScenariosCopy[4].versions.length);
+
+      service.deleteScenarioVersion('5', 's5v1').subscribe(() => {
+        expect(mockedScenarioApiService.deleteScenarioVersion).toHaveBeenCalled();
+        expect(state.scenariosGroups).toHaveSize(--mockScenariosCopy.length);
+        expect(state.scenariosGroups[4]).toBeUndefined();
+        done();
+      });
+    });
+
+    it('should not update state when delete scenario version fails', (done) => {
+      mockedScenarioApiService.deleteScenarioVersion.and.returnValue(throwError(new Error()));
+      const mockScenariosCopy = JSON.parse(JSON.stringify(mockScenarios));
+      service.setScenariosGroupsData(mockScenariosCopy);
+      const state = service.getState();
+
+      expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+      expect(state.scenariosGroups[0].versions).toHaveSize(mockScenariosCopy[0].versions.length);
+
+      service.deleteScenarioVersion('1', 's1v1').subscribe({
+        error: () => {
+          expect(mockedScenarioApiService.deleteScenarioVersion).toHaveBeenCalled();
+          expect(state.scenariosGroups).toHaveSize(mockScenariosCopy.length);
+          expect(state.scenariosGroups[0].versions).toHaveSize(4);
+          done();
+        }
+      });
+    });
   });
 
   it('should build an array of unique categories not falsy sorted alphabetically from scenarios groups', () => {

@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { first, take, takeUntil } from 'rxjs/operators';
 
 import { Filter, ScenarioGroup, ScenarioGroupExtended, ScenarioGroupUpdate, ScenarioVersion, SCENARIO_STATE } from '../models';
-import { ScenarioService } from '../services/scenario.service';
+import { ScenarioService } from '../services';
 import { StateService } from '../../core-nlp/state.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
@@ -14,8 +14,9 @@ import { OrderBy, orderBy } from '../../shared/utils';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ScenarioImportComponent } from './scenario-import/scenario-import.component';
 import { ScenarioExportComponent } from './scenario-export/scenario-export.component';
-import { deepCopy } from '../commons/utils';
+import { deepCopy } from '../../shared/utils';
 import { Pagination } from '../../shared/components';
+import { ScenariosSettingsComponent } from './scenarios-settings/scenarios-settings.component';
 
 @Component({
   selector: 'scenarios-list',
@@ -26,6 +27,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   @ViewChild('scenarioImportComponent') scenarioImportComponent: ScenarioImportComponent;
   @ViewChild('scenarioExportComponent') scenarioExportComponent: ScenarioExportComponent;
   @ViewChild('scenarioEditComponent') scenarioEditComponent: ScenarioEditComponent;
+  @ViewChild('scenarioSettingsComponent') scenarioSettingsComponent: ScenariosSettingsComponent;
   @ViewChild('duplicationModal') duplicationModal: TemplateRef<any>;
 
   configurations: BotApplicationConfiguration[];
@@ -40,7 +42,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   isSidePanelOpen = {
     edit: false,
     export: false,
-    import: false
+    import: false,
+    settings: false
   };
 
   loading = {
@@ -56,7 +59,6 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     total: 0
   };
 
-  //private forceReload: boolean = false;
   private currentFilters: Filter = { search: '', tags: [], enabled: null };
   private currentOrderByCriteria: OrderBy = {
     criteria: 'name',
@@ -71,9 +73,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private router: Router,
     protected stateService: StateService
-  ) {
-    //this.forceReload = !this.router.getCurrentNavigation().previousNavigation?.finalUrl.toString().includes('/scenarios');
-  }
+  ) {}
 
   ngOnInit() {
     this.botConfigurationService.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs) => {
@@ -114,8 +114,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.addOrEditScenarioGroup(scenarioGroup);
       }, 200);
-    } else if (this.scenarioEditComponent || this.scenarioImportComponent) {
-      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioImportComponent, () => {
+    } else if (this.scenarioEditComponent || this.scenarioImportComponent || this.scenarioSettingsComponent) {
+      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioImportComponent || this.scenarioSettingsComponent, () => {
         setTimeout(() => {
           this.addOrEditScenarioGroup(scenarioGroup);
         }, 200);
@@ -212,25 +212,27 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       });
   }
 
-  closeSidePanel(panel?: 'edit' | 'export' | 'import'): void {
-    if (!panel) {
-      this.isSidePanelOpen.edit = false;
-      this.isSidePanelOpen.export = false;
-      this.isSidePanelOpen.import = false;
-      this.scenarioGroupEdit = undefined;
-    } else {
-      switch (panel) {
-        case 'edit':
-          this.isSidePanelOpen.edit = false;
-          this.scenarioGroupEdit = undefined;
-          break;
-        case 'export':
-          this.isSidePanelOpen.export = false;
-          break;
-        case 'import':
-          this.isSidePanelOpen.import = false;
-          break;
-      }
+  closeSidePanel(panel?: 'edit' | 'export' | 'import' | 'settings'): void {
+    switch (panel) {
+      case 'edit':
+        this.isSidePanelOpen.edit = false;
+        this.scenarioGroupEdit = undefined;
+        break;
+      case 'export':
+        this.isSidePanelOpen.export = false;
+        break;
+      case 'import':
+        this.isSidePanelOpen.import = false;
+        break;
+      case 'settings':
+        this.isSidePanelOpen.settings = false;
+        break;
+      default:
+        for (let panel in this.isSidePanelOpen) {
+          this.isSidePanelOpen[panel] = false;
+        }
+        this.scenarioGroupEdit = undefined;
+        break;
     }
   }
 
@@ -367,8 +369,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   openExportScenario(): void {
-    if (this.scenarioEditComponent || this.scenarioImportComponent) {
-      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioImportComponent, () => {
+    if (this.scenarioEditComponent || this.scenarioImportComponent || this.scenarioSettingsComponent) {
+      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioImportComponent || this.scenarioSettingsComponent, () => {
         this.isSidePanelOpen.export = true;
       });
     } else {
@@ -377,8 +379,8 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
   }
 
   openImportScenario(): void {
-    if (this.scenarioEditComponent) {
-      this.closeSidePanelCheck(this.scenarioEditComponent, () => {
+    if (this.scenarioEditComponent || this.scenarioSettingsComponent) {
+      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioSettingsComponent, () => {
         this.isSidePanelOpen.import = true;
       });
     } else if (this.scenarioExportComponent) {
@@ -386,6 +388,19 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       this.isSidePanelOpen.import = true;
     } else {
       this.isSidePanelOpen.import = true;
+    }
+  }
+
+  openSettings(): void {
+    if (this.scenarioEditComponent || this.scenarioImportComponent) {
+      this.closeSidePanelCheck(this.scenarioEditComponent || this.scenarioImportComponent, () => {
+        this.isSidePanelOpen.settings = true;
+      });
+    } else if (this.scenarioExportComponent) {
+      this.closeSidePanel('export');
+      this.isSidePanelOpen.settings = true;
+    } else {
+      this.isSidePanelOpen.settings = true;
     }
   }
 
@@ -421,7 +436,7 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       });
   }
 
-  private closeSidePanelCheck(component: ScenarioEditComponent | ScenarioImportComponent, cb: Function): void {
+  private closeSidePanelCheck(component: ScenarioEditComponent | ScenarioImportComponent | ScenariosSettingsComponent, cb: Function): void {
     component
       .close()
       .pipe(take(1))

@@ -4,7 +4,7 @@ import { NbDialogService, NbTagComponent, NbTagInputAddEvent } from '@nebular/th
 import { Observable, of } from 'rxjs';
 
 import { ScenarioGroup } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 import { ChoiceDialogComponent } from '../../../shared/components';
 
 @Component({

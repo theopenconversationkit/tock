@@ -29,6 +29,7 @@ import { FormControlComponent } from '../../../shared/components';
 import { DelayDirective } from '../../../shared/directives';
 import { FaqDefinitionExtended } from '../faq-management.component';
 import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../../model/nlp';
+import { NbDialogServiceMock } from '../../../../testing/classMocked';
 
 const mockSentences: Sentence[] = [
   {
@@ -159,7 +160,7 @@ describe('FaqManagementEditComponent', () => {
       ],
       providers: [
         { provide: StateService, useClass: MockState },
-        { provide: NbDialogService, useValue: { open: () => ({ onClose: (val: any) => of(val) }) } },
+        { provide: NbDialogService, useClass: NbDialogServiceMock },
         { provide: NlpService, useClass: NlpServiceMock }
       ]
     }).compileComponents();

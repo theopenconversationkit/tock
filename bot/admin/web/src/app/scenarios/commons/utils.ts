@@ -42,10 +42,6 @@ export function stringifiedCleanObject(obj: Object): string {
   });
 }
 
-export function deepCopy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj));
-}
-
 export function getContrastYIQ(hexcolor: string): string {
   if (!hexcolor) return '';
   hexcolor = hexcolor.replace('#', '');

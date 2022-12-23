@@ -24,6 +24,16 @@
     </button>
     <button
       nbButton
+      ghost
+      shape="round"
+      nbTooltip="Settings"
+      [disabled]="!configurations?.length"
+      (click)="openSettings()"
+    >
+      <nb-icon icon="settings-outline"></nb-icon>
+    </button>
+    <button
+      nbButton
       status="primary"
       [disabled]="!configurations?.length"
       (click)="addOrEditScenarioGroup()"
@@ -34,7 +44,7 @@
   </section>
 </div>
 
-<section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.export || isSidePanelOpen.import">
+<section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.export || isSidePanelOpen.import || isSidePanelOpen.settings">
   <tock-no-bot-configuration *ngIf="configurations?.length === 0"></tock-no-bot-configuration>
 
   <div
@@ -106,6 +116,13 @@
     [scenariosGroups]="scenariosGroups"
     (onClose)="closeSidePanel('export')"
   ></tock-scenario-export>
+
+  <tock-scenarios-settings
+    #scenarioSettingsComponent
+    *ngIf="isSidePanelOpen.settings"
+    class="aside"
+    (onClose)="closeSidePanel('settings')"
+  ></tock-scenarios-settings>
 </section>
 
 <ng-template #duplicationModal>

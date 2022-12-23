@@ -10,6 +10,7 @@ import { NlpService } from '../../nlp-tabs/nlp.service';
 import { TestSharedModule } from '../../../testing/test-shared.module';
 import { Action } from '../models';
 import { FaqTrainingComponent, SentenceExtended } from './faq-training.component';
+import { NbToastrServiceMock } from '../../../testing/classMocked';
 
 const mockSentences: SentenceExtended[] = [
   {
@@ -113,7 +114,7 @@ describe('FaqTrainingComponent', () => {
       providers: [
         { provide: NlpService, useClass: NlpServiceMock },
         { provide: StateService, useClass: StateServiceMock },
-        { provide: NbToastrService, useValue: { success: () => {} } }
+        { provide: NbToastrService, useClass: NbToastrServiceMock }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

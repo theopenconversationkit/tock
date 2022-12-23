@@ -19,11 +19,12 @@ import { NbContextMenuDirective, NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { deepCopy } from '../../../../../shared/utils';
 import { StateService } from '../../../../../core-nlp/state.service';
 import { ClassifiedEntity, EntityDefinition, qualifiedName, qualifiedRole, Sentence } from '../../../../../model/nlp';
 import { CreateEntityDialogComponent } from '../../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
 import { SelectedResult, Token } from '../../../../../sentence-analysis/highlight/highlight.component';
-import { deepCopy, getContrastYIQ } from '../../../../commons/utils';
+import { getContrastYIQ } from '../../../../commons/utils';
 import { ScenarioContext, ScenarioVersionExtended } from '../../../../models';
 import { ContextCreateComponent } from '../../../scenario-conception/context-create/context-create.component';
 import { SentenceExtended, TempSentenceExtended } from '../intent-edit.component';

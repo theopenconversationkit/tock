@@ -21,7 +21,7 @@ import {
   ScenarioVersionExtended,
   SCENARIO_MODE
 } from '../../models';
-import { ScenarioService } from '../../services/scenario.service';
+import { ScenarioService } from '../../services';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 
 @Component({

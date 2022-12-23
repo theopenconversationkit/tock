@@ -10,8 +10,8 @@ import { Application } from '../../model/application';
 import { PaginatedQuery } from '../../model/commons';
 import { Intent, SearchQuery, SentencesResult } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
-import { exportJsonDump } from '../../shared/utils';
-import { deepCopy, normalizedSnakeCase, stringifiedCleanObject } from '../commons/utils';
+import { deepCopy, exportJsonDump } from '../../shared/utils';
+import { normalizedSnakeCase, stringifiedCleanObject } from '../commons/utils';
 import {
   ScenarioDebug,
   ScenarioVersion,
@@ -84,7 +84,7 @@ export class ScenarioService {
     });
   }
 
-  setScenariosGroupsData(scenariosCollection): void {
+  setScenariosGroupsData(scenariosCollection: ScenarioGroupExtended[]): void {
     this.setState({
       ...this.getState(),
       loading: false,

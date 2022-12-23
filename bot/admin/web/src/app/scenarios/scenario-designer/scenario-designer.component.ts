@@ -14,16 +14,17 @@ import {
   SCENARIO_MODE,
   SCENARIO_STATE
 } from '../models/scenario.model';
-import { ScenarioService } from '../services/scenario.service';
+import { ScenarioService } from '../services';
 import { StateService } from '../../core-nlp/state.service';
 import { ScenarioDesignerService } from './scenario-designer.service';
-import { deepCopy, stringifiedCleanObject } from '../commons/utils';
+import { stringifiedCleanObject } from '../commons/utils';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { Intent } from '../../model/nlp';
 import { BotService } from '../../bot/bot-service';
 import { I18nLabels } from '../../bot/model/i18n';
 import { FullscreenDirective } from '../../shared/directives';
 import { Handler } from '../models';
+import { deepCopy } from '../../shared/utils';
 
 @Component({
   selector: 'scenario-designer',
@@ -175,7 +176,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           title: title,
           subtitle: subtitle,
           list: deletedIntents,
-          actions: [{ actionName: 'Ok', buttonStatus: 'basic' }]
+          actions: [{ actionName: 'Ok', buttonStatus: 'basic', ghost: true }]
         }
       });
     }
@@ -189,7 +190,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
           title: title,
           subtitle: subtitle,
           list: deletedAnswers,
-          actions: [{ actionName: 'Ok', buttonStatus: 'basic' }]
+          actions: [{ actionName: 'Ok', buttonStatus: 'basic', ghost: true }]
         }
       });
     }
