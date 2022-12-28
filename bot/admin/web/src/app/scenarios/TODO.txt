@@ -38,13 +38,13 @@ Scenario designer :
 
         CONCEPTION :
         
-                Popup intent revoir l'affichage pour des noms et labels longs
-
                 Popup actions. Revoir l'affichage des valeurs en read only, notament pour les non renseignées
 
-                Internationalisation des answers. Pour le moment seul la i18n d'interfaceType textChat et de locale currentLocale est définie
-
                 ??? Quid des sharedIntents ?
+
+                #Internationalisation des answers. Pour le moment seul la i18n d'interfaceType textChat et de locale currentLocale est définie
+                
+                #Popup intent revoir l'affichage pour des noms et labels longs
 
         PRODUCTION :
 

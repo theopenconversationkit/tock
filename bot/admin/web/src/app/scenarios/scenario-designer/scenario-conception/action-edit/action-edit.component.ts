@@ -7,6 +7,7 @@ import { StateService } from '../../../../core-nlp/state.service';
 import { ScenarioVersion, ScenarioItem, ScenarioContext, Handler } from '../../../models';
 import { getContrastYIQ, getScenarioActionDefinitions, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
+import { UserInterfaceType } from 'src/app/core/model/configuration';
 
 const ACTION_OR_CONTEXT_NAME_MINLENGTH = 5;
 
@@ -31,7 +32,9 @@ export class ActionEditComponent implements OnInit {
 
   handlers: string[] = [];
   triggers: string[] = [];
+  currentLocale: string;
   supportedLocales: string[] = [];
+  showAnswersLocales: boolean = false;
 
   isSubmitted: boolean = false;
 
@@ -43,7 +46,7 @@ export class ActionEditComponent implements OnInit {
     ]),
     description: new FormControl(),
     handler: new FormControl(),
-    answer: new FormControl(),
+    answers: new FormArray([]),
     answerId: new FormControl(),
     inputContextNames: new FormArray([]),
     outputContextNames: new FormArray([]),
@@ -65,8 +68,11 @@ export class ActionEditComponent implements OnInit {
   get handler(): FormControl {
     return this.form.get('handler') as FormControl;
   }
-  get answer(): FormControl {
-    return this.form.get('answer') as FormControl;
+  get answers(): FormArray {
+    return this.form.get('answers') as FormArray;
+  }
+  get currentLocaleAnswer(): FormControl {
+    return this.form.get('answers').value.find((a) => a.locale === this.currentLocale) as FormControl;
   }
   get inputContextNames(): FormArray {
     return this.form.get('inputContextNames') as FormArray;
@@ -82,6 +88,7 @@ export class ActionEditComponent implements OnInit {
   }
 
   constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {
+    this.currentLocale = state.currentLocale;
     this.supportedLocales = state.currentApplication.supportedLocales;
   }
 
@@ -117,19 +124,39 @@ export class ActionEditComponent implements OnInit {
     this.triggers = this.scenario.data.triggers || [];
     // this.contextsValues = this.contexts.map((c) => c.name);
 
-    let existingUnknownAnswersLocales = []
-    this.item.actionDefinition?.unknownAnswers?.forEach(ua=>{
-      this.unknownAnswers.push(new FormControl(ua));
-      existingUnknownAnswersLocales.push(ua.locale)
-    })
+    let existingAnswersLocales = [];
+    this.item.actionDefinition?.answers?.forEach((ua) => {
+      this.answers.push(new FormControl(ua));
+      existingAnswersLocales.push(ua.locale);
+    });
 
-    this.supportedLocales.forEach(sl=>{
-      if(!existingUnknownAnswersLocales.includes(sl)){
-        this.unknownAnswers.push(new FormControl({
-          locale:sl
-        }));
+    this.supportedLocales.forEach((sl) => {
+      if (!existingAnswersLocales.includes(sl)) {
+        this.answers.push(
+          new FormControl({
+            locale: sl,
+            interfaceType: UserInterfaceType.textChat
+          })
+        );
       }
-    })
+    });
+
+    let existingUnknownAnswersLocales = [];
+    this.item.actionDefinition?.unknownAnswers?.forEach((ua) => {
+      this.unknownAnswers.push(new FormControl(ua));
+      existingUnknownAnswersLocales.push(ua.locale);
+    });
+
+    this.supportedLocales.forEach((sl) => {
+      if (!existingUnknownAnswersLocales.includes(sl)) {
+        this.unknownAnswers.push(
+          new FormControl({
+            locale: sl,
+            interfaceType: UserInterfaceType.textChat
+          })
+        );
+      }
+    });
   }
 
   private isActionNameUnic(): ValidatorFn {
@@ -163,10 +190,10 @@ export class ActionEditComponent implements OnInit {
   }
 
   copyDescToAnswer(): void {
-    this.form.patchValue({
-      ...this.form.value,
-      answer: this.description.value
-    });
+    const answers = this.form.controls.answers.value;
+    const currLocale = answers.find((a) => a.locale === this.state.currentLocale);
+    currLocale.answer = this.description.value;
+    this.form.controls.answers.setValue(answers);
     this.form.markAsDirty();
   }
 

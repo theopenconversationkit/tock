@@ -6,6 +6,7 @@ import { ScenarioActionDefinition, ScenarioVersionExtended } from '../../models'
 import { svgPathRoundedCorners } from './utils';
 import { Edge, GraphEdge, graphlib, layout, Node } from 'dagre';
 import { CanvaAction, OffsetPosition } from '../../../shared/canvas/models';
+import { StateService } from 'src/app/core-nlp/state.service';
 
 type GraphNode = Node & { name?: string; actionDef?: ScenarioActionDefinition; type?: string };
 
@@ -30,7 +31,7 @@ export class ContextsGraphComponent implements OnInit {
 
   readonly canvaAction: typeof CanvaAction = CanvaAction;
 
-  constructor(public dialogRef: NbDialogRef<ContextsGraphComponent>) {}
+  constructor(public dialogRef: NbDialogRef<ContextsGraphComponent>, protected state: StateService) {}
 
   ngOnInit(): void {
     this.initNodesList();
@@ -188,7 +189,14 @@ export class ContextsGraphComponent implements OnInit {
   getNodeTooltip(node: GraphNode): string {
     if (node.type == 'action') {
       if (node.actionDef.description) return node.actionDef.description;
-      if (node.actionDef.answer) return node.actionDef.answer;
+      if (node.actionDef.answers?.length) {
+        for (let index = 0; index < node.actionDef.answers.length; index++) {
+          if (node.actionDef.answers[index].locale === this.state.currentLocale) {
+            return node.actionDef.answers[index].answer;
+          }
+        }
+        return node.actionDef.answers[0].answer;
+      }
       return node.actionDef.name;
     }
     return node.label;

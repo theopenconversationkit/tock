@@ -186,14 +186,15 @@
             </span>
           </div>
 
-          <div
-            *ngIf="item.actionDefinition.answer"
-            class="tiny-text"
-            nbTooltip="ANSWER : {{ item.actionDefinition.answer }}"
-          >
-            <strong>ANSWER</strong>
-            {{ item.actionDefinition.answer }}
-          </div>
+          <ng-container *ngIf="item.actionDefinition.answers?.length">
+            <div
+              class="tiny-text"
+              nbTooltip="ANSWER : {{ getCurrentLocaleAnswer() }}"
+            >
+              <strong>ANSWER</strong>
+              {{ getCurrentLocaleAnswer() }}
+            </div>
+          </ng-container>
         </ng-container>
       </div>
 

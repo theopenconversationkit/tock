@@ -1,3 +1,4 @@
+import { UserInterfaceType } from 'src/app/core/model/configuration';
 import { Sentence } from '../../model/nlp';
 import { TempSentence } from './designer.model';
 
@@ -91,7 +92,7 @@ export interface ScenarioActionDefinition {
   outputContextNames?: ScenarioContextName[];
   handler?: string;
   trigger?: ScenarioTriggerDefinition;
-  answer?: string;
+  answers?: ScenarioAnswer[];
   answerId?: string;
   answerUpdate?: true;
   unknownAnswers?: ScenarioAnswer[];
@@ -101,9 +102,12 @@ export interface ScenarioActionDefinition {
 
 export interface ScenarioAnswer {
   answer: string;
-  locale: string;
   answerUpdate?: true;
+  locale: string;
+  interfaceType: UserInterfaceType;
 }
+
+export const unknownIntentName = 'unknown';
 
 export type EntityTypeName = string;
 export type EntityRole = string;

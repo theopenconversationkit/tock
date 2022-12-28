@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, Que
 import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { StateService } from 'src/app/core-nlp/state.service';
 
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { getSmStateParentById } from '../../../commons/utils';
@@ -32,7 +33,8 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   constructor(
     private scenarioProductionService: ScenarioProductionService,
     private nbDialogService: NbDialogService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    protected stateService: StateService
   ) {
     this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'redrawActions') {
@@ -58,7 +60,15 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     });
     if (action) {
       if (action.description) return action.description;
-      if (action.answer) return action.answer;
+
+      if (action.answers?.length) {
+        for (let index = 0; index < action.answers.length; index++) {
+          if (action.answers[index].locale === this.stateService.currentLocale) {
+            return action.answers[index].answer;
+          }
+        }
+        return action.answers[0].answer;
+      }
       return action.name;
     }
     return this.state.id;

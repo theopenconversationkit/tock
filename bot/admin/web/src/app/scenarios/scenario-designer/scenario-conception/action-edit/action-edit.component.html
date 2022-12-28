@@ -73,7 +73,7 @@
               fullWidth
               id="description"
               placeholder="Enter description"
-              rows="4"
+              rows="2"
             ></textarea>
             <span
               *ngIf="isReadonly"
@@ -84,6 +84,116 @@
           </tock-form-control>
         </div>
 
+        <div class="position-relative">
+          <div
+            *ngIf="!isReadonly"
+            class="position-absolute"
+            style="left: 50%"
+          >
+            <nb-icon
+              *ngIf="!isReadonly"
+              icon="arrowhead-down-outline"
+              status="basic"
+              nbTooltip="Use description as answer"
+              class="pointer"
+              (click)="copyDescToAnswer()"
+            ></nb-icon>
+          </div>
+
+          <tock-form-control
+            label="Answer"
+            name="answer"
+            [controls]="answers"
+            [showError]="isSubmitted"
+            [hasMargin]="false"
+          >
+            <nb-form-field *ngIf="!isReadonly">
+              <div
+                nbPrefix
+                class="text-uppercase"
+                nbTooltip="Answer in {{ state.localeName(currentLocale) }}"
+              >
+                {{ currentLocale }}
+              </div>
+              <textarea
+                *ngIf="!isReadonly"
+                nbInput
+                fullWidth
+                id="answer"
+                placeholder="Enter answer in {{ state.localeName(currentLocale) }}"
+                rows="2"
+                [(ngModel)]="currentLocaleAnswer.answer"
+                [ngModelOptions]="{ standalone: true }"
+              ></textarea>
+            </nb-form-field>
+            <span
+              *ngIf="isReadonly"
+              class="text-mitigated"
+            >
+              {{ currentLocaleAnswer.answer }}
+            </span>
+          </tock-form-control>
+        </div>
+
+        <div
+          class="mb-3"
+          *ngIf="supportedLocales.length > 1"
+        >
+          <small
+            (click)="showAnswersLocales = !showAnswersLocales"
+            class="d-block mb-1"
+          >
+            <nb-icon
+              *ngIf="!showAnswersLocales"
+              icon="chevron-right-outline"
+              class="valign-middle"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="showAnswersLocales"
+              icon="chevron-down-outline"
+              class="valign-middle"
+            ></nb-icon>
+            Other locales
+          </small>
+
+          <div *ngIf="showAnswersLocales">
+            <ng-container *ngFor="let localeAnswerDef of answers.value; let i = index">
+              <ng-container *ngIf="localeAnswerDef.locale != currentLocale">
+                <tock-form-control name="answer">
+                  <nb-form-field *ngIf="!isReadonly">
+                    <div
+                      nbPrefix
+                      class="text-uppercase"
+                      nbTooltip="Answer in {{ state.localeName(localeAnswerDef.locale) }}"
+                    >
+                      {{ localeAnswerDef.locale }}
+                    </div>
+
+                    <textarea
+                      *ngIf="!isReadonly"
+                      nbInput
+                      fullWidth
+                      rows="2"
+                      placeholder="Enter answer in {{ state.localeName(localeAnswerDef.locale) }}"
+                      [(ngModel)]="localeAnswerDef.answer"
+                      [ngModelOptions]="{ standalone: true }"
+                    ></textarea>
+                  </nb-form-field>
+
+                  <span
+                    *ngIf="isReadonly"
+                    class="text-mitigated"
+                  >
+                    {{ localeAnswerDef.answer }}
+                  </span>
+                </tock-form-control>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <div id="formMiddleSection">
         <tock-form-control
           label="Api handler"
           name="handler"
@@ -205,40 +315,6 @@
           </nb-list>
         </div>
 
-        <div>
-          <nb-icon
-            *ngIf="!isReadonly"
-            icon="arrowhead-right-outline"
-            status="basic"
-            nbTooltip="Use description as answer"
-            class="pointer"
-            (click)="copyDescToAnswer()"
-          ></nb-icon>
-        </div>
-
-        <tock-form-control
-          label="Answer"
-          name="answer"
-          [controls]="answer"
-          [showError]="isSubmitted"
-        >
-          <textarea
-            *ngIf="!isReadonly"
-            nbInput
-            formControlName="answer"
-            fullWidth
-            id="answer"
-            placeholder="Enter answer"
-            rows="4"
-          ></textarea>
-          <span
-            *ngIf="isReadonly"
-            class="text-mitigated"
-          >
-            {{ answer.value }}
-          </span>
-        </tock-form-control>
-
         <tock-form-control
           label="Event"
           name="trigger"
@@ -358,15 +434,20 @@
 
         <small class="d-block text-muted mb-2">Enter the question to ask the user if their answer was not understood.</small>
 
-        <ng-container>
-          <ng-container *ngFor="let localeAnswerDef of unknownAnswers.value; let i = index">
-            <tock-form-control
-              name="answer"
-              [boldLabel]="false"
-              label="{{ state.localeName(localeAnswerDef.locale) }}"
-            >
+        <ng-container *ngFor="let localeAnswerDef of unknownAnswers.value; let i = index">
+          <tock-form-control
+            name="answer"
+            [boldLabel]="false"
+          >
+            <nb-form-field *ngIf="!isReadonly">
+              <div
+                nbPrefix
+                class="text-uppercase"
+                nbTooltip="Question in {{ state.localeName(localeAnswerDef.locale) }}"
+              >
+                {{ localeAnswerDef.locale }}
+              </div>
               <textarea
-                *ngIf="!isReadonly"
                 nbInput
                 fullWidth
                 rows="2"
@@ -374,15 +455,15 @@
                 [(ngModel)]="localeAnswerDef.answer"
                 [ngModelOptions]="{ standalone: true }"
               ></textarea>
+            </nb-form-field>
 
-              <span
-                *ngIf="isReadonly"
-                class="text-mitigated"
-              >
-                {{ localeAnswerDef.answer }}
-              </span>
-            </tock-form-control>
-          </ng-container>
+            <span
+              *ngIf="isReadonly"
+              class="text-mitigated"
+            >
+              {{ localeAnswerDef.answer }}
+            </span>
+          </tock-form-control>
         </ng-container>
       </div>
     </form>
