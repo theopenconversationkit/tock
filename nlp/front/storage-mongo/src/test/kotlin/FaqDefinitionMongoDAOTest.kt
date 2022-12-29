@@ -290,7 +290,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         intentDefinitionDao.save(secondIntentWithIntentId3)
         faqDefinitionDao.save(secondFaqDefinition)
 
-        val tags = faqDefinitionDao.getTags(applicationId.toString())
+        val tags = faqDefinitionDao.getTags(botId)
         assertEquals(tags, otherTagList + faqDefinition.tags)
     }
 
@@ -347,7 +347,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            applicationId.toString(),
+            botId,
             null
         )
 
@@ -434,7 +434,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //filtering on faqName2
             createFaqQuery(null, faqName2),
-            applicationId.toString(),
+            botId,
             null
         )
 
@@ -511,7 +511,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            applicationId.toString(),
+            botId,
             null
         )
 
@@ -557,7 +557,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            applicationId.toString(),
+            botId,
             null
         )
 

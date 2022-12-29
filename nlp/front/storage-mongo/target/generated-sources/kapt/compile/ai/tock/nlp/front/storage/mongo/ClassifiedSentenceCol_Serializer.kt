@@ -96,6 +96,11 @@ internal class ClassifiedSentenceCol_Serializer :
                 null
                 )
                 .serialize(_otherIntentsProbabilities_, gen, serializers)
+        gen.writeFieldName("configuration")
+        val _configuration_ = value.configuration
+        if(_configuration_ == null) { gen.writeNull() } else {
+                gen.writeString(_configuration_)
+                }
         gen.writeEndObject()
     }
 }

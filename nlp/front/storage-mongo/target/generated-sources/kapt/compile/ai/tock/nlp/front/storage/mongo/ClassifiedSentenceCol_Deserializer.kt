@@ -70,6 +70,8 @@ internal class ClassifiedSentenceCol_Deserializer :
             var _classifier_set : Boolean = false
             var _otherIntentsProbabilities_: MutableMap<String, Double>? = null
             var _otherIntentsProbabilities_set : Boolean = false
+            var _configuration_: String? = null
+            var _configuration_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -170,6 +172,11 @@ internal class ClassifiedSentenceCol_Deserializer :
                              else p.readValueAs(_otherIntentsProbabilities__reference);
                             _otherIntentsProbabilities_set = true
                             }
+                    "configuration" -> {
+                            _configuration_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _configuration_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -182,7 +189,8 @@ internal class ClassifiedSentenceCol_Deserializer :
                     _applicationId_set && _creationDate_set && _updateDate_set && _status_set &&
                     _classification_set && _lastIntentProbability_set && _lastEntityProbability_set
                     && _lastUsage_set && _usageCount_set && _unknownCount_set && _forReview_set &&
-                    _reviewComment_set && _classifier_set && _otherIntentsProbabilities_set)
+                    _reviewComment_set && _classifier_set && _otherIntentsProbabilities_set &&
+                    _configuration_set)
                     ClassifiedSentenceMongoDAO.ClassifiedSentenceCol(text = _text_!!, normalizedText
                             = _normalizedText_!!, fullText = _fullText_!!, language = _language_!!,
                             applicationId = _applicationId_!!, creationDate = _creationDate_!!,
@@ -191,7 +199,8 @@ internal class ClassifiedSentenceCol_Deserializer :
                             lastEntityProbability = _lastEntityProbability_, lastUsage =
                             _lastUsage_, usageCount = _usageCount_, unknownCount = _unknownCount_,
                             forReview = _forReview_!!, reviewComment = _reviewComment_, classifier =
-                            _classifier_, otherIntentsProbabilities = _otherIntentsProbabilities_!!)
+                            _classifier_, otherIntentsProbabilities = _otherIntentsProbabilities_!!,
+                            configuration = _configuration_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_text_set)
@@ -230,7 +239,9 @@ internal class ClassifiedSentenceCol_Deserializer :
                     map[parameters.getValue("classifier")] = _classifier_
                     if(_otherIntentsProbabilities_set)
                     map[parameters.getValue("otherIntentsProbabilities")] =
-                            _otherIntentsProbabilities_ 
+                            _otherIntentsProbabilities_
+                    if(_configuration_set)
+                    map[parameters.getValue("configuration")] = _configuration_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -260,7 +271,8 @@ internal class ClassifiedSentenceCol_Deserializer :
                 primaryConstructor.findParameterByName("forReview")!!, "reviewComment" to
                 primaryConstructor.findParameterByName("reviewComment")!!, "classifier" to
                 primaryConstructor.findParameterByName("classifier")!!, "otherIntentsProbabilities"
-                to primaryConstructor.findParameterByName("otherIntentsProbabilities")!!) }
+                to primaryConstructor.findParameterByName("otherIntentsProbabilities")!!,
+                "configuration" to primaryConstructor.findParameterByName("configuration")!!) }
 
         private val _applicationId__reference: TypeReference<Id<ApplicationDefinition>> = object :
                 TypeReference<Id<ApplicationDefinition>>() {}

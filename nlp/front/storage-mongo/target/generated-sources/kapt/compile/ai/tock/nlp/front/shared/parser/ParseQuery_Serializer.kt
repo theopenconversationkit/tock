@@ -50,6 +50,11 @@ internal class ParseQuery_Serializer : StdSerializer<ParseQuery>(ParseQuery::cla
                 null
                 )
                 .serialize(_intentsSubset_, gen, serializers)
+        gen.writeFieldName("configuration")
+        val _configuration_ = value.configuration
+        if(_configuration_ == null) { gen.writeNull() } else {
+                gen.writeString(_configuration_)
+                }
         gen.writeEndObject()
     }
 }
