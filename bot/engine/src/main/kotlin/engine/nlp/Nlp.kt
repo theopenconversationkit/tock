@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.nlp
 
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.engine.BotRepository
@@ -23,10 +24,7 @@ import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.TockConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
-import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.dialog.DialogState
-import ai.tock.bot.engine.dialog.EntityStateValue
-import ai.tock.bot.engine.dialog.EntityValue
+import ai.tock.bot.engine.dialog.*
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.model.Entity
@@ -404,6 +402,38 @@ internal class Nlp : NlpController {
             if (result != null) {
                 sentence.precomputedNlp = result
             }
+        }
+        if (dialog.state.currentIntent?.name == SatisfactionStoryEnum.STORY_SATISFACTION_ID.storyId) {
+            val index =
+                botDefinition.stories.find { storyDefinition -> storyDefinition.mainIntent().name == dialog.state.currentIntent?.name }?.steps?.indexOfFirst { storyStep -> (storyStep as StoryDefinitionConfigurationStep.Step).configuration.userSentenceLabel?.defaultLabel == sentence.stringText }
+            dialog.rating = if (index != null && index != -1) {
+                index + 1
+            } else null
+
+        }
+        if (dialog.state.currentIntent?.name == SatisfactionStoryEnum.STORY_REVIEW_ID.storyId) {
+            dialog.review = sentence.stringText
+            SentenceParser(
+                nlpClient,
+                SendSentence(
+                    sentence.playerId,
+                    sentence.applicationId,
+                    sentence.recipientId,
+                    SatisfactionStoryEnum.STORY_REVIEW_ADDED_ID.storyId,
+                    sentence.messages,
+                    sentence.toActionId(),
+                    sentence.date,
+                    sentence.state,
+                    sentence.metadata,
+                    sentence.nlpStats,
+                    sentence.precomputedNlp
+                ),
+                userTimeline,
+                dialog,
+                connector as TockConnectorController,
+                botDefinition
+            ).parse()
+            return
         }
 
         SentenceParser(

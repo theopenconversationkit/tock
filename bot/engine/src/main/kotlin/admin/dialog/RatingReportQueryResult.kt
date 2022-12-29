@@ -16,23 +16,12 @@
 
 package ai.tock.bot.admin.dialog
 
-import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.nlp.NlpCallStats
-import org.litote.kmongo.Id
 
 /**
  *
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun findBotDialogStat(query: DialogReportQuery): RatingReportQueryResult?
-
-    fun findBotDialogStatByNote(query: DialogReportQuery): List<DialogRating>
-
-    fun getDialog(id: Id<Dialog>): DialogReport?
-
-    fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
-}
+data class RatingReportQueryResult(
+    val ratingBot: Int?,
+    val nbUsersRated: Int?,
+    var ratingDetails: List<DialogRating> = emptyList(),
+)

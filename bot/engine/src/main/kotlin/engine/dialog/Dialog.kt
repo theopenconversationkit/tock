@@ -50,7 +50,11 @@ data class Dialog(
     /**
      * An optional group identifier.
      */
-    val groupId: String? = null
+    val groupId: String? = null,
+
+    var rating: Int? = null,
+
+    var review: String? = null
 ) {
 
     companion object {
@@ -70,7 +74,9 @@ data class Dialog(
                         }
                         s
                     }
-                ).toMutableList()
+                ).toMutableList(),
+                rating = dialog.rating,
+                review = dialog.review
             )
         }
     }

@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.dialog
+package ai.tock.bot.engine.dialog
 
-import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.nlp.NlpCallStats
-import org.litote.kmongo.Id
-
-/**
- *
- */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun findBotDialogStat(query: DialogReportQuery): RatingReportQueryResult?
-
-    fun findBotDialogStatByNote(query: DialogReportQuery): List<DialogRating>
-
-    fun getDialog(id: Id<Dialog>): DialogReport?
-
-    fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
+enum class SatisfactionStoryEnum(val storyId: String) {
+    STORY_REVIEW_ID("builtin_satisfaction_review"),
+    STORY_REVIEW_ASK_ID("builtin_satisfaction_review_ask"),
+    STORY_REVIEW_ADDED_ID("builtin_satisfaction_review_added"),
+    STORY_SATISFACTION_ID("builtin_satisfaction")
 }

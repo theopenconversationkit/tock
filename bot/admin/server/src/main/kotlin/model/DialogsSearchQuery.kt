@@ -32,7 +32,8 @@ data class DialogsSearchQuery(
     val exactMatch: Boolean,
     val connectorType: ConnectorType?,
     val displayTests: Boolean = false,
-    val skipObfuscation: Boolean = false
+    val skipObfuscation: Boolean = false,
+    val rating: Set<Int>? = emptySet()
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -49,7 +50,8 @@ data class DialogsSearchQuery(
             exactMatch,
             connectorType = connectorType,
             displayTests = displayTests,
-            obfuscated = true
+            obfuscated = true,
+            rating = rating
         )
     }
 }

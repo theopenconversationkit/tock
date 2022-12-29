@@ -51,6 +51,7 @@ import {
   NbDialogModule,
   NbRadioModule
 } from '@nebular/theme';
+import {ReactiveFormsModule} from "@angular/forms";
 import { ChartComponent } from './chart/chart.component';
 import { ChartDialogComponent } from './chart-dialog/chart-dialog.component';
 import { ActivityComponent } from './activity/activity.component';
@@ -60,6 +61,9 @@ import { FlowComponent } from './flow/flow.component';
 import { CytoComponent } from './flow/cyto.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { SatisfactionComponent} from "./satisfaction/satisfaction.component";
+import {ActivateSatisfactionComponent} from "./satisfaction/activate-satisfaction/activate-satisfaction.component";
+import {SatisfactionDetailsComponent} from "./satisfaction/satisfaction-details/satisfaction-details.component";
 
 export function importEcharts() {
   return import('echarts');
@@ -101,6 +105,10 @@ const routes: Routes = [
       {
         path: 'preferences',
         component: PreferencesComponent
+      },
+      {
+        path: 'satisfaction',
+        component: SatisfactionComponent
       }
     ]
   }
@@ -113,54 +121,59 @@ const routes: Routes = [
 export class AnalyticsRoutingModule {}
 
 @NgModule({
-    schemas: [NO_ERRORS_SCHEMA],
-    imports: [
-        CommonModule,
-        SharedModule,
-        AnalyticsRoutingModule,
-        InfiniteScrollModule,
-        MomentModule,
-        BotSharedModule,
-        BotModule,
-        NlpModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        NbRouteTabsetModule,
-        NbCheckboxModule,
-        NbCardModule,
-        NbTooltipModule,
-        NbSpinnerModule,
-        NbButtonModule,
-        NbInputModule,
-        NbSelectModule,
-        NbCalendarModule,
-        NbUserModule,
-        NbDatepickerModule,
-        NbListModule,
-        NbAccordionModule,
-        GoogleChartsModule,
-        NbContextMenuModule,
-        NbMenuModule.forRoot(),
-        NbCalendarRangeModule,
-        NbDialogModule.forRoot(),
-        NbRadioModule,
-        NgxEchartsModule.forRoot({
-            echarts: importEcharts
-        })
-    ],
-    declarations: [
-        AnalyticsTabsComponent,
-        DialogsComponent,
-        FlowComponent,
-        CytoComponent,
-        UsersComponent,
-        ChartComponent,
-        ActivityComponent,
-        BehaviorComponent,
-        PreferencesComponent,
-        ChartDialogComponent
-    ],
-    exports: [],
-    providers: [AnalyticsService]
+  schemas: [NO_ERRORS_SCHEMA],
+  imports: [
+    CommonModule,
+    SharedModule,
+    AnalyticsRoutingModule,
+    InfiniteScrollModule,
+    MomentModule,
+    BotSharedModule,
+    BotModule,
+    NlpModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    NbRouteTabsetModule,
+    NbCheckboxModule,
+    NbCardModule,
+    NbTooltipModule,
+    NbSpinnerModule,
+    NbButtonModule,
+    NbInputModule,
+    NbSelectModule,
+    NbCalendarModule,
+    NbUserModule,
+    NbDatepickerModule,
+    NbListModule,
+    NbAccordionModule,
+    GoogleChartsModule,
+    NbContextMenuModule,
+    NbMenuModule.forRoot(),
+    NbCalendarRangeModule,
+    NbDialogModule.forRoot(),
+    NbRadioModule,
+    NgxEchartsModule.forRoot({
+      echarts: importEcharts
+    }),
+    ReactiveFormsModule
+  ],
+  declarations: [
+    AnalyticsTabsComponent,
+    DialogsComponent,
+    FlowComponent,
+    CytoComponent,
+    UsersComponent,
+    ChartComponent,
+    ActivityComponent,
+    BehaviorComponent,
+    PreferencesComponent,
+    ChartDialogComponent,
+    SatisfactionComponent,
+    ActivateSatisfactionComponent,
+    SatisfactionDetailsComponent
+  ],
+  exports: [],
+  providers: [AnalyticsService],
+  entryComponents: []
 })
 export class BotAnalyticsModule {}

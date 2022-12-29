@@ -1,0 +1,11 @@
+<div *ngIf="loaded">
+  <div *ngIf="isStatisfactionActivated">
+    <tock-satisfaction-details></tock-satisfaction-details>
+  </div>
+  <div *ngIf="!isStatisfactionActivated && !errorMsg">
+    <tock-activate-satisfaction (enableSatisfaction)="isStatisfactionActivated = $event"></tock-activate-satisfaction>
+  </div>
+</div>
+
+
+<h2 *ngIf="errorMsg">{{errorMsg}}</h2>

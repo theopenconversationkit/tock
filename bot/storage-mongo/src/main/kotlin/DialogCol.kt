@@ -51,6 +51,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
 import java.time.Instant.now
+import java.util.*
 
 /**
  *
@@ -66,8 +67,9 @@ internal data class DialogCol(
     val lastUpdateDate: Instant = now(),
     val groupId: String? = null,
     val test: Boolean = false,
-    val namespace: String? = null
-) {
+    val namespace: String? = null,
+    val rating: Int? = null,
+    val review: String? = null) {
 
     companion object {
         private fun getActionWrapper(action: Action): ActionMongoWrapper {
@@ -89,7 +91,9 @@ internal data class DialogCol(
         userTimeline.applicationIds,
         groupId = dialog.groupId,
         test = userTimeline.userPreferences.test,
-        namespace = userTimeline.namespace
+        namespace = userTimeline.namespace,
+        review = dialog.review,
+        rating = dialog.rating
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {
@@ -99,7 +103,9 @@ internal data class DialogCol(
                 _id,
                 state.toState(stories.flatMap { it.actions }.map { it.toActionId() to it }.toMap()),
                 stories.toMutableList(),
-                groupId = groupId
+                groupId = groupId,
+                rating = rating,
+                review = review
             )
         }
     }
@@ -142,7 +148,9 @@ internal data class DialogCol(
                 .firstOrNull { it.state.userInterface != null }
                 ?.state?.userInterface
                 ?: textChat,
-            _id
+            _id,
+            rating = rating,
+            review = review
         )
     }
 
@@ -380,4 +388,13 @@ internal data class DialogCol(
             )
         }
     }
+}
+
+@Data(internal = true)
+@JacksonData(internal = true)
+data class ParseRequestSatisfactionStatCol(
+    val rating: Int ,
+    val count: Int = 1
+) {
+
 }
