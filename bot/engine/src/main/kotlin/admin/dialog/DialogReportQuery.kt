@@ -45,5 +45,7 @@ data class DialogReportQuery(
     /**
      * Is the result is obfuscated ?.
      */
-    val obfuscated: Boolean = false
+    val obfuscated: Boolean = false,
+
+    val rating : Set<Int>? = emptySet()
 )

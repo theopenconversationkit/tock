@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.dialog
+export class RatingReportQueryResult {
+  constructor(
+    public ratingBot: number,
+    public nbUsersRated: number,
+    public ratingDetails: DialogRating[],
+  ) {
+  }
+}
 
-import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.nlp.NlpCallStats
-import org.litote.kmongo.Id
-
-/**
- *
- */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun findBotDialogStat(query: DialogReportQuery): RatingReportQueryResult?
-
-    fun findBotDialogStatByNote(query: DialogReportQuery): List<DialogRating>
-
-    fun getDialog(id: Id<Dialog>): DialogReport?
-
-    fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?
+export class DialogRating {
+  constructor(
+    public rating: number,
+    public nbUsers: number) {
+  }
 }

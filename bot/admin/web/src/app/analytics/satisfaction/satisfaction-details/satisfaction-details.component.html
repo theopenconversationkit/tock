@@ -1,0 +1,36 @@
+<nb-card *ngIf="satisfactionStat"
+  class="stats"
+>
+  <div class="space space-component3">
+    <h5 class="heading1 text-basic">
+      <nb-icon *ngFor="let _ of [].constructor(satisfactionStat.ratingBot)" icon="star-outline"></nb-icon>
+    </h5>
+    <span class="text text-hint caption">
+
+       {{satisfactionStat.nbUsersRated}} users</span
+    >
+  </div>
+</nb-card>
+
+<div style="display: flex" *ngIf="satisfactionStat">
+  <nb-card
+    class="stats" *ngFor="let index of [1,2,3,4,5]"
+  >
+    <div class="space space-component3">
+      <h5 class="heading1 text-basic">
+        <nb-icon *ngFor="let _ of [].constructor(index)" icon="star-outline"></nb-icon>
+      </h5>
+      <span class="text text-hint caption">
+
+       {{getNbUsersByNote(index)}} users</span
+      >
+    </div>
+    <div class="space icon-space">
+      <nb-toggle [value]="index" (change)="updateRatingFilter($event)"
+                 status="basic"
+      ></nb-toggle>
+    </div>
+  </nb-card>
+</div>
+
+<tock-dialogs [ratingFilter]="ratingFilter"></tock-dialogs>

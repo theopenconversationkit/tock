@@ -15,7 +15,7 @@
   -->
 
 <div class="dialogs">
-  <nb-card>
+  <nb-card  *ngIf="!(isSatisfactionRoute()| async)">
     <nb-card-body>
       <span class="search-input">
         <input

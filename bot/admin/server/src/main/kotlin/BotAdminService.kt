@@ -28,9 +28,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.bot.BotVersion
-import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
-import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.dialog.DialogReportQueryResult
+import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.BotAnswerConfiguration
@@ -217,6 +215,12 @@ object BotAdminService {
                     )
                 }
             }
+    }
+
+    fun searchRating(query: DialogsSearchQuery): RatingReportQueryResult? {
+        val res = dialogReportDAO.findBotDialogStat(query.toDialogReportQuery()) ?: return null
+        res.ratingDetails = dialogReportDAO.findBotDialogStatByNote(query.toDialogReportQuery())
+        return res
     }
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {

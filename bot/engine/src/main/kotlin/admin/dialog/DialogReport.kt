@@ -28,5 +28,7 @@ data class DialogReport(
     val actions: List<ActionReport> = emptyList(),
     val userInterface: UserInterfaceType,
     val id: Id<Dialog> = newId(),
-    val obfuscated: Boolean = false
+    val obfuscated: Boolean = false,
+    val rating : Int? = null,
+    val review : String? = null
 )

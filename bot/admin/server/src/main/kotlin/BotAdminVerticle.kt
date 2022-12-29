@@ -25,24 +25,11 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.dialog.DialogReportQuery
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.utils.SatisfactionUtils
 import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.rest.addRestConnector
@@ -50,6 +37,7 @@ import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
 import ai.tock.bot.engine.dialog.DialogFlowDAO
+import ai.tock.bot.engine.dialog.SatisfactionStoryEnum
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
@@ -262,6 +250,52 @@ open class BotAdminVerticle : AdminVerticle() {
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByActionType(request)
+            }
+        }
+
+        blockingJsonPost(
+            "/analytics/satisfaction/isActive",
+            setOf(botUser, faqBotUser)
+        ) { context, query: ApplicationScopedQuery ->
+            val botConf =
+                getBotConfigurationsByNamespaceAndBotId(query.namespace, query.applicationName).firstOrNull()
+                    ?: badRequest("No bot configuration detected.")
+            val story = BotAdminService.findConfiguredStoryByBotIdAndIntent(
+                query.namespace,
+                botConf.botId,
+                SatisfactionStoryEnum.STORY_SATISFACTION_ID.storyId
+            )
+            story != null
+        }
+
+        blockingJsonPost(
+            "/analytics/satisfaction/init",
+            setOf(botUser, faqBotUser)
+        ) { context, query: ApplicationScopedQuery ->
+            val botConf =
+                getBotConfigurationsByNamespaceAndBotId(query.namespace, query.applicationName).firstOrNull()
+                    ?: badRequest("No bot configuration detected.")
+            val story = BotAdminService.findConfiguredStoryByBotIdAndIntent(
+                query.namespace,
+                botConf.botId,
+                SatisfactionStoryEnum.STORY_SATISFACTION_ID.storyId
+            )
+            if (story == null) {
+                BotAdminService.createStory(query.namespace, SatisfactionUtils.initSatisfactionCommentStory(query), context.userLogin)
+                BotAdminService.createStory(query.namespace, SatisfactionUtils.initSatisfactionRatingStory(query), context.userLogin)
+                BotAdminService.createStory(query.namespace, SatisfactionUtils.initSatisfactionCommentAddedStory(query), context.userLogin)
+                BotAdminService.createStory(query.namespace, SatisfactionUtils.initSatisfactionReviewAskStory(query), context.userLogin)
+            }
+        }
+
+        blockingJsonPost(
+            "/analytics/satisfaction",
+            setOf(botUser, faqNlpUser, faqBotUser)
+        ) { context, query: DialogsSearchQuery ->
+            if (context.organization == query.namespace) {
+                BotAdminService.searchRating(query)
+            } else {
+                unauthorized()
             }
         }
 
