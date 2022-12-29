@@ -271,7 +271,8 @@ internal object ApplicationCodecService : ApplicationCodec {
                                 appId,
                                 s.language,
                                 search = s.text,
-                                onlyExactMatch = true
+                                onlyExactMatch = true,
+                                configuration = null
                             )
                     ).total == 0L
                 ) {
