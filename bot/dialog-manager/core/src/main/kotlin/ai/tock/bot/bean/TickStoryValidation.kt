@@ -80,8 +80,12 @@ object TickStoryValidation {
             "The same name $it is used for Action handler and context"
         }
 
-        val UNKLNOW_ACTION_NOT_FOUND : (String) -> String =  {
-            "Action $it defined for unkown configuration is not found in StateMachine"
+        val UNKNOWN_ACTION_NOT_FOUND : (String) -> String =  {
+            "Action $it defined for unknown configuration is not found in StateMachine"
+        }
+
+        val UNKNOWN_INTENT_NOT_IN_SECONDARY_INTENTS : (String) -> String =  {
+            "Unknown intent $it is not defined as a secondary intent"
         }
 
     }
@@ -265,10 +269,19 @@ object TickStoryValidation {
         }
     }
 
-    fun validateUnknownConfigs(tickStory: TickStory) : List<String> = tickStory.unknownAnswerConfigs
-        .filterNot { tickStory.actions.map { act -> act.name }.contains(it.action) }
+    fun validateUnknownConfigActions(tickStory: TickStory) : List<String> = with(tickStory.unknownAnswerConfigs){
+        filterNot { tickStory.actions.map { act -> act.name }.contains(it.action) }
         .map { it.action }
-        .map { MessageProvider.UNKLNOW_ACTION_NOT_FOUND(it) }
+        .map { MessageProvider.UNKNOWN_ACTION_NOT_FOUND(it) }
+    }
+
+    fun validateUnknownConfigIntents(tickStory: TickStory) = with(tickStory.unknownAnswerConfigs) {
+        filterNot { tickStory.secondaryIntents.contains(it.intent)}
+            .map { it.intent }
+            .map { MessageProvider.UNKNOWN_INTENT_NOT_IN_SECONDARY_INTENTS(it) }
+    }
+
+
 
     fun validateTickStory(tick: TickStory): Set<String> {
         val errors = mutableSetOf<String>()
@@ -297,7 +310,10 @@ object TickStoryValidation {
         // Consistency of names :
         errors.addAll(validateNames(tick))
 
-        errors.addAll(validateUnknownConfigs(tick))
+        // Consistency of unknown config
+        errors.addAll(validateUnknownConfigActions(tick))
+
+        errors.addAll(validateUnknownConfigIntents(tick))
 
         return errors
     }

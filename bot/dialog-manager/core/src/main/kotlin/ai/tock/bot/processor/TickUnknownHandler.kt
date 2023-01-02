@@ -72,7 +72,7 @@ object TickUnknownHandler {
                         UnknownHandleResult(handlingStep = UnknownHandlingStep(1, answerConfig))
                         )
                     .also { result ->
-                        result.handlingStep?.let { step -> sender.sendById(step.answerConfig.answerId) }
+                        result.handlingStep?.let { step -> sender.endById(step.answerConfig.answerId) }
                     }
             } ?: UnknownHandleResult()
 

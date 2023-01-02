@@ -24,7 +24,7 @@ data class UnknownAnswerConfig(
     /*
     Detected unknown intent
     */
-    val intent: UnknownIntent = UnknownIntent(),
+    val intent: String = UNKNOWN,
     /*
     Handled action name
     */
@@ -47,7 +47,7 @@ data class UnknownAnswerConfig(
     /**
      * Handler key is a composition of its intent value and its action value
      */
-    private fun key() = "${intent.value}_${action}"
+    private fun key() = "${intent}_${action}"
 
     /**
      * Key is the handler identity

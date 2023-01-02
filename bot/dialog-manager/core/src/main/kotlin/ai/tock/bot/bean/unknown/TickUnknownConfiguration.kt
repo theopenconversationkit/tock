@@ -25,7 +25,7 @@ import java.util.TreeSet
 data class TickUnknownConfiguration(
     val unknownAnswerConfigs: Set<UnknownAnswerConfig> = TreeSet()
 ){
-    fun unknownIntents() = unknownAnswerConfigs.map { it.intent.value }.distinct()
+    fun unknownIntents() = unknownAnswerConfigs.map { it.intent }.distinct()
 }
 
 

@@ -252,13 +252,7 @@ class TickStoryProcessor(
             .intentsContexts
             .firstOrNull { it.intentName == intentName }
             ?.associations
-            ?.firstOrNull { it.actionName == ranHandlers.last {
-                // skip the unknown action
-                actionName -> actionName !in
-                    configuration
-                        .actions
-                        .map { action -> action.name }
-            }}
+            ?.firstOrNull { it.actionName == ranHandlers.last()}
             ?.contextNames
             ?.associateWith { null }
             ?: emptyMap()

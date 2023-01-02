@@ -387,12 +387,10 @@ internal class TickStoryProcessorTest {
         val msgCapture = slot<String>()
 
         val answerConfig1 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
             answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
             answerId ="unknown 2"
         )
@@ -449,7 +447,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { sender.sendById(capture(msgCapture)) } answers {
+            every { sender.endById(capture(msgCapture)) } answers {
                 println(msgCapture.captured)
             }
         }
@@ -471,7 +469,7 @@ internal class TickStoryProcessorTest {
 
             assertEquals(answerConfig2.answerId, msgCapture.captured)
 
-            verify(exactly = 1) { sender.sendById(answerConfig2.answerId) }
+            verify(exactly = 1) { sender.endById(answerConfig2.answerId) }
         }
 
         TestCase<TickStoryProcessor, Pair<TickSession, Boolean>>("process when executedAction with no trigger and no handler")
@@ -508,12 +506,10 @@ internal class TickStoryProcessorTest {
         val msgCapture = slot<String>()
 
         val answerConfig1 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
             answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
             answerId ="unknown 2"
         )
@@ -628,12 +624,10 @@ internal class TickStoryProcessorTest {
         val msgCapture = slot<String>()
 
         val answerConfig1 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
             answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
             answerId ="unknown 2"
         )
@@ -693,7 +687,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { sender.sendById(capture(msgCapture)) } answers {
+            every { sender.endById(capture(msgCapture)) } answers {
                 println(msgCapture.captured)
             }
 
@@ -715,7 +709,7 @@ internal class TickStoryProcessorTest {
 
             assertEquals(answerConfig2.answerId, msgCapture.captured)
 
-            verify(exactly = 1) { sender.sendById(answerConfig2.answerId) }
+            verify(exactly = 1) { sender.endById(answerConfig2.answerId) }
         }
 
         TestCase<TickStoryProcessor, Pair<TickSession, Boolean>>("process when executedAction with no trigger and no handler")
@@ -750,12 +744,10 @@ internal class TickStoryProcessorTest {
     fun `process when unknown intent is detected and unknownAnswerConfig is provided and retryNb is exceeded`() {
 
         val answerConfig1 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
             answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
             answerId ="unknown 2"
         )
@@ -842,12 +834,10 @@ internal class TickStoryProcessorTest {
     fun `process when unknown intent is detected and unknownAnswerConfig is provided, retryNb is exceeded ans exitAction is provided`() {
 
         val answerConfig1 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_1.value,
             answerId ="unknown 1"
         )
         val answerConfig2 = UnknownAnswerConfig(
-            intent = UnknownIntent(),
             action = StateIds.STATE_2.value,
             exitAction = StateIds.STATE_3.value,
             answerId ="unknown 2"
