@@ -95,7 +95,7 @@ object TickStoryValidation {
             val sm = StateMachine(stateMachine)
             // For each intent (primary and secondary) declared in the TickStory,
             // we must find a transition with the same name in the state machine
-            val allIntents = listOf(mainIntent).union(primaryIntents).union(secondaryIntents)
+            val allIntents = listOf(mainIntent).union(primaryIntents).union(secondaryIntents).minus(unknownAnswerConfigs.map { it.intent }.toSet())
             allIntents
                 .filterNot { sm.containsTransition(it) }
                 .map { MessageProvider.INTENT_NOT_FOUND(it) }

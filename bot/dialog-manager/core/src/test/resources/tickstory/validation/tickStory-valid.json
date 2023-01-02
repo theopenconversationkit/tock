@@ -5,8 +5,14 @@
   "description": "description",
   "mainIntent": "i_probleme_virement",
   "primaryIntents": [],
-  "secondaryIntents": [ "i_preciser_montant", "i_preciser_destination", "farewell", "greetings"],
+  "secondaryIntents": [ "i_preciser_montant", "i_preciser_destination", "farewell", "greetings", "unknown"],
   "triggers": ["e_trigger"],
+  "unknownAnswerConfigs":[
+    {
+      "action": "S_CHECK_TRANSFER",
+      "answerId": "answer_id"
+    }
+  ],
   "actions" : [
     {
       "name": "INTRODUCTION",
