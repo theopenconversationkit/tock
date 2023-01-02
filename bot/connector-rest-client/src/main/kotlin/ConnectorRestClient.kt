@@ -82,4 +82,8 @@ class ConnectorRestClient(
     fun talk(path: String, locale: Locale, query: ClientMessageRequest): Response<ClientMessageResponse> {
         return getService(path).talk(locale, query).execute()
     }
+
+    fun getDebugLog(path: String): Response<ScenarioDebugResponse> {
+        return getService("/dialog-manager").getDebugLog().execute()
+    }
 }

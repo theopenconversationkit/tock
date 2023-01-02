@@ -23,7 +23,7 @@ import com.github.salomonbrys.kodein.Kodein
 
 
 fun main() {
-    startAdminServer(botAdminServiceModule)
+    startAdminServer()
 }
 
 fun startAdminServer(vararg modules: Kodein.Module) {

@@ -21,19 +21,12 @@ import ai.tock.bot.admin.scenario.ScenarioGroupDAO
 import ai.tock.bot.admin.service.impl.ScenarioGroupServiceImpl
 import ai.tock.shared.exception.scenario.group.ScenarioGroupDuplicatedException
 import ai.tock.shared.exception.scenario.group.ScenarioGroupNotFoundException
-import ai.tock.shared.injector
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
-import com.github.salomonbrys.kodein.singleton
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.justRun
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -42,7 +35,7 @@ import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ScenarioGroupServiceTest {
+class ScenarioGroupServiceImplTest {
     private val dateNow = ZonedDateTime.parse("2022-01-01T00:00:00.000Z")
     private val groupId1 = "groupId1".toId<ScenarioGroup>()
     private val groupId2 = "groupId2".toId<ScenarioGroup>()
@@ -54,7 +47,6 @@ class ScenarioGroupServiceTest {
     private val scenarioGroup2 = ScenarioGroup(_id =groupId2, botId = botId1, name = "name2",
         creationDate = dateNow, updateDate = dateNow)
 
-    private val scenarioGroupService: ScenarioGroupService by injector.instance()
 
     companion object {
         private val scenarioGroupDAO: ScenarioGroupDAO = mockk(relaxed = true)
@@ -63,7 +55,6 @@ class ScenarioGroupServiceTest {
             tockInternalInjector = KodeinInjector()
             val module = Kodein.Module {
                 bind<ScenarioGroupDAO>() with provider { scenarioGroupDAO }
-                bind<ScenarioGroupService>() with singleton { ScenarioGroupServiceImpl() }
             }
             tockInternalInjector.inject(
                 Kodein {
@@ -83,7 +74,7 @@ class ScenarioGroupServiceTest {
         every { scenarioGroupDAO.createOne(scenarioGroup1) } throws ScenarioGroupDuplicatedException()
         // WHEN // THEN
         assertThrows<ScenarioGroupDuplicatedException> {
-            scenarioGroupService.createOne(scenarioGroup1)
+            ScenarioGroupServiceImpl.createOne(scenarioGroup1)
         }
         verify(exactly = 1) { scenarioGroupDAO.createOne(scenarioGroup1) }
     }
@@ -92,7 +83,7 @@ class ScenarioGroupServiceTest {
         // GIVEN
         every { scenarioGroupDAO.createOne(scenarioGroup1) } returns scenarioGroup1
         // WHEN
-        val result = scenarioGroupService.createOne(scenarioGroup1)
+        val result = ScenarioGroupServiceImpl.createOne(scenarioGroup1)
         // THEN
         assertEquals(scenarioGroup1, result)
         verify(exactly = 1) { scenarioGroupDAO.createOne(scenarioGroup1) }
@@ -102,7 +93,7 @@ class ScenarioGroupServiceTest {
         // GIVEN
         every { scenarioGroupDAO.findAllByBotId(botId1) } returns emptyList()
         // WHEN
-        val result = scenarioGroupService.findAllByBotId(botId1)
+        val result = ScenarioGroupServiceImpl.findAllByBotId(botId1)
         // THEN
         assertTrue(result.isEmpty())
         verify(exactly = 1) { scenarioGroupDAO.findAllByBotId(botId1) }
@@ -112,7 +103,7 @@ class ScenarioGroupServiceTest {
         val groups = listOf(scenarioGroup1, scenarioGroup2)
         every { scenarioGroupDAO.findAllByBotId(botId1) } returns groups
         // WHEN
-        val result = scenarioGroupService.findAllByBotId(botId1)
+        val result = ScenarioGroupServiceImpl.findAllByBotId(botId1)
         // THEN
         assertEquals(groups, result)
         verify(exactly = 1) { scenarioGroupDAO.findAllByBotId(botId1) }
@@ -122,7 +113,7 @@ class ScenarioGroupServiceTest {
         every { scenarioGroupDAO.findOneById(groupId1) } returns null
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            scenarioGroupService.findOneById(groupId1.toString())
+            ScenarioGroupServiceImpl.findOneById(groupId1.toString())
         }
         verify(exactly = 1) { scenarioGroupDAO.findOneById(groupId1) }
     }
@@ -130,7 +121,7 @@ class ScenarioGroupServiceTest {
         // GIVEN
         every { scenarioGroupDAO.findOneById(groupId1) } returns scenarioGroup1
         // WHEN
-        val result = scenarioGroupService.findOneById(groupId1.toString())
+        val result = ScenarioGroupServiceImpl.findOneById(groupId1.toString())
         // THEN
         assertEquals(scenarioGroup1, result)
         verify(exactly = 1) { scenarioGroupDAO.findOneById(groupId1) }
@@ -141,7 +132,7 @@ class ScenarioGroupServiceTest {
         every { scenarioGroupDAO.updateOne(scenarioGroup1) } throws ScenarioGroupNotFoundException(groupId1.toString())
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            scenarioGroupService.updateOne(scenarioGroup1)
+            ScenarioGroupServiceImpl.updateOne(scenarioGroup1)
         }
         verify(exactly = 1) { scenarioGroupDAO.updateOne(scenarioGroup1) }
     }
@@ -149,7 +140,7 @@ class ScenarioGroupServiceTest {
         // GIVEN
         every { scenarioGroupDAO.updateOne(scenarioGroup1) } returns scenarioGroup1
         // WHEN
-        val result = scenarioGroupService.updateOne(scenarioGroup1)
+        val result = ScenarioGroupServiceImpl.updateOne(scenarioGroup1)
         // THEN
         assertEquals(scenarioGroup1, result)
         verify(exactly = 1) { scenarioGroupDAO.updateOne(scenarioGroup1) }
@@ -159,7 +150,7 @@ class ScenarioGroupServiceTest {
         every { scenarioGroupDAO.deleteOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1.toString())
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            scenarioGroupService.deleteOneById(groupId1.toString())
+            ScenarioGroupServiceImpl.deleteOneById(groupId1.toString())
         }
         verify(exactly = 1) { scenarioGroupDAO.deleteOneById(groupId1) }
     }
@@ -167,7 +158,7 @@ class ScenarioGroupServiceTest {
         // GIVEN
         justRun { scenarioGroupDAO.deleteOneById(groupId1) }
         // WHEN
-        scenarioGroupService.deleteOneById(groupId1.toString())
+        ScenarioGroupServiceImpl.deleteOneById(groupId1.toString())
         // THEN
         verify(exactly = 1) { scenarioGroupDAO.deleteOneById(groupId1) }
     }

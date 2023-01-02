@@ -20,6 +20,7 @@ import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientMessageResponse
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import java.util.Locale
@@ -34,4 +35,11 @@ interface ConnectorRestService {
         @Path("locale") locale: Locale,
         @Body request: ClientMessageRequest
     ): Call<ClientMessageResponse>
+
+    @GET("debug")
+    fun getDebugLog(): Call<ScenarioDebugResponse>
 }
+
+data class ScenarioDebugResponse(
+    val imgBase64: String
+)

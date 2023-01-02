@@ -22,6 +22,7 @@ import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.bot.admin.service.StoryService
+import ai.tock.bot.admin.service.impl.StoryServiceImpl
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.ConnectorType
@@ -84,7 +85,7 @@ class FaqAdminServiceTest : AbstractTest() {
         val intentDAO: IntentDefinitionDAO = mockk(relaxed = false)
         val i18nDAO: I18nDAO = mockk(relaxed = false)
         val faqSettingsDAO: FaqSettingsDAO = mockk(relaxed = true)
-        val storyService: StoryService = mockk(relaxed = true)
+        //val storyService: StoryService = mockk(relaxed = true)
 
         init {
             // IOC
@@ -96,7 +97,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 bind<IntentDefinitionDAO>() with provider { intentDAO }
                 bind<I18nDAO>() with provider { i18nDAO }
                 bind<FaqSettingsDAO>() with provider { faqSettingsDAO }
-                bind<StoryService>() with provider { storyService }
+                //bind<StoryService>() with provider { storyService }
             }
             tockInternalInjector.inject(Kodein {
                 import(defaultModulesBinding())
@@ -551,7 +552,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 faqDefinitionDAO.deleteFaqDefinitionById(eq(faqId))
                 intentDAO.getIntentById(any())
                 i18nDAO.deleteByNamespaceAndId(any(), any())
-                storyService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(any(), any())
+                StoryServiceImpl.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(any(), any())
             }
         }
 

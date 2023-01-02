@@ -27,7 +27,7 @@ import org.litote.kmongo.toId
 /**
  * Implementation of ScenarioGroupService
  */
-class ScenarioGroupServiceImpl : ScenarioGroupService {
+object ScenarioGroupServiceImpl : ScenarioGroupService {
     private val scenarioGroupDAO: ScenarioGroupDAO by injector.instance()
 
     override fun findAllByBotId(botId: String): List<ScenarioGroup> {

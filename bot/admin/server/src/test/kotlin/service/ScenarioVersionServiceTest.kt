@@ -68,7 +68,7 @@ class ScenarioVersionServiceTest {
             tockInternalInjector = KodeinInjector()
             val module = Kodein.Module {
                 bind<ScenarioVersionDAO>() with provider { scenarioVersionDAO }
-                bind<ScenarioVersionService>() with singleton { ScenarioVersionServiceImpl() }
+                //bind<ScenarioVersionService>() with singleton { ScenarioVersionServiceImpl() }
             }
             tockInternalInjector.inject(
                 Kodein {

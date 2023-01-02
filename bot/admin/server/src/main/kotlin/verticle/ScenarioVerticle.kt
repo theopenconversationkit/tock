@@ -24,29 +24,15 @@ import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioGroup
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioGroupResponse
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersion
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersionResponse
-import ai.tock.bot.admin.model.scenario.ScenarioActionHandlerResponse
-import ai.tock.bot.admin.model.scenario.ScenarioDebugResponse
-import ai.tock.bot.admin.model.scenario.ScenarioGroupRequest
-import ai.tock.bot.admin.model.scenario.ScenarioGroupResponse
-import ai.tock.bot.admin.model.scenario.ScenarioGroupWithVersionsRequest
-import ai.tock.bot.admin.model.scenario.ScenarioVersionRequest
-import ai.tock.bot.admin.model.scenario.ScenarioVersionResponse
-import ai.tock.bot.admin.service.ScenarioService
+import ai.tock.bot.admin.model.scenario.*
+import ai.tock.bot.admin.service.impl.ScenarioServiceImpl
 import ai.tock.bot.handler.ActionHandlersRepository
-import ai.tock.shared.injector
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.WebVerticle
-import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
-import org.apache.commons.codec.binary.Base64
-import java.io.ByteArrayOutputStream
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.io.InputStream
 
 /**
  * ScenarioVerticle contains all the routes and actions associated with the scenarios
@@ -54,16 +40,12 @@ import java.io.InputStream
 open class ScenarioVerticle {
 
     private val logger: KLogger = KotlinLogging.logger {}
-    private val scenarioService: ScenarioService by injector.instance()
+    //private val ScenarioServiceImpl: ScenarioServiceImpl by injector.instance()
 
     private val botId = "botId"
     private val groupId = "groupId"
     private val versionId = "versionId"
     private val tickStoryId = "tickStoryId"
-
-    // TODO MASS : WIP DEBUG
-    private val debug    = "/debug/download"
-    private val debugScenarioPath    = "/bot/:$botId/scenarios/debug"
 
     private val importOneScenarioGroupPath    = "/bot/:$botId/scenarios/import/groups"
     private val importManyScenarioVersionPath = "/bot/:$botId/scenarios/import/groups/:$groupId/versions"
@@ -96,9 +78,6 @@ open class ScenarioVerticle {
             blockingJsonPost(createOneScenarioVersionPath, setOf(botUser), handler = createOneScenarioVersion)
 
             // Read
-            // TODO MASS : a supprimer une fois le debug est ok coté front
-            blockingJsonGet(debugScenarioPath, setOf(botUser), handler = debugScenario)
-
             blockingJsonGet(getAllScenarioGroupPath, setOf(botUser), handler = getAllScenarioGroup)
             blockingJsonGet(getOneScenarioGroupPath, setOf(botUser), handler = getOneScenarioGroup)
             blockingJsonGet(getOneScenarioVersionPath, setOf(botUser), handler = getOneScenarioVersion)
@@ -125,7 +104,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .importOneScenarioGroup(request.toScenarioGroup(botId))
                 .toScenarioGroupResponse()
         }
@@ -142,7 +121,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .importManyScenarioVersion(getNamespace(context), request.map { it.toScenarioVersion(groupId) })
                 .map { it.toScenarioVersionResponse() }
         }
@@ -158,7 +137,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
         
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .createOneScenarioGroup(request.toScenarioGroup(botId))
                 .toScenarioGroupResponse()
         }
@@ -175,7 +154,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
         
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .createOneScenarioVersion(getNamespace(context), request.toScenarioVersion(groupId))
                 .toScenarioVersionResponse()
 
@@ -192,7 +171,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .findAllScenarioGroupWithVersionsByBotId(getNamespace(context), botId)
                 .map { it.toScenarioGroupResponse() }
         }
@@ -209,7 +188,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .findOneScenarioGroup(getNamespace(context), groupId)
                 .toScenarioGroupResponse()
         }
@@ -226,7 +205,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .findOneScenarioVersion(groupId, versionId)
                 .toScenarioVersionResponse()
         }
@@ -242,7 +221,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .findOneScenarioGroup(getNamespace(context), groupId).versions.map { it.toScenarioVersionResponse() }
         }
     }
@@ -262,33 +241,6 @@ open class ScenarioVerticle {
             .toSet()
     }
 
-    private val debugScenario: (RoutingContext) -> ScenarioDebugResponse? =
-        { _ ->
-
-            try {
-                //TODO : better workaround about loading the file
-                val inputStream: InputStream = FileInputStream("/tmp/python/log/action-graph-full-new.png")
-                val buffer = ByteArray(8192 * 4)
-                var bytesRead: Int
-                val output = ByteArrayOutputStream()
-
-                try {
-                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                        output.write(buffer, 0, bytesRead)
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                } finally {
-                    inputStream.close()
-                }
-
-                ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
-            } catch (e: FileNotFoundException) {
-                logger.error("File not found ${e.message}")
-                null
-            }
-        }
-
     /**
      * Handler to update one scenario group
      * Returns the updated group with its versions, as [ScenarioGroupResponse]
@@ -300,7 +252,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .updateOneScenarioGroup(getNamespace(context), request.toScenarioGroup(botId, groupId))
                 .toScenarioGroupResponse()
         }
@@ -318,7 +270,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService
+            ScenarioServiceImpl
                 .updateOneScenarioVersion(request.toScenarioVersion(groupId, versionId))
                 .toScenarioVersionResponse()
         }
@@ -335,7 +287,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService.deleteOneScenarioGroup(getNamespace(context), botId, groupId)
+            ScenarioServiceImpl.deleteOneScenarioGroup(getNamespace(context), botId, groupId)
         }
     }
 
@@ -351,7 +303,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            scenarioService.deleteOneScenarioVersion(getNamespace(context), botId, groupId, versionId)
+            ScenarioServiceImpl.deleteOneScenarioVersion(getNamespace(context), botId, groupId, versionId)
         }
     }
 

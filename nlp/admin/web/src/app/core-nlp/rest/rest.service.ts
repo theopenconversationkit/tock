@@ -34,6 +34,7 @@ export class RestService {
   }
 
   readonly url: string;
+  readonly botApiUrl: string;
   readonly notAuthenticatedUrl: string;
   private ssologin = environment.ssologin;
 
@@ -43,6 +44,12 @@ export class RestService {
     this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${environment.serverUrl}`;
     this.url = `${this.notAuthenticatedUrl}/admin`;
     RestService.defaultNotAuthenticatedUrl = this.notAuthenticatedUrl;
+
+    // TODO MASS : do rollback when front debug is ready
+    this.botApiUrl = "https://botapi.rec.cinetext.net"
+    if(this.notAuthenticatedUrl.includes("localhost")){
+      this.botApiUrl = "http://localhost:8080"
+    }
   }
 
   isSSO(): boolean {

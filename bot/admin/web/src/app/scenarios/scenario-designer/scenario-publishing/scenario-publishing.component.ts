@@ -84,7 +84,8 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       });
 
       if (unImplementedHandlers.length) {
-        unPublishable = `The following handlers are not yet implemented on the server side : ${unImplementedHandlers.join(', ')}`;
+        // TODO MASS
+        // unPublishable = `The following handlers are not yet implemented on the server side : ${unImplementedHandlers.join(', ')}`;
       }
     }
 

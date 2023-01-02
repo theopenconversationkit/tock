@@ -24,7 +24,8 @@ import {
   TestPlanExecution,
   XRayPlanExecutionConfiguration,
   XRayPlanExecutionResult,
-  XRayTestPlan
+  XRayTestPlan,
+  ScenarioDebug
 } from './model/test';
 import { Observable } from 'rxjs';
 
@@ -34,6 +35,10 @@ export class TestService {
 
   talk(query: BotDialogRequest): Observable<BotDialogResponse> {
     return this.rest.post('/test/talk', query, BotDialogResponse.fromJSON);
+  }
+
+  getDebugLog(namespace: String, botApplicationConfigurationId: String): Observable<ScenarioDebug> {
+    return this.rest.get(`/test/talk/debug?namespace=${namespace}&botApplicationConfigurationId=${botApplicationConfigurationId}`, ScenarioDebug.fromJSON);
   }
 
   getTestPlans(): Observable<TestPlan[]> {

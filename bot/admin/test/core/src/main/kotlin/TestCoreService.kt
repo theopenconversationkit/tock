@@ -24,6 +24,7 @@ import ai.tock.bot.admin.test.model.BotDialogResponse
 import ai.tock.bot.admin.test.model.DialogDebugData
 import ai.tock.bot.admin.test.model.TestPlanUpdate
 import ai.tock.bot.connector.rest.client.ConnectorRestClient
+import ai.tock.bot.connector.rest.client.ScenarioDebugResponse
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.bot.engine.user.PlayerId
@@ -166,6 +167,22 @@ class TestCoreService : TestService {
                 Companion.unauthorized()
             }
         }
+
+        blockingJsonGet("/test/talk/debug", setOf(botUser,faqNlpUser,faqBotUser)) { context ->
+            val botApplicationConfigurationId = context.firstQueryParam("botApplicationConfigurationId")!!
+            val namespace = context.firstQueryParam("namespace")!!
+
+
+            if (context.organization == namespace) {
+                val conf = getBotConfiguration(botApplicationConfigurationId.toId(), namespace)
+
+                getDebugLog(conf)
+
+            } else {
+                Companion.unauthorized()
+            }
+        }
+
     }
 
     private fun talk(request: BotDialogRequest, conf: BotApplicationConfiguration): BotDialogResponse {
@@ -194,6 +211,20 @@ class TestCoreService : TestService {
             logger.error(throwable)
             BotDialogResponse(listOf(ClientSentence("technical error :( ${throwable.message}")))
         }
+    }
+
+    private fun getDebugLog(conf: BotApplicationConfiguration): ScenarioDebugResponse {
+            val restClient = getRestClient(conf)
+            val response = restClient.getDebugLog(conf.path ?: conf.applicationId)
+
+        // TODO MASS
+            return if (response.isSuccessful) {
+                response.body()?.run {
+                    this
+                } ?: ScenarioDebugResponse("")
+            } else {
+                ScenarioDebugResponse("FALSE")
+            }
     }
 
     private fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {

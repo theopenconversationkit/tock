@@ -24,7 +24,7 @@ import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqDefinitionSearchResult
 import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.service.StoryService
+import ai.tock.bot.admin.service.impl.StoryServiceImpl
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
@@ -75,7 +75,7 @@ object FaqAdminService {
     private val classifiedSentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val faqSettingsDAO: FaqSettingsDAO get() = injector.provide()
-    private val storyService: StoryService get() = injector.provide()
+
     private val front = FrontClient
 
     private const val FAQ_CATEGORY = "faq"
@@ -755,7 +755,7 @@ object FaqAdminService {
             )
 
             if (existingStory != null) {
-                storyService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(existingStory.namespace, existingStory._id.toString())
+                StoryServiceImpl.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(existingStory.namespace, existingStory._id.toString())
             }
             return true
         }

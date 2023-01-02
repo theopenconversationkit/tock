@@ -40,7 +40,7 @@ import org.litote.kmongo.toId
 /**
  * Implementation of StoryService
  */
-class StoryServiceImpl: StoryService {
+object StoryServiceImpl: StoryService {
 
     private val logger: KLogger = KotlinLogging.logger {}
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()

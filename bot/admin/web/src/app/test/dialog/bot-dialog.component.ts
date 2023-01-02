@@ -142,7 +142,10 @@ export class BotDialogComponent implements OnInit, OnDestroy {
         // TODO MASS : FIX ME !
         (async () => {
           await new Promise( resolve => setTimeout(resolve, 500) )
-          this.scenarioService.getScenarioDebug().subscribe((response) => {
+          this.test.getDebugLog(
+            this.state.currentApplication.namespace,
+            this.currentConfigurationId
+          ).subscribe((response) => {
             this.imgBase64 = response.imgBase64;
           });
         })();

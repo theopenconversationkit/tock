@@ -16,7 +16,7 @@
 
 package ai.tock.bot.admin.verticle
 
-import ai.tock.bot.admin.service.StoryService
+import ai.tock.bot.admin.service.impl.StoryServiceImpl
 import ai.tock.bot.bean.TickStory
 import ai.tock.shared.injector
 import ai.tock.shared.security.TockUser
@@ -31,7 +31,7 @@ import mu.KotlinLogging
 class StoryVerticle {
 
     private val logger: KLogger = KotlinLogging.logger {}
-    private val storyService: StoryService by injector.instance()
+    //private val StoryServiceImpl: StoryServiceImpl by injector.instance()
 
     private val baseURL = "/bot"
     private val storyURL = "$baseURL/story"
@@ -60,14 +60,14 @@ class StoryVerticle {
     private val createTickStory: (RoutingContext, TickStory) -> Unit = { context, tickStory ->
         logger.debug { "request to create tick story <${tickStory.storyId}>" }
         val namespace = (context.user() as TockUser).namespace
-        storyService.createTickStory(namespace, tickStory)
+        StoryServiceImpl.createTickStory(namespace, tickStory)
     }
 
     private val deleteStoryByStoryDefinitionConfigurationId: (RoutingContext) -> Boolean = { context ->
         val storyDefinitionConfigurationId = context.pathParam("storyDefinitionConfigurationId")
         logger.debug { "request to delete story <$storyDefinitionConfigurationId>" }
         val namespace = (context.user() as TockUser).namespace
-        storyService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(namespace, storyDefinitionConfigurationId)
+        StoryServiceImpl.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(namespace, storyDefinitionConfigurationId)
     }
 
 }

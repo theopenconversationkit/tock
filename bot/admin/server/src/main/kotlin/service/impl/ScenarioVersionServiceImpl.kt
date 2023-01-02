@@ -28,7 +28,7 @@ import org.litote.kmongo.toId
 /**
  * Implementation of ScenarioVersionService
  */
-class ScenarioVersionServiceImpl : ScenarioVersionService {
+object ScenarioVersionServiceImpl : ScenarioVersionService {
     private val scenarioVersionDAO: ScenarioVersionDAO by injector.instance()
 
     override fun findOneById(id: String): ScenarioVersion {

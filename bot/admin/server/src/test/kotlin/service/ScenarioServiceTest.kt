@@ -99,10 +99,10 @@ class ScenarioServiceTest {
         init {
             tockInternalInjector = KodeinInjector()
             val module = Kodein.Module {
-                bind<ScenarioGroupService>() with singleton { scenarioGroupService }
-                bind<ScenarioVersionService>() with singleton { scenarioVersionService }
-                bind<ScenarioService>() with singleton { ScenarioServiceImpl() }
-                bind<StoryService>() with singleton { storyService }
+                //bind<ScenarioGroupService>() with singleton { scenarioGroupService }
+                //bind<ScenarioVersionService>() with singleton { scenarioVersionService }
+                //bind<ScenarioService>() with singleton { ScenarioServiceImpl() }
+                //bind<StoryService>() with singleton { storyService }
             }
             tockInternalInjector.inject(
                 Kodein {

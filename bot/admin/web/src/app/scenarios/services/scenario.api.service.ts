@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, catchError, map } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Application } from '../../model/application';
@@ -9,7 +10,7 @@ import { Handler, ScenarioDebug, ScenarioGroup, ScenarioVersion, ScenarioSetting
 
 @Injectable()
 export class ScenarioApiService {
-  constructor(private rest: RestService, private applicationService: ApplicationService) {}
+  constructor(private rest: RestService, private applicationService: ApplicationService, private http: HttpClient) {}
 
   getScenariosGroups(): Observable<Array<ScenarioGroup>> {
     return this.applicationService
@@ -133,13 +134,11 @@ export class ScenarioApiService {
 
   // TODO MASS : do rollback when front debug is ready
   getScenarioDebug(): Observable<ScenarioDebug> {
-    return this.applicationService
-      .retrieveCurrentApplication()
-      .pipe(
-        switchMap((currentApplication: Application) =>
-          this.rest.get<ScenarioDebug>(`/bot/${currentApplication.name}/scenarios/debug`, (debug: ScenarioDebug) => debug)
-        )
-      );
+    return this.http
+    .get(`${this.rest.botApiUrl}/dialog-manager/debug`)
+    .pipe(
+      map((res: ScenarioDebug) => res)
+    );
   }
 
   postTickStory(tickStory: TickStory): Observable<TickStory> {
