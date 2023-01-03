@@ -7,7 +7,7 @@
 }
 
 @include nb-install-component {
-  #formTopSection {
+  #formMiddleSection {
     display: grid;
     grid-template-columns: minmax(5rem, 80vw);
 
@@ -24,10 +24,10 @@
   }
 
   @include media-breakpoint-up(sm) {
-    #formTopSection {
-      grid-template-columns: minmax(5rem, 20rem) auto minmax(5rem, 20rem);
+    #formMiddleSection {
+      grid-template-columns: minmax(5rem, 20rem) minmax(5rem, 20rem);
       column-gap: 0.5rem;
-      grid-template-rows: auto auto auto auto;
+      grid-template-rows: auto auto;
       grid-auto-flow: column;
 
       > :nth-child(5) {

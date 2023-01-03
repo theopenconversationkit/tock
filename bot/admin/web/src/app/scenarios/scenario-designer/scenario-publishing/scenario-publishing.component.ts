@@ -19,7 +19,8 @@ import {
   SCENARIO_STATE,
   TickStory,
   ScenarioVersionExtended,
-  SCENARIO_MODE
+  SCENARIO_MODE,
+  unknownIntentName
 } from '../../models';
 import { ScenarioService } from '../../services';
 import { ScenarioDesignerService } from '../scenario-designer.service';
@@ -122,19 +123,23 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     });
 
     getScenarioActions(this.scenario).forEach((action) => {
-      if (action.actionDefinition.answer && !action.actionDefinition.answerId) {
-        this.dependencies.answersToCreate.push({
-          type: 'creation',
-          done: false,
-          item: action
-        });
-      } else if (action.actionDefinition.answerUpdate) {
-        this.dependencies.answersToUpdate.push({
-          type: 'update',
-          done: false,
-          item: action
-        });
-      }
+      action.actionDefinition.answers?.forEach((scenarioAnswer) => {
+        if (scenarioAnswer.answer && !action.actionDefinition.answerId) {
+          this.dependencies.answersToCreate.push({
+            type: 'creation',
+            done: false,
+            item: action,
+            answer: scenarioAnswer
+          });
+        } else if (scenarioAnswer.answerUpdate) {
+          this.dependencies.answersToUpdate.push({
+            type: 'update',
+            done: false,
+            item: action,
+            answer: scenarioAnswer
+          });
+        }
+      });
 
       action.actionDefinition.unknownAnswers?.forEach((unknownAnswer) => {
         if (unknownAnswer.answer && !action.actionDefinition.unknownAnswerId) {
@@ -145,7 +150,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
             answer: unknownAnswer
           });
         } else if (unknownAnswer.answerUpdate) {
-          this.dependencies.unknownAnswersToCreate.push({
+          this.dependencies.unknownAnswersToUpdate.push({
             type: 'update',
             done: false,
             item: action,
@@ -319,64 +324,29 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
   processAnswer(answerTask: DependencyUpdateJob): void {
     if (!answerTask.item.actionDefinition.answerId) {
-      return this.postNewAnswer(answerTask);
-    }
-
-    if (answerTask.item.actionDefinition.answerUpdate) {
+      return this.postAnswer(answerTask);
+    } else {
       return this.patchAnswer(answerTask);
     }
-
-    answerTask.done = true;
-    this.processDependencies();
-  }
-
-  postNewAnswer(answerTask: DependencyUpdateJob): void {
-    let request = new CreateI18nLabelRequest('scenario', answerTask.item.actionDefinition.answer, this.state.currentLocale);
-    this.botService.createI18nLabel(request).subscribe(
-      (answer) => {
-        answerTask.item.actionDefinition.answerId = answer._id;
-        this.processAnswer(answerTask);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-
-  patchAnswer(answerTask: DependencyUpdateJob): void {
-    let i18nLabel: I18nLabel = this.i18n.labels.find((i) => {
-      return i._id === answerTask.item.actionDefinition.answerId;
-    });
-
-    let i18n = i18nLabel.i18n.find((i) => {
-      return i.interfaceType === UserInterfaceType.textChat && i.locale === this.state.currentLocale;
-    });
-    i18n.label = answerTask.item.actionDefinition.answer;
-
-    this.botService.saveI18nLabel(i18nLabel).subscribe(
-      (result) => {
-        delete answerTask.item.actionDefinition.answerUpdate;
-        this.processAnswer(answerTask);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
   }
 
   processUnknownAnswer(answerTask: DependencyUpdateJob): void {
     if (!answerTask.item.actionDefinition.unknownAnswerId) {
-      return this.postNewUnknownAnswer(answerTask);
+      return this.postAnswer(answerTask, true);
     } else {
-      return this.patchUnknownAnswer(answerTask);
+      return this.patchAnswer(answerTask, true);
     }
   }
 
-  postNewUnknownAnswer(answerTask: DependencyUpdateJob): void {
+  postAnswer(answerTask: DependencyUpdateJob, unknown = false): void {
     let request = new CreateI18nLabelRequest('scenario', answerTask.answer.answer, answerTask.answer.locale);
     this.botService.createI18nLabel(request).subscribe(
       (answer) => {
-        answerTask.item.actionDefinition.unknownAnswerId = answer._id;
+        if (unknown) {
+          answerTask.item.actionDefinition.unknownAnswerId = answer._id;
+        } else {
+          answerTask.item.actionDefinition.answerId = answer._id;
+        }
         this.i18n.labels.push(answer);
 
         answerTask.done = true;
@@ -388,18 +358,23 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  patchUnknownAnswer(answerTask: DependencyUpdateJob): void {
+  patchAnswer(answerTask: DependencyUpdateJob, unknown = false): void {
+    let existingId = answerTask.item.actionDefinition.answerId;
+    if (unknown) {
+      existingId = answerTask.item.actionDefinition.unknownAnswerId;
+    }
+
     let i18nLabel: I18nLabel = this.i18n.labels.find((i) => {
-      return i._id === answerTask.item.actionDefinition.unknownAnswerId;
+      return i._id === existingId;
     });
     let i18n = i18nLabel.i18n.find((i) => {
-      return i.interfaceType === UserInterfaceType.textChat && i.locale === answerTask.answer.locale;
+      return i.interfaceType === answerTask.answer.interfaceType && i.locale === answerTask.answer.locale;
     });
 
     if (i18n) i18n.label = answerTask.answer.answer;
     else {
       i18nLabel.i18n.push(
-        new I18nLocalizedLabel(answerTask.answer.locale, UserInterfaceType.textChat, answerTask.answer.answer, true, null, [])
+        new I18nLocalizedLabel(answerTask.answer.locale, answerTask.answer.interfaceType, answerTask.answer.answer, true, null, [])
       );
     }
 
@@ -506,10 +481,15 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     actionsDefinitions.forEach((actionDefinition) => {
       if (actionDefinition.unknownAnswerId) {
         unknownAnswerConfigs.push({
-          intent: 'unknown',
+          intent: unknownIntentName,
           action: actionDefinition.name,
           answerId: actionDefinition.unknownAnswerId
         });
+
+        // We reference 'unknown' in the secondary intents if at least one action defines a response to the intent 'unknown' in order to ensure the integrity of the data set sent
+        if (!secondaryIntents.includes(unknownIntentName)) {
+          secondaryIntents.push(unknownIntentName);
+        }
       }
     });
 

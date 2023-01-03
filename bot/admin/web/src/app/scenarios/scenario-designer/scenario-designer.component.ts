@@ -25,6 +25,7 @@ import { I18nLabels } from '../../bot/model/i18n';
 import { FullscreenDirective } from '../../shared/directives';
 import { Handler } from '../models';
 import { deepCopy } from '../../shared/utils';
+import { UserInterfaceType } from 'src/app/core/model/configuration';
 
 @Component({
   selector: 'scenario-designer',
@@ -105,14 +106,26 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
             this.scenarioVersion.data.triggers = [];
           }
 
-          // backward compatibility update
+          // backward compatibility updates
           this.scenarioVersion.data.scenarioItems.forEach((item) => {
             if (item['tickActionDefinition']) {
               item.actionDefinition = item['tickActionDefinition'];
               delete item['tickActionDefinition'];
             }
+
+            if (item.actionDefinition && item.actionDefinition['answer']) {
+              if (!item.actionDefinition.answers) {
+                item.actionDefinition.answers = [];
+              }
+              item.actionDefinition.answers.push({
+                answer: item.actionDefinition['answer'],
+                interfaceType: UserInterfaceType.textChat,
+                locale: this.state.currentLocale
+              });
+              delete item.actionDefinition['answer'];
+            }
           });
-          // backward compatibility update
+          // backward compatibility updates
 
           this.botService
             .i18nLabels()
@@ -162,7 +175,30 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
         if (!existingAnswer) {
           // The answer has been removed. We delete the lapsed answerId
           delete item.actionDefinition.answerId;
-          deletedAnswers.push(item.actionDefinition.answer);
+
+          let scenarioAnswer = item.actionDefinition.answers.find((sa) => sa.locale === this.state.currentLocale);
+          if (!scenarioAnswer?.answer) {
+            scenarioAnswer = item.actionDefinition.answers.find((sa) => sa.answer);
+          }
+          deletedAnswers.push(scenarioAnswer.answer);
+        } else {
+          // We update the answers of the item to reflect any changes made from outside the studio
+          existingAnswer.i18n.forEach((i18n) => {
+            if (i18n.interfaceType === UserInterfaceType.textChat) {
+              const existingLocale = item.actionDefinition.answers.find(
+                (la) => la.locale === i18n.locale && la.interfaceType === i18n.interfaceType
+              );
+              if (existingLocale) {
+                existingLocale.answer = i18n.label;
+              } else {
+                item.actionDefinition.answers.push({
+                  locale: i18n.locale,
+                  interfaceType: i18n.interfaceType,
+                  answer: i18n.label
+                });
+              }
+            }
+          });
         }
       }
     });

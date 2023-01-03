@@ -89,10 +89,14 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         renameSmStateById(this.item.actionDefinition.name, actionDef.name, this.scenario.data.stateMachine);
       }
 
-      if (this.item.actionDefinition?.answerId) {
-        if (this.item.actionDefinition.answer !== actionDef.answer) {
-          actionDef.answerUpdate = true;
-        }
+      actionDef.answers = actionDef.answers.filter((ua) => ua.answer?.trim().length > 0);
+      if (actionDef.answerId) {
+        actionDef.answers.forEach((ua) => {
+          const storedAnswer = this.item.actionDefinition.answers?.find((sua) => sua.locale === ua.locale);
+          if (storedAnswer && storedAnswer.answer !== ua.answer) {
+            ua.answerUpdate = true;
+          }
+        });
       }
 
       actionDef.unknownAnswers = actionDef.unknownAnswers.filter((ua) => ua.answer?.trim().length > 0);
@@ -280,6 +284,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
 
   answering(): void {
     this.scenarioConceptionService.addAnswer(this.item);
+  }
+
+  getCurrentLocaleAnswer() {
+    const scenarioAnswer = this.item.actionDefinition.answers.find((sa) => {
+      return sa.locale === this.state.currentLocale;
+    });
+    return scenarioAnswer?.answer || '';
   }
 
   delete(): void {
