@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { RestService } from 'src/app/core-nlp/rest/rest.service';
+import { first } from 'rxjs/operators';
+
+import { RestService } from '../../core-nlp/rest/rest.service';
 import { Settings } from '../models';
 import { FaqService } from './faq.service';
 
@@ -24,66 +26,70 @@ describe('FaqService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        FaqService,
         {
           provide: RestService,
           useValue: mockedRestApiService
-        },
-        { provide: FaqService, useClass: FaqService }
+        }
       ]
     });
     service = TestBed.inject(FaqService);
+    service.setState(initialState);
+  });
 
-    it('should populate the state with the result when loading settings successfully', (done) => {
-      mockedRestApiService.get.and.returnValue(of(mockSettings));
+  it('should populate the state with the result when loading settings successfully', (done) => {
+    mockedRestApiService.get.and.returnValue(of(mockSettings));
 
-      expect(service.getState()).toEqual(initialState);
+    expect(service.getState()).toEqual(initialState);
 
-      service.getSettings('1').subscribe(() => {
+    service
+      .getSettings('1')
+      .pipe(first())
+      .subscribe(() => {
         const state = service.getState();
         expect(mockedRestApiService.get).toHaveBeenCalled();
         expect(state.loaded).toBeTrue();
         expect(state.settings).toEqual(mockSettings);
         done();
       });
-    });
+  });
 
-    it('should not update state when loading settings fails', (done) => {
-      mockedRestApiService.get.and.returnValue(throwError(new Error()));
+  it('should not update state when loading settings fails', (done) => {
+    mockedRestApiService.get.and.returnValue(throwError(new Error()));
 
-      expect(service.getState()).toEqual(initialState);
+    expect(service.getState()).toEqual(initialState);
 
-      service.getSettings('1').subscribe({
-        error: () => {
-          expect(service.getState()).toEqual(initialState);
-          done();
-        }
-      });
-    });
-
-    it('should update settings in the state when published successfully', (done) => {
-      mockedRestApiService.post.and.returnValue(of(mockSettings));
-
-      expect(service.getState()).toEqual(initialState);
-
-      service.saveSettings('1', mockSettings).subscribe(() => {
-        const state = service.getState();
-        expect(state.settings).toEqual(mockSettings);
+    service.getSettings('1').subscribe({
+      error: () => {
+        expect(service.getState()).toEqual(initialState);
         done();
-      });
+      }
     });
+  });
 
-    it('should not update state when post settings fails', (done) => {
-      mockedRestApiService.post.and.returnValue(throwError(new Error()));
+  it('should update settings in the state when published successfully', (done) => {
+    mockedRestApiService.post.and.returnValue(of(mockSettings));
 
-      expect(service.getState()).toEqual(initialState);
+    expect(service.getState()).toEqual(initialState);
 
-      service.saveSettings('1', mockSettings).subscribe({
-        error: () => {
-          const state = service.getState();
-          expect(state.settings).toEqual(initialState.settings);
-          done();
-        }
-      });
+    service.saveSettings('1', mockSettings).subscribe(() => {
+      const state = service.getState();
+      expect(state.settings).toEqual(mockSettings);
+      done();
+    });
+  });
+
+  it('should not update state when post settings fails', (done) => {
+    mockedRestApiService.post.and.returnValue(throwError(new Error()));
+
+    expect(service.getState()).toEqual(initialState);
+
+    service.saveSettings('1', mockSettings).subscribe({
+      error: () => {
+        const state = service.getState();
+        expect(state.settings).toEqual(initialState.settings);
+        done();
+      }
     });
   });
 });

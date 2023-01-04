@@ -54,7 +54,18 @@ describe('FaqManagementComponent', () => {
       imports: [],
       providers: [
         { provide: BotConfigurationService, useClass: BotConfigurationServiceMock },
-        { provide: RestService, useValue: {} },
+        {
+          provide: RestService,
+          useValue: {
+            post: () =>
+              of({
+                end: 0,
+                rows: [],
+                start: 0,
+                total: 0
+              })
+          }
+        },
         { provide: StateService, useClass: StateServiceMock },
         { provide: NbToastrService, useValue: {} },
         {

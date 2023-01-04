@@ -46,8 +46,6 @@ $red: #ff3d71;
 @import '~bootstrap/scss/print';
 
 // loading progress bar theme
-@import './pace.theme';
-
 @import './layout';
 @import './overrides';
 
@@ -57,8 +55,6 @@ $red: #ff3d71;
   @include nb-theme-global();
 
   @include ngx-layout();
-  // loading progress bar
-  @include ngx-pace-theme();
 
   @include nb-overrides();
 }
