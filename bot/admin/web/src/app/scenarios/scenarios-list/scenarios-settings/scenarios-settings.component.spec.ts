@@ -11,6 +11,8 @@ import {
   NbToastrService,
   NbTooltipModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { NbDialogServiceMock, NbToastrServiceMock, StateServiceMock } from '@tock/testing/mockedClass';
 import { of } from 'rxjs';
 
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';
@@ -19,9 +21,7 @@ import { ScenarioSettings } from '../../models';
 import { ScenarioSettingsService } from '../../services';
 import { ScenariosSettingsComponent } from './scenarios-settings.component';
 import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FormControlComponent } from '../../../shared/components';
-import { NbDialogServiceMock, NbToastrServiceMock, StateServiceMock } from '../../../../testing/classMocked';
 
 const mock: { stories: StoryDefinitionConfigurationSummary[]; settings: ScenarioSettings } = {
   stories: [
@@ -57,7 +57,7 @@ describe('ScenariosSettingsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ScenariosSettingsComponent, FormControlComponent],
-      imports: [TestSharedModule, NbCardModule, NbIconModule, NbInputModule, NbSelectModule, NbSpinnerModule, NbTooltipModule],
+      imports: [TestingModule, NbCardModule, NbIconModule, NbInputModule, NbSelectModule, NbSpinnerModule, NbTooltipModule],
       providers: [
         { provide: BotService, useClass: BotServiceMock },
         { provide: StateService, useClass: StateServiceMock },

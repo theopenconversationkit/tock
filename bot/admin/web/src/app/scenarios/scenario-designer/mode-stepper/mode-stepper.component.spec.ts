@@ -1,13 +1,12 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbDialogService, NbIconModule, NbTooltipModule } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { NbDialogServiceMock } from '@tock/testing/mockedClass';
 
 import { Sentence } from '../../../model/nlp';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, TempSentence } from '../../models';
 import { ModeStepperComponent } from './mode-stepper.component';
-import { NbDialogServiceMock } from '../../../../testing/classMocked';
 
 const scenarioWriting: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
@@ -139,7 +138,7 @@ describe('ModeStepperComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ModeStepperComponent],
-      imports: [TestSharedModule, NbButtonModule, NbIconModule, NbTooltipModule],
+      imports: [TestingModule, NbButtonModule, NbIconModule, NbTooltipModule],
       providers: [{ provide: NbDialogService, useClass: NbDialogServiceMock }]
     }).compileComponents();
   });

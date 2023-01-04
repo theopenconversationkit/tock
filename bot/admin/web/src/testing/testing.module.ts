@@ -22,4 +22,4 @@ import { AutofocusDirective, FullscreenDirective } from '../app/shared/directive
   ],
   exports: [AutofocusDirective, FullscreenDirective, CommonModule, FormsModule, ReactiveFormsModule]
 })
-export class TestSharedModule {}
+export class TestingModule {}

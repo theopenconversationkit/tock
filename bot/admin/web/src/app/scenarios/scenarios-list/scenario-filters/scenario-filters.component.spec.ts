@@ -11,12 +11,12 @@ import {
   NbOptionModule,
   NbSelectModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { SpyOnCustomMatchers } from '@tock/testing/matchers';
 import { of } from 'rxjs';
 
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { ScenarioService } from '../../services';
 import { ScenarioFiltersComponent } from './scenario-filters.component';
-import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
 
 describe('ScenarioFiltersComponent', () => {
   let component: ScenarioFiltersComponent;
@@ -25,7 +25,7 @@ describe('ScenarioFiltersComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        TestSharedModule,
+        TestingModule,
         NbButtonModule,
         NbCardModule,
         NbCheckboxModule,

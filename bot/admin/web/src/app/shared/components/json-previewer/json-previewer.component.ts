@@ -119,16 +119,10 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
     this.navigatorRef.clipboard
       .writeText(this.jsonFormat(this.jsonData))
       .then(() => {
-        this.toastrService.info(`The json has been copied successfully`, 'Copied', {
-          duration: 5000,
-          status: 'info'
-        });
+        this.toastrService.info(`The json has been copied successfully`, 'Copied', { duration: 5000 });
       })
       .catch(() => {
-        this.toastrService.danger(`An error has occurred`, 'Error', {
-          duration: 5000,
-          status: 'danger'
-        });
+        this.toastrService.danger(`An error has occurred`, 'Error', { duration: 5000 });
       });
   }
 

@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbCardModule, NbDialogRef, NbIconModule, NbInputModule } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
 
 import { ScenarioVersionExtended, SCENARIO_MODE, SCENARIO_STATE } from '../../../../scenarios/models';
 import { FormControlComponent } from '../../../../shared/components';
-import { TestSharedModule } from '../../../../../testing/test-shared.module';
 import { TriggerCreateComponent } from './trigger-create.component';
 
 const scenarioVersion: ScenarioVersionExtended = {
@@ -37,7 +37,7 @@ describe('EventCreateComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TriggerCreateComponent, FormControlComponent],
-      imports: [TestSharedModule, NbButtonModule, NbCardModule, NbIconModule, NbInputModule],
+      imports: [TestingModule, NbButtonModule, NbCardModule, NbIconModule, NbInputModule],
       providers: [
         {
           provide: NbDialogRef,

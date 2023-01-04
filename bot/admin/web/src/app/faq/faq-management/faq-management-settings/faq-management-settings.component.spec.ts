@@ -12,16 +12,16 @@ import {
   NbToastrService,
   NbTooltipModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { NbDialogServiceMock, NbToastrServiceMock, StateServiceMock } from '@tock/testing/mockedClass';
 import { of } from 'rxjs';
 
 import { BotService } from '../../../bot/bot-service';
 import { StateService } from '../../../core-nlp/state.service';
 import { FormControlComponent } from '../../../shared/components';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqService } from '../../services/faq.service';
 import { FaqManagementSettingsComponent } from './faq-management-settings.component';
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';
-import { NbDialogServiceMock, NbToastrServiceMock, StateServiceMock } from '../../../../testing/classMocked';
 
 const mockStories = [
   { _id: '1', name: 'story 1', category: 'category' } as StoryDefinitionConfigurationSummary,
@@ -55,7 +55,7 @@ describe('FaqManagementSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqManagementSettingsComponent, FormControlComponent],
       imports: [
-        TestSharedModule,
+        TestingModule,
         NbButtonModule,
         NbCardModule,
         NbCheckboxModule,

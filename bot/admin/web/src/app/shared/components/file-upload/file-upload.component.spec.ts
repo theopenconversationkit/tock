@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbIconModule, NbTooltipModule } from '@nebular/theme';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
+import { TestingModule } from '@tock/testing';
 
 import { FileUploadComponent } from './file-upload.component';
 
@@ -12,7 +12,7 @@ describe('FileUploadComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FileUploadComponent],
-      imports: [TestSharedModule, NbButtonModule, NbIconModule, NbTooltipModule]
+      imports: [TestingModule, NbButtonModule, NbIconModule, NbTooltipModule]
     }).compileComponents();
   });
 

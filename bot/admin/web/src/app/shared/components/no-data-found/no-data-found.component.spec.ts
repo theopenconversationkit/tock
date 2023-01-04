@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbCardModule } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
 
 import { NoDataFoundComponent } from './no-data-found.component';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 
 describe('NoDataFoundComponent', () => {
   let component: NoDataFoundComponent;
@@ -12,7 +12,7 @@ describe('NoDataFoundComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [NoDataFoundComponent],
-      imports: [TestSharedModule, NbCardModule]
+      imports: [TestingModule, NbCardModule]
     }).compileComponents();
   });
 

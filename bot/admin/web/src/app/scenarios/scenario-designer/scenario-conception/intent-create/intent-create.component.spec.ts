@@ -1,11 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
 import { EMPTY } from 'rxjs';
 
 import { StateService } from '../../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../../../testing/test-shared.module';
 import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
 import { IntentCreateComponent } from './intent-create.component';
 
@@ -69,7 +69,7 @@ describe('IntentCreateComponent', () => {
           }
         }
       ],
-      imports: [TestSharedModule],
+      imports: [TestingModule],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
   });

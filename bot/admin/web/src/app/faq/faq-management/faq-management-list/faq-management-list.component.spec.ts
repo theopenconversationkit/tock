@@ -9,13 +9,13 @@ import {
   NbToggleModule,
   NbTooltipModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { NbDialogServiceMock, StateServiceMock } from '@tock/testing/mockedClass';
 import { of } from 'rxjs';
 
 import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqManagementListComponent } from './faq-management-list.component';
 import { FaqDefinitionExtended } from '../faq-management.component';
-import { NbDialogServiceMock, StateServiceMock } from '../../../../testing/classMocked';
 
 const mockFaqs: FaqDefinitionExtended[] = [
   {
@@ -68,7 +68,7 @@ describe('FaqManagementListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FaqManagementListComponent],
-      imports: [TestSharedModule, NbIconModule, NbCardModule, NbButtonModule, NbTagModule, NbToggleModule, NbTooltipModule],
+      imports: [TestingModule, NbIconModule, NbCardModule, NbButtonModule, NbTagModule, NbToggleModule, NbTooltipModule],
       providers: [
         { provide: StateService, useClass: StateServiceMock },
         { provide: NbDialogService, useClass: NbDialogServiceMock }
