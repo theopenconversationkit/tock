@@ -54,10 +54,6 @@ testem.log
 /typings
 /node/node
 
-# e2e
-/e2e/*.js
-/e2e/*.map
-
 # System Files
 .DS_Store
 Thumbs.db
