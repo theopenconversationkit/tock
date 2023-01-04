@@ -522,6 +522,7 @@ object BotAdminService {
                 contexts = this.contexts,
                 actions = this.actions,
                 intentsContexts = this.intentsContexts,
+                unknownHandleConfiguration = unknownHandleConfiguration,
                 debug = this.debug
             )
             else -> error("unsupported type $this")

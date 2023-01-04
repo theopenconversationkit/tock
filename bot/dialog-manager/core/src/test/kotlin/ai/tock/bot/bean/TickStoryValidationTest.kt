@@ -308,5 +308,46 @@ class TickStoryValidationTest : DialogManagerTest() {
             assertEquals(expectedErrors.size, errors.size)
             assertTrue { errors.containsAll(expectedErrors) }
         }
+
+        @Test
+        fun invalidUnknownConfigAction() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-unknown-config")
+            val errors = TickStoryValidation.validateUnknownConfigActions(tickStory)
+
+            val expectedErrors = setOf(
+                TickStoryValidation.MessageProvider.UNKNOWN_ACTION_NOT_FOUND("unknown-action")
+            )
+            assertEquals(expectedErrors.size, errors.size)
+            assertTrue { errors.containsAll(expectedErrors) }
+        }
+
+        @Test
+        fun validUnknownConfigAction() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-valid-unknown-config")
+            val errors = TickStoryValidation.validateUnknownConfigActions(tickStory)
+
+            assertTrue { errors.isEmpty() }
+        }
+
+        @Test
+        fun validUnknownConfigIntent() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-valid-unknown-config")
+            val errors = TickStoryValidation.validateUnknownConfigIntents(tickStory)
+
+            assertTrue { errors.isEmpty() }
+        }
+
+        @Test
+        fun invalidUnknownConfigIntent() {
+            val tickStory = getTickStoryFromFile("validation", "tickStory-invalid-unknown-config")
+            val errors = TickStoryValidation.validateUnknownConfigIntents(tickStory)
+
+            val expectedErrors = setOf(
+                TickStoryValidation.MessageProvider.UNKNOWN_INTENT_NOT_IN_SECONDARY_INTENTS("unknown")
+            )
+            assertEquals(expectedErrors.size, errors.size)
+            assertTrue { errors.containsAll(expectedErrors) }
+        }
+
     }
 }

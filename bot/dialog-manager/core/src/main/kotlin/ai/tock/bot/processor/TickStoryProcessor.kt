@@ -46,14 +46,23 @@ class TickStoryProcessor(
     private var ranHandlers = session.ranHandlers.toMutableList()
     private val stateMachine: StateMachine = StateMachine(configuration.stateMachine)
     private var currentState = session.currentState ?: getGlobalState()
+    private var unknownHandlingStep = session.unknownHandlingStep
 
     /**
      * the main function to process the user action
      */
     fun process (tickUserAction : TickUserAction?): Pair<TickSession, Boolean> {
+
         logger.debug("objectivesStack: $objectivesStack")
 
+        // Handle unknown intent
+        var secondaryObjective = handleUnknown(tickUserAction)?.let {(session, objective) ->
+            if (session != null) return session to false
+            return@let objective
+        }
+
         val primaryObjective: String = if(tickUserAction != null) {
+
             updateContexts(tickUserAction)
 
             // Call to state machine to get the next state
@@ -67,7 +76,8 @@ class TickStoryProcessor(
 
         // Call to clyngor to get the secondary objective.
         // Randomly choose one among the multiple results
-        val secondaryObjective = GraphSolver.solve(
+
+        secondaryObjective = secondaryObjective ?: GraphSolver.solve(
             ranHandlers.lastOrNull(),
             configuration.actions,
             contextNames,
@@ -92,7 +102,6 @@ class TickStoryProcessor(
             getTickAction(primaryObjective),
             ranHandlers.toSet()
         ).random()
-
 
 
         // If the action has a trigger, the process method should be called with a new [TickUserAction] that have an intent corresponding to the trigger
@@ -243,14 +252,7 @@ class TickStoryProcessor(
             .intentsContexts
             .firstOrNull { it.intentName == intentName }
             ?.associations
-            ?.firstOrNull { it.actionName == ranHandlers.last {
-                // skip the unknown action
-                actionName -> actionName !in
-                    configuration
-                        .actions
-                        .filter {action -> action.unknown }
-                        .map { action -> action.name }
-            }}
+            ?.firstOrNull { it.actionName == ranHandlers.last()}
             ?.contextNames
             ?.associateWith { null }
             ?: emptyMap()
@@ -266,4 +268,23 @@ class TickStoryProcessor(
         val tickAction = configuration.actions.firstOrNull { it.name == actionName }
         return tickAction ?: error("TickAction <$actionName> not found")
     }
+
+    private fun handleUnknown(action: TickUserAction?): Pair<TickSession?, String?>? =
+        if (configuration.unknownHandleConfiguration.unknownIntents().contains(action?.intentName)) {
+            val (handlingStep, exitAction) = TickUnknownHandler.handle(
+                lastExecutedActionName = ranHandlers.last(),
+                unknownConfiguration = configuration.unknownHandleConfiguration,
+                sender = sender,
+                unknownHandlingStep = unknownHandlingStep
+            )
+
+            if (handlingStep != null) {
+                TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList(), unknownHandlingStep = handlingStep) to null
+            } else if (exitAction != null) {
+                 Pair(null, exitAction)
+            } else null
+        } else {
+            null
+        }
+
 }

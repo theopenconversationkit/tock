@@ -21,6 +21,7 @@ import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.bean.TickAction
 import ai.tock.bot.bean.TickContext
 import ai.tock.bot.bean.TickIntent
+import ai.tock.bot.bean.unknown.TickUnknownConfiguration
 import ai.tock.bot.statemachine.State
 
 data class BotTickAnswerConfiguration(val stateMachine: State,
@@ -30,6 +31,7 @@ data class BotTickAnswerConfiguration(val stateMachine: State,
                                       val contexts: Set<TickContext>,
                                       val actions: Set<TickAction>,
                                       val intentsContexts: Set<TickIntent>,
+                                      val unknownHandleConfiguration: TickUnknownConfiguration,
                                       val debug : Boolean) :
     BotAnswerConfiguration(AnswerConfigurationType.tick) {
 
@@ -40,5 +42,6 @@ data class BotTickAnswerConfiguration(val stateMachine: State,
         conf.contexts,
         conf.actions,
         conf.intentsContexts,
+        conf.unknownHandleConfiguration,
         conf.debug)
 }

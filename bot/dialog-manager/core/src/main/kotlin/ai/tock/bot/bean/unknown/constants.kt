@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.bean
+package ai.tock.bot.bean.unknown
 
-import ai.tock.bot.bean.unknown.TickUnknownConfiguration
-import ai.tock.bot.statemachine.State
-
-@kotlinx.serialization.Serializable
-data class TickConfiguration (
-    val stateMachine: State,
-    val contexts: Set<TickContext>,
-    val actions: Set<TickAction>,
-    val intentsContexts: Set<TickIntent>,
-    val unknownHandleConfiguration: TickUnknownConfiguration,
-    val debug: Boolean
-)
+const val UNKNOWN = "unknown"
+const val DEFAULT_RETRY_NB = 2
+const val RETRY_NB_EXCEEDED_MSG = ""
+const val CONFIG_MISMATCHED_MSG = ""

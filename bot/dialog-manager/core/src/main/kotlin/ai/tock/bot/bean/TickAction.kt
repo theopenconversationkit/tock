@@ -26,8 +26,7 @@ data class TickAction(
     val inputContextNames: Set<String>,
     val outputContextNames: Set<String>,
     val proceed: Boolean = false,
-    val final: Boolean,
-    val unknown: Boolean = false
+    val final: Boolean
 ){
     /**
      * The action is silent only if a handler or a trigger is provided

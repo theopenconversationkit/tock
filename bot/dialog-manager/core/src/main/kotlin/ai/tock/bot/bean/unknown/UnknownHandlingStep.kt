@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.bean
+package ai.tock.bot.bean.unknown
 
-import ai.tock.bot.bean.unknown.TickUnknownConfiguration
-import ai.tock.bot.statemachine.State
-
-@kotlinx.serialization.Serializable
-data class TickConfiguration (
-    val stateMachine: State,
-    val contexts: Set<TickContext>,
-    val actions: Set<TickAction>,
-    val intentsContexts: Set<TickIntent>,
-    val unknownHandleConfiguration: TickUnknownConfiguration,
-    val debug: Boolean
-)
+/**
+ * UnknownHandlingStep represents a step while a unknown intent is being handled
+ * @param repeated the number of repetition of this step
+ * @param answerConfig the unknown answer configuration attached to this step
+ */
+data class UnknownHandlingStep(
+    val repeated: Int = 1,
+    val answerConfig: UnknownAnswerConfig
+){
+    fun increment(): UnknownHandlingStep = this.copy(repeated = repeated + 1)
+}
