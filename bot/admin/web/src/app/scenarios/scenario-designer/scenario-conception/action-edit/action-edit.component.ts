@@ -36,6 +36,11 @@ export class ActionEditComponent implements OnInit {
   supportedLocales: string[] = [];
   showAnswersLocales: boolean = false;
 
+  constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {
+    this.currentLocale = state.currentLocale;
+    this.supportedLocales = state.currentApplication.supportedLocales;
+  }
+
   isSubmitted: boolean = false;
 
   form: FormGroup = new FormGroup({
@@ -85,11 +90,6 @@ export class ActionEditComponent implements OnInit {
   }
   get unknownAnswers(): FormArray {
     return this.form.get('unknownAnswers') as FormArray;
-  }
-
-  constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {
-    this.currentLocale = state.currentLocale;
-    this.supportedLocales = state.currentApplication.supportedLocales;
   }
 
   ngOnInit(): void {

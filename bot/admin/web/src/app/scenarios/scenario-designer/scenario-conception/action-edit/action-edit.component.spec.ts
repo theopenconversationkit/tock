@@ -2,25 +2,21 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
+import { UserInterfaceType } from 'src/app/core/model/configuration';
 import { StateService } from '../../../../core-nlp/state.service';
-import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE, ScenarioContext } from '../../../models';
+import { ScenarioVersion, SCENARIO_MODE, SCENARIO_STATE, ScenarioContext } from '../../../models';
 import { ActionEditComponent } from './action-edit.component';
 
-const scenarioMock = {
+const scenarioMock: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
-  name: 'testing scenario',
-  category: 'scenarios',
-  tags: ['testing'],
-  applicationId: '62558f21b318632c9200b567',
   creationDate: '2022-08-17T09:57:14.428Z',
   updateDate: '2022-08-17T09:57:33.053Z',
-  description: '',
   data: {
     mode: 'writing' as SCENARIO_MODE,
     scenarioItems: [
       {
         id: 0,
-        from: 'client' as ScenarioItemFrom,
+        from: 'client',
         text: 'Main intent',
         main: true,
         intentDefinition: { name: 'intent1', label: 'intent1', primary: true }
@@ -28,50 +24,51 @@ const scenarioMock = {
       {
         id: 1,
         text: 'action1',
-        from: 'bot' as ScenarioItemFrom,
+        from: 'bot',
         parentIds: [0],
         actionDefinition: {
           name: 'ACTION1',
           inputContextNames: [],
-          outputContextNames: ['TEST']
+          outputContextNames: ['TEST'],
+          answers: []
         }
       },
       {
         id: 2,
         text: 'action2',
-        from: 'bot' as ScenarioItemFrom,
+        from: 'bot',
         parentIds: [0, 1],
         actionDefinition: {
           name: 'ACTION2',
           inputContextNames: ['TEST'],
           outputContextNames: ['CONTEXT2'],
           answerId: '456',
-          answer: 'action2 answer'
+          answers: [{ locale: 'fr', interfaceType: UserInterfaceType.textChat, answer: 'action2 answer' }]
         }
       },
       {
         id: 3,
-        from: 'client' as ScenarioItemFrom,
+        from: 'client',
         text: 'Second intent',
         intentDefinition: { name: 'intent2', label: 'intent2', intentId: '123' }
       },
       {
         id: 4,
         text: 'action3',
-        from: 'bot' as ScenarioItemFrom,
+        from: 'bot',
         parentIds: [3]
       },
       {
         id: 5,
-        from: 'client' as ScenarioItemFrom,
+        from: 'client',
         text: 'Third intent'
       }
     ],
     contexts: [
       { name: 'TEST', type: 'string', entityType: 'hello', entityRole: 'world' },
-      { name: 'CONTEXT2', type: 'string' },
-      { name: 'CONTEXT3', type: 'string' },
-      { name: 'CONTEXT4', type: 'string' }
+      { name: 'CONTEXT2', type: 'string' as const },
+      { name: 'CONTEXT3', type: 'string' as const },
+      { name: 'CONTEXT4', type: 'string' as const }
     ],
     stateMachine: {
       id: 'root',
@@ -119,7 +116,9 @@ describe('ActionEditComponent', () => {
             },
             localeName: () => {
               return 'french';
-            }
+            },
+            currentLocale: 'fr',
+            supportedLocales: ['fr']
           }
         }
       ],
@@ -143,12 +142,12 @@ describe('ActionEditComponent', () => {
       description: null,
       handler: null,
       trigger: null,
-      answer: 'action2 answer',
+      answers: [{ locale: 'fr', interfaceType: UserInterfaceType.textChat, answer: 'action2 answer' }],
       answerId: '456',
       inputContextNames: ['TEST'],
       outputContextNames: ['CONTEXT2'],
       final: false,
-      unknownAnswers: [{ locale: 'fr' }]
+      unknownAnswers: [{ locale: 'fr', interfaceType: UserInterfaceType.textChat }]
     });
   });
 
