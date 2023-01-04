@@ -2,15 +2,15 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbSpinnerModule, NbToastrService, NbToggleModule } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { NbToastrServiceMock } from '@tock/testing/mockedClass';
 import { of, Subject } from 'rxjs';
 
 import { StateService } from '../../core-nlp/state.service';
 import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
-import { TestSharedModule } from '../../../testing/test-shared.module';
 import { Action } from '../models';
 import { FaqTrainingComponent, SentenceExtended } from './faq-training.component';
-import { NbToastrServiceMock } from '../../../testing/classMocked';
 
 const mockSentences: SentenceExtended[] = [
   {
@@ -110,7 +110,7 @@ describe('FaqTrainingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FaqTrainingComponent],
-      imports: [TestSharedModule, NbSpinnerModule, NbToggleModule],
+      imports: [TestingModule, NbSpinnerModule, NbToggleModule],
       providers: [
         { provide: NlpService, useClass: NlpServiceMock },
         { provide: StateService, useClass: StateServiceMock },

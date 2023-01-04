@@ -14,7 +14,7 @@ import {
   ScenarioVersionExtended,
   Handler
 } from '../../models';
-import { StateService } from 'src/app/core-nlp/state.service';
+import { StateService } from '../../../core-nlp/state.service';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../model/nlp';
 import {
   getContrastYIQ,

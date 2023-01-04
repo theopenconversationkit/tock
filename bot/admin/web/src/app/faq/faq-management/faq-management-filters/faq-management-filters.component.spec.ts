@@ -11,11 +11,11 @@ import {
   NbSelectModule,
   NbTooltipModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { SpyOnCustomMatchers } from '@tock/testing/matchers';
 
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqFilter } from '../../models';
 import { FaqManagementFiltersComponent } from './faq-management-filters.component';
-import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
 
 describe('FaqManagementFiltersComponent', () => {
   let component: FaqManagementFiltersComponent;
@@ -25,7 +25,7 @@ describe('FaqManagementFiltersComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqManagementFiltersComponent],
       imports: [
-        TestSharedModule,
+        TestingModule,
         NbButtonModule,
         NbCardModule,
         NbCheckboxModule,

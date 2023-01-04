@@ -2,13 +2,13 @@ import { NO_ERRORS_SCHEMA, SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
+import { NbDialogServiceMock } from '@tock/testing/mockedClass';
+import { SpyOnCustomMatchers } from '@tock/testing/matchers';
 import { of } from 'rxjs';
 
 import { ScenarioGroup } from '../../models';
 import { ScenarioService } from '../../services';
 import { ScenarioEditComponent } from './scenario-edit.component';
-import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
-import { NbDialogServiceMock } from '../../../../testing/classMocked';
 import { AutocompleteInputComponent, FormControlComponent } from '../../../shared/components';
 
 class MockScenarioService {

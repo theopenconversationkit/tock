@@ -2,9 +2,9 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { NbDialogRef } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { StateService } from 'src/app/core-nlp/state.service';
-import { SearchQuery } from 'src/app/model/nlp';
-import { NlpService } from 'src/app/nlp-tabs/nlp.service';
+import { StateService } from '../../../../core-nlp/state.service';
+import { SearchQuery } from '../../../../model/nlp';
+import { NlpService } from '../../../../nlp-tabs/nlp.service';
 import { ScenarioService } from '../../../services';
 
 @Component({

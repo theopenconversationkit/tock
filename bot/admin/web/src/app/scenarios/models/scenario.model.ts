@@ -1,4 +1,4 @@
-import { UserInterfaceType } from 'src/app/core/model/configuration';
+import { UserInterfaceType } from '../../core/model/configuration';
 import { Sentence } from '../../model/nlp';
 import { TempSentence } from './designer.model';
 

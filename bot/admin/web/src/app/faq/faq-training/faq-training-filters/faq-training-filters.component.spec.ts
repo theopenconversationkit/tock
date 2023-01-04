@@ -9,8 +9,8 @@ import {
   NbToggleModule,
   NbTooltipModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
 
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqTrainingFiltersComponent } from './faq-training-filters.component';
 
 describe('FaqTrainingFiltersComponent', () => {
@@ -21,7 +21,7 @@ describe('FaqTrainingFiltersComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqTrainingFiltersComponent],
       imports: [
-        TestSharedModule,
+        TestingModule,
         NbButtonModule,
         NbCardModule,
         NbFormFieldModule,

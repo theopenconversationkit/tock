@@ -6,7 +6,7 @@ import { ScenarioActionDefinition, ScenarioVersionExtended } from '../../models'
 import { svgPathRoundedCorners } from './utils';
 import { Edge, GraphEdge, graphlib, layout, Node } from 'dagre';
 import { CanvaAction, OffsetPosition } from '../../../shared/canvas/models';
-import { StateService } from 'src/app/core-nlp/state.service';
+import { StateService } from '../../../core-nlp/state.service';
 
 type GraphNode = Node & { name?: string; actionDef?: ScenarioActionDefinition; type?: string };
 

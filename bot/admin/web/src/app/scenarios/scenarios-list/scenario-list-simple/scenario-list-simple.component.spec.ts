@@ -16,16 +16,16 @@ import {
   NbToggleModule,
   NbTooltipModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { NbDialogServiceMock, StateServiceMock } from '@tock/testing/mockedClass';
 
 import { ScenarioListSimpleComponent } from './scenario-list-simple.component';
 import { ScenarioService } from '../../services';
 import { ScenarioGroupExtended, SCENARIO_STATE } from '../../models';
 import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { ScenarioDesignerComponent } from '../../scenario-designer/scenario-designer.component';
 import { ScenariosListComponent } from '../scenarios-list.component';
 import { SpyOnCustomMatchers } from '../../../../testing/matchers/custom-matchers';
-import { NbDialogServiceMock, StateServiceMock } from '../../../../testing/classMocked';
 
 const mockScenariosGroups: ScenarioGroupExtended[] = [
   {
@@ -133,7 +133,7 @@ describe('ScenarioListSimpleComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ScenarioListSimpleComponent],
       imports: [
-        TestSharedModule,
+        TestingModule,
         RouterTestingModule.withRoutes([
           { path: 'scenarios', component: ScenariosListComponent },
           { path: ':scenarioGroupId/:scenarioVersionId', component: ScenarioDesignerComponent },

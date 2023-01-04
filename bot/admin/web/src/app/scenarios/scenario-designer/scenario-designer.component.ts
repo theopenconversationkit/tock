@@ -25,7 +25,7 @@ import { I18nLabels } from '../../bot/model/i18n';
 import { FullscreenDirective } from '../../shared/directives';
 import { Handler } from '../models';
 import { deepCopy } from '../../shared/utils';
-import { UserInterfaceType } from 'src/app/core/model/configuration';
+import { UserInterfaceType } from '../../core/model/configuration';
 
 @Component({
   selector: 'scenario-designer',

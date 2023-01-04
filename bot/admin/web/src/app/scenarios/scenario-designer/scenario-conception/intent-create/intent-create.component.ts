@@ -2,7 +2,7 @@ import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 import { of, Subject } from 'rxjs';
-import { StateService } from 'src/app/core-nlp/state.service';
+import { StateService } from '../../../../core-nlp/state.service';
 import { Intent, nameFromQualifiedName } from '../../../../model/nlp';
 import { getScenarioIntentDefinitions, normalizedCamelCase } from '../../../commons/utils';
 import { ScenarioVersion, ScenarioItem } from '../../../models';

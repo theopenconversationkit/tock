@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbButtonModule, NbIconModule, NbSelectComponent, NbSelectModule, NbTooltipModule } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
 
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { Pagination, PaginationComponent } from './pagination.component';
 
 describe('PaginationComponent', () => {
@@ -12,7 +12,7 @@ describe('PaginationComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [PaginationComponent, NbSelectComponent],
-      imports: [TestSharedModule, NbButtonModule, NbIconModule, NbSelectModule, NbTooltipModule]
+      imports: [TestingModule, NbButtonModule, NbIconModule, NbSelectModule, NbTooltipModule]
     }).compileComponents();
   });
 

@@ -2,7 +2,7 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@ang
 import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
-import { StateService } from 'src/app/core-nlp/state.service';
+import { StateService } from '../../../core-nlp/state.service';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
 import {

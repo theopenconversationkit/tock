@@ -7,7 +7,7 @@ import { StateService } from '../../../../core-nlp/state.service';
 import { ScenarioVersion, ScenarioItem, ScenarioContext, Handler } from '../../../models';
 import { getContrastYIQ, getScenarioActionDefinitions, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
-import { UserInterfaceType } from 'src/app/core/model/configuration';
+import { UserInterfaceType } from '../../../../core/model/configuration';
 
 const ACTION_OR_CONTEXT_NAME_MINLENGTH = 5;
 

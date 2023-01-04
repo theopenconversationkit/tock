@@ -12,7 +12,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-import { StateService } from 'src/app/core-nlp/state.service';
+import { StateService } from '../../../../core-nlp/state.service';
 import { ScenarioItem, TempSentence, ScenarioContext, ScenarioVersionExtended } from '../../../models';
 import { Token } from '../../../../sentence-analysis/highlight/highlight.component';
 import { entityColor, EntityDefinition, Intent, qualifiedName, qualifiedRole, Sentence } from '../../../../model/nlp';

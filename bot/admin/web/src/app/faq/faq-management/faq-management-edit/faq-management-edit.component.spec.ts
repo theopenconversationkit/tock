@@ -19,17 +19,17 @@ import {
   NbTagModule,
   NbTooltipModule
 } from '@nebular/theme';
+import { TestingModule } from '@tock/testing';
+import { NbDialogServiceMock } from '@tock/testing/mockedClass';
 import { of } from 'rxjs';
 
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../../testing/test-shared.module';
 import { FaqManagementEditComponent, FaqTabs } from './faq-management-edit.component';
 import { FormControlComponent } from '../../../shared/components';
 import { DelayDirective } from '../../../shared/directives';
 import { FaqDefinitionExtended } from '../faq-management.component';
 import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../../model/nlp';
-import { NbDialogServiceMock } from '../../../../testing/classMocked';
 
 const mockSentences: Sentence[] = [
   {
@@ -143,7 +143,7 @@ describe('FaqManagementEditComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqManagementEditComponent, FormControlComponent, DelayDirective],
       imports: [
-        TestSharedModule,
+        TestingModule,
         NbAlertModule,
         NbAutocompleteModule,
         NbTabsetModule,

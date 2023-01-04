@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbAutocompleteModule, NbInputModule } from '@nebular/theme';
-import { TestSharedModule } from 'src/testing/test-shared.module';
+import { TestingModule } from '@tock/testing';
 
 import { AutocompleteInputComponent } from './autocomplete-input.component';
 
@@ -11,7 +11,7 @@ describe('AutocompleteInputComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AutocompleteInputComponent],
-      imports: [TestSharedModule, NbAutocompleteModule, NbInputModule]
+      imports: [TestingModule, NbAutocompleteModule, NbInputModule]
     }).compileComponents();
   });
 
