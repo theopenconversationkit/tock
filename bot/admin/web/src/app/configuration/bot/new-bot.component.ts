@@ -71,7 +71,8 @@ export class NewBotComponent implements OnInit {
       true,
       false,
       0.0,
-      false
+      false,
+      []
     );
     this.applicationService.saveApplication(newApp).subscribe((app) => {
       this.applicationService.refreshCurrentApplication(app);

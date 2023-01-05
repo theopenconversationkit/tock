@@ -21,7 +21,7 @@ package ai.tock.nlp.front.shared.namespace
  */
 data class NamespaceConfiguration(
    /**
-     * Rhe applications namespace
+     * The applications namespace
      */
     val namespace: String,
    /**

@@ -167,7 +167,7 @@ object AdminService {
 
     fun getApplicationWithIntents(application: ApplicationDefinition): ApplicationWithIntents {
         val intents = front.getIntentsByApplicationId(application._id).sortedBy { it.name }
-        return ApplicationWithIntents(application, intents)
+        return ApplicationWithIntents(application, intents, front.getModelSharedIntents(application.namespace))
     }
 
     fun createOrGetIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {

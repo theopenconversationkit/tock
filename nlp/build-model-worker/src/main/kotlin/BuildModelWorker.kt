@@ -82,7 +82,7 @@ class BuildModelWorker {
                 logger.trace { "New sentences : ${sentences.map { it.text }}" }
 
                 front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType, onlyIfNotExists)
-                sentences.groupBy { it.classification.intentId }.forEach { intentId, intentSentences ->
+                sentences.groupBy { it.classification.intentId }.forEach { (intentId, intentSentences) ->
                     logger.info { "start model update for ${app.name}, intent $intentId and ${key.language}" }
                     front.updateEntityModelForIntent(
                         intentSentences,

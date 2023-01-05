@@ -21,9 +21,9 @@ import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
 import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration_.Companion.DefaultSharingConfiguration
 import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration_.Companion.Namespace
 import ai.tock.nlp.front.shared.namespace.NamespaceSharingConfiguration
+import ai.tock.shared.watch
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.UpdateOptions
 import org.litote.kmongo.div
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -31,6 +31,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.or
+import org.litote.kmongo.reactivestreams.getCollection
 
 object NamespaceConfigurationMongoDAO : NamespaceConfigurationDAO {
 
@@ -40,6 +41,10 @@ object NamespaceConfigurationMongoDAO : NamespaceConfigurationDAO {
         c.ensureIndex(DefaultSharingConfiguration / NamespaceSharingConfiguration::model)
         c.ensureIndex(DefaultSharingConfiguration / NamespaceSharingConfiguration::stories)
         c
+    }
+
+    private val asyncCol by lazy {
+        MongoFrontConfiguration.asyncDatabase.getCollection<NamespaceConfiguration>()
     }
 
     override fun saveNamespaceConfiguration(configuration: NamespaceConfiguration) {
@@ -57,4 +62,8 @@ object NamespaceConfigurationMongoDAO : NamespaceConfigurationDAO {
             )
         )
             .toList()
+
+    override fun listenNamespaceConfigurationChanges(listener: () -> Unit) {
+        asyncCol.watch { listener() }
+    }
 }

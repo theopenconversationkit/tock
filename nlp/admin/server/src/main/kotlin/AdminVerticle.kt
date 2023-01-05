@@ -303,7 +303,11 @@ open class AdminVerticle : WebVerticle() {
                     || appWithSameName.normalizeText != newApp.normalizeText) {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))
                 }
-                ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id))
+                ApplicationWithIntents(
+                    newApp,
+                    front.getIntentsByApplicationId(newApp._id),
+                    front.getModelSharedIntents(application.namespace),
+                    )
             } else {
                 unauthorized()
             }

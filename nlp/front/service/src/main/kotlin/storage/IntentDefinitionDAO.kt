@@ -32,6 +32,8 @@ interface IntentDefinitionDAO {
 
     fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
+    fun getIntentsByNamespace(namespace: String): List<IntentDefinition>
+
     fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
 
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?

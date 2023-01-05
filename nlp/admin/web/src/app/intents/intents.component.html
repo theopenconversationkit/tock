@@ -64,8 +64,8 @@
           <span
             *ngIf="!row.data.expandable"
             class="intent_name"
-            nbTooltip="{{ row.data.name }}"
-            >{{ row.data.intentLabel() }}</span
+            nbTooltip="{{ row.data.qualifiedName() }}"
+            >{{ state.isOtherNamespaceIntent(row.data) ? row.data.qualifiedName() : row.data.intentLabel() }}</span
           >
           <div
             *ngIf="state.intentExistsInOtherApplication(row.data.name)"
@@ -116,7 +116,7 @@
                 >{{ e.qualifiedName(state.user) }}</span
               >
               <button
-                *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+                *ngIf="!state.intentExistsInOtherApplication(row.data.name) && !state.isOtherNamespaceIntent(row.data)"
                 nbButton
                 size="tiny"
                 ghost
@@ -147,6 +147,7 @@
         >
           <div *ngIf="!row.data.expandable">
             <button
+              *ngIf = "!state.isOtherNamespaceIntent(row.data)"
               [disabled]="selectedIntent == row.data"
               nbButton
               size="small"
@@ -162,7 +163,7 @@
               class="shared_list"
             >
               <mat-chip-list
-                *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+                *ngIf="!state.intentExistsInOtherApplication(row.data.name) && !state.isOtherNamespaceIntent(row.data)"
                 nbTooltip="Shared intent - click to remove"
               >
                 <mat-chip
@@ -175,7 +176,7 @@
                 </mat-chip>
               </mat-chip-list>
               <mat-chip-list
-                *ngIf="state.intentExistsInOtherApplication(row.data.name)"
+                *ngIf="state.intentExistsInOtherApplication(row.data.name) && !state.isOtherNamespaceIntent(row.data)"
                 nbTooltip="Shared intent"
               >
                 <mat-chip
@@ -205,7 +206,7 @@
         >
           <div *ngIf="!row.data.expandable">
             <button
-              *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+              *ngIf="!state.intentExistsInOtherApplication(row.data.name) && !state.isOtherNamespaceIntent(row.data)"
               nbButton
               size="small"
               ghost
@@ -220,7 +221,7 @@
               class="shared_list"
             >
               <mat-chip-list
-                *ngIf="!state.intentExistsInOtherApplication(row.data.name)"
+                *ngIf="!state.intentExistsInOtherApplication(row.data.name) && !state.isOtherNamespaceIntent(row.data)"
                 nbTooltip="Mandatory states - click to delete"
               >
                 <br />
@@ -234,7 +235,7 @@
                 </mat-chip>
               </mat-chip-list>
               <mat-chip-list
-                *ngIf="state.intentExistsInOtherApplication(row.data.name)"
+                *ngIf="state.intentExistsInOtherApplication(row.data.name) && !state.isOtherNamespaceIntent(row.data)"
                 matTooltip="Mandatory states"
               >
                 <br />
@@ -263,7 +264,7 @@
           *nbTreeGridCellDef="let row"
           class="actions"
         >
-          <div *ngIf="!row.data.expandable">
+          <div *ngIf="!row.data.expandable && !state.isOtherNamespaceIntent(row.data)">
             <button
               nbButton
               outline

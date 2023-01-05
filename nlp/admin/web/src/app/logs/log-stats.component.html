@@ -24,7 +24,7 @@
     >
       <nb-option value="_all_">All</nb-option>
       <nb-option-group
-        *ngFor="let category of state.currentIntentsCategories | async"
+        *ngFor="let category of state.currentNamespaceIntentsCategories | async"
         [title]="category.category"
       >
         <nb-option

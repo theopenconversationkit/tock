@@ -36,6 +36,7 @@ import org.litote.kmongo.`in`
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
+import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -66,6 +67,9 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
     override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
         return col.find(Applications contains applicationId).toList()
     }
+
+    override fun getIntentsByNamespace(namespace: String): List<IntentDefinition> =
+        col.find(Namespace eq namespace).toList()
 
     override fun getIntentsByApplicationIdAndCategory(applicationId: Id<ApplicationDefinition>, category:String): List<IntentDefinition> {
         return col.find(Applications contains applicationId).filter(Category eq category).toList()

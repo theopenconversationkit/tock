@@ -28,4 +28,9 @@ interface NamespaceConfigurationDAO {
     fun getNamespaceConfiguration(namespace: String) : NamespaceConfiguration?
 
     fun getSharableNamespaceConfiguration() : List<NamespaceConfiguration>
+
+    /**
+     * Listen changes on namespace configurations.
+     */
+    fun listenNamespaceConfigurationChanges(listener: () -> Unit)
 }
