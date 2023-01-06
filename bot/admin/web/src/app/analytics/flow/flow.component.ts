@@ -31,12 +31,7 @@ import { entityColor } from '../../model/nlp';
 import { KeyValue } from '@angular/common';
 import { NodeTransition, NodeTypeFilter, NodeTypeFilters, StoryNode } from './node';
 import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
-import {
-  AnswerConfigurationType,
-  StoryDefinitionConfiguration,
-  StorySearchQuery,
-  StoryStep
-} from '../../bot/model/story';
+import { AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep } from '../../bot/model/story';
 import { Subscription } from 'rxjs';
 import { NbToastrService } from '@nebular/theme';
 import { ChartData } from '../chart/ChartData';
@@ -226,13 +221,7 @@ export class FlowComponent implements OnInit, OnDestroy {
           this.analytics.getApplicationFlow(request).subscribe((f) => {
             this.loading = false;
             this.userFlow = f;
-            console.debug(
-              'Application flow retrieved, incl. ' +
-                f.states.length +
-                ' states ' +
-                f.transitions.length +
-                ' transitions.'
-            );
+            console.debug('Application flow retrieved, incl. ' + f.states.length + ' states ' + f.transitions.length + ' transitions.');
             this.reset();
           });
         }
@@ -254,12 +243,7 @@ export class FlowComponent implements OnInit, OnDestroy {
             this.loading = false;
             this.allStories = s;
             this.configuredStories = s.filter((story) => !story.isBuiltIn());
-            console.debug(
-              this.allStories.length +
-                ' stories retrieved, incl. ' +
-                this.configuredStories.length +
-                ' configured stories.'
-            );
+            console.debug(this.allStories.length + ' stories retrieved, incl. ' + this.configuredStories.length + ' configured stories.');
             this.buildStaticFlowFromStories();
             this.reset();
           });
@@ -300,19 +284,8 @@ export class FlowComponent implements OnInit, OnDestroy {
     const transitions: DialogFlowStateTransitionData[] = [];
     this.allStories.forEach((s) => {
       intentStoryMap.set(s.intent.name, s);
-      states.push(
-        new DialogFlowStateData(s._id, s.intent.name, [], null, s.currentType, s.name, 0, s._id)
-      );
-      transitions.push(
-        new DialogFlowStateTransitionData(
-          s._id,
-          [],
-          DialogFlowStateTransitionType.nlp,
-          null,
-          null,
-          0
-        )
-      );
+      states.push(new DialogFlowStateData(s._id, s.intent.name, [], null, s.currentType, s.name, 0, s._id));
+      transitions.push(new DialogFlowStateTransitionData(s._id, [], DialogFlowStateTransitionType.nlp, null, null, 0));
     });
 
     this.allStories.forEach((s) => {
@@ -322,14 +295,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         const targetStory = intentStoryMap.get(i);
         if (targetStory) {
           transitions.push(
-            new DialogFlowStateTransitionData(
-              targetStory.intent.name,
-              [],
-              DialogFlowStateTransitionType.nlp,
-              s.intent.name,
-              null,
-              0
-            )
+            new DialogFlowStateTransitionData(targetStory.intent.name, [], DialogFlowStateTransitionType.nlp, s.intent.name, null, 0)
           );
         }
       });
@@ -392,9 +358,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         if (
           this.statsMode ||
           this.displayDisabled ||
-          !this.allStories
-            .find((aStory) => aStory._id == s._id)
-            .isDisabled(this.selectedConnectorId)
+          !this.allStories.find((aStory) => aStory._id == s._id).isDisabled(this.selectedConnectorId)
         ) {
           if (this.statsEntity() && this.statsStep() && this.intent) {
             const node = new StoryNode(
@@ -512,12 +476,8 @@ export class FlowComponent implements OnInit, OnDestroy {
       nodesByIndex.forEach((s) => {
         NodeTypeFilters.forEach((f) => {
           if (f.filter(s)) {
-            if (!f.alwaysDisplay && !this.typeFilters.find((filter) => filter == f))
-              this.typeFilters.push(f);
-            this.typeFilterCounters.set(
-              f,
-              this.typeFilterCounters.has(f) ? this.typeFilterCounters.get(f) + 1 : 1
-            );
+            if (!f.alwaysDisplay && !this.typeFilters.find((filter) => filter == f)) this.typeFilters.push(f);
+            this.typeFilterCounters.set(f, this.typeFilterCounters.has(f) ? this.typeFilterCounters.get(f) + 1 : 1);
           }
         });
         if (this.minimalNodeCount <= s.count && this.selectedTypeFilter.filter(s)) {
@@ -525,11 +485,10 @@ export class FlowComponent implements OnInit, OnDestroy {
         }
       });
       if (finalNodes.length < 1) {
-        this.toastrService.show(
-          'Please change options to find nodes to render.',
-          'No node to render',
-          { duration: 5000, status: 'warning' }
-        );
+        this.toastrService.show('Please change options to find nodes to render.', 'No node to render', {
+          duration: 5000,
+          status: 'warning'
+        });
       } else {
         //4 create transitions
         const countTransitionByStartId = [];
@@ -564,23 +523,14 @@ export class FlowComponent implements OnInit, OnDestroy {
           const nextId = next.index;
           const finalPrev = prev ? finalNodes[prev.index] : null;
           const finalNext = finalNodes[nextId];
-          const percentage =
-            Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
-          if (
-            (this.recursive || prev !== next) &&
-            finalNodes[nextId] &&
-            (t.previousId === -1 || finalNodes[prevId])
-          ) {
+          const percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
+          if ((this.recursive || prev !== next) && finalNodes[nextId] && (t.previousId === -1 || finalNodes[prevId])) {
             if (
               !this.statsMode ||
               (percentage >= this.minimalTransitionPercentage &&
                 (!this.selectedStory ||
-                  (!displayOnlyPrev &&
-                    finalPrev &&
-                    finalPrev.storyDefinitionId === this.selectedStory._id) ||
-                  (!displayOnlyNext &&
-                    finalNext &&
-                    finalNext.storyDefinitionId === this.selectedStory._id)))
+                  (!displayOnlyPrev && finalPrev && finalPrev.storyDefinitionId === this.selectedStory._id) ||
+                  (!displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStory._id)))
             ) {
               finalTransitions.set(k, t);
             }
@@ -590,12 +540,8 @@ export class FlowComponent implements OnInit, OnDestroy {
         //6 filter by selected story and create graph nodes
         let addStartup = true;
         const tmpFinalStates = [];
-        const theMinCount = finalNodes.reduce((prev, current) =>
-          prev.count < current.count ? prev : current
-        ).count;
-        const theMaxCount = finalNodes.reduce((prev, current) =>
-          prev.count > current.count ? prev : current
-        ).count;
+        const theMinCount = finalNodes.reduce((prev, current) => (prev.count < current.count ? prev : current)).count;
+        const theMaxCount = finalNodes.reduce((prev, current) => (prev.count > current.count ? prev : current)).count;
         if (this.statsMode) {
           console.debug('Node min visits: ' + theMinCount);
           console.debug('Node max visits: ' + theMaxCount);
@@ -613,14 +559,9 @@ export class FlowComponent implements OnInit, OnDestroy {
                   const next = finalNodes[t.nextId];
                   const prevId = prev ? prev.index : -1;
                   if (
-                    ((!displayOnlyNext && prev && prevId === s.index) ||
-                      (!displayOnlyPrev && next && next.index === s.index)) &&
-                    ((!displayOnlyPrev &&
-                      prev &&
-                      prev.storyDefinitionId === this.selectedStory._id) ||
-                      (!displayOnlyNext &&
-                        next &&
-                        next.storyDefinitionId === this.selectedStory._id))
+                    ((!displayOnlyNext && prev && prevId === s.index) || (!displayOnlyPrev && next && next.index === s.index)) &&
+                    ((!displayOnlyPrev && prev && prev.storyDefinitionId === this.selectedStory._id) ||
+                      (!displayOnlyNext && next && next.storyDefinitionId === this.selectedStory._id))
                   ) {
                     include = true;
                   }
@@ -631,9 +572,7 @@ export class FlowComponent implements OnInit, OnDestroy {
           if (include) {
             addStartup = false;
             tmpFinalStates[s.index] = s;
-            const theScore = this.statsMode
-              ? Math.round(((s.count - theMinCount) * 100.0) / (theMaxCount - theMinCount))
-              : 0;
+            const theScore = this.statsMode ? Math.round(((s.count - theMinCount) * 100.0) / (theMaxCount - theMinCount)) : 0;
             const theNodeName =
               s.nodeName() +
               (this.displayNodeType
@@ -646,9 +585,7 @@ export class FlowComponent implements OnInit, OnDestroy {
               (this.displayNodeCount ? ' (x' + this.displayCount(s.count) + ')' : '') +
               (!this.statsMode &&
               this.displayDisabled &&
-              this.allStories
-                .find((aStory) => aStory._id == s.storyDefinitionId)
-                .isDisabled(this.selectedConnectorId)
+              this.allStories.find((aStory) => aStory._id == s.storyDefinitionId).isDisabled(this.selectedConnectorId)
                 ? ' 🚫'
                 : '');
             graph.nodes.push({
@@ -676,8 +613,7 @@ export class FlowComponent implements OnInit, OnDestroy {
             const prev = nodesByIndex.get(t.previousId);
             const next = nodesByIndex.get(t.nextId);
             const prevId = prev ? prev.index : -1;
-            let percentage =
-              Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
+            let percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
             let fPrev = finalNodes[prevId];
             let fNext = finalNodes[next.index];
             if (
@@ -748,9 +684,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         if (result != null) {
           trByNodeNamesIndex.set(mapKey, count + result);
         } else {
-          let element = Array.from(trByNodeNamesIndex.keys()).find((key) =>
-            key.startsWith(destNodeName)
-          );
+          let element = Array.from(trByNodeNamesIndex.keys()).find((key) => key.startsWith(destNodeName));
           if (element == null) {
             trByNodeNamesIndex.set(mapKey, count);
           }

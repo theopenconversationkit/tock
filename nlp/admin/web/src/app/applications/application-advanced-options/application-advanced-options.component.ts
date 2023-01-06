@@ -18,11 +18,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { StateService } from '../../core-nlp/state.service';
-import {
-  Application,
-  NlpApplicationConfiguration,
-  NlpModelConfiguration
-} from '../../model/application';
+import { Application, NlpApplicationConfiguration, NlpModelConfiguration } from '../../model/application';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { saveAs } from 'file-saver-es';
 import { ApplicationScopedQuery } from '../../model/commons';
@@ -70,18 +66,12 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   triggerBuild() {
     this.applicationService
       .triggerBuild(this.application)
-      .subscribe((_) =>
-        this.toastrService.show(`Application build started`, 'Build', { duration: 2000 })
-      );
+      .subscribe((_) => this.toastrService.show(`Application build started`, 'Build', { duration: 2000 }));
   }
 
   downloadAlexaExport() {
     setTimeout((_) => {
-      const query = new ApplicationScopedQuery(
-        this.application.namespace,
-        this.application.name,
-        this.alexaLocale
-      );
+      const query = new ApplicationScopedQuery(this.application.namespace, this.application.name, this.alexaLocale);
       this.applicationService.getAlexaExport(query).subscribe((blob) => {
         this.exportAlexa = false;
         saveAs(blob, this.application.name + '_alexa.json');
@@ -91,13 +81,11 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   }
 
   displayConfiguration() {
-    this.applicationService
-      .getNlpConfiguration(this.application._id, this.application.nlpEngineType)
-      .subscribe((m) => {
-        this.tokenizerProperties = m.tokenizerConfiguration.toProperties();
-        this.intentClassifierProperties = m.intentConfiguration.toProperties();
-        this.entityClassifierProperties = m.entityConfiguration.toProperties();
-      });
+    this.applicationService.getNlpConfiguration(this.application._id, this.application.nlpEngineType).subscribe((m) => {
+      this.tokenizerProperties = m.tokenizerConfiguration.toProperties();
+      this.intentClassifierProperties = m.intentConfiguration.toProperties();
+      this.entityClassifierProperties = m.entityConfiguration.toProperties();
+    });
   }
 
   updateConfiguration() {
@@ -106,12 +94,10 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
       NlpModelConfiguration.parseProperties(this.intentClassifierProperties),
       NlpModelConfiguration.parseProperties(this.entityClassifierProperties)
     );
-    this.applicationService
-      .updateModelConfiguration(this.application._id, this.application.nlpEngineType, m)
-      .subscribe((_) => {
-        this.tokenizerProperties = null;
-        this.intentClassifierProperties = null;
-        this.entityClassifierProperties = null;
-      });
+    this.applicationService.updateModelConfiguration(this.application._id, this.application.nlpEngineType, m).subscribe((_) => {
+      this.tokenizerProperties = null;
+      this.intentClassifierProperties = null;
+      this.entityClassifierProperties = null;
+    });
   }
 }

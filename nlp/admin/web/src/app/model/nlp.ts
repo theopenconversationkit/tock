@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ApplicationScopedQuery,
-  Entry,
-  isNullOrUndefined,
-  JsonUtils,
-  PaginatedQuery,
-  SearchMark
-} from './commons';
+import { ApplicationScopedQuery, Entry, isNullOrUndefined, JsonUtils, PaginatedQuery, SearchMark } from './commons';
 import { User } from './auth';
 import { StateService } from '../core-nlp/state.service';
 
@@ -72,32 +65,17 @@ export class EntityDefinition {
 }
 
 export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
-  constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public entity: EntityDefinition
-  ) {
+  constructor(public namespace: string, public applicationName: string, public language: string, public entity: EntityDefinition) {
     super(namespace, applicationName, language);
   }
 }
 
 export class PredefinedValueQuery {
-  constructor(
-    public entityTypeName: string,
-    public predefinedValue: string,
-    public locale: string,
-    public oldPredefinedValue?: string
-  ) {}
+  constructor(public entityTypeName: string, public predefinedValue: string, public locale: string, public oldPredefinedValue?: string) {}
 }
 
 export class PredefinedLabelQuery {
-  constructor(
-    public entityTypeName: string,
-    public predefinedValue: string,
-    public locale: string,
-    public label: string
-  ) {}
+  constructor(public entityTypeName: string, public predefinedValue: string, public locale: string, public label: string) {}
 }
 
 export class EntityType {
@@ -138,20 +116,14 @@ export class EntityType {
   }
 
   addEntity(entity: EntityDefinition) {
-    if (
-      !this.subEntities.some(
-        (e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role
-      )
-    ) {
+    if (!this.subEntities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
       this.subEntities.push(entity);
       EntityDefinition.sortEntities(this.subEntities);
     }
   }
 
   allSuperEntities(entityTypes: EntityType[], set: Set<EntityType>): Set<EntityType> {
-    const r = entityTypes.filter(
-      (e) => !set.has(e) && e.subEntities.find((sub) => sub.entityTypeName === this.name)
-    );
+    const r = entityTypes.filter((e) => !set.has(e) && e.subEntities.find((sub) => sub.entityTypeName === this.name));
     r.forEach((e) => set.add(e));
     r.forEach((e) => e.allSuperEntities(entityTypes, set));
     return set;
@@ -162,9 +134,7 @@ export class EntityType {
   }
 
   containsSuperEntity(superEntity: EntityDefinition, entityTypes: EntityType[]): boolean {
-    return this.allSuperEntities(entityTypes, new Set()).has(
-      entityTypes.find((e) => e.name === superEntity.entityTypeName)
-    );
+    return this.allSuperEntities(entityTypes, new Set()).has(entityTypes.find((e) => e.name === superEntity.entityTypeName));
   }
 
   static fromJSON(json?: any): EntityType {
@@ -201,9 +171,7 @@ export class Dictionary {
     const value = Object.create(Dictionary.prototype);
 
     const result = Object.assign(value, json, {
-      values: PredefinedValue.fromJSONArray(json.values).sort((a, b) =>
-        a.value.localeCompare(b.value)
-      )
+      values: PredefinedValue.fromJSONArray(json.values).sort((a, b) => a.value.localeCompare(b.value))
     });
 
     return result;
@@ -221,14 +189,7 @@ export abstract class EntityContainer {
     if (!this.editedSubEntities) {
       this.editedSubEntities = this.getEntities()
         .filter((e) => e.subEntities.length !== 0)
-        .map(
-          (e) =>
-            new EntityWithSubEntities(
-              this.getText().substring(e.start, e.end),
-              e,
-              this.rootEntity() ? this.rootEntity() : e
-            )
-        );
+        .map((e) => new EntityWithSubEntities(this.getText().substring(e.start, e.end), e, this.rootEntity() ? this.rootEntity() : e));
     }
     return this.editedSubEntities;
   }
@@ -246,9 +207,7 @@ export abstract class EntityContainer {
       );
     }
     this.editedSubEntities.push(e);
-    this.editedSubEntities.sort((e1, e2) =>
-      e1.start < e2.start ? -1 : e1.start > e2.start ? 1 : 0
-    );
+    this.editedSubEntities.sort((e1, e2) => (e1.start < e2.start ? -1 : e1.start > e2.start ? 1 : 0));
     return e;
   }
 
@@ -348,17 +307,11 @@ export class Intent {
   }
 
   removeEntity(entity: EntityDefinition) {
-    this.entities = this.entities.filter(
-      (e) => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role
-    );
+    this.entities = this.entities.filter((e) => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role);
   }
 
   addEntity(entity: EntityDefinition) {
-    if (
-      !this.entities.some(
-        (e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role
-      )
-    ) {
+    if (!this.entities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
       this.entities.push(entity);
       EntityDefinition.sortEntities(this.entities);
     }
@@ -409,9 +362,7 @@ export class Sentence extends EntityContainer {
   getIntentLabel(state: StateService): string {
     if (!this.intentLabel) {
       const intent = state.findIntentById(this.classification.intentId);
-      this.intentLabel = intent ?
-        intent.label ? intent.label : intent.name :
-        nameFromQualifiedName(Intent.unknown);
+      this.intentLabel = intent ? (intent.label ? intent.label : intent.name) : nameFromQualifiedName(Intent.unknown);
     }
     return this.intentLabel;
   }
@@ -484,11 +435,7 @@ export class Sentence extends EntityContainer {
 
     // Keep only entities compatible with newer intent
     const newIntent = state.findIntentById(intentId);
-    newSentence.classification.entities =
-      this
-        .classification
-        .entities
-        .filter(e => newIntent && newIntent.containsEntity(e.type, e.role));
+    newSentence.classification.entities = this.classification.entities.filter((e) => newIntent && newIntent.containsEntity(e.type, e.role));
     return newSentence;
   }
 
@@ -831,12 +778,7 @@ export class SearchQuery extends PaginatedQuery {
 }
 
 export class SentencesTextQuery extends ApplicationScopedQuery {
-  constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public texts?: string[]
-  ) {
+  constructor(public namespace: string, public applicationName: string, public language: string, public texts?: string[]) {
     super(namespace, applicationName, language);
   }
 }
@@ -849,12 +791,7 @@ export interface PaginatedResult<T> {
 }
 
 export class SentencesResult implements PaginatedResult<Sentence> {
-  constructor(
-    public rows: Sentence[],
-    public total: number,
-    public start: number,
-    public end: number
-  ) {}
+  constructor(public rows: Sentence[], public total: number, public start: number, public end: number) {}
 
   static fromJSON(json?: any): SentencesResult {
     const value = Object.create(SentencesResult.prototype);
@@ -1052,31 +989,13 @@ export class EntityTestError {
 }
 
 export class TestErrorQuery extends PaginatedQuery {
-  static createWithoutSize(
-    stateService: StateService,
-    intentName: string,
-    after?: Date
-  ): TestErrorQuery {
+  static createWithoutSize(stateService: StateService, intentName: string, after?: Date): TestErrorQuery {
     return TestErrorQuery.create(stateService, 0, undefined, intentName, after);
   }
 
-  static create(
-    stateService: StateService,
-    start: number,
-    size?: number,
-    intentName?: string,
-    after?: Date
-  ): TestErrorQuery {
+  static create(stateService: StateService, start: number, size?: number, intentName?: string, after?: Date): TestErrorQuery {
     const p = stateService.createPaginatedQuery(start, size);
-    return new TestErrorQuery(
-      p.namespace,
-      p.applicationName,
-      p.language,
-      p.start,
-      p.size,
-      intentName,
-      after
-    );
+    return new TestErrorQuery(p.namespace, p.applicationName, p.language, p.start, p.size, intentName, after);
   }
 
   constructor(
@@ -1118,12 +1037,7 @@ export class TestBuildStat {
 }
 
 export class IntentQA {
-  constructor(
-    public intent1: string,
-    public intent2: string,
-    public occurrences: number,
-    public average: number
-  ) {}
+  constructor(public intent1: string, public intent2: string, public occurrences: number, public average: number) {}
 
   static fromJSON(json?: any): IntentQA {
     const value = Object.create(IntentQA.prototype);
@@ -1295,11 +1209,7 @@ export function nameFromQualifiedName(qualifiedName: string): string {
   return qualifiedName ? qualifiedName.split(':')[1] : 'error';
 }
 
-export function getRoles(
-  intents: Intent[],
-  entityTypes: EntityType[],
-  entityType?: string
-): string[] {
+export function getRoles(intents: Intent[], entityTypes: EntityType[], entityType?: string): string[] {
   const roles = new Set<string>();
   intents.forEach((intent) =>
     intent.entities.forEach((entity) => {

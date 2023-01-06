@@ -110,9 +110,7 @@ export class ApplicationComponent implements OnInit {
         status: 'warning'
       });
     } else {
-      this.application.nlpEngineType = this.state.supportedNlpEngines.find(
-        (e) => e.name === this.nlpEngineType
-      );
+      this.application.nlpEngineType = this.state.supportedNlpEngines.find((e) => e.name === this.nlpEngineType);
       this.applicationService.saveApplication(this.application).subscribe(
         (app) => {
           this.applicationService.refreshCurrentApplication(app);
@@ -157,11 +155,10 @@ export class ApplicationComponent implements OnInit {
       if (result === 'delete') {
         this.applicationService.deleteApplication(this.application).subscribe((result) => {
           if (result) {
-            this.toastrService.show(
-              `Application ${this.application.name} deleted`,
-              'Delete Application',
-              { duration: 2000, status: 'success' }
-            );
+            this.toastrService.show(`Application ${this.application.name} deleted`, 'Delete Application', {
+              duration: 2000,
+              status: 'success'
+            });
             this.state.resetConfiguration();
           } else {
             this.toastrService.show(`Delete Application ${this.application.name} failed`, 'Error', {

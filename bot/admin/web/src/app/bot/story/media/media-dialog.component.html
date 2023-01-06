@@ -127,19 +127,20 @@
         <!--- Description -->
         <span
           *ngIf="media.file"
-          class="nb-form-field inline">
-            <label>File Description</label>
-            <input
-              nbInput
-              type="text"
-              name="description"
-              placeholder="Description"
-              [(ngModel)]="media.file.descriptionLabel"
-              class="width-50"
-              nbTooltip="File Description"
-            />
-          </span>
-        <hr/>
+          class="nb-form-field inline"
+        >
+          <label>File Description</label>
+          <input
+            nbInput
+            type="text"
+            name="description"
+            placeholder="Description"
+            [(ngModel)]="media.file.descriptionLabel"
+            class="width-50"
+            nbTooltip="File Description"
+          />
+        </span>
+        <hr />
         <!-- actions -->
         <div class="actions">
           <h6>Actions</h6>

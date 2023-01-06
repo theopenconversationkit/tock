@@ -17,7 +17,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
-import {NamespaceConfiguration, NamespaceSharingConfiguration, UserNamespace} from '../../model/application';
+import { NamespaceConfiguration, NamespaceSharingConfiguration, UserNamespace } from '../../model/application';
 import { AuthService } from '../../core-nlp/auth/auth.service';
 import { NbToastrService } from '@nebular/theme';
 import { UserRole } from '../../model/auth';
@@ -60,9 +60,7 @@ export class NamespacesComponent implements OnInit {
   selectNamespace(namespace: string) {
     this.applicationService
       .selectNamespace(namespace)
-      .subscribe((_) =>
-        this.authService.loadUser().subscribe((_) => this.applicationService.resetConfiguration)
-      );
+      .subscribe((_) => this.authService.loadUser().subscribe((_) => this.applicationService.resetConfiguration));
   }
 
   canCreateNamespace(): boolean {
@@ -101,9 +99,7 @@ export class NamespacesComponent implements OnInit {
   }
 
   deleteUserNamespace(userNamespace: UserNamespace) {
-    this.applicationService
-      .deleteNamespace(userNamespace)
-      .subscribe((_) => this.manageUsers(userNamespace.namespace));
+    this.applicationService.deleteNamespace(userNamespace).subscribe((_) => this.manageUsers(userNamespace.namespace));
   }
 
   addUserNamespace() {
@@ -111,9 +107,7 @@ export class NamespacesComponent implements OnInit {
       this.toastrService.show('Please enter a non empty login');
     } else {
       this.applicationService
-        .saveNamespace(
-          new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false)
-        )
+        .saveNamespace(new UserNamespace(this.managedNamespace, this.newLogin, this.newOwner, false))
         .subscribe((_) => this.manageUsers(this.managedNamespace));
     }
   }
@@ -127,12 +121,8 @@ export class NamespacesComponent implements OnInit {
   manageSharingSettings(namespace: string) {
     this.applicationService.getNamespaceConfiguration(namespace).subscribe((config) => {
       this.closeManageUsers();
-      this.namespaceConfiguration = config ??
-        new NamespaceConfiguration(
-          namespace,
-          new NamespaceSharingConfiguration(false, false),
-          new Map()
-        );
+      this.namespaceConfiguration =
+        config ?? new NamespaceConfiguration(namespace, new NamespaceSharingConfiguration(false, false), new Map());
       this.managedNamespace = namespace;
       this.importedNamespaces = Array.from(this.namespaceConfiguration.namespaceImportConfiguration.keys());
       this.applicationService.getSharableNamespaceConfiguration().subscribe((configs) => {
@@ -142,12 +132,9 @@ export class NamespacesComponent implements OnInit {
   }
 
   saveNamespaceConfiguration() {
-      this.namespaceConfiguration.namespaceImportConfiguration = new Map(
-        this.sharableNamespaceConfigurations.map(c => [c.namespace, c.defaultSharingConfiguration])
-      );
-      this.applicationService
-        .saveNamespaceConfiguration(this.namespaceConfiguration)
-        .subscribe((_) => this.closeSharingSettings());
-    }
-
+    this.namespaceConfiguration.namespaceImportConfiguration = new Map(
+      this.sharableNamespaceConfigurations.map((c) => [c.namespace, c.defaultSharingConfiguration])
+    );
+    this.applicationService.saveNamespaceConfiguration(this.namespaceConfiguration).subscribe((_) => this.closeSharingSettings());
+  }
 }

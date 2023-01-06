@@ -58,10 +58,8 @@ export class AuthService {
   }
 
   authenticate(email: string, password: string): Observable<boolean> {
-    return this.rest.postNotAuthenticated(
-      '/authenticate',
-      new AuthenticateRequest(email, password),
-      (j) => this.login(AuthenticateResponse.fromJSON(j))
+    return this.rest.postNotAuthenticated('/authenticate', new AuthenticateRequest(email, password), (j) =>
+      this.login(AuthenticateResponse.fromJSON(j))
     );
   }
 

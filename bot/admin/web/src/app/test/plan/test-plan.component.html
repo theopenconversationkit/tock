@@ -181,9 +181,7 @@
                 Hide Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
               </button>
             </span>
-            <span *ngIf="p.dialogs.length === 0">
-              - you can add dialogs via the Analytics menu.
-            </span>
+            <span *ngIf="p.dialogs.length === 0"> - you can add dialogs via the Analytics menu. </span>
           </div>
         </nb-card-header>
         <nb-card-body>
@@ -274,22 +272,19 @@
                     </span>
                     <span *ngIf="e.nbErrors !== 0">
                       <mat-icon class="error">error</mat-icon>
-                      {{ e.nbErrors }} error{{ e.nbErrors ? '' : 's' }} /
-                      {{ e.dialogs.length }} conversation{{ e.dialogs.length < 2 ? '' : 's' }}
+                      {{ e.nbErrors }} error{{ e.nbErrors ? '' : 's' }} / {{ e.dialogs.length }} conversation{{
+                        e.dialogs.length < 2 ? '' : 's'
+                      }}
                     </span>
                     <ol *ngIf="e.displayExecution">
                       <li *ngFor="let details of e.dialogs">
-                        <span *ngIf="!details.error"
-                          ><mat-icon class="success">check_circle</mat-icon> Success</span
-                        >
+                        <span *ngIf="!details.error"><mat-icon class="success">check_circle</mat-icon> Success</span>
                         <span *ngIf="details.error">
                           <mat-icon class="error">error</mat-icon>
                           Error
                           <span *ngIf="details.dialogReport">
                             <h4>Expected dialog:</h4>
-                            <tock-display-dialog
-                              [dialog]="details.dialogReport"
-                            ></tock-display-dialog>
+                            <tock-display-dialog [dialog]="details.dialogReport"></tock-display-dialog>
                             <span *ngIf="details.returnedMessage">
                               <h4>But last answer was:</h4>
                               <tock-bot-message

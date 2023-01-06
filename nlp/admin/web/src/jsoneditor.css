@@ -423,8 +423,7 @@ div.jsoneditor textarea,
 pre.jsoneditor-preview,
 .jsoneditor-schema-error,
 .jsoneditor-popover {
-  font-family: 'dejavu sans mono', 'droid sans mono', consolas, monaco, 'lucida console',
-    'courier new', courier, monospace, sans-serif;
+  font-family: 'dejavu sans mono', 'droid sans mono', consolas, monaco, 'lucida console', 'courier new', courier, monospace, sans-serif;
   font-size: 10pt;
   color: #1a1a1a;
 }
@@ -1086,8 +1085,7 @@ pre.jsoneditor-preview,
 
 .jsoneditor-modal #query,
 .jsoneditor-modal .jsoneditor-transform-preview {
-  font-family: 'dejavu sans mono', 'droid sans mono', consolas, monaco, 'lucida console',
-    'courier new', courier, monospace, sans-serif;
+  font-family: 'dejavu sans mono', 'droid sans mono', consolas, monaco, 'lucida console', 'courier new', courier, monospace, sans-serif;
   font-size: 10pt;
   width: 100%;
   box-sizing: border-box;
@@ -1104,12 +1102,8 @@ pre.jsoneditor-preview,
   cursor: pointer;
 }
 
-.jsoneditor-modal
-  .jsoneditor-button-group.jsoneditor-button-group-value-asc
-  input.jsoneditor-button-asc,
-.jsoneditor-modal
-  .jsoneditor-button-group.jsoneditor-button-group-value-desc
-  input.jsoneditor-button-desc {
+.jsoneditor-modal .jsoneditor-button-group.jsoneditor-button-group-value-asc input.jsoneditor-button-asc,
+.jsoneditor-modal .jsoneditor-button-group.jsoneditor-button-group-value-desc input.jsoneditor-button-desc {
   background: #3883fa;
   border-color: #3883fa;
   color: #ffffff;
@@ -1332,8 +1326,7 @@ pre.jsoneditor-preview,
   padding: 5px;
   text-align: left;
   outline: 0;
-  font-family: 'dejavu sans mono', 'droid sans mono', consolas, monaco, 'lucida console',
-    'courier new', courier, monospace, sans-serif;
+  font-family: 'dejavu sans mono', 'droid sans mono', consolas, monaco, 'lucida console', 'courier new', courier, monospace, sans-serif;
   font-size: 10pt;
 }
 

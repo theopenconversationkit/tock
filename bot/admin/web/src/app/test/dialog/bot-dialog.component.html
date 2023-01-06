@@ -23,9 +23,7 @@
   >
     <nb-accordion>
       <nb-accordion-item>
-        <nb-accordion-item-header (click)="removeXrayTestName()"
-          >Save dialog in Xray</nb-accordion-item-header
-        >
+        <nb-accordion-item-header (click)="removeXrayTestName()">Save dialog in Xray</nb-accordion-item-header>
         <nb-accordion-item-body>
           <input
             *ngIf="testContext"
@@ -82,9 +80,7 @@
       </nb-accordion-item>
 
       <nb-accordion-item>
-        <nb-accordion-item-header (click)="removeXrayTestIdentifier()"
-          >Update dialog in Xray</nb-accordion-item-header
-        >
+        <nb-accordion-item-header (click)="removeXrayTestIdentifier()">Update dialog in Xray</nb-accordion-item-header>
         <nb-accordion-item-body>
           <input
             *ngIf="testContext"

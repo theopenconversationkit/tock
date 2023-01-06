@@ -39,14 +39,8 @@ export class RestService {
 
   readonly errorEmitter: EventEmitter<string> = new EventEmitter();
 
-  constructor(
-    @Inject(APP_BASE_HREF) private baseHref: string,
-    private http: HttpClient,
-    private router: Router
-  ) {
-    this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${
-      environment.serverUrl
-    }`;
+  constructor(@Inject(APP_BASE_HREF) private baseHref: string, private http: HttpClient, private router: Router) {
+    this.notAuthenticatedUrl = `${baseHref.substring(0, baseHref.length - 1)}${environment.serverUrl}`;
     this.url = `${this.notAuthenticatedUrl}/admin`;
     RestService.defaultNotAuthenticatedUrl = this.notAuthenticatedUrl;
   }
@@ -55,18 +49,15 @@ export class RestService {
     return this.ssologin || document.cookie.indexOf('tock-sso=') !== -1;
   }
 
-  isCas():boolean{
-    return this.isSSO() && document.cookie.indexOf("pac4jCsrfToken=") !== -1;
+  isCas(): boolean {
+    return this.isSSO() && document.cookie.indexOf('pac4jCsrfToken=') !== -1;
   }
 
   private headers(): HttpHeaders {
     const headers = this.notAuthenticatedHeaders();
     //hack for dev env
     if (environment.autologin) {
-      headers.append(
-        'Authorization',
-        btoa(`${environment.default_user}:${environment.default_password}`)
-      );
+      headers.append('Authorization', btoa(`${environment.default_user}:${environment.default_password}`));
     }
     return headers;
   }
@@ -78,38 +69,27 @@ export class RestService {
   }
 
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http
-      .get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => parseFunction(res || {})),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => parseFunction(res || {})),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
   getArray<T>(path: string, parseFunction: (value: any) => T[]): Observable<T[]> {
-    return this.http
-      .get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => parseFunction(res || [])),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.get(`${this.url}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => parseFunction(res || [])),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
   delete<I>(path: string): Observable<boolean> {
-    return this.http
-      .delete(`${this.url}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => BooleanResponse.fromJSON(res || {}).success),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.delete(`${this.url}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => BooleanResponse.fromJSON(res || {}).success),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
-  post<I, O>(
-    path: string,
-    value?: I,
-    parseFunction?: (value: any) => O,
-    baseUrl?: string
-  ): Observable<O> {
+  post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O, baseUrl?: string): Observable<O> {
     return this.http
       .post(`${baseUrl ? baseUrl : this.url}${path}`, JsonUtils.stringify(value), {
         headers: this.headers(),
@@ -134,19 +114,13 @@ export class RestService {
   }
 
   getNotAuthenticated<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http
-      .get(`${this.notAuthenticatedUrl}${path}`, { headers: this.headers(), withCredentials: true })
-      .pipe(
-        map((res: string) => parseFunction(res || {})),
-        catchError((e) => this.handleError(this, e))
-      );
+    return this.http.get(`${this.notAuthenticatedUrl}${path}`, { headers: this.headers(), withCredentials: true }).pipe(
+      map((res: string) => parseFunction(res || {})),
+      catchError((e) => this.handleError(this, e))
+    );
   }
 
-  postNotAuthenticated<I, O>(
-    path: string,
-    value?: I,
-    parseFunction?: (value: any) => O
-  ): Observable<O> {
+  postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http
       .post(`${this.notAuthenticatedUrl}${path}`, JsonUtils.stringify(value), {
         headers: this.notAuthenticatedHeaders(),
@@ -166,12 +140,7 @@ export class RestService {
 
   setFileUploaderOptions(uploader: FileUploader, path: string) {
     uploader.setOptions({ url: `${this.url}${path}` });
-    uploader.onErrorItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
+    uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       uploader.removeFromQueue(item);
       this.handleError(this, response ? response : `Error ${status}`);
     };
@@ -189,10 +158,7 @@ export class RestService {
         rest.router.navigateByUrl('/login');
         return NEVER;
       }
-      errMsg =
-        e.status === 400
-          ? e.statusText || ''
-          : `Server error : ${e.status} - ${e.statusText || ''}`;
+      errMsg = e.status === 400 ? e.statusText || '' : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
       //strange things happen
       if (e && e.status === 0 && this.isSSO()) {

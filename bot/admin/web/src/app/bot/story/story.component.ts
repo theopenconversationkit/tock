@@ -15,16 +15,7 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChange,
-  SimpleChanges
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import {
   AnswerConfigurationType,
   BotConfiguredAnswer,
@@ -118,13 +109,11 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   private initStoryByBotIdAndIntent() {
-    this.bot
-      .findStoryByBotIdAndIntent(this.botId, this.storyNode.storyDefinitionId)
-      .subscribe((s) => {
-        // explicit null value if no story found
-        this.story = s.storyId ? s : null;
-        this.storyTag = s.getFirstTag();
-      });
+    this.bot.findStoryByBotIdAndIntent(this.botId, this.storyNode.storyDefinitionId).subscribe((s) => {
+      // explicit null value if no story found
+      this.story = s.storyId ? s : null;
+      this.storyTag = s.getFirstTag();
+    });
   }
 
   deleteStory() {
@@ -244,15 +233,10 @@ export class StoryComponent implements OnInit, OnChanges {
     if (invalidMessage) {
       this.dialog.notify(`Error: ${invalidMessage}`);
     } else {
-      this.bot
-        .newStory(new CreateStoryRequest(this.story, this.state.currentLocale, []))
-        .subscribe((intent) => {
-          this.dialog.notify(
-            `New story ${this.story.name} created for language ${this.state.currentLocale}`,
-            'New Story'
-          );
-          this.initStoryByBotIdAndIntent();
-        });
+      this.bot.newStory(new CreateStoryRequest(this.story, this.state.currentLocale, [])).subscribe((intent) => {
+        this.dialog.notify(`New story ${this.story.name} created for language ${this.state.currentLocale}`, 'New Story');
+        this.initStoryByBotIdAndIntent();
+      });
     }
   }
 
@@ -294,11 +278,7 @@ export class StoryComponent implements OnInit, OnChanges {
         if (!selectedConfig || !this.canCustomiseMainAnswer()) {
           return;
         }
-        if (
-          this.story.configuredAnswers.find(
-            (customAnswer) => customAnswer.botConfiguration === selectedConfig.name
-          )
-        ) {
+        if (this.story.configuredAnswers.find((customAnswer) => customAnswer.botConfiguration === selectedConfig.name)) {
           this.dialog.notify('Custom answer already exists.', 'Customise', {
             status: 'danger',
             duration: 3000
@@ -311,20 +291,13 @@ export class StoryComponent implements OnInit, OnChanges {
         const answerConfigurations = this.story.answers
           .filter((answer) => answer.answerType === this.story.currentType)
           .map((answer) => answer.duplicate(this.bot));
-        const configuredAnswer = new BotConfiguredAnswer(
-          selectedConfig.name,
-          this.story.currentType,
-          answerConfigurations
-        );
+        const configuredAnswer = new BotConfiguredAnswer(selectedConfig.name, this.story.currentType, answerConfigurations);
         this.story.configuredAnswers.push(configuredAnswer);
       });
   }
 
   canCustomiseMainAnswer(): boolean {
-    return (
-      this.story.currentType === AnswerConfigurationType.simple ||
-      this.story.currentType === AnswerConfigurationType.script
-    );
+    return this.story.currentType === AnswerConfigurationType.simple || this.story.currentType === AnswerConfigurationType.script;
   }
 
   deleteCustomAnswers(answer: BotConfiguredAnswer) {
@@ -338,9 +311,7 @@ export class StoryComponent implements OnInit, OnChanges {
       })
       .onClose.subscribe((confirmed) => {
         if (confirmed) {
-          const foundIndex = this.story.configuredAnswers
-            ? this.story.configuredAnswers.indexOf(answer)
-            : -1;
+          const foundIndex = this.story.configuredAnswers ? this.story.configuredAnswers.indexOf(answer) : -1;
           if (foundIndex >= 0) {
             this.story.configuredAnswers.splice(foundIndex, 1);
           }
@@ -360,11 +331,7 @@ export class StoryComponent implements OnInit, OnChanges {
         if (!selectedConfig) {
           return;
         }
-        if (
-          this.story.configuredSteps.find(
-            (customAnswer) => customAnswer.botConfiguration === selectedConfig.name
-          )
-        ) {
+        if (this.story.configuredSteps.find((customAnswer) => customAnswer.botConfiguration === selectedConfig.name)) {
           this.dialog.notify('Custom actions already exist.', 'Customise', {
             status: 'danger',
             duration: 3000
@@ -390,9 +357,7 @@ export class StoryComponent implements OnInit, OnChanges {
       })
       .onClose.subscribe((confirmed) => {
         if (confirmed) {
-          const foundIndex = this.story.configuredSteps
-            ? this.story.configuredSteps.indexOf(steps)
-            : -1;
+          const foundIndex = this.story.configuredSteps ? this.story.configuredSteps.indexOf(steps) : -1;
           if (foundIndex >= 0) {
             this.story.configuredSteps.splice(foundIndex, 1);
           }

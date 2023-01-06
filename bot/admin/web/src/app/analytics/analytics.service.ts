@@ -47,106 +47,52 @@ export class AnalyticsService implements OnDestroy {
     return this.rest.post('/analytics/messages', request, UserAnalyticsQueryResult.fromJSON);
   }
 
-  messagesAnalyticsByConfiguration(
-    request: DialogFlowRequest
-  ): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byConfiguration',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+  messagesAnalyticsByConfiguration(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post('/analytics/messages/byConfiguration', request, UserAnalyticsQueryResult.fromJSON);
   }
 
-  messagesAnalyticsByConnectorType(
-    request: DialogFlowRequest
-  ): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byConnectorType',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+  messagesAnalyticsByConnectorType(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post('/analytics/messages/byConnectorType', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   messagesAnalyticsByDayOfWeek(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byDayOfWeek',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+    return this.rest.post('/analytics/messages/byDayOfWeek', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   messagesAnalyticsByHour(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
     return this.rest.post('/analytics/messages/byHour', request, UserAnalyticsQueryResult.fromJSON);
   }
 
-  messagesAnalyticsByDateAndIntent(
-    request: DialogFlowRequest
-  ): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byDateAndIntent',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+  messagesAnalyticsByDateAndIntent(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post('/analytics/messages/byDateAndIntent', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   messagesAnalyticsByIntent(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byIntent',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+    return this.rest.post('/analytics/messages/byIntent', request, UserAnalyticsQueryResult.fromJSON);
   }
 
-  messagesAnalyticsByDateAndStory(
-    request: DialogFlowRequest
-  ): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byDateAndStory',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+  messagesAnalyticsByDateAndStory(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post('/analytics/messages/byDateAndStory', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   messagesAnalyticsByStory(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byStory',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+    return this.rest.post('/analytics/messages/byStory', request, UserAnalyticsQueryResult.fromJSON);
   }
 
-  messagesAnalyticsByStoryCategory(
-    request: DialogFlowRequest
-  ): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byStoryCategory',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+  messagesAnalyticsByStoryCategory(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
+    return this.rest.post('/analytics/messages/byStoryCategory', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   messagesAnalyticsByStoryType(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byStoryType',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+    return this.rest.post('/analytics/messages/byStoryType', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   messagesAnalyticsByStoryLocale(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byStoryLocale',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+    return this.rest.post('/analytics/messages/byStoryLocale', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   messagesAnalyticsByActionType(request: DialogFlowRequest): Observable<UserAnalyticsQueryResult> {
-    return this.rest.post(
-      '/analytics/messages/byActionType',
-      request,
-      UserAnalyticsQueryResult.fromJSON
-    );
+    return this.rest.post('/analytics/messages/byActionType', request, UserAnalyticsQueryResult.fromJSON);
   }
 
   dialogs(query: DialogReportQuery): Observable<DialogReportQueryResult> {
@@ -158,18 +104,11 @@ export class AnalyticsService implements OnDestroy {
   }
 
   getTestPlansByNamespaceAndNlpModel(): Observable<TestPlan[]> {
-    return this.rest.post(
-      `/application/plans`,
-      this.state.createApplicationScopedQuery(),
-      TestPlan.fromJSONArray
-    );
+    return this.rest.post(`/application/plans`, this.state.createApplicationScopedQuery(), TestPlan.fromJSONArray);
   }
 
   addDialogToTestPlan(planId: string, dialogId: string): Observable<boolean> {
-    return this.rest.post(
-      `/test/plan/${planId}/dialog/${dialogId}`,
-      this.state.createApplicationScopedQuery()
-    );
+    return this.rest.post(`/test/plan/${planId}/dialog/${dialogId}`, this.state.createApplicationScopedQuery());
   }
 
   getApplicationFlow(request: DialogFlowRequest): Observable<ApplicationDialogFlow> {

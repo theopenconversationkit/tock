@@ -171,9 +171,7 @@ export class ChartComponent implements OnChanges {
     const years = dates.map((date) => new Date(date).getFullYear()).filter(unique);
 
     dates.forEach(function (date, index) {
-      rows.push(
-        [new Date(date)].concat(that.getDataFromSelection(data[index]).reduce((x, y) => x + y))
-      );
+      rows.push([new Date(date)].concat(that.getDataFromSelection(data[index]).reduce((x, y) => x + y)));
     });
     this.chartOptions = {
       tooltip: {
@@ -226,9 +224,7 @@ export class ChartComponent implements OnChanges {
 
     dates.forEach(function (date, index) {
       if (chartType === 'Calendar') {
-        rows.push(
-          [new Date(date)].concat(that.getDataFromSelection(data[index]).reduce((x, y) => x + y))
-        );
+        rows.push([new Date(date)].concat(that.getDataFromSelection(data[index]).reduce((x, y) => x + y)));
       } else {
         rows.push([date].concat(that.getDataFromSelection(data[index])));
       }
@@ -247,9 +243,7 @@ export class ChartComponent implements OnChanges {
         seriesCounters[serieIndex] += serieDateValue;
       });
     });
-    let seriesLabels = this.getDataFromSelection(series).map(
-      (c, i) => c + '(' + seriesCounters[i] + ')'
-    );
+    let seriesLabels = this.getDataFromSelection(series).map((c, i) => c + '(' + seriesCounters[i] + ')');
     let colors = series.map((serie) => this.getColor(serie, series));
     this.chartOptions = {
       tooltip: {
@@ -370,14 +364,7 @@ export class ChartComponent implements OnChanges {
         }
       ]
     };
-    return new ChartData(
-      chartType ? chartType : 'PieChart',
-      rows,
-      series,
-      null,
-      '500',
-      width ? width : '100%'
-    );
+    return new ChartData(chartType ? chartType : 'PieChart', rows, series, null, '500', width ? width : '100%');
   }
 
   buildPieChartFromDates(result: UserAnalyticsQueryResult, chartType?: string, width?: string) {
@@ -425,30 +412,11 @@ export class ChartComponent implements OnChanges {
         }
       ]
     };
-    return new ChartData(
-      chartType ? chartType : 'PieChart',
-      rows,
-      ['Date'].concat(series),
-      undefined,
-      '500',
-      width ? width : '100%'
-    );
+    return new ChartData(chartType ? chartType : 'PieChart', rows, ['Date'].concat(series), undefined, '500', width ? width : '100%');
   }
 
   getColor(serie: string, series: string[]): string {
-    let colors = [
-      '#0084ff',
-      '#fabc05',
-      '#3dc3ef',
-      '#e01f5c',
-      '#dc2727',
-      '#1ca3f3',
-      '#41c352',
-      '#5d67cf',
-      '#58e951',
-      '#878f9c',
-      '#f3745d'
-    ];
+    let colors = ['#0084ff', '#fabc05', '#3dc3ef', '#e01f5c', '#dc2727', '#1ca3f3', '#41c352', '#5d67cf', '#58e951', '#878f9c', '#f3745d'];
     let serieIndex = series.indexOf(serie);
     let colorIndex = serieIndex % colors.length;
     return colors[colorIndex];

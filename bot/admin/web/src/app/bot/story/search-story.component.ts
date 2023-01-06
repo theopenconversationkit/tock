@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import {saveAs} from 'file-saver-es';
-import {Component, Injectable, OnDestroy, OnInit} from '@angular/core';
-import {BotService} from '../bot-service';
-import {NlpService} from '../../nlp-tabs/nlp.service';
-import {StateService} from '../../core-nlp/state.service';
-import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery, AnswerConfigurationType, IntentName} from '../model/story';
-import {Subscription} from 'rxjs';
-import {FileItem, FileUploader, ParsedResponseHeaders} from 'ng2-file-upload';
-import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import {CanDeactivate} from '@angular/router';
-import {LocationStrategy} from '@angular/common';
-import {NbToastrService} from '@nebular/theme';
-import {DialogService} from 'src/app/core-nlp/dialog.service';
-import {I18nLabel} from '../model/i18n'
+import { saveAs } from 'file-saver-es';
+import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
+import { BotService } from '../bot-service';
+import { NlpService } from '../../nlp-tabs/nlp.service';
+import { StateService } from '../../core-nlp/state.service';
+import { StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery } from '../model/story';
+import { Subscription } from 'rxjs';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { CanDeactivate } from '@angular/router';
+import { LocationStrategy } from '@angular/common';
+import { NbToastrService } from '@nebular/theme';
+import { DialogService } from 'src/app/core-nlp/dialog.service';
 
 interface TreeNode<T> {
   data: T;
@@ -53,7 +52,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   allColumns = [this.categoryColumn, this.intentColumn, this.descriptionColumn, this.lastEditedColumn, this.actionsColumn];
   nodes: TreeNode<any>[];
   private lastExpandableState: Map<string, boolean> = new Map<string, boolean>();
-  dateFormat = 'dd/MM/yyyy HH:mm'
+  dateFormat = 'dd/MM/yyyy HH:mm';
 
   filter: string = '';
   category: string = '';
@@ -75,8 +74,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private location: LocationStrategy,
     private backButtonHolder: BackButtonHolder
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     // check if back or forward button is pressed.
@@ -103,7 +101,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     setTimeout((_) => {
       this.bot.exportStory(this.state.currentApplication.name, story.storyId).subscribe((blob) => {
         saveAs(blob, this.state.currentApplication.name + '_' + story.storyId + '.json');
-        this.toastrService.show(`Dump provided`, 'Dump', {duration: 3000, status: 'success'});
+        this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
       });
     }, 1);
   }
@@ -120,7 +118,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       if (result === 'remove') {
         this.bot.deleteStory(story._id).subscribe((_) => {
           this.delete(story.storyId);
-          this.toastrService.show(`Story deleted`, 'Delete', {duration: 3000, status: 'success'});
+          this.toastrService.show(`Story deleted`, 'Delete', { duration: 3000, status: 'success' });
         });
       }
     });
@@ -187,11 +185,16 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
           });
 
           this.stories = s.sort((a, b) => {
-            let fa = a.lastEdited, fb = b.lastEdited;
-            if (fa < fb) { return 1; }
-            if (fa > fb) { return -1; }
+            let fa = a.lastEdited,
+              fb = b.lastEdited;
+            if (fa < fb) {
+              return 1;
+            }
+            if (fa > fb) {
+              return -1;
+            }
             return 0;
-           });
+          });
 
           this.nodes = Array.from(sortedMap, ([key, value]) => {
             return {
@@ -223,20 +226,15 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     setTimeout((_) => {
       this.bot.exportStories(this.state.currentApplication.name).subscribe((blob) => {
         saveAs(blob, this.state.currentApplication.name + '_stories.json');
-        this.toastrService.show(`Dump provided`, 'Dump', {duration: 3000, status: 'success'});
+        this.toastrService.show(`Dump provided`, 'Dump', { duration: 3000, status: 'success' });
       });
     }, 1);
   }
 
   prepareUpload() {
-    this.uploader = new FileUploader({removeAfterUpload: true});
-    this.uploader.onCompleteItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
-      this.toastrService.show(`Dump uploaded`, 'Dump', {duration: 3000, status: 'success'});
+    this.uploader = new FileUploader({ removeAfterUpload: true });
+    this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+      this.toastrService.show(`Dump uploaded`, 'Dump', { duration: 3000, status: 'success' });
       this.state.resetConfiguration();
     };
     this.displayUpload = true;

@@ -22,9 +22,7 @@
           [nbSpinner]="loading"
           nbSpinnerStatus="primary"
         >
-          <span *ngIf="total > 0">
-            users : {{ formattedTotal() }}
-          </span>
+          <span *ngIf="total > 0"> users : {{ formattedTotal() }} </span>
           <span *ngIf="total === 0"> No users </span>
           <button
             nbButton
@@ -61,9 +59,9 @@
                   />
                   <nb-user
                     size="large"
-                    name="{{
-                      user.userPreferences.firstName ? user.userPreferences.firstName : 'Anonymous'
-                    }} {{ user.userPreferences.lastName }}"
+                    name="{{ user.userPreferences.firstName ? user.userPreferences.firstName : 'Anonymous' }} {{
+                      user.userPreferences.lastName
+                    }}"
                     title="{{ user.lastUpdateDate | amDateFormat: 'DD MMM YYYY HH:mm' }}"
                     picture="{{ getUserPicture(user) }}"
                   >
@@ -78,12 +76,9 @@
                       <nb-accordion-item-header>
                         <p style="text-align: left">
                           <span *ngIf="user.botConfiguration"
-                            >[{{ user.botConfiguration.name }} -
-                            {{ user.botConfiguration.connectorType.id }}]</span
+                            >[{{ user.botConfiguration.name }} - {{ user.botConfiguration.connectorType.id }}]</span
                           >
-                          <span *ngIf="user.userPreferences.locale"
-                            >({{ user.userPreferences.locale }})</span
-                          >
+                          <span *ngIf="user.userPreferences.locale">({{ user.userPreferences.locale }})</span>
                           <span
                             class="last-action-text"
                             *ngIf="user.lastActionText"

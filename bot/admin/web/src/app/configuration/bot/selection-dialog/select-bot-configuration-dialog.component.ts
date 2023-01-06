@@ -32,10 +32,7 @@ export class SelectBotConfigurationDialogComponent implements OnInit {
   botApplicationConfigurations: BotConfiguration[];
   valid = true;
 
-  constructor(
-    private dialogRef: NbDialogRef<SelectBotConfigurationDialogComponent>,
-    private botConfiguration: BotConfigurationService
-  ) {}
+  constructor(private dialogRef: NbDialogRef<SelectBotConfigurationDialogComponent>, private botConfiguration: BotConfigurationService) {}
 
   ngOnInit() {
     this.load();
@@ -45,25 +42,21 @@ export class SelectBotConfigurationDialogComponent implements OnInit {
     this.botConfiguration.configurations.subscribe((applicationConfigurations) => {
       const configsByName = this.groupByName(applicationConfigurations);
       const bots = this.botConfiguration.bots.getValue();
-      this.botApplicationConfigurations = Array.from(configsByName.values()).map(
-        (connectorConfigurations) => {
-          const existingConf = bots.find(
-            (botConfig) => botConfig.name === connectorConfigurations[0].name
-          );
-          if (existingConf) {
-            existingConf.configurations = connectorConfigurations;
-            return existingConf;
-          }
-          const firstBotConfiguration = connectorConfigurations[0];
-          return new BotConfiguration(
-            firstBotConfiguration.botId,
-            firstBotConfiguration.name,
-            firstBotConfiguration.namespace,
-            firstBotConfiguration.nlpModel,
-            connectorConfigurations
-          );
+      this.botApplicationConfigurations = Array.from(configsByName.values()).map((connectorConfigurations) => {
+        const existingConf = bots.find((botConfig) => botConfig.name === connectorConfigurations[0].name);
+        if (existingConf) {
+          existingConf.configurations = connectorConfigurations;
+          return existingConf;
         }
-      );
+        const firstBotConfiguration = connectorConfigurations[0];
+        return new BotConfiguration(
+          firstBotConfiguration.botId,
+          firstBotConfiguration.name,
+          firstBotConfiguration.namespace,
+          firstBotConfiguration.nlpModel,
+          connectorConfigurations
+        );
+      });
     });
   }
 

@@ -128,9 +128,7 @@ export class BotApplicationConfig implements ApplicationConfig {
 
   /** is it allowed to create namespace? **/
   canCreateNamespace(): boolean {
-    return (
-      this.botSharedService.configuration && !this.botSharedService.configuration.botApiSupport
-    );
+    return this.botSharedService.configuration && !this.botSharedService.configuration.botApiSupport;
   }
 }
 

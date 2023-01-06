@@ -155,9 +155,7 @@ export class StepComponent implements OnInit {
               }
             } else {
               if (targetIntent) {
-                step.targetIntent.name = step.targetIntentDefinition
-                  ? step.targetIntentDefinition.name
-                  : '';
+                step.targetIntent.name = step.targetIntentDefinition ? step.targetIntentDefinition.name : '';
               } else {
                 step.intent.name = step.intentDefinition ? step.intentDefinition.name : '';
               }
@@ -185,10 +183,7 @@ export class StepComponent implements OnInit {
       if (invalidMessage) {
         this.dialog.notify(`Error: ${invalidMessage}`);
         return;
-      } else if (
-        this.step.newUserSentence.trim().length === 0 ||
-        this.step.intent.name.trim().length === 0
-      ) {
+      } else if (this.step.newUserSentence.trim().length === 0 || this.step.intent.name.trim().length === 0) {
         return;
       } else {
         this.save(this.step);
@@ -198,13 +193,7 @@ export class StepComponent implements OnInit {
 
   private save(step: StoryStep) {
     this.bot
-      .createI18nLabel(
-        new CreateI18nLabelRequest(
-          this.defaultCategory,
-          step.newUserSentence.trim(),
-          this.state.currentLocale
-        )
-      )
+      .createI18nLabel(new CreateI18nLabelRequest(this.defaultCategory, step.newUserSentence.trim(), this.state.currentLocale))
       .subscribe((i18n) => {
         step.userSentence = i18n;
         step.new = false;
@@ -251,19 +240,17 @@ export class StepComponent implements OnInit {
       if (step.intent.name.length === 0 && !step.entity) {
         const app = this.state.currentApplication;
         const language = this.state.currentLocale;
-        this.nlp
-          .parse(new ParseQuery(app.namespace, app.name, language, changedSentence, true))
-          .subscribe((r) => {
-            if (r.classification.intentId) {
-              const intent = this.state.findIntentById(r.classification.intentId);
-              if (intent) {
-                step.intentDefinition = intent;
-                step.intent = new IntentName(intent.name);
-                this.onIntentChange(step, intent.name);
-                this.validateIntent(step, false);
-              }
+        this.nlp.parse(new ParseQuery(app.namespace, app.name, language, changedSentence, true)).subscribe((r) => {
+          if (r.classification.intentId) {
+            const intent = this.state.findIntentById(r.classification.intentId);
+            if (intent) {
+              step.intentDefinition = intent;
+              step.intent = new IntentName(intent.name);
+              this.onIntentChange(step, intent.name);
+              this.validateIntent(step, false);
             }
-          });
+          }
+        });
       } else {
         this.checkStep();
       }
@@ -272,19 +259,10 @@ export class StepComponent implements OnInit {
 
   private updateStepI18nLabel(step: StoryStep, changedSentence: string) {
     step.userSentence.defaultLocale = this.state.currentLocale;
-    let currentLocaleI18nSentence = step.userSentence.i18n.find(
-      (i18nSentence) => i18nSentence.locale === this.state.currentLocale
-    );
+    let currentLocaleI18nSentence = step.userSentence.i18n.find((i18nSentence) => i18nSentence.locale === this.state.currentLocale);
     if (!currentLocaleI18nSentence) {
       step.userSentence.i18n.push(
-        new I18nLocalizedLabel(
-          this.state.currentLocale,
-          defaultUserInterfaceType,
-          changedSentence,
-          false,
-          null,
-          []
-        )
+        new I18nLocalizedLabel(this.state.currentLocale, defaultUserInterfaceType, changedSentence, false, null, [])
       );
     } else {
       currentLocaleI18nSentence.label = changedSentence;

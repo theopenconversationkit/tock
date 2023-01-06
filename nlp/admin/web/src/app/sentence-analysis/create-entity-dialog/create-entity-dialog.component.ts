@@ -36,10 +36,7 @@ export class CreateEntityDialogComponent implements OnInit {
   error: string;
   entityTypes: EntityType[];
 
-  constructor(
-    public dialogRef: NbDialogRef<CreateEntityDialogComponent>,
-    private state: StateService
-  ) {
+  constructor(public dialogRef: NbDialogRef<CreateEntityDialogComponent>, private state: StateService) {
     this.state.entityTypesSortedByName().subscribe((entities) => (this.entityTypes = entities));
   }
 

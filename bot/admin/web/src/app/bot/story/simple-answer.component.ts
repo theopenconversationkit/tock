@@ -46,11 +46,7 @@ export class SimpleAnswerComponent implements OnInit {
 
   @ViewChild('newAnswerElement') newAnswerElement: ElementRef;
 
-  constructor(
-    private state: StateService,
-    private bot: BotService,
-    private dialog: DialogService
-  ) {}
+  constructor(private state: StateService, private bot: BotService, private dialog: DialogService) {}
 
   ngOnInit(): void {
     this.answer = this.container.simpleAnswer();
@@ -91,13 +87,7 @@ export class SimpleAnswerComponent implements OnInit {
       }
     } else {
       this.bot
-        .createI18nLabel(
-          new CreateI18nLabelRequest(
-            this.container.category,
-            this.newAnswer.trim(),
-            this.state.currentLocale
-          )
-        )
+        .createI18nLabel(new CreateI18nLabelRequest(this.container.category, this.newAnswer.trim(), this.state.currentLocale))
         .subscribe((i18n) => {
           this.answer.answers.push(new SimpleAnswer(i18n, -1, this.newMedia));
           this.newAnswer = '';

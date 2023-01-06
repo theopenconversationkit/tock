@@ -108,9 +108,7 @@
             >
               <span nbTooltip="{{ typeFilter.description }}">
                 {{ typeFilter.name }}
-                <span *ngIf="typeFilterCounters.get(typeFilter) > 0">
-                  ({{ typeFilterCounters.get(typeFilter) }})</span
-                ></span
+                <span *ngIf="typeFilterCounters.get(typeFilter) > 0"> ({{ typeFilterCounters.get(typeFilter) }})</span></span
               >
             </nb-option>
           </nb-select>

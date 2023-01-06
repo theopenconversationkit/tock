@@ -24,11 +24,7 @@ import { CoreConfig } from './core.config';
 
 @Injectable()
 export class ApplicationResolver implements Resolve<Application> {
-  constructor(
-    private config: CoreConfig,
-    private appService: ApplicationService,
-    private router: Router
-  ) {}
+  constructor(private config: CoreConfig, private appService: ApplicationService, private router: Router) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application> {
     return this.appService.retrieveCurrentApplication().pipe(

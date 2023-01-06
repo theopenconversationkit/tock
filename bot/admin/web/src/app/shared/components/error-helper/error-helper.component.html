@@ -3,7 +3,5 @@
   <small *ngIf="field?.errors?.minlength">
     This field must contain at least {{ field?.errors?.minlength.requiredLength }} characters
   </small>
-  <small *ngIf="field?.errors?.maxlength">
-    This field is limited to {{ field?.errors?.maxlength.requiredLength }} characters
-  </small>
+  <small *ngIf="field?.errors?.maxlength"> This field is limited to {{ field?.errors?.maxlength.requiredLength }} characters </small>
 </div>

@@ -32,11 +32,7 @@ export class TryComponent implements OnInit, OnDestroy {
   queryState: string;
   private subscription: Subscription;
 
-  constructor(
-    private nlp: NlpService,
-    private state: StateService,
-    private toastrService: NbToastrService
-  ) {}
+  constructor(private nlp: NlpService, private state: StateService, private toastrService: NbToastrService) {}
 
   ngOnInit() {
     this.subscription = this.state.configurationChange.subscribe((_) => this.onClose());

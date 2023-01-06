@@ -64,7 +64,7 @@
       </button>
     </h1>
     <h1 *ngIf="total !== 0">
-      {{ title }} size : {{ formattedTotal()   }}
+      {{ title }} size : {{ formattedTotal() }}
       <button
         mat-icon-button
         class="button"
@@ -112,15 +112,10 @@
         <nb-card-body>
           {{ state.intentLabelByName(d.intent) }}
           <span
-            *ngIf="
-              d.sentence?.classification?.intentId &&
-              d.sentence.classification.hasIntentProbability()
-            "
+            *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()"
             nbTooltip="intent probability"
           >
-            <span class="intentProbability"
-              >({{ d.sentence.classification.intentProbability | percent: '1.0-2' }})</span
-            >
+            <span class="intentProbability">({{ d.sentence.classification.intentProbability | percent: '1.0-2' }})</span>
           </span>
           {{ state.intentLabelByName(d.intent) ? '-' : '' }} {{ d.date | amTimeAgo }}
           <span *ngIf="d.durationInMS !== 0">in {{ d.durationInMS }} ms</span>

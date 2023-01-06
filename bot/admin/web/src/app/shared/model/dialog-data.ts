@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AttachmentType,
-  ConnectorType,
-  EventType,
-  UserInterfaceType
-} from '../../core/model/configuration';
+import { AttachmentType, ConnectorType, EventType, UserInterfaceType } from '../../core/model/configuration';
 import { JsonUtils } from '../../model/commons';
 import { ClassifiedEntity } from '../../model/nlp';
 import { IntentName } from '../../bot/model/story';
@@ -27,11 +22,7 @@ import { IntentName } from '../../bot/model/story';
 export class DialogReport {
   displayActions: boolean;
 
-  constructor(
-    public actions: ActionReport[],
-    public id: string,
-    public obfuscated: boolean = false
-  ) {}
+  constructor(public actions: ActionReport[], public id: string, public obfuscated: boolean = false) {}
 
   static fromJSON(json?: any): DialogReport {
     const value = Object.create(DialogReport.prototype);
@@ -153,11 +144,7 @@ export class Attachment extends BotMessage {
 }
 
 export class Choice extends BotMessage {
-  constructor(
-    public delay: number,
-    public intentName: String,
-    public parameters: Map<String, String>
-  ) {
+  constructor(public delay: number, public intentName: String, public parameters: Map<String, String>) {
     super(EventType.choice, delay);
   }
 
@@ -211,12 +198,7 @@ export class UserLocation {
 }
 
 export class Sentence extends BotMessage {
-  constructor(
-    public delay: number,
-    public messages: SentenceElement[],
-    public text?: string,
-    public userInterface?: UserInterfaceType
-  ) {
+  constructor(public delay: number, public messages: SentenceElement[], public text?: string, public userInterface?: UserInterfaceType) {
     super(EventType.sentence, delay);
   }
 
@@ -248,12 +230,7 @@ export class SentenceElement {
   ) {}
 
   isEmptyElement(): boolean {
-    return (
-      this.attachments.length === 0 &&
-      this.choices.length === 0 &&
-      this.locations.length === 0 &&
-      this.texts.size === 0
-    );
+    return this.attachments.length === 0 && this.choices.length === 0 && this.locations.length === 0 && this.texts.size === 0;
   }
 
   static fromJSON(json?: any): SentenceElement {

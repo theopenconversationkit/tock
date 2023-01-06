@@ -105,23 +105,10 @@
             message="Only sub steps entities are checked to decide if the user stays in the same story."
             position="inline"
           ></tock-info-button>
-          <div
-            *ngIf="
-              !checkOnlySubEntitiesForStorySelection ||
-              checkOnlySubEntitiesForStorySelection.length < 1
-            "
-          >
-            <p>
-              No story tagged in order that only sub actions entities are checked for action
-              selection (and not the whole tree).
-            </p>
+          <div *ngIf="!checkOnlySubEntitiesForStorySelection || checkOnlySubEntitiesForStorySelection.length < 1">
+            <p>No story tagged in order that only sub actions entities are checked for action selection (and not the whole tree).</p>
           </div>
-          <div
-            *ngIf="
-              checkOnlySubEntitiesForStorySelection &&
-              checkOnlySubEntitiesForStorySelection.length > 0
-            "
-          >
+          <div *ngIf="checkOnlySubEntitiesForStorySelection && checkOnlySubEntitiesForStorySelection.length > 0">
             <div
               *ngFor="let story of checkOnlySubEntitiesForStorySelection"
               class="deactivation-story"
@@ -152,23 +139,10 @@
             message="Only intents supported by the story are checked for entity action selection."
             position="inline"
           ></tock-info-button>
-          <div
-            *ngIf="
-              !checkSubEntitiesOnlyWithStoryIntents ||
-              checkSubEntitiesOnlyWithStoryIntents.length < 1
-            "
-          >
-            <p>
-              No story tagged in order that only intents supported by the story are checked for
-              entity action selection.
-            </p>
+          <div *ngIf="!checkSubEntitiesOnlyWithStoryIntents || checkSubEntitiesOnlyWithStoryIntents.length < 1">
+            <p>No story tagged in order that only intents supported by the story are checked for entity action selection.</p>
           </div>
-          <div
-            *ngIf="
-              checkSubEntitiesOnlyWithStoryIntents &&
-              checkSubEntitiesOnlyWithStoryIntents.length > 0
-            "
-          >
+          <div *ngIf="checkSubEntitiesOnlyWithStoryIntents && checkSubEntitiesOnlyWithStoryIntents.length > 0">
             <div
               *ngFor="let story of checkSubEntitiesOnlyWithStoryIntents"
               class="deactivation-story"

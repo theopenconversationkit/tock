@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {StateService} from "../core-nlp/state.service";
-import {UserRole} from "../model/auth";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { StateService } from '../core-nlp/state.service';
+import { UserRole } from '../model/auth';
 
 class TabLink {
-  constructor(
-    public route: string,
-    public title: string,
-    public icon?: string
-  ) {
-  }
+  constructor(public route: string, public title: string, public icon?: string) {}
 }
 
 const tabs = [
@@ -47,7 +42,7 @@ export class AnalyticsTabsComponent implements OnInit {
 
   constructor(private router: Router, private state: StateService) {
     if (!state.hasRole(UserRole.botUser)) {
-      this.analyticsTabLinks = this.analyticsTabLinks.filter(t => !["flow", "users"].includes(t.route))
+      this.analyticsTabLinks = this.analyticsTabLinks.filter((t) => !['flow', 'users'].includes(t.route));
     }
   }
 

@@ -105,9 +105,12 @@
           *ngIf="n.owner"
           class="control-item"
           (click)="manageUsers(n.namespace)"
-          nbTooltip="Manage Users">
-          <i class="material-icons tock-toolbar-menu"
-            style="font-size: 30px">
+          nbTooltip="Manage Users"
+        >
+          <i
+            class="material-icons tock-toolbar-menu"
+            style="font-size: 30px"
+          >
             person
           </i>
         </nb-action>
@@ -115,9 +118,12 @@
           *ngIf="n.owner"
           class="control-item"
           (click)="manageSharingSettings(n.namespace)"
-          nbTooltip="Configure sharing settings">
-          <i class="material-icons tock-toolbar-menu"
-             style="font-size: 30px">
+          nbTooltip="Configure sharing settings"
+        >
+          <i
+            class="material-icons tock-toolbar-menu"
+            style="font-size: 30px"
+          >
             settings
           </i>
         </nb-action>
@@ -200,32 +206,45 @@
     <nb-card-header>
       <div style="display: flex">
         <span *ngIf="state.applications.length !== 0"
-        >Shared settings for Namespace <b>{{ managedNamespace }}</b></span
+          >Shared settings for Namespace <b>{{ managedNamespace }}</b></span
         >
       </div>
     </nb-card-header>
 
     <nb-card-body>
       <p>
-      <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.model">Allow sharing <b>model</b> with other namespaces</nb-toggle>
+        <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.model"
+          >Allow sharing <b>model</b> with other namespaces</nb-toggle
+        >
       </p>
       <p>
-        <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.stories">Allow sharing <b>stories</b> with other namespaces</nb-toggle>
+        <nb-toggle [(ngModel)]="namespaceConfiguration.defaultSharingConfiguration.stories"
+          >Allow sharing <b>stories</b> with other namespaces</nb-toggle
+        >
       </p>
       <p>
         Imported namespaces:
-        <nb-select multiple placeholder="None" [(selected)]="importedNamespaces" style="width:400px">
-        <nb-option *ngFor="let c of sharableNamespaceConfigurations" [value]="c.namespace">
-          {{c.namespace}}
-        </nb-option>
-      </nb-select>
+        <nb-select
+          multiple
+          placeholder="None"
+          [(selected)]="importedNamespaces"
+          style="width: 400px"
+        >
+          <nb-option
+            *ngFor="let c of sharableNamespaceConfigurations"
+            [value]="c.namespace"
+          >
+            {{ c.namespace }}
+          </nb-option>
+        </nb-select>
       </p>
     </nb-card-body>
     <nb-card-footer>
       <button
         nbButton
         status="primary"
-        (click)="saveNamespaceConfiguration()">
+        (click)="saveNamespaceConfiguration()"
+      >
         Save
       </button>
     </nb-card-footer>

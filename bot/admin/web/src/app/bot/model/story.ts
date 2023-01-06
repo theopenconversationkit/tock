@@ -23,11 +23,7 @@ import { AttachmentType, BotApplicationConfiguration } from '../../core/model/co
 import { StateService } from '../../core-nlp/state.service';
 
 export class CreateStoryRequest {
-  constructor(
-    public story: StoryDefinitionConfiguration,
-    public language: string,
-    public firstSentences: string[]
-  ) {}
+  constructor(public story: StoryDefinitionConfiguration, public language: string, public firstSentences: string[]) {}
 }
 
 export class StorySearchQuery extends PaginatedQuery {
@@ -46,10 +42,7 @@ export class StorySearchQuery extends PaginatedQuery {
 }
 
 export class Story {
-  constructor(
-    public storyDefinition: StoryDefinitionConfiguration,
-    public firstSentences: Sentence[]
-  ) {}
+  constructor(public storyDefinition: StoryDefinitionConfiguration, public firstSentences: Sentence[]) {}
 
   static fromJSON(json: any): Story {
     const value = Object.create(Story.prototype);
@@ -67,11 +60,7 @@ export class Story {
 }
 
 export abstract class AnswerContainer {
-  protected constructor(
-    public currentType: AnswerConfigurationType,
-    public answers: AnswerConfiguration[],
-    public category: string
-  ) {}
+  protected constructor(public currentType: AnswerConfigurationType, public answers: AnswerConfiguration[], public category: string) {}
 
   abstract containerId(): string;
 
@@ -243,15 +232,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       this.name,
       this.userSentence,
       this.userSentenceLocale,
-      this.features.map(
-        (f) =>
-          new StoryFeature(
-            f.botApplicationConfigurationId,
-            f.enabled,
-            f.switchToStoryId,
-            f.endWithStoryId
-          )
-      ),
+      this.features.map((f) => new StoryFeature(f.botApplicationConfigurationId, f.enabled, f.switchToStoryId, f.endWithStoryId)),
       this.configurationName,
       this._id,
       this.version,
@@ -273,10 +254,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
       ? false
       : this.features.filter(
           (f) =>
-            !f.enabled &&
-            !f.switchToStoryId &&
-            (!f.botApplicationConfigurationId ||
-              f.botApplicationConfigurationId === configurationId)
+            !f.enabled && !f.switchToStoryId && (!f.botApplicationConfigurationId || f.botApplicationConfigurationId === configurationId)
         ).length > 0;
   }
 }
@@ -570,15 +548,9 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
   }
 
   simpleTextView(wide: boolean): string {
-    const r =
-      this.answers && this.answers.length > 0
-        ? this.answers[0].label.defaultLocalizedLabel().label
-        : '[no text yet]';
+    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : '[no text yet]';
     const limit = wide ? 80 : 25;
-    return (
-      r.substring(0, Math.min(r.length, limit)) +
-      (r.length > limit || this.answers.length > 1 ? '...' : '')
-    );
+    return r.substring(0, Math.min(r.length, limit)) + (r.length > limit || this.answers.length > 1 ? '...' : '');
   }
 
   invalidMessage(): string {
@@ -652,11 +624,7 @@ export class SimpleAnswer {
   }
 
   clone(): SimpleAnswer {
-    return new SimpleAnswer(
-      this.label.clone(),
-      this.delay,
-      this.mediaMessage ? this.mediaMessage.clone() : null
-    );
+    return new SimpleAnswer(this.label.clone(), this.delay, this.mediaMessage ? this.mediaMessage.clone() : null);
   }
 }
 
@@ -732,7 +700,7 @@ export class MediaAction extends Media {
   }
 
   public titleLabel = '';
-  public readonly internalId = Math.random()
+  public readonly internalId = Math.random();
 
   static fromJSON(json: any): MediaAction {
     const value = Object.create(MediaAction.prototype);
@@ -806,10 +774,7 @@ export class MediaFile {
 }
 
 export class ScriptAnswerConfiguration extends AnswerConfiguration {
-  constructor(
-    public scriptVersions: ScriptAnswerVersionedConfiguration[],
-    public current: ScriptAnswerVersionedConfiguration
-  ) {
+  constructor(public scriptVersions: ScriptAnswerVersionedConfiguration[], public current: ScriptAnswerVersionedConfiguration) {
     super(AnswerConfigurationType.script);
   }
 
@@ -941,11 +906,7 @@ export class StoryFeature {
 }
 
 export class BotConfiguredAnswer {
-  constructor(
-    public botConfiguration: String,
-    public currentType: AnswerConfigurationType,
-    public answers: AnswerConfiguration[]
-  ) {}
+  constructor(public botConfiguration: String, public currentType: AnswerConfigurationType, public answers: AnswerConfiguration[]) {}
 
   static fromJSONArray(json?: Array<any>): BotConfiguredAnswer[] {
     return json ? json.map(BotConfiguredAnswer.fromJSON) : [];
@@ -969,10 +930,7 @@ export class BotConfiguredAnswer {
 }
 
 export class CustomAnswerContainer extends AnswerContainer {
-  constructor(
-    public botConfigurationAnswer: BotConfiguredAnswer,
-    public story: StoryDefinitionConfiguration
-  ) {
+  constructor(public botConfigurationAnswer: BotConfiguredAnswer, public story: StoryDefinitionConfiguration) {
     super(botConfigurationAnswer.currentType, botConfigurationAnswer.answers, story.category);
   }
 

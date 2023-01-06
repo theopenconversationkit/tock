@@ -53,32 +53,19 @@ export class MediaDialogComponent implements OnInit {
     this.create = this.media === null;
     this.media = this.media ? this.media : new MediaCard([], null, null, null, true);
     if (this.media.title) {
-      this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(
-        this.state.currentLocale
-      ).label;
+      this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
     }
     if (this.media.subTitle) {
-      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabelForLocale(
-        this.state.currentLocale
-      ).label;
+      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
     }
     if (this.media.file && this.media.file.description) {
-      this.media.file.descriptionLabel = this.media.file.description.defaultLocalizedLabelForLocale(
-        this.state.currentLocale
-      ).label;
+      this.media.file.descriptionLabel = this.media.file.description.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
     }
 
-    this.media.actions.forEach(
-      (a) => (a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label)
-    );
+    this.media.actions.forEach((a) => (a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label));
 
     this.uploader = new FileUploader({ removeAfterUpload: true, autoUpload: true });
-    this.uploader.onCompleteItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
+    this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.media.file = MediaFile.fromJSON(JSON.parse(response));
     };
     this.bot.prepareFileDumpUploader(this.uploader);
@@ -123,34 +110,19 @@ export class MediaDialogComponent implements OnInit {
 
   save() {
     if (!this.isTitle() && !this.isSubtitle() && !this.isFile()) {
-      this.toastrService.show(
-        `Please add a Title, Subtitle or File.`,
-        'Media Message is not complete',
-        {
-          duration: 3000,
-          status: 'warning'
-        }
-      );
+      this.toastrService.show(`Please add a Title, Subtitle or File.`, 'Media Message is not complete', {
+        duration: 3000,
+        status: 'warning'
+      });
     } else {
       if (this.isTitle()) {
         if (this.media.title) {
           this.bot
-            .saveI18nLabel(
-              this.media.title.changeDefaultLabelForLocale(
-                this.state.currentLocale,
-                this.media.titleLabel.trim()
-              )
-            )
+            .saveI18nLabel(this.media.title.changeDefaultLabelForLocale(this.state.currentLocale, this.media.titleLabel.trim()))
             .subscribe((_) => {});
         } else {
           this.bot
-            .createI18nLabel(
-              new CreateI18nLabelRequest(
-                this.category,
-                this.media.titleLabel.trim(),
-                this.state.currentLocale
-              )
-            )
+            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.titleLabel.trim(), this.state.currentLocale))
             .subscribe((i18n) => (this.media.title = i18n));
         }
       } else {
@@ -160,22 +132,11 @@ export class MediaDialogComponent implements OnInit {
       if (this.isSubtitle()) {
         if (this.media.subTitle) {
           this.bot
-            .saveI18nLabel(
-              this.media.subTitle.changeDefaultLabelForLocale(
-                this.state.currentLocale,
-                this.media.subTitleLabel.trim()
-              )
-            )
+            .saveI18nLabel(this.media.subTitle.changeDefaultLabelForLocale(this.state.currentLocale, this.media.subTitleLabel.trim()))
             .subscribe((_) => {});
         } else {
           this.bot
-            .createI18nLabel(
-              new CreateI18nLabelRequest(
-                this.category,
-                this.media.subTitleLabel.trim(),
-                this.state.currentLocale
-              )
-            )
+            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.subTitleLabel.trim(), this.state.currentLocale))
             .subscribe((i18n) => (this.media.subTitle = i18n));
         }
       } else {
@@ -186,21 +147,12 @@ export class MediaDialogComponent implements OnInit {
         if (this.media.file && this.media.file.description) {
           this.bot
             .saveI18nLabel(
-              this.media.file.description.changeDefaultLabelForLocale(
-                this.state.currentLocale,
-                this.media.file.descriptionLabel.trim()
-              )
+              this.media.file.description.changeDefaultLabelForLocale(this.state.currentLocale, this.media.file.descriptionLabel.trim())
             )
             .subscribe((_) => {});
         } else {
           this.bot
-            .createI18nLabel(
-              new CreateI18nLabelRequest(
-                this.category,
-                this.media.file.descriptionLabel.trim(),
-                this.state.currentLocale
-              )
-            )
+            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.file.descriptionLabel.trim(), this.state.currentLocale))
             .subscribe((i18n) => (this.media.file.description = i18n));
         }
       } else if (this.media.file) {
@@ -211,20 +163,10 @@ export class MediaDialogComponent implements OnInit {
         .filter((a) => a.titleLabel && a.titleLabel.trim().length !== 0)
         .map((a) => {
           if (a.title) {
-            this.bot
-              .saveI18nLabel(
-                a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())
-              )
-              .subscribe((_) => {});
+            this.bot.saveI18nLabel(a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())).subscribe((_) => {});
           } else {
             this.bot
-              .createI18nLabel(
-                new CreateI18nLabelRequest(
-                  this.category,
-                  a.titleLabel.trim(),
-                  this.state.currentLocale
-                )
-              )
+              .createI18nLabel(new CreateI18nLabelRequest(this.category, a.titleLabel.trim(), this.state.currentLocale))
               .subscribe((i18n) => (a.title = i18n));
           }
           return a;

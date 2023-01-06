@@ -224,8 +224,5 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     </div>`
 })
 export class DisplayNlpStatsComponent {
-  constructor(
-    public dialogRef: MatDialogRef<DisplayNlpStatsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor(public dialogRef: MatDialogRef<DisplayNlpStatsComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
 }

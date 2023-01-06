@@ -85,9 +85,7 @@
                   placeholder="Password"
                   [required]="true"
                 />
-                <ng-container
-                  *ngIf="errorMessage || (userPassword.invalid && userPassword.touched)"
-                >
+                <ng-container *ngIf="errorMessage || (userPassword.invalid && userPassword.touched)">
                   <p
                     class="error-message"
                     *ngIf="userPassword.errors?.required"

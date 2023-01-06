@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DialogFlowStateData,
-  DialogFlowStateTransitionData,
-  DialogFlowStateTransitionType
-} from './flow';
+import { DialogFlowStateData, DialogFlowStateTransitionData, DialogFlowStateTransitionType } from './flow';
 import { AnswerConfigurationType } from '../../bot/model/story';
 
 export class StoryNode {
@@ -117,9 +113,7 @@ export class NodeTypeFilter {
 
 export const NodeTypeFilters = [
   new NodeTypeFilter('All', 'All Types', true, (node) => true),
-  new NodeTypeFilter('Configured', 'All Configured Types', true, (node) =>
-    node.isConfiguredAnswer()
-  ),
+  new NodeTypeFilter('Configured', 'All Configured Types', true, (node) => node.isConfiguredAnswer()),
   new NodeTypeFilter('Simple', 'Only Simple Type', true, (node) => node.isSimpleAnswer()),
   //TODO uncomment this when message type available
   //new NodeTypeFilter('Message', 'Only Message Type', true, node => node.isMessageAnswer()),

@@ -48,12 +48,7 @@ export class EntitiesComponent implements OnInit {
 
   ngOnInit() {
     this.uploader = new FileUploader({ autoUpload: true, removeAfterUpload: true });
-    this.uploader.onCompleteItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
+    this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       const d = Dictionary.fromJSON(JSON.parse(response));
       this.selectedDictionary = d;
       this.selectedEntityType.dictionary = d.values.length !== 0;
@@ -68,10 +63,7 @@ export class EntitiesComponent implements OnInit {
   }
 
   downloadDictionary() {
-    saveAs(
-      new Blob([JsonUtils.stringify(this.selectedDictionary)]),
-      'dictionary_' + this.selectedEntityType.name + '.json'
-    );
+    saveAs(new Blob([JsonUtils.stringify(this.selectedDictionary)]), 'dictionary_' + this.selectedEntityType.name + '.json');
     this.toastrService.show(`Dictionary exported`, 'Dictionary', {
       duration: 2000,
       status: 'success'
@@ -82,9 +74,7 @@ export class EntitiesComponent implements OnInit {
     this.nlp
       .updateEntityDefinition(this.state.createUpdateEntityDefinitionQuery(entity))
       .pipe(map((_) => this.applicationService.reloadCurrentApplication()))
-      .subscribe((_) =>
-        this.toastrService.show(`Entity updated`, 'Update', { duration: 2000, status: 'success' })
-      );
+      .subscribe((_) => this.toastrService.show(`Entity updated`, 'Update', { duration: 2000, status: 'success' }));
   }
 
   deleteEntityType(entityType: EntityType) {
@@ -100,14 +90,10 @@ export class EntitiesComponent implements OnInit {
         this.nlp.removeEntityType(entityType).subscribe(
           (_) => {
             this.state.resetConfiguration();
-            this.toastrService.show(
-              `Entity Type ${entityType.name} removed`,
-              'Remove Entity Type',
-              {
-                duration: 2000,
-                status: 'success'
-              }
-            );
+            this.toastrService.show(`Entity Type ${entityType.name} removed`, 'Remove Entity Type', {
+              duration: 2000,
+              status: 'success'
+            });
           },
           (_) =>
             this.toastrService.show(`Delete Entity Type ${entityType.name} failed`, 'Error', {
@@ -182,13 +168,7 @@ export class EntitiesComponent implements OnInit {
           input.focus();
         } else {
           this.nlp
-            .createOrUpdatePredefinedValue(
-              this.state.createPredefinedValueQuery(
-                this.selectedEntityType.name,
-                newValue,
-                oldValue
-              )
-            )
+            .createOrUpdatePredefinedValue(this.state.createPredefinedValueQuery(this.selectedEntityType.name, newValue, oldValue))
             .subscribe(
               (next) => {
                 this.selectedDictionary = next;
@@ -214,58 +194,50 @@ export class EntitiesComponent implements OnInit {
         status: 'danger'
       });
     } else {
-      this.nlp
-        .createOrUpdatePredefinedValue(
-          this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)
-        )
-        .subscribe(
-          (next) => {
-            this.selectedDictionary = next;
-            if (next.values.length === 1) {
-              this.selectedEntityType.dictionary = true;
-              this.nlp.updateEntityType(this.selectedEntityType).subscribe((s) => {
-                if (s) this.refreshEntityType(this.selectedEntityType);
-              });
-            }
-          },
-          (_) =>
-            this.toastrService.show(`Create Predefined Value '${name}' failed`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            })
-        );
-    }
-  }
-
-  deletePredefinedValue(name: string) {
-    this.nlp
-      .deletePredefinedValue(
-        this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)
-      )
-      .subscribe(
+      this.nlp.createOrUpdatePredefinedValue(this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
         (next) => {
-          let index = -1;
-          this.selectedDictionary.values.forEach((pv, i) => {
-            if (pv.value === name) {
-              index = i;
-            }
-          });
-          if (index > -1) {
-            this.selectedDictionary.values.splice(index, 1);
-          }
-          if (this.selectedDictionary.values.length === 0) {
-            this.selectedEntityType.dictionary = false;
+          this.selectedDictionary = next;
+          if (next.values.length === 1) {
+            this.selectedEntityType.dictionary = true;
             this.nlp.updateEntityType(this.selectedEntityType).subscribe((s) => {
               if (s) this.refreshEntityType(this.selectedEntityType);
             });
           }
         },
         (_) =>
-          this.toastrService.show(`Delete Predefined Value '${name}' failed`, 'Error', {
+          this.toastrService.show(`Create Predefined Value '${name}' failed`, 'Error', {
             duration: 5000,
             status: 'danger'
           })
       );
+    }
+  }
+
+  deletePredefinedValue(name: string) {
+    this.nlp.deletePredefinedValue(this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
+      (next) => {
+        let index = -1;
+        this.selectedDictionary.values.forEach((pv, i) => {
+          if (pv.value === name) {
+            index = i;
+          }
+        });
+        if (index > -1) {
+          this.selectedDictionary.values.splice(index, 1);
+        }
+        if (this.selectedDictionary.values.length === 0) {
+          this.selectedEntityType.dictionary = false;
+          this.nlp.updateEntityType(this.selectedEntityType).subscribe((s) => {
+            if (s) this.refreshEntityType(this.selectedEntityType);
+          });
+        }
+      },
+      (_) =>
+        this.toastrService.show(`Delete Predefined Value '${name}' failed`, 'Error', {
+          duration: 5000,
+          status: 'danger'
+        })
+    );
   }
 
   createLabel(predefinedValue: PredefinedValue, name: string) {
@@ -277,26 +249,17 @@ export class EntitiesComponent implements OnInit {
     } else {
       this.nlp
         .createLabel(
-          this.state.createPredefinedLabelQuery(
-            this.selectedEntityType.name,
-            predefinedValue.value,
-            this.state.currentLocale,
-            name
-          )
+          this.state.createPredefinedLabelQuery(this.selectedEntityType.name, predefinedValue.value, this.state.currentLocale, name)
         )
         .subscribe(
           (next) => {
             this.selectedDictionary = next;
           },
           (_) =>
-            this.toastrService.show(
-              `Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`,
-              'Error',
-              {
-                duration: 5000,
-                status: 'danger'
-              }
-            )
+            this.toastrService.show(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, 'Error', {
+              duration: 5000,
+              status: 'danger'
+            })
         );
     }
   }
@@ -304,12 +267,7 @@ export class EntitiesComponent implements OnInit {
   deleteLabel(predefinedValue: PredefinedValue, name: string) {
     this.nlp
       .deleteLabel(
-        this.state.createPredefinedLabelQuery(
-          this.selectedEntityType.name,
-          predefinedValue.value,
-          this.state.currentLocale,
-          name
-        )
+        this.state.createPredefinedLabelQuery(this.selectedEntityType.name, predefinedValue.value, this.state.currentLocale, name)
       )
       .subscribe(
         (next) => {
@@ -326,14 +284,10 @@ export class EntitiesComponent implements OnInit {
           });
         },
         (_) =>
-          this.toastrService.show(
-            `Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`,
-            'Error',
-            {
-              duration: 5000,
-              status: 'danger'
-            }
-          )
+          this.toastrService.show(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, 'Error', {
+            duration: 5000,
+            status: 'danger'
+          })
       );
   }
 }

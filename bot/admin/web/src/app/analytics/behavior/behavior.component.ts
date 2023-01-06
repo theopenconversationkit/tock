@@ -63,11 +63,7 @@ export class BehaviorComponent implements AfterViewInit {
   configurations: BotApplicationConfiguration[];
   userPreferences: UserAnalyticsPreferences;
 
-  constructor(
-    private state: StateService,
-    private analytics: AnalyticsService,
-    private botConfiguration: BotConfigurationService
-  ) {
+  constructor(private state: StateService, private analytics: AnalyticsService, private botConfiguration: BotConfigurationService) {
     this.botConfiguration.configurations.subscribe((configs) => {
       this.configurations = configs;
     });
@@ -161,9 +157,7 @@ export class BehaviorComponent implements AfterViewInit {
   // }
 
   getConnector(connectorId: string): ConnectorType {
-    let connectors = this.configurations
-      .filter((config) => config.connectorType.id === connectorId)
-      .map((config) => config.connectorType);
+    let connectors = this.configurations.filter((config) => config.connectorType.id === connectorId).map((config) => config.connectorType);
     return connectors && connectors.length > 0 ? connectors[0] : null;
   }
 
@@ -187,56 +181,46 @@ export class BehaviorComponent implements AfterViewInit {
   private buildMessagesByStoryTypeCharts() {
     if (!this.userPreferences.graphs.behavior.messagesByStoryType) return;
     this.messagesByStoryTypeLoading = true;
-    this.analytics
-      .messagesAnalyticsByStoryType(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByStoryTypeData = result;
-        this.messagesByStoryTypeLoading = false;
-      });
+    this.analytics.messagesAnalyticsByStoryType(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByStoryTypeData = result;
+      this.messagesByStoryTypeLoading = false;
+    });
   }
 
   private buildMessagesByStoryCategoryCharts() {
     if (!this.userPreferences.graphs.behavior.messagesByStoryCategory) return;
     this.messagesByStoryCategoryLoading = true;
-    this.analytics
-      .messagesAnalyticsByStoryCategory(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByStoryCategoryData = result;
-        this.messagesByStoryCategoryLoading = false;
-      });
+    this.analytics.messagesAnalyticsByStoryCategory(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByStoryCategoryData = result;
+      this.messagesByStoryCategoryLoading = false;
+    });
   }
 
   private buildMessagesByStoryLocaleCharts() {
     if (!this.userPreferences.graphs.behavior.messagesByLocale) return;
     this.messagesByStoryLocaleLoading = true;
-    this.analytics
-      .messagesAnalyticsByStoryLocale(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByStoryLocaleData = result;
-        this.messagesByStoryLocaleLoading = false;
-      });
+    this.analytics.messagesAnalyticsByStoryLocale(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByStoryLocaleData = result;
+      this.messagesByStoryLocaleLoading = false;
+    });
   }
 
   private buildMessagesByIntentCharts() {
     if (!this.userPreferences.graphs.behavior.messagesByIntent) return;
     this.messagesByIntentLoading = true;
-    this.analytics
-      .messagesAnalyticsByIntent(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByIntentData = result;
-        this.messagesByIntentLoading = false;
-      });
+    this.analytics.messagesAnalyticsByIntent(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByIntentData = result;
+      this.messagesByIntentLoading = false;
+    });
   }
 
   private buildMessagesByDayOfWeekCharts() {
     if (!this.userPreferences.graphs.behavior.messagesByDayOfWeek) return;
     this.messagesByDayOfWeekLoading = true;
-    this.analytics
-      .messagesAnalyticsByDayOfWeek(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByDayOfWeekData = result;
-        this.messagesByDayOfWeekLoading = false;
-      });
+    this.analytics.messagesAnalyticsByDayOfWeek(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByDayOfWeekData = result;
+      this.messagesByDayOfWeekLoading = false;
+    });
   }
 
   private buildMessagesByHourCharts() {
@@ -251,12 +235,10 @@ export class BehaviorComponent implements AfterViewInit {
   private buildMessagesByActionTypeCharts() {
     if (!this.userPreferences.graphs.behavior.messagesByActionType) return;
     this.messagesByActionTypeLoading = true;
-    this.analytics
-      .messagesAnalyticsByActionType(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByActionTypeData = result;
-        this.messagesByActionTypeLoading = false;
-      });
+    this.analytics.messagesAnalyticsByActionType(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByActionTypeData = result;
+      this.messagesByActionTypeLoading = false;
+    });
   }
 
   private buildMessagesSearchQuery(): DialogFlowRequest {

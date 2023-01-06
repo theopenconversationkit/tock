@@ -20,7 +20,8 @@ import { Observable, of } from 'rxjs';
 import {
   Application,
   ApplicationImportConfiguration,
-  ModelBuildQueryResult, NamespaceConfiguration,
+  ModelBuildQueryResult,
+  NamespaceConfiguration,
   NlpApplicationConfiguration,
   UserLogQueryResult,
   UserNamespace
@@ -37,9 +38,7 @@ export class ApplicationService implements OnDestroy {
 
   constructor(private rest: RestService, private state: StateService) {
     this.resetConfiguration();
-    this.resetConfigurationUnsuscriber = this.state.resetConfigurationEmitter.subscribe((_) =>
-      this.resetConfiguration()
-    );
+    this.resetConfigurationUnsuscriber = this.state.resetConfigurationEmitter.subscribe((_) => this.resetConfiguration());
   }
 
   ngOnDestroy(): void {
@@ -75,9 +74,7 @@ export class ApplicationService implements OnDestroy {
   getApplicationsPending: Observable<Application[]>;
   getApplications(): Observable<Application[]> {
     if (!this.getApplicationsPending) {
-      this.getApplicationsPending = this.rest
-        .getArray('/applications', Application.fromJSONArray)
-        .pipe(share());
+      this.getApplicationsPending = this.rest.getArray('/applications', Application.fromJSONArray).pipe(share());
     }
     return this.getApplicationsPending;
   }
@@ -139,10 +136,7 @@ export class ApplicationService implements OnDestroy {
   }
 
   getApplicationDump(application: Application): Observable<Blob> {
-    return this.rest.get(
-      `/application/dump/${application._id}`,
-      (r) => new Blob([JSON.stringify(r)], { type: 'application/json' })
-    );
+    return this.rest.get(`/application/dump/${application._id}`, (r) => new Blob([JSON.stringify(r)], { type: 'application/json' }));
   }
 
   getSentencesDump(application: Application, full: boolean): Observable<Blob> {
@@ -152,24 +146,14 @@ export class ApplicationService implements OnDestroy {
     );
   }
 
-  getSentencesDumpForIntent(
-    application: Application,
-    intent: Intent,
-    locale: string,
-    full: boolean
-  ): Observable<Blob> {
+  getSentencesDumpForIntent(application: Application, intent: Intent, locale: string, full: boolean): Observable<Blob> {
     return this.rest.get(
-      `/sentences/dump/${full ? 'full/' : ''}${application._id}/${encodeURIComponent(
-        intent.qualifiedName()
-      )}/${locale}`,
+      `/sentences/dump/${full ? 'full/' : ''}${application._id}/${encodeURIComponent(intent.qualifiedName())}/${locale}`,
       (r) => new Blob([JSON.stringify(r)], { type: 'application/json' })
     );
   }
 
-  prepareApplicationDumpUploader(
-    uploader: FileUploader,
-    configuration: ApplicationImportConfiguration
-  ) {
+  prepareApplicationDumpUploader(uploader: FileUploader, configuration: ApplicationImportConfiguration) {
     let url: string;
     if (configuration.newApplicationName) {
       url = `/dump/application/${configuration.newApplicationName.trim()}`;
@@ -226,21 +210,11 @@ export class ApplicationService implements OnDestroy {
   }
 
   getAlexaExport(query: ApplicationScopedQuery): Observable<Blob> {
-    return this.rest.post(
-      `/alexa/export`,
-      query,
-      (r) => new Blob([JSON.stringify(r)], { type: 'application/json' })
-    );
+    return this.rest.post(`/alexa/export`, query, (r) => new Blob([JSON.stringify(r)], { type: 'application/json' }));
   }
 
-  getNlpConfiguration(
-    applicationId: string,
-    engineType: NlpEngineType
-  ): Observable<NlpApplicationConfiguration> {
-    return this.rest.get(
-      `/application/${applicationId}/model/${engineType.name}/configuration`,
-      NlpApplicationConfiguration.fromJSON
-    );
+  getNlpConfiguration(applicationId: string, engineType: NlpEngineType): Observable<NlpApplicationConfiguration> {
+    return this.rest.get(`/application/${applicationId}/model/${engineType.name}/configuration`, NlpApplicationConfiguration.fromJSON);
   }
 
   updateModelConfiguration(
@@ -248,10 +222,7 @@ export class ApplicationService implements OnDestroy {
     engineType: NlpEngineType,
     conf: NlpApplicationConfiguration
   ): Observable<NlpApplicationConfiguration> {
-    return this.rest.post(
-      `/application/${applicationId}/model/${engineType.name}/configuration`,
-      conf
-    );
+    return this.rest.post(`/application/${applicationId}/model/${engineType.name}/configuration`, conf);
   }
 
   searchUserLogs(query: PaginatedQuery): Observable<UserLogQueryResult> {

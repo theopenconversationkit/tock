@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ApplicationRef,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output
-} from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Intent, nameFromQualifiedName, Sentence, SentenceStatus } from '../model/nlp';
 import { StateService } from '../core-nlp/state.service';
 import { NlpService } from '../nlp-tabs/nlp.service';
@@ -97,9 +88,7 @@ export class SentenceAnalysisComponent implements OnInit {
     const classification = newSentence.classification;
     classification.intentId = value;
     const intent = this.state.findIntentById(value);
-    classification.entities = oldSentence.classification.entities.filter(
-      (e) => intent && intent.containsEntity(e.type, e.role)
-    );
+    classification.entities = oldSentence.classification.entities.filter((e) => intent && intent.containsEntity(e.type, e.role));
     this.sentence = newSentence;
   }
 
@@ -212,24 +201,13 @@ export class SentenceAnalysisComponent implements OnInit {
       s.language = this.state.currentLocale;
       s.status = SentenceStatus.deleted;
       this.nlp.updateSentence(s).subscribe((_) => {
-        this.dialog.notify(
-          `Language change to ${this.state.localeName(this.sentence.language)}`,
-          'Language change'
-        );
+        this.dialog.notify(`Language change to ${this.state.localeName(this.sentence.language)}`, 'Language change');
       });
     }
   }
 
-  private createIntent(
-    name: string,
-    label: string,
-    description: string,
-    category: string
-  ): boolean {
-    if (
-      StateService.intentExistsInApp(this.state.currentApplication, name) ||
-      name === nameFromQualifiedName(Intent.unknown)
-    ) {
+  private createIntent(name: string, label: string, description: string, category: string): boolean {
+    if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === nameFromQualifiedName(Intent.unknown)) {
       this.dialog.notify(`Intent ${name} already exists`);
       return false;
     } else {
@@ -237,8 +215,7 @@ export class SentenceAnalysisComponent implements OnInit {
         const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
           context: {
             title: 'This intent is already used in an other application',
-            subtitle:
-              'If you confirm the name, the intent will be shared between the two applications.',
+            subtitle: 'If you confirm the name, the intent will be shared between the two applications.',
             action: 'Confirm'
           }
         });
@@ -258,17 +235,7 @@ export class SentenceAnalysisComponent implements OnInit {
   private saveIntent(name: string, label: string, description: string, category: string) {
     this.nlp
       .saveIntent(
-        new Intent(
-          name,
-          this.state.user.organization,
-          [],
-          [this.state.currentApplication._id],
-          [],
-          [],
-          label,
-          description,
-          category
-        )
+        new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], [], [], label, description, category)
       )
       .subscribe(
         (intent) => {

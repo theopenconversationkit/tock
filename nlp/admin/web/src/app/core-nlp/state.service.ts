@@ -21,13 +21,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthListener } from './auth/auth.listener';
 import { User, UserRole } from '../model/auth';
 import { SettingsService } from './settings.service';
-import {
-  ApplicationScopedQuery,
-  Entry,
-  groupBy,
-  PaginatedQuery,
-  SearchMark
-} from '../model/commons';
+import { ApplicationScopedQuery, Entry, groupBy, PaginatedQuery, SearchMark } from '../model/commons';
 import {
   EntityDefinition,
   EntityType,
@@ -131,24 +125,18 @@ export class StateService implements AuthListener {
     this.currentApplication.intents.sort((a, b) => a.intentLabel().localeCompare(b.intentLabel()));
     this.currentIntents.next(this.currentApplication.intents);
     const categories = [];
-    groupBy(this.currentApplication.intents, (i) => (i.category ? i.category : 'default')).forEach(
-      (intents, category) => {
-        categories.push(new IntentsCategory(category, intents));
-      }
-    );
-    this.currentIntentsCategories.next(
-      categories.sort((a, b) => a.category.localeCompare(b.category))
-    );
+    groupBy(this.currentApplication.intents, (i) => (i.category ? i.category : 'default')).forEach((intents, category) => {
+      categories.push(new IntentsCategory(category, intents));
+    });
+    this.currentIntentsCategories.next(categories.sort((a, b) => a.category.localeCompare(b.category)));
 
     const namespaceCategories = [];
-    groupBy(this.currentApplication.intents.concat(this.currentApplication.namespaceIntents), (i) => (i.category ? i.category : 'default')).forEach(
-      (intents, category) => {
-        namespaceCategories.push(new IntentsCategory(category, intents));
-      }
-    );
-    this.currentNamespaceIntentsCategories.next(
-      namespaceCategories.sort((a, b) => a.category.localeCompare(b.category))
-    );
+    groupBy(this.currentApplication.intents.concat(this.currentApplication.namespaceIntents), (i) =>
+      i.category ? i.category : 'default'
+    ).forEach((intents, category) => {
+      namespaceCategories.push(new IntentsCategory(category, intents));
+    });
+    this.currentNamespaceIntentsCategories.next(namespaceCategories.sort((a, b) => a.category.localeCompare(b.category)));
   }
 
   addIntent(intent: Intent) {
@@ -175,7 +163,7 @@ export class StateService implements AuthListener {
     return this.findIntentById(id) ?? this.currentApplication.namespaceIntents.find((i) => i._id === id);
   }
 
-  isOtherNamespaceIntent(intent: Intent) : boolean {
+  isOtherNamespaceIntent(intent: Intent): boolean {
     return intent && this.currentApplication.isOtherNamespaceIntent(intent);
   }
 
@@ -198,9 +186,7 @@ export class StateService implements AuthListener {
   }
 
   entityTypesSortedByName(): Observable<EntityType[]> {
-    return this.entityTypes.pipe(
-      map((e) => e.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName())))
-    );
+    return this.entityTypes.pipe(map((e) => e.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName()))));
   }
 
   removeEntityTypeByName(name: string) {
@@ -262,9 +248,7 @@ export class StateService implements AuthListener {
   findCurrentApplication(): Application {
     if (!this.currentApplication && this.applications) {
       if (this.settings.currentApplicationName) {
-        this.changeApplication(
-          this.applications.find((a) => a.name === this.settings.currentApplicationName)
-        );
+        this.changeApplication(this.applications.find((a) => a.name === this.settings.currentApplicationName));
       }
       if (!this.currentApplication && this.applications.length != 0) {
         this.changeApplication(this.applications[0]);
@@ -293,12 +277,7 @@ export class StateService implements AuthListener {
   }
 
   createUpdateEntityDefinitionQuery(entity: EntityDefinition): UpdateEntityDefinitionQuery {
-    return new UpdateEntityDefinitionQuery(
-      this.currentApplication.namespace,
-      this.currentApplication.name,
-      this.currentLocale,
-      entity
-    );
+    return new UpdateEntityDefinitionQuery(this.currentApplication.namespace, this.currentApplication.name, this.currentLocale, entity);
   }
 
   createPaginatedQuery(start: number, size?: number, searchMark?: SearchMark): PaginatedQuery {
@@ -312,25 +291,11 @@ export class StateService implements AuthListener {
     );
   }
 
-  createPredefinedValueQuery(
-    entityTypeName: string,
-    predefinedValue: string,
-    oldPredefinedValue?: string
-  ): PredefinedValueQuery {
-    return new PredefinedValueQuery(
-      entityTypeName,
-      predefinedValue.trim(),
-      this.currentLocale,
-      oldPredefinedValue
-    );
+  createPredefinedValueQuery(entityTypeName: string, predefinedValue: string, oldPredefinedValue?: string): PredefinedValueQuery {
+    return new PredefinedValueQuery(entityTypeName, predefinedValue.trim(), this.currentLocale, oldPredefinedValue);
   }
 
-  createPredefinedLabelQuery(
-    entityTypeName: string,
-    predefinedValue: string,
-    locale: string,
-    label: string
-  ): PredefinedLabelQuery {
+  createPredefinedLabelQuery(entityTypeName: string, predefinedValue: string, locale: string, label: string): PredefinedLabelQuery {
     return new PredefinedLabelQuery(entityTypeName, predefinedValue.trim(), locale, label.trim());
   }
 

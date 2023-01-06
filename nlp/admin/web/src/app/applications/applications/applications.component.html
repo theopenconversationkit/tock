@@ -17,9 +17,7 @@
 <nb-card class="applications-applications">
   <nb-card-header>
     <div style="display: flex">
-      <span *ngIf="state.applications.length === 0">
-        Welcome! Please create your first Application
-      </span>
+      <span *ngIf="state.applications.length === 0"> Welcome! Please create your first Application </span>
       <span *ngIf="state.applications.length !== 0">Applications</span>
       <nb-actions
         size="small"

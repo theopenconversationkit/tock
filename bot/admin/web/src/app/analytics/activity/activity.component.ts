@@ -76,11 +76,7 @@ export class ActivityComponent implements OnInit {
   beforeCurrentFilterNbUsers: number;
   variationUsersPercentage: number;
 
-  constructor(
-    private state: StateService,
-    private analytics: AnalyticsService,
-    private botConfiguration: BotConfigurationService
-  ) {
+  constructor(private state: StateService, private analytics: AnalyticsService, private botConfiguration: BotConfigurationService) {
     this.botConfiguration.configurations.subscribe((configs) => {
       this.configurations = configs;
     });
@@ -93,8 +89,7 @@ export class ActivityComponent implements OnInit {
 
   getNumberOfDays(): number {
     return Number(
-      !this.filter.to || !this.filter.from ? 1 :
-        ((this.filter.to.getTime() - this.filter.from.getTime()) / (1000 * 3600 * 24)).toFixed(0)
+      !this.filter.to || !this.filter.from ? 1 : ((this.filter.to.getTime() - this.filter.from.getTime()) / (1000 * 3600 * 24)).toFixed(0)
     );
   }
 
@@ -170,9 +165,7 @@ export class ActivityComponent implements OnInit {
   // }
 
   getConnector(connectorId: string): ConnectorType {
-    let connectors = this.configurations
-      .filter((config) => config.connectorType.id === connectorId)
-      .map((config) => config.connectorType);
+    let connectors = this.configurations.filter((config) => config.connectorType.id === connectorId).map((config) => config.connectorType);
     return connectors && connectors.length > 0 ? connectors[0] : null;
   }
 
@@ -207,16 +200,14 @@ export class ActivityComponent implements OnInit {
       this.messagesByTypeLoading = false;
       this.currentFilterNbMessages = this.getTotalNumber(result.usersData);
 
-      this.analytics
-        .messagesAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays()))
-        .subscribe((result) => {
-          this.beforeCurrentFilterNbMessages = this.getTotalNumber(result.usersData);
-          this.variationMessagesPercentage = this.messagesVariationPercentage(
-            this.beforeCurrentFilterNbMessages,
-            this.currentFilterNbMessages
-          );
-          this.messagesPercentageLoading = false;
-        });
+      this.analytics.messagesAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays())).subscribe((result) => {
+        this.beforeCurrentFilterNbMessages = this.getTotalNumber(result.usersData);
+        this.variationMessagesPercentage = this.messagesVariationPercentage(
+          this.beforeCurrentFilterNbMessages,
+          this.currentFilterNbMessages
+        );
+        this.messagesPercentageLoading = false;
+      });
     });
   }
 
@@ -229,16 +220,11 @@ export class ActivityComponent implements OnInit {
       this.activeUsersLoading = false;
       this.currentFilterNbUsers = this.getTotalNumber(result.usersData);
 
-      this.analytics
-        .usersAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays()))
-        .subscribe((result) => {
-          this.beforeCurrentFilterNbUsers = this.getTotalNumber(result.usersData);
-          this.variationUsersPercentage = this.messagesVariationPercentage(
-            this.beforeCurrentFilterNbUsers,
-            this.currentFilterNbUsers
-          );
-          this.usersPercentageLoading = false;
-        });
+      this.analytics.usersAnalytics(this.buildPreviousDateSearchQuery(this.getNumberOfDays())).subscribe((result) => {
+        this.beforeCurrentFilterNbUsers = this.getTotalNumber(result.usersData);
+        this.variationUsersPercentage = this.messagesVariationPercentage(this.beforeCurrentFilterNbUsers, this.currentFilterNbUsers);
+        this.usersPercentageLoading = false;
+      });
     });
   }
 
@@ -250,9 +236,7 @@ export class ActivityComponent implements OnInit {
     if (current == before) {
       return 'minus-outline';
     } else {
-      return this.metricIncreased(before, current)
-        ? 'diagonal-arrow-right-up-outline'
-        : 'diagonal-arrow-right-down-outline';
+      return this.metricIncreased(before, current) ? 'diagonal-arrow-right-up-outline' : 'diagonal-arrow-right-down-outline';
     }
   }
 
@@ -260,9 +244,7 @@ export class ActivityComponent implements OnInit {
     if (current == before) {
       return 'minus-outline';
     } else {
-      return this.metricIncreased(before, current)
-        ? 'arrow-upward-outline'
-        : 'arrow-downward-outline';
+      return this.metricIncreased(before, current) ? 'arrow-upward-outline' : 'arrow-downward-outline';
     }
   }
 
@@ -300,45 +282,37 @@ export class ActivityComponent implements OnInit {
   private buildMessagesByStoryCharts() {
     if (!this.userPreferences.graphs.activity.messagesByStory) return;
     this.messagesByStoryLoading = true;
-    this.analytics
-      .messagesAnalyticsByDateAndStory(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByStoryData = result;
-        this.messagesByStoryLoading = false;
-      });
+    this.analytics.messagesAnalyticsByDateAndStory(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByStoryData = result;
+      this.messagesByStoryLoading = false;
+    });
   }
 
   private buildMessagesByIntentCharts() {
     if (!this.userPreferences.graphs.activity.messagesByIntent) return;
     this.messagesByIntentLoading = false;
-    this.analytics
-      .messagesAnalyticsByDateAndIntent(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByIntentData = result;
-        this.messagesByIntentLoading = false;
-      });
+    this.analytics.messagesAnalyticsByDateAndIntent(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByIntentData = result;
+      this.messagesByIntentLoading = false;
+    });
   }
 
   private buildMessagesByConfigurationCharts() {
     if (!this.userPreferences.graphs.activity.messagesByConfiguration) return;
     this.messagesByConfigurationLoading = true;
-    this.analytics
-      .messagesAnalyticsByConfiguration(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByConfigurationData = result;
-        this.messagesByConfigurationLoading = false;
-      });
+    this.analytics.messagesAnalyticsByConfiguration(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByConfigurationData = result;
+      this.messagesByConfigurationLoading = false;
+    });
   }
 
   private buildMessagesByConnectorCharts() {
     if (!this.userPreferences.graphs.activity.messagesByConnector) return;
     this.messagesByConnectorLoading = true;
-    this.analytics
-      .messagesAnalyticsByConnectorType(this.buildMessagesSearchQuery())
-      .subscribe((result) => {
-        this.messagesByConnectorData = result;
-        this.messagesByConnectorLoading = false;
-      });
+    this.analytics.messagesAnalyticsByConnectorType(this.buildMessagesSearchQuery()).subscribe((result) => {
+      this.messagesByConnectorData = result;
+      this.messagesByConnectorLoading = false;
+    });
   }
 
   private buildMessagesSearchQuery(): DialogFlowRequest {
@@ -356,8 +330,8 @@ export class ActivityComponent implements OnInit {
   }
 
   private buildPreviousDateSearchQuery(nbDays: number): DialogFlowRequest {
-    if(!this.filter.to) {
-      this.filter.to = this.filter.from
+    if (!this.filter.to) {
+      this.filter.to = this.filter.from;
     }
     const oldFromDate = new Date(this.filter.from.getTime());
     oldFromDate.setDate(oldFromDate.getDate() - nbDays);

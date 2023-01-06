@@ -29,19 +29,14 @@ export class ReviewRequestDialogComponent implements OnInit {
   @Input() beforeClassification: string;
   @Input() reviewComment: string;
 
-  constructor(
-    public dialogRef: NbDialogRef<ReviewRequestDialogComponent>,
-    private state: StateService
-  ) {}
+  constructor(public dialogRef: NbDialogRef<ReviewRequestDialogComponent>, private state: StateService) {}
 
   ngOnInit() {
     if (this.reviewComment) {
       this.description = this.reviewComment;
     } else {
       this.state.currentIntentsCategories.subscribe((c) => {
-        let intent = flatMap(c, (cat) => cat.intents).find(
-          (intent) => intent._id === this.beforeClassification
-        );
+        let intent = flatMap(c, (cat) => cat.intents).find((intent) => intent._id === this.beforeClassification);
         this.description = 'Initial intent: ' + (intent ? intent.name : '') + '\n\n';
       });
     }

@@ -15,12 +15,7 @@
  */
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import {
-  AnswerConfigurationType,
-  IntentName,
-  SimpleAnswerConfiguration,
-  StoryStep
-} from '../model/story';
+import { AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryStep } from '../model/story';
 import { StateService } from '../../core-nlp/state.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -197,14 +192,7 @@ export class StepsComponent implements OnInit, OnChanges {
       if (result?.entity) {
         this.nlp.getDictionary(result.entity).subscribe((dictionary) => {
           //dictionary
-          const newSteps = StoryStep.generateEntitySteps(
-            result.intent,
-            this.defaultCategory,
-            result.entity,
-            result.role,
-            dictionary,
-            0
-          );
+          const newSteps = StoryStep.generateEntitySteps(result.intent, this.defaultCategory, result.entity, result.role, dictionary, 0);
           newSteps.forEach((s) => {
             this.steps.push(s);
             this.saveI18nLabel(s);
@@ -217,13 +205,7 @@ export class StepsComponent implements OnInit, OnChanges {
 
   private saveI18nLabel(step: StoryStep) {
     this.bot
-      .createI18nLabel(
-        new CreateI18nLabelRequest(
-          this.defaultCategory,
-          step.newUserSentence.trim(),
-          this.state.currentLocale
-        )
-      )
+      .createI18nLabel(new CreateI18nLabelRequest(this.defaultCategory, step.newUserSentence.trim(), this.state.currentLocale))
       .subscribe((i18n) => {
         step.userSentence = i18n;
         step.new = false;

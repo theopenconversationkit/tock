@@ -17,13 +17,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BotService } from '../bot-service';
 import { StateService } from '../../core-nlp/state.service';
-import {
-  RuleType,
-  ruleTypeValues,
-  StoryDefinitionConfiguration,
-  StoryFeature,
-  StorySearchQuery
-} from '../model/story';
+import { RuleType, ruleTypeValues, StoryDefinitionConfiguration, StoryFeature, StorySearchQuery } from '../model/story';
 import { flatMap } from '../../model/commons';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 
@@ -53,17 +47,11 @@ export class StoryRuleComponent implements OnInit {
     }
   };
 
-  constructor(
-    private state: StateService,
-    private botService: BotService,
-    private configurationService: BotConfigurationService
-  ) {}
+  constructor(private state: StateService, private botService: BotService, private configurationService: BotConfigurationService) {}
 
   ngOnInit(): void {
     this.initNewFeature();
-    this.currentApplicationSubscription = this.state.currentApplicationEmitter.subscribe((a) =>
-      this.refresh()
-    );
+    this.currentApplicationSubscription = this.state.currentApplicationEmitter.subscribe((a) => this.refresh());
     this.refresh();
   }
 
@@ -105,9 +93,7 @@ export class StoryRuleComponent implements OnInit {
     s.features.push(newFeature);
     this.botService.saveStory(s).subscribe((_) => {
       newFeature.conf = newFeature.botApplicationConfigurationId
-        ? this.configurationService.findApplicationConfigurationById(
-            newFeature.botApplicationConfigurationId
-          )
+        ? this.configurationService.findApplicationConfigurationById(newFeature.botApplicationConfigurationId)
         : null;
       switch (newFeature.getRuleType()) {
         case RuleType.Redirection:
@@ -117,9 +103,7 @@ export class StoryRuleComponent implements OnInit {
           this.redirectedFeatures.push(newFeature);
           break;
         case RuleType.Ending:
-          newFeature.endWithStory = newFeature.endWithStoryId
-            ? this.stories.find((st) => st.storyId === newFeature.endWithStoryId)
-            : null;
+          newFeature.endWithStory = newFeature.endWithStoryId ? this.stories.find((st) => st.storyId === newFeature.endWithStoryId) : null;
           this.endingFeatures.push(newFeature);
           break;
         case RuleType.Activation:
@@ -154,22 +138,14 @@ export class StoryRuleComponent implements OnInit {
             story.features.forEach((f) => {
               f.story = story;
               f.conf = f.botApplicationConfigurationId
-                ? this.configurationService.findApplicationConfigurationById(
-                    f.botApplicationConfigurationId
-                  )
+                ? this.configurationService.findApplicationConfigurationById(f.botApplicationConfigurationId)
                 : null;
-              f.switchToStory = f.switchToStoryId
-                ? result.find((st) => st.storyId === f.switchToStoryId)
-                : null;
-              f.endWithStory = f.endWithStoryId
-                ? result.find((st) => st.storyId === f.endWithStoryId)
-                : null;
+              f.switchToStory = f.switchToStoryId ? result.find((st) => st.storyId === f.switchToStoryId) : null;
+              f.endWithStory = f.endWithStoryId ? result.find((st) => st.storyId === f.endWithStoryId) : null;
             });
             return story.features;
           });
-          this.disabledFeatures = features.filter(
-            (feat) => !feat.switchToStoryId && !feat.endWithStoryId
-          );
+          this.disabledFeatures = features.filter((feat) => !feat.switchToStoryId && !feat.endWithStoryId);
           this.redirectedFeatures = features.filter((feat) => feat.switchToStoryId);
           this.endingFeatures = features.filter((feat) => feat.endWithStoryId);
           this.loadingStoryRules = false;

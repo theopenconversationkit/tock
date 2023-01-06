@@ -58,10 +58,7 @@ export class BotApplicationConfiguration {
     public targetConfigurationId?: string
   ) {}
 
-  static getRestConfiguration(
-    allConfs: BotApplicationConfiguration[],
-    conf: BotApplicationConfiguration
-  ): BotApplicationConfiguration {
+  static getRestConfiguration(allConfs: BotApplicationConfiguration[], conf: BotApplicationConfiguration): BotApplicationConfiguration {
     if (conf.connectorType.isRest()) {
       return conf;
     }
@@ -123,11 +120,7 @@ export class ConnectorType {
 }
 
 export class ConnectorTypeConfiguration {
-  constructor(
-    public connectorType: ConnectorType,
-    public fields: ConnectorTypeConfigurationField[],
-    public svgIcon: string
-  ) {}
+  constructor(public connectorType: ConnectorType, public fields: ConnectorTypeConfigurationField[], public svgIcon: string) {}
 
   static fromJSON(json?: any): ConnectorTypeConfiguration {
     if (!json) {

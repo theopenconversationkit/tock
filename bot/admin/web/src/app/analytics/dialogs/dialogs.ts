@@ -38,12 +38,7 @@ export class DialogReportQuery extends PaginatedQuery {
 }
 
 export class DialogReportQueryResult implements PaginatedResult<DialogReport> {
-  constructor(
-    public total: number,
-    public start: number,
-    public end: number,
-    public rows: DialogReport[]
-  ) {}
+  constructor(public total: number, public start: number, public end: number, public rows: DialogReport[]) {}
 
   static fromJSON(json?: any): DialogReportQueryResult {
     const value = Object.create(DialogReportQueryResult.prototype);

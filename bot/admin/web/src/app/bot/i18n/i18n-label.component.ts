@@ -91,17 +91,11 @@ export class I18nLabelComponent implements OnInit {
       }
     }
     this.delete.emit(label);
-    this.botService
-      .deleteI18nLabel(label)
-      .subscribe((_) =>
-        this.toastrService.show(`Label ${l} deleted`, 'Delete', { duration: 3000 })
-      );
+    this.botService.deleteI18nLabel(label).subscribe((_) => this.toastrService.show(`Label ${l} deleted`, 'Delete', { duration: 3000 }));
   }
 
   save(i18n: I18nLabel) {
-    this.botService
-      .saveI18nLabel(i18n)
-      .subscribe((_) => this.toastrService.show(`Label updated`, 'Update', { duration: 3000 }));
+    this.botService.saveI18nLabel(i18n).subscribe((_) => this.toastrService.show(`Label updated`, 'Update', { duration: 3000 }));
   }
 
   removeLocalizedLabel(i18n: I18nLabel, label: I18nLocalizedLabel) {
@@ -114,9 +108,7 @@ export class I18nLabelComponent implements OnInit {
   }
 
   addLocalizedLabelForConnector(i18n: I18nLabel, label: I18nLocalizedLabel, connectorId: string) {
-    i18n.i18n.push(
-      new I18nLocalizedLabel(label.locale, label.interfaceType, '', false, connectorId, [])
-    );
+    i18n.i18n.push(new I18nLocalizedLabel(label.locale, label.interfaceType, '', false, connectorId, []));
     this.save(i18n);
     this.i18nController.fillLabels(this.locales);
   }
@@ -165,14 +157,7 @@ export class I18nController {
           } else {
             return a.interfaceType - b.interfaceType;
           }
-        } else
-          return a.locale === this.localeBase
-            ? -1
-            : b.locale === this.localeBase
-            ? 1
-            : b.locale < a.locale
-            ? 1
-            : -1;
+        } else return a.locale === this.localeBase ? -1 : b.locale === this.localeBase ? 1 : b.locale < a.locale ? 1 : -1;
       });
     });
   }

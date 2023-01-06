@@ -61,14 +61,7 @@ export class TestEntityErrorComponent implements OnInit {
     this.loading = true;
     const startIndex = this.getIndex() * this.pageSize;
     this.qualityService
-      .searchEntityErrors(
-        TestErrorQuery.create(
-          this.state,
-          startIndex,
-          this.pageSize,
-          this.intent === '' ? undefined : this.intent
-        )
-      )
+      .searchEntityErrors(TestErrorQuery.create(this.state, startIndex, this.pageSize, this.intent === '' ? undefined : this.intent))
       .subscribe((r) => {
         this.loading = false;
         this.totalSize = r.total;
@@ -102,9 +95,7 @@ export class TestEntityErrorComponent implements OnInit {
   download() {
     setTimeout((_) => {
       this.qualityService
-        .searchEntityErrorsBlob(
-          TestErrorQuery.create(this.state, 0, 100000, this.intent === '' ? undefined : this.intent)
-        )
+        .searchEntityErrorsBlob(TestErrorQuery.create(this.state, 0, 100000, this.intent === '' ? undefined : this.intent))
         .subscribe((blob) => {
           saveAs(blob, this.state.currentApplication.name + '_entity_errors.json');
           this.dialog.notify(`Dump provided`, 'Dump');

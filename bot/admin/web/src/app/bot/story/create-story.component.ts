@@ -104,18 +104,16 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
       this.toastrService.show(`Please enter a non-empty sentence`, 'ERROR', { duration: 2000 });
     } else {
       this.loading = true;
-      this.nlp
-        .parse(new ParseQuery(app.namespace, app.name, language, v, true))
-        .subscribe((sentence) => {
-          this.sentence = sentence;
-          const intent = this.initIntentName(v, sentence.classification.intentId);
-          this.story.userSentence = v;
-          this.story.storyId = intent;
-          this.story.intent = new IntentName(intent);
-          this.story.name = v;
-          this.displayStory = true;
-          this.loading = false;
-        });
+      this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe((sentence) => {
+        this.sentence = sentence;
+        const intent = this.initIntentName(v, sentence.classification.intentId);
+        this.story.userSentence = v;
+        this.story.storyId = intent;
+        this.story.intent = new IntentName(intent);
+        this.story.name = v;
+        this.displayStory = true;
+        this.loading = false;
+      });
     }
   }
 
@@ -179,10 +177,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
       }
     }
     // else suggest a new intent
-    const v = NormalizeUtil.normalize(sentence.trim().toLowerCase()).replace(
-      new RegExp(' ', 'g'),
-      '_'
-    );
+    const v = NormalizeUtil.normalize(sentence.trim().toLowerCase()).replace(new RegExp(' ', 'g'), '_');
     let candidate = v.substring(0, Math.min(sentence.length, 10));
     let count = 1;
     const candidateBase = candidate;
@@ -203,18 +198,12 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
       } else {
         this.story.steps = this.story.steps.filter((s) => !s.new);
         this.bot
-          .newStory(
-            new CreateStoryRequest(this.story, this.state.currentLocale, [
-              this.story.userSentence.trim()
-            ])
-          )
+          .newStory(new CreateStoryRequest(this.story, this.state.currentLocale, [this.story.userSentence.trim()]))
           .subscribe((intent) => {
             this.state.resetConfiguration();
-            this.toastrService.show(
-              `New story ${this.story.name} created for language ${this.state.currentLocale}`,
-              'New Story',
-              { duration: 3000 }
-            );
+            this.toastrService.show(`New story ${this.story.name} created for language ${this.state.currentLocale}`, 'New Story', {
+              duration: 3000
+            });
 
             this.newSentence.nativeElement.focus();
             setTimeout((_) => this.resetState(), 200);

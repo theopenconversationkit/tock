@@ -38,27 +38,17 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
     this.uploader = new FileUploader({
       isHTML5: true
     });
-    this.uploader.onCompleteItem = (
-      item: FileItem,
-      response: string,
-      status: number,
-      headers: ParsedResponseHeaders
-    ) => {
+    this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.loading = false;
       this.closeWindow();
       if (status === 200) {
         if (parseInt(response) > 0) {
-          this.dialog.notify(
-            response + ' labels have been created or updated.',
-            'Labels Imported',
-            { duration: 5000, status: 'success' }
-          );
+          this.dialog.notify(response + ' labels have been created or updated.', 'Labels Imported', { duration: 5000, status: 'success' });
         } else {
-          this.dialog.notify(
-            'No label created or updated: file might be empty or no label is validated.',
-            'No Label Imported',
-            { duration: 5000, status: 'warning' }
-          );
+          this.dialog.notify('No label created or updated: file might be empty or no label is validated.', 'No Label Imported', {
+            duration: 5000,
+            status: 'warning'
+          });
         }
       }
       refresh();
@@ -81,9 +71,7 @@ export class I18nImportComponent implements OnInit, AfterViewInit {
   }
 
   private getFileType() {
-    return this.uploader.queue.every((fileItem) => fileItem.file.type.toLowerCase() === 'text/csv')
-      ? 'CSV'
-      : 'JSON';
+    return this.uploader.queue.every((fileItem) => fileItem.file.type.toLowerCase() === 'text/csv') ? 'CSV' : 'JSON';
   }
 
   closeWindow(): void {

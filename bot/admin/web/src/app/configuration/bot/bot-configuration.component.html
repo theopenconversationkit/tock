@@ -207,10 +207,7 @@
           </span>
           <span
             class="nb-form-field block"
-            *ngFor="
-              let f of botSharedService.findConnectorConfiguration(configuration.connectorType)
-                .fields
-            "
+            *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
           >
             <label>{{ f.label }}</label>
             <input

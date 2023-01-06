@@ -49,10 +49,7 @@ export class TestService {
   }
 
   getTestPlanExecutionStatus(planId: string, executionId: string): Observable<TestPlanExecution> {
-    return this.rest.get(
-      `/test/plan/${planId}/executions/${executionId}`,
-      TestPlanExecution.fromJSON
-    );
+    return this.rest.get(`/test/plan/${planId}/executions/${executionId}`, TestPlanExecution.fromJSON);
   }
 
   saveTestPlan(plan: TestPlan): Observable<boolean> {
@@ -69,10 +66,7 @@ export class TestService {
   }
 
   removeDialogFromTestPlan(planId: string, dialogId: string): Observable<boolean> {
-    return this.rest.post(
-      `/test/plan/${planId}/dialog/delete/${dialogId}`,
-      this.state.createApplicationScopedQuery()
-    );
+    return this.rest.post(`/test/plan/${planId}/dialog/delete/${dialogId}`, this.state.createApplicationScopedQuery());
   }
 
   executeXRay(conf: XRayPlanExecutionConfiguration): Observable<XRayPlanExecutionResult> {

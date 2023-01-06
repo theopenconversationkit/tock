@@ -122,11 +122,7 @@
         class="probability"
       >
         <span
-          *ngIf="
-            displayProbabilities &&
-            sentence.classification.intentId &&
-            sentence.classification.hasIntentProbability()
-          "
+          *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
           nbTooltip="intent probability"
         >
           intent : {{ sentence.classification.intentProbability | percent: '1.0-2' }}
@@ -145,8 +141,7 @@
         <span
           *ngIf="
             displayProbabilities &&
-            (sentence.classification.notRetainedEntities?.length !== 0 ||
-              sentence.classification.otherIntentsProbabilities?.size !== 0)
+            (sentence.classification.notRetainedEntities?.length !== 0 || sentence.classification.otherIntentsProbabilities?.size !== 0)
           "
         >
           <button
@@ -166,9 +161,7 @@
             <mat-icon>expand_less</mat-icon>
           </button>
         </span>
-        <span
-          *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0"
-        >
+        <span *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0">
           <span
             *ngIf="sentence.classification.displayOtherIntents"
             class="otherEntities"
@@ -182,20 +175,14 @@
             </tock-edit-entities>
           </span>
         </span>
-        <span
-          *ngIf="
-            displayProbabilities && sentence.classification.otherIntentsProbabilities?.size !== 0
-          "
-        >
+        <span *ngIf="displayProbabilities && sentence.classification.otherIntentsProbabilities?.size !== 0">
           <span
             *ngIf="sentence.classification.displayOtherIntents"
             class="otherIntents"
           >
             Probability for other intents:
             <ol style="overflow: auto">
-              <li
-                *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable"
-              >
+              <li *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable">
                 <div style="float: left">{{ state.intentLabelByName(i.key) }}&nbsp;&nbsp;</div>
                 <div style="float: right">&nbsp;{{ i.value | percent: '1.0-2' }}</div>
               </li>

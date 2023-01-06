@@ -81,15 +81,10 @@ export class LogsComponent extends ScrollComponent<Log> {
 
   downloadDump() {
     setTimeout((_) => {
-      this.nlp
-        .exportLogs(this.state.currentApplication, this.state.currentLocale)
-        .subscribe((blob) => {
-          saveAs(
-            blob,
-            this.state.currentApplication.name + '_' + this.state.currentLocale + '_logs.csv'
-          );
-          this.toastrService.show(`Export provided`, 'Dump', { duration: 2000 });
-        });
+      this.nlp.exportLogs(this.state.currentApplication, this.state.currentLocale).subscribe((blob) => {
+        saveAs(blob, this.state.currentApplication.name + '_' + this.state.currentLocale + '_logs.csv');
+        this.toastrService.show(`Export provided`, 'Dump', { duration: 2000 });
+      });
     }, 1);
   }
 }
@@ -104,11 +99,7 @@ export class LogsComponent extends ScrollComponent<Log> {
           status="info"
           style="margin: 0"
         >
-          <nb-card-header
-            style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center;"
-          >
-            Request
-          </nb-card-header>
+          <nb-card-header style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center;"> Request </nb-card-header>
           <nb-card-body style="padding: 0">
             <json-editor
               [options]="editorOptions"
@@ -121,11 +112,7 @@ export class LogsComponent extends ScrollComponent<Log> {
           status="success"
           style="margin: 0"
         >
-          <nb-card-header
-            style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center;"
-          >
-            Response
-          </nb-card-header>
+          <nb-card-header style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center;"> Response </nb-card-header>
           <nb-card-body style="padding: 0">
             <json-editor
               [options]="editorOptions"

@@ -86,12 +86,7 @@ export class BotTestRoutingModule {}
     NbInputModule,
     ReactiveFormsModule
   ],
-  declarations: [
-    TestTabsComponent,
-    BotDialogComponent,
-    TestPlanComponent,
-    DisplayNlpStatsComponent
-  ],
+  declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, DisplayNlpStatsComponent],
   exports: [],
   providers: [TestService],
   entryComponents: [DisplayNlpStatsComponent]
