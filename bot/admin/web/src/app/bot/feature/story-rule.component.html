@@ -245,8 +245,7 @@
         <nb-card-header style="position: relative">
           <nb-badge
             [text]="
-              (!disabledFeatures ? 0 : !disabledFeatures.length ? 0 : disabledFeatures.length)
-                | i18nPlural: rulesPluralMapping['rule']
+              (!disabledFeatures ? 0 : !disabledFeatures.length ? 0 : disabledFeatures.length) | i18nPlural: rulesPluralMapping['rule']
             "
             [status]="disabledFeatures.length < 1 ? 'success' : 'info'"
             position="top left"
@@ -343,9 +342,7 @@
             position="top left"
           ></nb-badge>
           <span nbTooltip="Forwarding Stories (to Other Stories)">Redirection</span>
-          <tock-info-button
-            message="Rules used to redirect a given story to other stories."
-          ></tock-info-button>
+          <tock-info-button message="Rules used to redirect a given story to other stories."></tock-info-button>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="!redirectedFeatures || redirectedFeatures.length < 1">
@@ -456,17 +453,12 @@
       <nb-card>
         <nb-card-header style="position: relative">
           <nb-badge
-            [text]="
-              (!endingFeatures ? 0 : !endingFeatures.length ? 0 : endingFeatures.length)
-                | i18nPlural: rulesPluralMapping['rule']
-            "
+            [text]="(!endingFeatures ? 0 : !endingFeatures.length ? 0 : endingFeatures.length) | i18nPlural: rulesPluralMapping['rule']"
             [status]="endingFeatures.length < 1 ? 'success' : 'info'"
             position="top left"
           ></nb-badge>
           <span nbTooltip="Ending Stories (with Other Stories)">Ending</span>
-          <tock-info-button
-            message="Rules used to end stories with other stories."
-          ></tock-info-button>
+          <tock-info-button message="Rules used to end stories with other stories."></tock-info-button>
         </nb-card-header>
         <nb-card-body>
           <div *ngIf="!endingFeatures || endingFeatures.length < 1">

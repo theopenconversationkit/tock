@@ -49,9 +49,7 @@
 
         <nb-action
           class="control-item"
-          nbTooltip="{{
-            displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations'
-          }}"
+          nbTooltip="{{ displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations' }}"
           (click)="displayTestConfigurations = !displayTestConfigurations"
           *ngIf="!newApplicationConfiguration && state.currentApplication"
         >

@@ -9,9 +9,8 @@ describe('ErrorHelperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ErrorHelperComponent ]
-    })
-    .compileComponents();
+      declarations: [ErrorHelperComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,6 @@
 // see https://github.com/akveo/nebular/issues/2554
-import {Injectable} from '@angular/core';
-import {NbFontIconPackParams, NbFontIcon, NbIcon, NbIconLibraries} from "@nebular/theme";
+import { Injectable } from '@angular/core';
+import { NbFontIconPackParams, NbFontIcon, NbIcon, NbIconLibraries } from '@nebular/theme';
 
 @Injectable()
 export class CustomNbIconLibraries extends NbIconLibraries {
@@ -10,5 +10,4 @@ export class CustomNbIconLibraries extends NbIconLibraries {
     }
     return new NbFontIcon(name, params.ligature ? name : content, params);
   }
-
 }

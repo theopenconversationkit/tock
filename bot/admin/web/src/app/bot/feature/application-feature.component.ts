@@ -34,16 +34,10 @@ export class ApplicationFeatureComponent implements OnInit {
   botApplicationConfigurationId: string;
   loadingApplicationsFeatures: boolean = false;
 
-  constructor(
-    private state: StateService,
-    private botService: BotService,
-    private configurationService: BotConfigurationService
-  ) {}
+  constructor(private state: StateService, private botService: BotService, private configurationService: BotConfigurationService) {}
 
   ngOnInit(): void {
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe((a) =>
-      this.refresh()
-    );
+    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe((a) => this.refresh());
     this.refresh();
   }
 
@@ -54,10 +48,7 @@ export class ApplicationFeatureComponent implements OnInit {
         f.forEach((feature) => {
           if (feature.applicationId) {
             this.configurationService.configurations.subscribe((_) => {
-              feature.configuration =
-                this.configurationService.findApplicationConfigurationByApplicationId(
-                  feature.applicationId
-                );
+              feature.configuration = this.configurationService.findApplicationConfigurationByApplicationId(feature.applicationId);
             });
           }
         });

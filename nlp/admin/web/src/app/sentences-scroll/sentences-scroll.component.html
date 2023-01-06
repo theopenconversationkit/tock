@@ -28,8 +28,8 @@
         <mat-icon>refresh</mat-icon>
       </button>
       <p>
-        To add Sentences, start from <em>New Sentence</em> or <em>Test the Bot</em> in Tock Studio,
-        or talk to the bot on any connected channel.
+        To add Sentences, start from <em>New Sentence</em> or <em>Test the Bot</em> in Tock Studio, or talk to the bot on any connected
+        channel.
       </p>
     </div>
   </nb-card-body>
@@ -337,9 +337,7 @@
           nbTreeGridCell
           *nbTreeGridCellDef="let row"
         >
-          <span class="green-text">{{
-            row.data.classification.intentProbability | percent: '1.0-2'
-          }}</span>
+          <span class="green-text">{{ row.data.classification.intentProbability | percent: '1.0-2' }}</span>
         </td>
       </ng-container>
 
@@ -360,9 +358,7 @@
           nbTreeGridCell
           *nbTreeGridCellDef="let row"
         >
-          <span class="green-text">{{
-            row.data.classification.entitiesProbability | percent: '1.0-2'
-          }}</span>
+          <span class="green-text">{{ row.data.classification.entitiesProbability | percent: '1.0-2' }}</span>
         </td>
       </ng-container>
 
@@ -382,9 +378,7 @@
           nbTreeGridCell
           *nbTreeGridCellDef="let row"
         >
-          <span class="green-text">{{
-            row.data.classification.lastUsage | date: 'yyyy-MM-dd HH:mm'
-          }}</span>
+          <span class="green-text">{{ row.data.classification.lastUsage | date: 'yyyy-MM-dd HH:mm' }}</span>
         </td>
       </ng-container>
 

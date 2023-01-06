@@ -39,9 +39,7 @@ export class BotTabsComponent implements OnInit {
 
   constructor(private router: Router, private state: StateService) {
     if (!state.hasRole(UserRole.botUser)) {
-      this.botTabLinks = this.botTabLinks.filter(
-        (t) => !['story-create', 'story-search', 'story-rules'].includes(t.route)
-      );
+      this.botTabLinks = this.botTabLinks.filter((t) => !['story-create', 'story-search', 'story-rules'].includes(t.route));
     }
   }
 

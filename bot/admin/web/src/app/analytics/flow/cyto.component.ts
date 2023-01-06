@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  Output,
-  Renderer2
-} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, Renderer2 } from '@angular/core';
 
 declare var cytoscape: any;
 

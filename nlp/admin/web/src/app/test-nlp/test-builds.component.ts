@@ -78,9 +78,7 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.search(this.modifiedAfter);
-    this.subscription = this.state.configurationChange.subscribe((_) =>
-      this.search(this.modifiedAfter)
-    );
+    this.subscription = this.state.configurationChange.subscribe((_) => this.search(this.modifiedAfter));
   }
 
   ngOnDestroy(): void {
@@ -91,13 +89,7 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
     if (date) this.modifiedAfter = date;
     this.loading = true;
     this.quality
-      .buildStats(
-        TestErrorQuery.createWithoutSize(
-          this.state,
-          this.intent === '' ? undefined : this.intent,
-          this.modifiedAfter
-        )
-      )
+      .buildStats(TestErrorQuery.createWithoutSize(this.state, this.intent === '' ? undefined : this.intent, this.modifiedAfter))
       .subscribe((result) => {
         this.loading = false;
         if (result.length === 0) {
@@ -112,15 +104,11 @@ export class TestBuildsComponent implements OnInit, OnDestroy {
         ]);
         const intentData = result.map((p) => [
           p.date,
-          p.nbSentencesTested === 0
-            ? 0
-            : Math.round(10000 * (p.intentErrors / p.nbSentencesTested)) / 100
+          p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.intentErrors / p.nbSentencesTested)) / 100
         ]);
         const entityData = result.map((p) => [
           p.date,
-          p.nbSentencesTested === 0
-            ? 0
-            : Math.round(10000 * (p.entityErrors / p.nbSentencesTested)) / 100
+          p.nbSentencesTested === 0 ? 0 : Math.round(10000 * (p.entityErrors / p.nbSentencesTested)) / 100
         ]);
 
         this.errorChartOptions = {

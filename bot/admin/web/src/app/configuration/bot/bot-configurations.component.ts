@@ -16,12 +16,7 @@
 
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import {
-  BotApplicationConfiguration,
-  BotConfiguration,
-  ConnectorType,
-  UserInterfaceType
-} from '../../core/model/configuration';
+import { BotApplicationConfiguration, BotConfiguration, ConnectorType, UserInterfaceType } from '../../core/model/configuration';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from '../../core-nlp/state.service';
 import { NbToastrService, NbDialogService } from '@nebular/theme';
@@ -63,25 +58,21 @@ export class BotConfigurationsComponent implements OnInit {
         }
       });
       const bots = this.botConfiguration.bots.getValue();
-      this.configurations = Array.from(botConfigurationsByName.values()).map(
-        (botConfigurations) => {
-          const existingConf = bots.find(
-            (botConfig) => botConfig.name === botConfigurations[0].name
-          );
-          if (existingConf) {
-            existingConf.configurations = botConfigurations;
-            return existingConf;
-          }
-          const firstBotConfiguration = botConfigurations[0];
-          return new BotConfiguration(
-            firstBotConfiguration.botId,
-            firstBotConfiguration.name,
-            firstBotConfiguration.namespace,
-            firstBotConfiguration.nlpModel,
-            botConfigurations
-          );
+      this.configurations = Array.from(botConfigurationsByName.values()).map((botConfigurations) => {
+        const existingConf = bots.find((botConfig) => botConfig.name === botConfigurations[0].name);
+        if (existingConf) {
+          existingConf.configurations = botConfigurations;
+          return existingConf;
         }
-      );
+        const firstBotConfiguration = botConfigurations[0];
+        return new BotConfiguration(
+          firstBotConfiguration.botId,
+          firstBotConfiguration.name,
+          firstBotConfiguration.namespace,
+          firstBotConfiguration.nlpModel,
+          botConfigurations
+        );
+      });
     });
   }
 
@@ -183,10 +174,6 @@ export class BotConfigurationsComponent implements OnInit {
       // do nothing
     }
     t.style.display = 'none';
-    this.toastrService.show(
-      successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`,
-      'Clipboard',
-      { duration: 2000 }
-    );
+    this.toastrService.show(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, 'Clipboard', { duration: 2000 });
   }
 }

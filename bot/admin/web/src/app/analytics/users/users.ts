@@ -39,12 +39,7 @@ export class UserSearchQuery extends PaginatedQuery {
 }
 
 export class UserReportQueryResult implements PaginatedResult<UserReport> {
-  constructor(
-    public total: number,
-    public start: number,
-    public end: number,
-    public rows: UserReport[]
-  ) {}
+  constructor(public total: number, public start: number, public end: number, public rows: UserReport[]) {}
 
   static fromJSON(json?: any): UserReportQueryResult {
     const value = Object.create(UserReportQueryResult.prototype);
@@ -58,12 +53,7 @@ export class UserReportQueryResult implements PaginatedResult<UserReport> {
 }
 
 export class UserAnalyticsQueryResult {
-  constructor(
-    public usersData: any[][],
-    public dates: Date[],
-    public connectorsType: [],
-    public intents: []
-  ) {}
+  constructor(public usersData: any[][], public dates: Date[], public connectorsType: [], public intents: []) {}
 
   static fromJSON(json?: any): UserAnalyticsQueryResult {
     const value = Object.create(UserAnalyticsQueryResult.prototype);
@@ -107,12 +97,7 @@ export class UserReport {
 }
 
 export class UserPreferences {
-  constructor(
-    public firstName?: string,
-    public lastName?: string,
-    public locale?: string,
-    public picture?: string
-  ) {}
+  constructor(public firstName?: string, public lastName?: string, public locale?: string, public picture?: string) {}
 
   static fromJSON(json?: any): UserPreferences {
     const value = Object.create(UserPreferences.prototype);

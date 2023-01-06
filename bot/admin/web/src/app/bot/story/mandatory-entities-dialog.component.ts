@@ -17,18 +17,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { StateService } from '../../core-nlp/state.service';
-import {
-  AnswerConfigurationType,
-  IntentName,
-  MandatoryEntity,
-  SimpleAnswerConfiguration
-} from '../model/story';
-import {
-  EntityDefinition,
-  entityNameFromQualifiedName,
-  Intent,
-  IntentsCategory
-} from '../../model/nlp';
+import { AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration } from '../model/story';
+import { EntityDefinition, entityNameFromQualifiedName, Intent, IntentsCategory } from '../../model/nlp';
 import { CreateEntityDialogComponent } from '../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
 import { IntentDialogComponent } from '../../sentence-analysis/intent-dialog/intent-dialog.component';
 import { NbToastrService, NbDialogService } from '@nebular/theme';
@@ -65,10 +55,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
       : [];
     this.state.entities.subscribe((allEntities) => {
       this.entities.forEach(
-        (e) =>
-          (e.entity =
-            allEntities.find((a) => a.role === e.role) ??
-            allEntities.find((a) => a.entityTypeName === e.entityType))
+        (e) => (e.entity = allEntities.find((a) => a.role === e.role) ?? allEntities.find((a) => a.entityTypeName === e.entityType))
       );
     });
     this.defaultCategory = this.data.category;
@@ -104,9 +91,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
             new IntentsCategory(
               c.category,
               c.intents.filter(
-                (i) =>
-                  i.intentLabel().toLowerCase().startsWith(intent) &&
-                  (!entity.role || i.entities.find((e) => e.role === entity.role))
+                (i) => i.intentLabel().toLowerCase().startsWith(intent) && (!entity.role || i.entities.find((e) => e.role === entity.role))
               )
             )
         )
@@ -130,10 +115,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   validateIntent(entity: MandatoryEntity) {
     setTimeout((_) => {
       const intentName = entity.intent.name.trim();
-      if (
-        intentName.length !== 0 &&
-        (!entity.intentDefinition || entity.intentDefinition.name !== intentName)
-      ) {
+      if (intentName.length !== 0 && (!entity.intentDefinition || entity.intentDefinition.name !== intentName)) {
         const intent = this.state.findIntentByName(intentName);
         if (intent) {
           entity.intentDefinition = intent;
@@ -206,10 +188,7 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
   }
 
   save() {
-    if (
-      this.newEntity.currentAnswer().invalidMessage() === null &&
-      this.newEntity.entityType.length !== 0
-    ) {
+    if (this.newEntity.currentAnswer().invalidMessage() === null && this.newEntity.entityType.length !== 0) {
       this.entities.push(this.newEntity);
     }
     this.dialogRef.close({

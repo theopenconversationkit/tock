@@ -127,6 +127,6 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   }
 
   formattedTotal() {
-    return this.total !== 1000000 ? this.total.toString() : this.total+"+";
+    return this.total !== 1000000 ? this.total.toString() : this.total + '+';
   }
 }

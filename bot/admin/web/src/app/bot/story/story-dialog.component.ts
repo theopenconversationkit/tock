@@ -42,11 +42,7 @@ export class StoryDialogComponent implements OnInit {
 
   @ViewChild('labelElement') labelElement: ElementRef;
 
-  constructor(
-    public dialogRef: MatDialogRef<StoryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public state: StateService
-  ) {
+  constructor(public dialogRef: MatDialogRef<StoryDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any, public state: StateService) {
     this.create = this.data.create;
     this.intent = this.data.intent;
     this.name = this.data.name;
@@ -89,8 +85,7 @@ export class StoryDialogComponent implements OnInit {
   categoryChange() {
     let cat = this.category.toLowerCase().trim();
     let allCats = this.originalCategories.map((cat) => cat.category);
-    this.categories =
-      cat.length === 0 ? allCats : allCats.filter((c) => c.toLowerCase().startsWith(cat));
+    this.categories = cat.length === 0 ? allCats : allCats.filter((c) => c.toLowerCase().startsWith(cat));
   }
 
   copyToName() {
@@ -114,22 +109,15 @@ export class StoryDialogComponent implements OnInit {
   }
 
   save() {
-    if (
-      this.name &&
-      this.name.trim().length !== 0 &&
-      this.intent &&
-      this.intent.trim().length !== 0
-    ) {
+    if (this.name && this.name.trim().length !== 0 && this.intent && this.intent.trim().length !== 0) {
       this.format();
       this.dialogRef.close({
         name: this.name.trim(),
         label: !this.label || this.label.trim().length === 0 ? this.name.trim() : this.label.trim(),
         tag: this.tag ? this.tag.trim() : null,
         intent: this.intent.trim(),
-        description:
-          !this.description || this.description.trim().length === 0 ? '' : this.description.trim(),
-        category:
-          !this.category || this.category.trim().length === 0 ? 'default' : this.category.trim(),
+        description: !this.description || this.description.trim().length === 0 ? '' : this.description.trim(),
+        category: !this.category || this.category.trim().length === 0 ? 'default' : this.category.trim(),
         userSentence: this.userSentence
       });
     }

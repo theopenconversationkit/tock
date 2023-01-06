@@ -38,14 +38,7 @@ const authRoutes: Routes = [
 export class AuthRoutingModule {}
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedModule,
-    RestModule,
-    AuthRoutingModule,
-    NbCardModule,
-    NbCheckboxModule
-  ],
+  imports: [CommonModule, SharedModule, RestModule, AuthRoutingModule, NbCardModule, NbCheckboxModule],
   declarations: [LoginComponent],
   providers: [AuthService, AuthGuard]
 })

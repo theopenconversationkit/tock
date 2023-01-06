@@ -16,13 +16,7 @@
 import { ComponentType } from '@angular/cdk/overlay';
 import { Injectable, TemplateRef, Type } from '@angular/core';
 import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import {
-  NbDialogConfig,
-  NbDialogRef,
-  NbDialogService,
-  NbToastrConfig,
-  NbToastrService
-} from '@nebular/theme';
+import { NbDialogConfig, NbDialogRef, NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
 
 @Injectable()
 export class DialogService {
@@ -35,11 +29,7 @@ export class DialogService {
    * @param config Additional configuration options for the snackbar.
    */
   notify(message: string, action?: string, config?: Partial<NbToastrConfig>) {
-    this.toastrService.show(
-      message,
-      action ? action : 'Error',
-      config ? config : { duration: 3000 }
-    );
+    this.toastrService.show(message, action ? action : 'Error', config ? config : { duration: 3000 });
   }
 
   /**

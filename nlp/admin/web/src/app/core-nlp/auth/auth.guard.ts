@@ -15,13 +15,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  CanActivateChild,
-  Router,
-  RouterStateSnapshot
-} from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 import { StateService } from '../state.service';
@@ -93,9 +87,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       return true;
     } else {
       if (this.authService.isSSO()) {
-        this.authService
-          .loadUser()
-          .subscribe((u) => this.router.navigateByUrl(url === '/login' ? '/' : url));
+        this.authService.loadUser().subscribe((u) => this.router.navigateByUrl(url === '/login' ? '/' : url));
         return false;
       } else if (this.autologin) {
         this.autologin = false;

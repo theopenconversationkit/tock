@@ -30,10 +30,7 @@ export class AddSharedIntentDialogComponent {
 
   selectedIntent: Intent;
 
-  constructor(
-    public state: StateService,
-    public dialogRef: NbDialogRef<AddSharedIntentDialogComponent>
-  ) {}
+  constructor(public state: StateService, public dialogRef: NbDialogRef<AddSharedIntentDialogComponent>) {}
 
   save() {
     this.dialogRef.close({ intent: this.selectedIntent });

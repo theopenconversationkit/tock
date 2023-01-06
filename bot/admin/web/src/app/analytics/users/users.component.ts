@@ -81,16 +81,12 @@ export class UsersComponent extends ScrollComponent<UserReport> {
   }
 
   getConnector(applicationId: string): ConnectorType {
-    let connectors = this.configurations
-      .filter((config) => config.applicationId === applicationId)
-      .map((config) => config.connectorType);
+    let connectors = this.configurations.filter((config) => config.applicationId === applicationId).map((config) => config.connectorType);
     return connectors && connectors.length > 0 ? connectors[0] : null;
   }
 
   getUserPicture(user: UserReport): string {
-    return user.userPreferences.picture
-      ? user.userPreferences.picture
-      : '/assets/images/people.png';
+    return user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png';
   }
 
   toggleFlag(flag: string) {
@@ -171,18 +167,10 @@ export class UsersComponent extends ScrollComponent<UserReport> {
     }
     this.analytics
       .addDialogToTestPlan(planId, dialog.id)
-      .subscribe((_) =>
-        this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 })
-      );
+      .subscribe((_) => this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 }));
   }
 }
 
 export class UserFilter {
-  constructor(
-    public flags: string[],
-    public displayTests: boolean,
-    public from?: Date,
-    public to?: Date,
-    public intent: string = ''
-  ) {}
+  constructor(public flags: string[], public displayTests: boolean, public from?: Date, public to?: Date, public intent: string = '') {}
 }

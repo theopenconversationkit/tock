@@ -68,24 +68,13 @@ export class EntityDetailsComponent implements OnInit {
     });
     dialogRef.onClose.subscribe((result) => {
       if (result === 'remove') {
-        this.nlp
-          .removeSubEntity(this.state.currentApplication, this.entityType, this.entity)
-          .subscribe(
-            (_) => {
-              this.state.resetConfiguration();
-              this.toastrService.show(
-                `Subentity ${this.entity.entityTypeName} removed`,
-                'Remove Subentity',
-                { duration: 2000 }
-              );
-            },
-            (_) =>
-              this.toastrService.show(
-                `Remove Subentity ${this.entity.entityTypeName} failed`,
-                'Error',
-                { duration: 5000 }
-              )
-          );
+        this.nlp.removeSubEntity(this.state.currentApplication, this.entityType, this.entity).subscribe(
+          (_) => {
+            this.state.resetConfiguration();
+            this.toastrService.show(`Subentity ${this.entity.entityTypeName} removed`, 'Remove Subentity', { duration: 2000 });
+          },
+          (_) => this.toastrService.show(`Remove Subentity ${this.entity.entityTypeName} failed`, 'Error', { duration: 5000 })
+        );
       }
     });
   }

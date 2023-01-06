@@ -226,10 +226,7 @@ export class NlpModelConfiguration {
       if (!l.startsWith('#') && l.length !== 0) {
         let i = l.indexOf('=');
         if (i !== -1) {
-          r.set(
-            l.substring(0, i).trim(),
-            i === l.length - 1 ? '' : l.substring(i + 1, l.length).trim()
-          );
+          r.set(l.substring(0, i).trim(), i === l.length - 1 ? '' : l.substring(i + 1, l.length).trim());
         }
       }
     });
@@ -288,12 +285,7 @@ export class UserLogQueryResult {
 }
 
 export class UserNamespace {
-  constructor(
-    public namespace: string,
-    public login: string,
-    public owner: boolean,
-    public current: boolean
-  ) {}
+  constructor(public namespace: string, public login: string, public owner: boolean, public current: boolean) {}
 
   static fromJSON(json?: any): UserNamespace {
     const value = Object.create(UserNamespace.prototype);
@@ -309,7 +301,6 @@ export class UserNamespace {
 }
 
 export class NamespaceConfiguration {
-
   constructor(
     public namespace: string,
     public defaultSharingConfiguration: NamespaceSharingConfiguration,
@@ -317,7 +308,7 @@ export class NamespaceConfiguration {
   ) {}
 
   static fromJSON(json?: any): NamespaceConfiguration {
-    if(!json || !json.namespace) {
+    if (!json || !json.namespace) {
       return null;
     }
     const value = Object.create(NamespaceConfiguration.prototype);
@@ -337,11 +328,7 @@ export class NamespaceConfiguration {
 }
 
 export class NamespaceSharingConfiguration {
-
-  constructor(
-    public model: boolean = false,
-    public stories: boolean = false
-  ) {}
+  constructor(public model: boolean = false, public stories: boolean = false) {}
 
   static fromJSON(json?: any): NamespaceSharingConfiguration {
     const value = Object.create(NamespaceSharingConfiguration.prototype);

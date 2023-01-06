@@ -58,10 +58,7 @@ export class IntentDialogComponent implements OnInit {
   categoryChange() {
     if (this.category) {
       const cat = this.category.toLowerCase().trim();
-      this.categories =
-        cat.length === 0
-          ? this.originalCategories
-          : this.originalCategories.filter((c) => c.toLowerCase().startsWith(cat));
+      this.categories = cat.length === 0 ? this.originalCategories : this.originalCategories.filter((c) => c.toLowerCase().startsWith(cat));
     }
   }
 
@@ -89,10 +86,7 @@ export class IntentDialogComponent implements OnInit {
       this.dialogRef.close({
         name: this.name.trim(),
         label: !this.label || this.label.trim().length === 0 ? null : this.label.trim(),
-        description:
-          !this.description || this.description.trim().length === 0
-            ? null
-            : this.description.trim(),
+        description: !this.description || this.description.trim().length === 0 ? null : this.description.trim(),
         category: !this.category || this.category.trim().length === 0 ? null : this.category.trim()
       });
     }

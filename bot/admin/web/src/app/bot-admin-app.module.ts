@@ -51,8 +51,7 @@ const routes: Routes = [
   },
   {
     path: 'configuration',
-    loadChildren: () =>
-      import('./configuration/configuration.module').then((m) => m.BotConfigurationModule)
+    loadChildren: () => import('./configuration/configuration.module').then((m) => m.BotConfigurationModule)
   },
   {
     path: 'build',

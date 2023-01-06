@@ -25,9 +25,7 @@
           <span
             class="i18n-label__title__label"
             nbTooltip="ns: {{ i.namespace }}, key: {{ i._id }}"
-            >{{
-              i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label
-            }}
+            >{{ i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label }}
           </span>
           <button
             class="i18n-label__title__delete"
@@ -65,9 +63,7 @@
       <div *ngFor="let l of i.i18n; let isLast = last; let index = index">
         <div
           *ngIf="isLocalizedVisible(l)"
-          class="i18n-label__entry i18n-label__entry--language-{{
-            l.locale
-          }} i18n-label__entry--mode-{{ l.interfaceType }}"
+          class="i18n-label__entry i18n-label__entry--language-{{ l.locale }} i18n-label__entry--mode-{{ l.interfaceType }}"
         >
           <div class="i18n-label__entry__label_details">
             <!-- Locale -->
@@ -122,10 +118,7 @@
               [nbTooltip]="
                 isSupportedLocale(l)
                   ? l.stats && l.stats.length !== 0
-                    ? 'used ' +
-                      l.mergedStats().count +
-                      ' times, last used ' +
-                      (l.mergedStats().lastUpdate | amTimeAgo)
+                    ? 'used ' + l.mergedStats().count + ' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)
                     : 'No stats'
                   : 'Delete-only since locale is not supported by current application'
               "
@@ -141,9 +134,7 @@
                 nbButton
                 ghost
                 [nbTooltip]="
-                  isSupportedLocale(l)
-                    ? 'Add an alternative'
-                    : 'Delete-only since locale is not supported by current application'
+                  isSupportedLocale(l) ? 'Add an alternative' : 'Delete-only since locale is not supported by current application'
                 "
                 status="info"
                 (click)="addNewAlternative(l)"
@@ -251,11 +242,7 @@
           <!-- Add specific label for connector -->
           <div
             class="i18n-label__entry__connectors"
-            *ngIf="
-              isLast ||
-              i.i18n[index + 1].interfaceType !== l.interfaceType ||
-              i.i18n[index + 1].locale !== l.locale
-            "
+            *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale"
           >
             <div class="i18n-label__entry__connector_container">
               <span *ngFor="let connector of connectorTypes">
@@ -263,12 +250,7 @@
                 <mat-action-list class="i18n-label__entry__connector-list">
                   <button
                     *ngIf="
-                      isSupportedLocale(l) &&
-                      !i.hasLocaleAndInterfaceAndConnector(
-                        l.locale,
-                        l.interfaceType,
-                        connector.connectorType.id
-                      )
+                      isSupportedLocale(l) && !i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)
                     "
                     (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)"
                     nbTooltip="Add specific label for connector {{ connector.connectorType.id }}"

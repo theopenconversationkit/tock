@@ -158,11 +158,7 @@ export class I18nComponent extends I18nController implements OnInit {
     const noLocaleFilter = this.filterLocale === '';
     const currentLocale = this.filterLocale === 'current';
     const supportedLocales = this.filterLocale === 'supported';
-    return (
-      noLocaleFilter ||
-      supportedLocales ||
-      (currentLocale && this.state.currentApplication.supportedLocales.length == 1)
-    );
+    return noLocaleFilter || supportedLocales || (currentLocale && this.state.currentApplication.supportedLocales.length == 1);
   }
 
   private filterImpl(value: string) {
@@ -196,23 +192,14 @@ export class I18nComponent extends I18nController implements OnInit {
     const notUsedFromDate = Date.now() - 1000 * 60 * 60 * 24 * this.notUsedFrom;
     this.filteredI18n = this.i18n.filter((label) => {
       return (
-        (filteredLocales.size < 1 ||
-          label.i18n.some((i18nLabel) => filteredLocales.has(i18nLabel.locale))) &&
-        (!hideValidated ||
-          label.i18n.some((i18nLabel) => !i18nLabel.validated && i18nLabel.label.length !== 0)) &&
+        (filteredLocales.size < 1 || label.i18n.some((i18nLabel) => filteredLocales.has(i18nLabel.locale))) &&
+        (!hideValidated || label.i18n.some((i18nLabel) => !i18nLabel.validated && i18nLabel.label.length !== 0)) &&
         (!hideNotValidated || label.i18n.some((i18nLabel) => i18nLabel.validated)) &&
         (filterText.length === 0 ||
           (label.defaultLabel && label.defaultLabel.toLowerCase().indexOf(filterText) !== -1) ||
-          label.i18n.some(
-            (i18nLabel) =>
-              i18nLabel.label.length !== 0 &&
-              i18nLabel.label.toLowerCase().indexOf(filterText) !== -1
-          )) &&
-        (this.selectedCategory === this.doNotFilterByCategory ||
-          label.category === this.selectedCategory) &&
-        (this.notUsedFrom === -1 ||
-          !label.lastUpdate ||
-          label.lastUpdate.getTime() < notUsedFromDate)
+          label.i18n.some((i18nLabel) => i18nLabel.label.length !== 0 && i18nLabel.label.toLowerCase().indexOf(filterText) !== -1)) &&
+        (this.selectedCategory === this.doNotFilterByCategory || label.category === this.selectedCategory) &&
+        (this.notUsedFrom === -1 || !label.lastUpdate || label.lastUpdate.getTime() < notUsedFromDate)
       );
     });
     this.setCategoryOnFirstItem(this.filteredI18n);
@@ -251,9 +238,7 @@ export class I18nComponent extends I18nController implements OnInit {
     });
     this.botService
       .saveI18nLabels(this.i18n)
-      .subscribe((_) =>
-        this.toastrService.show(`All labels validated`, 'Validate', { duration: 3000 })
-      );
+      .subscribe((_) => this.toastrService.show(`All labels validated`, 'Validate', { duration: 3000 }));
   }
 
   openExportWindow() {

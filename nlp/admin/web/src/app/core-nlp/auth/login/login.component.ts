@@ -31,11 +31,7 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   sendLogin: boolean;
 
-  constructor(
-    public authService: AuthService,
-    private router: Router,
-    @Inject(APP_BASE_HREF) public baseHref: string
-  ) {}
+  constructor(public authService: AuthService, private router: Router, @Inject(APP_BASE_HREF) public baseHref: string) {}
 
   ngOnInit(): void {
     if (this.authService.isSSO()) {

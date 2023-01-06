@@ -34,11 +34,7 @@ export class UserLogsComponent implements OnInit {
   pageIndex: number = 0;
   loading: boolean = false;
 
-  constructor(
-    private state: StateService,
-    private applicationService: ApplicationService,
-    private dialogService: NbDialogService
-  ) {}
+  constructor(private state: StateService, private applicationService: ApplicationService, private dialogService: NbDialogService) {}
 
   ngOnInit(): void {
     this.search();

@@ -89,10 +89,7 @@ export class SearchMark {
   constructor(public text: String, public date: Date) {}
 }
 
-export function flatMap<T, U>(
-  array: T[],
-  callbackfn: (value: T, index: number, array: T[]) => U[]
-): U[] {
+export function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: T[]) => U[]): U[] {
   return [].concat(...array.map(callbackfn));
 }
 
@@ -131,11 +128,7 @@ export function groupBy(list, keyGetter) {
 
 export function formatStatDate(value): String {
   const date = new Date(value);
-  return (
-    date.getDate().toString().padStart(2, '0') +
-    '/' +
-    (date.getMonth() + 1).toString().padStart(2, '0')
-  );
+  return date.getDate().toString().padStart(2, '0') + '/' + (date.getMonth() + 1).toString().padStart(2, '0');
 }
 
 export function formatStatDateTime(value): String {

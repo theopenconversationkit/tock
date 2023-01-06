@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ActionReport,
-  BotMessage,
-  DialogReport,
-  PlayerId,
-  PlayerType
-} from '../../shared/model/dialog-data';
+import { ActionReport, BotMessage, DialogReport, PlayerId, PlayerType } from '../../shared/model/dialog-data';
 import { ApplicationScopedQuery } from '../../model/commons';
 import { ConnectorType, UserInterfaceType } from '../../core/model/configuration';
 
@@ -38,12 +32,7 @@ export class BotDialogRequest extends ApplicationScopedQuery {
 }
 
 export class BotDialogResponse {
-  constructor(
-    public messages: BotMessage[],
-    public hasNlpStats: boolean,
-    public userActionId?: string,
-    public userLocale?: string
-  ) {}
+  constructor(public messages: BotMessage[], public hasNlpStats: boolean, public userActionId?: string, public userLocale?: string) {}
 
   static fromJSON(json?: any): BotDialogResponse {
     const value = Object.create(BotDialogResponse.prototype);
@@ -96,9 +85,7 @@ export class TestPlan {
           );
         } else {
           report.dialogReport = new DialogReport(
-            d.actions
-              .slice(0, Math.min(aIndex + 1, d.actions.length))
-              .map((d) => d.toActionReport()),
+            d.actions.slice(0, Math.min(aIndex + 1, d.actions.length)).map((d) => d.toActionReport()),
             d.id
           );
         }
@@ -215,14 +202,7 @@ export class TestActionReport {
   ) {}
 
   toActionReport(): ActionReport {
-    return new ActionReport(
-      this.playerId,
-      this.date,
-      this.messages[0],
-      this.id,
-      true,
-      this.connectorType
-    );
+    return new ActionReport(this.playerId, this.date, this.messages[0], this.id, true, this.connectorType);
   }
 
   isBot(): boolean {
@@ -248,11 +228,7 @@ export class TestActionReport {
 }
 
 export class XRayPlanExecutionConfiguration {
-  constructor(
-    public configurationId: string,
-    public testPlanKey: string,
-    public testedBotId: string
-  ) {}
+  constructor(public configurationId: string, public testPlanKey: string, public testedBotId: string) {}
 }
 
 export class XRayPlanExecutionResult {

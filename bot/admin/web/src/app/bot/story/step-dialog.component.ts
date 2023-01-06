@@ -28,11 +28,7 @@ export class StepDialogComponent {
   steps: StoryStep[];
   defaultCategory: string;
 
-  constructor(
-    public dialogRef: MatDialogRef<StepDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public state: StateService
-  ) {
+  constructor(public dialogRef: MatDialogRef<StepDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any, public state: StateService) {
     this.defaultCategory = this.data.category;
     this.steps = this.data.steps
       ? this.data.steps.slice(0).map((a) => {

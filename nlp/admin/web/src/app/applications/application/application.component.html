@@ -20,9 +20,7 @@
       <div style="display: flex">
         <span *ngIf="applications.length !== 0"
           >Application
-          <span *ngIf="application && application?.name?.length !== 0"
-            >"{{ application?.name }}"</span
-          >
+          <span *ngIf="application && application?.name?.length !== 0">"{{ application?.name }}"</span>
         </span>
         <nb-actions>
           <nb-action

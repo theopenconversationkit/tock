@@ -51,10 +51,7 @@ export class DialogFlowRequest extends ApplicationScopedQuery {
 }
 
 export class ApplicationDialogFlow {
-  constructor(
-    public states: DialogFlowStateData[],
-    public transitions: DialogFlowStateTransitionData[]
-  ) {}
+  constructor(public states: DialogFlowStateData[], public transitions: DialogFlowStateTransitionData[]) {}
 
   static fromJSON(json: any): ApplicationDialogFlow {
     const value = Object.create(ApplicationDialogFlow.prototype);

@@ -37,9 +37,7 @@ export class BotSharedService implements OnDestroy {
     if (this.connectorTypes) {
       return of(this.connectorTypes);
     } else {
-      return this.rest
-        .get(`/connectorTypes`, ConnectorTypeConfiguration.fromJSONArray)
-        .pipe(tap((c) => (this.connectorTypes = c)));
+      return this.rest.get(`/connectorTypes`, ConnectorTypeConfiguration.fromJSONArray).pipe(tap((c) => (this.connectorTypes = c)));
     }
   }
 
@@ -66,9 +64,7 @@ export class BotSharedService implements OnDestroy {
       return of(this.configuration);
     } else {
       if (!this.getConfigurationPending) {
-        this.getConfigurationPending = this.rest
-          .get(`/configuration`, AdminConfiguration.fromJSON)
-          .pipe(share());
+        this.getConfigurationPending = this.rest.get(`/configuration`, AdminConfiguration.fromJSON).pipe(share());
       }
       return this.getConfigurationPending;
     }

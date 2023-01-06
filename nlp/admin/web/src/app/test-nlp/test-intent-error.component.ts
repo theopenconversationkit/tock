@@ -60,14 +60,7 @@ export class TestIntentErrorComponent implements OnInit {
     this.loading = true;
     const startIndex = this.getIndex() * this.pageSize;
     this.qualityService
-      .searchIntentErrors(
-        TestErrorQuery.create(
-          this.state,
-          startIndex,
-          this.pageSize,
-          this.intent === '' ? undefined : this.intent
-        )
-      )
+      .searchIntentErrors(TestErrorQuery.create(this.state, startIndex, this.pageSize, this.intent === '' ? undefined : this.intent))
       .subscribe((r) => {
         this.loading = false;
         this.totalSize = r.total;
@@ -96,9 +89,7 @@ export class TestIntentErrorComponent implements OnInit {
   download() {
     setTimeout((_) => {
       this.qualityService
-        .searchIntentErrorsBlob(
-          TestErrorQuery.create(this.state, 0, 100000, this.intent === '' ? undefined : this.intent)
-        )
+        .searchIntentErrorsBlob(TestErrorQuery.create(this.state, 0, 100000, this.intent === '' ? undefined : this.intent))
         .subscribe((blob) => {
           saveAs(blob, this.state.currentApplication.name + '_intent_errors.json');
           this.dialog.notify(`Dump provided`, 'Dump');

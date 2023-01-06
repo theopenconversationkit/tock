@@ -61,11 +61,7 @@ export class TestPlanComponent implements OnInit {
   ngOnInit(): void {
     this.reload();
     setInterval((_) => {
-      if (
-        null != this.testPlanId &&
-        null != this.testExecutionId &&
-        'COMPLETE' !== this.testExecutionStatus
-      ) {
+      if (null != this.testPlanId && null != this.testExecutionId && 'COMPLETE' !== this.testExecutionStatus) {
         this.getExecutionStatus(this.testPlanId, this.testExecutionId);
       }
       if ('COMPLETE' === this.testExecutionStatus) {
@@ -114,17 +110,11 @@ export class TestPlanComponent implements OnInit {
             this.executeXray = false;
             this.reload();
             if (r.total === 0) {
-              this.toastrService.show(
-                `No tests executed for Plan ${this.xray.testPlanKey}`,
-                'Execution',
-                { duration: 2000 }
-              );
+              this.toastrService.show(`No tests executed for Plan ${this.xray.testPlanKey}`, 'Execution', { duration: 2000 });
             } else if (r.total === r.success) {
-              this.toastrService.show(
-                `${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`,
-                'Execution',
-                { duration: 2000 }
-              );
+              this.toastrService.show(`${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`, 'Execution', {
+                duration: 2000
+              });
             } else {
               this.toastrService.show(
                 `Plan ${this.xray.testPlanKey} executed with ${r.success} successful tests / ${r.total}`,
@@ -149,9 +139,7 @@ export class TestPlanComponent implements OnInit {
       this.toastrService.show(`Please enter a valid name`, 'Error', { duration: 5000 });
       return;
     }
-    const conf = this.botConfiguration.restConfigurations.value.find(
-      (c) => c._id === this.testBotConfigurationId
-    );
+    const conf = this.botConfiguration.restConfigurations.value.find((c) => c._id === this.testBotConfigurationId);
     this.test
       .saveTestPlan(
         new TestPlan(
@@ -231,9 +219,7 @@ export class TestPlanComponent implements OnInit {
    * @param testExecutionId - Identifier of the test plan execution
    */
   getExecutionStatus(testPlanId: string, testExecutionId: string) {
-    this.test
-      .getTestPlanExecutionStatus(testPlanId, testExecutionId)
-      .subscribe((e) => (this.testExecutionStatus = e.status));
+    this.test.getTestPlanExecutionStatus(testPlanId, testExecutionId).subscribe((e) => (this.testExecutionStatus = e.status));
   }
 
   hideExecutions(plan: TestPlan) {

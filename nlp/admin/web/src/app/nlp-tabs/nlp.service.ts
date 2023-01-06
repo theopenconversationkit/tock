@@ -47,9 +47,7 @@ export class NlpService implements OnDestroy {
 
   constructor(private rest: RestService, private state: StateService) {
     this.resetConfiguration();
-    this.resetConfigurationUnsuscriber = this.state.resetConfigurationEmitter.subscribe((_) =>
-      this.resetConfiguration()
-    );
+    this.resetConfigurationUnsuscriber = this.state.resetConfigurationEmitter.subscribe((_) => this.resetConfiguration());
   }
 
   ngOnDestroy(): void {
@@ -69,46 +67,28 @@ export class NlpService implements OnDestroy {
   }
 
   removeState(application: Application, intent: Intent, state: string): Observable<boolean> {
-    return this.rest.delete(
-      `/application/${application._id}/intent/${intent._id}/state/${encodeURIComponent(state)}`
-    );
+    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/state/${encodeURIComponent(state)}`);
   }
 
-  removeSharedIntent(
-    application: Application,
-    intent: Intent,
-    intentId: string
-  ): Observable<boolean> {
-    return this.rest.delete(
-      `/application/${application._id}/intent/${intent._id}/shared/${intentId}`
-    );
+  removeSharedIntent(application: Application, intent: Intent, intentId: string): Observable<boolean> {
+    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/shared/${intentId}`);
   }
 
   removeIntent(application: Application, intent: Intent): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}`);
   }
 
-  removeEntity(
-    application: Application,
-    intent: Intent,
-    entity: EntityDefinition
-  ): Observable<boolean> {
+  removeEntity(application: Application, intent: Intent, entity: EntityDefinition): Observable<boolean> {
     return this.rest.delete(
-      `/application/${application._id}/intent/${intent._id}/entity/${encodeURIComponent(
-        entity.entityTypeName
-      )}/${encodeURIComponent(entity.role)}`
+      `/application/${application._id}/intent/${intent._id}/entity/${encodeURIComponent(entity.entityTypeName)}/${encodeURIComponent(
+        entity.role
+      )}`
     );
   }
 
-  removeSubEntity(
-    application: Application,
-    entityType: EntityType,
-    entity: EntityDefinition
-  ): Observable<boolean> {
+  removeSubEntity(application: Application, entityType: EntityType, entity: EntityDefinition): Observable<boolean> {
     return this.rest.delete(
-      `/application/${application._id}/entity/${encodeURIComponent(
-        entityType.name
-      )}/${encodeURIComponent(entity.role)}`
+      `/application/${application._id}/entity/${encodeURIComponent(entityType.name)}/${encodeURIComponent(entity.role)}`
     );
   }
 
@@ -165,10 +145,7 @@ export class NlpService implements OnDestroy {
   }
 
   exportLogs(application: Application, locale: string): Observable<Blob> {
-    return this.rest.get(
-      `/logs/${application._id}/${locale}/export`,
-      (r) => new Blob([r], { type: 'text/csv;charset=utf-8' })
-    );
+    return this.rest.get(`/logs/${application._id}/${locale}/export`, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
   }
 
   getSentencesDump(application: Application, query: SearchQuery, full: boolean): Observable<Blob> {
@@ -179,11 +156,7 @@ export class NlpService implements OnDestroy {
     );
   }
 
-  getSentencesQueryDump(
-    application: Application,
-    query: SentencesTextQuery,
-    full: boolean
-  ): Observable<Blob> {
+  getSentencesQueryDump(application: Application, query: SentencesTextQuery, full: boolean): Observable<Blob> {
     return this.rest.post(
       `/sentences/dump/${full ? 'full/' : ''}${application._id}/fromText`,
       query,
@@ -197,9 +170,7 @@ export class NlpService implements OnDestroy {
 
   deletePredefinedValue(query: PredefinedValueQuery): Observable<boolean> {
     return this.rest.delete(
-      `/dictionary/predefined-values/${encodeURIComponent(
-        query.entityTypeName
-      )}/${encodeURIComponent(query.predefinedValue)}`
+      `/dictionary/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`
     );
   }
 
@@ -209,11 +180,9 @@ export class NlpService implements OnDestroy {
 
   deleteLabel(query: PredefinedLabelQuery): Observable<boolean> {
     return this.rest.delete(
-      `/dictionary/predefined-value/labels/${encodeURIComponent(
-        query.entityTypeName
-      )}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(
-        query.locale
-      )}/${encodeURIComponent(query.label)}`
+      `/dictionary/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(
+        query.predefinedValue
+      )}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`
     );
   }
 

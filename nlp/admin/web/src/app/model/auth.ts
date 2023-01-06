@@ -34,12 +34,7 @@ export class AuthenticateRequest {
 }
 
 export class AuthenticateResponse {
-  constructor(
-    public authenticated: boolean,
-    public email?: string,
-    public organization?: string,
-    public roles?: UserRole[]
-  ) {}
+  constructor(public authenticated: boolean, public email?: string, public organization?: string, public roles?: UserRole[]) {}
 
   static fromJSON(json: any): AuthenticateResponse {
     const value = Object.create(AuthenticateResponse.prototype);

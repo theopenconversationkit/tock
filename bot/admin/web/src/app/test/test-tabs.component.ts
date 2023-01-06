@@ -20,17 +20,10 @@ import { StateService } from '../core-nlp/state.service';
 import { UserRole } from '../model/auth';
 
 class TabLink {
-  constructor(
-    public route: string,
-    public title: string,
-    public icon?: string
-  ) { }
+  constructor(public route: string, public title: string, public icon?: string) {}
 }
 
-const tabs = [
-  new TabLink('test', 'Test the bot', 'smiling-face-outline'),
-  new TabLink('plan', 'Test Plans', 'map-outline')
-];
+const tabs = [new TabLink('test', 'Test the bot', 'smiling-face-outline'), new TabLink('plan', 'Test Plans', 'map-outline')];
 
 @Component({
   selector: 'tock-test-tabs',
@@ -42,7 +35,7 @@ export class TestTabsComponent implements OnInit {
 
   constructor(private router: Router, private state: StateService) {
     if (!state.hasRole(UserRole.botUser)) {
-      this.testTabLinks = this.testTabLinks.filter(t => t.route !== 'plan')
+      this.testTabLinks = this.testTabLinks.filter((t) => t.route !== 'plan');
     }
   }
 

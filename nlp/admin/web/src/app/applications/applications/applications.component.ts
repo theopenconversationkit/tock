@@ -31,11 +31,7 @@ export class ApplicationsComponent implements OnInit {
   UserRole = UserRole;
   uploadDump: boolean = false;
 
-  constructor(
-    private toastrService: NbToastrService,
-    public state: StateService,
-    private applicationService: ApplicationService
-  ) {}
+  constructor(private toastrService: NbToastrService, public state: StateService, private applicationService: ApplicationService) {}
 
   ngOnInit() {}
 
@@ -52,12 +48,10 @@ export class ApplicationsComponent implements OnInit {
   }
 
   downloadSentencesDump(app: Application) {
-    this.applicationService
-      .getSentencesDump(app, this.state.hasRole(UserRole.technicalAdmin))
-      .subscribe((blob) => {
-        saveAs(blob, app.name + '_sentences.json');
-        this.toastrService.show(`Dump provided`, 'Dump', { duration: 2000 });
-      });
+    this.applicationService.getSentencesDump(app, this.state.hasRole(UserRole.technicalAdmin)).subscribe((blob) => {
+      saveAs(blob, app.name + '_sentences.json');
+      this.toastrService.show(`Dump provided`, 'Dump', { duration: 2000 });
+    });
   }
 
   showUploadDumpPanel() {

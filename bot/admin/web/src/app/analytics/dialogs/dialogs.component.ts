@@ -108,9 +108,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
     }
     this.analytics
       .addDialogToTestPlan(planId, dialog.id)
-      .subscribe((_) =>
-        this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 })
-      );
+      .subscribe((_) => this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 }));
   }
 }
 

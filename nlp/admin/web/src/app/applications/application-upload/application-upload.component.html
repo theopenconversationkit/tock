@@ -43,12 +43,9 @@
       </p>
       <ul class="mention">
         <li *ngIf="state.hasRole(UserRole.technicalAdmin)">
-          The "Application Dump" format is an internal format, useful to copy application data
-          across environments.
+          The "Application Dump" format is an internal format, useful to copy application data across environments.
         </li>
-        <li>
-          The "Sentences Dump" format is an agnostic format, used to share data with other systems.
-        </li>
+        <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
       </ul>
       <p *ngIf="!applicationName">
         <mat-form-field id="applicationName">

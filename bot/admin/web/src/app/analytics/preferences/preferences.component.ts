@@ -28,11 +28,7 @@ import { UserAnalyticsPreferences } from './UserAnalyticsPreferences';
 export class PreferencesComponent {
   preferences: UserAnalyticsPreferences;
 
-  constructor(
-    protected settings: SettingsService,
-    private toastrService: NbToastrService,
-    private analytics: AnalyticsService
-  ) {
+  constructor(protected settings: SettingsService, private toastrService: NbToastrService, private analytics: AnalyticsService) {
     this.preferences = this.analytics.getUserPreferences();
   }
 

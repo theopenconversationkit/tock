@@ -78,14 +78,7 @@ export class I18nLabel {
       if (!defaultLabel && this.i18n.length !== 0) {
         defaultLabel = this.i18n[0];
       }
-      const newLabel = new I18nLocalizedLabel(
-        locale,
-        defaultUserInterfaceType,
-        defaultLabel ? defaultLabel.label : '',
-        false,
-        null,
-        []
-      );
+      const newLabel = new I18nLocalizedLabel(locale, defaultUserInterfaceType, defaultLabel ? defaultLabel.label : '', false, null, []);
       this.i18n.push(newLabel);
       return newLabel;
     }
@@ -102,39 +95,17 @@ export class I18nLabel {
     return this;
   }
 
-  label(
-    locale: string,
-    userInterface: UserInterfaceType,
-    connectorId?: string
-  ): I18nLocalizedLabel {
-    const l = this.i18n.find(
-      (i) =>
-        i.locale === locale && i.interfaceType === userInterface && i.connectorId === connectorId
-    );
+  label(locale: string, userInterface: UserInterfaceType, connectorId?: string): I18nLocalizedLabel {
+    const l = this.i18n.find((i) => i.locale === locale && i.interfaceType === userInterface && i.connectorId === connectorId);
     return l ? l : this.i18n.find((i) => i.locale === locale && i.interfaceType === userInterface);
   }
 
-  hasLocalAndInterfaceWithASpecifiedConnector(
-    locale: string,
-    userInterface: UserInterfaceType
-  ): boolean {
-    return this.i18n.some(
-      (i) =>
-        i.locale === locale &&
-        i.interfaceType === userInterface &&
-        !isNullOrUndefined(i.connectorId)
-    );
+  hasLocalAndInterfaceWithASpecifiedConnector(locale: string, userInterface: UserInterfaceType): boolean {
+    return this.i18n.some((i) => i.locale === locale && i.interfaceType === userInterface && !isNullOrUndefined(i.connectorId));
   }
 
-  hasLocaleAndInterfaceAndConnector(
-    locale: string,
-    userInterface: UserInterfaceType,
-    connectorId?: string
-  ): boolean {
-    return this.i18n.some(
-      (i) =>
-        i.locale === locale && i.interfaceType === userInterface && i.connectorId === connectorId
-    );
+  hasLocaleAndInterfaceAndConnector(locale: string, userInterface: UserInterfaceType, connectorId?: string): boolean {
+    return this.i18n.some((i) => i.locale === locale && i.interfaceType === userInterface && i.connectorId === connectorId);
   }
 
   static fromJSON(json: any): I18nLabel {
@@ -185,9 +156,7 @@ export class I18nLocalizedLabel {
   }
 
   displayStats(): string {
-    return this.stats && this.stats.length !== 0
-      ? this.stats.map((s) => s.display()).join(',')
-      : '';
+    return this.stats && this.stats.length !== 0 ? this.stats.map((s) => s.display()).join(',') : '';
   }
 
   mergedStats(): I18nLabelStat {
@@ -199,10 +168,7 @@ export class I18nLocalizedLabel {
       let lastUpdate = this.stats[0].lastUpdate;
       for (let i = 1; i < this.stats.length; i++) {
         sum += this.stats[i].count;
-        lastUpdate =
-          lastUpdate.getTime() > this.stats[i].lastUpdate.getTime()
-            ? this.stats[i].lastUpdate
-            : lastUpdate;
+        lastUpdate = lastUpdate.getTime() > this.stats[i].lastUpdate.getTime() ? this.stats[i].lastUpdate : lastUpdate;
       }
       return new I18nLabelStat(this.locale, this.interfaceType, this.connectorId, sum, lastUpdate);
     } else {
@@ -235,9 +201,9 @@ export class I18nLabelStat {
   ) {}
 
   display(): string {
-    return `[${this.locale}-${UserInterfaceType[this.interfaceType]}-${
-      this.connectorId ? this.connectorId : ''
-    }:${this.count}-${this.lastUpdate}]`;
+    return `[${this.locale}-${UserInterfaceType[this.interfaceType]}-${this.connectorId ? this.connectorId : ''}:${this.count}-${
+      this.lastUpdate
+    }]`;
   }
 
   static fromJSON(json: any): I18nLabelStat {
@@ -266,23 +232,13 @@ export enum I18nLabelStateQuery {
 }
 
 export class I18LabelQuery {
-  constructor(
-    public label: string,
-    public category: string,
-    public state: I18nLabelStateQuery,
-    public notUsedSince: number
-  ) {}
+  constructor(public label: string, public category: string, public state: I18nLabelStateQuery, public notUsedSince: number) {}
 
   toString(): string {
     const labelString = this.label && this.label.trim().length > 0 ? '_' + this.label : '';
-    const categoryString =
-      this.category && this.category.trim().length > 0 ? '_' + this.category : '';
-    const stateString =
-      this.state === I18nLabelStateQuery.ALL ? '' : '_' + this.state.toLowerCase();
-    const notUsedSinceString =
-      this.notUsedSince && this.notUsedSince > 0
-        ? '_not_used_since_' + this.notUsedSince + '_days'
-        : '';
+    const categoryString = this.category && this.category.trim().length > 0 ? '_' + this.category : '';
+    const stateString = this.state === I18nLabelStateQuery.ALL ? '' : '_' + this.state.toLowerCase();
+    const notUsedSinceString = this.notUsedSince && this.notUsedSince > 0 ? '_not_used_since_' + this.notUsedSince + '_days' : '';
     return labelString + categoryString + stateString + notUsedSinceString;
   }
 }

@@ -15,10 +15,7 @@
  */
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {
-  SentenceFilter,
-  SentencesScrollComponent
-} from '../sentences-scroll/sentences-scroll.component';
+import { SentenceFilter, SentencesScrollComponent } from '../sentences-scroll/sentences-scroll.component';
 import {
   EntityDefinition,
   EntityType,
@@ -60,12 +57,7 @@ export class SearchComponent implements OnInit {
   NO_INTENT_FILTER = new FilterOption('-1', 'All');
   UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
 
-  constructor(
-    public state: StateService,
-    private nlp: NlpService,
-    private toastrService: NbToastrService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(public state: StateService, private nlp: NlpService, private toastrService: NbToastrService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.status = null;
@@ -106,10 +98,7 @@ export class SearchComponent implements OnInit {
 
   private findEntitiesAndSubEntities(entities: EntityType[], intent: Intent): EntityType[] {
     return entities.filter((e) =>
-      intent.entities.some(
-        (intentEntity) =>
-          intentEntity.entityTypeName === e.name || e.containsSuperEntity(intentEntity, entities)
-      )
+      intent.entities.some((intentEntity) => intentEntity.entityTypeName === e.name || e.containsSuperEntity(intentEntity, entities))
     );
   }
 
@@ -117,16 +106,8 @@ export class SearchComponent implements OnInit {
     this.state.entityTypesSortedByName().subscribe((entities) => {
       if (!this.filter.intentId || this.filter.intentId === this.NO_INTENT_FILTER.value) {
         this.entityTypes = entities;
-        this.entityRolesToInlude = getRoles(
-          this.state.currentIntents.value,
-          entities,
-          this.filter.entityType
-        );
-        this.entityRolesToExclude = getRoles(
-          this.state.currentIntents.value,
-          entities,
-          this.filter.entityType
-        );
+        this.entityRolesToInlude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
+        this.entityRolesToExclude = getRoles(this.state.currentIntents.value, entities, this.filter.entityType);
       } else {
         const intent = this.state.findIntentById(this.filter.intentId);
         if (intent) {
@@ -147,19 +128,11 @@ export class SearchComponent implements OnInit {
       }
       if (!this.filter.searchSubEntities && this.filter.entityRolesToInclude.length > 0) {
         this.filter.searchSubEntities =
-          entities.find(
-            (e) =>
-              e.subEntities.find((s) => this.filter.entityRolesToInclude.includes(s.role)) !=
-              undefined
-          ) != undefined;
+          entities.find((e) => e.subEntities.find((s) => this.filter.entityRolesToInclude.includes(s.role)) != undefined) != undefined;
       }
       if (!this.filter.searchSubEntities && this.filter.entityRolesToExclude.length > 0) {
         this.filter.searchSubEntities =
-          entities.find(
-            (e) =>
-              e.subEntities.find((s) => this.filter.entityRolesToExclude.includes(s.role)) !=
-              undefined
-          ) != undefined;
+          entities.find((e) => e.subEntities.find((s) => this.filter.entityRolesToExclude.includes(s.role)) != undefined) != undefined;
       }
     });
   }
@@ -204,12 +177,8 @@ export class SearchComponent implements OnInit {
         this.filter.search = this.filter.search.trim();
       }
 
-      const theActualMin = Math.round(
-        Math.min(this.filter.maxIntentProbability, this.filter.minIntentProbability)
-      );
-      const theActualMax = Math.round(
-        Math.max(this.filter.maxIntentProbability, this.filter.minIntentProbability)
-      );
+      const theActualMin = Math.round(Math.min(this.filter.maxIntentProbability, this.filter.minIntentProbability));
+      const theActualMax = Math.round(Math.max(this.filter.maxIntentProbability, this.filter.minIntentProbability));
       this.filter.maxIntentProbability = Math.min(100, theActualMax);
       this.filter.minIntentProbability = Math.max(0, theActualMin);
 
@@ -241,9 +210,7 @@ export class SearchComponent implements OnInit {
             this.state.currentApplication.name,
             this.state.currentLocale,
             this.selectedSentences ? this.selectedSentences : [],
-            this.selectedSentences
-              ? null
-              : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000)),
+            this.selectedSentences ? null : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000)),
             this.update.newIntentId,
             this.update.oldEntity,
             this.update.newEntity
@@ -281,9 +248,7 @@ export class SearchComponent implements OnInit {
             this.state.currentLocale,
             this.targetLocale,
             this.selectedSentences ? this.selectedSentences : [],
-            this.selectedSentences
-              ? null
-              : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000))
+            this.selectedSentences ? null : this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000))
           )
         )
         .subscribe((r) => {
@@ -301,9 +266,5 @@ export class SearchComponent implements OnInit {
 }
 
 export class SentencesUpdate {
-  constructor(
-    public newIntentId?: string,
-    public oldEntity?: EntityDefinition,
-    public newEntity?: EntityDefinition
-  ) {}
+  constructor(public newIntentId?: string, public oldEntity?: EntityDefinition, public newEntity?: EntityDefinition) {}
 }

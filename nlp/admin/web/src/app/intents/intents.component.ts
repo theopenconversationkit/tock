@@ -166,10 +166,7 @@ export class IntentsComponent implements OnInit {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
           (response) => {
-            this.dialog.notify(
-              `State ${response.name} added for Intent ${intent.name}`,
-              'Add State'
-            );
+            this.dialog.notify(`State ${response.name} added for Intent ${intent.name}`, 'Add State');
           },
           (_) => {
             intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
@@ -191,15 +188,13 @@ export class IntentsComponent implements OnInit {
     });
     dialogRef.onClose.subscribe((result) => {
       if (result === 'remove') {
-        this.nlp
-          .removeEntity(this.state.currentApplication, intent, entity)
-          .subscribe((deleted) => {
-            this.state.currentApplication.intentById(intent._id).removeEntity(entity);
-            if (deleted) {
-              this.state.removeEntityTypeByName(entity.entityTypeName);
-            }
-            this.dialog.notify(`Entity ${entityName} removed from intent`, 'Remove Entity');
-          });
+        this.nlp.removeEntity(this.state.currentApplication, intent, entity).subscribe((deleted) => {
+          this.state.currentApplication.intentById(intent._id).removeEntity(entity);
+          if (deleted) {
+            this.state.removeEntityTypeByName(entity.entityTypeName);
+          }
+          this.dialog.notify(`Entity ${entityName} removed from intent`, 'Remove Entity');
+        });
       }
     });
   }

@@ -15,23 +15,8 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-  ViewEncapsulation
-} from '@angular/core';
-import {
-  PaginatedResult,
-  SearchQuery,
-  Sentence,
-  SentenceStatus,
-  SentencesTextQuery,
-  UpdateSentencesQuery
-} from '../model/nlp';
+import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { PaginatedResult, SearchQuery, Sentence, SentenceStatus, SentencesTextQuery, UpdateSentencesQuery } from '../model/nlp';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { StateService } from '../core-nlp/state.service';
 import { ScrollComponent } from '../scroll/scroll.component';
@@ -92,14 +77,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       columns.push('status');
     }
     if (this.advancedView) {
-      columns.push(
-        'lastUpdate',
-        'intentProbability',
-        'entitiesProbability',
-        'lastUsage',
-        'usageCount',
-        'unknownCount'
-      );
+      columns.push('lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount');
     }
     this.displayedColumns = columns;
   }
@@ -151,20 +129,12 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.search,
       this.filter.intentId,
       this.filter.status,
-      !this.filter.entityType || this.filter.entityType.length === 0
-        ? null
-        : this.filter.entityType,
-      !this.filter.entityRolesToInclude || this.filter.entityRolesToInclude.length === 0
-        ? []
-        : this.filter.entityRolesToInclude,
-      !this.filter.entityRolesToExclude || this.filter.entityRolesToExclude.length === 0
-        ? []
-        : this.filter.entityRolesToExclude,
+      !this.filter.entityType || this.filter.entityType.length === 0 ? null : this.filter.entityType,
+      !this.filter.entityRolesToInclude || this.filter.entityRolesToInclude.length === 0 ? [] : this.filter.entityRolesToInclude,
+      !this.filter.entityRolesToExclude || this.filter.entityRolesToExclude.length === 0 ? [] : this.filter.entityRolesToExclude,
       this.filter.modifiedAfter,
       this.filter.modifiedBefore,
-      this.tableView && this.sort.length !== 0
-        ? this.sort.map((s) => new Entry<string, boolean>(s.column, s.direction === 'asc'))
-        : null,
+      this.tableView && this.sort.length !== 0 ? this.sort.map((s) => new Entry<string, boolean>(s.column, s.direction === 'asc')) : null,
       this.filter.onlyToReview,
       this.filter.searchSubEntities,
       this.filter.user,
@@ -258,9 +228,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
-    this.isAllSelected()
-      ? this.selection.clear()
-      : this.nodes.forEach((row) => this.selection.select(row.data));
+    this.isAllSelected() ? this.selection.clear() : this.nodes.forEach((row) => this.selection.select(row.data));
     this.fireSelectionChange();
   }
 
@@ -304,11 +272,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
           theSelectedSentences.map((s) => s.text)
         );
         this.nlp
-          .getSentencesQueryDump(
-            this.state.currentApplication,
-            theQuery,
-            this.state.hasRole(UserRole.technicalAdmin)
-          )
+          .getSentencesQueryDump(this.state.currentApplication, theQuery, this.state.hasRole(UserRole.technicalAdmin))
           .subscribe((blob) => {
             saveAs(blob, this.state.currentApplication.name + '_selected_sentences.json');
             this.dialog.notify(`Dump provided`, 'Dump');

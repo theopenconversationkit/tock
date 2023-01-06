@@ -25,10 +25,7 @@ import { SentenceStatus } from '../model/nlp';
   styleUrls: ['./archive.component.css']
 })
 export class ArchiveComponent implements OnInit {
-  filter: SentenceFilter = new SentenceFilter(null, Intent.unknown, [
-    SentenceStatus.validated,
-    SentenceStatus.model
-  ]);
+  filter: SentenceFilter = new SentenceFilter(null, Intent.unknown, [SentenceStatus.validated, SentenceStatus.model]);
 
   constructor() {}
 

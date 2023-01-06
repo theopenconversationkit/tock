@@ -43,10 +43,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer
   ) {
-    iconRegistry.addSvgIcon(
-      'logo',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg')
-    );
+    iconRegistry.addSvgIcon('logo', sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
     this.auth.addListener(this);
   }
 
