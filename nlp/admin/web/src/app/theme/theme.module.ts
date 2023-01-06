@@ -36,8 +36,6 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { FooterComponent, HeaderComponent } from './components';
 import { OneColumnLayoutComponent } from './layouts';
 import { DEFAULT_THEME } from './styles/theme.default';
-import { COSMIC_THEME } from './styles/theme.cosmic';
-import { CORPORATE_THEME } from './styles/theme.corporate';
 import { DARK_THEME } from './styles/theme.dark';
 import { FormsModule } from '@angular/forms';
 
@@ -75,7 +73,7 @@ export class ThemeModule {
           {
             name: 'dark'
           },
-          [DEFAULT_THEME, COSMIC_THEME, CORPORATE_THEME, DARK_THEME]
+          [DEFAULT_THEME, DARK_THEME]
         ).providers
       ]
     };
