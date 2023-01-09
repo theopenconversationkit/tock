@@ -50,7 +50,7 @@ import {
   PaginationComponent
 } from './components';
 
-import { AutofocusDirective, DelayDirective } from './directives';
+import { AutofocusDirective } from './directives';
 
 @NgModule({
   imports: [
@@ -85,8 +85,7 @@ import { AutofocusDirective, DelayDirective } from './directives';
     ChatUiMessageComponent,
     ChoiceDialogComponent,
 
-    AutofocusDirective,
-    DelayDirective
+    AutofocusDirective
   ],
   exports: [
     BotMessageComponent,
@@ -102,8 +101,7 @@ import { AutofocusDirective, DelayDirective } from './directives';
     ChatUiMessageComponent,
     ChoiceDialogComponent,
 
-    AutofocusDirective,
-    DelayDirective
+    AutofocusDirective
   ],
   providers: [BotSharedService],
   entryComponents: []
