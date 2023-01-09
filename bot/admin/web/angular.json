@@ -17,13 +17,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "preserveSymlinks": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets", "src/img"],
             "styles": ["src/app/theme/styles/styles.scss", "src/styles.css", "src/jsoneditor.css"],
             "scripts": [
@@ -55,10 +55,8 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
+              "vendorChunk": false
             },
             "dev": {
               "budgets": [
@@ -67,12 +65,12 @@
                   "maximumWarning": "6kb"
                 }
               ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
-                }
-              ]
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           }
         },
@@ -88,7 +86,8 @@
             "dev": {
               "browserTarget": "bot:build:dev"
             }
-          }
+          },
+          "defaultConfiguration": "dev"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

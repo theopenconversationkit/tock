@@ -98,37 +98,36 @@ const routes: Routes = [
 export class QualityRoutingModule {}
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedModule,
-    QualityRoutingModule,
-    ApplicationsModule,
-    NlpModule,
-    MomentModule,
-    NbThemeModule,
-    ThemeModule,
-    NbRouteTabsetModule,
-    NbCardModule,
-    NbButtonModule,
-    NbSelectModule,
-    NgxEchartsModule.forRoot({
-      echarts: importEcharts
-    }),
-    NbTooltipModule,
-    NgbModule,
-    NbSpinnerModule
-  ],
-  declarations: [
-    QualityTabsComponent,
-    TestIntentErrorComponent,
-    TestEntityErrorComponent,
-    TestBuildsComponent,
-    LogStatsComponent,
-    ModelBuildsComponent,
-    IntentQAComponent
-  ],
-  exports: [],
-  providers: [QualityService],
-  entryComponents: []
+    imports: [
+        CommonModule,
+        SharedModule,
+        QualityRoutingModule,
+        ApplicationsModule,
+        NlpModule,
+        MomentModule,
+        NbThemeModule,
+        ThemeModule,
+        NbRouteTabsetModule,
+        NbCardModule,
+        NbButtonModule,
+        NbSelectModule,
+        NgxEchartsModule.forRoot({
+            echarts: importEcharts
+        }),
+        NbTooltipModule,
+        NgbModule,
+        NbSpinnerModule
+    ],
+    declarations: [
+        QualityTabsComponent,
+        TestIntentErrorComponent,
+        TestEntityErrorComponent,
+        TestBuildsComponent,
+        LogStatsComponent,
+        ModelBuildsComponent,
+        IntentQAComponent
+    ],
+    exports: [],
+    providers: [QualityService]
 })
 export class QualityModule {}

@@ -114,45 +114,44 @@ export class NlpApplicationConfig implements ApplicationConfig {
 }
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedModule,
-    MomentModule,
-    ApplicationsRoutingModule,
-    NbTabsetModule,
-    NbCardModule,
-    NbRouteTabsetModule,
-    FileUploadModule,
-    NbCardModule,
-    NbActionsModule,
-    NbButtonModule,
-    NbTooltipModule,
-    NbCheckboxModule,
-    NbSelectModule,
-    NbAccordionModule,
-    NbSpinnerModule,
-    NbRadioModule,
-    NgJsonEditorModule,
-    NbDialogModule.forRoot(),
-    NgbPaginationModule
-  ],
-  declarations: [
-    ApplicationsComponent,
-    ApplicationComponent,
-    ApplicationAdvancedOptionsComponent,
-    ApplicationUploadComponent,
-    UserLogsComponent,
-    DisplayUserDataComponent,
-    ConfigurationTabsComponent,
-    NamespacesComponent
-  ],
-  providers: [
-    {
-      provide: ApplicationConfig,
-      useClass: NlpApplicationConfig
-    },
-    ApplicationsResolver
-  ],
-  entryComponents: [DisplayUserDataComponent]
+    imports: [
+        CommonModule,
+        SharedModule,
+        MomentModule,
+        ApplicationsRoutingModule,
+        NbTabsetModule,
+        NbCardModule,
+        NbRouteTabsetModule,
+        FileUploadModule,
+        NbCardModule,
+        NbActionsModule,
+        NbButtonModule,
+        NbTooltipModule,
+        NbCheckboxModule,
+        NbSelectModule,
+        NbAccordionModule,
+        NbSpinnerModule,
+        NbRadioModule,
+        NgJsonEditorModule,
+        NbDialogModule.forRoot(),
+        NgbPaginationModule
+    ],
+    declarations: [
+        ApplicationsComponent,
+        ApplicationComponent,
+        ApplicationAdvancedOptionsComponent,
+        ApplicationUploadComponent,
+        UserLogsComponent,
+        DisplayUserDataComponent,
+        ConfigurationTabsComponent,
+        NamespacesComponent
+    ],
+    providers: [
+        {
+            provide: ApplicationConfig,
+            useClass: NlpApplicationConfig
+        },
+        ApplicationsResolver
+    ]
 })
 export class ApplicationsModule {}

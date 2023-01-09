@@ -105,10 +105,7 @@
           [showError]="isSubmitted"
           data-testid="tags"
         >
-          <nb-tag-list
-            tock-delay
-            (tagRemove)="onTagRemove($event)"
-          >
+          <nb-tag-list (tagRemove)="onTagRemove($event)">
             <nb-tag
               *ngFor="let tag of tags.value"
               removable
