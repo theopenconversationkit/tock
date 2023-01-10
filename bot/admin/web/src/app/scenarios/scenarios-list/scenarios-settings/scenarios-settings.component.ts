@@ -155,7 +155,7 @@ export class ScenariosSettingsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.loading = false;
-          this.close();
+          this.onClose.emit(true);
           this.toastrService.success(`Settings successfully updated`, 'Success');
         },
         error: () => {
