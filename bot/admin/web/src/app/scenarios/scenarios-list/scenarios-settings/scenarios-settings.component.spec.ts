@@ -13,7 +13,7 @@ import {
 } from '@nebular/theme';
 import { TestingModule } from '@tock/testing';
 import { NbDialogServiceMock, NbToastrServiceMock, StateServiceMock } from '@tock/testing/mockedClass';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';
 import { BotService } from '../../../bot/bot-service';
@@ -211,6 +211,28 @@ describe('ScenariosSettingsComponent', () => {
         actionRepetitionNumber: 4,
         redirectStoryId: 'test'
       });
+    });
+
+    it('should not emit event to close the settings panel when save fails', () => {
+      spyOn(component.onClose, 'emit');
+      spyOn(component['scenarioSettingsService'], 'saveSettings').and.returnValue(throwError(new Error()));
+
+      component.actionRepetitionNumber.setValue(4);
+      component.redirectStoryId.setValue('1');
+      component.save();
+
+      expect(component.onClose.emit).not.toHaveBeenCalled();
+    });
+
+    it('should emit event to close the settings panel when save successfully', () => {
+      spyOn(component.onClose, 'emit');
+      spyOn(component['scenarioSettingsService'], 'saveSettings').and.returnValue(of(mock.settings));
+
+      component.actionRepetitionNumber.setValue(4);
+      component.redirectStoryId.setValue('1');
+      component.save();
+
+      expect(component.onClose.emit).toHaveBeenCalledTimes(1);
     });
   });
 });
