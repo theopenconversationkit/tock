@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NbDialogRef } from '@nebular/theme';
-import { UserInterfaceType } from 'src/app/core/model/configuration';
+import { UserInterfaceType } from '../../../../core/model/configuration';
 import { StateService } from '../../../../core-nlp/state.service';
 import { ScenarioVersion, SCENARIO_MODE, SCENARIO_STATE, ScenarioContext } from '../../../models';
 import { ActionEditComponent } from './action-edit.component';

@@ -19,7 +19,7 @@ import { ScenarioConceptionService } from './scenario-conception-service.service
 import { ScenarioDesignerService } from '../scenario-designer.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
-import { UserInterfaceType } from 'src/app/core/model/configuration';
+import { UserInterfaceType } from '../../../core/model/configuration';
 
 const scenarioMock: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
