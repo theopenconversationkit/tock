@@ -1,4 +1,4 @@
-<nb-card id="modal-wrapper">
+<nb-card>
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     <div>
       Create a new intent
@@ -71,24 +71,13 @@
           [controls]="category"
           [showError]="isSubmitted"
         >
-          <input
-            nbInput
+          <tock-autocomplete-input
             formControlName="category"
-            fullWidth
-            id="category"
-            type="text"
             placeholder="Select category"
-            autocomplete="off"
-            [nbAutocomplete]="categoryAutocomplete"
-          />
-          <nb-autocomplete #categoryAutocomplete>
-            <nb-option
-              *ngFor="let option of categoryAutocompleteValues | async"
-              [value]="option"
-            >
-              {{ option }}
-            </nb-option>
-          </nb-autocomplete>
+            name="category"
+            keyLabel="category"
+            [options]="categories"
+          ></tock-autocomplete-input>
         </tock-form-control>
       </div>
 

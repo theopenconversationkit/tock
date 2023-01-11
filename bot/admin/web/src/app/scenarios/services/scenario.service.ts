@@ -6,6 +6,7 @@ import { map, tap, switchMap, filter, concatMap, take } from 'rxjs/operators';
 
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { StateService } from '../../core-nlp/state.service';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { Application } from '../../model/application';
 import { PaginatedQuery } from '../../model/commons';
 import { Intent, SearchQuery, SentencesResult } from '../../model/nlp';
@@ -53,11 +54,23 @@ export class ScenarioService {
     private applicationService: ApplicationService,
     private datePipe: DatePipe,
     private router: Router,
-    protected state: StateService,
+    private botConfigurationService: BotConfigurationService,
+    protected stateService: StateService,
     private nlp: NlpService
   ) {
     this._state = new BehaviorSubject(scenariosInitialState);
     this.state$ = this._state.asObservable();
+    this.observeConfigurationChanges();
+  }
+
+  observeConfigurationChanges(): void {
+    let obervable = this.stateService.configurationChange.pipe(
+      switchMap(() => this.botConfigurationService.grabConfigurations()),
+      tap((configurations) => {
+        if (configurations?.length) this.getScenariosGroups(true);
+      })
+    );
+    obervable.subscribe();
   }
 
   getState(): ScenarioState {
@@ -113,6 +126,7 @@ export class ScenarioService {
       filter((state) => state.loaded === true),
       map((state) => state.scenariosGroups)
     );
+
     return merge(notLoaded, loaded);
   }
 
@@ -333,7 +347,7 @@ export class ScenarioService {
     const cursor: number = 0;
     const pageSize: number = 50;
     const mark = null;
-    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
+    const paginatedQuery: PaginatedQuery = this.stateService.createPaginatedQuery(cursor, pageSize, mark);
     return new SearchQuery(
       paginatedQuery.namespace,
       paginatedQuery.applicationName,
@@ -366,7 +380,7 @@ export class ScenarioService {
         exportableGroup.group.versions.forEach((version: ScenarioVersion) => {
           version.data.scenarioItems.forEach((item) => {
             if (item.intentDefinition?.intentId) {
-              const existingIntent: Intent = this.state.findIntentById(item.intentDefinition.intentId);
+              const existingIntent: Intent = this.stateService.findIntentById(item.intentDefinition.intentId);
 
               if (existingIntent) {
                 if (!listedIntentIds.includes(item.intentDefinition.intentId)) {
@@ -397,7 +411,7 @@ export class ScenarioService {
                   version.data.scenarioItems.forEach((item) => {
                     const intentId = item.intentDefinition?.intentId;
                     if (intentId === sentence.classification.intentId) {
-                      const app = this.state.currentApplication;
+                      const app = this.stateService.currentApplication;
                       item.intentDefinition.sentences.push(
                         new TempSentence(app.namespace, app.name, sentence.language, sentence.text, false, '')
                       );

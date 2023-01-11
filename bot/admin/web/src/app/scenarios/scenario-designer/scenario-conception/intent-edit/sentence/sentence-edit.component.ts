@@ -1,4 +1,4 @@
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { FlexibleConnectedPositionStrategyOrigin, Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import {
   Component,
@@ -17,7 +17,7 @@ import {
 import { FormArray, FormControl } from '@angular/forms';
 import { NbContextMenuDirective, NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 
 import { deepCopy } from '../../../../../shared/utils';
 import { StateService } from '../../../../../core-nlp/state.service';
@@ -25,7 +25,7 @@ import { ClassifiedEntity, EntityDefinition, qualifiedName, qualifiedRole, Sente
 import { CreateEntityDialogComponent } from '../../../../../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
 import { SelectedResult, Token } from '../../../../../sentence-analysis/highlight/highlight.component';
 import { getContrastYIQ } from '../../../../commons/utils';
-import { ScenarioContext, ScenarioVersionExtended } from '../../../../models';
+import { ScenarioContext, ScenarioVersionExtended, TempEntity } from '../../../../models';
 import { ContextCreateComponent } from '../../../scenario-conception/context-create/context-create.component';
 import { SentenceExtended, TempSentenceExtended } from '../intent-edit.component';
 
@@ -42,8 +42,8 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   @Input() contexts: ScenarioContext[];
   @Input() contextsEntities: FormArray;
   @Input() isReadonly: boolean;
-
   @Input() allEntities: [];
+
   @Output() componentActivated = new EventEmitter();
   @Output() entityAdded = new EventEmitter();
   @Output() storeModifiedSentence = new EventEmitter();
@@ -54,17 +54,17 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   getContrastYIQ = getContrastYIQ;
 
   constructor(
-    protected state: StateService,
+    private stateService: StateService,
     private nbDialogService: NbDialogService,
-    public overlay: Overlay,
-    public viewContainerRef: ViewContainerRef
+    private overlay: Overlay,
+    private viewContainerRef: ViewContainerRef
   ) {}
 
   ngOnInit(): void {
     this.initTokens();
   }
 
-  setActive(): void {
+  private signalComponentActive(): void {
     this.componentActivated.emit(this);
   }
 
@@ -76,11 +76,11 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   overlayRef: OverlayRef | null;
   @ViewChild('userMenu') userMenu: TemplateRef<any>;
 
-  hideTokenMenu(): void {
+  private hideTokenMenu(): void {
     if (this.overlayRef) this.overlayRef.detach();
   }
 
-  displayTokenMenu(event, token): void {
+  displayTokenMenu(event: MouseEvent, token: Token): void {
     if (this.isReadonly) return;
     event.stopPropagation();
     this.hideTokenMenu();
@@ -88,7 +88,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
 
     const positionStrategy = this.overlay
       .position()
-      .flexibleConnectedTo(event.target)
+      .flexibleConnectedTo(event.target as FlexibleConnectedPositionStrategyOrigin)
       .withPositions([
         {
           originX: 'start',
@@ -122,13 +122,13 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     );
   }
 
-  addContext(token): void {
+  addContext(token: Token): void {
     const modal = this.nbDialogService.open(ContextCreateComponent, {
       context: {
         scenario: this.scenario
       }
     });
-    const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((contextDef) => {
+    const validate = modal.componentRef.instance.validate.pipe(take(1)).subscribe((contextDef) => {
       this.contextsEntities.push(
         new FormControl({
           name: contextDef.name,
@@ -148,10 +148,10 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  associateContextWithEntity(token, context): void {
+  associateContextWithEntity(token: Token, context: ScenarioContext): void {
     const exists = this.getContextOfEntity({
       entity: { type: token.entity.type, role: token.entity.role }
-    });
+    } as Token);
     if (exists) return;
 
     const newContextDef = {
@@ -163,45 +163,46 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     this.hideTokenMenu();
   }
 
-  dissociateContextFromEntity(token): void {
-    let index = this.getContextIndexOfEntity(token);
-    let context = deepCopy(this.getContextOfEntity(token));
+  dissociateContextFromEntity(token: Token): void {
+    const index = this.getContextIndexOfEntity(token);
+    const context = deepCopy(this.getContextOfEntity(token));
     delete context.entityType;
     delete context.entityRole;
     this.contextsEntities.setControl(index, new FormControl(context));
     this.hideTokenMenu();
   }
 
-  getContextIndexOfEntity(token): number {
+  private getContextIndexOfEntity(token: Token): number {
     return this.contextsEntities.value.findIndex((ctx) => {
       return token.entity?.type && token.entity?.type == ctx.entityType && token.entity?.role == ctx.entityRole;
     });
   }
-  getContextOfEntity(token): ScenarioContext {
+
+  getContextOfEntity(token: Token): ScenarioContext {
     return this.contextsEntities.value.find((ctx) => {
       return token.entity?.type && token.entity?.type == ctx.entityType && token.entity?.role == ctx.entityRole;
     });
   }
 
-  getTokenTooltip(token): string {
+  getTokenTooltip(token: Token): string {
     if (!token.entity)
       return this.isReadonly
         ? 'Formulation of a question likely to trigger this intent'
         : 'Select a part of this sentence to associate an entity';
-    let clickToEdit = this.isReadonly ? '' : '(click to edit)';
+    const clickToEdit = this.isReadonly ? '' : '(click to edit)';
     const entity = new EntityDefinition(token.entity.type, token.entity.role);
     const ctx = this.getContextOfEntity(token);
     if (ctx) {
-      return `The entity "${entity.qualifiedName(this.state.user)}" is associated with the context "${ctx.name}" ${clickToEdit}`;
+      return `The entity "${entity.qualifiedName(this.stateService.user)}" is associated with the context "${ctx.name}" ${clickToEdit}`;
     }
-    return `Entity "${entity.qualifiedName(this.state.user)}" ${clickToEdit}`;
+    return `Entity "${entity.qualifiedName(this.stateService.user)}" ${clickToEdit}`;
   }
 
   initTokens(): void {
     let i = 0;
     let entityIndex = 0;
-    let text;
-    let entities;
+    let text: String;
+    let entities: ClassifiedEntity[] | TempEntity[];
     if (this.sentence instanceof Sentence) {
       text = this.sentence.getText();
       entities = this.sentence.getEntities();
@@ -213,12 +214,12 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     const result: Token[] = [];
     while (i <= text.length) {
       if (entities.length > entityIndex) {
-        const e = entities[entityIndex];
-        if (e.start !== i) {
-          result.push(new Token(i, text.substring(i, e.start), result.length));
+        const entity = entities[entityIndex] as ClassifiedEntity;
+        if (entity.start !== i) {
+          result.push(new Token(i, text.substring(i, entity.start), result.length));
         }
-        result.push(new Token(e.start, text.substring(e.start, e.end), result.length, e));
-        i = e.end;
+        result.push(new Token(entity.start, text.substring(entity.start, entity.end), result.length, entity));
+        i = entity.end;
         entityIndex++;
       } else {
         if (i != text.length) {
@@ -239,7 +240,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     if (this.isReadonly) return;
     event.stopPropagation();
     this.hideTokenMenu();
-    this.setActive();
+    this.signalComponentActive();
 
     const windowsSelection = window.getSelection();
     if (windowsSelection.rangeCount > 0) {
@@ -270,13 +271,13 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  private findSelected(node, result): void {
+  private findSelected(node: Node, result: SelectedResult): void {
     if (this.txtSelectionStart == -1) {
       if (node.nodeType === Node.TEXT_NODE) {
         const content = node.textContent;
         result.alreadyCount += content.length;
       } else {
-        for (const child of node.childNodes) {
+        node.childNodes.forEach((child) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
             if (node === result.selectedNode) {
               this.txtSelectionStart = result.alreadyCount + result.startOffset;
@@ -286,12 +287,12 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
               this.findSelected(child, result);
             }
           }
-        }
+        });
       }
     }
   }
 
-  removeEntityFromSentence(token): void {
+  removeEntityFromSentence(token: Token): void {
     if (this.sentence instanceof Sentence) {
       const entitiesCopy = deepCopy(this.sentence.classification.entities).filter((e) => {
         return !(token.entity.type === e.type && token.entity.role === e.role && token.start === e.start && token.end === e.end);
@@ -345,7 +346,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
           };
 
           if (this.sentence instanceof Sentence) {
-            let entitiesCopy = deepCopy(this.sentence.classification.entities);
+            const entitiesCopy = deepCopy(this.sentence.classification.entities);
             entitiesCopy.push(tempEntity as ClassifiedEntity);
             entitiesCopy.sort((e1, e2) => e1.start - e2.start);
             this.storeModifiedSentence.emit({ sentence: this.sentence, entities: entitiesCopy });
@@ -362,7 +363,7 @@ export class SentenceEditComponent implements OnInit, OnDestroy {
   }
 
   getEntityTooltip(entity: EntityDefinition): string {
-    return `Assign the entity "${entity.qualifiedName(this.state.user)}" to the selected text`;
+    return `Assign the entity "${entity.qualifiedName(this.stateService.user)}" to the selected text`;
   }
 
   callEntitiesModal(event: MouseEvent): void {

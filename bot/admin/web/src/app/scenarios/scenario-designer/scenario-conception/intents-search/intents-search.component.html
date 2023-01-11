@@ -1,12 +1,9 @@
-<nb-card
-  id="modal-wrapper"
-  size="large"
->
+<nb-card size="large">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     <div>
       {{ title }}
       <div
-        *ngIf="groupedIntents?.length"
+        *ngIf="deduplicatedIntents?.length"
         class="card-header-subtitle"
       >
         <span *ngIf="groupedIntents.length == 1">
@@ -35,11 +32,11 @@
 
   <nb-card-body [nbSpinner]="loading">
     <div *ngIf="!loading">
-      <nb-card *ngFor="let intent of groupedIntents">
+      <nb-card *ngFor="let deduplicatedIntent of groupedIntents">
         <nb-card-header>
-          {{ intent.intent?.label }}
-          <span *ngIf="!intent.intent?.label">
-            {{ intent.intent?.name }}
+          {{ deduplicatedIntent.intent?.label }}
+          <span *ngIf="!deduplicatedIntent.intent?.label">
+            {{ deduplicatedIntent.intent?.name }}
           </span>
 
           <button
@@ -47,7 +44,7 @@
             size="small"
             status="primary"
             class="m-1 float-right"
-            (click)="useIntent(intent)"
+            (click)="useIntent(deduplicatedIntent)"
           >
             Use this intent
             <nb-icon icon="chevron-right-outline"></nb-icon>
@@ -55,7 +52,7 @@
         </nb-card-header>
         <nb-card-body class="p-0">
           <nb-list>
-            <nb-list-item *ngFor="let sentence of intent.sentences">
+            <nb-list-item *ngFor="let sentence of deduplicatedIntent.sentences">
               {{ sentence }}
             </nb-list-item>
           </nb-list>
@@ -79,7 +76,6 @@
       status="primary"
       (click)="createNewIntent()"
     >
-      <nb-icon icon="plus-outline"></nb-icon>
       Create a new intent
     </button>
   </nb-card-footer>

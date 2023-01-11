@@ -42,7 +42,7 @@ export function stringifiedCleanObject(obj: Object): string {
   });
 }
 
-export function getContrastYIQ(hexcolor: string): string {
+export function getContrastYIQ(hexcolor: string): '' | 'black' | 'white' {
   if (!hexcolor) return '';
   hexcolor = hexcolor.replace('#', '');
   let r = parseInt(hexcolor.substring(0, 2), 16);
@@ -52,8 +52,8 @@ export function getContrastYIQ(hexcolor: string): string {
   return yiq >= 128 ? 'black' : 'white';
 }
 
-export function revertTransformMatrix(el: Element, transformedParent: Element): DOMRect {
-  let brect = el.getBoundingClientRect();
+export function revertTransformMatrix(element: Element, transformedParent: Element): DOMRect {
+  let brect = element.getBoundingClientRect();
   let style = getComputedStyle(transformedParent);
   let transformation = style.transform;
   if (transformation === 'none') return brect;

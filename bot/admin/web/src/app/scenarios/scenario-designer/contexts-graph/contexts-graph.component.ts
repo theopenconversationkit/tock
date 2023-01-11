@@ -1,10 +1,11 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { Subject } from 'rxjs';
+import { Edge, GraphEdge, graphlib, layout, Node } from 'dagre';
+
 import { getScenarioActionDefinitions } from '../../commons/utils';
 import { ScenarioActionDefinition, ScenarioVersionExtended } from '../../models';
 import { svgPathRoundedCorners } from './utils';
-import { Edge, GraphEdge, graphlib, layout, Node } from 'dagre';
 import { CanvaAction, OffsetPosition } from '../../../shared/canvas/models';
 import { StateService } from '../../../core-nlp/state.service';
 
@@ -31,7 +32,7 @@ export class ContextsGraphComponent implements OnInit {
 
   readonly canvaAction: typeof CanvaAction = CanvaAction;
 
-  constructor(public dialogRef: NbDialogRef<ContextsGraphComponent>, protected state: StateService) {}
+  constructor(private dialogRef: NbDialogRef<ContextsGraphComponent>, private stateService: StateService) {}
 
   ngOnInit(): void {
     this.initNodesList();
@@ -55,7 +56,7 @@ export class ContextsGraphComponent implements OnInit {
 
   noGraphInScenario: boolean = false;
 
-  initNodesList(): void {
+  private initNodesList(): void {
     const nodesLUT: { width?: number } = {};
     const actionDefs = getScenarioActionDefinitions(this.scenario);
 
@@ -82,7 +83,7 @@ export class ContextsGraphComponent implements OnInit {
 
   dummyNode: { name: string; type: string };
 
-  measureNodes(nodesLUT): void {
+  private measureNodes(nodesLUT: {}): void {
     for (let labName in nodesLUT) {
       const label = nodesLUT[labName];
       if (!label.width) {
@@ -107,15 +108,13 @@ export class ContextsGraphComponent implements OnInit {
   graphPadding: number = 20;
   graphReady: boolean = false;
 
-  computeGraph(nodesLUT): void {
+  private computeGraph(nodesLUT: {}): void {
     const actionDefs = getScenarioActionDefinitions(this.scenario);
 
     this.graph = new graphlib.Graph({ directed: true, compound: false });
 
     this.graph.setGraph({ ranksep: 48, nodesep: 20, edgesep: 10, rankdir: 'TB' });
-    this.graph.setDefaultEdgeLabel(function () {
-      return {};
-    });
+    this.graph.setDefaultEdgeLabel(() => ({}));
 
     actionDefs.forEach((actionDef) => {
       if (actionDef.outputContextNames.length || actionDef.inputContextNames.length) {
@@ -170,7 +169,7 @@ export class ContextsGraphComponent implements OnInit {
     layout(this.graph);
 
     this.graph.edges().forEach((e) => {
-      let edge = this.graph.edge(e);
+      const edge = this.graph.edge(e);
       const rpath = svgPathRoundedCorners(edge.points, 5, false);
       this.graph.setEdge(e.v, e.w, { points: edge.points, minlen: edge.minlen, rpath: rpath });
     });
@@ -191,7 +190,7 @@ export class ContextsGraphComponent implements OnInit {
       if (node.actionDef.description) return node.actionDef.description;
       if (node.actionDef.answers?.length) {
         for (let index = 0; index < node.actionDef.answers.length; index++) {
-          if (node.actionDef.answers[index].locale === this.state.currentLocale) {
+          if (node.actionDef.answers[index].locale === this.stateService.currentLocale) {
             return node.actionDef.answers[index].answer;
           }
         }
@@ -205,7 +204,7 @@ export class ContextsGraphComponent implements OnInit {
   nodesHighlightLUT: Map<string, boolean>;
   edgesHighlightLUT: Map<Edge, boolean>;
 
-  highlight(node?: GraphNode) {
+  highlight(node?: GraphNode): void {
     if (!this.nodesHighlightLUT) {
       this.nodesHighlightLUT = new Map();
       this.graph.nodes().forEach((v) => this.nodesHighlightLUT.set(v, false));
@@ -233,10 +232,10 @@ export class ContextsGraphComponent implements OnInit {
     }
   }
 
-  isNodeDimmed(nodeName) {
+  isNodeDimmed(nodeName: string): boolean {
     if (!this.nodesHighlightLUT) return false;
 
-    let atLeastOneHigh;
+    let atLeastOneHigh: boolean = false;
     for (const v of this.nodesHighlightLUT) {
       if (v[1]) {
         atLeastOneHigh = true;
@@ -251,7 +250,7 @@ export class ContextsGraphComponent implements OnInit {
   isEdgeDimmed(edge: Edge): boolean {
     if (!this.edgesHighlightLUT) return false;
 
-    let atLeastOneHigh;
+    let atLeastOneHigh: boolean = false;
     for (const e of this.edgesHighlightLUT) {
       if (e[1]) {
         atLeastOneHigh = true;
@@ -263,7 +262,7 @@ export class ContextsGraphComponent implements OnInit {
     return this.edgesHighlightLUT.get(edge) != true;
   }
 
-  getNodeAncestors(nodeName: string, stack = { nodes: [], edges: [] }) {
+  private getNodeAncestors(nodeName: string, stack = { nodes: [], edges: [] }) {
     stack.nodes.push(nodeName);
     const inEdges = this.graph.inEdges(nodeName);
     stack.edges = [...stack.edges, ...inEdges];
@@ -274,7 +273,7 @@ export class ContextsGraphComponent implements OnInit {
     return stack;
   }
 
-  getNodeDescendants(nodeName: string, stack = { nodes: [], edges: [] }) {
+  private getNodeDescendants(nodeName: string, stack = { nodes: [], edges: [] }) {
     stack.nodes.push(nodeName);
     const outEdges = this.graph.outEdges(nodeName);
     stack.edges = [...stack.edges, ...outEdges];

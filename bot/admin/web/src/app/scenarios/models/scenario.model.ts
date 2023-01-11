@@ -71,6 +71,8 @@ export interface ScenarioItem {
   actionDefinition?: ScenarioActionDefinition;
 }
 
+export type ScenarioIntentDefinitionForm = ScenarioIntentDefinition & { contextsEntities: ScenarioContext[] };
+
 export interface ScenarioIntentDefinition {
   label: string;
   name: string;
@@ -109,9 +111,12 @@ export interface ScenarioAnswer {
 
 export const unknownIntentName = 'unknown';
 
+export const ACTION_OR_CONTEXT_NAME_MINLENGTH = 5;
+
 export type EntityTypeName = string;
 export type EntityRole = string;
 export type ScenarioContextName = string;
+
 export interface ScenarioContext {
   name: ScenarioContextName;
   entityType?: EntityTypeName;

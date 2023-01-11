@@ -27,8 +27,9 @@ import { ContextCreateComponent } from './context-create/context-create.componen
 import { ContextsGraphComponent } from '../contexts-graph/contexts-graph.component';
 import { TriggerCreateComponent } from './trigger-create/trigger-create.component';
 import { ChoiceDialogComponent } from '../../../shared/components';
+import { OffsetPosition } from '../../../shared/canvas/models';
 
-const CANVAS_TRANSITION_TIMING = 300;
+const CANVAS_TRANSITION_TIMING: number = 300;
 
 @Component({
   selector: 'scenario-conception',
@@ -56,20 +57,20 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   constructor(
     private scenarioConceptionService: ScenarioConceptionService,
-    protected state: StateService,
+    private stateService: StateService,
     private nbDialogService: NbDialogService
   ) {}
 
   ngOnInit(): void {
     this.scenarioConceptionService.scenarioDesignerItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
-      if (evt.type == 'addAnswer') this.addItem(evt.item);
-      if (evt.type == 'deleteAnswer') this.deleteItem(evt.item, evt.parentItemId);
-      if (evt.type == 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
-      if (evt.type == 'itemSelected') this.selectItem(evt.item);
-      if (evt.type == 'testItem') this.testStory(evt.item);
-      if (evt.type == 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
-      if (evt.type == 'changeItemType') this.changeItemType(evt.item, evt.targetType);
-      if (evt.type == 'removeItemDefinition') this.removeItemDefinition(evt.item);
+      if (evt.type === 'addAnswer') this.addItem(evt.item);
+      if (evt.type === 'deleteAnswer') this.deleteItem(evt.item, evt.parentItemId);
+      if (evt.type === 'itemDropped') this.itemDropped(evt.targetId, evt.droppedId);
+      if (evt.type === 'itemSelected') this.selectItem(evt.item);
+      if (evt.type === 'testItem') this.testStory(evt.item);
+      if (evt.type === 'exposeItemPosition') this.centerOnItem(evt.item, evt.position);
+      if (evt.type === 'changeItemType') this.changeItemType(evt.item, evt.targetType);
+      if (evt.type === 'removeItemDefinition') this.removeItemDefinition(evt.item);
     });
   }
 
@@ -175,35 +176,41 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteContext(context: ScenarioContext): void {
+  private deleteContext(context: ScenarioContext): void {
     this.scenario.data.scenarioItems.forEach((item) => {
       if (item.from == SCENARIO_ITEM_FROM_BOT && item.actionDefinition) {
-        item.actionDefinition.inputContextNames = item.actionDefinition.inputContextNames.filter((icn) => icn != context.name);
-        item.actionDefinition.outputContextNames = item.actionDefinition.outputContextNames.filter((icn) => icn != context.name);
+        item.actionDefinition.inputContextNames = item.actionDefinition.inputContextNames.filter(
+          (inputContextName) => inputContextName != context.name
+        );
+        item.actionDefinition.outputContextNames = item.actionDefinition.outputContextNames.filter(
+          (outputContextName) => outputContextName != context.name
+        );
       }
       if (item.from == SCENARIO_ITEM_FROM_CLIENT && item.intentDefinition && item.intentDefinition.outputContextNames) {
-        item.intentDefinition.outputContextNames = item.intentDefinition.outputContextNames.filter((icn) => icn != context.name);
+        item.intentDefinition.outputContextNames = item.intentDefinition.outputContextNames.filter(
+          (outputContextName) => outputContextName != context.name
+        );
       }
     });
     this.scenario.data.contexts = this.scenario.data.contexts.filter((ctx) => ctx !== context);
   }
 
   isContextUsed(context: ScenarioContext): boolean {
-    let isInput;
-    let isOutput;
+    let isInput: boolean;
+    let isOutput: boolean;
     const actionsDefinitions = getScenarioActionDefinitions(this.scenario);
     actionsDefinitions.forEach((actionDef) => {
-      if (actionDef.inputContextNames.find((ctxName) => ctxName === context.name)) {
+      if (actionDef.inputContextNames.find((inputContextName) => inputContextName === context.name)) {
         isInput = true;
       }
-      if (actionDef.outputContextNames.find((ctxName) => ctxName === context.name)) {
+      if (actionDef.outputContextNames.find((outputContextName) => outputContextName === context.name)) {
         isOutput = true;
       }
     });
 
     const intentDefinitions = getScenarioIntentDefinitions(this.scenario);
     intentDefinitions.forEach((intentDef) => {
-      if (intentDef.outputContextNames?.find((ctxName) => ctxName === context.name)) {
+      if (intentDef.outputContextNames?.find((outputContextName) => outputContextName === context.name)) {
         isOutput = true;
       }
     });
@@ -221,17 +228,17 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  getNextItemId(): number {
+  private getNextItemId(): number {
     return Math.max(...this.scenario.data.scenarioItems.map((i) => i.id)) + 1;
   }
 
-  addItem(itemRef: ScenarioItem, from?: ScenarioItemFrom): void {
+  private addItem(itemRef: ScenarioItem, from?: ScenarioItemFrom): void {
     let fromType = from || SCENARIO_ITEM_FROM_CLIENT;
     if (from == undefined && itemRef.from == SCENARIO_ITEM_FROM_CLIENT) {
       fromType = SCENARIO_ITEM_FROM_BOT;
     }
 
-    let newEntry: ScenarioItem = {
+    const newEntry: ScenarioItem = {
       id: this.getNextItemId(),
       parentIds: [itemRef.id],
       from: fromType,
@@ -243,10 +250,10 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.selectItem(newEntry);
       this.scenarioConceptionService.requireItemPosition(newEntry);
-    }, 0);
+    });
   }
 
-  deleteItem(itemRef: ScenarioItem, parentItemId: number): void {
+  private deleteItem(itemRef: ScenarioItem, parentItemId: number): void {
     if (itemRef.parentIds.length > 1) {
       itemRef.parentIds = itemRef.parentIds.filter((pi) => pi != parentItemId);
     } else {
@@ -255,7 +262,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeItemType(item: ScenarioItem, targetType: ScenarioItemFrom): void {
+  private changeItemType(item: ScenarioItem, targetType: ScenarioItemFrom): void {
     if (targetType === SCENARIO_ITEM_FROM_BOT && item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         this.removeItemDefinition(item);
@@ -271,7 +278,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     item.from = targetType;
   }
 
-  removeItemDefinition(item: ScenarioItem): void {
+  private removeItemDefinition(item: ScenarioItem): void {
     if (item.intentDefinition) {
       if (this.scenario.data.stateMachine) {
         const intentTransitionsParents = getSmTransitionParentsByname(item.intentDefinition.name, this.scenario.data.stateMachine);
@@ -296,8 +303,8 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     this.selectedItem = item ? item : undefined;
   }
 
-  elementPosition: any;
-  centerOnItem(item: ScenarioItem, position, setFocus: boolean = true): void {
+  elementPosition: OffsetPosition;
+  private centerOnItem(item: ScenarioItem, position: OffsetPosition, setFocus: boolean = true): void {
     this.elementPosition = position;
 
     if (setFocus) {
@@ -313,13 +320,13 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
     if (this.scenario.data.mode === this.SCENARIO_MODE.writing && this.selectedItem) {
       if (event.altKey) {
-        if (event.key == 'c') {
+        if (event.key === 'c') {
           this.addItem(this.selectedItem, SCENARIO_ITEM_FROM_CLIENT);
         }
-        if (event.key == 'b') {
+        if (event.key === 'b') {
           this.addItem(this.selectedItem, SCENARIO_ITEM_FROM_BOT);
         }
-        if (event.key == 'n') {
+        if (event.key === 'n') {
           this.addItem(this.selectedItem);
         }
       }
@@ -340,13 +347,13 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     dropped.parentIds = [targetId];
   }
 
-  isInFiliation(parent: ScenarioItem, child: ScenarioItem): boolean {
+  private isInFiliation(parent: ScenarioItem, child: ScenarioItem): boolean {
     let current = parent;
     while (true) {
       if (!current.parentIds) return false;
       current = this.findItemById(current.parentIds[0]);
       if (!current) return false;
-      if (current.id == child.id) return true;
+      if (current.id === child.id) return true;
     }
   }
 
@@ -357,8 +364,9 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
 
   chatDisplayed: boolean = false;
   chatControlsDisplay: boolean = false;
-  chatControlsFrom;
-  chatPropositions;
+  chatControlsFrom: ScenarioItemFrom;
+  chatPropositions: ScenarioItem[];
+  messages: any[] = [];
 
   closeChat(): void {
     this.chatDisplayed = false;
@@ -367,7 +375,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     this.chatControlsDisplay = false;
   }
 
-  testStory(item?): void {
+  testStory(item?: ScenarioItem): void {
     this.messages = [];
 
     if (!item) {
@@ -426,7 +434,7 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     api: { name: 'Vérification', avatar: 'assets/images/scenario-verification.svg' }
   };
 
-  addChatMessage(from: string, text: string, type: string = 'text'): void {
+  private addChatMessage(from: string, text: string, type: string = 'text'): void {
     let user;
     switch (from) {
       case SCENARIO_ITEM_FROM_CLIENT:
@@ -446,34 +454,23 @@ export class ScenarioConceptionComponent implements OnInit, OnDestroy {
     });
   }
 
-  messages: any[] = [];
-
-  findItemChild(item: ScenarioItem): ScenarioItem {
+  private findItemChild(item: ScenarioItem): ScenarioItem {
     return this.scenario.data.scenarioItems.find((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  findItemById(id: number): ScenarioItem {
+  private findItemById(id: number): ScenarioItem {
     return this.scenario.data.scenarioItems.find((oitem) => oitem.id == id);
   }
 
-  getChildren(item: ScenarioItem): ScenarioItem[] {
+  private getChildren(item: ScenarioItem): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.includes(item.id));
   }
 
-  getBrotherhood(item: ScenarioItem): ScenarioItem[] {
+  private getBrotherhood(item: ScenarioItem): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((oitem) => oitem.parentIds?.some((oip) => item.parentIds?.includes(oip)));
   }
 
-  getItemBrothers(item: ScenarioItem): ScenarioItem[] {
-    return this.getBrotherhood(item).filter((oitem) => oitem.id !== item.id);
-  }
-
-  isItemOnlyChild(item: ScenarioItem): boolean {
-    if (!this.getItemBrothers(item).length) return true;
-    return false;
-  }
-
-  displayGraph() {
+  displayGraph(): void {
     this.nbDialogService.open(ContextsGraphComponent, {
       context: {
         scenario: this.scenario

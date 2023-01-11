@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+
 import { ScenarioStateGroupComponent } from './state-group/state-group.component';
 import { ScenarioTransitionComponent } from './state-group/transition/transition.component';
 
@@ -11,38 +12,43 @@ export class ScenarioProductionService {
   public scenarioProductionTransitionsComponents: ScenarioTransitionComponent[] = [];
   public scenarioProductionStateComponents: { [key: string]: ScenarioStateGroupComponent } = {};
 
-  unRegisterTransitionComponent(name: string) {
+  registerTransitionComponent(component: ScenarioTransitionComponent): void {
+    this.scenarioProductionTransitionsComponents.push(component);
+  }
+
+  unRegisterTransitionComponent(name: string): void {
     this.scenarioProductionTransitionsComponents = this.scenarioProductionTransitionsComponents.filter(
       (entry) => entry.transition.name !== name
     );
   }
-  registerTransitionComponent(component: ScenarioTransitionComponent) {
-    this.scenarioProductionTransitionsComponents.push(component);
-  }
 
-  unRegisterStateComponent(name: string) {
-    delete this.scenarioProductionStateComponents[name];
-  }
-  registerStateComponent(component: ScenarioStateGroupComponent) {
+  registerStateComponent(component: ScenarioStateGroupComponent): void {
     this.scenarioProductionStateComponents[component.state.id] = component;
   }
 
-  redrawPaths() {
+  unRegisterStateComponent(name: string): void {
+    delete this.scenarioProductionStateComponents[name];
+  }
+
+  redrawPaths(): void {
     this.scenarioProductionItemsCommunication.next({
       type: 'redrawPaths'
     });
   }
-  redrawActions() {
+
+  private redrawActions(): void {
     this.scenarioProductionItemsCommunication.next({
       type: 'redrawActions'
     });
   }
-  redrawIntents() {
+
+  private redrawIntents(): void {
     this.scenarioProductionItemsCommunication.next({
       type: 'redrawIntents'
     });
   }
-  updateLayout() {
+
+  updateLayout(): void {
     setTimeout(() => {
       this.redrawActions();
       setTimeout(() => {
@@ -57,22 +63,23 @@ export class ScenarioProductionService {
   itemDropped(stateId: string, dropped: object): void {
     this.scenarioProductionItemsCommunication.next({
       type: 'itemDropped',
-      stateId: stateId,
-      dropped: dropped
+      stateId,
+      dropped
     });
   }
 
   addStateGroup(stateId: string, groupName: string): void {
     this.scenarioProductionItemsCommunication.next({
       type: 'addStateGroup',
-      stateId: stateId,
-      groupName: groupName
+      stateId,
+      groupName
     });
   }
+
   removeState(stateId: string): void {
     this.scenarioProductionItemsCommunication.next({
       type: 'removeState',
-      stateId: stateId
+      stateId
     });
   }
 }

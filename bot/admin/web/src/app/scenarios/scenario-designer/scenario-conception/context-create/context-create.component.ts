@@ -3,9 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
 
 import { normalizedSnakeCaseUpper, getScenarioActionDefinitions } from '../../../commons/utils';
-import { ScenarioVersionExtended } from '../../../models';
-
-const ENTITY_NAME_MINLENGTH = 5;
+import { ACTION_OR_CONTEXT_NAME_MINLENGTH, ScenarioVersionExtended } from '../../../models';
 
 @Component({
   selector: 'scenario-context-create',
@@ -16,10 +14,14 @@ export class ContextCreateComponent {
   @Input() scenario: ScenarioVersionExtended;
   @Output() validate = new EventEmitter();
 
-  constructor(public dialogRef: NbDialogRef<ContextCreateComponent>) {}
+  constructor(private dialogRef: NbDialogRef<ContextCreateComponent>) {}
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH), this.isContextNameUnic.bind(this)])
+    name: new FormControl(undefined, [
+      Validators.required,
+      Validators.minLength(ACTION_OR_CONTEXT_NAME_MINLENGTH),
+      this.isContextNameUnic.bind(this)
+    ])
   });
 
   isSubmitted: boolean = false;
@@ -32,7 +34,7 @@ export class ContextCreateComponent {
     return this.form.get('name') as FormControl;
   }
 
-  formatContextName() {
+  formatContextName(): void {
     if (this.name.value) {
       this.form.patchValue({
         ...this.form.value,
@@ -41,13 +43,13 @@ export class ContextCreateComponent {
     }
   }
 
-  isContextNameUnic(c: FormControl) {
+  private isContextNameUnic(c: FormControl): null | {} {
     if (!c.value || !this.scenario) return null;
 
     let formatedValue = normalizedSnakeCaseUpper(c.value.trim());
 
     if (this.scenario.data.contexts.find((ctx) => ctx.name === formatedValue))
-      return { custom: 'Context cannot have the same name as another context' };
+      return { custom: 'Context cannot have the same name as another existing context' };
 
     const actions = getScenarioActionDefinitions(this.scenario);
 

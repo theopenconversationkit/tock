@@ -1,4 +1,6 @@
-export function svgPathRoundedCorners(points: { x: number; y: number }[], radius, useFractionalRadius): string {
+type Point = { x: number; y: number };
+
+export function svgPathRoundedCorners(points: Point[], radius: number, useFractionalRadius: boolean): string {
   if (points.length < 2) return '';
   let result = 'M ';
   points.forEach((pt) => {
@@ -6,15 +8,16 @@ export function svgPathRoundedCorners(points: { x: number; y: number }[], radius
   });
   const pathString = result.substring(0, result.length - 2);
 
-  function moveTowardsLength(movingPoint, targetPoint, amount) {
-    var width = targetPoint.x - movingPoint.x;
-    var height = targetPoint.y - movingPoint.y;
+  function moveTowardsLength(movingPoint: Point, targetPoint: Point, amount: number): Point {
+    const width = targetPoint.x - movingPoint.x;
+    const height = targetPoint.y - movingPoint.y;
 
-    var distance = Math.sqrt(width * width + height * height);
+    const distance = Math.sqrt(width * width + height * height);
 
     return moveTowardsFractional(movingPoint, targetPoint, Math.min(1, amount / distance));
   }
-  function moveTowardsFractional(movingPoint, targetPoint, fraction) {
+
+  function moveTowardsFractional(movingPoint: Point, targetPoint: Point, fraction: number): Point {
     return {
       x: movingPoint.x + (targetPoint.x - movingPoint.x) * fraction,
       y: movingPoint.y + (targetPoint.y - movingPoint.y) * fraction
@@ -22,7 +25,7 @@ export function svgPathRoundedCorners(points: { x: number; y: number }[], radius
   }
 
   // Adjusts the ending position of a command
-  function adjustCommand(cmd, newPoint) {
+  function adjustCommand(cmd: number[], newPoint: Point): void {
     if (cmd.length > 2) {
       cmd[cmd.length - 2] = newPoint.x;
       cmd[cmd.length - 1] = newPoint.y;
@@ -30,7 +33,7 @@ export function svgPathRoundedCorners(points: { x: number; y: number }[], radius
   }
 
   // Gives an {x, y} object for a command's ending position
-  function pointForCommand(cmd) {
+  function pointForCommand(cmd: string[]): Point {
     return {
       x: parseFloat(cmd[cmd.length - 2]),
       y: parseFloat(cmd[cmd.length - 1])
@@ -38,8 +41,8 @@ export function svgPathRoundedCorners(points: { x: number; y: number }[], radius
   }
 
   // Split apart the path, handing concatonated letters and numbers
-  let pathParts: string[] = pathString.split(/[,\s]/).reduce(function (parts, part) {
-    let match = part.match('([a-zA-Z])(.+)');
+  const pathParts: string[] = pathString.split(/[,\s]/).reduce(function (parts, part) {
+    const match = part.match('([a-zA-Z])(.+)');
     if (match) {
       parts.push(match[1]);
       parts.push(match[2]);
@@ -51,7 +54,7 @@ export function svgPathRoundedCorners(points: { x: number; y: number }[], radius
   }, []);
 
   // Group the commands with their arguments for easier handling
-  let commands = pathParts.reduce(function (cmds, part) {
+  const commands = pathParts.reduce(function (cmds, part) {
     if (!isNaN(parseFloat(part)) && cmds.length) {
       cmds[cmds.length - 1].push(part);
     } else {
@@ -62,7 +65,7 @@ export function svgPathRoundedCorners(points: { x: number; y: number }[], radius
   }, [] as any[]);
 
   // The resulting commands, also grouped
-  let resultCommands: any[] = [];
+  let resultCommands = [];
 
   if (commands.length > 1) {
     let startPoint = pointForCommand(commands[0]);
@@ -93,7 +96,7 @@ export function svgPathRoundedCorners(points: { x: number; y: number }[], radius
         let nextPoint = pointForCommand(nextCmd);
 
         // The start and end of the cuve are just our point moved towards the previous and next points, respectivly
-        let curveStart, curveEnd;
+        let curveStart: Point, curveEnd: Point;
 
         if (useFractionalRadius) {
           curveStart = moveTowardsFractional(curPoint, prevCmd.origPoint || prevPoint, radius);

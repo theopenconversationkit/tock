@@ -74,7 +74,7 @@ export class CanvasComponent implements OnInit, OnChanges, AfterViewInit {
       } else {
         throw new Error('The container contains several elements. It is necessary to give a "canvas" identifier to the canvas element');
       }
-    }, 0);
+    });
   }
 
   private setCanvasTransform(): void {

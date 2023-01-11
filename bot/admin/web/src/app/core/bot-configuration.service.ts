@@ -19,20 +19,15 @@ import { RestService } from '../core-nlp/rest/rest.service';
 import { StateService } from '../core-nlp/state.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ApplicationScopedQuery } from '../model/commons';
-import {
-  BotApplicationConfiguration,
-  BotConfiguration,
-  ConnectorType
-} from './model/configuration';
+import { BotApplicationConfiguration, BotConfiguration, ConnectorType } from './model/configuration';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Injectable()
 export class BotConfigurationService implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   //only rest configurations
-  readonly restConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject(
-    []
-  );
+  readonly restConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
   //all configurations
   readonly configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
   //has rest configuration
@@ -43,9 +38,7 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   readonly bots: BehaviorSubject<BotConfiguration[]> = new BehaviorSubject([]);
 
   constructor(private rest: RestService, private state: StateService) {
-    this.subscription = this.state.configurationChange.subscribe((_) =>
-      this.updateConfigurations()
-    );
+    this.subscription = this.state.configurationChange.subscribe((_) => this.updateConfigurations());
     this.updateConfigurations();
   }
 
@@ -57,31 +50,33 @@ export class BotConfigurationService implements OnInit, OnDestroy {
 
   updateConfigurations() {
     if (this.state.currentApplication) {
-      this.getBots(this.state.currentApplication.name).subscribe((bots) => {
-        this.bots.next(bots);
-        this.getConfigurations(this.state.createApplicationScopedQuery()).subscribe((c) => {
-          this.configurations.next(c);
-          let rest = c.filter((c) => c.connectorType.isRest());
-          this.restConfigurations.next(rest);
-          this.hasRestConfigurations.next(rest.length !== 0);
-          const connectors = [];
-          c.forEach((conf) => {
-            if (
-              !conf.connectorType.isRest() &&
-              !connectors.some((e) => conf.connectorType.id === e.id)
-            ) {
-              connectors.push(conf.connectorType);
-            }
-          });
-          this.supportedConnectors.next(connectors);
-        });
-      });
+      this.grabConfigurations().subscribe();
     }
   }
 
-  private getConfigurations(
-    query: ApplicationScopedQuery
-  ): Observable<BotApplicationConfiguration[]> {
+  grabConfigurations(): Observable<BotApplicationConfiguration[]> {
+    return this.getBots(this.state.currentApplication.name).pipe(
+      tap((bots) => {
+        this.bots.next(bots);
+      }),
+      switchMap(() => this.getConfigurations(this.state.createApplicationScopedQuery())),
+      tap((configurations) => {
+        this.configurations.next(configurations);
+        let rest = configurations.filter((c) => c.connectorType.isRest());
+        this.restConfigurations.next(rest);
+        this.hasRestConfigurations.next(rest.length !== 0);
+        const connectors = [];
+        configurations.forEach((conf) => {
+          if (!conf.connectorType.isRest() && !connectors.some((e) => conf.connectorType.id === e.id)) {
+            connectors.push(conf.connectorType);
+          }
+        });
+        this.supportedConnectors.next(connectors);
+      })
+    );
+  }
+
+  private getConfigurations(query: ApplicationScopedQuery): Observable<BotApplicationConfiguration[]> {
     return this.rest.post('/configuration/bots', query, BotApplicationConfiguration.fromJSONArray);
   }
 
@@ -121,16 +116,12 @@ export class BotConfigurationService implements OnInit, OnDestroy {
 
   findValidPath(connectorType: ConnectorType): string {
     const bots = this.bots.getValue();
-    const baseTargetPath = `/io/${
-      this.state.user.organization
-    }/${this.state.currentApplication.name.replace(/\s/g, '_')}/${connectorType.id}`;
+    const baseTargetPath = `/io/${this.state.user.organization}/${this.state.currentApplication.name.replace(/\s/g, '_')}/${
+      connectorType.id
+    }`;
     let targetPath = baseTargetPath;
     let index = 1;
-    while (
-      bots.findIndex(
-        (b) => b.configurations && b.configurations.findIndex((c) => c.path === targetPath) !== -1
-      ) !== -1
-    ) {
+    while (bots.findIndex((b) => b.configurations && b.configurations.findIndex((c) => c.path === targetPath) !== -1) !== -1) {
       targetPath = baseTargetPath + index++;
     }
     return targetPath;
@@ -141,12 +132,7 @@ export class BotConfigurationService implements OnInit, OnDestroy {
     const baseId = name;
     let targetId = baseId;
     let index = 1;
-    while (
-      bots.findIndex(
-        (b) =>
-          b.configurations && b.configurations.findIndex((c) => c.applicationId === targetId) !== -1
-      ) !== -1
-    ) {
+    while (bots.findIndex((b) => b.configurations && b.configurations.findIndex((c) => c.applicationId === targetId) !== -1) !== -1) {
       targetId = baseId + index++;
     }
     return targetId;

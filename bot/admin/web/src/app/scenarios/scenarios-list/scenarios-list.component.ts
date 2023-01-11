@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/c
 import { Router } from '@angular/router';
 import { NbDialogRef, NbDialogService, NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
-import { first, take, takeUntil } from 'rxjs/operators';
+import { first, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { Filter, ScenarioGroup, ScenarioGroupExtended, ScenarioGroupUpdate, ScenarioVersion, SCENARIO_STATE } from '../models';
 import { ScenarioService } from '../services';
@@ -81,26 +81,26 @@ export class ScenariosListComponent implements OnInit, OnDestroy {
       this.closeSidePanel();
     });
 
-    this.loading.list = true;
-
-    this.subscribeToScenariosGroups();
-
-    this.stateService.configurationChange.pipe(takeUntil(this.destroy$)).subscribe((_) => {
-      this.subscribeToScenariosGroups(true);
-    });
+    this.loadScenariosGroups();
   }
 
-  subscribeToScenariosGroups(forceReload = false): void {
+  loadScenariosGroups(): void {
+    this.loading.list = true;
+
     this.scenarioService
-      .getScenariosGroups(forceReload)
+      .getScenariosGroups()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: ScenarioGroup[]) => {
+      .subscribe((scenariosGroups: ScenarioGroupExtended[]) => {
         this.loading.list = false;
-        this.scenariosGroups = [...data];
-        this.pagination.total = data.length;
-        this.filterScenariosGroups(this.currentFilters, false);
-        this.orderBy(this.currentOrderByCriteria);
+        this.initController(scenariosGroups);
       });
+  }
+
+  private initController(scenariosGroups: ScenarioGroupExtended[]): void {
+    this.scenariosGroups = [...scenariosGroups];
+    this.pagination.total = scenariosGroups.length;
+    this.filterScenariosGroups(this.currentFilters, false);
+    this.orderBy(this.currentOrderByCriteria);
   }
 
   ngOnDestroy(): void {

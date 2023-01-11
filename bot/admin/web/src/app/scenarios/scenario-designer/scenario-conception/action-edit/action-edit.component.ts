@@ -4,12 +4,12 @@ import { NbDialogRef } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 
 import { StateService } from '../../../../core-nlp/state.service';
-import { ScenarioVersion, ScenarioItem, ScenarioContext, Handler } from '../../../models';
+import { ScenarioVersion, ScenarioItem, ScenarioContext, Handler, ACTION_OR_CONTEXT_NAME_MINLENGTH } from '../../../models';
 import { getContrastYIQ, getScenarioActionDefinitions, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 import { UserInterfaceType } from '../../../../core/model/configuration';
 
-const ACTION_OR_CONTEXT_NAME_MINLENGTH = 5;
+type InputOrOutputContext = 'input' | 'output';
 
 @Component({
   selector: 'scenario-action-edit',
@@ -36,9 +36,9 @@ export class ActionEditComponent implements OnInit {
   supportedLocales: string[] = [];
   showAnswersLocales: boolean = false;
 
-  constructor(public dialogRef: NbDialogRef<ActionEditComponent>, protected state: StateService) {
-    this.currentLocale = state.currentLocale;
-    this.supportedLocales = state.currentApplication.supportedLocales;
+  constructor(public dialogRef: NbDialogRef<ActionEditComponent>, private stateService: StateService) {
+    this.currentLocale = stateService.currentLocale;
+    this.supportedLocales = stateService.currentApplication.supportedLocales;
   }
 
   isSubmitted: boolean = false;
@@ -55,9 +55,9 @@ export class ActionEditComponent implements OnInit {
     answerId: new FormControl(),
     inputContextNames: new FormArray([]),
     outputContextNames: new FormArray([]),
-    final: new FormControl(false),
     trigger: new FormControl(undefined, [this.actionHasHandler()]),
-    unknownAnswers: new FormArray([])
+    unknownAnswers: new FormArray([]),
+    final: new FormControl(false)
   });
 
   get canSave(): boolean {
@@ -122,40 +122,30 @@ export class ActionEditComponent implements OnInit {
 
     this.handlers = this.avalaibleHandlers.map((handler) => handler.name);
     this.triggers = this.scenario.data.triggers || [];
-    // this.contextsValues = this.contexts.map((c) => c.name);
 
-    let existingAnswersLocales = [];
     this.item.actionDefinition?.answers?.forEach((ua) => {
       this.answers.push(new FormControl(ua));
-      existingAnswersLocales.push(ua.locale);
     });
 
-    this.supportedLocales.forEach((sl) => {
-      if (!existingAnswersLocales.includes(sl)) {
-        this.answers.push(
-          new FormControl({
-            locale: sl,
-            interfaceType: UserInterfaceType.textChat
-          })
-        );
-      }
-    });
-
-    let existingUnknownAnswersLocales = [];
     this.item.actionDefinition?.unknownAnswers?.forEach((ua) => {
       this.unknownAnswers.push(new FormControl(ua));
-      existingUnknownAnswersLocales.push(ua.locale);
     });
 
     this.supportedLocales.forEach((sl) => {
-      if (!existingUnknownAnswersLocales.includes(sl)) {
-        this.unknownAnswers.push(
-          new FormControl({
-            locale: sl,
-            interfaceType: UserInterfaceType.textChat
-          })
-        );
+      if (!this.answers.value.find((an) => an.locale === sl)) {
+        this.answers.push(this.addLocaleAnswer(sl));
       }
+
+      if (!this.unknownAnswers.value.find((an) => an.locale === sl)) {
+        this.unknownAnswers.push(this.addLocaleAnswer(sl));
+      }
+    });
+  }
+
+  private addLocaleAnswer(locale: string): FormControl {
+    return new FormControl({
+      locale: locale,
+      interfaceType: UserInterfaceType.textChat
     });
   }
 
@@ -191,7 +181,7 @@ export class ActionEditComponent implements OnInit {
 
   copyDescToAnswer(): void {
     const answers = this.form.controls.answers.value;
-    const currLocale = answers.find((a) => a.locale === this.state.currentLocale);
+    const currLocale = answers.find((a) => a.locale === this.currentLocale);
     currLocale.answer = this.description.value;
     this.form.controls.answers.setValue(answers);
     this.form.markAsDirty();
@@ -242,62 +232,23 @@ export class ActionEditComponent implements OnInit {
     this.outputContextsAddError = {};
   }
 
-  // contextsValues: string[];
+  getContextInputElemRef(wich: InputOrOutputContext): ElementRef {
+    if (wich === 'input') return this.inputContextsInput;
+    if (wich === 'output') return this.outputContextsInput;
+  }
 
-  // updateContextsValues(value: string): void {
-  //   this.contextsValues = this.contextsValues.filter((c) => c !== value);
-  // }
+  getContextNamesRef(wich: InputOrOutputContext): FormArray {
+    if (wich === 'input') return this.inputContextNames;
+    if (wich === 'output') return this.outputContextNames;
+  }
 
-  // addInputContext({ key, value }, wich: 'input' | 'output'): void {
-  //   if (key === 'Enter') {
-  //     const contextName = normalizedSnakeCaseUpper(value);
+  getContextAddErrorRef(wich: InputOrOutputContext): { errors: {} } {
+    if (wich === 'input') return this.inputContextsAddError;
+    if (wich === 'output') return this.outputContextsAddError;
+  }
 
-  //     this.resetContextsAddErrors();
-
-  //     if (!contextName) return;
-
-  //     if (contextName.length < ACTION_OR_CONTEXT_NAME_MINLENGTH) {
-  //       this[`${wich}ContextsAddError`] = {
-  //         errors: { minlength: { requiredLength: ACTION_OR_CONTEXT_NAME_MINLENGTH } }
-  //       };
-  //       return;
-  //     }
-
-  //     const actions = getScenarioActionDefinitions(this.scenario);
-
-  //     if (actions.find((act) => act.name === contextName)) {
-  //       this[`${wich}ContextsAddError`] = { errors: { custom: 'A context cannot have the same name as an action' } };
-  //       return;
-  //     }
-
-  //     const currentContextNamesArray = this[`${wich}ContextNames`];
-  //     if (currentContextNamesArray.value.find((ctx: string) => ctx == contextName)) {
-  //       this[`${wich}ContextsAddError`] = {
-  //         errors: { custom: `This ${wich} context is already associated with this action` }
-  //       };
-  //       return;
-  //     }
-
-  //     const otherWich = wich == 'input' ? 'output' : 'input';
-  //     const otherContextNamesArray = this[`${otherWich}ContextNames`];
-  //     if (otherContextNamesArray.value.find((ctx: string) => ctx == contextName)) {
-  //       this[`${wich}ContextsAddError`] = {
-  //         errors: {
-  //           custom: `This context is already associated with the ${otherWich} contexts of this action`
-  //         }
-  //       };
-  //       return;
-  //     }
-
-  //     currentContextNamesArray.push(new FormControl(contextName));
-  //     this.updateContextsValues(contextName);
-  //     // eventTarget.value = '';
-  //     this.form.markAsDirty();
-  //   }
-  // }
-
-  addContext(wich: 'input' | 'output'): void {
-    const eventTarget = this[`${wich}ContextsInput`].nativeElement as HTMLInputElement;
+  addContext(wich: InputOrOutputContext): void {
+    const eventTarget = this.getContextInputElemRef(wich).nativeElement;
     const ctxName = normalizedSnakeCaseUpper(eventTarget.value);
 
     this.resetContextsAddErrors();
@@ -305,45 +256,38 @@ export class ActionEditComponent implements OnInit {
     if (!ctxName) return;
 
     if (ctxName.length < ACTION_OR_CONTEXT_NAME_MINLENGTH) {
-      this[`${wich}ContextsAddError`] = {
-        errors: { minlength: { requiredLength: ACTION_OR_CONTEXT_NAME_MINLENGTH } }
-      };
+      this.getContextAddErrorRef(wich).errors = { minlength: { requiredLength: ACTION_OR_CONTEXT_NAME_MINLENGTH } };
+
       return;
     }
 
     const actions = getScenarioActionDefinitions(this.scenario);
 
     if (actions.find((act) => act.name === ctxName)) {
-      this[`${wich}ContextsAddError`] = { errors: { custom: 'A context cannot have the same name as an action' } };
+      this.getContextAddErrorRef(wich).errors = { custom: 'A context cannot have the same name as an action' };
       return;
     }
 
-    const currentContextNamesArray = this[`${wich}ContextNames`];
-    if (currentContextNamesArray.value.find((ctx: string) => ctx == ctxName)) {
-      this[`${wich}ContextsAddError`] = {
-        errors: { custom: `This ${wich} context is already associated with this action` }
-      };
+    if (this.getContextNamesRef(wich).value.find((ctx: string) => ctx == ctxName)) {
+      this.getContextAddErrorRef(wich).errors = { custom: `This ${wich} context is already associated with this action` };
       return;
     }
 
     const otherWich = wich == 'input' ? 'output' : 'input';
-    const otherContextNamesArray = this[`${otherWich}ContextNames`];
-    if (otherContextNamesArray.value.find((ctx: string) => ctx == ctxName)) {
-      this[`${wich}ContextsAddError`] = {
-        errors: {
-          custom: `This context is already associated with the ${otherWich} contexts of this action`
-        }
+    if (this.getContextNamesRef(otherWich).value.find((ctx: string) => ctx == ctxName)) {
+      this.getContextAddErrorRef(wich).errors = {
+        custom: `This context is already associated with the ${otherWich} contexts of this action`
       };
       return;
     }
 
-    currentContextNamesArray.push(new FormControl(ctxName));
+    this.getContextNamesRef(wich).push(new FormControl(ctxName));
     eventTarget.value = '';
     this.form.markAsDirty();
   }
 
-  removeContext(wich: 'input' | 'output', contextName: string): void {
-    const contextNamesArray = this[`${wich}ContextNames`];
+  removeContext(wich: InputOrOutputContext, contextName: string): void {
+    const contextNamesArray = this.getContextNamesRef(wich);
     contextNamesArray.removeAt(contextNamesArray.value.findIndex((ctx: string) => ctx === contextName));
     this.form.markAsDirty();
   }

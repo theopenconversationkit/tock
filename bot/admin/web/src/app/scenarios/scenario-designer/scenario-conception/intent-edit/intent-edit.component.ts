@@ -11,21 +11,27 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { NbDialogRef } from '@nebular/theme';
-import { StateService } from '../../../../core-nlp/state.service';
-import { ScenarioItem, TempSentence, ScenarioContext, ScenarioVersionExtended } from '../../../models';
-import { Token } from '../../../../sentence-analysis/highlight/highlight.component';
-import { entityColor, EntityDefinition, Intent, qualifiedName, qualifiedRole, Sentence } from '../../../../model/nlp';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { NbDialogRef } from '@nebular/theme';
 import { Observable, of, Subject } from 'rxjs';
+
+import { StateService } from '../../../../core-nlp/state.service';
+import {
+  ScenarioItem,
+  TempSentence,
+  ScenarioContext,
+  ScenarioVersionExtended,
+  ACTION_OR_CONTEXT_NAME_MINLENGTH,
+  ScenarioIntentDefinitionForm
+} from '../../../models';
+import { entityColor, EntityDefinition, Intent, qualifiedName, qualifiedRole, Sentence } from '../../../../model/nlp';
+import { Token } from '../../../../sentence-analysis/highlight/highlight.component';
 import { SentenceEditComponent } from './sentence/sentence-edit.component';
 import { getContrastYIQ, getScenarioActionDefinitions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { deepCopy } from '../../../../shared/utils';
 
 export type SentenceExtended = Sentence & { _tokens?: Token[] };
 export type TempSentenceExtended = TempSentence & { _tokens?: Token[] };
-
-const CONTEXT_NAME_MINLENGTH = 5;
 
 @Component({
   selector: 'scenario-intent-edit',
@@ -40,7 +46,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
   @Input() contexts: ScenarioContext[];
   @Input() isReadonly: boolean;
 
-  @Output() saveModifications = new EventEmitter();
+  @Output() saveModifications = new EventEmitter<ScenarioIntentDefinitionForm>();
   @Output() onRemoveDefinition = new EventEmitter();
 
   @ViewChildren(SentenceEditComponent) sentencesComponents: QueryList<SentenceEditComponent>;
@@ -49,7 +55,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
   private qualifiedName = qualifiedName;
 
-  constructor(public dialogRef: NbDialogRef<IntentEditComponent>, protected state: StateService) {}
+  constructor(private dialogRef: NbDialogRef<IntentEditComponent>, private stateService: StateService) {}
 
   _sentences: Sentence[] = [];
 
@@ -59,37 +65,32 @@ export class IntentEditComponent implements OnInit, OnDestroy {
       this.form.get('primary').disable();
     }
 
-    if (this.item.intentDefinition?.sentences?.length) {
-      this.item.intentDefinition?.sentences.forEach((sentence) => {
-        const clone = deepCopy(sentence);
-        this.sentences.push(new FormControl(clone));
-      });
-    }
-    if (this.item.intentDefinition?._sentences?.length) {
-      this.item.intentDefinition?._sentences.forEach((sentence) => {
-        this._sentences.push(sentence);
-      });
-    }
+    this.item.intentDefinition?.sentences?.forEach((sentence) => {
+      const clone = deepCopy(sentence);
+      this.sentences.push(new FormControl(clone));
+    });
+
+    this.item.intentDefinition?._sentences?.forEach((sentence) => {
+      this._sentences.push(sentence);
+    });
 
     this.contexts.forEach((ctx) => {
       this.contextsEntities.push(new FormControl(ctx));
     });
 
-    if (this.item.intentDefinition?.outputContextNames?.length) {
-      this.item.intentDefinition.outputContextNames.forEach((contextName) => {
-        this.outputContextNames.push(new FormControl(contextName));
-      });
-    }
+    this.item.intentDefinition?.outputContextNames?.forEach((contextName) => {
+      this.outputContextNames.push(new FormControl(contextName));
+    });
 
     this.collectAllEntities();
   }
 
   @HostListener('mouseup', ['$event'])
-  hideContextsMenus() {
+  private hideContextsMenus(): void {
     this.sentencesComponents.forEach((sc) => sc.outsideClick());
   }
 
-  componentActivated(componentInstance) {
+  componentActivated(componentInstance): void {
     this.sentencesComponents.forEach((sc) => {
       if (sc !== componentInstance) {
         sc.outsideClick();
@@ -97,13 +98,13 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  entityAdded() {
+  entityAdded(): void {
     this.collectAllEntities();
   }
 
-  storeModifiedSentence(data) {
-    const app = this.state.currentApplication;
-    const language = this.state.currentLocale;
+  storeModifiedSentence(data): void {
+    const app = this.stateService.currentApplication;
+    const language = this.stateService.currentLocale;
     let sentenceCopy = new TempSentence(app.namespace, app.name, language, data.sentence.text, false, '');
     sentenceCopy.classification.entities = data.entities;
     this.sentences.push(new FormControl(sentenceCopy));
@@ -155,11 +156,11 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     return this.form.get('primary') as FormControl;
   }
 
-  dissociateIntent() {
+  dissociateIntent(): void {
     this.onRemoveDefinition.emit();
   }
 
-  addSentence(sentenceString?) {
+  addSentence(sentenceString?: string): void {
     let eventTarget;
     if (!sentenceString) {
       eventTarget = this.addSentenceInput.nativeElement as HTMLInputElement;
@@ -168,8 +169,8 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
     if (sentenceString) {
       if (!this.isStringAlreadyASentence(sentenceString)) {
-        const app = this.state.currentApplication;
-        const language = this.state.currentLocale;
+        const app = this.stateService.currentApplication;
+        const language = this.stateService.currentLocale;
         const newSentence = new TempSentence(app.namespace, app.name, language, sentenceString, false, '');
         this.sentences.push(new FormControl(newSentence));
       }
@@ -177,23 +178,20 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  isExistingSentence(sentence) {
-    return sentence instanceof Sentence;
-  }
-
-  removeSentence(sentence) {
+  removeSentence(sentence: TempSentence): void {
     this.sentences.removeAt(this.sentences.value.findIndex((stce) => stce === sentence));
     this.form.markAsDirty();
   }
 
-  entitiesCache = [];
-  collectAllEntities() {
-    let entities = [];
+  entitiesCache: EntityDefinition[] = [];
 
+  private collectAllEntities(): void {
+    let entities: EntityDefinition[] = [];
     let intents = new Set();
+
     this._sentences.forEach((_sentence) => {
       if (_sentence.classification) {
-        const intent = this.state.currentApplication.intentById(_sentence.classification.intentId);
+        const intent = this.stateService.currentApplication.intentById(_sentence.classification.intentId);
         intents.add(intent);
       }
     });
@@ -204,8 +202,8 @@ export class IntentEditComponent implements OnInit, OnDestroy {
       });
     });
 
-    this.sentences.value.forEach((formControl) => {
-      formControl.classification?.entities.forEach((e) => {
+    this.sentences.value.forEach((tempSentence) => {
+      tempSentence.classification?.entities.forEach((e) => {
         const entity = new EntityDefinition(e.type, e.role);
         this.pushUnicEntity(entities, entity);
       });
@@ -221,7 +219,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.entitiesCache = entities;
   }
 
-  pushUnicEntity(entities, entity) {
+  private pushUnicEntity(entities: EntityDefinition[], entity: EntityDefinition): void {
     if (entities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) return;
     entities.push(entity);
   }
@@ -243,7 +241,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     this.contextsAutocompleteValues = of(results);
   }
 
-  outputContextsAddError: any = {};
+  outputContextsAddError: {} = {};
 
   resetContextsAddErrors(): void {
     this.outputContextsAddError = {};
@@ -257,9 +255,9 @@ export class IntentEditComponent implements OnInit, OnDestroy {
 
     if (!ctxName) return;
 
-    if (ctxName.length < CONTEXT_NAME_MINLENGTH) {
+    if (ctxName.length < ACTION_OR_CONTEXT_NAME_MINLENGTH) {
       this.outputContextsAddError = {
-        errors: { minlength: { requiredLength: CONTEXT_NAME_MINLENGTH } }
+        errors: { minlength: { requiredLength: ACTION_OR_CONTEXT_NAME_MINLENGTH } }
       };
       return;
     }
@@ -304,7 +302,7 @@ export class IntentEditComponent implements OnInit, OnDestroy {
     if (context.entityType) return getContrastYIQ(entityColor(qualifiedRole(context.entityType, context.entityRole)));
   }
 
-  save() {
+  save(): void {
     // here we use getRawValue because we need the value of the potentially disabled primary field
     this.saveModifications.emit(this.form.getRawValue());
   }

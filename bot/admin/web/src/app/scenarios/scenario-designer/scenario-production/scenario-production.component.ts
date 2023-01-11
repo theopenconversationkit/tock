@@ -1,7 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
-import { SVG } from '@svgdotjs/svg.js';
+import { G, Marker, Svg, SVG } from '@svgdotjs/svg.js';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { NbDialogService } from '@nebular/theme';
 
 import { ChoiceDialogComponent, JsonPreviewerComponent } from '../../../shared/components';
 import {
@@ -25,12 +26,21 @@ import {
   getAllSmStatesNames,
   removeSmStateById
 } from '../../commons/utils';
-import { NbDialogService } from '@nebular/theme';
 
 type ScenarioDefinition = {
   actions: ScenarioActionDefinition[];
   intents: ScenarioIntentDefinition[];
   triggers: ScenarioTriggerDefinition[];
+};
+
+type PathHandler = {
+  transitionName: string;
+  transitionSource: string;
+  transitionTarget: string;
+  transStartLeft: number;
+  transStartTop: number;
+  transEndLeft: number;
+  transEndTop: number;
 };
 
 const TRANSITION_COLOR = '#006fd6';
@@ -96,19 +106,21 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  pathHandlers = [];
+  pathHandlers: PathHandler[] = [];
 
-  svgCanvas;
-  svgCanvasGroup;
+  svgCanvas: Svg;
+  svgCanvasGroup: G;
 
-  svgCanvasStartMarker;
-  svgCanvasStartMarkerHovered;
-  svgCanvasEndMarker;
-  svgCanvasEndMarkerHovered;
+  svgCanvasStartMarker: Marker;
+  svgCanvasStartMarkerHovered: Marker;
+  svgCanvasEndMarker: Marker;
+  svgCanvasEndMarkerHovered: Marker;
 
-  initSvgCanvas() {
+  initSvgCanvas(): void {
     this.svgCanvas = SVG().addTo(this.canvasElem.nativeElement).size('150%', '150%');
     this.svgCanvas.attr('style', 'position:absolute;top:0;left:0;pointer-events: none;');
+    this.svgCanvasGroup = this.svgCanvas.group();
+
     this.svgCanvasStartMarker = this.svgCanvas.marker(2, 2, function (add) {
       add.circle(2).fill(TRANSITION_COLOR);
     });
@@ -121,15 +133,14 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     this.svgCanvasEndMarkerHovered = this.svgCanvas.marker(3.5, 3.5, function (add) {
       add.polygon('0 0, 3.5 1.75, 0 3.5').fill(TRANSITION_COLOR_HOVERED);
     });
-    this.svgCanvasGroup = this.svgCanvas.group();
   }
 
-  drawPaths() {
+  drawPaths(): void {
     if (!this.svgCanvas) this.initSvgCanvas();
     this.svgCanvasGroup.clear();
     this.pathHandlers = [];
 
-    const canvasPos = revertTransformMatrix(this.svgCanvas.node, this.canvasElem.nativeElement);
+    const canvasPos: DOMRect = revertTransformMatrix(this.svgCanvas.node, this.canvasElem.nativeElement);
     const canvasLeft = canvasPos.left;
     const canvasTop = canvasPos.top;
 
@@ -174,11 +185,11 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       const targetStateElem = targetStateComponent.stateWrapper.nativeElement;
       const targetStateElemPos = revertTransformMatrix(targetStateElem, this.canvasElem.nativeElement);
 
-      let inPath;
-      let inStartLeft;
-      let inStartTop;
-      let inEndLeft;
-      let inEndTop;
+      let inPath: string;
+      let inStartLeft: number;
+      let inStartTop: number;
+      let inEndLeft: number;
+      let inEndTop: number;
 
       if (targetStateElemPos.left - canvasLeft > transitionElemPos.left - canvasLeft) {
         if (sourceStateComponent.state.states) {
@@ -190,7 +201,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
           if (Math.round(inStartTop) === Math.round(inEndTop)) {
             inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft} ${inEndTop}`;
           } else {
-            let offset = 15;
+            const offset = 15;
             inPath = `M${inStartLeft} ${inStartTop} L${inEndLeft - offset} ${inStartTop}  L${
               inEndLeft - offset
             } ${inEndTop} L${inEndLeft} ${inEndTop}`;
@@ -245,7 +256,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
       if (Math.round(outStartTop) === Math.round(outEndTop)) {
         outPath = `M${outStartLeft} ${outStartTop} L${outEndLeft} ${outEndTop}`;
       } else {
-        let offset = 15;
+        const offset = 15;
         outPath = `M${outStartLeft} ${outStartTop} L${outEndLeft - offset} ${outStartTop}  L${
           outEndLeft - offset
         } ${outEndTop} L${outEndLeft} ${outEndTop}`;
@@ -269,7 +280,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getScenarioIntentDefinitions() {
+  private getScenarioIntentDefinitions(): ScenarioIntentDefinition[] {
     return getScenarioIntentDefinitions(this.scenario).sort((a, b) => {
       const aIsUsed = this.isIntentInUse(a);
       if (aIsUsed) return 1;
@@ -279,16 +290,16 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getDraggableIntentType(intent: ScenarioIntentDefinition) {
+  getDraggableIntentType(intent: ScenarioIntentDefinition): string {
     if (intent.primary) return 'primaryIntent';
     return 'intent';
   }
 
-  getIntentTooltip(intent: ScenarioIntentDefinition) {
+  getIntentTooltip(intent: ScenarioIntentDefinition): string {
     return intent.label ? intent.label : intent.name;
   }
 
-  getScenarioActionDefinitions(): ScenarioActionDefinition[] {
+  private getScenarioActionDefinitions(): ScenarioActionDefinition[] {
     return getScenarioActionDefinitions(this.scenario).sort((a, b) => {
       const aIsUsed = this.isActionInUse(a);
       if (aIsUsed) return 1;
@@ -298,7 +309,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     });
   }
 
-  getScenarioTriggerDefinition(): ScenarioTriggerDefinition[] {
+  private getScenarioTriggerDefinition(): ScenarioTriggerDefinition[] {
     const triggers = getScenarioActionDefinitions(this.scenario)
       .filter((a) => a.trigger)
       .map((a) => a.trigger);
@@ -331,13 +342,13 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  getActionTooltip(action) {
+  getActionTooltip(action): string {
     if (action.description) return action.description;
     if (action.answer) return action.answer;
     return action.name;
   }
 
-  initStateMachine() {
+  initStateMachine(): void {
     this.scenario.data.stateMachine = {
       id: 'root',
       type: 'parallel',
@@ -349,7 +360,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     };
   }
 
-  resetStateMachine() {
+  resetStateMachine(): void {
     const cancelAction = 'cancel';
     const confirmAction = 'reset';
     const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
@@ -374,7 +385,7 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     return transition.match(expected) ? transition : `#${transition}`;
   }
 
-  itemDropped(event) {
+  itemDropped(event): void {
     if (event.dropped.type === 'action') {
       let target = getSmStateById(event.stateId, this.scenario.data.stateMachine);
       if (target) {
@@ -404,10 +415,9 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
 
     this.scenarioProductionService.updateLayout();
-    // setTimeout(() => this.scenarioProductionService.updateLayout(), 300);
   }
 
-  addStateGroup(event) {
+  private addStateGroup(event): void {
     let target = getSmStateById(event.stateId, this.scenario.data.stateMachine);
     if (target) {
       const alreadyExists = getSmStateById(event.groupName, this.scenario.data.stateMachine);
@@ -421,20 +431,18 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
     }
   }
 
-  removeState(event) {
+  private removeState(event): void {
     removeSmStateById(event.stateId, this.scenario.data.stateMachine);
   }
 
   displayStateMachineCode(): void {
-    const jsonPreviewerRef = this.nbDialogService.open(JsonPreviewerComponent, {
+    this.nbDialogService.open(JsonPreviewerComponent, {
       context: { jsonData: this.scenario.data.stateMachine },
       dialogClass: 'full-width-dialog'
     });
-
-    jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;
   }
 
-  preventDefault(event) {
+  preventDefault(event): void {
     event.stopPropagation();
   }
 

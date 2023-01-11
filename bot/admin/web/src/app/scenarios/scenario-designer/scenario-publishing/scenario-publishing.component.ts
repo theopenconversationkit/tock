@@ -1,10 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { Subject } from 'rxjs';
+
 import { BotService } from '../../../bot/bot-service';
 import { CreateI18nLabelRequest, I18nLabel, I18nLabels, I18nLocalizedLabel } from '../../../bot/model/i18n';
 import { StateService } from '../../../core-nlp/state.service';
-import { UserInterfaceType } from '../../../core/model/configuration';
 import { ClassifiedEntity, Intent, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { JsonPreviewerComponent } from '../../../shared/components/json-previewer/json-previewer.component';
@@ -20,7 +20,9 @@ import {
   TickStory,
   ScenarioVersionExtended,
   SCENARIO_MODE,
-  unknownIntentName
+  unknownIntentName,
+  Handler,
+  TempEntity
 } from '../../models';
 import { ScenarioService } from '../../services';
 import { ScenarioDesignerService } from '../scenario-designer.service';
@@ -34,7 +36,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
   @Input() i18n: I18nLabels;
-  @Input() readonly avalaibleHandlers: string[];
+  @Input() readonly avalaibleHandlers: Handler[];
 
   destroy = new Subject();
 
@@ -42,7 +44,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   readonly SCENARIO_ITEM_FROM_BOT = SCENARIO_ITEM_FROM_BOT;
 
   constructor(
-    public state: StateService,
+    private stateService: StateService,
     private nlp: NlpService,
     private scenarioDesignerService: ScenarioDesignerService,
     private botService: BotService,
@@ -52,14 +54,15 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   ) {}
 
   tickStoryJson: string;
+
   ngOnInit(): void {
     if (!this.isReadonly) {
       this.checkDependencies();
     }
   }
 
-  isScenarioUnPublishable() {
-    let unPublishable;
+  isScenarioUnPublishable(): string {
+    let unPublishable: string;
 
     const isPublishingStepValid =
       isStepValid(this.scenario, SCENARIO_MODE.casting).valid &&
@@ -75,7 +78,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       const expectedHandlers = actionDefs.filter((ad) => ad.handler).map((ad) => ad.handler);
       let unImplementedHandlers = [];
       expectedHandlers.forEach((eh) => {
-        if (!this.avalaibleHandlers.includes(eh)) {
+        if (!this.avalaibleHandlers.find((h) => h.name === eh)) {
           unImplementedHandlers.push(eh);
         }
       });
@@ -101,7 +104,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     return jobs[0].type;
   }
 
-  areAllJobsTypeDone(jobs: DependencyUpdateJob[]) {
+  areAllJobsTypeDone(jobs: DependencyUpdateJob[]): boolean {
     return jobs.every((job) => job.done);
   }
 
@@ -211,7 +214,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         const entities = intentDefinition.sentences[0].classification.entities;
         for (let index = 0; index < entities.length; index++) {
           let entity = entities[index];
-          const existingEntityType = this.state.findEntityTypeByName(entity.type);
+          const existingEntityType = this.stateService.findEntityTypeByName(entity.type);
           if (!existingEntityType) {
             return this.postNewEntity(intentTask, entity);
           }
@@ -220,7 +223,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     }
 
     // Creation of non-existent intents
-    if (!intentDefinition.intentId || !this.state.findIntentById(intentDefinition.intentId)) {
+    if (!intentDefinition.intentId || !this.stateService.findIntentById(intentDefinition.intentId)) {
       // List of all sentences entities
       let intentEntities = [];
       intentDefinition.sentences.forEach((stnce) => {
@@ -234,7 +237,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
     // Creation of non-existent or modified sentences
     if (intentDefinition.sentences?.length) {
-      const intent: Intent = this.state.findIntentById(intentDefinition.intentId);
+      const intent: Intent = this.stateService.findIntentById(intentDefinition.intentId);
       return this.postNewSentence(intentTask, intent, intentDefinition.sentences[0]);
     }
 
@@ -242,14 +245,14 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     this.processDependencies();
   }
 
-  postNewEntity(task: DependencyUpdateJob, tempEntity): void {
+  postNewEntity(task: DependencyUpdateJob, tempEntity: TempEntity): void {
     this.nlp.createEntityType(tempEntity.type).subscribe(
       (e) => {
         if (e) {
           // update of application entities
-          const entities = this.state.entityTypes.getValue().slice(0);
+          const entities = this.stateService.entityTypes.getValue().slice(0);
           entities.push(e);
-          this.state.entityTypes.next(entities);
+          this.stateService.entityTypes.next(entities);
           this.processIntent(task);
         } else {
           console.log(`Error when creating Entity Type ${tempEntity.type}`);
@@ -264,7 +267,6 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   postNewSentence(task: DependencyUpdateJob, intent: Intent, tempSentence: TempSentence): void {
     this.nlp.parse(tempSentence).subscribe(
       (sentence) => {
-        // sentence = sentence.withIntent(this.state, intentId);
         sentence.classification.intentId = intent._id;
         tempSentence.classification.entities.forEach((entity) => (entity.subEntities = []));
         sentence.classification.entities = tempSentence.classification.entities as ClassifiedEntity[];
@@ -285,7 +287,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  postNewIntent(intentTask: DependencyUpdateJob, intentEntities): void {
+  postNewIntent(intentTask: DependencyUpdateJob, intentEntities: TempEntity[]): void {
     let entities = [];
     intentEntities.forEach((ie) => {
       entities.push({
@@ -300,9 +302,9 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       .saveIntent(
         new Intent(
           intentTask.item.intentDefinition.name,
-          this.state.user.organization,
+          this.stateService.user.organization,
           entities,
-          [this.state.currentApplication._id],
+          [this.stateService.currentApplication._id],
           [],
           [],
           intentTask.item.intentDefinition.label,
@@ -313,7 +315,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       .subscribe(
         (intent) => {
           intentTask.item.intentDefinition.intentId = intent._id;
-          this.state.addIntent(intent);
+          this.stateService.addIntent(intent);
           this.processIntent(intentTask);
         },
         (error) => {
@@ -324,17 +326,17 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
 
   processAnswer(answerTask: DependencyUpdateJob): void {
     if (!answerTask.item.actionDefinition.answerId) {
-      return this.postAnswer(answerTask);
+      this.postAnswer(answerTask);
     } else {
-      return this.patchAnswer(answerTask);
+      this.patchAnswer(answerTask);
     }
   }
 
   processUnknownAnswer(answerTask: DependencyUpdateJob): void {
     if (!answerTask.item.actionDefinition.unknownAnswerId) {
-      return this.postAnswer(answerTask, true);
+      this.postAnswer(answerTask, true);
     } else {
-      return this.patchAnswer(answerTask, true);
+      this.patchAnswer(answerTask, true);
     }
   }
 
@@ -364,10 +366,10 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       existingId = answerTask.item.actionDefinition.unknownAnswerId;
     }
 
-    let i18nLabel: I18nLabel = this.i18n.labels.find((i) => {
+    const i18nLabel: I18nLabel = this.i18n.labels.find((i) => {
       return i._id === existingId;
     });
-    let i18n = i18nLabel.i18n.find((i) => {
+    const i18n = i18nLabel.i18n.find((i) => {
       return i.interfaceType === answerTask.answer.interfaceType && i.locale === answerTask.answer.locale;
     });
 
@@ -389,15 +391,6 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
         console.log(error);
       }
     );
-  }
-
-  previewTickStory(): void {
-    const story = this.compileTickStory();
-
-    const jsonPreviewerRef = this.nbDialogService.open(JsonPreviewerComponent, {
-      context: { jsonData: story }
-    });
-    jsonPreviewerRef.componentRef.instance.jsonPreviewerRef = jsonPreviewerRef;
   }
 
   tickStoryPostSuccessfull: boolean = false;
@@ -435,7 +428,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     );
   }
 
-  compileTickStory(): TickStory {
+  private compileTickStory(): TickStory {
     const intents: ScenarioItem[] = getScenarioIntents(this.scenario);
     let mainIntent;
     let primaryIntents = [];
@@ -494,7 +487,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
     });
 
     let tickStory: TickStory = {
-      botId: this.state.currentApplication.name,
+      botId: this.stateService.currentApplication.name,
       storyId: this.scenario._scenarioGroupId,
       name: `TickStory from the scenarioGroup "${this.scenario._name}"`,
       description: `TickStory from the scenarioGroup "${this.scenario._name}" with id ${this.scenario._scenarioGroupId}`,

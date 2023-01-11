@@ -43,7 +43,7 @@
                 [style.color]="getContextEntityContrast(context)"
               >
                 <span>
-                  {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
+                  {{ qualifiedName(stateService.user, context.entityType, context.entityRole) }}
                 </span>
               </div>
             </div>
@@ -59,6 +59,7 @@
         </nb-list>
       </nb-accordion-item-body>
     </nb-accordion-item>
+
     <nb-accordion-item>
       <nb-accordion-item-header>Events</nb-accordion-item-header>
       <nb-accordion-item-body>
@@ -100,6 +101,7 @@
       </nb-accordion-item-body>
     </nb-accordion-item>
   </nb-accordion>
+
   <div menu-actions>
     <div [class.d-none]="!isSidePanelOpen">
       <button
@@ -199,11 +201,11 @@
           <scenario-conception-item
             *ngIf="scenario?.data.scenarioItems.length"
             [isReadonly]="isReadonly"
-            [item]="scenario.data.scenarioItems[0]"
-            [contexts]="scenario.data.contexts"
-            [selectedItem]="selectedItem"
             [mode]="scenario.data.mode"
             [scenario]="scenario"
+            [item]="scenario.data.scenarioItems[0]"
+            [selectedItem]="selectedItem"
+            [contexts]="scenario.data.contexts"
             [avalaibleHandlers]="avalaibleHandlers"
             (onSelectElement)="handleSeletedElement($event)"
           ></scenario-conception-item>

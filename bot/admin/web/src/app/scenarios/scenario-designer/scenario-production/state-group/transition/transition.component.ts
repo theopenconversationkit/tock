@@ -1,7 +1,8 @@
 import { Component, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ScenarioIntentDefinition, MachineState, ScenarioActionDefinition, Transition } from '../../../../models';
+
+import { ScenarioIntentDefinition, MachineState, Transition } from '../../../../models';
 import { ScenarioProductionService } from '../../scenario-production.service';
 
 @Component({
@@ -15,7 +16,6 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
   @Input() transition: Transition;
   @Input() parentState: MachineState;
   @Input() intents: ScenarioIntentDefinition[];
-  // @Input() actions: ScenarioActionDefinition[];
   @Input() isReadonly: boolean = false;
 
   constructor(public elementRef: ElementRef, private scenarioProductionService: ScenarioProductionService) {
@@ -37,7 +37,8 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
     this.scenarioProductionService.redrawPaths();
   }
 
-  intent;
+  intent: ScenarioIntentDefinition;
+
   ngOnInit(): void {
     this.intent = this.intents.find((i) => {
       if (typeof i === 'string') {
@@ -59,11 +60,11 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
     return typeof this.intent === 'string' ? this.intent : this.intent.label ? this.intent.label : this.intent.name;
   }
 
-  setTransitionTop(): void {
+  private setTransitionTop(): void {
     this.elementRef.nativeElement.style.top = this.getTransitionTop() + 'px';
   }
 
-  getTransitionTop(): number {
+  private getTransitionTop(): number {
     const stateComponent = this.scenarioProductionService.scenarioProductionStateComponents[this.transition.target.replace(/^#/, '')];
 
     if (stateComponent) {
@@ -102,8 +103,8 @@ export class ScenarioTransitionComponent implements OnInit, OnDestroy {
     return 0;
   }
 
-  remove(transition): void {
-    this.removeTransition.emit(transition);
+  remove(): void {
+    this.removeTransition.emit(this.transition);
   }
 
   ngOnDestroy(): void {

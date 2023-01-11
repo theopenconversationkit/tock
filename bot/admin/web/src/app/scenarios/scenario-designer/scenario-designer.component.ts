@@ -1,9 +1,9 @@
 import { DOCUMENT } from '@angular/common';
 import { Component, ElementRef, HostListener, Inject, Injectable, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { ActivatedRoute, CanDeactivate } from '@angular/router';
+import { ActivatedRoute, CanDeactivate, Params } from '@angular/router';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { isEqual } from 'lodash-es';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil, take, distinctUntilChanged } from 'rxjs/operators';
 
 import {
@@ -45,7 +45,6 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   i18n: I18nLabels;
   avalaibleHandlers: Handler[];
   initialDependenciesCheckDone: boolean = false;
-  requestFullscreen?: 'close' | 'open';
 
   private footer: HTMLElement;
 
@@ -57,7 +56,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     private scenarioService: ScenarioService,
     private route: ActivatedRoute,
     private toastrService: NbToastrService,
-    protected state: StateService,
+    private state: StateService,
     private scenarioDesignerService: ScenarioDesignerService,
     private nbDialogService: NbDialogService,
     private botService: BotService,
@@ -70,90 +69,99 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.params.pipe(takeUntil(this.destroy)).subscribe((routeParams) => {
-      this.scenarioService
-        .getScenarioVersion(routeParams.scenarioGroupId, routeParams.scenarioVersionId)
-        .pipe(
-          distinctUntilChanged((a, b) => isEqual(a, b)),
-          takeUntil(this.destroy)
-        )
-        .subscribe((scenarioVersionExt: ScenarioVersionExtended) => {
-          if (scenarioVersionExt === null) {
-            return this.informScenarioNotFound();
-          }
-
-          this.scenarioVersion = deepCopy(scenarioVersionExt);
-
-          this.isReadonly = this.scenarioVersion.state !== SCENARIO_STATE.draft;
-
-          if (!this.scenarioVersion.data) this.scenarioVersion.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
-          if (typeof this.scenarioVersion.data.mode == 'undefined') this.scenarioVersion.data.mode = SCENARIO_MODE.writing;
-
-          this.switchMode(this.scenarioVersion.data.mode || SCENARIO_MODE.writing);
-
-          if (!this.scenarioVersion.data.scenarioItems.length) {
-            this.scenarioVersion.data.scenarioItems.push({
-              id: 0,
-              from: SCENARIO_ITEM_FROM_CLIENT,
-              text: '',
-              main: true
-            });
-          }
-          if (!this.scenarioVersion.data.contexts) {
-            this.scenarioVersion.data.contexts = [];
-          }
-          if (!this.scenarioVersion.data.triggers) {
-            this.scenarioVersion.data.triggers = [];
-          }
-
-          // backward compatibility updates
-          this.scenarioVersion.data.scenarioItems.forEach((item) => {
-            if (item['tickActionDefinition']) {
-              item.actionDefinition = item['tickActionDefinition'];
-              delete item['tickActionDefinition'];
-            }
-
-            if (item.actionDefinition && item.actionDefinition['answer']) {
-              if (!item.actionDefinition.answers) {
-                item.actionDefinition.answers = [];
-              }
-              item.actionDefinition.answers.push({
-                answer: item.actionDefinition['answer'],
-                interfaceType: UserInterfaceType.textChat,
-                locale: this.state.currentLocale
-              });
-              delete item.actionDefinition['answer'];
-            }
-          });
-          // backward compatibility updates
-
-          this.botService
-            .i18nLabels()
-            .pipe(take(1))
-            .subscribe((results) => {
-              this.i18n = results;
-              this.checkDependencies();
-            });
-
-          this.updateScenarioBackup(this.scenarioVersion);
-        });
-    });
-
-    this.scenarioService.getActionHandlers().subscribe((handlers) => {
-      this.avalaibleHandlers = handlers;
-    });
+    this.hideFooter();
 
     this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
       this.exit();
     });
 
-    this.footer = this.document.getElementById('app-layout-footer');
-    if (this.footer) {
-      this.renderer.setStyle(this.footer, 'display', 'none');
-    }
+    this.loadAvalaibleHandlers();
+
+    this.route.params.pipe(takeUntil(this.destroy)).subscribe((routeParams) => {
+      this.loadAndInitScenario(routeParams);
+    });
   }
 
-  checkDependencies() {
+  private loadAndInitScenario(routeParams: Params): void {
+    this.scenarioService
+      .getScenarioVersion(routeParams.scenarioGroupId, routeParams.scenarioVersionId)
+      .pipe(
+        distinctUntilChanged((a, b) => isEqual(a, b)),
+        takeUntil(this.destroy)
+      )
+      .subscribe((scenarioVersionExt: ScenarioVersionExtended) => {
+        if (scenarioVersionExt === null) {
+          return this.informScenarioNotFound();
+        }
+
+        this.scenarioVersion = deepCopy(scenarioVersionExt);
+
+        this.isReadonly = this.scenarioVersion.state !== SCENARIO_STATE.draft;
+
+        this.normalizeScenario();
+
+        this.switchMode(this.scenarioVersion.data.mode || SCENARIO_MODE.writing);
+
+        this.botService
+          .i18nLabels()
+          .pipe(take(1))
+          .subscribe((results) => {
+            this.i18n = results;
+            this.checkDependencies();
+          });
+
+        this.updateScenarioBackup(this.scenarioVersion);
+      });
+  }
+
+  private normalizeScenario(): void {
+    if (!this.scenarioVersion.data) this.scenarioVersion.data = { mode: SCENARIO_MODE.writing, scenarioItems: [], contexts: [] };
+    if (typeof this.scenarioVersion.data.mode == 'undefined') this.scenarioVersion.data.mode = SCENARIO_MODE.writing;
+
+    if (!this.scenarioVersion.data.scenarioItems.length) {
+      this.scenarioVersion.data.scenarioItems.push({
+        id: 0,
+        from: SCENARIO_ITEM_FROM_CLIENT,
+        text: '',
+        main: true
+      });
+    }
+    if (!this.scenarioVersion.data.contexts) {
+      this.scenarioVersion.data.contexts = [];
+    }
+    if (!this.scenarioVersion.data.triggers) {
+      this.scenarioVersion.data.triggers = [];
+    }
+
+    // backward compatibility updates
+    this.scenarioVersion.data.scenarioItems.forEach((item) => {
+      if (item['tickActionDefinition']) {
+        item.actionDefinition = item['tickActionDefinition'];
+        delete item['tickActionDefinition'];
+      }
+
+      if (item.actionDefinition && item.actionDefinition['answer']) {
+        if (!item.actionDefinition.answers) {
+          item.actionDefinition.answers = [];
+        }
+        item.actionDefinition.answers.push({
+          answer: item.actionDefinition['answer'],
+          interfaceType: UserInterfaceType.textChat,
+          locale: this.state.currentLocale
+        });
+        delete item.actionDefinition['answer'];
+      }
+    });
+    // backward compatibility updates
+  }
+
+  private loadAvalaibleHandlers(): void {
+    this.scenarioService.getActionHandlers().subscribe((handlers) => {
+      this.avalaibleHandlers = handlers;
+    });
+  }
+
+  private checkDependencies(): void {
     let deletedIntents = [];
     let deletedAnswers = [];
     this.scenarioVersion.data.scenarioItems.forEach((item) => {
@@ -204,13 +212,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     });
 
     if (deletedIntents.length) {
-      let title = 'Intents deleted';
-      let subtitle = 'The following intents have been removed:';
       this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
-          title: title,
-          subtitle: subtitle,
+          title: 'Intents deleted',
+          subtitle: 'The following intents have been removed:',
           list: deletedIntents,
           actions: [{ actionName: 'Ok', buttonStatus: 'basic', ghost: true }]
         }
@@ -218,13 +224,11 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     }
 
     if (deletedAnswers.length) {
-      let title = 'Answers deleted';
-      let subtitle = 'The following answers have been removed:';
       this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           modalStatus: 'warning',
-          title: title,
-          subtitle: subtitle,
+          title: 'Answers deleted',
+          subtitle: 'The following answers have been removed:',
           list: deletedAnswers,
           actions: [{ actionName: 'Ok', buttonStatus: 'basic', ghost: true }]
         }
@@ -234,7 +238,7 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.initialDependenciesCheckDone = true;
   }
 
-  informScenarioNotFound() {
+  private informScenarioNotFound(): void {
     const modal = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `No scenario found`,
@@ -254,11 +258,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
   save(exit: boolean = false, silent: boolean = false): void {
     if (this.isReadonly) return;
 
-    this.scenarioDesignerService.saveScenario(this.scenarioVersion).subscribe((data) => {
+    this.scenarioDesignerService.saveScenario(this.scenarioVersion).subscribe((_data) => {
       if (!silent) {
         this.toastrService.success(`Scenario successfully saved`, 'Success', {
-          duration: 5000,
-          status: 'success'
+          duration: 5000
         });
       }
 
@@ -266,8 +269,8 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateScenarioBackup(scenario: ScenarioVersion): void {
-    let backup = JSON.parse(stringifiedCleanObject(scenario));
+  private updateScenarioBackup(scenario: ScenarioVersion): void {
+    const backup = JSON.parse(stringifiedCleanObject(scenario));
     delete backup.creationDate;
     delete backup.updateDate;
     this.scenarioVersionBackup = JSON.stringify(backup);
@@ -280,10 +283,21 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
     this.scenarioDesignerService.exitDesigner();
   }
 
-  ngOnDestroy(): void {
+  private hideFooter(): void {
+    this.footer = this.document.getElementById('app-layout-footer');
+    if (this.footer) {
+      this.renderer.setStyle(this.footer, 'display', 'none');
+    }
+  }
+
+  private showFooter(): void {
     if (this.footer) {
       this.renderer.setStyle(this.footer, 'display', 'initial');
     }
+  }
+
+  ngOnDestroy(): void {
+    this.showFooter();
     this.destroy.next();
     this.destroy.complete();
   }
@@ -308,10 +322,10 @@ export class ScenarioDesignerComponent implements OnInit, OnDestroy {
 }
 
 @Injectable()
-export class ScenarioDesignerNavigationGuard implements CanDeactivate<any> {
+export class ScenarioDesignerNavigationGuard implements CanDeactivate<ScenarioDesignerComponent> {
   constructor(private nbDialogService: NbDialogService) {}
 
-  canDeactivate(component: any) {
+  canDeactivate(component: ScenarioDesignerComponent): boolean | Observable<boolean> {
     const canDeactivate = component.canDeactivate();
 
     if (!canDeactivate) {
