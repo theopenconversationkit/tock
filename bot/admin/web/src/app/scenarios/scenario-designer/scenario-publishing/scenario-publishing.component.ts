@@ -20,7 +20,8 @@ import {
   TickStory,
   ScenarioVersionExtended,
   SCENARIO_MODE,
-  unknownIntentName
+  unknownIntentName,
+  Handler
 } from '../../models';
 import { ScenarioService } from '../../services';
 import { ScenarioDesignerService } from '../scenario-designer.service';
@@ -34,7 +35,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
   @Input() i18n: I18nLabels;
-  @Input() readonly avalaibleHandlers: string[];
+  @Input() readonly avalaibleHandlers: Handler[];
 
   destroy = new Subject();
 
@@ -75,7 +76,7 @@ export class ScenarioPublishingComponent implements OnInit, OnDestroy {
       const expectedHandlers = actionDefs.filter((ad) => ad.handler).map((ad) => ad.handler);
       let unImplementedHandlers = [];
       expectedHandlers.forEach((eh) => {
-        if (!this.avalaibleHandlers.includes(eh)) {
+        if (!this.avalaibleHandlers.find((h) => h.name === eh)) {
           unImplementedHandlers.push(eh);
         }
       });
