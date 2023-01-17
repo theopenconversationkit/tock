@@ -326,28 +326,13 @@ describe('ScenarioConceptionItemComponent', () => {
     expect(component.contexts).toEqual(intentDef.contextsEntities);
   });
 
-  describe('getParentItem', () => {
-    it('Should return parent item', () => {
-      expect(component.getParentItem()).toEqual(component.scenario.data.scenarioItems[0]);
-    });
-  });
-
-  describe('getChildItems | itemHasNoChildren | itemHasSeveralChildren', () => {
+  describe('getChildItems | itemHasNoChildren', () => {
     it('Should return child items', () => {
       component.item = getScenarioMock().data.scenarioItems[0];
       component.ngOnInit();
       expect(component.getChildItems()).toEqual([component.scenario.data.scenarioItems[1], component.scenario.data.scenarioItems[2]]);
 
       expect(component.itemHasNoChildren()).toEqual(false);
-      expect(component.itemHasSeveralChildren()).toEqual(true);
-    });
-  });
-
-  describe('answering', () => {
-    it('Should call scenarioConceptionService.addAnswer', () => {
-      spyOn(scenarioConceptionService, 'addAnswer');
-      component.answering();
-      expect(scenarioConceptionService.addAnswer).toHaveBeenCalled();
     });
   });
 

@@ -26,15 +26,7 @@ import {
   SimpleChange,
   ViewChild
 } from '@angular/core';
-import {
-  ClassifiedEntity,
-  EntityContainer,
-  EntityDefinition,
-  EntityType,
-  EntityWithSubEntities,
-  Intent,
-  Sentence
-} from '../../model/nlp';
+import { ClassifiedEntity, EntityContainer, EntityDefinition, EntityType, EntityWithSubEntities, Intent, Sentence } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { StateService } from '../../core-nlp/state.service';
 import { CreateEntityDialogComponent } from '../create-entity-dialog/create-entity-dialog.component';
@@ -114,17 +106,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   ngOnInit(): void {
     if (this.sentence instanceof Sentence) {
-      this.entityProvider = new IntentEntityProvider(
-        this.nlp,
-        this.state,
-        this.sentence as Sentence
-      );
+      this.entityProvider = new IntentEntityProvider(this.nlp, this.state, this.sentence as Sentence);
     } else {
-      this.entityProvider = new SubEntityProvider(
-        this.nlp,
-        this.state,
-        this.sentence as EntityWithSubEntities
-      );
+      this.entityProvider = new SubEntityProvider(this.nlp, this.state, this.sentence as EntityWithSubEntities);
     }
 
     this.rebuild();
@@ -144,9 +128,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           this.selectedStart = e.startSelection;
           this.selectedEnd = e.endSelection;
 
-          const tokenMatch = this.tokens.find(
-            (t) => t.start <= e.startSelection && t.end >= e.endSelection
-          );
+          const tokenMatch = this.tokens.find((t) => t.start <= e.startSelection && t.end >= e.endSelection);
           if (!tokenMatch) {
             return;
           }
@@ -220,9 +202,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
         if (overlap) {
           if (this.state.currentApplication.supportSubEntities) {
-            this.sentence
-              .addEditedSubEntities(overlap)
-              .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+            this.sentence.addEditedSubEntities(overlap).setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
           }
           window.getSelection().removeAllRanges();
         } else if (this.entityProvider.isValid()) {
@@ -309,13 +289,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           }
         }
         if (this.selectedStart < this.selectedEnd) {
-          const e = new ClassifiedEntity(
-            entity.entityTypeName,
-            entity.role,
-            this.selectedStart,
-            this.selectedEnd,
-            []
-          );
+          const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd, []);
           this.sentence.addEntity(e);
         }
         this.initTokens();
@@ -368,16 +342,11 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
       //do nothing
     }
     t.style.display = 'none';
-    this.dialog.notify(
-      successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`,
-      'Clipboard'
-    );
+    this.dialog.notify(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, 'Clipboard');
   }
 
   canReveal(): boolean {
-    return (
-      this.sentence instanceof Sentence && this.sentence.key && this.state.hasRole(UserRole.admin)
-    );
+    return this.sentence instanceof Sentence && this.sentence.key && this.state.hasRole(UserRole.admin);
   }
 
   reveal() {
@@ -395,7 +364,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 export class SelectedResult {
   alreadyCount: number;
 
-  constructor(public selectedNode: any, public startOffset: Number, public endOffset) {
+  constructor(public selectedNode: any, public startOffset: number, public endOffset) {
     this.alreadyCount = 0;
   }
 }
@@ -403,12 +372,7 @@ export class SelectedResult {
 export class Token {
   public end: number;
 
-  constructor(
-    public start: number,
-    public text: string,
-    public index: number,
-    public entity?: ClassifiedEntity
-  ) {
+  constructor(public start: number, public text: string, public index: number, public entity?: ClassifiedEntity) {
     this.end = this.start + text.length;
   }
 
@@ -442,19 +406,12 @@ export interface EntityProvider {
 }
 
 export class IntentEntityProvider implements EntityProvider {
-  constructor(
-    private nlp: NlpService,
-    private state: StateService,
-    private sentence: Sentence,
-    private intent?: Intent
-  ) {}
+  constructor(private nlp: NlpService, private state: StateService, private sentence: Sentence, private intent?: Intent) {}
 
   addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
     this.intent.addEntity(entity);
     const allEntities = this.state.entities.getValue();
-    if (
-      !allEntities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)
-    ) {
+    if (!allEntities.some((e) => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
       this.state.entities.next(this.state.currentApplication.allEntities());
     }
     this.nlp.saveIntent(this.intent).subscribe((_) => {
@@ -497,11 +454,7 @@ export class SubEntityProvider implements EntityProvider {
   addEntity(entity: EntityDefinition, highlight: HighlightComponent): string {
     if (
       this.entity.root.containsEntityType(entity.entityTypeName) ||
-      this.containsEntityType(
-        this.state.findEntityTypeByName(entity.entityTypeName),
-        this.entity.root.type,
-        new Set()
-      )
+      this.containsEntityType(this.state.findEntityTypeByName(entity.entityTypeName), this.entity.root.type, new Set())
     ) {
       return 'adding recursive sub entity is not allowed';
     }
@@ -512,11 +465,7 @@ export class SubEntityProvider implements EntityProvider {
     return null;
   }
 
-  private containsEntityType(
-    entityType: EntityType,
-    entityTypeName: string,
-    entityTypes: Set<string>
-  ): boolean {
+  private containsEntityType(entityType: EntityType, entityTypeName: string, entityTypes: Set<string>): boolean {
     if (entityTypeName === entityType.name) {
       return true;
     }
@@ -524,13 +473,7 @@ export class SubEntityProvider implements EntityProvider {
     return (
       entityType.subEntities
         .filter((e) => !entityTypes.has(e.entityTypeName))
-        .find((e) =>
-          this.containsEntityType(
-            this.state.findEntityTypeByName(e.entityTypeName),
-            entityTypeName,
-            entityTypes
-          )
-        ) !== undefined
+        .find((e) => this.containsEntityType(this.state.findEntityTypeByName(e.entityTypeName), entityTypeName, entityTypes)) !== undefined
     );
   }
 

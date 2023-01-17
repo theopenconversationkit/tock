@@ -2,8 +2,8 @@ import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, Que
 import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { StateService } from 'src/app/core-nlp/state.service';
 
+import { StateService } from 'src/app/core-nlp/state.service';
 import { ChoiceDialogComponent } from '../../../../shared/components';
 import { getSmStateParentById } from '../../../commons/utils';
 import { ScenarioIntentDefinition, MachineState, ScenarioActionDefinition, Transition } from '../../../models';
@@ -16,7 +16,7 @@ import { ScenarioTransitionComponent } from './transition/transition.component';
   templateUrl: './state-group.component.html',
   styleUrls: ['./state-group.component.scss']
 })
-export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
+export class ScenarioStateGroupComponent implements OnDestroy {
   destroy = new Subject();
   @Input() state: MachineState;
   @Input() stateMachine: MachineState;
@@ -34,7 +34,7 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     private scenarioProductionService: ScenarioProductionService,
     private nbDialogService: NbDialogService,
     private cd: ChangeDetectorRef,
-    protected stateService: StateService
+    private stateService: StateService
   ) {
     this.scenarioProductionService.scenarioProductionItemsCommunication.pipe(takeUntil(this.destroy)).subscribe((evt) => {
       if (evt.type == 'redrawActions') {
@@ -43,9 +43,8 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {}
-
   viewInited: boolean = false;
+
   ngAfterViewInit(): void {
     this.viewInited = true;
     this.scenarioProductionService.registerStateComponent(this);
@@ -92,12 +91,13 @@ export class ScenarioStateGroupComponent implements OnInit, OnDestroy {
   }
 
   transitionWrapperWidth: number = 0;
-  updateTransitionWrapperWidth(): void {
+
+  private updateTransitionWrapperWidth(): void {
     this.transitionWrapperWidth = this.getMaxTransitionWidth();
     this.cd.detectChanges();
   }
 
-  getMaxTransitionWidth(): number {
+  private getMaxTransitionWidth(): number {
     let width = 0;
     if (this.childTransitionsComponents) {
       this.childTransitionsComponents.forEach((t) => {

@@ -33,9 +33,9 @@ export class TriggerCreateComponent {
     return this.form.get('trigger') as FormControl;
   }
 
-  constructor(public dialogRef: NbDialogRef<TriggerCreateComponent>) {}
+  constructor(private dialogRef: NbDialogRef<TriggerCreateComponent>) {}
 
-  formatTriggerName() {
+  formatTriggerName(): void {
     if (this.trigger.value) {
       this.trigger.patchValue(normalizedCamelCase(this.trigger.value).toLowerCase());
     }
@@ -45,7 +45,7 @@ export class TriggerCreateComponent {
    * Checks if the trigger name is already present in the list
    * @returns {ValidationErrors|null} return custom error or null
    */
-  isAlreadyPresentInTriggerList(): ValidatorFn {
+  private isAlreadyPresentInTriggerList(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value || !this.scenarioVersion) return null;
 
@@ -61,7 +61,7 @@ export class TriggerCreateComponent {
    * Checks if the trigger name matches the name of an intention
    * @returns {ValidationErrors|null} return custom error or null
    */
-  isTriggerNameUnic(): ValidatorFn {
+  private isTriggerNameUnic(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       if (!control.value || !this.scenarioVersion) return null;
 

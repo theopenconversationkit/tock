@@ -14,16 +14,7 @@
   border-radius: 1rem;
   max-width: 180px;
   margin-left: 25px;
-  // :before {
-  //   content: '';
-  //   display: block;
-  //   position: absolute;
-  //   left: -15px;
-  //   top: 12px;
-  //   height: 3px;
-  //   width: 15px;
-  //   background-color: #ccc;
-  // }
+
   &.hovered {
     background-color: nb-theme(color-info-hover);
   }

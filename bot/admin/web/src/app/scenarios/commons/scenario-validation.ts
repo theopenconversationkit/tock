@@ -197,9 +197,8 @@ function checkScenarioItemsIntegrity(scenario: ScenarioVersion): IntegrityCheckR
 }
 
 function checkStateMachineIntegrity(scenario: ScenarioVersion): IntegrityCheckResult {
-  const stateMachine = scenario.data!.stateMachine;
-
   const intentDefinitions = getScenarioIntentDefinitions(scenario);
+
   // We create an array of unique values and delete the undefined elements
   const triggerDefinitions = [...new Set(getScenarioActionDefinitions(scenario).map((a) => a.trigger))].filter((trigger) => trigger);
 

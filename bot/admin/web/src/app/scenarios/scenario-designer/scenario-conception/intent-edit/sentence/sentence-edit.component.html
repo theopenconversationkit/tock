@@ -1,40 +1,40 @@
 <span
   *ngFor="let token of sentence._tokens"
-  [ngClass]="{ token: token.entity, pointer: token.entity, 'cursor-default': !token.entity }"
   [title]="'Entity : ' + token.entity?.role"
+  [ngClass]="{ token: token.entity, pointer: token.entity, 'cursor-default': !token.entity }"
   [style.background]="token.color()"
   [style.color]="getContrastYIQ(token.color())"
   [nbTooltip]="getTokenTooltip(token)"
   (click)="displayTokenMenu($event, token)"
-  >{{ token.text
-  }}<nb-icon
+>
+  {{ token.text }}
+  <nb-icon
     icon="code-download-outline"
     class="valign-middle ml-1"
     *ngIf="getContextOfEntity(token)"
-  ></nb-icon
-></span>
+  ></nb-icon>
+</span>
 
 <div
   *ngIf="txtSelection"
-  class="my-3 d-flex flex-wrap align-items-center"
+  class="my-3 d-flex flex-wrap align-items-center gap-1"
 >
   <div
     *ngFor="let entity of allEntities"
-    class="entity ml-2 pointer d-inline-block"
+    class="entity pointer d-inline-block"
     [style.background]="entity.entityColor"
     [style.color]="getContrastYIQ(entity.entityColor)"
     [nbTooltip]="getEntityTooltip(entity)"
     (click)="addEntityToSentence(entity)"
   >
-    {{ qualifiedName(state.user, entity.entityTypeName, entity.role) }}
+    {{ qualifiedName(stateService.user, entity.entityTypeName, entity.role) }}
   </div>
 
   <button
     nbButton
     ghost
     shape="round"
-    class="ml-2"
-    nbTooltip="Choose or create an other entity"
+    nbTooltip="Choose or create another entity"
     (click)="callEntitiesModal($event)"
   >
     <nb-icon icon="plus-circle-outline"></nb-icon> Add an entity
@@ -51,7 +51,7 @@
       nbButton
       ghost
       size="small"
-      class="ml-1 d-block w-100"
+      class="d-block w-100"
       (click)="removeEntityFromSentence(token)"
     >
       <nb-icon icon="trash-2-outline"></nb-icon> Remove entity
@@ -62,7 +62,7 @@
       nbButton
       ghost
       size="small"
-      class="ml-1 d-block w-100"
+      class="d-block w-100"
       (click)="dissociateContextFromEntity(token)"
     >
       <nb-icon icon="code-outline"></nb-icon> Dissociate context
@@ -94,7 +94,7 @@
       nbButton
       ghost
       size="small"
-      class="ml-1 d-block w-100"
+      class="d-block w-100"
       (click)="addContext(token)"
     >
       <nb-icon icon="plus-circle-outline"></nb-icon> Create a context

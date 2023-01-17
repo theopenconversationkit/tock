@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
-import { of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { StateService } from '../../../../core-nlp/state.service';
 import { Intent, nameFromQualifiedName } from '../../../../model/nlp';
 import { getScenarioIntentDefinitions, normalizedCamelCase } from '../../../commons/utils';
@@ -19,15 +20,13 @@ export class IntentCreateComponent implements OnInit {
   @Input() scenario: ScenarioVersion;
   @Output() createIntentEvent = new EventEmitter();
   categories: string[] = [];
-  categoryAutocompleteValues;
   isSubmitted: boolean = false;
 
-  constructor(public dialogRef: NbDialogRef<IntentCreateComponent>, private state: StateService) {}
+  constructor(private dialogRef: NbDialogRef<IntentCreateComponent>, private stateService: StateService) {}
 
   ngOnInit(): void {
-    this.state.currentIntentsCategories.subscribe((c) => {
+    this.stateService.currentIntentsCategories.pipe(take(1)).subscribe((c) => {
       this.categories = c.map((cat) => cat.category);
-      this.categoryAutocompleteValues = of(this.categories);
     });
 
     if (this.item.text.trim()) {
@@ -50,26 +49,26 @@ export class IntentCreateComponent implements OnInit {
     primary: new FormControl(false)
   });
 
-  isIntentNameUnic(c: FormControl) {
+  private isIntentNameUnic(control: FormControl): null | {} {
     if (!this.scenario) return null;
 
     let isNotUnic;
     let errorString;
-    if (c.value === nameFromQualifiedName(Intent.unknown)) {
+    if (control.value === nameFromQualifiedName(Intent.unknown)) {
       isNotUnic = true;
       errorString = `The string "${nameFromQualifiedName(Intent.unknown)}" is not allowed as an intent name`;
     } else {
-      if (this.scenario.data.triggers?.find((trigger) => trigger === c.value)) {
+      if (this.scenario.data.triggers?.find((trigger) => trigger === control.value)) {
         isNotUnic = true;
         errorString = 'There is already an event with the same name';
       } else {
         const allIntentDefs = getScenarioIntentDefinitions(this.scenario);
-        const nameExistInScenario = allIntentDefs.find((intentDef) => intentDef.name === c.value);
+        const nameExistInScenario = allIntentDefs.find((intentDef) => intentDef.name === control.value);
         if (nameExistInScenario) {
           isNotUnic = true;
           errorString = 'This name is already used by another intent of this scenario';
         } else {
-          const intentAlreadyExist = this.state.intentExists(c.value);
+          const intentAlreadyExist = this.stateService.intentExists(control.value);
           if (intentAlreadyExist) {
             isNotUnic = true;
             errorString = 'This name is already used by an existing intent of this or another application';

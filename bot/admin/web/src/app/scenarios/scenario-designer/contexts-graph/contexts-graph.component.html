@@ -1,4 +1,4 @@
-<nb-card id="modal-wrapper">
+<nb-card>
   <nb-card-body id="modal-body">
     <button
       id="closeButton"
@@ -12,7 +12,7 @@
     </button>
 
     <div
-      class="my-5 p-5 text-warning text-center"
+      class="my-5 p-5 text-center"
       *ngIf="noGraphInScenario"
     >
       <h5 class="my-5">This scenario does not contain a valid constraint graph.</h5>
@@ -49,7 +49,7 @@
 
           <svg:svg
             *ngIf="graphReady"
-            class="svgDoc"
+            id="svgDoc"
             [ngStyle]="{
               'left.px': graphPadding * -1,
               'top.px': graphPadding * -1
@@ -99,8 +99,8 @@
   #dummyContainer
 >
   <div
-    class="node"
     *ngIf="dummyNode"
+    class="node"
     [ngClass]="{ action: dummyNode.type === 'action', context: dummyNode.type === 'context' }"
   >
     {{ dummyNode.name }}

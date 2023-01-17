@@ -29,7 +29,6 @@ const NAVIGATOR = new InjectionToken<Navigator>('An abstraction over navigator o
 export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
   @Input() jsonData!: string | object;
   @Input() title: string = 'JSON Preview';
-  @Input() jsonPreviewerRef: NbDialogRef<JsonPreviewerComponent>;
 
   @Output() onClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -39,6 +38,7 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
   theme: string = 'default';
 
   constructor(
+    private dialogRef: NbDialogRef<JsonPreviewerComponent>,
     @Inject(NAVIGATOR) private navigatorRef: Navigator,
     private themeService: NbThemeService,
     private toastrService: NbToastrService
@@ -132,10 +132,7 @@ export class JsonPreviewerComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   close(): void {
-    if (this.jsonPreviewerRef) {
-      this.jsonPreviewerRef.close();
-    }
-
+    this.dialogRef.close();
     this.onClose.emit(true);
   }
 }

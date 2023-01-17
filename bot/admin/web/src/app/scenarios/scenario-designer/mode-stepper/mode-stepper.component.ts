@@ -24,12 +24,12 @@ export class ModeStepperComponent {
 
   constructor(private nbDialogService: NbDialogService) {}
 
-  getStepErrorTooltip(mode: SCENARIO_MODE) {
+  getStepErrorTooltip(mode: SCENARIO_MODE): string {
     if (this.mode === mode) return 'Not all conditions are met to pass this stage';
     return 'Not all conditions are met to access this stage';
   }
 
-  displayNotMetConditionToAccesNextStage(mode: SCENARIO_MODE) {
+  displayNotMetConditionToAccesNextStage(mode: SCENARIO_MODE): void {
     const currentStageIndex = this.steps.findIndex((s) => s.mode === mode);
     const nextStage = this.steps[currentStageIndex + 1];
     let title;
@@ -38,7 +38,7 @@ export class ModeStepperComponent {
     this.displayFirstNotMetCondition(nextStage?.mode || mode, title);
   }
 
-  displayFirstNotMetCondition(mode: SCENARIO_MODE, title = 'At least one condition is not met to access this stage') {
+  private displayFirstNotMetCondition(mode: SCENARIO_MODE, title = 'At least one condition is not met to access this stage'): void {
     let reason = this.getStepSequenceValidity(mode);
     this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
@@ -50,7 +50,7 @@ export class ModeStepperComponent {
     });
   }
 
-  switchMode(mode: SCENARIO_MODE) {
+  switchMode(mode: SCENARIO_MODE): void {
     if (!this.isStepSequenceValid(mode)) {
       this.displayFirstNotMetCondition(mode);
     } else {
@@ -63,7 +63,7 @@ export class ModeStepperComponent {
     return keys.indexOf(mode) < keys.indexOf(this.mode);
   }
 
-  getStepSequenceValidity(mode: SCENARIO_MODE): string {
+  private getStepSequenceValidity(mode: SCENARIO_MODE): string {
     if (mode === SCENARIO_MODE.casting) {
       return isStepValid(this.scenario, SCENARIO_MODE.casting).reason;
     }
@@ -97,6 +97,9 @@ export class ModeStepperComponent {
           isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
           isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
         );
+      default:
+        console.error('invalid argument');
+        break;
     }
   }
 
@@ -113,6 +116,9 @@ export class ModeStepperComponent {
           isStepValid(this.scenario, SCENARIO_MODE.production).valid &&
           isStepValid(this.scenario, SCENARIO_MODE.publishing).valid
         );
+      default:
+        console.error('invalid argument');
+        break;
     }
   }
 }

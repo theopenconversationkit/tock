@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+
 import { OffsetPosition } from '../../../shared/canvas/models';
-import { ScenarioItem } from '../../models/scenario.model';
+import { ScenarioItem, ScenarioItemFrom } from '../../models/scenario.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,48 +10,45 @@ import { ScenarioItem } from '../../models/scenario.model';
 export class ScenarioConceptionService {
   public scenarioDesignerItemsCommunication = new Subject<any>();
 
-  /*
-    COMMUNICATION BETWEEN MAIN COMPONENT AND ITEMS COMPONENT
-  */
   // Child components to designer communication
   addAnswer(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'addAnswer',
-      item: item
+      item
     });
   }
 
   deleteAnswer(item: ScenarioItem, parentItemId: number): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'deleteAnswer',
-      item: item,
-      parentItemId: parentItemId
+      item,
+      parentItemId
     });
   }
 
   itemDropped(targetId: number, droppedId: number): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'itemDropped',
-      targetId: targetId,
-      droppedId: droppedId
+      targetId,
+      droppedId
     });
   }
 
   selectItem(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'itemSelected',
-      item: item
+      item
     });
   }
 
   testItem(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'testItem',
-      item: item
+      item
     });
   }
 
-  exposeItemPosition(item: ScenarioItem, position: OffsetPosition) {
+  exposeItemPosition(item: ScenarioItem, position: OffsetPosition): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'exposeItemPosition',
       item,
@@ -58,18 +56,18 @@ export class ScenarioConceptionService {
     });
   }
 
-  changeItemType(item, targetType) {
+  changeItemType(item: ScenarioItem, targetType: ScenarioItemFrom): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'changeItemType',
-      item: item,
-      targetType: targetType
+      item,
+      targetType
     });
   }
 
-  removeItemDefinition(item) {
+  removeItemDefinition(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'removeItemDefinition',
-      item: item
+      item
     });
   }
 
@@ -77,14 +75,14 @@ export class ScenarioConceptionService {
   focusItem(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'focusItem',
-      item: item
+      item
     });
   }
 
   requireItemPosition(item: ScenarioItem): void {
     this.scenarioDesignerItemsCommunication.next({
       type: 'requireItemPosition',
-      item: item
+      item
     });
   }
 }

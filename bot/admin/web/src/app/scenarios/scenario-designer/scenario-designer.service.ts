@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { tap, take, share } from 'rxjs/operators';
-import { StateService } from '../../core-nlp/state.service';
+
 import { SearchQuery, SentencesResult } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { stringifiedCleanObject } from '../commons/utils';
@@ -15,7 +15,7 @@ export type ScenarioItemExtended = ScenarioItem & { _sentencesLoading?: boolean 
   providedIn: 'root'
 })
 export class ScenarioDesignerService {
-  constructor(private scenarioService: ScenarioService, private router: Router, protected state: StateService, private nlp: NlpService) {}
+  constructor(private scenarioService: ScenarioService, private router: Router, private nlp: NlpService) {}
 
   public scenarioDesignerCommunication = new Subject<any>();
 
@@ -56,7 +56,7 @@ export class ScenarioDesignerService {
     sentenceSubscription.subscribe((sentencesResearch) => {
       // In the case where the scenario comes from an export=>import, all the sentences have been preserved in the tempSentences. But if the sentences exist on the current application, we can delete them. Since they already exist, we won't have to recreate them.
       sentencesResearch.rows.forEach((sentence) => {
-        let existingTempSentenceIndex = item.intentDefinition.sentences.findIndex(
+        const existingTempSentenceIndex = item.intentDefinition.sentences.findIndex(
           (s) => s.language === sentence.language && s.query === sentence.text
         );
         if (existingTempSentenceIndex >= 0) {

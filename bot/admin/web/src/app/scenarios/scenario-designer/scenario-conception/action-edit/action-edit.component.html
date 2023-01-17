@@ -103,15 +103,13 @@
           <tock-form-control
             label="Answer"
             name="answer"
-            [controls]="answers"
-            [showError]="isSubmitted"
             [hasMargin]="false"
           >
             <nb-form-field *ngIf="!isReadonly">
               <div
                 nbPrefix
                 class="text-uppercase"
-                nbTooltip="Answer in {{ state.localeName(currentLocale) }}"
+                nbTooltip="Answer in {{ stateService.localeName(currentLocale) }}"
               >
                 {{ currentLocale }}
               </div>
@@ -120,7 +118,7 @@
                 nbInput
                 fullWidth
                 id="answer"
-                placeholder="Enter answer in {{ state.localeName(currentLocale) }}"
+                placeholder="Enter answer in {{ stateService.localeName(currentLocale) }}"
                 rows="2"
                 [(ngModel)]="currentLocaleAnswer.answer"
                 [ngModelOptions]="{ standalone: true }"
@@ -164,7 +162,7 @@
                     <div
                       nbPrefix
                       class="text-uppercase"
-                      nbTooltip="Answer in {{ state.localeName(localeAnswerDef.locale) }}"
+                      nbTooltip="Answer in {{ stateService.localeName(localeAnswerDef.locale) }}"
                     >
                       {{ localeAnswerDef.locale }}
                     </div>
@@ -174,7 +172,7 @@
                       nbInput
                       fullWidth
                       rows="2"
-                      placeholder="Enter answer in {{ state.localeName(localeAnswerDef.locale) }}"
+                      placeholder="Enter answer in {{ stateService.localeName(localeAnswerDef.locale) }}"
                       [(ngModel)]="localeAnswerDef.answer"
                       [ngModelOptions]="{ standalone: true }"
                     ></textarea>
@@ -225,13 +223,6 @@
           >
             <div class="d-flex">
               <div class="w-100">
-                <!-- <tock-autocomplete-input
-                *ngIf="!isReadonly"
-                placeholder="Add an input context and press enter"
-                name="inputContexts"
-                [options]="contextsValues"
-                (onKeyup)="resetContextsAddErrors(); addInputContext($event, 'input')"
-              ></tock-autocomplete-input> -->
                 <input
                   #inputContextsInput
                   nbInput
@@ -298,7 +289,7 @@
                     [style.background]="getContextEntityColor(context)"
                     [style.color]="getContextEntityContrast(context)"
                   >
-                    {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
+                    {{ qualifiedName(stateService.user, context.entityType, context.entityRole) }}
                   </span>
                 </ng-container>
               </div>
@@ -412,7 +403,7 @@
                   [style.background]="getContextEntityColor(context)"
                   [style.color]="getContextEntityContrast(context)"
                 >
-                  {{ qualifiedName(state.user, context.entityType, context.entityRole) }}
+                  {{ qualifiedName(stateService.user, context.entityType, context.entityRole) }}
                 </span>
               </ng-container>
 
@@ -443,7 +434,7 @@
               <div
                 nbPrefix
                 class="text-uppercase"
-                nbTooltip="Question in {{ state.localeName(localeAnswerDef.locale) }}"
+                nbTooltip="Question in {{ stateService.localeName(localeAnswerDef.locale) }}"
               >
                 {{ localeAnswerDef.locale }}
               </div>
@@ -451,7 +442,7 @@
                 nbInput
                 fullWidth
                 rows="2"
-                placeholder="Enter question in {{ state.localeName(localeAnswerDef.locale) }}"
+                placeholder="Enter question in {{ stateService.localeName(localeAnswerDef.locale) }}"
                 [(ngModel)]="localeAnswerDef.answer"
                 [ngModelOptions]="{ standalone: true }"
               ></textarea>
@@ -487,7 +478,7 @@
       status="danger"
       (click)="removeActionDefinition()"
     >
-      Delete action definition
+      Remove definition
     </button>
 
     <button

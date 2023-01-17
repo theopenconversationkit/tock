@@ -1,8 +1,10 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
 import { takeUntil, take } from 'rxjs/operators';
+
 import { StateService } from '../../../core-nlp/state.service';
+import { Intent } from '../../../model/nlp';
 import { ChoiceDialogComponent } from '../../../shared/components';
 import { getSmTransitionParentsByname, renameSmStateById } from '../../commons/utils';
 import {
@@ -14,7 +16,9 @@ import {
   ScenarioContext,
   ScenarioVersionExtended,
   Handler,
-  ScenarioActionDefinition
+  ScenarioActionDefinition,
+  ScenarioIntentDefinitionForm,
+  ScenarioIntentDefinition
 } from '../../models';
 import { ScenarioDesignerService } from '../scenario-designer.service';
 import { ActionEditComponent } from './action-edit/action-edit.component';
@@ -22,6 +26,8 @@ import { IntentCreateComponent } from './intent-create/intent-create.component';
 import { IntentEditComponent } from './intent-edit/intent-edit.component';
 import { IntentsSearchComponent } from './intents-search/intents-search.component';
 import { ScenarioConceptionService } from './scenario-conception-service.service';
+
+type Draggable = { data: number };
 
 @Component({
   selector: 'scenario-conception-item',
@@ -49,7 +55,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
 
   constructor(
     private scenarioConceptionService: ScenarioConceptionService,
-    protected state: StateService,
+    private stateService: StateService,
     private scenarioDesignerService: ScenarioDesignerService,
     private nbDialogService: NbDialogService
   ) {
@@ -59,19 +65,19 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     });
   }
 
+  draggable: Draggable;
+
   ngOnInit(): void {
     this.draggable = {
       data: this.item.id
     };
   }
 
-  ngAfterViewInit(): void {
-    this.itemCard.nativeElement.addEventListener('mousedown', function (event) {
-      event.stopPropagation();
-    });
+  stopPropagation(event: MouseEvent): void {
+    event.stopPropagation();
   }
 
-  manageAction() {
+  manageAction(): void {
     const modal = this.nbDialogService.open(ActionEditComponent, {
       context: {
         item: this.item,
@@ -85,26 +91,34 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       this.checkAndAddNewTrigger(actionDef.trigger);
       this.checkAndAddNewContexts(actionDef.inputContextNames);
       this.checkAndAddNewContexts(actionDef.outputContextNames);
+
       if (this.scenario.data.stateMachine && this.item.actionDefinition && this.item.actionDefinition.name !== actionDef.name) {
         renameSmStateById(this.item.actionDefinition.name, actionDef.name, this.scenario.data.stateMachine);
       }
 
-      actionDef.answers = actionDef.answers.filter((ua) => ua.answer?.trim().length > 0);
+      actionDef.answers = actionDef.answers.filter((scenarioAnswer) => scenarioAnswer.answer?.trim().length > 0);
+
       if (actionDef.answerId) {
-        actionDef.answers.forEach((ua) => {
-          const storedAnswer = this.item.actionDefinition.answers?.find((sua) => sua.locale === ua.locale);
-          if (storedAnswer && storedAnswer.answer !== ua.answer) {
-            ua.answerUpdate = true;
+        actionDef.answers.forEach((scenarioAnswer) => {
+          const storedAnswer = this.item.actionDefinition.answers?.find(
+            (storedScenarioAnswer) => storedScenarioAnswer.locale === scenarioAnswer.locale
+          );
+          if (storedAnswer && storedAnswer.answer !== scenarioAnswer.answer) {
+            scenarioAnswer.answerUpdate = true;
           }
         });
       }
 
-      actionDef.unknownAnswers = actionDef.unknownAnswers.filter((ua) => ua.answer?.trim().length > 0);
+      actionDef.unknownAnswers = actionDef.unknownAnswers.filter(
+        (scenarioUnknownAnswer) => scenarioUnknownAnswer.answer?.trim().length > 0
+      );
       if (actionDef.unknownAnswerId) {
-        actionDef.unknownAnswers.forEach((ua) => {
-          const storedAnswer = this.item.actionDefinition.unknownAnswers?.find((sua) => sua.locale === ua.locale);
-          if (storedAnswer && storedAnswer.answer !== ua.answer) {
-            ua.answerUpdate = true;
+        actionDef.unknownAnswers.forEach((scenarioUnknownAnswer) => {
+          const storedAnswer = this.item.actionDefinition.unknownAnswers?.find(
+            (storedScenarioUnknownAnswer) => storedScenarioUnknownAnswer.locale === scenarioUnknownAnswer.locale
+          );
+          if (storedAnswer && storedAnswer.answer !== scenarioUnknownAnswer.answer) {
+            scenarioUnknownAnswer.answerUpdate = true;
           }
         });
       }
@@ -125,7 +139,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     if (trigger && !this.scenario.data.triggers.includes(trigger)) this.scenario.data.triggers = [...this.scenario.data.triggers, trigger];
   }
 
-  checkAndAddNewContexts(contextNames) {
+  private checkAndAddNewContexts(contextNames: string[]): void {
     contextNames.forEach((context) => {
       if (!this.contexts?.find((c) => c.name == context)) {
         this.contexts.push({
@@ -144,7 +158,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     }
   }
 
-  searchIntent(): void {
+  private searchIntent(): void {
     const modal = this.nbDialogService.open(IntentsSearchComponent, {
       context: {
         intentSentence: this.item.text
@@ -162,15 +176,14 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     });
   }
 
-  setItemIntentDefinition(intentDef): void {
+  private setItemIntentDefinition(intent: Intent): void {
     this.item.intentDefinition = {
-      label: intentDef.label,
-      name: intentDef.name,
-      category: intentDef.category,
-      description: intentDef.description,
-      intentId: intentDef._id,
+      label: intent.label,
+      name: intent.name,
+      category: intent.category,
+      description: intent.description,
+      intentId: intent._id,
       primary: this.item.main
-      // isEvent: false
     };
 
     this.scenarioDesignerService.grabIntentSentences(this.item).subscribe(() => {
@@ -178,23 +191,22 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     });
   }
 
-  createIntent(): void {
+  private createIntent(): void {
     const modal = this.nbDialogService.open(IntentCreateComponent, {
       context: {
         item: this.item,
         scenario: this.scenario
       }
     });
-    const createIntentEvent = modal.componentRef.instance.createIntentEvent.pipe(take(1)).subscribe((res) => {
+    modal.componentRef.instance.createIntentEvent.pipe(take(1)).subscribe((res) => {
       if (this.item.main) res.primary = true;
       this.item.intentDefinition = res;
       this.editIntent();
-      // createIntentEvent.unsubscribe();
       modal.close();
     });
   }
 
-  editIntent(): void {
+  private editIntent(): void {
     const modal = this.nbDialogService.open(IntentEditComponent, {
       context: {
         item: this.item,
@@ -204,7 +216,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       }
     });
 
-    modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((intentDef) => {
+    modal.componentRef.instance.saveModifications.pipe(take(1)).subscribe((intentDef: ScenarioIntentDefinitionForm) => {
       // If an intent is not primary anymore, it should not be a transition of the global state
       if (this.scenario.data.stateMachine && this.item.intentDefinition.primary && !intentDef.primary) {
         const parents = getSmTransitionParentsByname(this.item.intentDefinition.name, this.scenario.data.stateMachine);
@@ -230,13 +242,13 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       modal.close();
     });
 
-    modal.componentRef.instance.onRemoveDefinition.pipe(take(1)).subscribe((intentDef) => {
+    modal.componentRef.instance.onRemoveDefinition.pipe(take(1)).subscribe((_intentDef) => {
       this.scenarioConceptionService.removeItemDefinition(this.item);
       modal.close();
     });
   }
 
-  itemHasDefinition() {
+  itemHasDefinition(): ScenarioActionDefinition | ScenarioIntentDefinition {
     return this.item.intentDefinition || this.item.actionDefinition;
   }
 
@@ -250,7 +262,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     }
   }
 
-  requireItemPosition(item: ScenarioItem): void {
+  private requireItemPosition(item: ScenarioItem): void {
     if (item == this.item) {
       this.scenarioConceptionService.exposeItemPosition(this.item, {
         offsetLeft: this.itemCard.nativeElement.offsetLeft,
@@ -265,10 +277,6 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     this.scenarioConceptionService.testItem(this.item);
   }
 
-  getParentItem(): ScenarioItem {
-    return this.scenario.data.scenarioItems.find((item) => item.id == this.parentId);
-  }
-
   getChildItems(): ScenarioItem[] {
     return this.scenario.data.scenarioItems.filter((item) => item.parentIds?.includes(this.item.id));
   }
@@ -278,23 +286,19 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     return !childs.length;
   }
 
-  itemHasSeveralChildren(): boolean {
-    return this.getChildItems().length > 1;
-  }
-
   answering(): void {
     this.scenarioConceptionService.addAnswer(this.item);
   }
 
-  getCurrentLocaleAnswer() {
+  getCurrentLocaleAnswer(): string {
     const scenarioAnswer = this.item.actionDefinition.answers.find((sa) => {
-      return sa.locale === this.state.currentLocale;
+      return sa.locale === this.stateService.currentLocale;
     });
     return scenarioAnswer?.answer || '';
   }
 
   delete(): void {
-    let alertMessage;
+    let alertMessage: string;
     if (this.item.intentDefinition) {
       if (this.item.from === SCENARIO_ITEM_FROM_CLIENT) {
         alertMessage =
@@ -325,10 +329,8 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result) {
-          if (result == confirmAction) {
-            this.scenarioConceptionService.deleteAnswer(this.item, this.parentId);
-          }
+        if (result === confirmAction) {
+          this.scenarioConceptionService.deleteAnswer(this.item, this.parentId);
         }
       });
     } else {
@@ -337,19 +339,19 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
   }
 
   getItemCardCssClass(): string {
-    let classes = 'cursor-default ' + this.item.from;
-    if (this.item.from == SCENARIO_ITEM_FROM_BOT) {
-      if (this.item.final) classes += ' final';
-    }
-    if (this.item.parentIds?.length > 1) classes += ' duplicate';
-    if (this.selectedItem?.id == this.item.id) classes += ' selected';
-    return classes;
+    const classes = ['cursor-default', this.item.from];
+
+    if (this.item.from === SCENARIO_ITEM_FROM_BOT && this.item.final) classes.push('final');
+    if (this.item.parentIds?.length > 1) classes.push('duplicate');
+    if (this.selectedItem?.id == this.item.id) classes.push('selected');
+
+    return classes.join(' ');
   }
 
-  switchItemType(which: ScenarioItemFrom): void {
-    if (which === this.item.from) return;
+  switchItemType(wich: ScenarioItemFrom): void {
+    if (wich === this.item.from) return;
 
-    let alertMessage;
+    let alertMessage: string;
     if (this.item.intentDefinition) {
       if (this.item.from === SCENARIO_ITEM_FROM_CLIENT) {
         alertMessage =
@@ -385,16 +387,16 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       dialogRef.onClose.subscribe((result) => {
         if (result) {
           if (result == confirmAction) {
-            this.scenarioConceptionService.changeItemType(this.item, which);
+            this.scenarioConceptionService.changeItemType(this.item, wich);
           }
         }
       });
     } else {
-      this.scenarioConceptionService.changeItemType(this.item, which);
+      this.scenarioConceptionService.changeItemType(this.item, wich);
     }
   }
 
-  toggleFinal($event): void {
+  toggleFinal($event: boolean): void {
     if ($event) this.item.final = true;
     else delete this.item.final;
   }
@@ -409,33 +411,32 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
     });
   }
 
-  shouldShowArrowTop(which): boolean {
+  shouldShowArrowTop(wich: 'left' | 'right' | 'leftAndRight'): boolean {
     let brothers = this.getItemBrothers();
 
     if (!brothers.length) return false;
 
     let bIds = brothers.map((b) => b.id);
 
-    if (which == 'left') {
+    if (wich === 'left') {
       const min = Math.min(...bIds);
       if (this.item.id < min) return false;
     }
-    if (which == 'right') {
+    if (wich === 'right') {
       const max = Math.max(...bIds);
       if (this.item.id > max) return false;
+    }
+    if (wich === 'leftAndRight') {
+      const max = Math.max(...bIds);
+      const min = Math.min(...bIds);
+      if (this.item.id < min || this.item.id > max) return true;
     }
     return true;
   }
 
-  draggable;
-
-  onDrop($event): void {
+  onDrop($event: Draggable): void {
     if (this.item.id == $event.data) return;
     this.scenarioConceptionService.itemDropped(this.item.id, $event.data);
-  }
-
-  mouseWheel(event) {
-    event.stopPropagation();
   }
 
   ngOnDestroy() {

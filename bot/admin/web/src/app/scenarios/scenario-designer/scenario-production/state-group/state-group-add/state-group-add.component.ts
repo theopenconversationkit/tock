@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogRef } from '@nebular/theme';
-import { normalizedSnakeCaseUpper } from '../../../../commons/utils';
 
-const ENTITY_NAME_MINLENGTH = 5;
+import { normalizedSnakeCaseUpper } from '../../../../commons/utils';
+import { ACTION_OR_CONTEXT_NAME_MINLENGTH } from '../../../../models';
 
 @Component({
   selector: 'scenario-production-state-group-add',
@@ -14,13 +14,17 @@ export class ScenarioProductionStateGroupAddComponent {
   @Input() usedNames: string[];
   @Output() validate = new EventEmitter();
 
-  constructor(public dialogRef: NbDialogRef<ScenarioProductionStateGroupAddComponent>) {}
+  constructor(private dialogRef: NbDialogRef<ScenarioProductionStateGroupAddComponent>) {}
 
   form: FormGroup = new FormGroup({
-    name: new FormControl(undefined, [Validators.required, Validators.minLength(ENTITY_NAME_MINLENGTH), this.notUsedName.bind(this)])
+    name: new FormControl(undefined, [
+      Validators.required,
+      Validators.minLength(ACTION_OR_CONTEXT_NAME_MINLENGTH),
+      this.notUsedName.bind(this)
+    ])
   });
 
-  notUsedName(c: FormControl) {
+  private notUsedName(c: FormControl): null | { custom: string } {
     if (!this.usedNames) return null;
     return this.usedNames.includes(c.value)
       ? {
@@ -39,7 +43,7 @@ export class ScenarioProductionStateGroupAddComponent {
     return this.form.get('name') as FormControl;
   }
 
-  formatContextName() {
+  formatContextName(): void {
     if (this.name.value) {
       this.form.patchValue({
         ...this.form.value,

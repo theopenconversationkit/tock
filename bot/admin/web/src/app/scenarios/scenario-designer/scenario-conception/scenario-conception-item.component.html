@@ -12,7 +12,7 @@
   ></div>
   <div
     class="arrow"
-    *ngIf="shouldShowArrowTop('left') || shouldShowArrowTop('right')"
+    *ngIf="shouldShowArrowTop('leftAndRight')"
   >
     <div class="arrow-line"></div>
   </div>
@@ -31,7 +31,8 @@
     dndDragoverClass="dragHover"
     (click)="selectItem()"
     appMouseWheelListner
-    (onMouseWheel)="mouseWheel($event)"
+    (onMouseWheel)="stopPropagation($event)"
+    (mousedown)="stopPropagation($event)"
   >
     <div
       class="from-icon client"
@@ -264,8 +265,9 @@
             (checkedChange)="toggleFinal($event)"
             [checked]="item.final"
             nbTooltip="Define this item as ending the conversation"
-            >End of chat</nb-checkbox
           >
+            End of chat
+          </nb-checkbox>
         </div>
       </div>
     </div>
