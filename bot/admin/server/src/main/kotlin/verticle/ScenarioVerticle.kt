@@ -44,6 +44,7 @@ import mu.KotlinLogging
 import org.apache.commons.codec.binary.Base64
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 
@@ -261,26 +262,32 @@ open class ScenarioVerticle {
             .toSet()
     }
 
-    private val debugScenario: (RoutingContext) -> ScenarioDebugResponse =
+    private val debugScenario: (RoutingContext) -> ScenarioDebugResponse? =
         { _ ->
 
-        val inputStream: InputStream = FileInputStream("/tmp/python/log/action-graph-full-new.png")
-        val buffer = ByteArray(8192*4)
-        var bytesRead: Int
-        val output = ByteArrayOutputStream()
+            try {
+                //TODO : better workaround about loading the file
+                val inputStream: InputStream = FileInputStream("/tmp/python/log/action-graph-full-new.png")
+                val buffer = ByteArray(8192 * 4)
+                var bytesRead: Int
+                val output = ByteArrayOutputStream()
 
-        try {
-            while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                output.write(buffer, 0, bytesRead)
+                try {
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        output.write(buffer, 0, bytesRead)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } finally {
+                    inputStream.close()
+                }
+
+                ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
+            } catch (e: FileNotFoundException) {
+                logger.error("File not found ${e.message}")
+                null
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }finally {
-            inputStream.close()
         }
-
-        ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
-    }
 
     /**
      * Handler to update one scenario group
