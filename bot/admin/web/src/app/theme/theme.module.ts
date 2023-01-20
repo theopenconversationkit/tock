@@ -59,10 +59,9 @@ const NB_MODULES = [
 const COMPONENTS = [HeaderComponent, FooterComponent, OneColumnLayoutComponent];
 
 @NgModule({
-  imports: [CommonModule, ...NB_MODULES],
-  exports: [CommonModule, ...COMPONENTS],
-  declarations: [...COMPONENTS],
-  entryComponents: []
+    imports: [CommonModule, ...NB_MODULES],
+    exports: [CommonModule, ...COMPONENTS],
+    declarations: [...COMPONENTS]
 })
 export class ThemeModule {
   static forRoot(): ModuleWithProviders<ThemeModule> {

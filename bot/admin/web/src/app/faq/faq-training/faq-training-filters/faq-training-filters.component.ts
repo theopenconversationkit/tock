@@ -5,6 +5,11 @@ import { debounceTime } from 'rxjs/operators';
 
 import { FaqTrainingFilter } from '../../models';
 
+interface FaqTrainingFilterForm {
+  search: FormControl<string>;
+  showUnknown: FormControl<boolean>;
+}
+
 @Component({
   selector: 'tock-faq-training-filters',
   templateUrl: './faq-training-filters.component.html',
@@ -15,7 +20,7 @@ export class FaqTrainingFiltersComponent implements OnInit, OnDestroy {
 
   private _subscription = new Subscription();
 
-  form = new FormGroup({
+  form = new FormGroup<FaqTrainingFilterForm>({
     search: new FormControl(),
     showUnknown: new FormControl(false)
   });

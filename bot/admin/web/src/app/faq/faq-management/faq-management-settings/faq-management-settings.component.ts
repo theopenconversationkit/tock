@@ -12,6 +12,11 @@ import { StateService } from '../../../core-nlp/state.service';
 import { Settings } from '../../models';
 import { FaqService } from '../../services/faq.service';
 
+interface SettingsForm {
+  satisfactionEnabled: FormControl<boolean>;
+  satisfactionStoryId?: FormControl<string>;
+}
+
 @Component({
   selector: 'tock-faq-management-settings',
   templateUrl: './faq-management-settings.component.html',
@@ -27,7 +32,7 @@ export class FaqManagementSettingsComponent implements OnInit {
 
   availableStories: StoryDefinitionConfigurationSummary[] = [];
 
-  form = new FormGroup({
+  form = new FormGroup<SettingsForm>({
     satisfactionEnabled: new FormControl(false),
     satisfactionStoryId: new FormControl({ value: null, disabled: true })
   });
@@ -169,10 +174,7 @@ export class FaqManagementSettingsComponent implements OnInit {
           this.loading = false;
           this.form.reset();
           this.close();
-          this.toastrService.success(`Settings successfully updated`, 'Success', {
-            duration: 5000,
-            status: 'success'
-          });
+          this.toastrService.success(`Settings successfully updated`, 'Success', { duration: 5000 });
         },
         error: () => {
           this.loading = false;

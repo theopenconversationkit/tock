@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'tock-error-helper',
@@ -7,6 +7,5 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./error-helper.component.scss']
 })
 export class ErrorHelperComponent {
-  @Input()
-  field!: FormArray | FormControl | FormGroup;
+  @Input() field!: UntypedFormArray | UntypedFormControl | UntypedFormGroup;
 }

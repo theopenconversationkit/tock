@@ -15,11 +15,21 @@
  */
 
 @import '../../styles/themes';
-@import '~bootstrap/scss/mixins/breakpoints';
-@import '~@nebular/theme/styles/global/breakpoints';
 
 @include nb-install-component() {
-  .menu-sidebar ::ng-deep .scrollable {
-    padding-top: nb-theme(layout-padding-top);
+  .menu-sidebar {
+    z-index: 1;
+
+    & ::ng-deep .scrollable {
+      padding-top: nb-theme(layout-padding-top);
+    }
+  }
+
+  /*
+  * Fixes a conflict between Nebular and Angular Material. Ensures that elements using the cdk-overlay-container are on top of the Nebular header.
+  * To be removed when all Angular Material elements are replaced by Nebular ones and the Angular Material css is not imported in the project anymore.
+  */
+  nb-layout-header.fixed {
+    z-index: 999 !important;
   }
 }

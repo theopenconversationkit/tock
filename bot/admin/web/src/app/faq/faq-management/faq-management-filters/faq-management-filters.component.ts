@@ -1,9 +1,15 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { FaqFilter } from '../../models';
+
+interface FaqFilterForm {
+  search: FormControl<string>;
+  tags: FormControl<string[]>;
+  enabled: FormControl<boolean | null>;
+}
 
 @Component({
   selector: 'tock-faq-management-filters',
@@ -11,15 +17,13 @@ import { FaqFilter } from '../../models';
   styleUrls: ['./faq-management-filters.component.scss']
 })
 export class FaqManagementFiltersComponent implements OnInit, OnDestroy {
-  @Input()
-  tagsCache: string[];
+  @Input() tagsCache: string[];
 
-  @Output()
-  onFilter = new EventEmitter<FaqFilter>();
+  @Output() onFilter = new EventEmitter<FaqFilter>();
 
   subscription = new Subscription();
 
-  form = new FormGroup({
+  form = new FormGroup<FaqFilterForm>({
     search: new FormControl(),
     tags: new FormControl([]),
     enabled: new FormControl(null)

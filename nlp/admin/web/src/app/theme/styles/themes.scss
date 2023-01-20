@@ -15,10 +15,10 @@
  */
 
 // @nebular theming framework
-@import '~@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/theming';
 // @nebular out of the box themes
-@import '~@nebular/theme/styles/themes/default';
-@import '~@nebular/theme/styles/themes/dark';
+@import '@nebular/theme/styles/themes/default';
+@import '@nebular/theme/styles/themes/dark';
 
 $nb-themes: nb-register-theme(
   (

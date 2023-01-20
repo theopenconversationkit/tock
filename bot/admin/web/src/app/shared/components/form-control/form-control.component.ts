@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormArray, FormControl } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl } from '@angular/forms';
 
 @Component({
   selector: 'tock-form-control',
@@ -7,7 +7,7 @@ import { FormArray, FormControl } from '@angular/forms';
   styleUrls: ['./form-control.component.scss']
 })
 export class FormControlComponent {
-  @Input() controls!: FormControl | FormArray;
+  @Input() controls!: UntypedFormControl | UntypedFormArray;
   @Input() label?: string;
   @Input() name!: string;
   @Input() showError: boolean = false;
