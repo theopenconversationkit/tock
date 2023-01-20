@@ -92,7 +92,6 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     init {
         try {
             col.ensureIndex(Namespace, BotId)
-            col.ensureIndex(Namespace, BotId, Intent.name_)
             col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
 
             historyCol.ensureIndex(Date)

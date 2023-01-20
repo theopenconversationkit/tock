@@ -40,7 +40,7 @@ import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.user.UserTimeline
-import ai.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getHackedConfigurationByApplicationIdAndBot
+import ai.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getConfigurationByApplicationIdAndBotId
 import ai.tock.bot.mongo.DialogFlowAggregateResult_.Companion.Count
 import ai.tock.bot.mongo.DialogFlowAggregateResult_.Companion.SeriesKey
 import ai.tock.bot.mongo.DialogFlowStateCol_.Companion.BotId
@@ -241,14 +241,16 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         logger.info("cleanup stats users")
                         flowTransitionStatsUserAggregationCol.deleteMany()
                         logger.info("reset processed level")
-                        flowTransitionStatsCol.updateMany(EMPTY_BSON, set(ProcessedLevel setTo 0))
+                        flowTransitionStatsCol.updateMany(ProcessedLevel eq currentProcessedLevel, set(ProcessedLevel setTo 0))
                         logger.info("persist flow configuration")
                         currentProcessedLevelCol.save(DialogFlowConfiguration(defaultConfKey, currentProcessedLevel))
                         logger.info { "end update flow stats to level $currentProcessedLevel" }
                     }
                 } catch (e: Throwable) {
-                    initFlowStatCrawl()
                     logger.error(e)
+                    logger.error("Waiting for flow state set")
+                    Thread.sleep(1000 * 60 * 60)
+                    initFlowStatCrawl()
                     return@schedule
                 }
                 scheduleWithFixedDelay(1, 1, TimeUnit.MINUTES) {
@@ -928,7 +930,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         val state = findState(botDefinition, snapshot.snapshots.lastOrNull())
         if (state != null) {
             val transition = findTransition(botDefinition, previousState, state, lastUserAction)
-            val botAppConf = getHackedConfigurationByApplicationIdAndBot(
+            val botAppConf = getConfigurationByApplicationIdAndBotId(
                 botDefinition.namespace, lastUserAction.applicationId, botDefinition.botId
             )
             if (botAppConf != null) {
