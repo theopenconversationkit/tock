@@ -1,6 +1,6 @@
-@import '~@nebular/theme/styles/global/breakpoints';
-@import '~@nebular/theme/styles/theming';
-@import '~@nebular/theme/styles/themes';
+@import '@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
 
 .grid-columns {
   display: grid;
@@ -21,14 +21,15 @@
 
 .select-intent {
   display: grid;
-  grid-template-columns: minmax(7.5rem, 5fr) 0 minmax(1rem, 0.5fr);
+  grid-template-columns: minmax(7.5rem, 5fr) 0 minmax(2.5rem, 0.5fr);
   align-items: center;
   grid-gap: 0.5rem;
+  text-align: right;
 }
 
 @include media-breakpoint-up(sm) {
   .grid-columns {
-    grid-template-columns: auto minmax(5rem, 1.25fr) minmax(10rem, 1fr) minmax(5rem, auto);
+    grid-template-columns: auto minmax(5rem, 1.25fr) minmax(11rem, 1fr) minmax(5rem, auto);
   }
 
   .grid-columns-header {

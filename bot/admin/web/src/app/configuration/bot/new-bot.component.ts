@@ -16,7 +16,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { Router } from '@angular/router';
@@ -30,14 +30,14 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
   styleUrls: ['./new-bot.component.css']
 })
 export class NewBotComponent implements OnInit {
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
-  channel: FormControl = new FormControl('', Validators.required);
+  firstFormGroup: UntypedFormGroup;
+  secondFormGroup: UntypedFormGroup;
+  channel: UntypedFormControl = new UntypedFormControl('', Validators.required);
 
   connectorTypes: ConnectorType[] = [];
 
   constructor(
-    private _formBuilder: FormBuilder,
+    private _formBuilder: UntypedFormBuilder,
     public state: StateService,
     private botSharedService: BotSharedService,
     private router: Router,

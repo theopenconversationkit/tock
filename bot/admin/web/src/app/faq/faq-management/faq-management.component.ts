@@ -309,7 +309,7 @@ export class FaqManagementComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.destroy.next();
+    this.destroy.next(true);
     this.destroy.complete();
   }
 }

@@ -19,26 +19,26 @@ export enum FaqTabs {
   ANSWER = 'answer'
 }
 
+interface FaqEditForm {
+  title: FormControl<string>;
+  description: FormControl<string>;
+  tags: FormArray<FormControl<string>>;
+  utterances: FormArray<FormControl<string>>;
+  answer: FormControl<string>;
+}
+
 @Component({
   selector: 'tock-faq-management-edit',
   templateUrl: './faq-management-edit.component.html',
   styleUrls: ['./faq-management-edit.component.scss']
 })
 export class FaqManagementEditComponent implements OnChanges {
-  @Input()
-  loading: boolean;
+  @Input() loading: boolean;
+  @Input() faq?: FaqDefinitionExtended;
+  @Input() tagsCache?: string[];
 
-  @Input()
-  faq?: FaqDefinitionExtended;
-
-  @Input()
-  tagsCache?: string[];
-
-  @Output()
-  onClose = new EventEmitter<boolean>();
-
-  @Output()
-  onSave = new EventEmitter();
+  @Output() onClose = new EventEmitter<boolean>();
+  @Output() onSave = new EventEmitter();
 
   @ViewChild('tagInput') tagInput: ElementRef;
   @ViewChild('addUtteranceInput') addUtteranceInput: ElementRef;
@@ -59,7 +59,7 @@ export class FaqManagementEditComponent implements OnChanges {
     this.currentTab = tab.tabTitle as FaqTabs;
   }
 
-  form = new FormGroup({
+  form = new FormGroup<FaqEditForm>({
     title: new FormControl(undefined, [Validators.required, Validators.minLength(6), Validators.maxLength(40)]),
     description: new FormControl('', Validators.maxLength(this.controlsMaxLength.description)),
     tags: new FormArray([]),

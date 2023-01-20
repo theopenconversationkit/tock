@@ -11,7 +11,7 @@ import {
   NbToastrService,
   NbTooltipModule
 } from '@nebular/theme';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 
 import { BotService } from '../../../bot/bot-service';
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -21,6 +21,7 @@ import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqService } from '../../services/faq.service';
 import { FaqManagementSettingsComponent } from './faq-management-settings.component';
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';
+import { Settings } from '../../models';
 
 const mockStories = [
   { _id: '1', name: 'story 1', category: 'category' } as StoryDefinitionConfigurationSummary,
@@ -193,7 +194,7 @@ describe('FaqManagementSettingsComponent', () => {
       component.save();
 
       expect(component['dialogService'].openDialog).toHaveBeenCalled();
-      expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value);
+      expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value as Settings);
     });
 
     it('should not call the method to save settings after displaying a confirmation request message and cancel if the satisfaction enabled field is false', () => {
@@ -216,7 +217,7 @@ describe('FaqManagementSettingsComponent', () => {
       component.save();
 
       expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
-      expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value);
+      expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value as Settings);
     });
   });
 });
