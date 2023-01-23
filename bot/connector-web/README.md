@@ -176,6 +176,8 @@ The HTTP parameters, allowed by default can be found in [`WebConnector`](./src/m
 To allow extra parameters without modifying the Web connector, use the optional `tock_web_connector_extra_headers` 
 property.
 
+To retrieve metadata present in extra headers (the list present in `tock_web_connector_extra_headers`) and use them in `Bus` in the `ConnectorData`, use the `tock_web_connector_use_extra_header_as_metadata_request` and pass it to true.
+
 Docker-Compose example:
 
 ```
