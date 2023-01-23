@@ -88,7 +88,9 @@ private val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
 
-private val webConnectorExtraHeaders = listProperty("tock_web_connector_extra_headers", emptyList())
+val webConnectorExtraHeaders = listProperty("tock_web_connector_extra_headers", emptyList())
+val webConnectorUseExtraHeadersAsMetadata: Boolean =
+    booleanProperty("tock_web_connector_use_extra_header_as_metadata_request", false)
 
 class WebConnector internal constructor(
         val applicationId: String,
@@ -223,7 +225,8 @@ class WebConnector internal constructor(
                         applicationId
 
             val event = request.toEvent(applicationId)
-            WebRequestInfosByEvent.put(event.id.toString(), WebRequestInfos(context.request()))
+            val requestInfos = WebRequestInfos(context.request())
+            WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
             val callback = WebConnectorCallback(
                     applicationId = applicationId,
                     locale = request.locale,
@@ -231,13 +234,36 @@ class WebConnector internal constructor(
                     webMapper = webMapper,
                     eventId = event.id.toString()
             )
-            controller.handle(event, ConnectorData(callback))
+            controller.handle(
+                event,
+                ConnectorData(
+                    callback = callback, metadata = extraHeadersAsMetadata(requestInfos)
+                )
+            )
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
         } finally {
             BotRepository.requestTimer.end(timerData)
         }
+    }
+
+    /**
+     * add extra configured Header to Metadata
+     * accessible if "tock_web_connector_use_extra_header_as_metadata_request" is true
+     * @param requestInfos [WebRequestInfos]
+     */
+    private fun extraHeadersAsMetadata(requestInfos: WebRequestInfos): MutableMap<String, String> {
+        val metaDataExtraHeaders: MutableMap<String, String> = mutableMapOf()
+        if (webConnectorUseExtraHeadersAsMetadata) {
+            webConnectorExtraHeaders.forEach {
+                val headerSearch = requestInfos.headers(it)
+                if (headerSearch.isNotEmpty()) {
+                    metaDataExtraHeaders.putIfAbsent(it, headerSearch[0])
+                }
+            }
+        }
+        return metaDataExtraHeaders
     }
 
     private fun handleProxy(

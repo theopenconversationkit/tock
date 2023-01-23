@@ -32,6 +32,7 @@ data class RequestContext(
     val userId: PlayerId,
     val botId: PlayerId,
     val user: UserData,
+    val metadata: MutableMap<String, String> = mutableMapOf(),
     val actionsHistory: ActionsHistory
 )
 
