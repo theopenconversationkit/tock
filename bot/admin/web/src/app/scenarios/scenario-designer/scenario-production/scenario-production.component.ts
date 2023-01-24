@@ -1,4 +1,16 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges,
+  ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import { G, Marker, Svg, SVG } from '@svgdotjs/svg.js';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -51,7 +63,7 @@ const TRANSITION_COLOR_HOVERED = '#42aaff';
   styleUrls: ['./scenario-production.component.scss'],
   providers: [ScenarioProductionService]
 })
-export class ScenarioProductionComponent implements OnInit, OnDestroy {
+export class ScenarioProductionComponent implements OnInit, OnChanges, OnDestroy {
   destroy = new Subject();
   @Input() scenario: ScenarioVersionExtended;
   @Input() isReadonly: boolean;
@@ -92,12 +104,15 @@ export class ScenarioProductionComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     if (!this.scenario.data.stateMachine) this.initStateMachine();
 
+    this.transitionsDefinition = [...this.scenarioDefinition.intents, ...this.scenarioDefinition.triggers];
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
     this.scenarioDefinition = {
       actions: this.getScenarioActionDefinitions(),
       intents: this.getScenarioIntentDefinitions(),
       triggers: this.getScenarioTriggerDefinition()
     };
-    this.transitionsDefinition = [...this.scenarioDefinition.intents, ...this.scenarioDefinition.triggers];
   }
 
   ngAfterViewInit(): void {
