@@ -73,6 +73,10 @@ export class IntentsSearchComponent implements OnInit, OnDestroy {
 
   private extractIntents(foundSentences: Sentence[]): SentencesGroupedByIntent[] {
     let intents = this.groupBy(foundSentences, 'classification.intentId');
+
+    // we delete unknown intents if any
+    delete intents[Intent.unknown];
+
     let intentsIds = Object.keys(intents);
     return intentsIds.map((intentId) => {
       let intent = this.stateService.findIntentById(intentId);
