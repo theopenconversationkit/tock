@@ -183,6 +183,7 @@ export class ScenarioConceptionItemComponent implements OnInit, OnDestroy {
       category: intent.category,
       description: intent.description,
       intentId: intent._id,
+      sentences: [],
       primary: this.item.main
     };
 

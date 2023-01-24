@@ -6,13 +6,13 @@
         *ngIf="deduplicatedIntents?.length"
         class="card-header-subtitle"
       >
-        <span *ngIf="groupedIntents.length == 1">
+        <span *ngIf="deduplicatedIntents.length == 1">
           There is one intent matching the given sentence "{{ intentSentence }}"
           <br />
           Do you want to use it as intent for this scenario ?
         </span>
-        <span *ngIf="groupedIntents.length > 1">
-          There are {{ groupedIntents.length }} intents matching the given sentence "{{ intentSentence }}"
+        <span *ngIf="deduplicatedIntents.length > 1">
+          There are {{ deduplicatedIntents.length }} intents matching the given sentence "{{ intentSentence }}"
           <br />
           Do you want to use one of them as intent for this scenario ?
         </span>
@@ -32,7 +32,7 @@
 
   <nb-card-body [nbSpinner]="loading">
     <div *ngIf="!loading">
-      <nb-card *ngFor="let deduplicatedIntent of groupedIntents">
+      <nb-card *ngFor="let deduplicatedIntent of deduplicatedIntents">
         <nb-card-header>
           {{ deduplicatedIntent.intent?.label }}
           <span *ngIf="!deduplicatedIntent.intent?.label">
