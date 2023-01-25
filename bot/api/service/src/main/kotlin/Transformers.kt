@@ -16,6 +16,8 @@
 
 package ai.tock.bot.api.service
 
+import ai.tock.bot.admin.dialog.ActionReport
+import ai.tock.bot.api.model.ActionsHistory
 import ai.tock.bot.api.model.RequestContext
 import ai.tock.bot.api.model.UserRequest
 import ai.tock.bot.api.model.context.Entity
@@ -70,8 +72,26 @@ private fun BotBus.toRequestContext(): RequestContext =
         applicationId,
         userId,
         botId,
-        userPreferences.toUserData()
+        userPreferences.toUserData(),
+        toActionsHistory(),
     )
+
+/**
+ * Retrieve the action history from the dialog
+ */
+private fun BotBus.toActionsHistory(): ActionsHistory =
+    dialog.allActions().toList().map {
+        ActionReport(
+            it.playerId,
+            it.recipientId,
+            it.date,
+            it.toMessage(),
+            targetConnectorType,
+            userInterfaceType,
+            test,
+            it.toActionId()
+        )
+    }
 
 private fun UserPreferences.toUserData(): UserData =
     UserData(
