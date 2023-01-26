@@ -29,7 +29,6 @@ import { SentenceFilter } from '../../sentences-scroll/sentences-scroll.componen
 import { NbToastrService } from '@nebular/theme';
 import { AnalyticsService } from '../../analytics/analytics.service';
 import { APP_BASE_HREF } from '@angular/common';
-import { ScenarioService } from 'src/app/scenarios/services/scenario.service';
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -69,7 +68,6 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     private shared: BotSharedService,
     private toastrService: NbToastrService,
     private dialog: MatDialog,
-    private scenarioService: ScenarioService, // TODO MASS : FIX ME !
     @Inject(APP_BASE_HREF) public baseHref: string
   ) {}
 
@@ -141,7 +139,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
         // TODO MASS : FIX ME !
         (async () => {
-          await new Promise( resolve => setTimeout(resolve, 500) )
+          await new Promise( resolve => setTimeout(resolve, 750) )
           this.test.getDebugLog(
             this.state.currentApplication.namespace,
             this.currentConfigurationId

@@ -132,15 +132,6 @@ export class ScenarioApiService {
       );
   }
 
-  // TODO MASS : do rollback when front debug is ready
-  getScenarioDebug(): Observable<ScenarioDebug> {
-    return this.http
-    .get(`${this.rest.botApiUrl}/dialog-manager/debug`)
-    .pipe(
-      map((res: ScenarioDebug) => res)
-    );
-  }
-
   postTickStory(tickStory: TickStory): Observable<TickStory> {
     return this.rest.post<TickStory, TickStory>('/bot/story/tick', tickStory, null, null, true);
   }

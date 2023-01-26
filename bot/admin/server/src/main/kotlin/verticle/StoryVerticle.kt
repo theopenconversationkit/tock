@@ -16,13 +16,11 @@
 
 package ai.tock.bot.admin.verticle
 
-import ai.tock.bot.admin.service.impl.StoryServiceImpl
+import ai.tock.bot.admin.service.StoryService
 import ai.tock.bot.bean.TickStory
-import ai.tock.shared.injector
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
-import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -60,14 +58,14 @@ class StoryVerticle {
     private val createTickStory: (RoutingContext, TickStory) -> Unit = { context, tickStory ->
         logger.debug { "request to create tick story <${tickStory.storyId}>" }
         val namespace = (context.user() as TockUser).namespace
-        StoryServiceImpl.createTickStory(namespace, tickStory)
+        StoryService.createTickStory(namespace, tickStory)
     }
 
     private val deleteStoryByStoryDefinitionConfigurationId: (RoutingContext) -> Boolean = { context ->
         val storyDefinitionConfigurationId = context.pathParam("storyDefinitionConfigurationId")
         logger.debug { "request to delete story <$storyDefinitionConfigurationId>" }
         val namespace = (context.user() as TockUser).namespace
-        StoryServiceImpl.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(namespace, storyDefinitionConfigurationId)
+        StoryService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(namespace, storyDefinitionConfigurationId)
     }
 
 }

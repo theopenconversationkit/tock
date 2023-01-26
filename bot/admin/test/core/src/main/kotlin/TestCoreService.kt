@@ -24,7 +24,6 @@ import ai.tock.bot.admin.test.model.BotDialogResponse
 import ai.tock.bot.admin.test.model.DialogDebugData
 import ai.tock.bot.admin.test.model.TestPlanUpdate
 import ai.tock.bot.connector.rest.client.ConnectorRestClient
-import ai.tock.bot.connector.rest.client.ScenarioDebugResponse
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.bot.engine.user.PlayerId
@@ -44,6 +43,7 @@ import ai.tock.shared.security.TockUserRole.faqNlpUser
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
 import io.vertx.ext.web.RoutingContext
+import model.ScenarioDebugResponse
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -172,17 +172,13 @@ class TestCoreService : TestService {
             val botApplicationConfigurationId = context.firstQueryParam("botApplicationConfigurationId")!!
             val namespace = context.firstQueryParam("namespace")!!
 
-
             if (context.organization == namespace) {
                 val conf = getBotConfiguration(botApplicationConfigurationId.toId(), namespace)
-
                 getDebugLog(conf)
-
             } else {
                 Companion.unauthorized()
             }
         }
-
     }
 
     private fun talk(request: BotDialogRequest, conf: BotApplicationConfiguration): BotDialogResponse {
@@ -214,17 +210,15 @@ class TestCoreService : TestService {
     }
 
     private fun getDebugLog(conf: BotApplicationConfiguration): ScenarioDebugResponse {
-            val restClient = getRestClient(conf)
-            val response = restClient.getDebugLog(conf.path ?: conf.applicationId)
+        val restClient = getRestClient(conf)
+        val response = restClient.getDebugLog(conf.path ?: conf.applicationId)
 
-        // TODO MASS
-            return if (response.isSuccessful) {
-                response.body()?.run {
-                    this
-                } ?: ScenarioDebugResponse("")
-            } else {
-                ScenarioDebugResponse("FALSE")
-            }
+        val debug = when(response.isSuccessful){
+            true -> response.body()?.run { this }
+            else -> null
+        }
+
+        return debug ?: ScenarioDebugResponse()
     }
 
     private fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {

@@ -25,7 +25,7 @@ import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioGroupResponse
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersion
 import ai.tock.bot.admin.mapper.ScenarioMapper.toScenarioVersionResponse
 import ai.tock.bot.admin.model.scenario.*
-import ai.tock.bot.admin.service.impl.ScenarioServiceImpl
+import ai.tock.bot.admin.service.ScenarioService
 import ai.tock.bot.handler.ActionHandlersRepository
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole.*
@@ -104,7 +104,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .importOneScenarioGroup(request.toScenarioGroup(botId))
                 .toScenarioGroupResponse()
         }
@@ -121,7 +121,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .importManyScenarioVersion(getNamespace(context), request.map { it.toScenarioVersion(groupId) })
                 .map { it.toScenarioVersionResponse() }
         }
@@ -137,7 +137,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
         
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .createOneScenarioGroup(request.toScenarioGroup(botId))
                 .toScenarioGroupResponse()
         }
@@ -154,7 +154,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
         
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .createOneScenarioVersion(getNamespace(context), request.toScenarioVersion(groupId))
                 .toScenarioVersionResponse()
 
@@ -171,7 +171,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .findAllScenarioGroupWithVersionsByBotId(getNamespace(context), botId)
                 .map { it.toScenarioGroupResponse() }
         }
@@ -188,7 +188,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .findOneScenarioGroup(getNamespace(context), groupId)
                 .toScenarioGroupResponse()
         }
@@ -205,7 +205,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .findOneScenarioVersion(groupId, versionId)
                 .toScenarioVersionResponse()
         }
@@ -221,7 +221,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .findOneScenarioGroup(getNamespace(context), groupId).versions.map { it.toScenarioVersionResponse() }
         }
     }
@@ -252,7 +252,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .updateOneScenarioGroup(getNamespace(context), request.toScenarioGroup(botId, groupId))
                 .toScenarioGroupResponse()
         }
@@ -270,7 +270,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl
+            ScenarioService
                 .updateOneScenarioVersion(request.toScenarioVersion(groupId, versionId))
                 .toScenarioVersionResponse()
         }
@@ -287,7 +287,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl.deleteOneScenarioGroup(getNamespace(context), botId, groupId)
+            ScenarioService.deleteOneScenarioGroup(getNamespace(context), botId, groupId)
         }
     }
 
@@ -303,7 +303,7 @@ open class ScenarioVerticle {
         checkBotConfiguration(context, botId)
 
         ScenarioExceptionManager.catch {
-            ScenarioServiceImpl.deleteOneScenarioVersion(getNamespace(context), botId, groupId, versionId)
+            ScenarioService.deleteOneScenarioVersion(getNamespace(context), botId, groupId, versionId)
         }
     }
 

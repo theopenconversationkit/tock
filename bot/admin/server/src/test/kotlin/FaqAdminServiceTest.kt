@@ -22,7 +22,6 @@ import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.bot.admin.service.StoryService
-import ai.tock.bot.admin.service.impl.StoryServiceImpl
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.ConnectorType
@@ -534,7 +533,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 faqDefinitionDAO.deleteFaqDefinitionById(eq(faqId))
                 intentDAO.getIntentById(any())
                 i18nDAO.deleteByNamespaceAndId(any(), any())
-                StoryServiceImpl.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(any(), any())
+                StoryService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(any(), any())
             }
         }
 

@@ -36,4 +36,4 @@ data class ScenarioGroup(
     val enabled: Boolean? = null
 )
 
-    // TODO MASSS : transient versions
+    // TODO MASS : transient versions

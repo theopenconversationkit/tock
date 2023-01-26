@@ -20,7 +20,6 @@ import ai.tock.bot.admin.scenario.ScenarioGroup
 import ai.tock.bot.admin.scenario.ScenarioVersion
 import ai.tock.bot.admin.scenario.ScenarioVersionDAO
 import ai.tock.bot.admin.scenario.ScenarioVersionState
-import ai.tock.bot.admin.service.impl.ScenarioVersionServiceImpl
 import ai.tock.shared.exception.scenario.version.ScenarioVersionNotFoundException
 import ai.tock.shared.injector
 import ai.tock.shared.tockInternalInjector
@@ -29,7 +28,6 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
 import com.github.salomonbrys.kodein.provider
-import com.github.salomonbrys.kodein.singleton
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk

@@ -18,7 +18,6 @@ package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.scenario.ScenarioGroup
 import ai.tock.bot.admin.scenario.ScenarioGroupDAO
-import ai.tock.bot.admin.service.impl.ScenarioGroupServiceImpl
 import ai.tock.shared.exception.scenario.group.ScenarioGroupDuplicatedException
 import ai.tock.shared.exception.scenario.group.ScenarioGroupNotFoundException
 import ai.tock.shared.tockInternalInjector
@@ -74,7 +73,7 @@ class ScenarioGroupServiceImplTest {
         every { scenarioGroupDAO.createOne(scenarioGroup1) } throws ScenarioGroupDuplicatedException()
         // WHEN // THEN
         assertThrows<ScenarioGroupDuplicatedException> {
-            ScenarioGroupServiceImpl.createOne(scenarioGroup1)
+            ScenarioGroupService.createOne(scenarioGroup1)
         }
         verify(exactly = 1) { scenarioGroupDAO.createOne(scenarioGroup1) }
     }
@@ -83,7 +82,7 @@ class ScenarioGroupServiceImplTest {
         // GIVEN
         every { scenarioGroupDAO.createOne(scenarioGroup1) } returns scenarioGroup1
         // WHEN
-        val result = ScenarioGroupServiceImpl.createOne(scenarioGroup1)
+        val result = ScenarioGroupService.createOne(scenarioGroup1)
         // THEN
         assertEquals(scenarioGroup1, result)
         verify(exactly = 1) { scenarioGroupDAO.createOne(scenarioGroup1) }
@@ -93,7 +92,7 @@ class ScenarioGroupServiceImplTest {
         // GIVEN
         every { scenarioGroupDAO.findAllByBotId(botId1) } returns emptyList()
         // WHEN
-        val result = ScenarioGroupServiceImpl.findAllByBotId(botId1)
+        val result = ScenarioGroupService.findAllByBotId(botId1)
         // THEN
         assertTrue(result.isEmpty())
         verify(exactly = 1) { scenarioGroupDAO.findAllByBotId(botId1) }
@@ -103,7 +102,7 @@ class ScenarioGroupServiceImplTest {
         val groups = listOf(scenarioGroup1, scenarioGroup2)
         every { scenarioGroupDAO.findAllByBotId(botId1) } returns groups
         // WHEN
-        val result = ScenarioGroupServiceImpl.findAllByBotId(botId1)
+        val result = ScenarioGroupService.findAllByBotId(botId1)
         // THEN
         assertEquals(groups, result)
         verify(exactly = 1) { scenarioGroupDAO.findAllByBotId(botId1) }
@@ -113,7 +112,7 @@ class ScenarioGroupServiceImplTest {
         every { scenarioGroupDAO.findOneById(groupId1) } returns null
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            ScenarioGroupServiceImpl.findOneById(groupId1.toString())
+            ScenarioGroupService.findOneById(groupId1.toString())
         }
         verify(exactly = 1) { scenarioGroupDAO.findOneById(groupId1) }
     }
@@ -121,7 +120,7 @@ class ScenarioGroupServiceImplTest {
         // GIVEN
         every { scenarioGroupDAO.findOneById(groupId1) } returns scenarioGroup1
         // WHEN
-        val result = ScenarioGroupServiceImpl.findOneById(groupId1.toString())
+        val result = ScenarioGroupService.findOneById(groupId1.toString())
         // THEN
         assertEquals(scenarioGroup1, result)
         verify(exactly = 1) { scenarioGroupDAO.findOneById(groupId1) }
@@ -132,7 +131,7 @@ class ScenarioGroupServiceImplTest {
         every { scenarioGroupDAO.updateOne(scenarioGroup1) } throws ScenarioGroupNotFoundException(groupId1.toString())
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            ScenarioGroupServiceImpl.updateOne(scenarioGroup1)
+            ScenarioGroupService.updateOne(scenarioGroup1)
         }
         verify(exactly = 1) { scenarioGroupDAO.updateOne(scenarioGroup1) }
     }
@@ -140,7 +139,7 @@ class ScenarioGroupServiceImplTest {
         // GIVEN
         every { scenarioGroupDAO.updateOne(scenarioGroup1) } returns scenarioGroup1
         // WHEN
-        val result = ScenarioGroupServiceImpl.updateOne(scenarioGroup1)
+        val result = ScenarioGroupService.updateOne(scenarioGroup1)
         // THEN
         assertEquals(scenarioGroup1, result)
         verify(exactly = 1) { scenarioGroupDAO.updateOne(scenarioGroup1) }
@@ -150,7 +149,7 @@ class ScenarioGroupServiceImplTest {
         every { scenarioGroupDAO.deleteOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1.toString())
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
-            ScenarioGroupServiceImpl.deleteOneById(groupId1.toString())
+            ScenarioGroupService.deleteOneById(groupId1.toString())
         }
         verify(exactly = 1) { scenarioGroupDAO.deleteOneById(groupId1) }
     }
@@ -158,7 +157,7 @@ class ScenarioGroupServiceImplTest {
         // GIVEN
         justRun { scenarioGroupDAO.deleteOneById(groupId1) }
         // WHEN
-        ScenarioGroupServiceImpl.deleteOneById(groupId1.toString())
+        ScenarioGroupService.deleteOneById(groupId1.toString())
         // THEN
         verify(exactly = 1) { scenarioGroupDAO.deleteOneById(groupId1) }
     }

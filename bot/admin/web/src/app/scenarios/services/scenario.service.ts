@@ -318,10 +318,6 @@ export class ScenarioService {
     return this.scenarioApiService.getActionHandlers();
   }
 
-  getScenarioDebug(): Observable<ScenarioDebug> {
-    return this.scenarioApiService.getScenarioDebug();
-  }
-
   postTickStory(tickStory: TickStory): Observable<TickStory> {
     return this.scenarioApiService.postTickStory(tickStory);
   }

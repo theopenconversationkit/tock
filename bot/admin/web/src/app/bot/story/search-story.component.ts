@@ -22,12 +22,14 @@ import {StateService} from '../../core-nlp/state.service';
 import {StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery, AnswerConfigurationType, IntentName} from '../model/story';
 import {Subscription} from 'rxjs';
 import {FileItem, FileUploader, ParsedResponseHeaders} from 'ng2-file-upload';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogComponent} from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import {ChoiceDialogComponent} from '../../shared/components';
 import {CanDeactivate} from '@angular/router';
 import {LocationStrategy} from '@angular/common';
 import {NbToastrService} from '@nebular/theme';
 import {DialogService} from 'src/app/core-nlp/dialog.service';
 import {I18nLabel} from '../model/i18n'
+
 
 interface TreeNode<T> {
   data: T;

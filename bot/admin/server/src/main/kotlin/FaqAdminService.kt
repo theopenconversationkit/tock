@@ -24,7 +24,7 @@ import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqDefinitionSearchResult
 import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.service.impl.StoryServiceImpl
+import ai.tock.bot.admin.service.StoryService
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
@@ -761,7 +761,7 @@ object FaqAdminService {
             )
 
             if (existingStory != null) {
-                StoryServiceImpl.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(existingStory.namespace, existingStory._id.toString())
+                StoryService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(existingStory.namespace, existingStory._id.toString())
             }
             return true
         }

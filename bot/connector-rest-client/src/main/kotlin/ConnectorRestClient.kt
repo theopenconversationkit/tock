@@ -26,6 +26,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import model.ScenarioDebugResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -83,6 +84,10 @@ class ConnectorRestClient(
         return getService(path).talk(locale, query).execute()
     }
 
+    /**
+     * Get a python generated graph
+     * TODO MASS : to replace
+     */
     fun getDebugLog(path: String): Response<ScenarioDebugResponse> {
         return getService("/dialog-manager").getDebugLog().execute()
     }

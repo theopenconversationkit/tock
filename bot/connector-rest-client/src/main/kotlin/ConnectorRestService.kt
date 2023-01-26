@@ -18,6 +18,7 @@ package ai.tock.bot.connector.rest.client
 
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientMessageResponse
+import model.ScenarioDebugResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -39,7 +40,3 @@ interface ConnectorRestService {
     @GET("debug")
     fun getDebugLog(): Call<ScenarioDebugResponse>
 }
-
-data class ScenarioDebugResponse(
-    val imgBase64: String
-)
