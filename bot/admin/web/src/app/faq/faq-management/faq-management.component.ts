@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -22,7 +22,7 @@ export type FaqDefinitionExtended = FaqDefinition & { _initUtterance?: string };
   templateUrl: './faq-management.component.html',
   styleUrls: ['./faq-management.component.scss']
 })
-export class FaqManagementComponent implements OnInit {
+export class FaqManagementComponent implements OnInit, OnDestroy {
   @ViewChild('faqEditComponent') faqEditComponent: FaqManagementEditComponent;
   @ViewChild('faqSettingsComponent') faqSettingsComponent: FaqManagementSettingsComponent;
 

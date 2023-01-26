@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -22,7 +22,7 @@ interface SettingsForm {
   templateUrl: './faq-management-settings.component.html',
   styleUrls: ['./faq-management-settings.component.scss']
 })
-export class FaqManagementSettingsComponent implements OnInit {
+export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter<boolean>();
   @Output() onSave = new EventEmitter<Settings>();
 

@@ -20,7 +20,7 @@ import { takeWhile } from 'rxjs/operators';
 import { AuthService } from '../../../core-nlp/auth/auth.service';
 
 @Component({
-  selector: 'ngx-one-column-layout',
+  selector: 'tock-one-column-layout',
   styleUrls: ['./one-column.layout.scss'],
   template: `
     <nb-layout>
@@ -28,7 +28,7 @@ import { AuthService } from '../../../core-nlp/auth/auth.service';
         fixed
         *ngIf="auth.isLoggedIn()"
       >
-        <ngx-header></ngx-header>
+        <tock-header></tock-header>
       </nb-layout-header>
 
       <nb-sidebar
@@ -48,7 +48,7 @@ import { AuthService } from '../../../core-nlp/auth/auth.service';
         fixed
         *ngIf="auth.isLoggedIn()"
       >
-        <ngx-footer></ngx-footer>
+        <tock-footer></tock-footer>
       </nb-layout-footer>
     </nb-layout>
   `

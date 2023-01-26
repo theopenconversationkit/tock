@@ -15,7 +15,7 @@
  */
 
 import { map } from 'rxjs/operators';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { StateService } from '../core-nlp/state.service';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { ApplicationService } from '../core-nlp/applications.service';
@@ -29,7 +29,7 @@ import { DialogService } from '../core-nlp/dialog.service';
   templateUrl: './entity-details.component.html',
   styleUrls: ['./entity-details.component.css']
 })
-export class EntityDetailsComponent implements OnInit {
+export class EntityDetailsComponent {
   @Input()
   entity: EntityDefinition;
   @Input()
@@ -44,8 +44,6 @@ export class EntityDetailsComponent implements OnInit {
     private dialog: DialogService,
     private applicationService: ApplicationService
   ) {}
-
-  ngOnInit() {}
 
   findEntityType(): EntityType {
     return this.state.findEntityTypeByName(this.entity.entityTypeName);

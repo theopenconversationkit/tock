@@ -52,7 +52,7 @@
 </nb-card>
 <nb-card
   class="entities"
-  *ngIf="selectedEntityType != null"
+  *ngIf="!!selectedEntityType"
 >
   <nb-card-header>Configuration for {{ selectedEntityType.name }}</nb-card-header>
   <nb-card-body>
@@ -61,13 +61,14 @@
       class="no-model model"
       (change)="updateEntityType()"
       matTooltip="If selected all values are obfuscated in Tock Studio"
-      >Obfuscated
+    >
+      Obfuscated
     </mat-checkbox>
   </nb-card-body>
 </nb-card>
 <nb-card
   class="entities"
-  *ngIf="selectedDictionary != null"
+  *ngIf="!!selectedDictionary"
 >
   <nb-card-header>Predefined values for {{ selectedEntityType.name }}</nb-card-header>
   <nb-card-body>
@@ -77,7 +78,8 @@
         class="no-model model"
         (change)="updateDictionary()"
         matTooltip="If selected, no model is used: only exact values are recognized/evaluated"
-        >No Model
+      >
+        No Model
       </mat-checkbox>
       <mat-form-field
         *ngIf="!selectedDictionary.onlyValues"

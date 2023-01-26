@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 
 @Component({
@@ -22,13 +22,11 @@ import { NbDialogRef } from '@nebular/theme';
   templateUrl: './add-state-dialog.component.html',
   styleUrls: ['./add-state-dialog.component.css']
 })
-export class AddStateDialogComponent implements OnInit {
+export class AddStateDialogComponent {
   name: string;
   @Input() title: string;
 
   constructor(public dialogRef: NbDialogRef<AddStateDialogComponent>) {}
-
-  ngOnInit() {}
 
   save() {
     this.dialogRef.close({ name: this.name.toLowerCase().trim() });

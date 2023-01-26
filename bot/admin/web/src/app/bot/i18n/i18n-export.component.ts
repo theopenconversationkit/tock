@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { NbButtonComponent, NbWindowRef } from '@nebular/theme';
 
 const CSV = { value: 'CSV', label: '.csv' };
@@ -25,7 +25,7 @@ const JSON = { value: 'JSON', label: '.json' };
   templateUrl: './i18n-export.component.html',
   styleUrls: ['./i18n-export.component.css']
 })
-export class I18nExportComponent implements OnInit, AfterViewInit {
+export class I18nExportComponent implements AfterViewInit {
   constructor(private windowRef: NbWindowRef) {}
 
   @ViewChild('focusElement') focusElement: NbButtonComponent;
@@ -36,8 +36,6 @@ export class I18nExportComponent implements OnInit, AfterViewInit {
   exportAllOption = 'All labels';
   exportAllOptions: string[] = ['All labels', 'Only filtered labels'];
   loading = false;
-
-  ngOnInit(): void {}
 
   ngAfterViewInit(): void {
     const focusElement = this.focusElement['hostElement']?.nativeElement;

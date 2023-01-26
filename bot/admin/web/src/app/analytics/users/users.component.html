@@ -47,7 +47,7 @@
               class="chat-item"
             >
               <nb-card
-                accent="{{ user.playerId == selectedUser?.playerId ? 'info' : '' }}"
+                accent="{{ user.playerId === selectedUser?.playerId ? 'info' : '' }}"
                 class="chat-card"
               >
                 <nb-card-header (click)="loadDialog(user)">

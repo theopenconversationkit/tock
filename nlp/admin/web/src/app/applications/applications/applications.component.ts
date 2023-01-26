@@ -15,7 +15,7 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Application } from '../../model/application';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
@@ -27,13 +27,11 @@ import { NbToastrService } from '@nebular/theme';
   templateUrl: 'applications.component.html',
   styleUrls: ['applications.component.css']
 })
-export class ApplicationsComponent implements OnInit {
+export class ApplicationsComponent {
   UserRole = UserRole;
   uploadDump: boolean = false;
 
   constructor(private toastrService: NbToastrService, public state: StateService, private applicationService: ApplicationService) {}
-
-  ngOnInit() {}
 
   selectApplication(app: Application) {
     this.state.changeApplication(app);

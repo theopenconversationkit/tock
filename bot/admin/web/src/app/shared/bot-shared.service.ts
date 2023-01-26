@@ -15,7 +15,8 @@
  */
 
 import { share, tap } from 'rxjs/operators';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
+
 import { RestService } from '../core-nlp/rest/rest.service';
 import { Observable, of } from 'rxjs';
 import { ConnectorType, ConnectorTypeConfiguration } from '../core/model/configuration';
@@ -23,15 +24,13 @@ import { NlpCallStats } from './model/dialog-data';
 import { AdminConfiguration } from './model/conf';
 
 @Injectable()
-export class BotSharedService implements OnDestroy {
+export class BotSharedService {
   private connectorTypes: ConnectorTypeConfiguration[];
   configuration: AdminConfiguration;
 
   constructor(private rest: RestService) {
     this.getConfiguration().subscribe((r) => (this.configuration = r));
   }
-
-  ngOnDestroy(): void {}
 
   getConnectorTypes(): Observable<ConnectorTypeConfiguration[]> {
     if (this.connectorTypes) {

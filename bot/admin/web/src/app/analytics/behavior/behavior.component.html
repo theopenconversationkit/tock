@@ -20,10 +20,10 @@
 >
   <nb-card style="margin-bottom: unset">
     <nb-card-body nbSpinnerStatus="primary">
-      <date-range-calendar
+      <tock-date-range-calendar
         [rangeInDays]="7"
         (datesChanged)="datesChanged($event)"
-      ></date-range-calendar>
+      ></tock-date-range-calendar>
       <tock-select-bot
         [allowNoConfigurationSelection]="true"
         noConnectorLabel="All Connectors"

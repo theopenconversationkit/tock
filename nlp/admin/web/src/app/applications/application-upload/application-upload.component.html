@@ -124,7 +124,7 @@
             >
               Number of sentences imported
             </h3>
-            <mat-list-item *ngIf="report.sentencesImported != 0">
+            <mat-list-item *ngIf="report.sentencesImported !== 0">
               <mat-icon mat-list-icon>speaker_notes</mat-icon>
               <h4 mat-line>{{ report.sentencesImported }}</h4>
             </mat-list-item>
@@ -135,7 +135,7 @@
             >
               Number of FAQs imported
             </h3>
-            <mat-list-item *ngIf="report.faqsImported != 0">
+            <mat-list-item *ngIf="report.faqsImported !== 0">
               <mat-icon mat-list-icon>speaker_notes</mat-icon>
               <h4 mat-line>{{ report.faqsImported }}</h4>
             </mat-list-item>
