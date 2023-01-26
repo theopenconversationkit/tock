@@ -1,0 +1,122 @@
+<div class="d-flex flex-wrap mt-3">
+  <h1 class="flex-grow-1">Indicators</h1>
+
+  <section>
+    <button
+      nbButton
+      status="primary"
+      (click)="addOrEditIndicator()"
+      *ngIf="configurations?.length"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      NEW INDICATOR
+    </button>
+  </section>
+</div>
+
+<section
+  [class.grid]="isSidePanelOpen.edit"
+  class="mt-1"
+>
+  <nb-alert
+    *ngIf="configurations?.length === 0"
+    class="alert-config flex-row align-items-center"
+    accent="warning"
+  >
+    <nb-icon
+      class="mr-1"
+      icon="alert-triangle-outline"
+      status="warning"
+    ></nb-icon>
+    No bot configuration detected
+  </nb-alert>
+
+  <div
+    class="main"
+    [nbSpinner]="loading.list || loading.delete"
+    *ngIf="configurations?.length"
+  >
+    <nb-card class="mb-2">
+      <nb-card-body>
+        <tock-indicators-filters
+          [dimensionsCache]="dimensionsCache"
+          (onFilter)="filterIndicators($event)"
+        ></tock-indicators-filters>
+      </nb-card-body>
+    </nb-card>
+
+    <tock-no-data-found
+      *ngIf="!filteredIndicators?.length && !loading.list"
+      title="No Indicator found"
+      message="You may create a new one using above button &#34;NEW INDICATOR&#34;."
+    ></tock-no-data-found>
+
+    <nb-card
+      *ngFor="let indicator of filteredIndicators"
+      class="mb-2"
+    >
+      <nb-card-body>
+        <div class="indicator">
+          <div class="d-flex align-items-center justify-content-between">
+            <strong>{{ indicator.label }}</strong>
+            <div>
+              <nb-tag
+                *ngFor="let dimension of indicator.dimensions"
+                appearance="filled"
+                status="basic"
+                size="tiny"
+                [text]="dimension"
+                class="mx-1"
+              ></nb-tag>
+            </div>
+          </div>
+
+          <small class="text-muted">
+            {{ indicator.description }}
+          </small>
+
+          <div class="d-flex gap-2">
+            <ul class="flex-grow-1 pl-3 w-50 mb-0">
+              <li *ngFor="let value of indicator.values">{{ value.label }}</li>
+            </ul>
+
+            <div class="d-flex flex-wrap align-items-center justify-content-between">
+              <button
+                nbButton
+                ghost
+                shape="round"
+                nbTooltip="Edit"
+                class="mb-2"
+                (click)="addOrEditIndicator(indicator)"
+              >
+                <nb-icon icon="edit-outline"></nb-icon>
+              </button>
+              <button
+                nbButton
+                ghost
+                shape="round"
+                nbTooltip="Delete"
+                class="mb-2"
+                (click)="confirmDeleteIndicator(indicator)"
+              >
+                <nb-icon icon="trash-2-outline"></nb-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+
+  <tock-indicators-edit
+    #indicatorsEditComponent
+    *ngIf="isSidePanelOpen.edit"
+    class="aside"
+    [indicatorEdition]="indicatorEdition"
+    [indicators]="indicators"
+    [dimensionsCache]="dimensionsCache"
+    (onClose)="closeSidePanel()"
+    (onSave)="saveOrCreateIndicator($event)"
+    [nbSpinner]="loading.edit"
+  ></tock-indicators-edit>
+</section>

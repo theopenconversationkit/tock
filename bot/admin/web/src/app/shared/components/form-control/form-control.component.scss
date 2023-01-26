@@ -2,14 +2,20 @@
 @import '@nebular/theme/styles/themes';
 
 @include nb-install-component() {
-  label.required {
-    position: relative;
+  label {
+    &.required {
+      position: relative;
 
-    abbr {
-      position: absolute;
-      left: -0.8rem;
-      text-decoration: none;
-      color: nb-theme(color-danger-500);
+      abbr {
+        position: absolute;
+        left: -0.8rem;
+        text-decoration: none;
+        color: nb-theme(color-danger-500);
+      }
+    }
+
+    &.hasError {
+      color: nb-theme(color-danger-500) !important;
     }
   }
 }

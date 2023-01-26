@@ -1,0 +1,100 @@
+Association indicateurs / story actions :
+
+- Possible d'associer plusieurs indicateurs à un meme step de la story ? Possible que oui. Exemple à retrouver
+
+Edition des indicateurs :
+
+- Un indicateur peut-il n'appartenir à aucune dimensions => Plutot non
+- Que signifie supprimer un indicateur ? Faut-il nettoyer toutes les references à cet indicateur dans les actions des stories ?
+
+Vue stats :
+
+- "Nombre de questions" c'est quoi ? 1 hit par question posée ou par story declenchée. Le click sur une quick answer de question de satisfaction increment-t-il le "nombre de questions" ?
+- "Nombre de questions avec réponse" ?
+- filtrer les stats affcihées par category de story
+
+
+
+
+STATS GENERALES
+
+query :
+    - date start
+    - date end
+    - applicationName
+
+response :
+{ 
+    unknownHits : 987,
+    hitsByDay : [ 
+        {
+            day:'2023-01-27', 
+            hits:116
+        }, 
+        {
+            day:'2023-01-28', 
+            hits:129
+        }
+    ],
+    storiesHits : [ 
+        { 
+            storyId: "absencesdcsgrandparent", // est ce bien l'id invariable pour par exemple une tickStory ? 
+            name: "Absences décès grand-parent", 
+            description:"", 
+            category: "faq", 
+            currentType :"simple", 
+            hits : 1 // nombre de hits sur la période demandée 
+        }
+    ] 
+}
+
+STATS PAR DIMENSION
+
+query :
+    - date start
+    - date end
+    - applicationName
+    - dimension
+
+response :
+{
+    
+    ????  : 654 //nombre de fois ou la story de satisfaction a été déclenché....
+
+    indicators :[
+        {
+            name: 'satisfaction',
+            label: 'Question de satisfaction',
+
+            values: [
+                { 
+                    name: 'ok',
+                    label: 'Ok',
+                    hits : 654
+                },
+                { 
+                    name: 'ko', 
+                    label: 'Ko',
+                    hits: 987
+                }
+            ]
+        },
+        {
+            name: 'question_mal_comprise',
+            label: 'Question mal comprise',
+
+            values: [
+                { 
+                    name: 'oui',
+                    label: 'Oui',
+                    hits : 124
+                },
+                { 
+                    name: 'reformuler', 
+                    label: 'Reformuler',
+                    hits: 98
+                }
+            ]
+        }
+    ]
+}

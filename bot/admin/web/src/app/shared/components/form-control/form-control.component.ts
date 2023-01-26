@@ -9,7 +9,9 @@ import { UntypedFormArray, UntypedFormControl } from '@angular/forms';
 export class FormControlComponent {
   @Input() controls!: UntypedFormControl | UntypedFormArray;
   @Input() label?: string;
+  @Input() boldLabel?: boolean = true;
   @Input() name!: string;
   @Input() showError: boolean = false;
   @Input() required: boolean = false;
+  @Input() hasMargin: boolean = true;
 }
