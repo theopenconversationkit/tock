@@ -95,4 +95,10 @@ interface ClassifiedSentenceDAO {
      * Returns sentence validator users.
      */
     fun users(applicationId: Id<ApplicationDefinition>): List<String>
+
+
+    /**
+     * Returns sentence channel source.
+     */
+    fun configurations(applicationId: Id<ApplicationDefinition>): List<String>
 }

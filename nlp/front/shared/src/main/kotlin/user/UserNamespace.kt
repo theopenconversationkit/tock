@@ -25,7 +25,7 @@ data class UserNamespace(
      */
     val login: String,
     /**
-     * the applications namespace
+     * The applications namespace
      */
     val namespace: String,
     /**

@@ -29,6 +29,7 @@ import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
 import ai.tock.nlp.front.service.storage.FaqSettingsDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
+import ai.tock.nlp.front.service.storage.NamespaceConfigurationDAO
 import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -53,6 +54,7 @@ val sentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
 val userNamespaceDAO: UserNamespaceDAO get() = injector.provide()
 val faqDefinitionDAO: FaqDefinitionDAO get() = injector.provide()
 val faqSettingsDAO: FaqSettingsDAO get() = injector.provide()
+val namespaceConfigurationDAO: NamespaceConfigurationDAO get() = injector.provide()
 
 /**
  *
@@ -64,6 +66,7 @@ object ApplicationConfigurationService :
     ClassifiedSentenceDAO by sentenceDAO,
     UserNamespaceDAO by userNamespaceDAO,
     FaqDefinitionDAO by faqDefinitionDAO,
+    NamespaceConfigurationDAO by namespaceConfigurationDAO,
     ApplicationConfiguration {
 
     private val logger = KotlinLogging.logger {}
@@ -94,7 +97,7 @@ object ApplicationConfigurationService :
         intentDAO.getIntentsByApplicationId(id).forEach { intent ->
             removeIntentFromApplication(app, intent._id)
         }
-        faqDefinitionDAO.deleteFaqDefinitionByApplicationId(id)
+        faqDefinitionDAO.deleteFaqDefinitionByBotId(app.name)
         applicationDAO.deleteApplicationById(id)
     }
 
@@ -318,7 +321,7 @@ object ApplicationConfigurationService :
         ConfigurationRepository.entityTypeByName(name)?.obfuscated ?: true
 
     override fun getFaqsDefinitionByApplicationId(id: Id<ApplicationDefinition>): List<FaqDefinition>
-            = faqDefinitionDAO.getFaqDefinitionByApplicationId(id)
+            = getApplicationById(id)?.let { faqDefinitionDAO.getFaqDefinitionByBotId(it.name) } ?: arrayListOf()
 
     override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition?
             = faqDefinitionDAO.getFaqDefinitionByIntentId(id)

@@ -21,7 +21,7 @@ const mockFaqs: FaqDefinitionExtended[] = [
   {
     id: '1',
     language: 'fr',
-    applicationId: '1',
+    applicationName: '1',
     title: 'faq 1',
     utterances: ['question 1'],
     tags: [],
@@ -31,7 +31,7 @@ const mockFaqs: FaqDefinitionExtended[] = [
   {
     id: '2',
     language: 'fr',
-    applicationId: '1',
+    applicationName: '1',
     title: 'faq 2',
     utterances: ['question'],
     tags: [],
@@ -41,7 +41,7 @@ const mockFaqs: FaqDefinitionExtended[] = [
   {
     id: '3',
     language: 'fr',
-    applicationId: '1',
+    applicationName: '1',
     title: 'faq 3',
     description: 'description',
     utterances: ['question 1', 'question 2'],
@@ -52,7 +52,7 @@ const mockFaqs: FaqDefinitionExtended[] = [
   {
     id: '4',
     language: 'fr',
-    applicationId: '1',
+    applicationName: '1',
     title: 'faq 4',
     utterances: ['question 1'],
     tags: ['tag'],

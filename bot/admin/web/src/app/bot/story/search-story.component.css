@@ -68,4 +68,66 @@
 .toggle {
   position: relative;
   top: 10px;
+  margin-right:1em;
+}
+
+
+.mat-table {
+  width: 100%;
+}
+
+.mat-row {
+  width: 100%;
+  min-height: 12px;
+}
+
+.div-title {
+  text-align: center;
+  font-size: medium;
+  font-weight: bold;
+  padding: 4px;
+}
+
+.mat-header-cell {
+  min-height: 2rem;
+  color: #222b45;
+  font-family: Open Sans, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: bold;
+  padding: 0.85rem 1.3rem;
+  border: 2px solid #f7f9fc;
+  height: fit-content;
+}
+
+.mat-header-row {
+  width: 100%;
+  min-height: 2rem;
+  border-bottom-width: 0px;
+}
+
+.mat-cell {
+  padding: 0.85rem 1.3rem;
+  border: 2px solid #f7f9fc;
+  color: #222b45;
+  font-family: Open Sans, sans-serif;
+  font-size: 0.9375rem;
+  word-wrap: anywhere;
+  min-height: 2rem;
+  align-self: stretch;
+}
+
+.mat-row {
+  width: 100%;
+  min-height: 2rem;
+  border-bottom-width: 0px;
+}
+
+.mat-cell:last-of-type {
+  padding-left: 0px;
+  max-width: 160px;
+}
+
+.mat-header-cell:last-of-type {
+  padding-left: 0px;
+  max-width: 160px;
 }

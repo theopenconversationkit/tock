@@ -78,19 +78,11 @@ import ai.tock.shared.sumByLong
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.UpdateOneModel
 import com.mongodb.client.model.UpdateOptions
-import java.time.DayOfWeek
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit.DAYS
-import java.time.temporal.TemporalAccessor
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import kotlin.reflect.KProperty
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
+import org.litote.kmongo.EMPTY_BSON
 import org.litote.kmongo.Id
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
@@ -122,6 +114,15 @@ import org.litote.kmongo.setTo
 import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
+import java.time.DayOfWeek
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.TemporalAccessor
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.reflect.KProperty
 
 /**
  *
@@ -176,7 +177,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         ConnectorType,
                         ActionType,
                         HourOfDay,
-                        indexOptions = IndexOptions().name("index")
+                        indexOptions = IndexOptions().name("flow_stats_date_index")
                     )
                 } catch (e: Exception) {
                     logger.error(e)
@@ -215,32 +216,52 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     private val currentProcessedLevelCol =
         MongoBotConfiguration.database.getCollection<DialogFlowConfiguration>("flow_configuration")
 
-    internal const val currentProcessedLevel = 2
+    internal const val currentProcessedLevel = 3
 
     private val crawlStats: Boolean = booleanProperty("tock_dialog_flow_crawl_stats", true)
 
+    private fun schedule(delay: Long, unit: TimeUnit, runnable: Runnable) =
+        Executors.newSingleThreadScheduledExecutor().schedule(runnable, delay, unit)
+
+    private fun scheduleWithFixedDelay(initialDelay: Long, delay: Long, unit: TimeUnit, runnable: Runnable) =
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(runnable, initialDelay, delay, unit)
+
+
     override fun initFlowStatCrawl() {
         if (crawlStats) {
-            val conf = currentProcessedLevelCol.findOneById(defaultConfKey)
-            if(conf?.currentProcessedLevel != currentProcessedLevel) {
-                flowTransitionStatsDateAggregationCol.deleteMany()
-                flowTransitionStatsDialogAggregationCol.deleteMany()
-                flowTransitionStatsUserAggregationCol.deleteMany()
-                currentProcessedLevelCol.save(DialogFlowConfiguration(defaultConfKey, currentProcessedLevel))
-            }
-            val executor = Executors.newSingleThreadExecutor()
-            Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(
-                {
+            schedule(10, TimeUnit.SECONDS) {
+                try {
+                    val conf = currentProcessedLevelCol.findOneById(defaultConfKey)
+                    if (conf?.currentProcessedLevel != currentProcessedLevel) {
+                        logger.info { "update flow stats to level $currentProcessedLevel" }
+                        logger.info("cleanup stats dates")
+                        flowTransitionStatsDateAggregationCol.deleteMany()
+                        logger.info("cleanup stats dialogs")
+                        flowTransitionStatsDialogAggregationCol.deleteMany()
+                        logger.info("cleanup stats users")
+                        flowTransitionStatsUserAggregationCol.deleteMany()
+                        logger.info("reset processed level")
+                        flowTransitionStatsCol.updateMany(EMPTY_BSON, set(ProcessedLevel setTo 0))
+                        logger.info("persist flow configuration")
+                        currentProcessedLevelCol.save(DialogFlowConfiguration(defaultConfKey, currentProcessedLevel))
+                        logger.info { "end update flow stats to level $currentProcessedLevel" }
+                    }
+                } catch (e: Throwable) {
+                    initFlowStatCrawl()
+                    logger.error(e)
+                    return@schedule
+                }
+                scheduleWithFixedDelay(1, 1, TimeUnit.MINUTES) {
                     try {
                         var found = true
                         var minDate: LocalDateTime? = null
                         val applicationsMap =
-                            mutableMapOf<Id<BotApplicationConfiguration>, BotApplicationConfiguration>()
-                        val nextStateMap = mutableMapOf<Id<DialogFlowStateCol>, DialogFlowStateCol>()
+                            mutableMapOf<Id<BotApplicationConfiguration>, BotApplicationConfiguration?>()
+                        val nextStateMap = mutableMapOf<Id<DialogFlowStateCol>, DialogFlowStateCol?>()
                         val storyMap = mutableMapOf<Triple<String, String, String>, StoryDefinitionConfiguration?>()
                         while (found) {
                             val transitionsMap =
-                                mutableMapOf<Id<DialogFlowStateTransitionCol>, DialogFlowStateTransitionCol>()
+                                mutableMapOf<Id<DialogFlowStateTransitionCol>, DialogFlowStateTransitionCol?>()
                             found = false
                             flowTransitionStatsCol
                                 .find(ProcessedLevel ne currentProcessedLevel)
@@ -252,18 +273,24 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                                         val dateStats: List<UpdateOneModel<DialogFlowStateTransitionStatDateAggregationCol>> =
                                             mapNotNull {
                                                 try {
+                                                    val date = it.date.atZone(defaultZoneId).toLocalDateTime()
+                                                    val truncatedDate = date.truncatedTo(DAYS)
+                                                    minDate =
+                                                        minDate?.let { d -> minOf(d, truncatedDate) }
+                                                            ?: truncatedDate
+
                                                     val transition = transitionsMap.getOrPut(it.transitionId) {
                                                         flowTransitionCol.findOneById(it.transitionId)
-                                                            ?: error("no transition for id ${it.transitionId}")
-                                                    }
+                                                    } ?: error("no transition for id ${it.transitionId}")
+
                                                     val configuration = applicationsMap.getOrPut(it.applicationId) {
                                                         BotApplicationConfigurationMongoDAO.getConfigurationById(it.applicationId)
-                                                            ?: error("no application for id ${it.applicationId}")
-                                                    }
+                                                    } ?: error("no application for id ${it.applicationId}")
+
                                                     val nextState = nextStateMap.getOrPut(transition.nextStateId) {
                                                         flowStateCol.findOneById(transition.nextStateId)
-                                                            ?: error("no state for id ${transition.nextStateId}")
-                                                    }
+                                                    } ?: error("no state for id ${transition.nextStateId}")
+
                                                     val story = storyMap.getOrPut(
                                                         Triple(
                                                             configuration.namespace,
@@ -280,10 +307,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                                                                 nextState.storyDefinitionId.toId()
                                                             )
                                                     }
-                                                    val date = it.date.atZone(defaultZoneId).toLocalDateTime()
-                                                    val truncatedDate = date.truncatedTo(DAYS)
-                                                    minDate =
-                                                        minDate?.let { d -> minOf(d, truncatedDate) } ?: truncatedDate
+
                                                     UpdateOneModel(
                                                         and(
                                                             ApplicationId eq it.applicationId,
@@ -346,10 +370,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                                         }
                                         logger.debug { "stats calculated" }
 
-                                        executor.submit {
-                                            if (dateStats.isNotEmpty()) {
-                                                flowTransitionStatsDateAggregationCol.bulkWrite(dateStats)
-                                            }
+                                        if (dateStats.isNotEmpty()) {
+                                            flowTransitionStatsDateAggregationCol.bulkWrite(dateStats)
                                         }
 
                                         if (stats.isNotEmpty()) {
@@ -404,11 +426,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     } catch (e: Throwable) {
                         logger.error(e)
                     }
-                },
-                1,
-                1,
-                TimeUnit.MINUTES
-            )
+                }
+            }
         }
     }
 

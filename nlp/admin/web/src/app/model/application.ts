@@ -300,3 +300,47 @@ export class UserNamespace {
     return json ? json.map(UserNamespace.fromJSON) : [];
   }
 }
+
+export class NamespaceConfiguration {
+
+  constructor(
+    public namespace: string,
+    public defaultSharingConfiguration: NamespaceSharingConfiguration,
+    public namespaceImportConfiguration: Map<string, NamespaceSharingConfiguration>
+  ) {}
+
+  static fromJSON(json?: any): NamespaceConfiguration {
+    if(!json || !json.namespace) {
+      return null;
+    }
+    const value = Object.create(NamespaceConfiguration.prototype);
+
+    const result = Object.assign(value, json, {
+      namespace: json.namespace,
+      defaultSharingConfiguration: NamespaceSharingConfiguration.fromJSON(json.defaultSharingConfiguration),
+      namespaceImportConfiguration: JsonUtils.jsonToMap(json.namespaceImportConfiguration)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): NamespaceConfiguration[] {
+    return json ? json.map(NamespaceConfiguration.fromJSON) : [];
+  }
+}
+
+export class NamespaceSharingConfiguration {
+
+  constructor(
+    public model: boolean = false,
+    public stories: boolean = false
+  ) {}
+
+  static fromJSON(json?: any): NamespaceSharingConfiguration {
+    const value = Object.create(NamespaceSharingConfiguration.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+}

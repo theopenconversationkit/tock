@@ -28,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonSubTypes(
     JsonSubTypes.Type(value = WhatsAppSendBotTextMessage::class, name = "text"),
     JsonSubTypes.Type(value = WhatsAppSendBotImageMessage::class, name = "image"),
-    JsonSubTypes.Type(value = WhatsAppSendBotInteractiveMessage::class, name = "template")
+    JsonSubTypes.Type(value = WhatsAppSendBotInteractiveMessage::class, name = "template"),
+    JsonSubTypes.Type(value = WhatsAppSendBotMessageInteractiveMessage::class, name = "interactive")
 )
 abstract class WhatsAppSendBotMessage(val type: WhatsAppBotMessageType) {
 

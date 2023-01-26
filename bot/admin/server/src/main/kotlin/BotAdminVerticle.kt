@@ -23,6 +23,7 @@ import ai.tock.bot.admin.BotAdminService.getBotConfigurationsByNamespaceAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.model.BotAdminConfiguration
 import ai.tock.bot.admin.model.BotConnectorConfiguration
@@ -57,6 +58,7 @@ import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettingsQuery
+import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
@@ -66,6 +68,7 @@ import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.faqBotUser
 import ai.tock.shared.security.TockUserRole.faqNlpUser
+import ai.tock.shared.vertx.ServerStatus
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
@@ -103,15 +106,21 @@ open class BotAdminVerticle : AdminVerticle() {
     override fun protectedPaths(): Set<String> = setOf(rootPath)
 
     override fun configureServices() {
+        vertx.eventBus().consumer<Boolean>(ServerStatus.SERVER_STARTED) {
+            if (it.body() && booleanProperty(Properties.FAQ_MIGRATION_ENABLED, false)) {
+                FaqAdminService.makeMigration()
+            }
+        }
         initTranslator()
         dialogFlowDAO.initFlowStatCrawl()
+
         super.configureServices()
     }
 
     private fun <R> measureTimeMillis(context: RoutingContext, function: () -> R): R {
         val before = System.currentTimeMillis()
         val result = function()
-        logger.debug { "${context.normalisedPath()} took ${System.currentTimeMillis() - before} ms." }
+        logger.debug { "${context.normalizedPath()} took ${System.currentTimeMillis() - before} ms." }
         return result
     }
 
@@ -778,7 +787,7 @@ open class BotAdminVerticle : AdminVerticle() {
             if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
                 badRequest("Missing argument or trouble in query: $query")
             } else {
-                val applicationDefinition = front.getApplicationById(query.applicationId)
+                val applicationDefinition = front.getApplicationByNamespaceAndName(namespace = context.organization, name = query.applicationName)
                 if (context.organization == applicationDefinition?.namespace) {
                     return@blockingJsonPost FaqAdminService.saveFAQ(query, context.userLogin, applicationDefinition)
                 } else {

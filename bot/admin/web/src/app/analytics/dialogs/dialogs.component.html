@@ -96,7 +96,7 @@
       *ngIf="total !== 0"
       style="margin: 20px"
     >
-      <span *ngIf="total > 10">Estimated</span> Dialogs : {{ total }}
+      Dialogs : {{ formattedTotal() }}
       <button
         mat-button
         (click)="refresh()"

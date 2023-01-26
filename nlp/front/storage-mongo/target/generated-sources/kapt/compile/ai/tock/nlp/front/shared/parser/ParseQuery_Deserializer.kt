@@ -36,6 +36,8 @@ internal class ParseQuery_Deserializer : JsonDeserializer<ParseQuery>(), Jackson
             var _state_set : Boolean = false
             var _intentsSubset_: MutableSet<IntentQualifier>? = null
             var _intentsSubset_set : Boolean = false
+            var _configuration_: String? = null
+            var _configuration_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -76,6 +78,11 @@ internal class ParseQuery_Deserializer : JsonDeserializer<ParseQuery>(), Jackson
                              else p.readValueAs(_intentsSubset__reference);
                             _intentsSubset_set = true
                             }
+                    "configuration" -> {
+                            _configuration_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _configuration_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -85,10 +92,10 @@ internal class ParseQuery_Deserializer : JsonDeserializer<ParseQuery>(), Jackson
                 _token_ = currentToken
                         } 
             return if(_queries_set && _namespace_set && _applicationName_set && _context_set &&
-                    _state_set && _intentsSubset_set)
+                    _state_set && _intentsSubset_set && _configuration_set)
                     ParseQuery(queries = _queries_!!, namespace = _namespace_!!, applicationName =
                             _applicationName_!!, context = _context_!!, state = _state_!!,
-                            intentsSubset = _intentsSubset_!!)
+                            intentsSubset = _intentsSubset_!!, configuration = _configuration_)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_queries_set)
@@ -102,7 +109,9 @@ internal class ParseQuery_Deserializer : JsonDeserializer<ParseQuery>(), Jackson
                     if(_state_set)
                     map[parameters.getValue("state")] = _state_
                     if(_intentsSubset_set)
-                    map[parameters.getValue("intentsSubset")] = _intentsSubset_ 
+                    map[parameters.getValue("intentsSubset")] = _intentsSubset_
+                    if(_configuration_set)
+                    map[parameters.getValue("configuration")] = _configuration_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -119,7 +128,8 @@ internal class ParseQuery_Deserializer : JsonDeserializer<ParseQuery>(), Jackson
                 primaryConstructor.findParameterByName("applicationName")!!, "context" to
                 primaryConstructor.findParameterByName("context")!!, "state" to
                 primaryConstructor.findParameterByName("state")!!, "intentsSubset" to
-                primaryConstructor.findParameterByName("intentsSubset")!!) }
+                primaryConstructor.findParameterByName("intentsSubset")!!, "configuration" to
+                primaryConstructor.findParameterByName("configuration")!!) }
 
         private val _queries__reference: TypeReference<List<String>> = object :
                 TypeReference<List<String>>() {}

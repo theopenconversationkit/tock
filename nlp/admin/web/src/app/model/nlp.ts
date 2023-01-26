@@ -396,7 +396,8 @@ export class Sentence extends EntityContainer {
     public forReview: boolean,
     public reviewComment: string,
     public qualifier: string,
-    public key?: string
+    public key?: string,
+    public configuration? : string
   ) {
     super();
   }
@@ -822,7 +823,8 @@ export class SearchQuery extends PaginatedQuery {
     public user?: string,
     public allButUser?: string,
     public maxIntentProbability: number = 1,
-    public minIntentProbability: number = 0
+    public minIntentProbability: number = 0,
+    public configuration?: string
   ) {
     super(namespace, applicationName, language, start, size, searchMark, sort);
   }

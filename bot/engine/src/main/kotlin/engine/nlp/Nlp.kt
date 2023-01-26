@@ -49,9 +49,9 @@ import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.withNamespace
+import mu.KotlinLogging
 import java.io.InputStream
 import java.time.ZonedDateTime
-import mu.KotlinLogging
 
 /**
  * [NlpController] default implementation.
@@ -258,7 +258,8 @@ internal class Nlp : NlpController {
                 NlpQueryState(
                     dialog.state.nextActionState?.states
                         ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
-                )
+                ),
+                configuration = connector.botConfiguration.applicationId
             ).run {
                 var query = this
                 BotRepository.forEachNlpListener {

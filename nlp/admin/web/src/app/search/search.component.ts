@@ -55,6 +55,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   update: SentencesUpdate = new SentencesUpdate();
   targetLocale: string;
   users: string[];
+  configurations : string[];
 
   private firstSearch = false;
   @ViewChild(SentencesScrollComponent) scroll;
@@ -80,6 +81,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       }
       this.state.currentIntents.pipe(takeUntil(this.destroy)).subscribe((i) => {
         this.nlp.findUsers(this.state.currentApplication).subscribe((u) => (this.users = u));
+        this.nlp.findConfigurations(this.state.currentApplication).subscribe((res) => (this.configurations = res));
         const search = this.filter.search;
         this.filter = new SentenceFilter();
         this.filter.search = search;

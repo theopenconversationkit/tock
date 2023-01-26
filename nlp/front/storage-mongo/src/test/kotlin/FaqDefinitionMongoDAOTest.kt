@@ -51,7 +51,8 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val classifiedSentencesDao: ClassifiedSentenceDAO get() = injector.provide()
 
     private val applicationId = "idApplication".toId<ApplicationDefinition>()
-    private val applicationId2 = "idApplication2".toId<ApplicationDefinition>()
+    private val botId = "botId"
+    private val botId2 = "botId2"
     private val intentId = "idIntent".toId<IntentDefinition>()
     private val intentId2 = "idIntent2".toId<IntentDefinition>()
     private val intentId3 = "idIntent3".toId<IntentDefinition>()
@@ -71,9 +72,9 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val faqCategory = "faq"
     private val userLogin: UserLogin = "whateverLogin"
 
-    private val faqDefinition = FaqDefinition(faqId, applicationId, intentId, i18nId, tagList, true, now, now)
-    private val faq2Definition = FaqDefinition(faqId2, applicationId, intentId2, i18nId2, tagList, true, now, now)
-    private val faq3Definition = FaqDefinition(faqId3, applicationId2, intentId3, i18nId3, tagList, true, now, now)
+    private val faqDefinition = FaqDefinition(faqId, botId, intentId, i18nId, tagList, true, now, now)
+    private val faq2Definition = FaqDefinition(faqId2,  botId, intentId2, i18nId2, tagList, true, now, now)
+    private val faq3Definition = FaqDefinition(faqId3,botId2, intentId3, i18nId3, tagList, true, now, now)
 
     private val col: MongoCollection<FaqDefinition> by lazy { FaqDefinitionMongoDAO.col }
 
@@ -105,7 +106,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         faqDefinitionDao.save(faqDefinition)
         assertEquals(
             expected = faqDefinition,
-            actual = faqDefinitionDao.getFaqDefinitionByApplicationId(applicationId).first(),
+            actual = faqDefinitionDao.getFaqDefinitionByBotId(botId).first(),
             message = "There should be something returned with an applicationId"
         )
         assertEquals(
@@ -141,12 +142,12 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         assertEquals(
             expected = 2,
-            actual = faqDefinitionDao.getFaqDefinitionByApplicationId(applicationId).size,
+            actual = faqDefinitionDao.getFaqDefinitionByBotId(botId).size,
             message = "There should be something returned with an applicationId"
         )
         assertEquals(
             expected = 1,
-            actual = faqDefinitionDao.getFaqDefinitionByApplicationId(applicationId2).size,
+            actual = faqDefinitionDao.getFaqDefinitionByBotId(botId2).size,
             message = "There should be something returned with an applicationId"
         )
     }
@@ -191,7 +192,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val otherFaqDefinition =
             FaqDefinition(
                 faqId2,
-                applicationId,
+                botId,
                 intentId2,
                 i18nId2,
                 tagList2,
@@ -208,7 +209,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val someOtherFaqDefinition =
             FaqDefinition(
                 faqId3,
-                applicationId,
+                botId,
                 intentId3,
                 i18nId3,
                 tagList3,
@@ -227,21 +228,21 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
     @Test
     fun `Delete faq by application id`() {
-        val appId1: Id<ApplicationDefinition> = "appID1".toId()
-        val appId2: Id<ApplicationDefinition> = "appID2".toId()
+        val botId1 = "appID1"
+        val botId2 = "appID2"
 
-        faqDefinitionDao.save(faqDefinition.copy(applicationId = appId1))
-        faqDefinitionDao.save(faq2Definition.copy(applicationId = appId1))
-        faqDefinitionDao.save(faq3Definition.copy(applicationId = appId2))
+        faqDefinitionDao.save(faqDefinition.copy(botId = botId1))
+        faqDefinitionDao.save(faq2Definition.copy(botId = botId1))
+        faqDefinitionDao.save(faq3Definition.copy(botId = botId2))
 
         assertEquals(3, col.countDocuments())
 
-        assertEquals(2, faqDefinitionDao.getFaqDefinitionByApplicationId(appId1).size)
+        assertEquals(2, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
 
-        faqDefinitionDao.deleteFaqDefinitionByApplicationId(appId1)
+        faqDefinitionDao.deleteFaqDefinitionByBotId(botId1)
 
-        assertEquals(0, faqDefinitionDao.getFaqDefinitionByApplicationId(appId1).size)
-        assertEquals(1, faqDefinitionDao.getFaqDefinitionByApplicationId(appId2).size)
+        assertEquals(0, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
+        assertEquals(1, faqDefinitionDao.getFaqDefinitionByBotId(botId2).size)
     }
 
     @Test
@@ -267,7 +268,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val secondFaqDefinition =
             FaqDefinition(
                 faqId3,
-                applicationId,
+                botId,
                 intentId3,
                 i18nId,
                 otherTagList,
@@ -289,7 +290,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         intentDefinitionDao.save(secondIntentWithIntentId3)
         faqDefinitionDao.save(secondFaqDefinition)
 
-        val tags = faqDefinitionDao.getTags(applicationId.toString())
+        val tags = faqDefinitionDao.getTags(botId)
         assertEquals(tags, otherTagList + faqDefinition.tags)
     }
 
@@ -346,7 +347,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            applicationId.toString(),
+            botId,
             null
         )
 
@@ -433,7 +434,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //filtering on faqName2
             createFaqQuery(null, faqName2),
-            applicationId.toString(),
+            botId,
             null
         )
 
@@ -510,7 +511,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            applicationId.toString(),
+            botId,
             null
         )
 
@@ -556,7 +557,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            applicationId.toString(),
+            botId,
             null
         )
 
@@ -610,7 +611,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     ): FaqDefinition {
 
         val faqDefinition =
-            FaqDefinition(faqId, applicationId, intentId, i18nId, tagList, enabled, instant, instant)
+            FaqDefinition(faqId,  botId, intentId, i18nId, tagList, enabled, instant, instant)
 
         val createdIntent = IntentDefinition(
             faqName,

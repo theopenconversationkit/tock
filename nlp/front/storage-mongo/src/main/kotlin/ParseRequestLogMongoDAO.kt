@@ -46,6 +46,7 @@ import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Dura
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.EntitiesProbability
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.IntentProbability
 import ai.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion._id
+import ai.tock.shared.defaultCountOptions
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
@@ -314,7 +315,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,
                     if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId
                 )
-            val count = col.countDocuments(baseFilter)
+            val count = col.countDocuments(baseFilter, defaultCountOptions)
             return if (count > start) {
                 val list = col.find(baseFilter)
                     .descendingSort(Date)

@@ -221,6 +221,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                     }
                 }
             val appId = app._id
+            val botId = app.name
 
             val intentsToCreate = mutableListOf<IntentDefinition>()
             val intentsIdsMap = dump.intents.map { i ->
@@ -271,7 +272,8 @@ internal object ApplicationCodecService : ApplicationCodec {
                                 appId,
                                 s.language,
                                 search = s.text,
-                                onlyExactMatch = true
+                                onlyExactMatch = true,
+                                configuration = null
                             )
                     ).total == 0L
                 ) {
@@ -297,7 +299,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                 if(faq == null) {
                     val newFaq = it.copy(
                         _id = newId(),
-                        applicationId = appId,
+                        botId =  botId,
                         intentId = intentDB._id
                     )
                     report.add(newFaq)

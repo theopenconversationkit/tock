@@ -16,8 +16,6 @@
 
 package ai.tock.bot.admin.model
 
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
-import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
@@ -25,7 +23,7 @@ data class FaqDefinitionRequest(
     val id: String?,
     val intentId: String?,
     val language: Locale,
-    val applicationId: Id<ApplicationDefinition>,
+    val applicationName: String,
     val creationDate: Instant?,
     val updateDate: Instant?,
     // storyName
