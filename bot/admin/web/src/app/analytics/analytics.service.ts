@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { StateService } from '../core-nlp/state.service';
 import { UserAnalyticsQueryResult, UserReportQueryResult, UserSearchQuery } from './users/users';
@@ -26,14 +26,12 @@ import { ApplicationDialogFlow, DialogFlowRequest } from './flow/flow';
 import { UserAnalyticsPreferences } from './preferences/UserAnalyticsPreferences';
 
 @Injectable()
-export class AnalyticsService implements OnDestroy {
+export class AnalyticsService {
   userAnalyticsSettings: string;
 
   constructor(private rest: RestService, private state: StateService) {
     this.userAnalyticsSettings = localStorage.getItem('_tock_analytics_settings');
   }
-
-  ngOnDestroy(): void {}
 
   users(query: UserSearchQuery): Observable<UserReportQueryResult> {
     return this.rest.post('/users/search', query, UserReportQueryResult.fromJSON);

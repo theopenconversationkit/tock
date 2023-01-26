@@ -48,7 +48,7 @@
           <nb-icon icon="download"></nb-icon>
         </button>
         <button
-          *ngIf="type != 'PieChart' && isMultiChart == true"
+          *ngIf="type !== 'PieChart' && isMultiChart === true"
           nbButton
           ghost
           status="info"
@@ -60,7 +60,7 @@
           <nb-icon icon="pie-chart-outline"></nb-icon>
         </button>
         <button
-          *ngIf="type == 'PieChart' && isMultiChart == true"
+          *ngIf="type === 'PieChart' && isMultiChart === true"
           nbButton
           ghost
           status="info"

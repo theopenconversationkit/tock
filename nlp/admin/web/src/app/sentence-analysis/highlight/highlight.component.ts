@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  HostListener,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChange,
-  ViewChild
-} from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, Input, OnChanges, OnInit, SimpleChange, ViewChild } from '@angular/core';
 import { ClassifiedEntity, EntityContainer, EntityDefinition, EntityType, EntityWithSubEntities, Intent, Sentence } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { StateService } from '../../core-nlp/state.service';
@@ -42,7 +31,7 @@ import { NbDialogService } from '@nebular/theme';
   templateUrl: 'highlight.component.html',
   styleUrls: ['highlight.component.css']
 })
-export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
+export class HighlightComponent implements OnInit, OnChanges {
   @Input() sentence: EntityContainer;
   @Input() readOnly: boolean = false;
   @Input() fontSize: string = 'inherit';
@@ -117,8 +106,6 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   ngOnChanges(changes: { [key: string]: SimpleChange }): any {
     this.rebuild();
   }
-
-  ngAfterViewInit(): void {}
 
   private handleParentSelect() {
     if (this.sentence instanceof EntityWithSubEntities) {

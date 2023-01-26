@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
+
 import { StateService } from '../../core-nlp/state.service';
 import { entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole } from '../../model/nlp';
 import { EntityProvider } from '../highlight/highlight.component';
@@ -25,7 +26,7 @@ import { EntityProvider } from '../highlight/highlight.component';
   templateUrl: 'create-entity-dialog.component.html',
   styleUrls: ['create-entity-dialog.component.css']
 })
-export class CreateEntityDialogComponent implements OnInit {
+export class CreateEntityDialogComponent {
   @Input() entityProvider: EntityProvider;
   entityType: EntityType;
   type: string;
@@ -39,8 +40,6 @@ export class CreateEntityDialogComponent implements OnInit {
   constructor(public dialogRef: NbDialogRef<CreateEntityDialogComponent>, private state: StateService) {
     this.state.entityTypesSortedByName().subscribe((entities) => (this.entityTypes = entities));
   }
-
-  ngOnInit() {}
 
   onSelect(entityType: EntityType) {
     this.entityType = entityType;

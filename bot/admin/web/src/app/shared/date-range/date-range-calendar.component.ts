@@ -19,7 +19,7 @@ import { NbCalendarRange, NbDateService, NbPopoverDirective } from '@nebular/the
 import { StateService } from 'src/app/core-nlp/state.service';
 
 @Component({
-  selector: 'date-range-calendar',
+  selector: 'tock-date-range-calendar',
   templateUrl: './date-range-calendar.component.html',
   styleUrls: ['./date-range-calendar.component.css']
 })

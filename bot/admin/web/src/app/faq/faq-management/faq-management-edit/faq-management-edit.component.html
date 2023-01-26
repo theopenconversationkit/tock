@@ -29,7 +29,7 @@
           badgePosition="top right"
           badgeStatus="danger"
           [badgeDot]="isSubmitted && (title.errors || description.errors || intentNameExistInApp)"
-          [active]="currentTab == faqTabs.INFO"
+          [active]="currentTab === faqTabs.INFO"
         >
         </nb-tab>
         <nb-tab
@@ -37,7 +37,7 @@
           badgePosition="top right"
           badgeStatus="danger"
           [badgeDot]="isSubmitted && utterances.errors"
-          [active]="currentTab == faqTabs.QUESTION"
+          [active]="currentTab === faqTabs.QUESTION"
         >
         </nb-tab>
         <nb-tab
@@ -45,12 +45,12 @@
           badgePosition="top right"
           badgeStatus="danger"
           [badgeDot]="isSubmitted && answer.errors"
-          [active]="currentTab == faqTabs.ANSWER"
+          [active]="currentTab === faqTabs.ANSWER"
         >
         </nb-tab>
       </nb-tabset>
 
-      <div *ngIf="currentTab == faqTabs.INFO">
+      <div *ngIf="currentTab === faqTabs.INFO">
         <tock-form-control
           label="Name"
           name="name"
@@ -60,7 +60,7 @@
           data-testid="name"
         >
           <input
-            autofocusElement
+            tockAutofocusElement
             nbInput
             formControlName="title"
             id="name"
@@ -139,7 +139,7 @@
         </tock-form-control>
       </div>
 
-      <div *ngIf="currentTab == 'question'">
+      <div *ngIf="currentTab === 'question'">
         <tock-form-control
           label="Question"
           name="question"
@@ -151,7 +151,7 @@
           <div class="d-flex">
             <input
               #addUtteranceInput
-              autofocusElement
+              tockAutofocusElement
               nbInput
               fullWidth
               id="question"
@@ -280,7 +280,7 @@
         </div>
       </div>
 
-      <div *ngIf="currentTab == 'answer'">
+      <div *ngIf="currentTab === 'answer'">
         <tock-form-control
           label="Answer"
           name="answer"
@@ -290,7 +290,7 @@
           data-testid="answer"
         >
           <textarea
-            autofocusElement
+            tockAutofocusElement
             nbInput
             formControlName="answer"
             fullWidth

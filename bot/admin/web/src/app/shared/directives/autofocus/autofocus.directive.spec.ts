@@ -8,7 +8,7 @@ import { AutofocusDirective } from './autofocus.directive';
   template: `<div>
     <input
       id="focusElement"
-      autofocusElement
+      tockAutofocusElement
     />
   </div>`
 })

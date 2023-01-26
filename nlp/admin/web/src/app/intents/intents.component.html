@@ -19,12 +19,12 @@
     The <span class="default_category">default</span> intent category is expanded by default.
   </nb-card-header>
   <nb-card-body>
-    <div *ngIf="!nodes || nodes.length == 0">
+    <div *ngIf="!nodes || nodes.length === 0">
       <h4 class="title">No Intent found</h4>
       <p>To create Intents, start from <em>New Sentence</em> or <em>New Story</em> in Tock Studio, or the <em>API</em>.</p>
     </div>
     <table
-      *ngIf="nodes && nodes.length != 0"
+      *ngIf="nodes && nodes.length !== 0"
       [nbTreeGrid]="nodes"
     >
       <tr
@@ -144,8 +144,8 @@
         >
           <div *ngIf="!row.data.expandable">
             <button
-              *ngIf = "!state.isOtherNamespaceIntent(row.data)"
-              [disabled]="selectedIntent == row.data"
+              *ngIf="!state.isOtherNamespaceIntent(row.data)"
+              [disabled]="selectedIntent === row.data"
               nbButton
               size="small"
               ghost

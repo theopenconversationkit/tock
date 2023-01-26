@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+
 import { SentenceStatus } from '../model/nlp';
 import { SentenceFilter } from '../sentences-scroll/sentences-scroll.component';
 
@@ -23,10 +24,8 @@ import { SentenceFilter } from '../sentences-scroll/sentences-scroll.component';
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.css']
 })
-export class InboxComponent implements OnInit {
+export class InboxComponent {
   filter: SentenceFilter = new SentenceFilter(null, null, [SentenceStatus.inbox]);
 
   constructor() {}
-
-  ngOnInit() {}
 }

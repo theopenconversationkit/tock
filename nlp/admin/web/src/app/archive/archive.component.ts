@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+
 import { SentenceFilter } from '../sentences-scroll/sentences-scroll.component';
 import { Intent } from '../model/nlp';
 import { SentenceStatus } from '../model/nlp';
@@ -24,10 +25,8 @@ import { SentenceStatus } from '../model/nlp';
   templateUrl: './archive.component.html',
   styleUrls: ['./archive.component.css']
 })
-export class ArchiveComponent implements OnInit {
+export class ArchiveComponent {
   filter: SentenceFilter = new SentenceFilter(null, Intent.unknown, [SentenceStatus.validated, SentenceStatus.model]);
 
   constructor() {}
-
-  ngOnInit() {}
 }

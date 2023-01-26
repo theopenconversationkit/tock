@@ -22,7 +22,7 @@ import { IntentName } from '../model/story';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 
 @Component({
-  selector: 'select-entity-dialog',
+  selector: 'tock-select-entity-dialog',
   templateUrl: './select-entity-dialog.component.html',
   styleUrls: ['./select-entity-dialog.component.css']
 })

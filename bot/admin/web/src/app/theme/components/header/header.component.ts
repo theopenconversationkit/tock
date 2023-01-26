@@ -20,13 +20,11 @@ import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme'
 import { StateService } from '../../../core-nlp/state.service';
 import { AuthService } from '../../../core-nlp/auth/auth.service';
 import { SettingsService } from '../../../core-nlp/settings.service';
-import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { AnalyticsService } from '../../../analytics/analytics.service';
 import { APP_BASE_HREF } from '@angular/common';
 
 @Component({
-  selector: 'ngx-header',
+  selector: 'tock-header',
   styleUrls: ['./header.component.scss'],
   templateUrl: './header.component.html'
 })

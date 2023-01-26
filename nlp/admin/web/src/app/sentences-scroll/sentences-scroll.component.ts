@@ -15,7 +15,7 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { PaginatedResult, SearchQuery, Sentence, SentenceStatus, SentencesTextQuery, UpdateSentencesQuery } from '../model/nlp';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { StateService } from '../core-nlp/state.service';
@@ -41,7 +41,7 @@ interface TreeNode<T> {
   styleUrls: ['./sentences-scroll.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class SentencesScrollComponent extends ScrollComponent<Sentence> implements AfterViewInit {
+export class SentencesScrollComponent extends ScrollComponent<Sentence> implements OnInit, AfterViewInit {
   UserRole = UserRole;
 
   @Input() filter: SentenceFilter;

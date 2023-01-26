@@ -15,14 +15,14 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DataSource } from '@angular/cdk/collections';
+
 import { QualityService } from '../../quality-nlp/quality.service';
 import { IntentQA, LogStatsQuery } from '../../model/nlp';
 import { StateService } from '../../core-nlp/state.service';
-import { Observable, of, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'intent-qa',
+  selector: 'tock-intent-qa',
   templateUrl: './intent-qa.component.html',
   styleUrls: ['./intent-qa.component.css']
 })

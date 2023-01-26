@@ -15,7 +15,7 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import {
   AnswerConfigurationType,
   BotConfiguredAnswer,
@@ -44,7 +44,7 @@ import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/co
   templateUrl: './story.component.html',
   styleUrls: ['./story.component.css']
 })
-export class StoryComponent implements OnInit, OnChanges {
+export class StoryComponent implements OnChanges {
   @Input()
   story: StoryDefinitionConfiguration = null;
 
@@ -76,7 +76,7 @@ export class StoryComponent implements OnInit, OnChanges {
   displayCount = true;
 
   @Output()
-  close = new EventEmitter<boolean>();
+  closeStory = new EventEmitter<boolean>();
 
   isSwitchingToManagedStory = false;
 
@@ -87,8 +87,6 @@ export class StoryComponent implements OnInit, OnChanges {
     private matDialog: MatDialog,
     private dialogService: NbDialogService
   ) {}
-
-  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.storyNode) {
@@ -241,7 +239,7 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   submitClose() {
-    this.close.emit(true);
+    this.closeStory.emit(true);
   }
 
   manageStory() {
