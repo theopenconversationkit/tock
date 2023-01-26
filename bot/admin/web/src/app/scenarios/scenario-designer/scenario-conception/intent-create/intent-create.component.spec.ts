@@ -6,6 +6,7 @@ import { TestingModule } from '@tock/testing';
 import { EMPTY } from 'rxjs';
 
 import { StateService } from '../../../../core-nlp/state.service';
+import { AutocompleteInputComponent } from '../../../../shared/components';
 import { ScenarioVersion, ScenarioItemFrom, SCENARIO_MODE, SCENARIO_STATE } from '../../../models';
 import { IntentCreateComponent } from './intent-create.component';
 
@@ -52,7 +53,7 @@ describe('IntentCreateComponent', () => {
   let fixture: ComponentFixture<IntentCreateComponent>;
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [IntentCreateComponent],
+      declarations: [IntentCreateComponent, AutocompleteInputComponent],
       providers: [
         {
           provide: NbDialogRef,

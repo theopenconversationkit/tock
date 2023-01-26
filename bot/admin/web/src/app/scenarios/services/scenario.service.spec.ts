@@ -2,7 +2,7 @@ import { DatePipe, Location } from '@angular/common';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import { ApplicationService } from '../../core-nlp/applications.service';
@@ -13,6 +13,7 @@ import { ScenarioApiService } from './scenario.api.service';
 import { ScenarioService } from './scenario.service';
 import { StateService } from '../../core-nlp/state.service';
 import { NlpService } from '../../nlp-tabs/nlp.service';
+import { BotConfigurationService } from '../../core/bot-configuration.service';
 
 const mockScenarios: ScenarioGroupExtended[] = [
   {
@@ -234,12 +235,15 @@ describe('ScenarioService', () => {
         },
         {
           provide: StateService,
-          useValue: {}
+          useValue: {
+            configurationChange: new Subject()
+          }
         },
         {
           provide: NlpService,
           useValue: {}
-        }
+        },
+        { provide: BotConfigurationService, useValue: {} }
       ]
     });
     service = TestBed.inject(ScenarioService);

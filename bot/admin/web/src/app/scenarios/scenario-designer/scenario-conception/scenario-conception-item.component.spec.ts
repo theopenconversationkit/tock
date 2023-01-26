@@ -20,6 +20,7 @@ import { ScenarioDesignerService } from '../scenario-designer.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { UserInterfaceType } from '../../../core/model/configuration';
+import { Intent } from '../../../model/nlp';
 
 const scenarioMock: ScenarioVersion = {
   id: '62fcbb7ae4d25c16a44071a1',
@@ -156,9 +157,9 @@ describe('ScenarioConceptionItemComponent', () => {
     component['scenarioConceptionService'].focusItem(item);
     expect(component.focusItem).toHaveBeenCalledWith(item);
 
-    spyOn(component, 'requireItemPosition');
+    spyOn<any>(component, 'requireItemPosition');
     component['scenarioConceptionService'].requireItemPosition(item);
-    expect(component.requireItemPosition).toHaveBeenCalledWith(item);
+    expect(component['requireItemPosition']).toHaveBeenCalledWith(item);
   });
 
   it('Should set the current item on init', () => {
@@ -214,14 +215,14 @@ describe('ScenarioConceptionItemComponent', () => {
   });
 
   it('Should handle correctly manageIntent call', () => {
-    let editSpy = spyOn(component, 'editIntent');
-    let searchSpy = spyOn(component, 'searchIntent');
+    let editSpy = spyOn<any>(component, 'editIntent');
+    let searchSpy = spyOn<any>(component, 'searchIntent');
 
     component.item = getScenarioMock().data.scenarioItems[0];
     component.ngOnInit();
     component.manageIntent();
-    expect(component.editIntent).toHaveBeenCalled();
-    expect(component.searchIntent).not.toHaveBeenCalled();
+    expect(component['editIntent']).toHaveBeenCalled();
+    expect(component['searchIntent']).not.toHaveBeenCalled();
 
     editSpy.calls.reset();
     searchSpy.calls.reset();
@@ -229,21 +230,21 @@ describe('ScenarioConceptionItemComponent', () => {
     delete component.item.intentDefinition;
 
     component.manageIntent();
-    expect(component.editIntent).not.toHaveBeenCalled();
-    expect(component.searchIntent).toHaveBeenCalled();
+    expect(component['editIntent']).not.toHaveBeenCalled();
+    expect(component['searchIntent']).toHaveBeenCalled();
   });
 
   it('Should handle correctly searchIntent => createNewIntentEvent call', () => {
-    spyOn(component, 'createIntent');
+    spyOn<any>(component, 'createIntent');
     spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { useIntentEvent: EMPTY, createNewIntentEvent: of(true) } }
     } as NbDialogRef<any>);
 
-    component.searchIntent();
+    component['searchIntent']();
 
     expect(component['nbDialogService'].open).toHaveBeenCalled();
-    expect(component.createIntent).toHaveBeenCalled();
+    expect(component['createIntent']).toHaveBeenCalled();
   });
 
   it('Should handle correctly searchIntent => useIntentEvent call', () => {
@@ -253,17 +254,17 @@ describe('ScenarioConceptionItemComponent', () => {
       category: 'category',
       description: 'category',
       _id: 'id'
-    };
-    spyOn(component, 'setItemIntentDefinition');
+    } as Intent;
+    spyOn<any>(component, 'setItemIntentDefinition');
     spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { useIntentEvent: of(intentDef), createNewIntentEvent: EMPTY } }
     } as NbDialogRef<any>);
 
-    component.searchIntent();
+    component['searchIntent']();
 
     expect(component['nbDialogService'].open).toHaveBeenCalled();
-    expect(component.setItemIntentDefinition).toHaveBeenCalledWith(intentDef);
+    expect(component['setItemIntentDefinition']).toHaveBeenCalledWith(intentDef);
   });
 
   it('Should handle correctly createIntent => createIntentEvent call', () => {
@@ -275,17 +276,17 @@ describe('ScenarioConceptionItemComponent', () => {
       primary: false
     } as ScenarioIntentDefinition;
 
-    spyOn(component, 'editIntent');
+    spyOn<any>(component, 'editIntent');
     spyOn(component['nbDialogService'], 'open').and.returnValue({
       close: () => {},
       componentRef: { instance: { createIntentEvent: of(intentDef) } }
     } as NbDialogRef<any>);
 
-    component.createIntent();
+    component['createIntent']();
 
     expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(component.item.intentDefinition).toEqual(intentDef);
-    expect(component.editIntent).toHaveBeenCalled();
+    expect(component['editIntent']).toHaveBeenCalled();
   });
 
   xit('Should handle correctly editIntent => saveModifications call', () => {
@@ -317,7 +318,7 @@ describe('ScenarioConceptionItemComponent', () => {
     component.item = getScenarioMock().data.scenarioItems[0];
     component.ngOnInit();
 
-    component.editIntent();
+    component['editIntent']();
 
     expect(component['nbDialogService'].open).toHaveBeenCalled();
     expect(component.item.intentDefinition.sentences).toEqual(intentDef.sentences);

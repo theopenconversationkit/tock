@@ -1,12 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { ApplicationService } from '../../core-nlp/applications.service';
 
 import { CurrentApplicationGuard } from './current-application.guard';
 
 describe('ApplicationGuard', () => {
   let guard: CurrentApplicationGuard;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      providers: [{ provide: ApplicationService, useValue: {} }]
+    }).compileComponents();
+
     guard = TestBed.inject(CurrentApplicationGuard);
   });
 

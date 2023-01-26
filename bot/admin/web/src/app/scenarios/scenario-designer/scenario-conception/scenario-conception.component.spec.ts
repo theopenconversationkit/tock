@@ -176,7 +176,7 @@ describe('ScenarioConceptionComponent', () => {
   });
 
   it('Should clean actions when deleting context', () => {
-    component.deleteContext(component.scenario.data.contexts[0]);
+    component['deleteContext'](component.scenario.data.contexts[0]);
     const expected = getScenarioMock().data;
     expected.contexts = [];
     expected.scenarioItems[1].actionDefinition.inputContextNames = [];
@@ -197,7 +197,7 @@ describe('ScenarioConceptionComponent', () => {
   it('Should add an item to a scenario, select it and require its position', fakeAsync(() => {
     spyOn(component['scenarioConceptionService'], 'requireItemPosition');
 
-    component.addItem(component.scenario.data.scenarioItems[2]);
+    component['addItem'](component.scenario.data.scenarioItems[2]);
     fixture.detectChanges();
 
     const expected = getScenarioMock();
@@ -219,53 +219,44 @@ describe('ScenarioConceptionComponent', () => {
   }));
 
   it('Should delete an item and its references', () => {
-    component.deleteItem(component.scenario.data.scenarioItems[2], 0);
+    component['deleteItem'](component.scenario.data.scenarioItems[2], 0);
     expect(component.scenario.data.scenarioItems[2].parentIds).toEqual([1]);
 
-    component.deleteItem(component.scenario.data.scenarioItems[2], 1);
+    component['deleteItem'](component.scenario.data.scenarioItems[2], 1);
     expect(component.scenario.data.scenarioItems[2]).toBeUndefined();
     expect(component.scenario.data.stateMachine.states.Global.states['action2']).toBeUndefined();
   });
 
   it('Should change the type of an item and remove its previous definition', () => {
-    component.changeItemType(component.scenario.data.scenarioItems[0], SCENARIO_ITEM_FROM_BOT);
+    component['changeItemType'](component.scenario.data.scenarioItems[0], SCENARIO_ITEM_FROM_BOT);
     expect(component.scenario.data.scenarioItems[0].from).toEqual('bot');
     expect(component.scenario.data.scenarioItems[0].intentDefinition).toBeUndefined();
 
-    component.changeItemType(component.scenario.data.scenarioItems[2], SCENARIO_ITEM_FROM_CLIENT);
+    component['changeItemType'](component.scenario.data.scenarioItems[2], SCENARIO_ITEM_FROM_CLIENT);
     expect(component.scenario.data.scenarioItems[2].from).toEqual('client');
     expect(component.scenario.data.scenarioItems[2].actionDefinition).toBeUndefined();
     expect(component.scenario.data.stateMachine.states.Global.states['action2']).toBeUndefined();
   });
 
   it('Should find item first child', () => {
-    expect(component.findItemChild(component.scenario.data.scenarioItems[0])).toEqual(component.scenario.data.scenarioItems[1]);
+    expect(component['findItemChild'](component.scenario.data.scenarioItems[0])).toEqual(component.scenario.data.scenarioItems[1]);
   });
 
   it('Should find an item by id', () => {
-    expect(component.findItemById(2)).toEqual(component.scenario.data.scenarioItems[2]);
+    expect(component['findItemById'](2)).toEqual(component.scenario.data.scenarioItems[2]);
   });
 
   it('Should find item children', () => {
-    expect(component.getChildren(component.scenario.data.scenarioItems[0])).toEqual([
+    expect(component['getChildren'](component.scenario.data.scenarioItems[0])).toEqual([
       component.scenario.data.scenarioItems[1],
       component.scenario.data.scenarioItems[2]
     ]);
   });
 
   it('Should find item brotherhood', () => {
-    expect(component.getBrotherhood(component.scenario.data.scenarioItems[1])).toEqual([
+    expect(component['getBrotherhood'](component.scenario.data.scenarioItems[1])).toEqual([
       component.scenario.data.scenarioItems[1],
       component.scenario.data.scenarioItems[2]
     ]);
-  });
-
-  it('Should find item brothers', () => {
-    expect(component.getItemBrothers(component.scenario.data.scenarioItems[1])).toEqual([component.scenario.data.scenarioItems[2]]);
-  });
-
-  it('Should detect if an item has no brothers', () => {
-    expect(component.isItemOnlyChild(component.scenario.data.scenarioItems[0])).toBeTruthy();
-    expect(component.isItemOnlyChild(component.scenario.data.scenarioItems[1])).toBeFalsy();
   });
 });
