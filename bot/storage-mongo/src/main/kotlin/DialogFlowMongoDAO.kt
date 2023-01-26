@@ -193,6 +193,11 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         Date,
                         DialogId,
                     )
+                    ensureIndex(
+                        Date,
+                        indexOptions = IndexOptions()
+                            .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
+                    )
                 } catch (e: Exception) {
                     logger.error(e)
                 }
