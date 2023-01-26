@@ -1,0 +1,43 @@
+@import '@nebular/theme/styles/global/breakpoints';
+
+.dimension {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 16px;
+  align-items: center;
+  cursor: default;
+  min-height: 32px;
+  height: 1px;
+  background-color: #e0e0e0;
+}
+
+.grid {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 100%;
+
+  .main {
+    order: 2;
+  }
+
+  .aside {
+    order: 1;
+    position: inherit;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .grid {
+    grid-template-columns: 6fr 4fr;
+
+    .main {
+      order: 1;
+    }
+
+    .aside {
+      order: 2;
+      position: sticky;
+      top: 5.75rem;
+    }
+  }
+}

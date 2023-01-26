@@ -1,0 +1,199 @@
+<nb-card
+  class="mb-0"
+  [nbSpinner]="loading"
+>
+  <nb-card-header>
+    <div class="d-flex justify-content-between align-items-start">
+      {{ indicatorEdition.existing ? 'Edit "' + indicatorEdition.indicator.label + '"' : 'New indicator' }}
+      <button
+        type="button"
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Close"
+        (click)="close()"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body>
+    <form [formGroup]="form">
+      <tock-form-control
+        label="Label"
+        name="label"
+        [controls]="label"
+        [showError]="isSubmitted"
+        [required]="true"
+      >
+        <input
+          nbInput
+          formControlName="label"
+          id="label"
+          fullWidth
+          type="text"
+          placeholder="Enter an indicator label"
+        />
+      </tock-form-control>
+
+      <tock-form-control
+        label="Description"
+        name="description"
+        [controls]="description"
+        [showError]="isSubmitted"
+      >
+        <textarea
+          nbInput
+          formControlName="description"
+          fullWidth
+          id="description"
+          type="text"
+          rows="3"
+          placeholder="Enter a description"
+        ></textarea>
+        <small [ngClass]="getDescMaxLengthIndicatorClass()">
+          {{ form.controls.description.value.length }} characters out of {{ descriptionMaxLength }} max
+        </small>
+      </tock-form-control>
+
+      <tock-form-control
+        label="Dimensions"
+        name="dimensions"
+        [controls]="dimensions"
+        [showError]="isSubmitted"
+        [required]="true"
+      >
+        <nb-tag-list (tagRemove)="onDimensionRemove($event)">
+          <nb-tag
+            *ngFor="let dimension of dimensions.value"
+            removable
+            [text]="dimension"
+          ></nb-tag>
+          <input
+            nbTagInput
+            #dimensionInput
+            fullWidth
+            id="dimensions"
+            type="text"
+            placeholder="Type dimension name and press enter"
+            autocomplete="off"
+            (tagAdd)="onDimensionAdd($event)"
+            (keyup)="updateDimensionsAutocompleteValues($event)"
+            [nbAutocomplete]="dimensionsAutocomplete"
+          />
+          <nb-autocomplete
+            #dimensionsAutocomplete
+            (selectedChange)="dimensionSelected($event)"
+          >
+            <nb-option
+              *ngFor="let option of dimensionsAutocompleteValues | async"
+              [value]="option"
+              class="text-capitalize"
+            >
+              {{ option }}
+            </nb-option>
+          </nb-autocomplete>
+        </nb-tag-list>
+      </tock-form-control>
+
+      <tock-form-control
+        label="Indicator values"
+        [controls]="values"
+        [required]="true"
+        [hasMargin]="false"
+        [showError]="isSubmitted"
+      >
+        <div
+          *ngIf="!values.controls.length"
+          class="text-center text-warning font-italic mb-3"
+        >
+          Define at least one possible value.
+        </div>
+
+        <div
+          formArrayName="values"
+          class="mt-2"
+          *ngIf="values.controls.length"
+        >
+          <ng-container *ngFor="let valueDefinition of values.controls; let i = index">
+            <div
+              [formGroup]="valueDefinition"
+              class="row"
+            >
+              <div class="col-10 pr-0">
+                <tock-form-control
+                  name="valueLabel"
+                  [controls]="valueDefinition.controls.label"
+                  [showError]="isSubmitted"
+                  [required]="true"
+                >
+                  <input
+                    #labelInput
+                    nbInput
+                    fullWidth
+                    type="text"
+                    fieldSize="small"
+                    formControlName="label"
+                    placeholder="Enter an indicator value label"
+                  />
+                </tock-form-control>
+              </div>
+
+              <div class="col-2 pr-0">
+                <button
+                  type="button"
+                  nbButton
+                  ghost
+                  shape="round"
+                  status="danger"
+                  nbTooltip="Remove this value"
+                  (click)="removeValueDefinition(i)"
+                >
+                  <nb-icon icon="trash-outline"></nb-icon>
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </tock-form-control>
+
+      <button
+        type="button"
+        nbButton
+        size="small"
+        fullWidth
+        nbTooltip="Add a new value"
+        (click)="addValueDefinition()"
+      >
+        <nb-icon icon="plus-circle-outline"></nb-icon>
+        Add a new value
+      </button>
+    </form>
+  </nb-card-body>
+
+  <nb-card-footer>
+    <div class="grid-button">
+      <button
+        type="button"
+        nbButton
+        outline
+        status="primary"
+        size="small"
+        (click)="close()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        [disabled]="!canSave"
+        (click)="save()"
+      >
+        Save
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

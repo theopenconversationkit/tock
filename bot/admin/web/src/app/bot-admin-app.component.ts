@@ -80,6 +80,12 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqBotUser)
       },
       {
+        title: 'Custom Metrics',
+        icon: 'pie-chart-outline',
+        link: '/business-metrics',
+        hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqBotUser)
+      },
+      {
         title: 'Model Quality',
         icon: 'clipboard-outline',
         link: '/quality',
