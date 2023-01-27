@@ -15,12 +15,13 @@
  */
 
 package ai.tock.bot
-// TODO MASS : configuration to persist in the database
-enum class HandlerNamespace(val key: String, val shared: Boolean = false) {
+
+enum class HandlerNamespace(val key: String, val shared: Boolean = true) { // TODO MASS : false as default
     DEV_TOOLS(key = "dev-tools", shared = true),
-    MAX(key = "max", shared = true),
-    AVENIR_ASSURANCE(key = "avenir-assurance", shared = true),
-    JOIGNABILITE(key = "joignabilite", shared = true),
+    MAX(key = "max"),
+    SURAVENIR_ASSURANCES(key = "suravenir-assurances"),
+    AVENIR_ASSURANCE(key = "avenir-assurance"), // TODO MASS : to delete
+    JOIGNABILITE(key = "joignabilite"),
     UNKNOWN(key = "UNKNOWN");
 
     companion object {

@@ -33,8 +33,7 @@ data class BotTickAnswerConfiguration(val stateMachine: State,
                                       val actions: Set<TickAction>,
                                       val intentsContexts: Set<TickIntent>,
                                       val unknownHandleConfiguration: TickUnknownConfiguration,
-                                      val storySettings: TickStorySettings?,
-                                      val debug : Boolean) :
+                                      val storySettings: TickStorySettings?) :
     BotAnswerConfiguration(AnswerConfigurationType.tick) {
 
     constructor(conf: TickAnswerConfiguration) : this(conf.stateMachine,
@@ -45,10 +44,9 @@ data class BotTickAnswerConfiguration(val stateMachine: State,
         conf.actions,
         conf.intentsContexts,
         conf.unknownHandleConfiguration,
-        conf.storySettings,
-        conf.debug)
+        conf.storySettings)
 
     fun toTickAnswerConfiguration() : TickAnswerConfiguration = TickAnswerConfiguration(stateMachine,
         primaryIntents, secondaryIntents, triggers, contexts, actions, intentsContexts, unknownHandleConfiguration,
-        storySettings, debug)
+        storySettings)
 }

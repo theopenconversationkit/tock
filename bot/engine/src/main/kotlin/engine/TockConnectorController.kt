@@ -30,6 +30,7 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.event.TypingOnEvent
 import ai.tock.bot.engine.user.*
+import ai.tock.bot.processor.debugEnabled
 import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
 import ai.tock.stt.STT
@@ -271,22 +272,27 @@ internal class TockConnectorController constructor(
     private val debugScenario: (RoutingContext) -> ScenarioDebugResponse =
         { _ ->
 
-            val inputStream: InputStream = FileInputStream("/tmp/python/log/action-graph-full-new.png")
-            val buffer = ByteArray(8192*4)
-            var bytesRead: Int
-            val output = ByteArrayOutputStream()
-
-            try {
-                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-                    output.write(buffer, 0, bytesRead)
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }finally {
-                inputStream.close()
+            if(!debugEnabled) {
+                ScenarioDebugResponse("")
             }
+            else {
+                val inputStream: InputStream = FileInputStream("/tmp/python/log/action-graph-full-new.png")
+                val buffer = ByteArray(8192 * 4)
+                var bytesRead: Int
+                val output = ByteArrayOutputStream()
 
-            ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
+                try {
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        output.write(buffer, 0, bytesRead)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } finally {
+                    inputStream.close()
+                }
+
+                ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
+            }
         }
 
     data class ScenarioDebugResponse(

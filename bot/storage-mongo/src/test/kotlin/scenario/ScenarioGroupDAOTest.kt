@@ -35,7 +35,8 @@ import kotlin.test.assertTrue
 
 class ScenarioGroupDAOTest : AbstractTest() {
 
-    private val dateNow = ZonedDateTime.parse("2022-01-01T00:00:00.000Z")
+
+    private val dateNow = ZonedDateTime.now()
     private val botId1 = "botId1"
     private val botId2 = "botId2"
 
@@ -50,9 +51,6 @@ class ScenarioGroupDAOTest : AbstractTest() {
 
     @BeforeEach
     fun clearDB() {
-        mockkStatic(ZonedDateTime::class)
-        every { ZonedDateTime.now() } returns dateNow
-
         // Delete all documents
         ScenarioGroupMongoDAO.collection.drop()
     }
@@ -133,7 +131,7 @@ class ScenarioGroupDAOTest : AbstractTest() {
         // WHEN
         val result = ScenarioGroupMongoDAO.findOneById(scenarioGroup3._id)
         // THEN
-        assertEquals(scenarioGroup3, result)
+        assertEquals(scenarioGroup3, result?.copy(creationDate = dateNow, updateDate = dateNow))
     }
 
     @Test
@@ -184,6 +182,6 @@ class ScenarioGroupDAOTest : AbstractTest() {
         ScenarioGroupMongoDAO.updateOne(scenarioGroup3Copy)
         val result = ScenarioGroupMongoDAO.findOneById(scenarioGroup3._id)
             // THEN
-        assertEquals(scenarioGroup3Copy, result)
+        assertEquals(scenarioGroup3Copy, result?.copy(creationDate = dateNow, updateDate = dateNow))
     }
 }

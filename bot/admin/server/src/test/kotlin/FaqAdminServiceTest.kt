@@ -520,10 +520,21 @@ class FaqAdminServiceTest : AbstractTest() {
             )
         }
 
+        private fun initDeleteStoryMock(){
+            mockkObject(StoryService)
+            every {
+                StoryService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(
+                    existingStory.namespace,
+                    existingStory._id.toString()
+                )
+            } returns true
+        }
+
         @Test
         fun `GIVEN delete single faq WHEN intent existing and one applicationId is found`() {
             val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
             initDeleteFaqMock()
+            initDeleteStoryMock()
 
             val isDeleted = faqAdminService.deleteFaqDefinition(namespace, faqId.toString())
 

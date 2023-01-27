@@ -91,16 +91,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.choco-solver</groupId>
-            <artifactId>choco-solver</artifactId>
-            <version>4.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.choco-solver</groupId>
-            <artifactId>choco-graph</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-dialog-manager-handlers-provider</artifactId>
             <version>${project.version}</version>
@@ -110,21 +100,17 @@
             <artifactId>tock-bot-dialog-manager-handlers-provider-dev-tools</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-dialog-manager-handlers-provider-max</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
+        <!-- TODO MASS : Add to patchs-->
+        <!--dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-bot-dialog-manager-handlers-provider-joignabilite</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-dialog-manager-handlers-provider-avenir-assurance</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+            <artifactId>tock-bot-dialog-manager-handlers-provider-suravenir-assurances</artifactId>
+            <version>1.0.0</version>
+        </dependency-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

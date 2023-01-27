@@ -213,14 +213,14 @@ object ScenarioService {
 
             // Delete all versions
             ScenarioVersionService.deleteAllByScenarioGroupId(scenarioGroupId)
-            logger.info { "Removal of all versions of the scenario group <id:$scenarioGroupId>" }
+            logger.info { "Deleting all versions of the scenario group <id:$scenarioGroupId>" }
 
             // Delete the tick story
             deleteTickStory(namespace, botId, scenarioGroupId)
 
             // Delete the scenario group
             ScenarioGroupService.deleteOneById(scenarioGroupId)
-            logger.info { "Removal of the scenario group <id:$scenarioGroupId>" }
+            logger.info { "Deleting of the scenario group <id:$scenarioGroupId>" }
 
             true
         } catch (ex: ScenarioException) {
@@ -254,7 +254,7 @@ object ScenarioService {
 
             // Delete the scenario version
             ScenarioVersionService.deleteOneById(scenarioVersionId)
-            logger.info { "Removal of the scenario version <id:$scenarioVersionId>" }
+            logger.info { "Deleting of the scenario version <id:$scenarioVersionId>" }
 
             // Delete the scenario group if there is no version left
             deleteEmptyScenarioGroup(scenarioGroupId)
@@ -317,13 +317,13 @@ object ScenarioService {
 
     private fun deleteTickStory(namespace: String, botId: String, scenarioGroupId: String) {
         StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId, scenarioGroupId)
-        logger.info { "Removal of the tick story <storyId:$scenarioGroupId> corresponding to the current version of the scenario group <id:$scenarioGroupId>" }
+        logger.info { "Deleting of the tick story <storyId:$scenarioGroupId> corresponding to the current version of the scenario group <id:$scenarioGroupId>" }
     }
 
     private fun deleteEmptyScenarioGroup(scenarioGroupId: String) {
         if (ScenarioVersionService.countAllByScenarioGroupId(scenarioGroupId) == 0L) {
             ScenarioGroupService.deleteOneById(scenarioGroupId)
-            logger.info { "Removal of the scenario group <id:$scenarioGroupId> following the removal of all these scenario versions" }
+            logger.info { "Deleting of the scenario group <id:$scenarioGroupId> following the deleting of all these scenario versions" }
         }
     }
 

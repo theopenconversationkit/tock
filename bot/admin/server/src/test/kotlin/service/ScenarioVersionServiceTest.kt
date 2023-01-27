@@ -16,10 +16,12 @@
 
 package ai.tock.bot.admin.service
 
+import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.scenario.ScenarioGroup
 import ai.tock.bot.admin.scenario.ScenarioVersion
 import ai.tock.bot.admin.scenario.ScenarioVersionDAO
 import ai.tock.bot.admin.scenario.ScenarioVersionState
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.shared.exception.scenario.version.ScenarioVersionNotFoundException
 import ai.tock.shared.injector
 import ai.tock.shared.tockInternalInjector
@@ -37,6 +39,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.toId
 import java.time.ZonedDateTime
+import kotlin.test.AfterTest
 import kotlin.test.assertEquals
 
 class ScenarioVersionServiceTest {
@@ -57,7 +60,6 @@ class ScenarioVersionServiceTest {
     private val scenarioVersion3Copy = scenarioVersion3.copy(data = "DATA-COPY", comment = "comment-Copy",
         state = ScenarioVersionState.ARCHIVED)
 
-
     companion object {
         private val scenarioVersionDAO: ScenarioVersionDAO = mockk(relaxed = true)
 
@@ -65,7 +67,6 @@ class ScenarioVersionServiceTest {
             tockInternalInjector = KodeinInjector()
             val module = Kodein.Module {
                 bind<ScenarioVersionDAO>() with provider { scenarioVersionDAO }
-                //bind<ScenarioVersionService>() with singleton { ScenarioVersionServiceImpl() }
             }
             tockInternalInjector.inject(
                 Kodein {

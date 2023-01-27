@@ -69,7 +69,13 @@ object ActionHandlersRepository {
     /**
      * Get action handlers
      */
-    fun getActionHandlers(namespace: HandlerNamespace): Set<ActionHandler> {
+    fun getActionHandlers(namespace: HandlerNamespace = HandlerNamespace.UNKNOWN): Set<ActionHandler> {
         return actionHandlers.values.filter { it.namespace == namespace || it.namespace.shared }.toSet()
     }
+}
+
+fun main() {
+    // TODO MASS
+    val handlers = ActionHandlersRepository.getActionHandlers()
+    println(handlers)
 }

@@ -30,13 +30,8 @@
 
     <modules>
         <module>core</module>
-        <module>integration-tests</module>
         <module>handlers-provider</module>
         <module>handlers-provider-dev-tools</module>
-
-        <module>handlers-provider-max</module>
-        <module>handlers-provider-joignabilite</module>
-        <module>handlers-provider-avenir-assurance</module>
     </modules>
 
 </project>

@@ -30,6 +30,7 @@ object GraphSolver {
     private const val pythonLogPath = "$pythonPath/log"
 
     fun solve(
+        debugEnabled: Boolean = false,
         currentState: String?,
         actions: Set<TickAction>,
         contexts: Map<String, String?>,
@@ -59,6 +60,7 @@ object GraphSolver {
             interp.runScript("$pythonScriptPath/graph-solver.py")
             interp.invoke(
                 "callClyngor",
+                debugEnabled,
                 currentState,
                 botActions,
                 target,

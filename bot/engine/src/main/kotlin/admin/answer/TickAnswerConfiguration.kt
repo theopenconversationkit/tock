@@ -32,8 +32,7 @@ data class TickAnswerConfiguration(val stateMachine: State,
                                    val actions: Set<TickAction>,
                                    val intentsContexts: Set<TickIntent>,
                                    val unknownHandleConfiguration: TickUnknownConfiguration,
-                                   val storySettings: TickStorySettings?,
-                                   val debug: Boolean) :
+                                   val storySettings: TickStorySettings?) :
     AnswerConfiguration(AnswerConfigurationType.tick) {
 
         fun toTickConfiguration() =
@@ -43,7 +42,6 @@ data class TickAnswerConfiguration(val stateMachine: State,
                     actions,
                     intentsContexts,
                     unknownHandleConfiguration,
-                    storySettings ?: TickStorySettings.default,
-                    debug
+                    storySettings ?: TickStorySettings.default
                 )
     }

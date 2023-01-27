@@ -28,6 +28,7 @@ import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.processor.debugEnabled
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.front.client.FrontClient

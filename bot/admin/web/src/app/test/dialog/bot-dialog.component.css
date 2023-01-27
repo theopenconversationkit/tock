@@ -84,8 +84,12 @@
   margin: 10px;
 }
 
-.discussion {
+.discussion1 {
   width : 900px
+}
+
+.discussion2 {
+  width : 100%
 }
 
 .graph {

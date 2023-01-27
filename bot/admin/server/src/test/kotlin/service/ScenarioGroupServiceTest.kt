@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.toId
 import java.time.ZonedDateTime
+import kotlin.test.AfterTest
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

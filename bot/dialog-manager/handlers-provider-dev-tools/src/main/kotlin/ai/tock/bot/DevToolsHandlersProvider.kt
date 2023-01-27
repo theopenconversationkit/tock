@@ -27,18 +27,19 @@ class DevToolsHandlersProvider: ActionHandlersProvider {
     override fun getNameSpace() = HandlerNamespace.DEV_TOOLS
 
     override fun getActionHandlers(): Set<ActionHandler> =
-        (1..10).map {counter ->
-            createActionHandler(
-                id = "set_context_$counter",
-                description = "Handler that just sets <DEV_CONTEXT_$counter>",
-                outputContexts = setOf("DEV_CONTEXT_$counter"),
-                handler = { mapOf("DEV_CONTEXT_$counter" to null) }
-            )
-        }.plus(
+        setOf(
             createActionHandler(
                 id = "do_nothing",
                 description = "Handler who does nothing. It is used to force the next round",
-                handler = { emptyMap() }
-            )
+                handler = { emptyMap() })
+        ).plus(
+            (1..7).map {counter ->
+                createActionHandler(
+                    id = "set_context_$counter",
+                    description = "Handler that just sets <DEV_CONTEXT_$counter>",
+                    outputContexts = setOf("DEV_CONTEXT_$counter"),
+                    handler = { mapOf("DEV_CONTEXT_$counter" to null) }
+                )
+            }
         ).toSet()
 }

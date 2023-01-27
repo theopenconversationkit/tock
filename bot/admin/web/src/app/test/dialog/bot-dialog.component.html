@@ -17,7 +17,7 @@
 
 
   <div class="flex-container">
-    <div class="discussion">
+    <div [ngClass]="imgBase64 ? 'discussion1' : 'discussion2' ">
       <nb-card class="dialog">
         <nb-card-header>
           Test the application <i>{{ state.currentApplication.label }}</i>
@@ -30,17 +30,17 @@
                 <input *ngIf="testContext" nbInput [status]="isXrayTestNameFilled ? 'basic' : 'danger'"
                   placeholder="Xray test name" id="test-name" [(ngModel)]="xrayTestName"
                   (ngModelChange)="updateSaveButtonStatus($event)" />
-      
+
                 <input *ngIf="testContext" nbInput status="default" placeholder="US identifier in Jira" id="jira-name"
                   [(ngModel)]="jiraIdentifier" />
-      
+
                 <nb-select *ngIf="testContext" multiple placeholder="Xray test plans" class="test-plans-select"
                   name="testplans" [(selected)]="selectTestPlans" (selectedChange)="printSelectedTestPlans($event)">
                   <nb-option *ngFor="let e of xrayTestPlans" [value]="e.key" [nbTooltip]="e.fields.summary">
                     {{ e.key }}
                   </nb-option>
                 </nb-select>
-      
+
                 <button *ngIf="testContext" nbTooltip="Send dialog to Xray" nbTooltipStatus="info"
                   [disabled]="!isXrayTestNameFilled" id="save-button" nbButton outline status="primary" size="small"
                   (click)="saveDialogToXray()">
@@ -48,14 +48,14 @@
                 </button>
               </nb-accordion-item-body>
             </nb-accordion-item>
-      
+
             <nb-accordion-item>
               <nb-accordion-item-header (click)="removeXrayTestIdentifier()">Update dialog in Xray</nb-accordion-item-header>
               <nb-accordion-item-body>
                 <input *ngIf="testContext" nbInput [status]="isXrayTestIdentifierFilled ? 'basic' : 'danger'"
                   placeholder="Xray test identifier" id="test-identifier" [(ngModel)]="xrayTestIdentifier"
                   (ngModelChange)="updateUpdateButtonStatus($event)" />
-      
+
                 <button *ngIf="testContext" nbTooltip="Update Xray test" nbTooltipStatus="info"
                   [disabled]="!isXrayTestIdentifierFilled" id="update-button" nbButton outline status="primary" size="small"
                   (click)="updateDialogXray()">
@@ -63,14 +63,14 @@
                 </button>
               </nb-accordion-item-body>
             </nb-accordion-item>
-      
+
             <nb-accordion-item disabled>
               <nb-accordion-item-header>Save dialog in Tock</nb-accordion-item-header>
               <nb-accordion-item-body> coming soon... </nb-accordion-item-body>
             </nb-accordion-item>
           </nb-accordion>
         </nb-card-body>
-      
+
         <nb-card-body>
           <br />
           <div>
@@ -85,7 +85,7 @@
                 outline status="warning" size="small" (click)="enableTestContext()">
                 <nb-icon icon="cube-outline"></nb-icon>
               </button>
-      
+
               <br /><br /><br />
               <table *ngIf="messages.length !== 0" class="messages">
                 <tr *ngFor="let m of messages">
@@ -125,7 +125,7 @@
       </nb-card>
     </div>
     <div class="graph" *ngIf="imgBase64">
-      <img src="data:image/png;base64,{{imgBase64}}" style="position: fixed;width : 400px">    
+      <img src="data:image/png;base64,{{imgBase64}}" style="position: fixed;width : 400px">
     </div>
   </div>
 

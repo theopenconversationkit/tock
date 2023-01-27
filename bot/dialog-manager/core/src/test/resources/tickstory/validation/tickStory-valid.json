@@ -44,7 +44,7 @@
     {
       "name": "S_CHECK_SERVICE_AVAILABLE",
       "description": "desc",
-      "handler": "joignabilite:check_service_available",
+      "handler": "dev-tools:set_context_1",
       "answerId": null,
       "inputContextNames": [],
       "outputContextNames": [ "SERVICE_AVAILABLE", "SERVICE_UNAVAILABLE" ],
@@ -71,7 +71,7 @@
     {
       "name": "S_CHECK_TRANSFER",
       "description": "desc",
-      "handler": "joignabilite:check_transfer",
+      "handler": "dev-tools:set_context_2",
       "answerId": null,
       "inputContextNames": [ "MONTANT_VIREMENT", "DESTINATION_VIREMENT" ],
       "outputContextNames": [ "LIMIT_EXCEDED", "CAN_CHANGE_LIMIT", "CANNOT_CHANGE_LIMIT" ],
@@ -80,7 +80,7 @@
     {
       "name": "S_SERVICE_UNAVAILABLE_REDIRECT",
       "description": "desc",
-      "handler": "joignabilite:service_unavailable_redirect",
+      "handler": "dev-tools:set_context_3",
       "answerId": "app_tick_Désolé, le service n'est actuellement pas disponible sur l'application, je vais vous mettre en relation avec un conseiller qui pourra traiter votre demande",
       "inputContextNames": [ "SERVICE_UNAVAILABLE" ],
       "outputContextNames": [ "RESOLVE_LIMIT_DONE" ],
@@ -89,7 +89,7 @@
     {
       "name": "S_SHOW_MSG_CAN_CHANGE_LIMIT",
       "description": "desc",
-      "handler": "joignabilite:service_unavailable_redirect",
+      "handler": "dev-tools:set_context_3",
       "answerId": "app_tick_Vous pouvez modifier vos plafonds dans l'app",
       "inputContextNames": [ "LIMIT_EXCEDED", "CAN_CHANGE_LIMIT" ],
       "outputContextNames": [ "RESOLVE_LIMIT_DONE" ],
@@ -98,7 +98,7 @@
     {
       "name": "S_SHOW_MSG_CANNOT_CHANGE_LIMIT",
       "description": "desc",
-      "handler": "joignabilite:service_unavailable_redirect",
+      "handler": "dev-tools:set_context_3",
       "answerId": "app_tick_Vous ne pouvez modifier vos plafonds dans l'app je vais vous mettre en relation avec un conseiller pour traiter votre demande",
       "inputContextNames": [ "LIMIT_EXCEDED", "CANNOT_CHANGE_LIMIT" ],
       "outputContextNames": [ "RESOLVE_LIMIT_DONE" ],

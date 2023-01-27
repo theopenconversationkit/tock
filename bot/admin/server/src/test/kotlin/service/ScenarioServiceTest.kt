@@ -16,10 +16,10 @@
 
 package ai.tock.bot.admin.service
 
-import ai.tock.bot.admin.AbstractTest
-import ai.tock.bot.admin.scenario.*
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
-import ai.tock.nlp.front.service.storage.ScenarioSettingsDAO
+import ai.tock.bot.admin.scenario.ScenarioGroup
+import ai.tock.bot.admin.scenario.ScenarioVersion
+import ai.tock.bot.admin.scenario.ScenarioVersionState
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.shared.exception.scenario.group.ScenarioGroupAndVersionMismatchException
 import ai.tock.shared.exception.scenario.group.ScenarioGroupDuplicatedException
 import ai.tock.shared.exception.scenario.group.ScenarioGroupNotFoundException
@@ -27,30 +27,31 @@ import ai.tock.shared.exception.scenario.group.ScenarioGroupWithoutVersionExcept
 import ai.tock.shared.exception.scenario.version.ScenarioVersionBadStateException
 import ai.tock.shared.exception.scenario.version.ScenarioVersionNotFoundException
 import ai.tock.shared.exception.scenario.version.ScenarioVersionsInconsistentException
+import ai.tock.shared.injector
 import ai.tock.shared.tockInternalInjector
-import com.github.salomonbrys.kodein.*
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.instance
 import io.mockk.*
+import org.junit.Before
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.toId
 import java.time.ZonedDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
-class ScenarioServiceTest: AbstractTest() {
+class ScenarioServiceTest {
 
     private val dateNow = ZonedDateTime.parse("2022-01-01T00:00:00.000Z")
 
     private val namespace = "namespace_app"
     private val botId1 = "botId1"
     private val botId2 = "botId2"
+
     private val groupId1 = "groupId1"
     private val groupId2 = "groupId2"
+    private val groupId3 = "groupId3"
     private val versionId1 = "versionId1"
     private val versionId2 = "versionId2"
     private val versionId3 = "versionId3"
@@ -73,44 +74,11 @@ class ScenarioServiceTest: AbstractTest() {
         state = ScenarioVersionState.ARCHIVED, comment = "v1", creationDate = dateNow, updateDate = dateNow)
 
     private val scenarioGroup1 = ScenarioGroup(_id = groupId1.toId(), botId = botId1, name = "name1", creationDate = dateNow, updateDate = dateNow,
-        versions = listOf(scenarioVersion1, scenarioVersion2))
+        versions = listOf(scenarioVersion1, scenarioVersion2), enabled = false)
     private val scenarioGroup1Copy = ScenarioGroup(_id = groupId1.toId(), botId = botId1, name = "name1", creationDate = dateNow, updateDate = dateNow,
-        versions = listOf(scenarioVersion1, scenarioVersion2), description = "DESC-COPY")
+        versions = listOf(scenarioVersion1, scenarioVersion2), description = "DESC-COPY", enabled = false)
     private val scenarioGroup2 = ScenarioGroup(_id = groupId2.toId(), botId = botId2, name = "name2", creationDate = dateNow, updateDate = dateNow,
-        versions = listOf(scenarioVersion3))
-
-
-
-    companion object {
-
-        private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk()
-        private val scenarioSettingsDAO: ScenarioSettingsDAO = mockk()
-
-        init {
-            tockInternalInjector = KodeinInjector()
-            val module = Kodein.Module {
-                bind<ScenarioGroupDAO>() with singleton { mockk() }
-                bind<ScenarioVersionDAO>() with singleton { mockk() }
-                bind<ScenarioSettingsDAO>() with singleton { scenarioSettingsDAO }
-                bind<StoryDefinitionConfigurationDAO>() with singleton { storyDefinitionConfigurationDAO }
-            }
-            tockInternalInjector.inject(
-                Kodein {
-                    import(defaultModulesBinding())
-                    import(module)
-                }
-            )
-        }
-    }
-
-    @BeforeEach
-    fun setUp() {
-        every { scenarioSettingsDAO.listenChanges(any()) } answers {}
-        mockkObject(ScenarioGroupService)
-        mockkObject(ScenarioVersionService)
-        mockkObject(StoryService)
-        mockkObject(ScenarioSettingsService)
-    }
+        versions = listOf(scenarioVersion3), enabled = false)
 
     @AfterEach
     fun clearMockk() {
@@ -118,7 +86,6 @@ class ScenarioServiceTest: AbstractTest() {
     }
 
     @Test fun `importOneScenarioGroup WHEN has no versions THEN throw exception`() {
-
         // GIVEN
         val scenarioGroupWithoutVersions = scenarioGroup1.copy(versions = emptyList())
         // WHEN // THEN
@@ -152,6 +119,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `importOneScenarioGroup WHEN scenario group name exist THEN throw exception`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.createOne(scenarioGroup1) } throws ScenarioGroupDuplicatedException()
         // WHEN // THEN
         assertThrows<ScenarioGroupDuplicatedException> {
@@ -163,12 +131,14 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `importOneScenarioGroup WHEN the name of the scenario group does not exist and has versions without current THEN creat the group and its versions`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
+        mockkObject(ScenarioVersionService)
         every { ScenarioGroupService.createOne(scenarioGroup1) } returns scenarioGroup1
         every { ScenarioVersionService.createMany(any()) } returnsArgument 0
         // WHEN
         val result = ScenarioService.importOneScenarioGroup(scenarioGroup1)
         // THEN
-        assertEquals(result, scenarioGroup1.copy(enabled = false))
+        assertEquals(result, scenarioGroup1)
         verify(exactly = 1) { ScenarioGroupService.createOne(scenarioGroup1) }
         verify(exactly = 1) { ScenarioVersionService.createMany(scenarioGroup1.versions)}
     }
@@ -176,6 +146,7 @@ class ScenarioServiceTest: AbstractTest() {
     @Test fun `importManyScenarioVersion WHEN scenario group not exists THEN throw exception`() {
         // GIVEN
         val versions = listOf(scenarioVersion1, scenarioVersion2)
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)        // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
             ScenarioService.importManyScenarioVersion(namespace, versions)
@@ -187,6 +158,7 @@ class ScenarioServiceTest: AbstractTest() {
     @Test fun `importManyScenarioVersion WHEN scenario group exists and versions are valid (not empty, same scenario group and no current) THEN create and return created versions`() {
         // GIVEN
         val versions = listOf(scenarioVersion1, scenarioVersion2)
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
         every { ScenarioVersionService.createMany(any()) } returnsArgument 0
         // WHEN
@@ -199,6 +171,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `createOneScenarioGroup WHEN the scenario group name exists THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.createOne(scenarioGroup1) } throws ScenarioGroupDuplicatedException()
         // WHEN // THEN
         assertThrows<ScenarioGroupDuplicatedException> {
@@ -211,6 +184,8 @@ class ScenarioServiceTest: AbstractTest() {
     @Test fun `createOneScenarioGroup WHEN the scenario group name not exists THEN create and return a scenario group created and its initial version`() {
         // GIVEN
         val scenarioGroupWithoutVersions = scenarioGroup1.copy(versions = emptyList())
+        mockkObject(ScenarioGroupService)
+        mockkObject(ScenarioVersionService)
         every { ScenarioGroupService.createOne(scenarioGroupWithoutVersions) } returns scenarioGroupWithoutVersions
         every { ScenarioVersionService.createOne(any()) } returnsArgument 0
         // WHEN
@@ -219,7 +194,7 @@ class ScenarioServiceTest: AbstractTest() {
         // assert not equals because result (created scenario group) has an initial version
         assertNotEquals(scenarioGroupWithoutVersions, result)
         // assert equals without comparing versions
-        assertEquals(scenarioGroupWithoutVersions.copy(enabled = false), result.copy(versions = emptyList()))
+        assertEquals(scenarioGroupWithoutVersions, result.copy(versions = emptyList()))
         assertEquals(1, result.versions.size)
         assertEquals(ScenarioVersionState.DRAFT, result.versions.first().state)
         verify(exactly = 1) { ScenarioGroupService.createOne(scenarioGroupWithoutVersions) }
@@ -228,6 +203,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `createOneScenarioVersion WHEN the scenario group not exists THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
@@ -239,6 +215,8 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `createOneScenarioVersion WHEN the scenario group exists THEN create and return a created scenario version`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
+        mockkObject(ScenarioVersionService)
         every { ScenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
         every { ScenarioVersionService.createOne(scenarioVersion1) } returns scenarioVersion1
         // WHEN
@@ -251,6 +229,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `findAllScenarioGroupWithVersionsByBotId WHEN no scenario group found THEN return empty list`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.findAllByBotId(botId1) } returns emptyList()
         // WHEN
         val result = ScenarioService.findAllScenarioGroupWithVersionsByBotId(namespace, botId1)
@@ -261,7 +240,12 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `findAllScenarioGroupWithVersionsByBotId WHEN 2 scenario groups was found THEN return the list of group and check presence of versions`() {
         // GIVEN
-        every { storyDefinitionConfigurationDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId2, groupId2) } returns null
+        mockkObject(ScenarioGroupService)
+        mockkObject(StoryService)
+        every {
+            StoryService.getStoryByNamespaceAndBotIdAndStoryId(any(), any(), any())
+        } returns null
+
         every { ScenarioGroupService.findAllByBotId(botId1) } returns listOf(scenarioGroup1, scenarioGroup2)
         // WHEN
         val result = ScenarioService.findAllScenarioGroupWithVersionsByBotId(namespace, botId1)
@@ -273,6 +257,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `findOneScenarioVersion WHEN the scenario version not exists THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } throws ScenarioVersionNotFoundException(versionId1)
         // WHEN // THEN
         assertThrows<ScenarioVersionNotFoundException> {
@@ -283,6 +268,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `findOneScenarioVersion WHEN the scenario version exists but not match with group id THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1
         // WHEN // THEN
         assertThrows<ScenarioGroupAndVersionMismatchException> {
@@ -293,6 +279,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `findOneScenarioGroup WHEN the scenario group not exists THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
@@ -303,6 +290,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `findOneScenarioGroup WHEN the scenario group exists THEN return the scenario group found`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
         // WHEN
         val result = ScenarioService.findOneScenarioGroup(namespace, groupId1)
@@ -313,6 +301,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `updateOneScenarioGroup WHEN the scenario group not exists THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
         every { ScenarioGroupService.updateOne(scenarioGroup1Copy) } throws ScenarioGroupNotFoundException(groupId1)
         // WHEN // THEN
         assertThrows<ScenarioGroupNotFoundException> {
@@ -323,7 +312,17 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `updateOneScenarioGroup WHEN the scenario group exists THEN update and return the scenario group updated`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
+        mockkObject(StoryService)
         every { ScenarioGroupService.updateOne(scenarioGroup1Copy) } returns scenarioGroup1Copy
+        every {
+            StoryService.updateActivateStoryFeatureByNamespaceAndBotIdAndStoryId(
+                any(),
+                any(),
+                any(),
+                any(),
+            )
+        } returns false
         // WHEN
         val result = ScenarioService.updateOneScenarioGroup(namespace, scenarioGroup1Copy)
         // THEN
@@ -333,6 +332,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `updateOneScenarioVersion WHEN the scenario version not exists THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } throws ScenarioVersionNotFoundException(versionId1)
         // WHEN // THEN
         assertThrows<ScenarioVersionNotFoundException> {
@@ -345,6 +345,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `updateOneScenarioVersion WHEN the scenario version that is not part of the group THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1.copy(scenarioGroupId = groupId2.toId())
         // WHEN // THEN
         assertThrows<ScenarioGroupAndVersionMismatchException> {
@@ -357,6 +358,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `updateOneScenarioVersion WHEN the scenario version exists with CURRENT state THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1Copy2
         // WHEN // THEN
         assertThrows<ScenarioVersionBadStateException> {
@@ -369,6 +371,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `updateOneScenarioVersion WHEN the scenario version exists with ARCHIVED state THEN throws exception`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId5) } returns scenarioVersion5
         // WHEN // THEN
         assertThrows<ScenarioVersionBadStateException> {
@@ -382,6 +385,7 @@ class ScenarioServiceTest: AbstractTest() {
     @Test fun `updateOneScenarioVersion to DRAFT WHEN the scenario version exists with DRAFT state and is part of its group and there is no current version for the group THEN update and return the scenario version updated`() {
         // GIVEN
         val scenarioVersion4CopyArchived = scenarioVersion4.copy(state = ScenarioVersionState.ARCHIVED)
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1
         every { ScenarioVersionService.updateOne(scenarioVersion1Copy1)  } returns scenarioVersion1Copy1
         // WHEN
@@ -396,6 +400,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `updateOneScenarioVersion to CURRENT WHEN the scenario version exists with DRAFT state and is part of its group and there is no current version for the group THEN update and return the scenario version updated`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1
         every { ScenarioVersionService.findAllByScenarioGroupIdAndState(any(), any()) } returns emptyList()
         every { ScenarioVersionService.updateOne(scenarioVersion1Copy2)  } returns scenarioVersion1Copy2
@@ -411,6 +416,7 @@ class ScenarioServiceTest: AbstractTest() {
     @Test fun `updateOneScenarioVersion to CURRENT WHEN the scenario version exists with DRAFT state and is part of its group and there is a current version for the group THEN update and return the scenario version updated`() {
         // GIVEN
         val scenarioVersion4CopyArchived = scenarioVersion4.copy(state = ScenarioVersionState.ARCHIVED)
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1
         every { ScenarioVersionService.findAllByScenarioGroupIdAndState(groupId1,
             ScenarioVersionState.CURRENT) } returns listOf(scenarioVersion4)
@@ -429,23 +435,32 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `deleteOneScenarioGroup WHEN the scenario group and its versions exist THEN delete the tick story, the group and its versions and return true`() {
         // GIVEN
-        every { storyDefinitionConfigurationDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) } returns null
+        mockkObject(ScenarioGroupService)
+        mockkObject(ScenarioVersionService)
+        mockkObject(StoryService)
         every { ScenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
-        every { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
+        every { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) } returns true
         justRun { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
         justRun { ScenarioGroupService.deleteOneById(groupId1) }
+        every {
+            StoryService.getStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1)
+        } returns null
+
         // WHEN
         val result = ScenarioService.deleteOneScenarioGroup(namespace, botId1, groupId1)
         // THEN
         assertTrue(result)
         verify(exactly = 1) { ScenarioGroupService.findOneById(groupId1) }
-        verify(exactly = 1)  { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
+        verify(exactly = 1) { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
         verify(exactly = 1) { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
-        verify(exactly = 1)  { ScenarioGroupService.deleteOneById(groupId1) }
+        verify(exactly = 1) { ScenarioGroupService.deleteOneById(groupId1) }
     }
 
     @Test fun `deleteOneScenarioGroup WHEN the scenario group does not exists THEN return false`() {
         // GIVEN
+        mockkObject(ScenarioVersionService)
+        mockkObject(ScenarioVersionService)
+        mockkObject(StoryService)
         every { ScenarioGroupService.findOneById(groupId1) } throws ScenarioGroupNotFoundException(groupId1)
         every { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
         justRun { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
@@ -455,13 +470,16 @@ class ScenarioServiceTest: AbstractTest() {
         // THEN
         assertFalse(result)
         verify(exactly = 1) { ScenarioGroupService.findOneById(groupId1) }
-        verify(exactly = 0)  { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
+        verify(exactly = 0) { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
         verify(exactly = 0) { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
-        verify(exactly = 0)  { ScenarioGroupService.deleteOneById(groupId1) }
+        verify(exactly = 0) { ScenarioGroupService.deleteOneById(groupId1) }
     }
 
     @Test fun `deleteOneScenarioGroup WHEN the scenario group versions does not exists THEN return false`() {
         // GIVEN
+        mockkObject(ScenarioGroupService)
+        mockkObject(ScenarioVersionService)
+        mockkObject(StoryService)
         every { ScenarioGroupService.findOneById(groupId1) } returns scenarioGroup1
         every { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
         every { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) } throws ScenarioVersionNotFoundException()
@@ -471,15 +489,16 @@ class ScenarioServiceTest: AbstractTest() {
         // THEN
         assertFalse(result)
         verify(exactly = 1) { ScenarioGroupService.findOneById(groupId1) }
-        verify(exactly = 1)  { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
+        verify(exactly = 1) { ScenarioVersionService.deleteAllByScenarioGroupId(groupId1) }
         verify(exactly = 0) { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId1) }
-        verify(exactly = 0)  { ScenarioGroupService.deleteOneById(groupId1) }
+        verify(exactly = 0) { ScenarioGroupService.deleteOneById(groupId1) }
     }
 
 
 
     @Test fun `deleteOneScenarioVersion a draft version WHEN it exists and is a part of scenario group but not the last one THEN delete the version but not its group nor the tick story and return true` () {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1
         justRun { ScenarioVersionService.deleteOneById(versionId1) }
         every { ScenarioVersionService.countAllByScenarioGroupId(groupId1) } returns 2
@@ -496,6 +515,8 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `deleteOneScenarioVersion a current version WHEN it exists and is a part of scenario group but not the last one THEN delete the tick story, the version but not its group and return true` () {
         // GIVEN
+        mockkObject(ScenarioVersionService)
+        mockkObject(StoryService)
         every { ScenarioVersionService.findOneById(versionId3) } returns scenarioVersion3
         justRun { ScenarioVersionService.deleteOneById(versionId3) }
         every { StoryService.deleteStoryByNamespaceAndBotIdAndStoryId(namespace, botId1, groupId2) } returns true
@@ -513,6 +534,9 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `deleteOneScenarioVersion a draft version WHEN it exists and is a part of scenario group and is the last one THEN delete the version and its group and return true` () {
         // GIVEN
+        mockkObject(ScenarioGroupService)
+        mockkObject(ScenarioVersionService)
+        mockkObject(StoryService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1
         justRun { ScenarioVersionService.deleteOneById(versionId1) }
         every { ScenarioVersionService.countAllByScenarioGroupId(groupId1) } returns 0
@@ -530,6 +554,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `deleteOneScenarioVersion a draft version WHEN it dose not exists THEN return false` () {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } throws ScenarioVersionNotFoundException(versionId1)
         // WHEN
         val result = ScenarioService.deleteOneScenarioVersion(namespace, botId1, groupId1, versionId1)
@@ -544,6 +569,7 @@ class ScenarioServiceTest: AbstractTest() {
 
     @Test fun `deleteOneScenarioVersion a draft version WHEN it exists and is not a part of scenario group THEN return false` () {
         // GIVEN
+        mockkObject(ScenarioVersionService)
         every { ScenarioVersionService.findOneById(versionId1) } returns scenarioVersion1
         // WHEN
         val result = ScenarioService.deleteOneScenarioVersion(namespace, botId1, groupId2, versionId1)

@@ -21,8 +21,11 @@ import ai.tock.bot.graphsolver.GraphSolver
 import ai.tock.bot.handler.ActionHandlersRepository
 import ai.tock.bot.sender.TickSender
 import ai.tock.bot.statemachine.StateMachine
+import ai.tock.shared.booleanProperty
 import mu.KotlinLogging
 import java.util.Stack
+
+val debugEnabled = booleanProperty("tock_bot_dialog_manager_debug_enabled", true)
 
 /**
  * A processor of tick story, it orchestrates the use of the state machine and the solver.
@@ -74,8 +77,8 @@ class TickStoryProcessor(
 
         // Call to clyngor to get the secondary objective.
         // Randomly choose one among the multiple results
-
         val secondaryObjective =  GraphSolver.solve(
+            debugEnabled,
             ranHandlers.lastOrNull(),
             configuration.actions,
             contextNames,
@@ -102,24 +105,23 @@ class TickStoryProcessor(
             TickActionHandlingStep(action =  secondaryObjective)
         }
 
-        // TODO : End of recursion if tickUserAction = null and (primaryObjective,secondaryObjective) = last(primaryObjective,secondaryObjective)
-        // TODO : A faire avec la JIRA DERCBOT-300  (voir commentaire sur la revue de code)
-
         // Execute the action corresponding of secondary objective.
         val executedAction = execute(secondaryObjective)
 
         // Update the current state
         updateCurrentState(primaryObjective, secondaryObjective)
 
-        // TODO MASS à supprimer une fois le debug front est ok: c'est juste pour MAJ le graph
-        GraphSolver.solve(
-            ranHandlers.lastOrNull(),
-            configuration.actions,
-            contextNames,
-            getTickAction(primaryObjective),
-            ranHandlers.toSet()
-        ).random()
-
+        if(debugEnabled) {
+            // TODO MASS à supprimer une fois le debug front est ok: c'est juste pour MAJ le graph
+            GraphSolver.solve(
+                debugEnabled,
+                ranHandlers.lastOrNull(),
+                configuration.actions,
+                contextNames,
+                getTickAction(primaryObjective),
+                ranHandlers.toSet()
+            ).random()
+        }
 
         // If the action has a trigger, the process method should be called with a new [TickUserAction] that have an intent corresponding to the trigger
         // Else If the action is silent or if it should proceed, then we restart the processing again, otherwise we send the results
@@ -132,7 +134,6 @@ class TickStoryProcessor(
                 TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList(), handlingStep = handlingStep),
                 executedAction.final)
         }
-
     }
 
     /**
@@ -155,7 +156,7 @@ class TickStoryProcessor(
 
         // send answer if provided
         action.answerId?.let {
-            if(endingStoryRuleExists && action.final || configuration.debug || action.isSilent()) {
+            if(endingStoryRuleExists && action.final || debugEnabled || action.isSilent()) {
                 sender.sendById(it)
             } else {
                 sender.endById(it)
@@ -190,13 +191,13 @@ class TickStoryProcessor(
     }
 
     private fun debugInput(action: TickAction) {
-        if(configuration.debug) {
+        if(debugEnabled) {
             sender.sendPlainText(getDebugMessage(action, "INPUT"))
         }
     }
 
     private fun debugOutput(action: TickAction) {
-        if(configuration.debug) {
+        if(debugEnabled) {
             sender.sendPlainText(getDebugMessage(action, "OUTPUT"))
             sender.sendPlainText()
             if(!action.isSilent()){

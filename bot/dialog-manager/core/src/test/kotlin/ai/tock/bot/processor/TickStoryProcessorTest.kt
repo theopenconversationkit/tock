@@ -77,8 +77,7 @@ internal class TickStoryProcessorTest {
             contexts = mutableSetOf(),
             intentsContexts = mutableSetOf(),
             unknownHandleConfiguration = TickUnknownConfiguration(),
-            storySettings = TickStorySettings(2),
-            debug = false
+            storySettings = TickStorySettings(2)
         )
 
         session = TickSession()
@@ -145,7 +144,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { GraphSolver.solve(any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
             every { ActionHandlersRepository.invoke(any(), any()) } returns mapOf(ContextNames.CONTEXT_1.value to null)
         }
 
@@ -236,7 +235,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { GraphSolver.solve(any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
             every { ActionHandlersRepository.invoke(any(), any()) } returns mapOf(ContextNames.CONTEXT_1.value to null)
         }
 
@@ -326,7 +325,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { GraphSolver.solve(any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
             every { ActionHandlersRepository.invoke(any(), any()) } returns mapOf(ContextNames.CONTEXT_1.value to null)
         }
 
@@ -425,8 +424,8 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { GraphSolver.solve(any(), any(), any(), match { it.name == StateIds.STATE_2.value }, any()) } returns listOf(StateIds.STATE_2.value)
-            every { GraphSolver.solve(any(), any(), any(), match { it.name == StateIds.STATE_1.value }, any()) } returns listOf(StateIds.STATE_1.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), match { it.name == StateIds.STATE_2.value }, any()) } returns listOf(StateIds.STATE_2.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), match { it.name == StateIds.STATE_1.value }, any()) } returns listOf(StateIds.STATE_1.value)
             every { ActionHandlersRepository.invoke(any(), any()) } returns mapOf(ContextNames.CONTEXT_1.value to null)
         }
 
@@ -523,8 +522,8 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { GraphSolver.solve(any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
-            every { GraphSolver.solve(any(), any(), any(), match { it.name == StateIds.STATE_2.value }, any()) } returns listOf(StateIds.STATE_2.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), match { it.name == StateIds.STATE_2.value }, any()) } returns listOf(StateIds.STATE_2.value)
             every { ActionHandlersRepository.invoke(any(), any()) } returns mapOf(ContextNames.CONTEXT_1.value to null)
         }
 
@@ -639,9 +638,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { sender.endById(capture(msgCapture)) } answers {
-                println(msgCapture.captured)
-            }
+            every { sender.endById(capture(msgCapture)) } answers {}
         }
 
         val checkResult: TConsumer<ProcessingResult?> = {
@@ -759,10 +756,10 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { sender.sendById(capture(msgCapture)) } answers {
-                println(msgCapture.captured)
-            }
-            every { GraphSolver.solve(any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
+            every { sender.sendById(capture(msgCapture)) } answers {}
+            every { sender.sendPlainText(any()) } answers {}
+            every { sender.endPlainText(any()) } answers {}
+            every { GraphSolver.solve(any(), any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
             every { ActionHandlersRepository.invoke(any(), any()) } returns mapOf(ContextNames.CONTEXT_1.value to null)
 
         }
@@ -883,9 +880,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { sender.endById(capture(msgCapture)) } answers {
-                println(msgCapture.captured)
-            }
+            every { sender.endById(capture(msgCapture)) } answers {}
 
         }
         val checkResult: TConsumer<ProcessingResult?> = {
@@ -1095,7 +1090,7 @@ internal class TickStoryProcessorTest {
         }
 
         val mockBehaviours: TRunnable = {
-            every { GraphSolver.solve(any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
+            every { GraphSolver.solve(any(), any(), any(), any(), any(), any()) } returns listOf(StateIds.STATE_3.value)
         }
         val processCall: TFunction<TickStoryProcessor?, ProcessingResult> = {
             it!!.process(TickUserAction(IntentNames.UNKNOWN_INTENT.value, emptyMap()))

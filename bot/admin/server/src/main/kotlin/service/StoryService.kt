@@ -200,8 +200,7 @@ object StoryService {
                         story.intentsContexts,
                         TickUnknownConfiguration(story.unknownAnswerConfigs),
                         storySettings = ScenarioSettingsService.getScenarioSettingsByApplicationId(application._id.toString())
-                            ?.let { TickStorySettings(it.actionRepetitionNumber, it.redirectStoryId) } ?: TickStorySettings(2),
-                        debug = true,
+                            ?.let { TickStorySettings(it.actionRepetitionNumber, it.redirectStoryId) } ?: TickStorySettings(2)
                     )
                 ),
                 namespace = namespace,
@@ -213,7 +212,7 @@ object StoryService {
         try {
             // Delete the tick story
             storyDefinitionDAO.deleteStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, story.botId, story.storyId)
-            logger.info { "Removal of the tick story <storyId:${story.storyId}>" }
+            logger.info { "Deleting of the tick story <storyId:${story.storyId}>" }
 
             storyDefinitionDAO.save(newStory)
             logger.info { "Creation of a new tick story <storyId:${story.storyId}>" }

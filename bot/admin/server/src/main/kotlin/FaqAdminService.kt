@@ -728,7 +728,8 @@ object FaqAdminService {
                 if (applicationDefinitionIds.isNotEmpty() && applicationDefinitionIds.size == 1) {
                     return deleteOneFaqDefinition(applicationDefinitionIds, faqDefinition, namespace, intent.name)
                 } else {
-                    throw NotImplementedError("Multiple application definition found for intent not IMPLEMENTED")
+                    // shared intent
+                    error("Shared FAQ not implemented yet")
                 }
             }
         }
