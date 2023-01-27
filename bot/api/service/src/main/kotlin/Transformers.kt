@@ -31,6 +31,7 @@ import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.user.UserPreferences
+import ai.tock.shared.booleanProperty
 
 internal fun BotBus.toUserRequest(): UserRequest =
     UserRequest(
@@ -73,7 +74,8 @@ private fun BotBus.toRequestContext(): RequestContext =
         userId,
         botId,
         userPreferences.toUserData(),
-        toActionsHistory(),
+        connectorData.metadata,
+        if (booleanProperty("tock_bot_api_actions_history_to_client_bus", false)) toActionsHistory() else null,
     )
 
 /**
