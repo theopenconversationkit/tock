@@ -256,10 +256,9 @@ class WebConnector internal constructor(
     private fun extraHeadersAsMetadata(requestInfos: WebRequestInfos): MutableMap<String, String> {
         val metaDataExtraHeaders: MutableMap<String, String> = mutableMapOf()
         if (webConnectorUseExtraHeadersAsMetadata) {
-            webConnectorExtraHeaders.forEach {
-                val headerSearch = requestInfos.headers(it)
-                if (headerSearch.isNotEmpty()) {
-                    metaDataExtraHeaders.putIfAbsent(it, headerSearch[0])
+            webConnectorExtraHeaders.forEach { header ->
+                requestInfos.firstHeader(header)?.let {
+                    metaDataExtraHeaders.putIfAbsent(header, it)
                 }
             }
         }
