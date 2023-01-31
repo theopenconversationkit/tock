@@ -143,7 +143,10 @@ data class DialogState(
      */
     fun changeValue(entity: Entity, newValue: Value?) {
         entityValues[entity.role]?.changeValue(entity, newValue)
-            ?: if (newValue != null) setValue(entity, newValue)
+            ?: if (newValue != null) {
+                setValue(entity, newValue)
+            } else {
+            }
     }
 
     /**
@@ -161,7 +164,10 @@ data class DialogState(
      */
     fun changeValue(role: String, newValue: EntityValue?) {
         entityValues[role]?.changeValue(newValue)
-            ?: if (newValue != null) setValue(role, newValue)
+            ?: if (newValue != null) {
+                setValue(role, newValue)
+            } else {
+            }
     }
 
     /**
