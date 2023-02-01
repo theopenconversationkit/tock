@@ -37,6 +37,8 @@ import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.dialog.Story
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.Entity
@@ -125,6 +127,12 @@ open class BotBusMock(
 
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
+
+    override fun isCompatibleWith(connectorType: ConnectorType): Boolean =
+       context.connectorsCompatibleWith.contains(connectorType)
+
+    override fun send(event: Event, delayInMs: Long): BotBus =
+        if(event is Action) answer(event, delayInMs) else this
 
     /**
      * Run the [StoryHandler] of the current [story].
@@ -389,7 +397,7 @@ open class BotBusMock(
     }
 
     override fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
-        if (targetConnectorType == connectorType) {
+        if (targetConnectorType == connectorType || isCompatibleWith(connectorType)) {
             mockData.addMessage(messageProvider.invoke())
         }
         return this
@@ -400,7 +408,7 @@ open class BotBusMock(
         connectorId: String,
         messageProvider: () -> ConnectorMessage
     ): BotBus {
-        if (applicationId == connectorId && targetConnectorType == connectorType) {
+        if (applicationId == connectorId && (targetConnectorType == connectorType || isCompatibleWith(connectorType))) {
             mockData.addMessage(messageProvider.invoke())
         }
         return this

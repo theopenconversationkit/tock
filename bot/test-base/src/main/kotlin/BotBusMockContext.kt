@@ -52,7 +52,8 @@ data class BotBusMockContext(
     var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
     var connectorType: ConnectorType = defaultTestConnectorType,
     val testContext: TestContext = currentTestContext,
-    val snapshots: MutableList<Snapshot> = mutableListOf()
+    val snapshots: MutableList<Snapshot> = mutableListOf(),
+    val connectorsCompatibleWith: Set<ConnectorType> = setOf(connectorType),
 ) {
 
     constructor(
