@@ -16,7 +16,6 @@
 
 package ai.tock.bot.bean
 
-import ai.tock.bot.bean.unknown.UnknownHandlingStep
 import java.time.Instant
 
 data class TickSession(
@@ -25,6 +24,7 @@ data class TickSession(
     val ranHandlers: List<String> = emptyList(),
     val objectivesStack: List<String> = emptyList(),
     val init: Instant = Instant.now(),
-    val unknownHandlingStep: UnknownHandlingStep? = null
+    val unknownHandlingStep: UnknownHandlingStep? = null,
+    val handlingStep: TickActionHandlingStep? = null
 )
 

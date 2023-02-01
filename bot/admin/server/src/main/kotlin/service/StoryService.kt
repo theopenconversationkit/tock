@@ -17,15 +17,18 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.BotAdminService
+import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.bean.TickStory
+import ai.tock.bot.bean.TickStorySettings
 import ai.tock.bot.bean.TickStoryValidation
 import ai.tock.bot.bean.unknown.TickUnknownConfiguration
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.vertx.WebVerticle
@@ -36,6 +39,8 @@ import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.toId
 
+private const val TICK = "tick"
+
 /**
  * Service that manage the scenario functionality
  */
@@ -43,6 +48,35 @@ object StoryService {
 
     private val logger: KLogger = KotlinLogging.logger {}
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
+
+    private val applicationDefinitionDAO: ApplicationDefinitionDAO by injector.instance()
+
+    init {
+        /* On scenarioSettings changes, all TickStoryConfiguration must be updated */
+        ScenarioSettingsService.listenChanges { settings ->
+            storyDefinitionDAO.getStoryDefinitionByCategory(TICK)
+                .forEach { storyDefinition ->
+                    val answers: List<AnswerConfiguration> = storyDefinition.answers.map { answer ->
+                        if (answer.answerType == AnswerConfigurationType.tick) {
+                            (answer as TickAnswerConfiguration).copy(
+                                storySettings = TickStorySettings(
+                                    settings.actionRepetitionNumber,
+                                    settings.redirectStoryId
+                                )
+                            )
+                        } else {
+                            answer
+                        }
+                    }
+
+                    storyDefinitionDAO.save(
+                        storyDefinition.copy(
+                            answers = answers
+                        )
+                    )
+                }
+        }
+    }
 
     /**
      * Get a tick story
@@ -79,7 +113,7 @@ object StoryService {
      * Update the activation feature of story
      * @param namespace : the namespace
      * @param botId : the id of the bot
-     * @param features : features to add to the story
+     * @param feature : feature to add to the story
      */
     fun updateActivateStoryFeatureByNamespaceAndBotIdAndStoryId(
         namespace: String,
@@ -146,6 +180,9 @@ object StoryService {
         val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
         botConf ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: $namespace, botId = ${story.botId}]")
 
+        val application = applicationDefinitionDAO.getApplicationByNamespaceAndName(namespace, botConf.applicationId)
+            ?: WebVerticle.badRequest("No application is defined yet [namespace: $namespace, name = ${botConf.applicationId}]")
+
         val newStory =
             StoryDefinitionConfiguration(
                 storyId = story.storyId,
@@ -162,12 +199,14 @@ object StoryService {
                         story.actions,
                         story.intentsContexts,
                         TickUnknownConfiguration(story.unknownAnswerConfigs),
+                        storySettings = ScenarioSettingsService.getScenarioSettingsByApplicationId(application._id.toString())
+                            ?.let { TickStorySettings(it.actionRepetitionNumber, it.redirectStoryId) } ?: TickStorySettings(2),
                         debug = true,
                     )
                 ),
                 namespace = namespace,
                 name = story.name,
-                category = "tick",
+                category = TICK,
                 description = story.description,
             )
 

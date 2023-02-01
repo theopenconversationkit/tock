@@ -25,6 +25,8 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
 import ai.tock.bot.engine.dialog.TickState
+import ai.tock.bot.processor.Redirect
+import ai.tock.bot.processor.Success
 import ai.tock.bot.processor.TickStoryProcessor
 import java.time.Instant
 
@@ -33,10 +35,11 @@ object TickAnswerHandler {
     internal fun handle(
         botBus: BotBus,
         container: StoryDefinitionAnswersContainer,
-        configuration: TickAnswerConfiguration
+        configuration: TickAnswerConfiguration,
+        redirectFn : (String) -> Unit,
     ) {
         with(botBus) {
-            val intentName = botBus.intent?.intentWithoutNamespace()?.name!!
+            val intentName = botBus.currentIntent?.intentWithoutNamespace()?.name!!
             val story = container as StoryDefinitionConfiguration
             val endingStoryRuleExists = story.findEnabledEndWithStoryId(applicationId) != null
 
@@ -44,7 +47,7 @@ object TickAnswerHandler {
             val tickSession = initTickSession(dialog, story._id.toString())
 
             // Call the tick story processor
-            val (newTickSession, isFinal) =
+            val result =
                 TickStoryProcessor(
                     tickSession,
                     configuration.toTickConfiguration(),
@@ -56,8 +59,11 @@ object TickAnswerHandler {
                         parseEntities(entities, tickSession.init))
                 )
 
-            // Manage tick state
-            updateDialog(dialog, isFinal, story._id.toString(), newTickSession)
+            when (result) {
+                is Success -> updateDialog(dialog, result.isFinal, story._id.toString(), result.session)
+                is Redirect -> result.storyId?.let { redirectFn(it) }
+            }
+
         }
     }
 

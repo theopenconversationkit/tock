@@ -25,7 +25,6 @@ import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
-import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
@@ -514,17 +513,7 @@ object BotAdminService {
                     answers?.find { it.answerType == script } as? ScriptAnswerConfiguration
                 )
             is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
-            is BotTickAnswerConfiguration -> TickAnswerConfiguration(
-                stateMachine = this.stateMachine,
-                primaryIntents = this.primaryIntents,
-                secondaryIntents = this.secondaryIntents,
-                triggers = this.triggers,
-                contexts = this.contexts,
-                actions = this.actions,
-                intentsContexts = this.intentsContexts,
-                unknownHandleConfiguration = unknownHandleConfiguration,
-                debug = this.debug
-            )
+            is BotTickAnswerConfiguration -> toTickAnswerConfiguration()
             else -> error("unsupported type $this")
         }
 

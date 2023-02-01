@@ -77,4 +77,9 @@ interface StoryDefinitionConfigurationDAO {
      * Create the built-in stories if they don't exist yet.
      */
     fun createBuiltInStoriesIfNotExist(stories: List<StoryDefinitionConfiguration>)
+
+    /**
+     * Get all story definitions with a given category
+     */
+    fun getStoryDefinitionByCategory(category: String): List<StoryDefinitionConfiguration>
 }

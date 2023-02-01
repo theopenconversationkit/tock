@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.engine.dialog
+package ai.tock.bot.bean
 
-import ai.tock.bot.bean.UnknownHandlingStep
-import java.time.Instant
+import ai.tock.bot.bean.unknown.DEFAULT_RETRY_NB
 
-data class TickState(
-    val currentState: String,
-    val contexts: Map<String, String?>,
-    val ranHandlers: List<String>,
-    val objectivesStack: List<String>,
-    val init: Instant,
-    val unknownHandlingStep: UnknownHandlingStep?,
-    val finished : Boolean
-)
+@kotlinx.serialization.Serializable
+data class TickStorySettings(
+    val repetitionNb: Int,
+    val redirectStory: String? = null
+) {
+    companion object {
+        val default = TickStorySettings(DEFAULT_RETRY_NB)
+    }
+}

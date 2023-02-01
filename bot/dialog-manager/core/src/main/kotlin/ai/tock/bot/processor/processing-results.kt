@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.bean.unknown
+package ai.tock.bot.processor
+
+import ai.tock.bot.bean.TickSession
 
 /**
- * UnknownHandlingStep represents a step while a unknown intent is being handled
- * @param repeated the number of repetition of this step
- * @param answerConfig the unknown answer configuration attached to this step
+ * Result of Tick processing that can be
+ * - [Success] if the processing is successful
+ * - [Redirect] if a redirection is required
  */
-data class UnknownHandlingStep(
-    val repeated: Int = 1,
-    val answerConfig: UnknownAnswerConfig
-){
-    fun increment(): UnknownHandlingStep = this.copy(repeated = repeated + 1)
-}
+sealed class ProcessingResult
+
+data class Success(val session: TickSession, val isFinal: Boolean) : ProcessingResult()
+
+data class Redirect(val storyId: String?) : ProcessingResult()

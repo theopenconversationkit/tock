@@ -16,10 +16,7 @@
 
 package ai.tock.bot.processor
 
-import ai.tock.bot.bean.TickAction
-import ai.tock.bot.bean.TickConfiguration
-import ai.tock.bot.bean.TickSession
-import ai.tock.bot.bean.TickUserAction
+import ai.tock.bot.bean.*
 import ai.tock.bot.graphsolver.GraphSolver
 import ai.tock.bot.handler.ActionHandlersRepository
 import ai.tock.bot.sender.TickSender
@@ -47,18 +44,19 @@ class TickStoryProcessor(
     private val stateMachine: StateMachine = StateMachine(configuration.stateMachine)
     private var currentState = session.currentState ?: getGlobalState()
     private var unknownHandlingStep = session.unknownHandlingStep
+    private var handlingStep = session.handlingStep ?: TickActionHandlingStep(0, currentState)
 
     /**
      * the main function to process the user action
      */
-    fun process (tickUserAction : TickUserAction?): Pair<TickSession, Boolean> {
+    fun process (tickUserAction : TickUserAction?): ProcessingResult {
 
         logger.debug("objectivesStack: $objectivesStack")
 
         // Handle unknown intent
-        var secondaryObjective = handleUnknown(tickUserAction)?.let {(session, objective) ->
-            if (session != null) return session to false
-            return@let objective
+        handleUnknown(tickUserAction)?.let {(session, redirectStoryId) ->
+            if (session != null) return Success(session, false)
+            if (redirectStoryId != null) return Redirect(redirectStoryId)
         }
 
         val primaryObjective: String = if(tickUserAction != null) {
@@ -77,13 +75,32 @@ class TickStoryProcessor(
         // Call to clyngor to get the secondary objective.
         // Randomly choose one among the multiple results
 
-        secondaryObjective = secondaryObjective ?: GraphSolver.solve(
+        val secondaryObjective =  GraphSolver.solve(
             ranHandlers.lastOrNull(),
             configuration.actions,
             contextNames,
             getTickAction(primaryObjective),
             ranHandlers.toSet()
         ).random()
+
+        /*
+        Sets the current handling step
+            If the current handling step has the same linked action as the secondary objective,
+                then the current handling step is incremented
+                    If the action is repeated more than the maximum number of repetitions
+                        then a redirection is required
+            Else, the current handling step is set to a new handling step with the secondary objective as linked action
+        */
+        handlingStep = if (handlingStep.action == secondaryObjective) {
+            with(configuration.storySettings) {
+                if (handlingStep.repeated > repetitionNb) {
+                    return Redirect(redirectStory)
+                }
+            }
+            handlingStep.next() as TickActionHandlingStep
+        } else {
+            TickActionHandlingStep(action =  secondaryObjective)
+        }
 
         // TODO : End of recursion if tickUserAction = null and (primaryObjective,secondaryObjective) = last(primaryObjective,secondaryObjective)
         // TODO : A faire avec la JIRA DERCBOT-300  (voir commentaire sur la revue de code)
@@ -111,8 +128,8 @@ class TickStoryProcessor(
         } else  if(executedAction.isSilent()){
             process(null)
         } else {
-            Pair(
-                TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList()),
+            Success(
+                TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList(), handlingStep = handlingStep),
                 executedAction.final)
         }
 
@@ -271,17 +288,18 @@ class TickStoryProcessor(
 
     private fun handleUnknown(action: TickUserAction?): Pair<TickSession?, String?>? =
         if (configuration.unknownHandleConfiguration.unknownIntents().contains(action?.intentName)) {
-            val (handlingStep, exitAction) = TickUnknownHandler.handle(
+            val (step, redirectStoryId) = TickUnknownHandler.handle(
                 lastExecutedActionName = ranHandlers.last(),
                 unknownConfiguration = configuration.unknownHandleConfiguration,
                 sender = sender,
-                unknownHandlingStep = unknownHandlingStep
+                unknownHandlingStep = unknownHandlingStep,
+                storySettings =  configuration.storySettings
             )
 
-            if (handlingStep != null) {
-                TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList(), unknownHandlingStep = handlingStep) to null
-            } else if (exitAction != null) {
-                 Pair(null, exitAction)
+            if (step != null) {
+                TickSession(currentState, contextNames, ranHandlers, objectivesStack.toList(), unknownHandlingStep = step, handlingStep = this.handlingStep) to null
+            } else if (redirectStoryId != null) {
+                 Pair(null, redirectStoryId)
             } else null
         } else {
             null

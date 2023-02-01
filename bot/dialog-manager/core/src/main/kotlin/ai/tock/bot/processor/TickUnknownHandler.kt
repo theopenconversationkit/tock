@@ -16,10 +16,11 @@
 
 package ai.tock.bot.processor
 
+import ai.tock.bot.bean.TickStorySettings
+import ai.tock.bot.bean.UnknownHandlingStep
 import ai.tock.bot.bean.unknown.ConfigMismatchedError
 import ai.tock.bot.bean.unknown.RetryExceededError
 import ai.tock.bot.bean.unknown.TickUnknownConfiguration
-import ai.tock.bot.bean.unknown.UnknownHandlingStep
 import ai.tock.bot.sender.TickSender
 
 /**
@@ -29,14 +30,15 @@ object TickUnknownHandler {
 
     data class UnknownHandleResult(
         val handlingStep: UnknownHandlingStep? = null,
-        val exitAction: String? = null
+        val redirectStoryId: String? = null
     )
 
     fun handle(
         lastExecutedActionName: String,
         unknownConfiguration: TickUnknownConfiguration,
         sender: TickSender,
-        unknownHandlingStep: UnknownHandlingStep?
+        unknownHandlingStep: UnknownHandlingStep?,
+        storySettings: TickStorySettings
     ): UnknownHandleResult =
         /*
         Get the unknownAnswerConfig for the lastExecutedAction name
@@ -56,20 +58,20 @@ object TickUnknownHandler {
                             if(step.answerConfig notEq answerConfig) throw ConfigMismatchedError()
 
                             /*
-                            When the answer's retryNb is not exceeded,
-                                increment the repeated property of the step by calling the again() method on it
-                            Else set the step to null and return the exitAction of the answerConfig
+                            When the answer's repetitionNb is not exceeded,
+                                increment the repeated property of the step by calling the next() method on it
+                            Else set the step to null and return the redirectStoryId
                             */
-                            if (answerConfig.retryNb > step.repeated)
-                                UnknownHandleResult(handlingStep = step.increment())
+                            if (storySettings.repetitionNb > step.repeated)
+                                UnknownHandleResult(handlingStep = step.next() as UnknownHandlingStep)
                             else
-                                answerConfig.exitAction?.let { UnknownHandleResult(exitAction = it) } ?: throw RetryExceededError()
+                                storySettings.redirectStory?.let { UnknownHandleResult(redirectStoryId = it) } ?: throw RetryExceededError()
 
                         } ?:
                         /*
-                        If no unknowHandlingStep has provided, create a new Step
+                        If no unknownHandlingStep has provided, create a new Step
                         */
-                        UnknownHandleResult(handlingStep = UnknownHandlingStep(1, answerConfig))
+                        UnknownHandleResult(handlingStep = UnknownHandlingStep(answerConfig =  answerConfig))
                         )
                     .also { result ->
                         result.handlingStep?.let { step -> sender.endById(step.answerConfig.answerId) }
