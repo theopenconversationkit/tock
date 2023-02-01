@@ -667,7 +667,7 @@ internal class TickStoryProcessorTest {
             verify(exactly = 1) { sender.endById(answerConfig2.answerId) }
         }
 
-        TestCase<TickStoryProcessor, ProcessingResult>("process when executedAction with no trigger and no handler")
+        TestCase<TickStoryProcessor, ProcessingResult>("process when unknown intent is detected and unknownAnswerConfig is provided")
 
             .given("""
     - current state is "state2"
@@ -911,7 +911,7 @@ internal class TickStoryProcessorTest {
             verify(exactly = 1) { sender.endById(answerConfig2.answerId) }
         }
 
-        TestCase<TickStoryProcessor, ProcessingResult>("process when executedAction with no trigger and no handler")
+        TestCase<TickStoryProcessor, ProcessingResult>("process when unknown intent is detected and unknownHandlingStep already exist")
 
             .given("""
     - current state is "state2"

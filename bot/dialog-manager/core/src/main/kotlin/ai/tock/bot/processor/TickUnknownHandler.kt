@@ -58,7 +58,7 @@ object TickUnknownHandler {
                             if(step.answerConfig notEq answerConfig) throw ConfigMismatchedError()
 
                             /*
-                            When the answer's retryNb is not exceeded,
+                            When the answer's repetitionNb is not exceeded,
                                 increment the repeated property of the step by calling the next() method on it
                             Else set the step to null and return the redirectStoryId
                             */
