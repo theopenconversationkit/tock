@@ -38,7 +38,7 @@ import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.message.Message
+import ai.tock.bot.engine.event.ExitEvent
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.Entity
@@ -129,10 +129,17 @@ open class BotBusMock(
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
 
     override fun isCompatibleWith(connectorType: ConnectorType): Boolean =
-       context.connectorsCompatibleWith.contains(connectorType)
+        context.connectorsCompatibleWith.contains(connectorType)
 
     override fun send(event: Event, delayInMs: Long): BotBus =
-        if(event is Action) answer(event, delayInMs) else this
+        if (event is Action) {
+            answer(event, delayInMs)
+        } else {
+            if (event is ExitEvent) {
+                endCount++
+            }
+            this
+        }
 
     /**
      * Run the [StoryHandler] of the current [story].
