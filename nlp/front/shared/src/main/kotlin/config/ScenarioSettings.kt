@@ -33,7 +33,7 @@ data class ScenarioSettings (
     val applicationId: Id<ApplicationDefinition>,
 
     /**
-     * The number of authorized repetition of on action.
+     * The number of authorized repetition of an action.
      */
     val actionRepetitionNumber: Int,
 

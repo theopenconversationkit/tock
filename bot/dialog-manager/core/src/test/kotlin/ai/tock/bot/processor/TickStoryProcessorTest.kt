@@ -696,7 +696,7 @@ internal class TickStoryProcessorTest {
     }
 
     @Test
-    fun `process when unknown intent is detected and unknownAnswerConfig is not provided `() {
+    fun `process when unknown intent is detected and unknownAnswerConfig is not provided`() {
 
         val msgCapture = slot<String>()
 
@@ -785,7 +785,7 @@ internal class TickStoryProcessorTest {
             verify(exactly = 0) { sender.sendById(answerConfig2.answerId) }
         }
 
-        TestCase<TickStoryProcessor, ProcessingResult>("process when executedAction with no trigger and no handler")
+        TestCase<TickStoryProcessor, ProcessingResult>("process when unknown intent is detected and unknownAnswerConfig is not provided")
 
             .given("""
     - current state is "state2"
