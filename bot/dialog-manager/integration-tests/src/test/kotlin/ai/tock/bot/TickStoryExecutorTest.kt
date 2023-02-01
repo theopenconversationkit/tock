@@ -22,7 +22,9 @@ import ai.tock.bot.bean.TickSession
 import ai.tock.bot.bean.TickStory
 import ai.tock.bot.bean.TickStoryValidation
 import ai.tock.bot.bean.TickUserAction
+import ai.tock.bot.bean.TickStorySettings
 import ai.tock.bot.bean.unknown.TickUnknownConfiguration
+import ai.tock.bot.processor.Success
 import ai.tock.bot.processor.TickStoryProcessor
 import ai.tock.bot.sender.TickSenderDefault
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -70,20 +72,21 @@ class TickStoryExecutorTest {
 
         val sender = TickSenderDefault()
         // Call the tick story processor
-        val (newTickSession, isFinal) =
-            TickStoryProcessor(
-                tickSession,
-                TickConfiguration(
-                    stateMachine = tickStory.stateMachine,
-                    contexts = tickStory.contexts,
-                    actions = tickStory.actions,
-                    intentsContexts = tickStory.intentsContexts,
-                    unknownHandleConfiguration = TickUnknownConfiguration(tickStory.unknownAnswerConfigs),
-                    debug = false
-                ),
-                sender,
-                false
-            ).process(tickUserAction)
+
+        val result = TickStoryProcessor(
+            tickSession,
+            TickConfiguration(
+                stateMachine = tickStory.stateMachine,
+                contexts = tickStory.contexts,
+                actions = tickStory.actions,
+                intentsContexts = tickStory.intentsContexts,
+                unknownHandleConfiguration = TickUnknownConfiguration(tickStory.unknownAnswerConfigs),
+                storySettings = TickStorySettings(2),
+                debug = false
+            ),
+            sender,
+            false
+        ).process(tickUserAction) as Success
 
 
 
@@ -94,7 +97,7 @@ class TickStoryExecutorTest {
 
         logger.info {"${tickStory.name} [${dialog.id}] -> SUCCESS" }
 
-        return if(isFinal) TickSession() else newTickSession
+        return if(result.isFinal) TickSession() else result.session
     }
 
 

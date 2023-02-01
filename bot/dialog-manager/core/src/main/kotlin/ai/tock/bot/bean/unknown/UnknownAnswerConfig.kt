@@ -30,24 +30,17 @@ data class UnknownAnswerConfig(
     */
     val action: String,
     /*
-    Action to execute when the unknownAnswer has been repeated more than its retryNb
-     */
-    val exitAction: String? = null,
-    /*
      Answer text
      */
     val answerId: String,
-    /*
-    Permitted retry number; 2 by default
-     */
-    val retryNb: Int = DEFAULT_RETRY_NB
+
 
 ): Comparable<UnknownAnswerConfig> {
 
     /**
      * Handler key is a composition of its intent value and its action value
      */
-    private fun key() = "${intent}_${action}"
+    fun key() = "${intent}_${action}"
 
     /**
      * Key is the handler identity

@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.engine.dialog
+package ai.tock.nlp.front.shared.config
 
-import ai.tock.bot.bean.UnknownHandlingStep
-import java.time.Instant
-
-data class TickState(
-    val currentState: String,
-    val contexts: Map<String, String?>,
-    val ranHandlers: List<String>,
-    val objectivesStack: List<String>,
-    val init: Instant,
-    val unknownHandlingStep: UnknownHandlingStep?,
-    val finished : Boolean
+data class ScenarioSettingsQuery(
+    val actionRepetitionNumber: Int,
+    val redirectStoryId: String? = null
 )

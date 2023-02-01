@@ -22,6 +22,7 @@ import ai.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import ai.tock.nlp.front.service.storage.IntentDefinitionDAO
 import ai.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import ai.tock.nlp.front.service.storage.ParseRequestLogDAO
+import ai.tock.nlp.front.service.storage.ScenarioSettingsDAO
 import ai.tock.nlp.front.service.storage.TestModelDAO
 import ai.tock.nlp.front.service.storage.UserActionLogDAO
 import ai.tock.nlp.front.service.storage.UserNamespaceDAO
@@ -53,4 +54,5 @@ val frontMongoModule = Kodein.Module {
     bind<FaqDefinitionDAO>() with provider { FaqDefinitionMongoDAO }
     bind<FaqSettingsDAO>() with provider { FaqSettingsMongoDAO }
     bind<NamespaceConfigurationDAO>() with provider { NamespaceConfigurationMongoDAO }
+    bind<ScenarioSettingsDAO>() with provider { ScenarioSettingsMongoDAO }
 }

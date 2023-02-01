@@ -17,9 +17,9 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.AbstractTest
-import ai.tock.bot.admin.AbstractTest.Companion.defaultModulesBinding
 import ai.tock.bot.admin.scenario.*
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.nlp.front.service.storage.ScenarioSettingsDAO
 import ai.tock.shared.exception.scenario.group.ScenarioGroupAndVersionMismatchException
 import ai.tock.shared.exception.scenario.group.ScenarioGroupDuplicatedException
 import ai.tock.shared.exception.scenario.group.ScenarioGroupNotFoundException
@@ -27,7 +27,6 @@ import ai.tock.shared.exception.scenario.group.ScenarioGroupWithoutVersionExcept
 import ai.tock.shared.exception.scenario.version.ScenarioVersionBadStateException
 import ai.tock.shared.exception.scenario.version.ScenarioVersionNotFoundException
 import ai.tock.shared.exception.scenario.version.ScenarioVersionsInconsistentException
-import ai.tock.shared.injector
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.*
 import io.mockk.*
@@ -50,10 +49,8 @@ class ScenarioServiceTest: AbstractTest() {
     private val namespace = "namespace_app"
     private val botId1 = "botId1"
     private val botId2 = "botId2"
-
     private val groupId1 = "groupId1"
     private val groupId2 = "groupId2"
-    private val groupId3 = "groupId3"
     private val versionId1 = "versionId1"
     private val versionId2 = "versionId2"
     private val versionId3 = "versionId3"
@@ -87,12 +84,14 @@ class ScenarioServiceTest: AbstractTest() {
     companion object {
 
         private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk()
+        private val scenarioSettingsDAO: ScenarioSettingsDAO = mockk()
 
         init {
             tockInternalInjector = KodeinInjector()
             val module = Kodein.Module {
                 bind<ScenarioGroupDAO>() with singleton { mockk() }
                 bind<ScenarioVersionDAO>() with singleton { mockk() }
+                bind<ScenarioSettingsDAO>() with singleton { scenarioSettingsDAO }
                 bind<StoryDefinitionConfigurationDAO>() with singleton { storyDefinitionConfigurationDAO }
             }
             tockInternalInjector.inject(
@@ -106,10 +105,11 @@ class ScenarioServiceTest: AbstractTest() {
 
     @BeforeEach
     fun setUp() {
+        every { scenarioSettingsDAO.listenChanges(any()) } answers {}
         mockkObject(ScenarioGroupService)
         mockkObject(ScenarioVersionService)
         mockkObject(StoryService)
-
+        mockkObject(ScenarioSettingsService)
     }
 
     @AfterEach
@@ -118,6 +118,7 @@ class ScenarioServiceTest: AbstractTest() {
     }
 
     @Test fun `importOneScenarioGroup WHEN has no versions THEN throw exception`() {
+
         // GIVEN
         val scenarioGroupWithoutVersions = scenarioGroup1.copy(versions = emptyList())
         // WHEN // THEN
