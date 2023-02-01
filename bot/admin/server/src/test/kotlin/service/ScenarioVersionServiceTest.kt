@@ -57,7 +57,6 @@ class ScenarioVersionServiceTest {
     private val scenarioVersion3Copy = scenarioVersion3.copy(data = "DATA-COPY", comment = "comment-Copy",
         state = ScenarioVersionState.ARCHIVED)
 
-    private val scenarioVersionService: ScenarioVersionService by injector.instance()
 
     companion object {
         private val scenarioVersionDAO: ScenarioVersionDAO = mockk(relaxed = true)
@@ -86,7 +85,7 @@ class ScenarioVersionServiceTest {
         val versions = listOf(scenarioVersion1, scenarioVersion2, scenarioVersion3)
         every { scenarioVersionDAO.createMany(versions) } returns versions
         // WHEN
-        val result = scenarioVersionService.createMany(versions)
+        val result = ScenarioVersionService.createMany(versions)
         // THEN
         assertEquals(versions, result)
         verify(exactly = 1) { scenarioVersionDAO.createMany(versions) }
@@ -96,7 +95,7 @@ class ScenarioVersionServiceTest {
         // GIVEN
         every { scenarioVersionDAO.createOne(scenarioVersion1) } returns scenarioVersion1
         // WHEN
-        val result = scenarioVersionService.createOne(scenarioVersion1)
+        val result = ScenarioVersionService.createOne(scenarioVersion1)
         // THEN
         assertEquals(scenarioVersion1, result)
         verify(exactly = 1) { scenarioVersionDAO.createOne(scenarioVersion1) }
@@ -107,7 +106,7 @@ class ScenarioVersionServiceTest {
         val versions = listOf(scenarioVersion1, scenarioVersion2)
         every { scenarioVersionDAO.findAllByScenarioGroupIdAndState(groupId1, ScenarioVersionState.DRAFT) } returns versions
         // WHEN
-        val result = scenarioVersionService.findAllByScenarioGroupIdAndState(groupId1.toString(), ScenarioVersionState.DRAFT)
+        val result = ScenarioVersionService.findAllByScenarioGroupIdAndState(groupId1.toString(), ScenarioVersionState.DRAFT)
         // THEN
         assertEquals(versions, result)
         verify(exactly = 1) { scenarioVersionDAO.findAllByScenarioGroupIdAndState(groupId1, ScenarioVersionState.DRAFT) }
@@ -117,7 +116,7 @@ class ScenarioVersionServiceTest {
         // GIVEN
         every { scenarioVersionDAO.findOneById(versionId1) } returns scenarioVersion1
         // WHEN
-        val result = scenarioVersionService.findOneById(versionId1.toString())
+        val result = ScenarioVersionService.findOneById(versionId1.toString())
         // THEN
         assertEquals(scenarioVersion1, result)
         verify(exactly = 1) { scenarioVersionDAO.findOneById(versionId1) }
@@ -128,7 +127,7 @@ class ScenarioVersionServiceTest {
         every { scenarioVersionDAO.findOneById(versionId1) } returns null
         // WHEN // THEN
         assertThrows<ScenarioVersionNotFoundException> {
-            scenarioVersionService.findOneById(versionId1.toString())
+            ScenarioVersionService.findOneById(versionId1.toString())
         }
         verify(exactly = 1) { scenarioVersionDAO.findOneById(versionId1) }
     }
@@ -137,7 +136,7 @@ class ScenarioVersionServiceTest {
         // GIVEN
         every { scenarioVersionDAO.countAllByScenarioGroupId(groupId1) } returns 10
         // WHEN
-        val result = scenarioVersionService.countAllByScenarioGroupId(groupId1.toString())
+        val result = ScenarioVersionService.countAllByScenarioGroupId(groupId1.toString())
         // THEN
         assertEquals(10, result)
         verify(exactly = 1) { scenarioVersionDAO.countAllByScenarioGroupId(groupId1) }
@@ -147,7 +146,7 @@ class ScenarioVersionServiceTest {
         // GIVEN
         every { scenarioVersionDAO.updateOne(scenarioVersion3Copy) } returns scenarioVersion3Copy
         // WHEN
-        val result = scenarioVersionService.updateOne(scenarioVersion3Copy)
+        val result = ScenarioVersionService.updateOne(scenarioVersion3Copy)
         // THEN
         assertEquals(scenarioVersion3Copy, result)
         verify(exactly = 1) { scenarioVersionDAO.updateOne(scenarioVersion3Copy) }
@@ -158,7 +157,7 @@ class ScenarioVersionServiceTest {
         every { scenarioVersionDAO.updateOne(scenarioVersion3Copy) } throws ScenarioVersionNotFoundException(versionId1.toString())
         // WHEN // THEN
         assertThrows<ScenarioVersionNotFoundException> {
-            scenarioVersionService.updateOne(scenarioVersion3Copy)
+            ScenarioVersionService.updateOne(scenarioVersion3Copy)
         }
         verify(exactly = 1) { scenarioVersionDAO.updateOne(scenarioVersion3Copy) }
     }
@@ -167,7 +166,7 @@ class ScenarioVersionServiceTest {
         // GIVEN
         every { scenarioVersionDAO.deleteAllByScenarioGroupId(groupId1) } returns Unit
         // WHEN
-        scenarioVersionService.deleteAllByScenarioGroupId(groupId1.toString())
+        ScenarioVersionService.deleteAllByScenarioGroupId(groupId1.toString())
         // THEN
         verify(exactly = 1) { scenarioVersionDAO.deleteAllByScenarioGroupId(groupId1) }
     }
@@ -177,7 +176,7 @@ class ScenarioVersionServiceTest {
         every { scenarioVersionDAO.deleteAllByScenarioGroupId(groupId1) } throws ScenarioVersionNotFoundException(versionId1.toString())
         // WHEN // THEN
         assertThrows<ScenarioVersionNotFoundException> {
-            scenarioVersionService.deleteAllByScenarioGroupId(groupId1.toString())
+            ScenarioVersionService.deleteAllByScenarioGroupId(groupId1.toString())
         }
         verify(exactly = 1) { scenarioVersionDAO.deleteAllByScenarioGroupId(groupId1) }
     }
@@ -186,7 +185,7 @@ class ScenarioVersionServiceTest {
         // GIVEN
         every { scenarioVersionDAO.deleteOneById(versionId1) } returns Unit
         // WHEN
-        scenarioVersionService.deleteOneById(versionId1.toString())
+        ScenarioVersionService.deleteOneById(versionId1.toString())
         // THEN
         verify(exactly = 1) { scenarioVersionDAO.deleteOneById(versionId1) }
     }
@@ -196,7 +195,7 @@ class ScenarioVersionServiceTest {
         every { scenarioVersionDAO.deleteOneById(versionId1) } throws ScenarioVersionNotFoundException(versionId1.toString())
         // WHEN // THEN
         assertThrows<ScenarioVersionNotFoundException> {
-            scenarioVersionService.deleteOneById(versionId1.toString())
+            ScenarioVersionService.deleteOneById(versionId1.toString())
         }
         verify(exactly = 1) { scenarioVersionDAO.deleteOneById(versionId1) }
     }

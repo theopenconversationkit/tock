@@ -53,20 +53,9 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import io.mockk.CapturingSlot
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.justRun
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.spyk
-import io.mockk.verify
+import io.mockk.*
 import org.apache.commons.lang3.StringUtils
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -85,7 +74,7 @@ class FaqAdminServiceTest : AbstractTest() {
         val intentDAO: IntentDefinitionDAO = mockk(relaxed = false)
         val i18nDAO: I18nDAO = mockk(relaxed = false)
         val faqSettingsDAO: FaqSettingsDAO = mockk(relaxed = true)
-        //val storyService: StoryService = mockk(relaxed = true)
+
 
         init {
             // IOC
@@ -104,6 +93,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 import(specificModule)
             })
         }
+
 
         private val applicationId = newId<ApplicationDefinition>()
         private val botId ="botId"
@@ -488,6 +478,16 @@ class FaqAdminServiceTest : AbstractTest() {
 
     @Nested
     inner class DeleteFaq {
+
+        @BeforeEach
+        fun setUp() {
+            mockkObject(StoryService)
+        }
+
+        @AfterEach
+        fun tearDown() {
+            clearAllMocks()
+        }
 
         private fun initDeleteFaqMock(
             mockedIntentDefinition: IntentDefinition? = existingIntent,
