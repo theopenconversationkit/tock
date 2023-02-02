@@ -22,16 +22,16 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-docker</artifactId>
-    <version>22.9.3-SNAPSHOT</version>
+    <version>22.9.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <major>22.9-SNAPSHOT</major>
         <latest>latest-SNAPSHOT</latest>
-        <tock>22.9.3-SNAPSHOT</tock>
-        <bot-open-data>22.9.3-SNAPSHOT</bot-open-data>
-        <stanford>22.9.3-SNAPSHOT</stanford>
+        <tock>22.9.5-SNAPSHOT</tock>
+        <bot-open-data>22.9.5-SNAPSHOT</bot-open-data>
+        <stanford>22.9.5-SNAPSHOT</stanford>
         <demo>22.9.0</demo>
 
         <jackson>2.13.4</jackson>
