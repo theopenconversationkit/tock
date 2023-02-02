@@ -30,6 +30,7 @@ export class Application {
     public supportSubEntities: boolean,
     public unknownIntentThreshold: number,
     public normalizeText: boolean,
+    public namespaceIntents: Intent[],
     public _id?: string
   ) {}
 
@@ -46,8 +47,13 @@ export class Application {
       this.supportSubEntities,
       this.unknownIntentThreshold,
       this.normalizeText,
+      this.namespaceIntents,
       this._id
     );
+  }
+
+  isOtherNamespaceIntent(intent: Intent) : boolean {
+    return this.namespaceIntents.findIndex(i => i.namespace === intent.namespace && i.name === intent.name) !== -1;
   }
 
   removeIntentById(id: string) {
@@ -69,7 +75,7 @@ export class Application {
   }
 
   intentById(id: string): Intent {
-    return this.intents.find((i) => i._id === id);
+    return this.intents.find((i) => i._id === id)
   }
 
   supportLocale(locale: string): boolean {
@@ -110,7 +116,8 @@ export class Application {
     const result = Object.assign(value, json, {
       intents: Intent.fromJSONArray(json.intents),
       nlpEngineType: NlpEngineType.fromJSON(json.nlpEngineType),
-      label: json.label || json.name
+      label: json.label || json.name,
+      namespaceIntents: Intent.fromJSONArray(json.namespaceIntents),
     });
 
     return result;

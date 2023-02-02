@@ -107,7 +107,7 @@ button:focus {
 }
 
 .entities {
-  width: 30%;
+  width: 25%;
   text-align: center;
 }
 
@@ -116,5 +116,5 @@ button:focus {
 }
 
 .intent {
-  width: 15%;
+  width: 200px
 }

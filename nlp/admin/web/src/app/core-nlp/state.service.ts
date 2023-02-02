@@ -58,6 +58,7 @@ export class StateService implements AuthListener {
   readonly entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
   readonly currentIntents: BehaviorSubject<Intent[]> = new BehaviorSubject([]);
   readonly currentIntentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
+  readonly currentNamespaceIntentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
   readonly configurationChange: Subject<boolean> = new Subject();
 
   currentApplication: Application;
@@ -138,6 +139,16 @@ export class StateService implements AuthListener {
     this.currentIntentsCategories.next(
       categories.sort((a, b) => a.category.localeCompare(b.category))
     );
+
+    const namespaceCategories = [];
+    groupBy(this.currentApplication.intents.concat(this.currentApplication.namespaceIntents), (i) => (i.category ? i.category : 'default')).forEach(
+      (intents, category) => {
+        namespaceCategories.push(new IntentsCategory(category, intents));
+      }
+    );
+    this.currentNamespaceIntentsCategories.next(
+      namespaceCategories.sort((a, b) => a.category.localeCompare(b.category))
+    );
   }
 
   addIntent(intent: Intent) {
@@ -158,6 +169,14 @@ export class StateService implements AuthListener {
 
   findIntentById(id: string): Intent {
     return this.currentApplication.intents.find((i) => i._id === id);
+  }
+
+  findSharedNamespaceIntentById(id: string): Intent {
+    return this.findIntentById(id) ?? this.currentApplication.namespaceIntents.find((i) => i._id === id);
+  }
+
+  isOtherNamespaceIntent(intent: Intent) : boolean {
+    return intent && this.currentApplication.isOtherNamespaceIntent(intent);
   }
 
   findIntentByName(name: string): Intent {

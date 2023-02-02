@@ -58,11 +58,11 @@ import ai.tock.shared.normalize
 import ai.tock.shared.provide
 import ai.tock.shared.withNamespace
 import ai.tock.shared.withoutNamespace
+import mu.KotlinLogging
+import org.litote.kmongo.toId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
-import mu.KotlinLogging
-import org.litote.kmongo.toId
 
 /**
  *
@@ -205,7 +205,7 @@ object ParserService : Parser {
                 .sentences
                 .firstOrNull()
 
-            val intents = ConfigurationRepository.getIntentsByApplicationId(application._id)
+            val intents = ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id)
 
             val callContext = CallContext(
                 toApplication(application),
@@ -361,7 +361,7 @@ object ParserService : Parser {
                 EntityEvaluationContext(
                     referenceDate,
                     referenceDateByEntityMap = getReferenceDateByEntityMap(
-                        ConfigurationRepository.getIntentsByApplicationId(application._id),
+                        ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id),
                         referenceDate
                     )
                 )
@@ -394,7 +394,7 @@ object ParserService : Parser {
                 EntityEvaluationContext(
                     referenceDate,
                     referenceDateByEntityMap = getReferenceDateByEntityMap(
-                        ConfigurationRepository.getIntentsByApplicationId(application._id),
+                        ConfigurationRepository.getSharedNamespaceIntentsByApplicationId(application._id),
                         referenceDate
                     )
                 )

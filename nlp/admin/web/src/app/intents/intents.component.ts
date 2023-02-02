@@ -69,7 +69,7 @@ export class IntentsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.state.currentIntentsCategories.subscribe((it) => {
+    this.state.currentNamespaceIntentsCategories.subscribe((it) => {
       this.nodes = Array.from(it, (element) => {
         return {
           expanded: element.category === 'default',

@@ -74,7 +74,7 @@
       <tock-search-filter
         [groups]="intentGroups()"
         (filterChange)="changeIntentFilter($event)"
-        [selectedValue]="selectedValueLabel"
+        [selectedValue]="selectedIntentLabel"
         [activeFirst]="true"
         [cleanupIfSelected]="true"
         name="Intent"
@@ -244,6 +244,7 @@
       Unknown
     </button>
     <button
+      [disabled]="state.isOtherNamespaceIntent(selectedIntent)"
       nbButton
       status="primary"
       size="small"
@@ -254,6 +255,7 @@
       Validate
     </button>
     <button
+      [disabled]="state.isOtherNamespaceIntent(selectedIntent)"
       nbButton
       outline
       status="primary"

@@ -195,7 +195,7 @@ interface ApplicationConfiguration {
      * Load the configuration cache.
      * @return true if configuration is correctly initialized
      */
-    fun initializeConfiguration() : Boolean
+    fun initializeConfiguration(): Boolean
 
     /**
      * Returns the current model configuration.
@@ -266,7 +266,10 @@ interface ApplicationConfiguration {
 
     fun saveNamespaceConfiguration(configuration: NamespaceConfiguration)
 
-    fun getNamespaceConfiguration(namespace: String) : NamespaceConfiguration?
+    fun getNamespaceConfiguration(namespace: String): NamespaceConfiguration?
 
-    fun getSharableNamespaceConfiguration() : List<NamespaceConfiguration>
+    fun getSharableNamespaceConfiguration(): List<NamespaceConfiguration>
+
+    fun getModelSharedIntents(namespace: String): List<IntentDefinition>
+    fun getSentencesForModel(application: ApplicationDefinition, language: Locale): List<ClassifiedSentence>
 }

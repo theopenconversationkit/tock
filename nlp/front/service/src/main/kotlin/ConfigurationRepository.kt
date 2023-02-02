@@ -56,6 +56,9 @@ internal object ConfigurationRepository {
     @Volatile
     private var intentsByApplicationId: Map<Id<ApplicationDefinition>, List<IntentDefinition>> = HashMap()
 
+    @Volatile
+    private var intentsSharedNamespaceByApplicationId: Map<Id<ApplicationDefinition>, List<IntentDefinition>> = HashMap()
+
     fun refreshEntityTypes() {
         entityTypes = loadEntityTypes()
     }
@@ -83,11 +86,29 @@ internal object ConfigurationRepository {
 
         intentsById = HashMap(byId)
         intentsByApplicationId = HashMap(byApplicationId)
+
+        refreshIntentsSharedByApplications()
+    }
+
+    private fun refreshIntentsSharedByApplications() {
+        val byApplicationId = mutableMapOf<Id<ApplicationDefinition>, List<IntentDefinition>>()
+
+        applicationDAO
+            .getApplications().forEach { app ->
+                val sharedIntents = ApplicationConfigurationService.getModelSharedIntents(app.namespace)
+                if(sharedIntents.isEmpty()) {
+                    byApplicationId[app._id] = intentsByApplicationId[app._id] ?: emptyList()
+                } else {
+                    byApplicationId[app._id] =((intentsByApplicationId[app._id] ?: emptyList()) + sharedIntents).distinct()
+                }
+            }
+
+        intentsSharedNamespaceByApplicationId = HashMap(byApplicationId)
     }
 
     private fun loadEntityTypes(): ConcurrentHashMap<String, EntityType?> {
         logger.debug { "load entity types" }
-        val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap()
+        val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().associateBy { it.name }
         // init subEntities only when all entities are known
         val entityTypesMap =
             entityTypesDefinitionMap.mapValues { (_, v) ->
@@ -147,7 +168,7 @@ internal object ConfigurationRepository {
     }
 
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
-        val intentDefinitions = getIntentsByApplicationId(applicationDefinition._id)
+        val intentDefinitions = getSharedNamespaceIntentsByApplicationId(applicationDefinition._id)
         val intents = intentDefinitions.map {
             Intent(
                 it.qualifiedName,
@@ -199,6 +220,10 @@ internal object ConfigurationRepository {
         return intentsByApplicationId[applicationId] ?: config.getIntentsByApplicationId(applicationId)
     }
 
+    fun getSharedNamespaceIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
+        return intentsSharedNamespaceByApplicationId[applicationId] ?: config.getIntentsByApplicationId(applicationId)
+    }
+
     fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? {
         return intentsById[id] ?: config.getIntentById(id)
     }
@@ -223,6 +248,7 @@ internal object ConfigurationRepository {
             entityTypeDAO.listenEntityTypeChanges { refreshEntityTypes() }
             applicationDAO.listenApplicationDefinitionChanges { refreshApplications() }
             intentDAO.listenIntentDefinitionChanges { refreshIntents() }
+            namespaceConfigurationDAO.listenNamespaceConfigurationChanges { refreshIntentsSharedByApplications() }
 
             injector.provide<DictionaryRepository>().updateData(entityTypeDAO.getAllDictionaryData())
             entityTypeDAO.listenDictionaryDataChanges {

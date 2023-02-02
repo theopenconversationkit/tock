@@ -21,7 +21,7 @@
   <parent>
     <groupId>ai.tock</groupId>
     <artifactId>tock-bot-admin</artifactId>
-    <version>22.9.3-SNAPSHOT</version>
+    <version>22.9.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>tock-bot-admin-web</artifactId>
@@ -145,13 +145,13 @@
             </configuration>
           </execution>
           <execution>
-            <id>npm install</id>
+            <id>npm ci</id>
             <phase>process-resources</phase>
             <goals>
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install -d --loglevel warn --force</arguments>
+              <arguments>ci -d --loglevel warn --force</arguments>
             </configuration>
           </execution>
           <execution>

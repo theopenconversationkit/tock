@@ -72,12 +72,16 @@ data class ApplicationWithIntents(
      */
     val normalizeText: Boolean = false,
     /**
+     * The shared intent definitions for other namespaces.
+     */
+    val namespaceIntents: List<IntentDefinition> = emptyList(),
+    /**
      * The id of the app.
      */
     val _id: Id<ApplicationDefinition>?
 ) {
 
-    constructor(application: ApplicationDefinition, intents: List<IntentDefinition>) :
+    constructor(application: ApplicationDefinition, intents: List<IntentDefinition>, namespacesIntents: List<IntentDefinition>) :
         this(
             application.name,
             application.label,
@@ -90,6 +94,7 @@ data class ApplicationWithIntents(
             application.supportSubEntities,
             application.unknownIntentThreshold,
             application.normalizeText,
+            namespacesIntents.sortedWith(compareBy({ it.label }, { it.name })),
             application._id
         )
 

@@ -108,7 +108,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
     ) {
         logBuild(application, language, ModelBuildType.intent, null, null) {
             val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
-            val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
+            val modelSentences = config.getSentencesForModel(application, language)
             val samples = (modelSentences + validatedSentences).map { s ->
                 s.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) })
             }
@@ -211,11 +211,9 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
 
     override fun deleteOrphans() {
         model.deleteOrphans(
-            config.getApplications()
-                .map {
-                    toApplication(it) to config.getIntentsByApplicationId(it._id).map { i -> config.toIntent(i) }.toSet()
-                }
-                .toMap(),
+            config.getApplications().associate {
+                toApplication(it) to config.getIntentsByApplicationId(it._id).map { i -> config.toIntent(i) }.toSet()
+            },
             config.getEntityTypes().mapNotNull { ConfigurationRepository.toEntityType(it) }
         )
     }

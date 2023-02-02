@@ -34,6 +34,7 @@ import ai.tock.nlp.front.service.storage.UserNamespaceDAO
 import ai.tock.nlp.front.shared.ApplicationConfiguration
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.EntityTypeDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinition
@@ -46,6 +47,7 @@ import ai.tock.shared.security.UserLogin
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import java.util.Locale
 
 val applicationDAO: ApplicationDefinitionDAO get() = injector.provide()
 val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
@@ -137,7 +139,7 @@ object ApplicationConfigurationService :
         if (loadedIntent != null) {
             intentDAO.save(
                 loadedIntent.copy(
-                    entities = loadedIntent.entities - listOfNotNull(
+                    entities = loadedIntent.entities - setOfNotNull(
                         loadedIntent.findEntity(
                             entityType,
                             role
@@ -203,7 +205,7 @@ object ApplicationConfigurationService :
     }
 
     fun toIntent(intentId: Id<IntentDefinition>, cache: MutableMap<Id<IntentDefinition>, Intent>? = null): Intent {
-        return cache?.getOrPut(intentId, { findIntent(intentId) }) ?: findIntent(intentId)
+        return cache?.getOrPut(intentId) { findIntent(intentId) } ?: findIntent(intentId)
     }
 
     private fun findIntent(intentId: Id<IntentDefinition>): Intent {
@@ -320,9 +322,28 @@ object ApplicationConfigurationService :
     override fun isEntityTypeObfuscated(name: String): Boolean =
         ConfigurationRepository.entityTypeByName(name)?.obfuscated ?: true
 
-    override fun getFaqsDefinitionByApplicationId(id: Id<ApplicationDefinition>): List<FaqDefinition>
-            = getApplicationById(id)?.let { faqDefinitionDAO.getFaqDefinitionByBotId(it.name) } ?: arrayListOf()
+    override fun getFaqsDefinitionByApplicationId(id: Id<ApplicationDefinition>): List<FaqDefinition> =
+        getApplicationById(id)?.let { faqDefinitionDAO.getFaqDefinitionByBotId(it.name) } ?: arrayListOf()
 
-    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition?
-            = faqDefinitionDAO.getFaqDefinitionByIntentId(id)
+    override fun getFaqDefinitionByIntentId(id: Id<IntentDefinition>): FaqDefinition? =
+        faqDefinitionDAO.getFaqDefinitionByIntentId(id)
+
+    override fun getModelSharedIntents(namespace: String): List<IntentDefinition> =
+        getNamespaceConfiguration(namespace)
+            ?.namespaceImportConfiguration
+            ?.filterValues { it.model }
+            ?.map { getIntentsByNamespace(it.key) }
+            ?.fold(emptyList()) { result, intents -> result + intents }
+            ?: emptyList()
+
+    override fun getSentencesForModel(
+        application: ApplicationDefinition,
+        language: Locale
+    ): List<ClassifiedSentence> =
+        getSentences(
+            application.intents + getModelSharedIntents(application.namespace).map { it._id },
+            language,
+            ClassifiedSentenceStatus.model
+        )
+
 }

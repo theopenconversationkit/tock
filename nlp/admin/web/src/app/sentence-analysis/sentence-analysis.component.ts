@@ -51,7 +51,8 @@ export class SentenceAnalysisComponent implements OnInit {
   intentBeforeClassification: string;
   UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
   intentId: string;
-  selectedValueLabel: string;
+  selectedIntent:Intent;
+  selectedIntentLabel: string;
 
   constructor(
     public state: StateService,
@@ -66,9 +67,11 @@ export class SentenceAnalysisComponent implements OnInit {
   ngOnInit() {
     this.intentBeforeClassification = this.sentence.classification.intentId;
     if (this.intentBeforeClassification === this.UNKNOWN_INTENT_FILTER.value) {
-      this.selectedValueLabel = this.UNKNOWN_INTENT_FILTER.label;
+      this.selectedIntent = null;
+      this.selectedIntentLabel = this.UNKNOWN_INTENT_FILTER.label;
     } else {
-      this.selectedValueLabel = this.state.findIntentById(this.intentBeforeClassification).name;
+      this.selectedIntent = this.state.findSharedNamespaceIntentById(this.intentBeforeClassification);
+      this.selectedIntentLabel = this.selectedIntent.name;
     }
     if (this.minimalView) {
       setTimeout((_) => {
@@ -80,7 +83,8 @@ export class SentenceAnalysisComponent implements OnInit {
   changeIntentFilter = (intentId: string) => {
     if (intentId && this.sentence.classification.intentId !== intentId) {
       this.sentence.classification.intentId = intentId;
-      this.selectedValueLabel = this.state.findIntentById(intentId).name;
+      this.selectedIntent = this.state.findIntentById(intentId);
+      this.selectedIntentLabel = this.selectedIntent.name;
       this.onIntentChange();
     }
   };
@@ -268,7 +272,8 @@ export class SentenceAnalysisComponent implements OnInit {
       )
       .subscribe(
         (intent) => {
-          this.selectedValueLabel = intent.intentLabel();
+          this.selectedIntent = intent;
+          this.selectedIntentLabel = intent.intentLabel();
           this.state.addIntent(intent);
           this.sentence.classification.intentId = intent._id;
           this.onIntentChange();
