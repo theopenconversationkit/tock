@@ -79,6 +79,7 @@ object TickAnswerHandler {
             tickSession.objectivesStack,
             tickSession.init,
             tickSession.unknownHandlingStep,
+            tickSession.handlingStep,
             isFinal
         )
     }
@@ -94,7 +95,7 @@ object TickAnswerHandler {
             } else if (finished) {
                 TickSession(init = dialog.lastDateUpdate)
             } else {
-                TickSession(currentState, contexts, ranHandlers, objectivesStack, init, unknownHandlingStep)
+                TickSession(currentState, contexts, ranHandlers, objectivesStack, init, unknownHandlingStep, handlingStep)
             }
         }
     }
