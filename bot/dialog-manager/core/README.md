@@ -16,4 +16,5 @@ Be sure to have installed :
 - Jep must have the same rights as the JAVA_HOME, so it must be available to your user.
 
 ## Workaround
-- In your IDE in botApi you can add as VM arguments for example the path where jep is located : -Djava.library.path=/usr/local/lib/python3.8/dist-packages/jep
+- In your IDE in botApi you can add as VM arguments for example the path where jep is located :  
+`-Djava.library.path=/usr/local/lib/python3.8/dist-packages/jep`
