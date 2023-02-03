@@ -6,14 +6,13 @@
   [style.color]="getContrastYIQ(token.color())"
   [nbTooltip]="getTokenTooltip(token)"
   (click)="displayTokenMenu($event, token)"
->
-  {{ token.text }}
-  <nb-icon
+  ><!-- NO carriage return here ! -->{{ token.text
+  }}<nb-icon
     icon="code-download-outline"
     class="valign-middle ml-1"
     *ngIf="getContextOfEntity(token)"
-  ></nb-icon>
-</span>
+  ></nb-icon
+></span>
 
 <div
   *ngIf="txtSelection"
