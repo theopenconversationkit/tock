@@ -2,3 +2,4 @@ biseau>=0.0.20
 clyngor-with-clingo==5.3.post1
 clyngor>=0.4.0
 jep==4.0.3
+numpy==1.24.2
