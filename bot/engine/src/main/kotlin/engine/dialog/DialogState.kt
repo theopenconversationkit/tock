@@ -47,6 +47,7 @@ data class DialogState(
      * If not null, it will be applied to the next user action, with NLP custom qualifiers.
      */
     var nextActionState: NextUserActionState? = null
+        // dialog.state.nextActionState.forceUnknown : Boolean, by pass the Nlp which will return and NlpResult Unkown if set
 ) {
 
     companion object {

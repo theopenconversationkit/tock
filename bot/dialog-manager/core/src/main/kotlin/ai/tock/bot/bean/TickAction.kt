@@ -27,6 +27,7 @@ data class TickAction(
     val outputContextNames: Set<String>,
     val proceed: Boolean = false,
     val final: Boolean
+        // Add freeSpeechContextName? : String
 ){
     /**
      * The action is silent only if a handler or a trigger is provided

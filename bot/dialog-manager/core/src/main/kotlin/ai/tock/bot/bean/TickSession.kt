@@ -25,6 +25,7 @@ data class TickSession(
     val objectivesStack: List<String> = emptyList(),
     val init: Instant = Instant.now(),
     val unknownHandlingStep: UnknownHandlingStep? = null,
-    val handlingStep: TickActionHandlingStep? = null
+    val handlingStep: TickActionHandlingStep? = null,
+    val freeSpeechContextName: String? = null,
 )
 

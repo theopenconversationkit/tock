@@ -43,6 +43,7 @@ object TickAnswerHandler {
             val story = container as StoryDefinitionConfiguration
             val endingStoryRuleExists = story.findEnabledEndWithStoryId(applicationId) != null
 
+
             // Get a stored tick state. Start a new session if it doesn't exist
             val tickSession = initTickSession(dialog, story._id.toString())
 
@@ -54,6 +55,8 @@ object TickAnswerHandler {
                     TickSenderBotBus(botBus),
                     endingStoryRuleExists
                 ).process(
+                        // Add botBus.userText to the TickUserAction
+                        // If tickSession.freeSpeechContextName, create TickUserAction with an event intent name "freespeech"
                     TickUserAction(
                         intentName,
                         parseEntities(entities, tickSession.init))

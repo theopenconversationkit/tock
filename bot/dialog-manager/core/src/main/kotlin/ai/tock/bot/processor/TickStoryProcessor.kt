@@ -170,6 +170,8 @@ class TickStoryProcessor(
             )
         }
 
+        // Update tickSession and set the freeSpeechContextName
+
         debugOutput(action)
 
         // Add action name to already executed handlers
@@ -274,6 +276,8 @@ class TickStoryProcessor(
             ?.contextNames
             ?.associateWith { null }
             ?: emptyMap()
+
+        // intentName == 'freespeech', create "freeSpeechContextName" with TickUserAction.userText
         )
     }
 
@@ -288,6 +292,7 @@ class TickStoryProcessor(
     }
 
     private fun handleUnknown(action: TickUserAction?): Pair<TickSession?, String?>? =
+            // Check if we are in free speech ...
         if (configuration.unknownHandleConfiguration.unknownIntents().contains(action?.intentName)) {
             val (step, redirectStoryId) = TickUnknownHandler.handle(
                 lastExecutedActionName = ranHandlers.last(),

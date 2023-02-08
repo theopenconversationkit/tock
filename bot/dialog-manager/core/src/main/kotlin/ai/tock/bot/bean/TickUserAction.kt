@@ -16,5 +16,6 @@
 
 package ai.tock.bot.bean
 
+// Add userText to the TickUserAction data class
 data class TickUserAction(val intentName: String,
                           val entities: Map<String, String?>)
