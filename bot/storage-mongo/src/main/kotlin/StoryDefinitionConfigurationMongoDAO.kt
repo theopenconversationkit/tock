@@ -44,6 +44,7 @@ import ai.tock.shared.trace
 import ai.tock.shared.warn
 import ai.tock.shared.watch
 import com.mongodb.client.model.Collation
+import com.mongodb.client.model.UnwindOptions
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -191,7 +192,8 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
                     if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else Document()
                 ),
-                unwind("\$history"),
+                // Allow fetching stories that have no history (example: builtin story)
+                unwind("\$history", UnwindOptions().preserveNullAndEmptyArrays(true)),
                 sort(Document("history.date", -1L)),
                 // The goal of this group is to take the last edited date
                 group(
