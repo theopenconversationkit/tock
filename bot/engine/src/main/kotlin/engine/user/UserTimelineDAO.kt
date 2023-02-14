@@ -36,8 +36,9 @@ interface UserTimelineDAO {
      *
      * @param userTimeline the timeline to save
      * @param botDefinition the bot definition (in order to add stats about the bot)
+     * @param asynchronousProcess boolean to disable/enable asynchronous saving
      */
-    fun save(userTimeline: UserTimeline, botDefinition: BotDefinition)
+    fun save(userTimeline: UserTimeline, botDefinition: BotDefinition, asynchronousProcess: Boolean = true)
 
     /**
      * Saves the timeline.
