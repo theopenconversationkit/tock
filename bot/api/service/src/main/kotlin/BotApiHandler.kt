@@ -39,6 +39,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
+import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.nlp.api.client.model.Entity
 import ai.tock.nlp.api.client.model.EntityType
 import ai.tock.shared.injector
@@ -59,6 +60,7 @@ internal class BotApiHandler(
     }
 
     private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
+    private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
     fun configuration(): ClientConfiguration? = clientController.configuration()
 
@@ -133,6 +135,12 @@ internal class BotApiHandler(
 
             //Handle current story and switch to ending story
             if (endingStoryId != null) {
+
+                // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
+                if (connectorData.saveTimeline){
+                    userTimelineDAO.save(userTimeline, botDefinition, asynchronousProcess = false)
+                }
+
                 val targetStory = botDefinition.findStoryDefinitionById(endingStoryId, applicationId)
                 switchEndingStory(targetStory)
             }

@@ -61,6 +61,9 @@ import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
 import org.litote.kmongo.*
 import org.litote.kmongo.MongoOperator.*
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.Instant.now
 import java.time.ZoneOffset
@@ -170,14 +173,14 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         save(userTimeline, namespace, null)
     }
 
-    override fun save(userTimeline: UserTimeline, botDefinition: BotDefinition) {
-        save(userTimeline, botDefinition.namespace, botDefinition)
+    override fun save(userTimeline: UserTimeline, botDefinition: BotDefinition, asynchronousProcess: Boolean) {
+        save(userTimeline, botDefinition.namespace, botDefinition, asynchronousProcess)
     }
 
     private fun timelineId(userId: String, namespace: String): String =
         if (addNamespaceToTimelineId) "_${namespace}_$userId" else userId
 
-    private fun save(userTimeline: UserTimeline, namespace: String, botDefinition: BotDefinition?) {
+    private fun save(userTimeline: UserTimeline, namespace: String, botDefinition: BotDefinition?, asynchronousProcess: Boolean = true) {
         logger.debug { "start to save timeline $userTimeline" }
         val timelineId = timelineId(userTimeline.playerId.id, namespace)
         val oldTimeline = userTimelineCol.findOneById(timelineId)
@@ -203,7 +206,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             logger.debug { "dialog saved $userTimeline" }
         }
 
-        executor.executeBlocking {
+        val saveProcessing = {
             if (userTimeline.playerId.clientId != null) {
                 clientIdCol.updateOneById(
                     userTimeline.playerId.clientId!!,
@@ -260,6 +263,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 DialogFlowMongoDAO.addFlowStat(userTimeline, botDefinition, lastUserAction, lastDialog, lastSnapshot)
             }
         }
+
+        if(asynchronousProcess) {
+            executor.executeBlocking { saveProcessing() }
+        } else {
+            saveProcessing()
+        }
+
         logger.debug { "end saving timeline $userTimeline" }
     }
 

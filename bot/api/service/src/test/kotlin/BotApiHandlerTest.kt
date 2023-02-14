@@ -24,6 +24,7 @@ import ai.tock.bot.api.model.websocket.ResponseData
 import ai.tock.bot.api.service.BotApiClientController
 import ai.tock.bot.api.service.BotApiDefinitionProvider
 import ai.tock.bot.api.service.BotApiHandler
+import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.api.service.toUserRequest
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
@@ -32,6 +33,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.NextUserActionState
+import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.shared.tockInternalInjector
@@ -40,6 +42,7 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -110,12 +113,17 @@ class BotApiHandlerTest {
                 }
     }
 
+    private val userTimelineDAO: UserTimelineDAO = mockk {
+        justRun { save(any(), any() as BotDefinition) }
+    }
+
     @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(
             Kodein.invoke {
                 bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
+                bind<UserTimelineDAO>() with provider { userTimelineDAO }
             }
         )
     }
