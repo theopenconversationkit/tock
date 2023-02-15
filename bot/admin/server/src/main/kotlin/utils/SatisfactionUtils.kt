@@ -55,7 +55,7 @@ object SatisfactionUtils {
         val labelRating = BotAdminService.createI18nRequest(
             query.namespace,
             CreateI18nLabelRequest(
-                "Comment évaluerez-vous votre expérience avec le Chatbot ?",
+                "How would you rate your experience with the Chatbot ?",
                 query.currentLanguage,
                 AnswerConfigurationType.builtin.name
             )
@@ -93,7 +93,7 @@ object SatisfactionUtils {
         val labelReview = BotAdminService.createI18nRequest(
             query.namespace,
             CreateI18nLabelRequest(
-                "Merci de laisser votre commentaire ou suggestion :",
+                "Please leave your comment or suggestion:",
                 query.currentLanguage,
                 AnswerConfigurationType.builtin.name
             )
@@ -132,7 +132,7 @@ object SatisfactionUtils {
         val labelReview = BotAdminService.createI18nRequest(
             query.namespace,
             CreateI18nLabelRequest(
-                "Merci pour votre retour !",
+                "Thanks for your feedback !",
                 query.currentLanguage,
                 AnswerConfigurationType.builtin.name
             )
@@ -171,7 +171,7 @@ object SatisfactionUtils {
         val botList = mutableListOf<BotStoryDefinitionConfigurationStep>()
         val yesResponse = BotAdminService.createI18nRequest(
             query.namespace,
-            CreateI18nLabelRequest("Oui", query.currentLanguage, AnswerConfigurationType.builtin.name)
+            CreateI18nLabelRequest("Yes", query.currentLanguage, AnswerConfigurationType.builtin.name)
         )
         val botStoryYes = BotStoryDefinitionConfigurationStep(
             "",
@@ -189,7 +189,7 @@ object SatisfactionUtils {
         )
         val noReponse = BotAdminService.createI18nRequest(
             query.namespace,
-            CreateI18nLabelRequest("Non", query.currentLanguage, AnswerConfigurationType.builtin.name)
+            CreateI18nLabelRequest("No", query.currentLanguage, AnswerConfigurationType.builtin.name)
         )
         val botStoryNo = BotStoryDefinitionConfigurationStep(
             "",
@@ -209,7 +209,7 @@ object SatisfactionUtils {
         val labelRating = BotAdminService.createI18nRequest(
             query.namespace,
             CreateI18nLabelRequest(
-                "Voulez-vous laisser un commentaire ?",
+                "Would you like to leave a comment ?",
                 query.currentLanguage,
                 AnswerConfigurationType.builtin.name
             )

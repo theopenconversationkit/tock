@@ -553,8 +553,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
                 if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                 if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
-                if (!query.rating.isNullOrEmpty()) DialogCol_.Rating `in` query.rating!!.toSet() else null
-                )
+                if (!query.ratings.isNullOrEmpty()) DialogCol_.Rating `in` query.ratings!!.toSet() else null
+            )
             logger.debug("dialog search query: $filter")
             val c = dialogCol.withReadPreference(secondaryPreferred())
             val count = c.countDocuments(filter, defaultCountOptions)
@@ -574,7 +574,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    override fun findBotDialogStatByNote(query: DialogReportQuery): List<DialogRating> {
+    override fun findBotDialogStatsByRating(query: DialogReportQuery): List<DialogRating> {
         return with(query) {
             val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
             dialogCol.aggregate<ParseRequestSatisfactionStatCol>(
@@ -589,11 +589,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
                         if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                         if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
-                        DialogCol_.Rating `in` setOf(1,2,3,4,5)
+                        DialogCol_.Rating `in` setOf(1, 2, 3, 4, 5)
                     )
                 ),
                 group(
-                    DialogCol_.Rating from DialogCol_.Rating ,
+                    DialogCol_.Rating from DialogCol_.Rating,
                     ParseRequestSatisfactionStatCol_.Count sum 1,
                     ParseRequestSatisfactionStatCol_.Rating avg ParseRequestSatisfactionStatCol_.Rating
                 ),
@@ -602,10 +602,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         ParseRequestSatisfactionStatCol_.Rating,
                     )
                 )
-            ).map{DialogRating(it.rating,it.count) }.toList()
+            ).map { DialogRating(it.rating, it.count) }.toList()
         }
     }
-    override fun findBotDialogStat(query: DialogReportQuery): RatingReportQueryResult? {
+
+    override fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult? {
         return with(query) {
             val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
             dialogCol.aggregate<ParseRequestSatisfactionStatCol>(
@@ -620,7 +621,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
                         if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                         if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
-                        DialogCol_.Rating `in` setOf(1,2,3,4,5)
+                        DialogCol_.Rating `in` setOf(1, 2, 3, 4, 5)
                     )
                 ),
                 group(
@@ -633,7 +634,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         ParseRequestSatisfactionStatCol_.Rating,
                     )
                 )
-            ).map{RatingReportQueryResult(it.rating,it.count, emptyList()) }.first()
+            ).map { RatingReportQueryResult(it.rating, it.count, emptyList()) }.first()
         }
     }
 

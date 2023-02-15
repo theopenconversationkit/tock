@@ -143,6 +143,6 @@ export class DialogFilter {
     public text?: string,
     public intentName?: string,
     public connectorType?: ConnectorType,
-    public rating?: number[]
+    public ratings?: number[]
   ) {}
 }
