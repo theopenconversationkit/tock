@@ -17,37 +17,22 @@
 package ai.tock.bot.admin.dialog
 
 /**
- * A dialog is a conversation between users and bots.
- * Conversation history is split into a list of [stories].
- * The dialog has a (current) [state].
+ * A [DialogRating] is a class of statistics for the user satisfaction module
+ * for each rating given by a user, the number of users who gave the same rating
+ *
  */
 data class DialogRating(
-    /**
-     * The state of the dialog.
-     */
-    /**
-     * The history of stories in the dialog.
-     */
-    /**
-     * An optional group identifier.
-     */
 
+
+    /**
+     *  [rating] is the rating given by the user
+     *  the rating can be a number between 1 and 5
+     */
     var rating: Int? = null,
 
+
+    /**
+     * [nbUsers] is the number of users who gave this rating to the dialog
+     */
     var nbUsers: Int? = null
-) {
-
-    companion object {
-        /**
-         * Init a new dialog from the specified dialog.
-         */
-        fun initFromDialog(dialog: DialogRating): DialogRating {
-            return DialogRating(
-                rating = dialog.rating,
-                nbUsers = dialog.nbUsers
-            )
-        }
-    }
-
-
-}
+)

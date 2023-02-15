@@ -28,9 +28,9 @@ interface DialogReportDAO {
 
     fun search(query: DialogReportQuery): DialogReportQueryResult
 
-    fun findBotDialogStat(query: DialogReportQuery): RatingReportQueryResult?
+    fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult?
 
-    fun findBotDialogStatByNote(query: DialogReportQuery): List<DialogRating>
+    fun findBotDialogStatsByRating(query: DialogReportQuery): List<DialogRating>
 
     fun getDialog(id: Id<Dialog>): DialogReport?
 
