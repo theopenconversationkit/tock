@@ -33,12 +33,14 @@ import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Tags
 import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
+import ai.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
 import ai.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
+import ai.tock.shared.allowDiacriticsInRegexp
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultZoneId
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.error
-import ai.tock.shared.allowDiacriticsInRegexp
 import ai.tock.shared.safeCollation
 import ai.tock.shared.trace
 import ai.tock.shared.warn
@@ -48,26 +50,33 @@ import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.document
 import org.litote.kmongo.eq
+import org.litote.kmongo.fields
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
+import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
+import org.litote.kmongo.group
 import org.litote.kmongo.`in`
+import org.litote.kmongo.match
+import org.litote.kmongo.max
 import org.litote.kmongo.ne
 import org.litote.kmongo.or
+import org.litote.kmongo.projection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.regex
 import org.litote.kmongo.save
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
-import org.litote.kmongo.*
-import org.bson.Document
+import java.time.ZonedDateTime
 
 /**
  *
@@ -90,11 +99,11 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
 
     init {
+        col.ensureIndex(Namespace, BotId)
+        historyCol.ensureIndex(Date)
+        historyCol.ensureIndex(Conf.namespace, Conf.storyId, Date)
         try {
-            col.ensureIndex(Namespace, BotId)
             col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
-
-            historyCol.ensureIndex(Date)
         } catch (e: Exception) {
             logger.warn(e)
             //there is a misleading data state when creating index
@@ -175,42 +184,43 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
-    override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> =
-        col.withDocumentClass<StoryDefinitionConfigurationSummary>()
-            .aggregate<StoryDefinitionConfigurationSummary>(
-                lookup("story_configuration_history", StoryDefinitionConfigurationSummary::storyId.name, "conf.storyId", "history"),
-                match(
-                    Namespace eq request.namespace,
-                    BotId eq request.botId,
-                    if (request.category.isNullOrBlank()) Document() else Category eq request.category,
-                    or(
-                        request.textSearch?.takeUnless { it.isBlank() }?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "gmix") }?:Document(),
-                        request.textSearch?.takeUnless { it.isBlank() }?.let { Intent.name_.regex(allowDiacriticsInRegexp(it.trim()), "gmix") }?:Document(),
-                        request.textSearch?.takeUnless { it.isBlank() }?.let { StoryId.regex(allowDiacriticsInRegexp(it.trim()), "gmix") }?:Document()
-                    ),
-
-                    if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else Document()
-                ),
-                unwind("\$history"),
-                sort(Document("history.date", -1L)),
-                // The goal of this group is to take the last edited date
+    override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> {
+        //get last date from history
+        val dateById = historyCol
+            .aggregate<DateProjection>(
+                match(Conf.namespace eq request.namespace),
                 group(
-                    id = StoryDefinitionConfigurationSummary::_id,
-                    // Since we duplicate these fields with unwind we just take the first one when we regroup, it is needed because it won't take the field without that
-                    StoryDefinitionConfigurationSummary::storyId first StoryDefinitionConfigurationSummary::storyId,
-                    StoryDefinitionConfigurationSummary::botId first StoryDefinitionConfigurationSummary::botId,
-                    StoryDefinitionConfigurationSummary::intent first StoryDefinitionConfigurationSummary::intent,
-                    StoryDefinitionConfigurationSummary::currentType first StoryDefinitionConfigurationSummary::currentType,
-                    StoryDefinitionConfigurationSummary::name first StoryDefinitionConfigurationSummary::name,
-                    StoryDefinitionConfigurationSummary::category first StoryDefinitionConfigurationSummary::category,
-                    StoryDefinitionConfigurationSummary::description first StoryDefinitionConfigurationSummary::description,
-                    // We sort by history.date so when we regroup the first field with a specific _id has the most recent date
-                    StoryDefinitionConfigurationSummary::lastEdited first "\$history.date"
-                ),
-                sort( ascending(StoryDefinitionConfigurationSummary::name) ),
+                    document(Namespace from Conf.namespace, StoryId from Conf.storyId),
+                    Date.max(Date)
+                )
+            )
+            .toList()
+            .associateBy({ it._id.storyId }) { it.date.withZoneSameInstant(defaultZoneId) }
+
+        return col.withDocumentClass<StoryDefinitionConfigurationSummary>()
+            .find(
+                Namespace eq request.namespace,
+                BotId eq request.botId,
+                if (request.category.isNullOrBlank()) null else Category eq request.category,
+                request.textSearch?.takeUnless { it.isBlank() }
+                    ?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "i") },
+                if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
+            )
+            .projection(
+                StoryDefinitionConfigurationSummary::_id,
+                StoryDefinitionConfigurationSummary::storyId,
+                StoryDefinitionConfigurationSummary::botId,
+                StoryDefinitionConfigurationSummary::intent,
+                StoryDefinitionConfigurationSummary::currentType,
+                StoryDefinitionConfigurationSummary::name,
+                StoryDefinitionConfigurationSummary::category,
+                StoryDefinitionConfigurationSummary::description
             )
             .safeCollation(Collation.builder().locale(defaultLocale.language).build())
+            .sort(ascending(StoryDefinitionConfigurationSummary::name))
+            .map { it.copy(lastEdited = dateById[it.storyId]) }
             .toList()
+    }
 
 
     override fun save(story: StoryDefinitionConfiguration) {
@@ -244,3 +254,6 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         }
     }
 }
+
+private data class DateProjectionKey(val storyId: String)
+private data class DateProjection(val _id: DateProjectionKey, val date: ZonedDateTime)

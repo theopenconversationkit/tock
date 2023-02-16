@@ -213,7 +213,7 @@
           nbTreeGridCell
           *nbTreeGridCellDef="let row"
         >
-          <span *ngIf="!row.data.expandable">{{ row.data.lastEdited }}</span>
+          <span *ngIf="!row.data.expandable">{{ row.data.lastEdited | date:dateFormat}}</span>
         </td>
       </ng-container>
       <ng-container [nbTreeGridColumnDef]="actionsColumn">

@@ -19,7 +19,7 @@ package ai.tock.bot.admin.story
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import org.litote.kmongo.Id
-import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 /**
  * Summary of [StoryDefinitionConfiguration].
@@ -33,5 +33,5 @@ data class StoryDefinitionConfigurationSummary(
     val name: String = storyId,
     val category: String = "default",
     val description: String = "",
-    val lastEdited: LocalDateTime? = null
+    val lastEdited: ZonedDateTime? = null
 )

@@ -354,10 +354,14 @@ object BotAdminService {
         } else {
             val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
             stories.forEach {
-                val controller =
-                    BotStoryDefinitionConfigurationDumpController(namespace, botId, it, application, locale, user)
-                val storyConf = it.toStoryDefinitionConfiguration(controller)
-                importStory(namespace, storyConf, botConf, controller)
+                try {
+                    val controller =
+                        BotStoryDefinitionConfigurationDumpController(namespace, botId, it, application, locale, user)
+                    val storyConf = it.toStoryDefinitionConfiguration(controller)
+                    importStory(namespace, storyConf, botConf, controller)
+                } catch (e: Exception) {
+                    logger.error("import error with story $it", e)
+                }
             }
         }
     }
@@ -368,7 +372,6 @@ object BotAdminService {
         botConf: BotApplicationConfiguration,
         controller: BotStoryDefinitionConfigurationDumpController
     ) {
-
         val existingStory1 = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
             namespace,
             botConf.botId,
@@ -423,7 +426,11 @@ object BotAdminService {
         botId: String,
         intentNames: List<String>
     ): List<StoryDefinitionConfiguration> {
-        return storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intentNames)
+        return storyDefinitionDAO.getConfiguredStoriesDefinitionByNamespaceAndBotIdAndIntent(
+            namespace,
+            botId,
+            intentNames
+        )
     }
 
     fun deleteStory(namespace: String, storyDefinitionId: String): Boolean {
@@ -520,6 +527,7 @@ object BotAdminService {
                     botId,
                     answers?.find { it.answerType == script } as? ScriptAnswerConfiguration
                 )
+
             is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
             else -> error("unsupported type $this")
         }
@@ -737,12 +745,15 @@ object BotAdminService {
                 storyWithSameId != null -> {
                     mergeStory(storyWithSameId, story, application, botConf.botId)
                 }
+
                 storyWithSameNsBotAndIntent != null -> {
                     mergeStory(storyWithSameNsBotAndIntent, story, application, botConf.botId)
                 }
+
                 storyWithSameNsBotAndName != null -> {
                     mergeStory(storyWithSameNsBotAndName, story, application, botConf.botId)
                 }
+
                 else -> {
                     StoryDefinitionConfiguration(
                         storyId = story.storyId,

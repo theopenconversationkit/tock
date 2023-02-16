@@ -631,11 +631,10 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(
-                    context,
-                    {
-                        BotAdminService.loadDialogFlow(request)
-                    }
-                )
+                    context
+                ) {
+                    BotAdminService.loadDialogFlow(request)
+                }
             } else {
                 unauthorized()
             }
