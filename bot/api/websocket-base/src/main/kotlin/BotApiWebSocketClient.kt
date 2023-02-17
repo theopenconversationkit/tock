@@ -74,13 +74,23 @@ fun start(
     ssl: Boolean = booleanProperty("tock_websocket_ssl", false)
 ) {
 
+    // State to indicate the current client is currently restarting, meaning a new client start is already scheduled
+    var websocketIsRestarting = false
+
     fun restart(client: HttpClient, delay: Long) {
-        logger.info("restart...")
+        // guard prevent multiples concurrent restart that would lead to multiple client at each restarts
+        // As restart is also called from the close handler
+        if(websocketIsRestarting) return
+
+        websocketIsRestarting = true
+        logger.info { "restart in $delay seconds..." }
+
         try {
             client.close()
         } catch (e: Exception) {
             logger.error(e)
         }
+
         vertx.setTimer(TimeUnit.SECONDS.toMillis(delay)) {
             try {
                 start(botDefinition, serverPort, serverHost, ssl)
@@ -149,11 +159,11 @@ fun start(
                     }
                 }
                 ?.exceptionHandler {
-                    logger.info("Exception, restarting in 1s")
+                    logger.info("Exception")
                     restart(client, 1)
                 }
                 ?.closeHandler {
-                    logger.info("Closed, restarting in 1s")
+                    logger.info("Closed")
                     restart(client, 1)
                 } ?: restart(client, 10).apply { logger.warn { "websocket server not found or unknown key - retry in 10s" } }
         } catch (e: Exception) {
