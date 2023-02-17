@@ -32,7 +32,6 @@ import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
-import com.mongodb.client.model.UnwindOptions
 import com.mongodb.client.model.Variable
 import mu.KotlinLogging
 import org.bson.conversions.Bson
@@ -40,7 +39,6 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.eq
 import org.litote.kmongo.MongoOperator.ne
-import org.litote.kmongo.addToSet
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
@@ -331,11 +329,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 joinOnClassifiedSentence(),
                 // unwind : to flat faq array into an object
                 FaqQueryResult::faq.unwind(),
-                // unwind : to flat utterrances array into an object
-                // Make it possible to filter directly on classified sentences per element ($elemMatch not available in Mongo 3.6.5)
-                FaqQueryResult::utterances.unwind(
-                    // keep faq search with orphans utterances
-                    UnwindOptions().preserveNullAndEmptyArrays(true)),
+
                 match(
                     andNotNull(
                         andNotNull(
@@ -411,7 +405,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
                 FaqQueryResult::enabled first FaqQueryResult::enabled,
                 FaqQueryResult::creationDate first FaqQueryResult::creationDate,
                 FaqQueryResult::updateDate first FaqQueryResult::updateDate,
-                FaqQueryResult::utterances addToSet FaqQueryResult::utterances,
+                FaqQueryResult::utterances first FaqQueryResult::utterances,
                 FaqQueryResult::faq first FaqQueryResult::faq
             )
         )
