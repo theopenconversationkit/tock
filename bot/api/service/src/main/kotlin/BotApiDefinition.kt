@@ -19,7 +19,9 @@ package ai.tock.bot.api.service
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.configuration.StepConfiguration
+import ai.tock.bot.api.model.configuration.StoryConfiguration
 import ai.tock.bot.definition.BotDefinitionBase
+import ai.tock.bot.definition.BotDefinitionBase.Companion.defaultUnknownStory
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.SimpleStoryDefinition
@@ -64,34 +66,27 @@ internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition>
     override val secondaryIntents: Set<IntentAware> = s.secondaryIntents.map { Intent(it) }.toSet()
 }
 
+/**
+ * [BotDefinition] implementation for BotApi mode
+ * @param configuration [BotConfiguration]
+ * @param clientConfiguration [ClientConfiguration]
+ * @param handler [BotApiHandler]
+ */
 internal class BotApiDefinition(
     configuration: BotConfiguration,
     clientConfiguration: ClientConfiguration?,
     handler: BotApiHandler
-) :
-    BotDefinitionBase(
-        configuration.botId,
-        configuration.namespace,
-        clientConfiguration
-            ?.stories
-            ?.filter { it.mainIntent != Intent.unknown.name }
-            ?.map { s ->
-                SimpleStoryDefinition(
-                    s.name,
-                    FallbackStoryHandler(defaultUnknownStory, handler),
-                    setOf(Intent(s.mainIntent)) + s.otherStarterIntents.map { Intent(it) },
-                    setOf(Intent(s.mainIntent)) + s.otherStarterIntents.map { Intent(it) } + s.secondaryIntents.map {
-                        Intent(
-                            it
-                        )
-                    },
-                    s.steps.map { ApiStep(it) }.toSet()
-                )
-            } ?: emptyList(),
-        configuration.nlpModel,
-        FallbackStoryDefinition(defaultUnknownStory, handler)
-    ) {
-
+) : BotDefinitionBase(
+    configuration.botId,
+    configuration.namespace,
+    clientConfiguration
+        ?.stories
+        ?.filter { it.mainIntent != Intent.unknown.name }
+        //map stories to SimpleStoryDefinition otherwise empty list
+        ?.map { it.mapToSimpleStoryDefinition(handler) } ?: emptyList(),
+    configuration.nlpModel,
+    FallbackStoryDefinition(defaultUnknownStory, handler)
+) {
     override fun findIntent(intent: String, applicationId: String): Intent =
         super.findIntent(intent, applicationId).let {
             if (it.wrap(Intent.unknown)) {
@@ -101,3 +96,20 @@ internal class BotApiDefinition(
             }
         }
 }
+
+/**
+ * Map a [StoryConfiguration] to [SimpleStoryDefinition] with default fallback [FallbackStoryHandler]
+ * @param handler [BotApiHandler]
+ * @return [SimpleStoryDefinition]
+ */
+private fun StoryConfiguration.mapToSimpleStoryDefinition(handler: BotApiHandler) =
+    SimpleStoryDefinition(
+        id = this.name,
+        storyHandler = FallbackStoryHandler(defaultUnknownStory, handler),
+        starterIntents = setOf(Intent(this.mainIntent))
+                + this.otherStarterIntents.map { Intent(it) },
+        intents = setOf(Intent(this.mainIntent))
+                + this.otherStarterIntents.map { Intent(it) }
+                + this.secondaryIntents.map { Intent(it) },
+        this.steps.map { ApiStep(it) }.toSet()
+    )

@@ -16,4 +16,8 @@
 
 package ai.tock.bot.api.model.configuration
 
+/**
+ * ClientConfiguration POJO
+ * @param stories list of [StoryConfiguration]
+ */
 data class ClientConfiguration(val stories: List<StoryConfiguration>)
