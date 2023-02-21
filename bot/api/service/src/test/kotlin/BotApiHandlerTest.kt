@@ -177,7 +177,7 @@ class BotApiHandlerTest {
     }
 
     @Test
-    fun `actions history property not set and no actions history in bus`() {
+    fun `actions history property not set THEN no actions history in bus is present`() {
         System.setProperty(
             TOCK_ACTIONS_HISTORY_ENABLE_PROPERTY, "false")
 
@@ -223,7 +223,7 @@ class BotApiHandlerTest {
         verify { clientController.send(capture(slot)) }
 
         assertEquals(emptyList(), slot.captured.context.actionsHistory)
-        assertEquals( 0,mockedBus.toUserRequest().context.actionsHistory?.size,)
+        assertEquals( 0,mockedBus.toUserRequest().context.actionsHistory?.size)
         assertTrue(mockedBus.toUserRequest().context.actionsHistory != null)
     }
 
