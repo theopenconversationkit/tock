@@ -33,6 +33,9 @@ import ai.tock.bot.engine.dialog.EntityValue
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.booleanProperty
 
+/**
+ * Transform to [UserRequest] from [BotBus] variables
+ */
 internal fun BotBus.toUserRequest(): UserRequest =
     UserRequest(
         intent?.wrappedIntent()?.name,
@@ -64,8 +67,14 @@ private fun Action.toApiMessage(): UserMessage =
         else -> error("unsupported action $this")
     }
 
-private fun BotBus.toRequestContext(): RequestContext =
-    RequestContext(
+
+/**
+ * Transform to [RequestContext] from [BotBus] variables
+ */
+private fun BotBus.toRequestContext(): RequestContext {
+    val returnsAlwaysHistory = booleanProperty("tock_bot_api_actions_history_to_client_bus", false)
+
+    return RequestContext(
         botDefinition.namespace,
         userLocale,
         targetConnectorType,
@@ -75,8 +84,9 @@ private fun BotBus.toRequestContext(): RequestContext =
         botId,
         userPreferences.toUserData(),
         connectorData.metadata,
-        if (booleanProperty("tock_bot_api_actions_history_to_client_bus", false)) toActionsHistory() else null,
+        if (returnsAlwaysHistory) toActionsHistory() else null
     )
+}
 
 /**
  * Retrieve the action history from the dialog
