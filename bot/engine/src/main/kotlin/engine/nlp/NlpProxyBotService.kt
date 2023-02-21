@@ -37,17 +37,27 @@ import mu.KotlinLogging
  */
 internal object NlpProxyBotService {
 
-    val logger: KLogger = KotlinLogging.logger {}
+    private val logger: KLogger = KotlinLogging.logger {}
     private val tockNlpProxyOnBotPath = property("tock_nlp_proxy_on_bot_path", "/_proxy_nlp")
     private val tockNlpServiceHost: String
     private val tockNlpServicePort: Int
     private val tockNlpServiceSsl: Boolean
+    private val nonForwardedHeaders = setOf(
+        "Accept-Encoding",
+        "Host",
+        "Via",
+        "X-Forwarded-For",
+        "X-Forwarded-Host",
+        "X-Forwarded-Port",
+        "X-Forwarded-Proto",
+        "X-Forwarded-Server",
+    )
 
     init {
-        val tocNlpServiceUrl = URL(System.getenv("tock_nlp_service_url") ?: "http://localhost:8888")
-        tockNlpServiceHost = System.getenv("tock_nlp_service_host") ?: tocNlpServiceUrl.host
-        tockNlpServicePort = System.getenv("tock_nlp_service_port")?.toInt() ?: tocNlpServiceUrl.port
-        tockNlpServiceSsl = System.getenv("tock_nlp_service_SSL") ?: tocNlpServiceUrl.protocol == "https"
+        val tockNlpServiceUrl = URL(System.getenv("tock_nlp_service_url") ?: "http://localhost:8888")
+        tockNlpServiceHost = System.getenv("tock_nlp_service_host") ?: tockNlpServiceUrl.host
+        tockNlpServicePort = System.getenv("tock_nlp_service_port")?.toInt() ?: tockNlpServiceUrl.port
+        tockNlpServiceSsl = (System.getenv("tock_nlp_service_SSL") ?: tockNlpServiceUrl.protocol) == "https"
     }
 
     fun configure(vertx: Vertx): (Router) -> Unit {
@@ -75,52 +85,27 @@ internal object NlpProxyBotService {
                 .setSsl(tockNlpServiceSsl)
                 .setURI(uri)
                 .setMethod(httpMethod)
-            val cReq = client.request(
-                options
-            ).result()
-            cReq.send { res ->
-                try {
-                    context.response().isChunked = true
-                    val cRes = res.result()
-                    val resStatusCode = cRes.statusCode()
-                    if (resStatusCode != 200 && resStatusCode != 201) {
-                        logger.warn { "target server status code error : $resStatusCode" }
+                .apply {
+                    context.response().headers().forEach { (key, value) ->
+                        if (key !in nonForwardedHeaders) addHeader(key, value)
                     }
-                    context.response().statusCode = resStatusCode
-                    context.response().headers().setAll(cRes.headers())
-                    cRes.handler { data ->
-                        try {
-                            context.response().write(data)
-                        } catch (e: Throwable) {
-                            logger.error(e)
-                        }
-                    }
-                    cRes.endHandler {
-                        try {
-                            context.response().end()
-                        } catch (e: Throwable) {
-                            logger.error(e)
-                        }
-                    }
-                } catch (e: Throwable) {
-                    logger.error(e)
                 }
-            }
-
-            cReq.headers().setAll(
-                context
-                    .response().headers()
-                    .remove("Host")
-                    .remove("Via")
-                    .remove("X-Forwarded-For")
-                    .remove("X-Forwarded-Port")
-                    .remove("X-Forwarded-Proto")
-                    .remove("X-Forwarded-Host")
-                    .remove("X-Forwarded-Server")
-                    .remove("Accept-Encoding")
-            )
-
-            cReq.end(context.body)
+            client.request(options).flatMap {
+                if (httpMethod == POST) {
+                    it.send(context.body().buffer())
+                } else {
+                    it.send()
+                }
+            }.flatMap { nlpResponse ->
+                context.response().isChunked = true
+                val resStatusCode = nlpResponse.statusCode()
+                if (resStatusCode != 200 && resStatusCode != 201) {
+                    logger.warn { "target server status code error : $resStatusCode" }
+                }
+                context.response().statusCode = resStatusCode
+                context.response().headers().setAll(nlpResponse.headers())
+                nlpResponse.pipeTo(context.response())
+            }.onFailure { t -> logger.error(t) }
         } catch (e: Exception) {
             logger.error(e)
             context.fail(500)
