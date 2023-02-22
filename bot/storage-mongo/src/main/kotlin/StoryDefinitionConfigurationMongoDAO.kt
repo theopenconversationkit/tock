@@ -57,7 +57,6 @@ import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
-import org.litote.kmongo.fields
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -77,6 +76,9 @@ import org.litote.kmongo.save
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 import java.time.ZonedDateTime
+import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.exists
+
 
 /**
  *
@@ -123,6 +125,16 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
     override fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration? {
         return col.findOneById(id)
+    }
+
+    override fun getStoryDefinitionsByNamespaceAndBotIdWithFileAttached(
+        namespace: String,
+        botId: String
+    ): List<StoryDefinitionConfiguration> {
+        return col.find(
+            Namespace eq namespace, BotId eq botId,
+            exists("answers.answers.mediaMessage.file.id", true)
+        ).toList()
     }
 
     override fun getRuntimeStorySettings(namespace: String, botId: String): List<StoryDefinitionConfiguration> {

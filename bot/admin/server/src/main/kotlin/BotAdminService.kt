@@ -326,6 +326,17 @@ object BotAdminService {
         return stories.mapNotNull { story -> loadStory(namespace, story) }
     }
 
+    fun findStoryDefinitionsByNamespaceAndBotIdWithFileAttached(
+        namespace: String,
+        botId: String
+    ): List<BotStoryDefinitionConfiguration> {
+        val stories = storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotIdWithFileAttached(namespace, botId)
+        return stories.mapNotNull { story -> loadStory(namespace, story) }
+
+    }
+
+
+
     private fun loadStory(namespace: String, conf: StoryDefinitionConfiguration?): BotStoryDefinitionConfiguration? {
         if (conf?.namespace == namespace) {
             val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, conf.botId).firstOrNull()
