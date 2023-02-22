@@ -26,7 +26,8 @@ const tabs = [
   new TabLink('story-create', 'New Story', 'plus-circle-outline'),
   new TabLink('story-search', 'Stories', 'layers-outline'),
   new TabLink('story-rules', 'Rules', 'toggle-right-outline'),
-  new TabLink('i18n', 'Answers', 'color-palette-outline')
+  new TabLink('i18n', 'Answers', 'color-palette-outline'),
+  new TabLink('story-documents', 'Documents', 'folder-outline')
 ];
 
 @Component({
@@ -39,7 +40,7 @@ export class BotTabsComponent implements OnInit {
 
   constructor(private router: Router, private state: StateService) {
     if (!state.hasRole(UserRole.botUser)) {
-      this.botTabLinks = this.botTabLinks.filter((t) => !['story-create', 'story-search', 'story-rules'].includes(t.route));
+      this.botTabLinks = this.botTabLinks.filter((t) => !['story-create', 'story-search', 'story-rules', 'story-documents'].includes(t.route));
     }
   }
 

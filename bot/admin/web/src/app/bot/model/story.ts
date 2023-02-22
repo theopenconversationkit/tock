@@ -133,7 +133,8 @@ export class StoryDefinitionConfigurationSummary {
     public name: string = storyId,
     public _id: string,
     public description: string = '',
-    public lastEdited: Date
+    public lastEdited: Date,
+    public answers: AnswerConfiguration
   ) {}
 
   static fromJSON(json: any): StoryDefinitionConfigurationSummary {

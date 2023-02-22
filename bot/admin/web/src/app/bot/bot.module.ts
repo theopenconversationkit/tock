@@ -71,6 +71,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { I18nExportComponent } from './i18n/i18n-export.component';
 import { I18nImportComponent } from './i18n/i18n-import.component';
 import { ApplicationFeaturesTableComponent } from './feature/application-features-table.component';
+import {DocumentsStoryComponent} from "./story/documents-story.component";
 
 const routes: Routes = [
   {
@@ -102,6 +103,10 @@ const routes: Routes = [
       {
         path: 'story-rules',
         component: FeatureComponent
+      },
+      {
+        path: 'story-documents',
+        component: DocumentsStoryComponent
       }
     ]
   }
@@ -146,7 +151,7 @@ export class BotRoutingModule {}
         BotTabsComponent,
         CreateStoryComponent,
         SearchStoryComponent,
-        I18nComponent,
+        DocumentsStoryComponent,I18nComponent,
         I18nLabelComponent,
         I18nExportComponent,
         I18nImportComponent,

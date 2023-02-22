@@ -1,0 +1,47 @@
+<nb-card *ngIf="fileList">
+  <nb-card-body>
+
+    <mat-table [dataSource]="fileList">
+      <mat-header-row *matHeaderRowDef="allColumns"></mat-header-row>
+      <mat-row *matRowDef="let file; columns: allColumns"></mat-row>
+
+      <ng-container matColumnDef="{{storyNameColumn}}">
+        <mat-header-cell *matHeaderCellDef> {{storyNameColumn}} </mat-header-cell>
+        <mat-cell *matCellDef="let file"> {{getStoryWithThisMediaFile(file)?.storyId}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="{{categoryColumn}}">
+        <mat-header-cell *matHeaderCellDef> {{categoryColumn}} </mat-header-cell>
+        <mat-cell *matCellDef="let file"> {{getStoryWithThisMediaFile(file)?.category}} </mat-cell>
+      </ng-container>
+
+
+      <ng-container matColumnDef="{{fileNameColumn}}">
+        <mat-header-cell *matHeaderCellDef> {{fileNameColumn}} </mat-header-cell>
+        <mat-cell *matCellDef="let file"><a href="{{ file.url(rest.url) }}" target="_blank">{{file.name}}</a>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="{{fileTitleColumn}}">
+        <mat-header-cell *matHeaderCellDef> {{fileTitleColumn}} </mat-header-cell>
+        <mat-cell *matCellDef="let file">{{getAnswerWithThisMediaFile(file)?.mediaMessage?.title?.defaultLabel}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="{{actionsColumn}}">
+        <mat-header-cell *matHeaderCellDef> {{actionsColumn}} </mat-header-cell>
+        <mat-cell *matCellDef="let file" [ngClass]="nb-column-Actions">
+          <button
+            nbButton
+            outline
+            status="primary"
+            nbTooltip="Update File"
+            (click)="displayMediaMessage(file)"
+            class="action"
+          >
+            <nb-icon icon="edit-outline"></nb-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+    </mat-table>
+
+  </nb-card-body>
+</nb-card>
