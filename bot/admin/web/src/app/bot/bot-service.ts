@@ -62,6 +62,13 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON);
   }
 
+
+  findStoryDefinitionsByNamespaceAndBotIdWithFileAttached(botId: string): Observable<StoryDefinitionConfiguration[]> {
+    return this.rest.get(
+      `/bot/story/${botId}/with_document`,
+      StoryDefinitionConfiguration.fromJSONArray
+    );
+  }
   findRuntimeStorySettings(botId: string): Observable<StoryDefinitionConfiguration[]> {
     return this.rest.get(`/bot/story/${botId}/settings`, StoryDefinitionConfiguration.fromJSONArray);
   }

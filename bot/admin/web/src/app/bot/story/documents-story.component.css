@@ -1,0 +1,117 @@
+.intent {
+  width: 820px;
+  overflow-x: auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+}
+
+.intent-mention {
+  font-size: small;
+}
+
+.sentence-input {
+  width: 80%;
+  font-size: xx-large;
+}
+
+.text-area-container {
+  min-width: 800px;
+}
+
+.text-area {
+  padding: 5px 5px 5px 5px;
+  border: inset;
+}
+
+.field {
+  margin-right: 20px;
+}
+
+.search-input {
+  margin-right: 10px;
+}
+
+.stories {
+  margin-top: 20px;
+}
+
+.download {
+  float: right;
+}
+
+.action {
+  margin-left: 10px;
+}
+
+.nb-column-Actions {
+  width: 160px;
+  padding: 0;
+}
+
+.toggle {
+  position: relative;
+  top: 10px;
+  margin-right:1em;
+}
+
+
+.mat-table {
+  width: 100%;
+}
+
+.mat-row {
+  width: 100%;
+  min-height: 12px;
+}
+
+.div-title {
+  text-align: center;
+  font-size: medium;
+  font-weight: bold;
+  padding: 4px;
+}
+
+.mat-header-cell {
+  min-height: 2rem;
+  color: #222b45;
+  font-family: Open Sans, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: bold;
+  padding: 0.85rem 1.3rem;
+  border: 2px solid #f7f9fc;
+  height: fit-content;
+}
+
+.mat-header-row {
+  width: 100%;
+  min-height: 2rem;
+  border-bottom-width: 0px;
+}
+
+.mat-cell {
+  padding: 0.85rem 1.3rem;
+  border: 2px solid #f7f9fc;
+  color: #222b45;
+  font-family: Open Sans, sans-serif;
+  font-size: 0.9375rem;
+  word-wrap: anywhere;
+  min-height: 2rem;
+  align-self: stretch;
+}
+
+.mat-row {
+  width: 100%;
+  min-height: 2rem;
+  border-bottom-width: 0px;
+}
+
+.mat-cell:last-of-type {
+  padding-left: 0px;
+  max-width: 160px;
+}
+
+.mat-header-cell:last-of-type {
+  padding-left: 0px;
+  max-width: 160px;
+}

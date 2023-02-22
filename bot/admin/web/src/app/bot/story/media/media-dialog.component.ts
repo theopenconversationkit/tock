@@ -40,6 +40,11 @@ export class MediaDialogComponent implements OnInit {
   uploader: FileUploader;
 
   @ViewChild('titleElement') titleElement: ElementRef;
+  private loading: boolean;
+
+  private loadingSubtitle: boolean;
+
+  private loadingDescription : boolean;
 
   constructor(
     public dialogRef: NbDialogRef<MediaDialogComponent>,
@@ -116,44 +121,68 @@ export class MediaDialogComponent implements OnInit {
       });
     } else {
       if (this.isTitle()) {
+        this.loading = true;
         if (this.media.title) {
           this.bot
             .saveI18nLabel(this.media.title.changeDefaultLabelForLocale(this.state.currentLocale, this.media.titleLabel.trim()))
-            .subscribe((_) => {});
+            .subscribe((_) => {
+              this.loading = false;
+              this.closeModal();
+            });
         } else {
           this.bot
             .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.titleLabel.trim(), this.state.currentLocale))
-            .subscribe((i18n) => (this.media.title = i18n));
+            .subscribe((i18n) => {
+              this.media.title = i18n;
+              this.loading = false;
+              this.closeModal();
+            });
         }
       } else {
         this.media.title = null;
       }
 
       if (this.isSubtitle()) {
+        this.loadingSubtitle = true;
         if (this.media.subTitle) {
           this.bot
             .saveI18nLabel(this.media.subTitle.changeDefaultLabelForLocale(this.state.currentLocale, this.media.subTitleLabel.trim()))
-            .subscribe((_) => {});
+            .subscribe((_) => {
+              this.loadingSubtitle = false;
+              this.closeModal();
+            });
         } else {
           this.bot
             .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.subTitleLabel.trim(), this.state.currentLocale))
-            .subscribe((i18n) => (this.media.subTitle = i18n));
+            .subscribe((i18n) => {
+              this.media.subTitle = i18n;
+              this.loadingSubtitle = false;
+              this.closeModal();
+            });
         }
       } else {
         this.media.subTitle = null;
       }
 
       if (this.isDescription()) {
+        this.loadingDescription = true;
         if (this.media.file && this.media.file.description) {
           this.bot
             .saveI18nLabel(
               this.media.file.description.changeDefaultLabelForLocale(this.state.currentLocale, this.media.file.descriptionLabel.trim())
             )
-            .subscribe((_) => {});
+            .subscribe((_) => {
+              this.loadingDescription = false;
+              this.closeModal();
+            });
         } else {
           this.bot
             .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.file.descriptionLabel.trim(), this.state.currentLocale))
-            .subscribe((i18n) => (this.media.file.description = i18n));
+            .subscribe((i18n) => {
+              this.media.file.description = i18n;
+              this.loadingDescription = false;
+              this.closeModal();
+            });
         }
       } else if (this.media.file) {
         this.media.file.description = null;
@@ -171,7 +200,12 @@ export class MediaDialogComponent implements OnInit {
           }
           return a;
         });
+    }
+    this.closeModal();
+  }
 
+  private closeModal() {
+    if (!this.loading && !this.loadingSubtitle && !this.loadingDescription) {
       this.dialogRef.close({
         media: this.media
       });

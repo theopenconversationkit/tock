@@ -51,7 +51,6 @@ import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.aggregate
-import org.litote.kmongo.and
 import org.litote.kmongo.ascending
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
