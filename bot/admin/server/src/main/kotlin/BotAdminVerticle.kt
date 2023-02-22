@@ -658,6 +658,13 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.findStory(context.organization, context.path("storyId"))
         }
 
+        blockingJsonGet("/bot/story/:botId/with_document", botUser) { context ->
+            BotAdminService.findStoryDefinitionsByNamespaceAndBotIdWithFileAttached(
+                context.organization,
+                context.path("botId")
+            )
+        }
+
         blockingJsonGet("/bot/story/:botId/settings", botUser) { context ->
             BotAdminService.findRuntimeStorySettings(context.organization, context.path("botId"))
         }
