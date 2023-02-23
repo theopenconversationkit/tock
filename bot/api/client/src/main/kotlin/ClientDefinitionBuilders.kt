@@ -30,10 +30,10 @@ fun unknownStory(
 ) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
 
 /**
- * Creates a new bot [ClientBotDefinition] in bot Api mode
- * @param apiKey the api key in studio for the bot configuration
- * @param stories List of stories [ClientStoryDefinition] supported by the bot.
- * @param unknownStory the unknown story triggered when unknown intent
+ * Creates a [definition for a new bot][ClientBotDefinition] in bot Api mode
+ * @param apiKey the api key for the bot configuration, as found in  Tock Studio
+ * @param stories List of [stories][ClientStoryDefinition] supported by the bot.
+ * @param unknownStory the story to trigger when the `unknown` intent is selected
  */
 fun newBot(
     apiKey: String,
@@ -42,9 +42,9 @@ fun newBot(
 ): ClientBotDefinition = ClientBotDefinition(apiKey, stories, unknownStory)
 
 /**
- * Creates a new bot [ClientBotDefinition] in bot Api mode
- * @param apiKey the api key in studio for the bot configuration
- * @param stories List of stories [ClientStoryDefinition] supported by the bot.
+ * Creates a new [bot][ClientBotDefinition] in bot Api mode
+ * @param apiKey the api key for the bot configuration, as found in  Tock Studio
+ * @param stories List of [stories][ClientStoryDefinition] supported by the bot.
  */
 fun newBot(
     apiKey: String,
@@ -57,11 +57,11 @@ fun newBot(
     )
 
 /**
- * Creates a new story [ClientStoryDefinition] in bot Api mode
+ * Creates a new [story][ClientStoryDefinition] in bot Api mode
  * @param mainIntent [String] The main intent name.
  * @param otherStarterIntents other intents that triggers the story
  * @param secondaryIntents other intents available in the story scope when it is triggered
- * @param steps List of steps stories [ClientStep]
+ * @param steps List of [story steps][ClientStep]
  * @param storyId default is [mainIntent] name
  * @param handler lamdba handler for the story
  */

@@ -18,7 +18,7 @@ package ai.tock.bot.api.client
 
 /**
  * @param apiKey the api key in studio for the bot configuration
- * @param stories List of stories [ClientStoryDefinition] supported by the bot.
+ * @param stories List of [stories][ClientStoryDefinition] supported by the bot.
  * @param unknownStory the unknown story triggered when unknown intent
  */
 class ClientBotDefinition(
