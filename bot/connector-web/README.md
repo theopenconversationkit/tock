@@ -129,7 +129,12 @@ response:
 
 A simple [Swagger descriptor](./Swagger_TOCKWebConnector.yaml) of the rest service is provided¬.
 
-## Server-sent events (SSE)
+## Additional features
+
+Several features can be optionally used with the Web Connector. Some require specific properties to be set, either
+as a Java system property or as an environment variable (system property takes precedence).
+
+### Server-sent events (SSE)
 
 This connector supports sending messages using [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
 This feature can be enabled by setting the `tock_web_sse` optional property to `true`.
@@ -140,7 +145,7 @@ while it is listening to server-sent events.
 The `tock_web_sse_keepalive_delay` optional property can be used to configure the number of seconds between
 two SSE pings (default: 10).
 
-## React chat widget
+### React chat widget
 
 The [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) component provides integration with
 Web pages, customizable chat widgets and orchestration with a Web connector back-end.
@@ -163,7 +168,7 @@ KMongoConfiguration.bsonMapper.subtypeResolver.registerSubtypes(
 )
 ```
 
-## Extra headers
+### Extra headers
 
 Sometimes it is useful to allow extra HTTP headers to bot requests, for instance to provide/pass authentication or 
 custom parameters from the front-end.
@@ -190,10 +195,17 @@ bot_api:
 > To add extra headers from a [`tock-react-kit`](https://github.com/theopenconversationkit/tock-react-kit) front-end, 
 > refer to its [README#extra-headers](https://github.com/theopenconversationkit/tock-react-kit#extra-headers).
 
-# Cookie storage for userId
+### Cookie storage for userId
 
 By default, a user's unique identifier is generated and stored by the client as an arbitrary string,
 which is passed to the web connector through the HTTP body and/or through query parameters.
-Setting the `tock_web_cookie_auth` environment variable to `true`
+Setting the `tock_web_cookie_auth` property to `true`
 makes it so the server stores users' identifiers in a secure, HTTP-only cookie, generating random unique identifiers
 (using the UUID V4 format) if no such cookie is found.
+
+### Markdown processing
+
+This connector can process [Markdown formatting](https://daringfireball.net/projects/markdown/) in messages.
+This feature can be enabled by setting the `tock_web_enable_markdown` property to `true`.
+When Markdown processing is enabled, the text content of each message is rendered with a Markdown to HTML converter before being sent to the client.
+Note that at the current time, only the main text body is rendered - markdown in cards and buttons is not supported yet.
