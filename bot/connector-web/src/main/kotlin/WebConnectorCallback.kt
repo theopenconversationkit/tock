@@ -17,11 +17,8 @@
 package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.ConnectorCallbackBase
-import ai.tock.bot.connector.web.WebMarkdown.markdown
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.MetadataEvent
-import ai.tock.shared.booleanProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.vertx.core.http.HttpHeaders
 import io.vertx.ext.web.RoutingContext
@@ -35,10 +32,9 @@ internal class WebConnectorCallback(
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
     private val metadata: MutableMap<String, String> = mutableMapOf(),
     private val webMapper: ObjectMapper,
-    private val eventId: String
+    private val eventId: String,
+    private val messageProcessor: WebMessageProcessor,
 ) : ConnectorCallbackBase(applicationId, webConnectorType) {
-
-    private val isMarkdown = booleanProperty("allow_markdown", false)
 
     fun addAction(action: Action) {
         actions.add(action)
@@ -50,22 +46,7 @@ internal class WebConnectorCallback(
 
     fun sendResponse() {
         WebRequestInfosByEvent.invalidate(eventId)
-        val messages = actions
-            .filterIsInstance<SendSentence>()
-            .mapNotNull {
-                val text = it.stringText
-                if (text != null) {
-                    WebMessage(
-                        if (isMarkdown) {
-                            markdown(text)
-                        } else {
-                            text
-                        }
-                    )
-                } else {
-                    it.message(webConnectorType) as? WebMessage
-                }
-            }
+        val messages = actions.mapNotNull(messageProcessor::process)
         context.response()
             .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
             .end(webMapper.writeValueAsString(WebConnectorResponse(messages, metadata)))

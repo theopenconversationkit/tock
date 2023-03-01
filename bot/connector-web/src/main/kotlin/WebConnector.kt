@@ -57,6 +57,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
+import ai.tock.shared.propertyOrNull
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -103,7 +104,12 @@ class WebConnector internal constructor(
                 addSerializer(CharSequence::class.java, ToStringSerializer())
             }
         )
-        private val channels by lazy { Channels(ChannelMongoDAO) }
+        private val messageProcessor = WebMessageProcessor(
+            processMarkdown = propertyOrNull("tock_web_enable_markdown")?.toBoolean()
+            // Fallback to previous property name for backward compatibility
+            ?: propertyOrNull("allow_markdown").toBoolean()
+        )
+        private val channels by lazy { Channels(ChannelMongoDAO, messageProcessor) }
     }
 
     private val executor: Executor get() = injector.provide()
@@ -232,7 +238,8 @@ class WebConnector internal constructor(
                 locale = request.locale,
                 context = context,
                 webMapper = webMapper,
-                eventId = event.id.toString()
+                eventId = event.id.toString(),
+                messageProcessor = messageProcessor
             )
             controller.handle(event, ConnectorData(callback))
         } catch (t: Throwable) {
