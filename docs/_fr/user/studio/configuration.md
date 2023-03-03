@@ -123,6 +123,6 @@ par les utilisateurs via Tock Studio: création d'applications, modifications de
 
 ## Continuer...
 
-Rendez-vous dans [_Guides utilisateur_](../../guides) pour la suite du manuel utilisateur.
+Rendez-vous dans [Menu _FAQ Training_](../faq-training) pour la suite du manuel utilisateur. 
 
 > Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../../dev/modes). 
