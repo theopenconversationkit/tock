@@ -4,7 +4,7 @@ title: FAQ Management
 
 # Le menu _FAQ Management_
 
-Le menu _FAQ Management_ permet de créer, modifier et enrichir les modèles conversationnels avec des questions de type _Foire Aux Questions_ (Questions/Réponses simples).
+Le menu _FAQ Management_ permet de créer, modifier et enrichir les modèles conversationnels avec des questions de type _Foire Aux Questions_ (Questions/Réponses avec simple texte).
 Il est destiné à un public métier non familier avec les concepts conversationnels (intentions, entités...).
 
 > Pour accéder à cette page il faut bénéficier du rôle _faqBotUser_.
