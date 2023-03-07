@@ -7,7 +7,7 @@ title: FAQ Training
 Le menu _FAQ Training_ permet d'enrichir les modèles conversationnels en associant les phrases utilisateur avec des questions de FAQ.
 Il est destiné à un public métier non familier avec les concepts conversationnels (intentions, entités...).
 
-> Pour accéder à cette page il faut bénéficier du rôle _faqNlpUser_.
+> Pour accéder à cette page il faut bénéficier du rôle _faqNlpUser_. ( plus de détails sur les rôles dans [securité](../../../admin/securite.md#rôles) ).
 
 Cete page liste l'ensemble des phrases reçues par le modèle _NLU_ avec les faq/scores détectés.
  
