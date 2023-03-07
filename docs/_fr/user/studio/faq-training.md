@@ -4,7 +4,7 @@ title: FAQ Training
 
 # Le menu _FAQ Training_
 
-Le menu _FAQ Trainging_ permet d'enrichir les modèles conversationnels en associant les phrases utilisateur avec des questions de FAQ.
+Le menu _FAQ Training_ permet d'enrichir les modèles conversationnels en associant les phrases utilisateur avec des questions de FAQ.
 Il est destiné à un public métier non familier avec les concepts conversationnels (intentions, entités...).
 
 > Pour accéder à cette page il faut bénéficier du rôle _faqNlpUser_.
