@@ -47,12 +47,70 @@ export class StoryRuleComponent implements OnInit {
     }
   };
 
-  constructor(private state: StateService, private botService: BotService, private configurationService: BotConfigurationService) {}
+  filteredOptions: StoryDefinitionConfiguration[];
+
+  filtredSecondStories: StoryDefinitionConfiguration[];
+  valueActivation: string;
+  valueRedirection: string;
+  valueEnding: string;
+
+  constructor(private state: StateService, private botService: BotService, private configurationService: BotConfigurationService) {
+  }
+
 
   ngOnInit(): void {
     this.initNewFeature();
     this.currentApplicationSubscription = this.state.currentApplicationEmitter.subscribe((a) => this.refresh());
     this.refresh();
+    this.filteredOptions = this.storiesToDisplay;
+  }
+
+  private filter(value: string, storiesToDisplay: StoryDefinitionConfiguration[]): StoryDefinitionConfiguration[] {
+    const filterValue = value.toLowerCase();
+    return storiesToDisplay.filter(optionValue => optionValue.name.toLowerCase().includes(filterValue));
+  }
+
+
+  onChange(value) {
+    this.filteredOptions = this.filter(value, this.storiesToDisplay);
+    const story = this.storiesToDisplay.find(it => it.name == value);
+    this.feature.story = story ? story : this.feature.story;
+  }
+
+
+  onChangeRedirection(value) {
+    this.filtredSecondStories = this.filter(value, this.stories);
+    const story = this.stories.find(it => it.name == value);
+    this.feature.switchToStoryId = story ? story.storyId : null;
+  }
+
+  onChangeEnding(value) {
+    this.filtredSecondStories = this.filter(value, this.stories);
+    const story = this.stories.find(it => it.name == value);
+    this.feature.endWithStoryId = story ? story.storyId : null;
+  }
+
+  isValidRule(): boolean {
+    const storyActivation = this.stories.find(it => it.name == this.valueActivation);
+    return  storyActivation != null
+      && (this.isRedirectionRule() ?
+        this.stories.find(it => it.name == this.valueRedirection) != null
+        : (this.isEndingRule() ? this.stories.find(it => it.name == this.valueEnding) != null : true));
+  }
+
+  onSelectionChange($event) {
+    this.filteredOptions = this.filter($event?.name, this.storiesToDisplay);
+    this.valueActivation = $event?.name;
+  }
+
+  onSelectionRedirectionChange($event) {
+    this.filtredSecondStories = this.filter($event?.name, this.stories);
+    this.valueRedirection = $event?.name;
+  }
+
+  onSelectionEndingChange($event) {
+    this.filtredSecondStories = this.filter($event?.name, this.stories);
+    this.valueEnding = $event?.name;
   }
 
   updateStoriesToDisplay() {
@@ -60,6 +118,11 @@ export class StoryRuleComponent implements OnInit {
   }
 
   prepareCreate() {
+    this.valueActivation = null;
+    this.valueRedirection = null;
+    this.valueEnding =null;
+    this.filteredOptions = this.storiesToDisplay;
+    this.filtredSecondStories = this.stories;
     this.create = true;
   }
 
@@ -76,15 +139,8 @@ export class StoryRuleComponent implements OnInit {
     this.feature = new StoryFeature(null, true, null, null);
     if (this.stories.length !== 0) {
       this.feature.story = this.stories[0];
+      this.valueActivation = this.feature.story.name;
     }
-  }
-
-  onSwitchStoryChange(switchToStory: StoryDefinitionConfiguration) {
-    this.feature.switchToStoryId = switchToStory ? switchToStory.storyId : null;
-  }
-
-  onSwitchStoryEnding(endWithStory: StoryDefinitionConfiguration) {
-    this.feature.endWithStoryId = endWithStory ? endWithStory.storyId : null;
   }
 
   addFeature() {
@@ -189,17 +245,20 @@ export class StoryRuleComponent implements OnInit {
         if (this.configuredStories.length !== 0) {
           this.feature.story = this.configuredStories[0];
         }
+        this.filtredSecondStories = this.stories;
         break;
       }
       case RuleType.Redirection: {
         this.feature.switchToStory = null;
         this.feature.switchToStoryId = null;
+        this.filtredSecondStories = this.stories;
         break;
       }
       case RuleType.Activation:
       default: {
         this.feature.endWithStory = null;
         this.feature.endWithStoryId = null;
+        this.filteredOptions = this.storiesToDisplay;
         break;
       }
     }
