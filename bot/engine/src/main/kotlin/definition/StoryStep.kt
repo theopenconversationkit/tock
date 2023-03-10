@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.story.StoryDefinitionStepMetric
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
@@ -145,4 +146,9 @@ interface StoryStep<T : StoryHandlerDefinition> {
      * If not null, entity has to be set in the current action to trigger the step.
      */
     val entityStepSelection: EntityStepSelection? get() = null
+
+    /**
+     * The step metrics.
+     */
+    val metrics: List<StoryDefinitionStepMetric> get() = emptyList()
 }

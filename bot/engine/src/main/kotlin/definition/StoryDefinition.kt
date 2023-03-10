@@ -66,6 +66,12 @@ interface StoryDefinition : IntentAware {
     val steps: Set<StoryStep<*>>
 
     /**
+     * True if the story handle metrics and is not a main tracked story
+     */
+    val metricStory: Boolean
+        get() = false
+
+    /**
      * When this story does not support all [UserInterfaceType]s.
      */
     val unsupportedUserInterfaces: Set<UserInterfaceType>

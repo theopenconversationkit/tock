@@ -66,7 +66,8 @@ data class BotStoryDefinitionConfiguration(
     val configuredAnswers: List<BotConfiguredAnswer> = emptyList(),
     val configuredSteps: List<BotConfiguredSteps> = emptyList(),
     val _id: Id<StoryDefinitionConfiguration> = newId(),
-    val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList()
+    val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList(),
+    val metricStory: Boolean = false
 ) {
 
     constructor(story: StoryDefinitionConfiguration, userLocale: Locale, readOnly: Boolean = false) : this(
@@ -89,6 +90,15 @@ data class BotStoryDefinitionConfiguration(
         story.configuredAnswers.map { BotConfiguredAnswer(it, story.userSentenceLocale, readOnly) },
         story.configuredSteps.mapSteps(story, readOnly),
         story._id,
-        story.nextIntentsQualifiers
+        story.nextIntentsQualifiers,
+        story.metricStory
     )
+
+    fun validateMetrics() : Boolean {
+        return if (metricStory) {
+            steps.isNotEmpty() && steps.any { it.hasMetrics() }
+        } else {
+            true
+        }
+    }
 }

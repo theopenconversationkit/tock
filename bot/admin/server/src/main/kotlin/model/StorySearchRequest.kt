@@ -16,7 +16,7 @@
 
 package ai.tock.bot.admin.model
 
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryRequest
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationExtendedSummaryRequest
 import ai.tock.nlp.admin.model.PaginatedQuery
 
 /**
@@ -28,8 +28,8 @@ class StorySearchRequest(
     val onlyConfiguredStory: Boolean = true
 ) : PaginatedQuery() {
 
-    fun toSummaryRequest(): StoryDefinitionConfigurationSummaryRequest =
-        StoryDefinitionConfigurationSummaryRequest(
+    fun toSummaryRequest(): StoryDefinitionConfigurationExtendedSummaryRequest =
+        StoryDefinitionConfigurationExtendedSummaryRequest(
             namespace, applicationName, category, textSearch, onlyConfiguredStory
         )
 }

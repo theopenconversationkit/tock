@@ -26,6 +26,7 @@ import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
+import ai.tock.bot.admin.story.StoryDefinitionStepMetric
 
 data class BotStoryDefinitionConfigurationStep(
     /**
@@ -69,14 +70,19 @@ data class BotStoryDefinitionConfigurationStep(
      */
     val entity: EntityStepSelection?,
     /**
+     * The step metrics.
+     */
+    val metrics: List<StoryDefinitionStepMetric> = emptyList(),
+    /**
      * Intent defined by the intent name.
      */
     val intentDefinition: IntentDefinition? = null,
     /**
      * Target Intent defined by the intent name.
      */
-    val targetIntentDefinition: IntentDefinition? = null
-) {
+    val targetIntentDefinition: IntentDefinition? = null,
+
+    ) {
 
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep, readOnly: Boolean = false) :
         this(
@@ -98,6 +104,11 @@ data class BotStoryDefinitionConfigurationStep(
                 .let { Translator.saveIfNotExist(it, readOnly) },
             e.children.map { BotStoryDefinitionConfigurationStep(story, it, readOnly) },
             e.level,
-            e.entity
+            e.entity,
+            e.metrics
         )
+
+    fun hasMetrics() : Boolean {
+        return metrics.isNotEmpty() || children.any { it.hasMetrics() }
+    }
 }

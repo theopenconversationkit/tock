@@ -63,9 +63,18 @@ interface StoryDefinitionConfigurationDAO {
     fun delete(story: StoryDefinitionConfiguration)
 
     /**
-     * Search [StoryDefinitionConfigurationSummary].
+     * Search [StoryDefinitionConfigurationSummaryMinimumMetrics] implementations
+     * @param request [StoryDefinitionConfigurationMinimalSummaryRequest] search request
+     * @return list of [StoryDefinitionConfigurationSummaryMinimumMetrics]
      */
-    fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary>
+    fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationMinimalSummaryRequest): List<StoryDefinitionConfigurationSummaryMinimumMetrics>
+
+    /**
+     * Search [StoryDefinitionConfigurationSummaryExtended]
+     * @param request [StoryDefinitionConfigurationExtendedSummaryRequest] search request
+     * @return list of [StoryDefinitionConfigurationSummaryExtended]
+     */
+    fun searchStoryDefinitionSummariesExtended(request: StoryDefinitionConfigurationExtendedSummaryRequest): List<StoryDefinitionConfigurationSummaryExtended>
 
     /**
      * Create the built-in stories if they don't exist yet.
