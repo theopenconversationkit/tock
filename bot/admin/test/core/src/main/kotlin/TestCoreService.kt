@@ -29,13 +29,13 @@ import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.shared.Dice
 import ai.tock.shared.error
+import ai.tock.shared.exception.rest.UnauthorizedException
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.faqBotUser
 import ai.tock.shared.security.TockUserRole.faqNlpUser
-import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
 import io.vertx.ext.web.RoutingContext

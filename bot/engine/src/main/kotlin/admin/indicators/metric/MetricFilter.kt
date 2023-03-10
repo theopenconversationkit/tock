@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2023 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.vertx
+package ai.tock.bot.admin.indicators.metric
+
+import java.time.Instant
 
 /**
- * Http 404 exception.
+ * Metric filter
  */
-class NotFoundException : RestException("not found", 404)
+data class MetricFilter(
+    val botId: String? = null,
+    val types: List<MetricType>? = null,
+    val emitterStoryIds: List<String>? = null,
+    val trackedStoryIds: List<String>? = null,
+    val indicatorNames: List<String>? = null,
+    val indicatorValueNames: List<String>? = null,
+    val creationDateSince: Instant? = null,
+    val creationDateUntil: Instant? = null,
+)
+

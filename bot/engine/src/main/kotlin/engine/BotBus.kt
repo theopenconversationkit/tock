@@ -16,6 +16,8 @@
 
 package ai.tock.bot.engine
 
+import ai.tock.bot.admin.indicators.metric.Metric
+import ai.tock.bot.admin.indicators.metric.MetricType
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
@@ -442,6 +444,32 @@ interface BotBus : Bus<BotBus> {
         @Suppress("UNCHECKED_CAST")
         storyDefinition.storyHandler.handle(this)
     }
+
+    /**
+     * Create one [Metric]
+     * @param type mandatory type of [Metric]
+     * @param indicatorName optional indicator name
+     * @param indicatorValueName optional indicator value name
+     */
+    fun createMetric(type: MetricType, indicatorName: String? = null, indicatorValueName: String? = null) =
+        Metric(
+            type = type,
+            indicatorName = indicatorName,
+            indicatorValueName = indicatorValueName,
+            emitterStoryId = story.definition.id,
+            trackedStoryId = getTrackedStoryId(),
+            playerIds = dialog.playerIds,
+            dialogId = dialog.id,
+            botId = botDefinition.botId
+        )
+
+    /**
+     * A tracked story is the last story in the dialog, wich flagged non metricStory,
+     * If it doesn't exist, the tracked story is the current one
+     */
+    fun getTrackedStoryId() = dialog.stories
+        .lastOrNull { !it.metricStory }?.definition?.id
+        ?: story.definition.id
 
     /**
      * Does not send an answer. Synchronous [Connector]s (like Google Assistant or Alexa)

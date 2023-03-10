@@ -17,12 +17,27 @@
 package ai.tock.bot.admin.story
 
 /**
- * Request to find [StoryDefinitionConfigurationSummary.
+ * Request to find [StoryDefinitionConfigurationMinimalSummaryRequest].
  */
-data class StoryDefinitionConfigurationSummaryRequest(
-    val namespace: String,
-    val botId: String,
-    val category: String?,
+data class StoryDefinitionConfigurationMinimalSummaryRequest(
+    override val namespace: String,
+    override val botId: String,
+    override val category: String?,
+) : StoryDefinitionConfigurationSummaryRequest
+
+/**
+ * Request to find [StoryDefinitionConfigurationExtendedSummaryRequest].
+ */
+data class StoryDefinitionConfigurationExtendedSummaryRequest(
+    override val namespace: String,
+    override val botId: String,
+    override val category: String?,
     val textSearch: String?,
     val onlyConfiguredStory: Boolean
-)
+) : StoryDefinitionConfigurationSummaryRequest
+
+interface StoryDefinitionConfigurationSummaryRequest{
+    val namespace: String
+    val botId: String
+    val category: String?
+}

@@ -49,6 +49,7 @@ import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
 import ai.tock.bot.admin.model.DialogsSearchQuery
 import ai.tock.bot.admin.model.Feature
+import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.model.UserSearchQueryResult
@@ -57,7 +58,8 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummary
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryExtended
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryMinimumMetrics
 import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
@@ -283,8 +285,11 @@ object BotAdminService {
         }
     }
 
-    fun searchStories(request: StorySearchRequest): List<StoryDefinitionConfigurationSummary> =
-            storyDefinitionDAO.searchStoryDefinitionSummaries(request.toSummaryRequest())
+    fun searchStories(request: StorySearchRequest): List<StoryDefinitionConfigurationSummaryExtended> =
+        storyDefinitionDAO.searchStoryDefinitionSummariesExtended(request.toSummaryRequest())
+
+    fun searchSummaryStories(request: SummaryStorySearchRequest): List<StoryDefinitionConfigurationSummaryMinimumMetrics> =
+        storyDefinitionDAO.searchStoryDefinitionSummaries(request.toSummaryRequest())
 
     fun loadStories(request: StorySearchRequest): List<BotStoryDefinitionConfiguration> =
             findStories(request.namespace, request.applicationName).map {
@@ -611,27 +616,28 @@ object BotAdminService {
             botId: String,
             oldStory: StoryDefinitionConfiguration?
     ): StoryDefinitionConfigurationStep =
-            StoryDefinitionConfigurationStep(
-                    name.takeIf { it.startsWith("##") }
-                            ?: "##${Dice.newId()}_${intent?.name}_${(entity?.value ?: entity?.entityRole)?.let { "_$it" }}_$level",
-                    intent?.takeIf { it.name.isNotBlank() },
-                    targetIntent?.takeIf { it.name.isNotBlank() },
-                    answers.mapNotNull { botAnswerConfiguration ->
-                        botAnswerConfiguration.toConfiguration(
-                                botId,
-                                oldStory?.steps?.find { it.name == name }?.answers
-                        )
-                    },
-                    currentType,
-                    userSentence.defaultLabel ?: "",
-                    I18nLabelValue(userSentence),
-                    children.map { it.toStepConfiguration(app, botId, oldStory) },
-                    level,
-                    entity
-            ).apply {
-                updateIntentDefinition(intentDefinition, intent, app)
-                updateIntentDefinition(targetIntentDefinition, targetIntent, app)
-            }
+        StoryDefinitionConfigurationStep(
+            name.takeIf { it.startsWith("##") }
+                ?: "##${Dice.newId()}_${intent?.name}_${(entity?.value ?: entity?.entityRole)?.let { "_$it" }}_$level",
+            intent?.takeIf { it.name.isNotBlank() },
+            targetIntent?.takeIf { it.name.isNotBlank() },
+            answers.mapNotNull { botAnswerConfiguration ->
+                botAnswerConfiguration.toConfiguration(
+                    botId,
+                    oldStory?.steps?.find { it.name == name }?.answers
+                )
+            },
+            currentType,
+            userSentence.defaultLabel ?: "",
+            I18nLabelValue(userSentence),
+            children.map { it.toStepConfiguration(app, botId, oldStory) },
+            level,
+            entity,
+            metrics
+        ).apply {
+            updateIntentDefinition(intentDefinition, intent, app)
+            updateIntentDefinition(targetIntentDefinition, targetIntent, app)
+        }
 
     private fun updateIntentDefinition(
             intentDefinition: IntentDefinition?,
@@ -672,30 +678,31 @@ object BotAdminService {
             botId: String
     ): StoryDefinitionConfiguration {
         return oldStory.copy(
-                name = story.name,
-                description = story.description,
-                category = story.category,
-                currentType = story.currentType,
-                intent = story.intent,
-                answers = story.answers.mapNotNull { it.toStoryConfiguration(botId, oldStory) },
-                mandatoryEntities = story.mandatoryEntities.map {
-                    it.toEntityConfiguration(
-                            application,
-                            botId,
-                            oldStory
-                    )
-                },
-                steps = story.steps.map { it.toStepConfiguration(application, botId, oldStory) },
-                userSentence = story.userSentence,
-                userSentenceLocale = story.userSentenceLocale,
-                configurationName = story.configurationName,
-                features = story.features,
-                tags = story.tags,
-                configuredAnswers = story.configuredAnswers.map {
-                    it.toConfiguredAnswer(botId, oldStory)
-                },
-                configuredSteps = story.configuredSteps.mapSteps(application, botId, oldStory),
-                nextIntentsQualifiers = story.nextIntentsQualifiers
+            name = story.name,
+            description = story.description,
+            category = story.category,
+            currentType = story.currentType,
+            intent = story.intent,
+            answers = story.answers.mapNotNull { it.toStoryConfiguration(botId, oldStory) },
+            mandatoryEntities = story.mandatoryEntities.map {
+                it.toEntityConfiguration(
+                    application,
+                    botId,
+                    oldStory
+                )
+            },
+            steps = story.steps.map { it.toStepConfiguration(application, botId, oldStory) },
+            userSentence = story.userSentence,
+            userSentenceLocale = story.userSentenceLocale,
+            configurationName = story.configurationName,
+            features = story.features,
+            tags = story.tags,
+            configuredAnswers = story.configuredAnswers.map {
+                it.toConfiguredAnswer(botId, oldStory)
+            },
+            configuredSteps = story.configuredSteps.mapSteps(application, botId, oldStory),
+            nextIntentsQualifiers = story.nextIntentsQualifiers,
+            metricStory = story.metricStory,
         )
     }
 
@@ -712,6 +719,10 @@ object BotAdminService {
             user: UserLogin,
             createdIntent: IntentDefinition? = null
     ): BotStoryDefinitionConfiguration? {
+
+        if (!story.validateMetrics()) {
+            badRequest("Story is not valid : Metric story must have at least one step that handles at least one metric.")
+        }
 
         // Two stories (built-in or configured) should not have the same _id
         // There should be max one built-in (resp. configured) story for given namespace+bot+intent (or namespace+bot+storyId)
@@ -781,37 +792,38 @@ object BotAdminService {
 
                 else -> {
                     StoryDefinitionConfiguration(
-                            storyId = story.storyId,
-                            botId = story.botId,
-                            intent = story.intent,
-                            currentType = story.currentType,
-                            answers = story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, null) },
-                            version = 0,
-                            namespace = namespace,
-                            mandatoryEntities = story.mandatoryEntities.map {
-                                it.toEntityConfiguration(
-                                        application,
-                                        botConf.botId,
-                                        storyWithSameId
-                                )
-                            },
-                            steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, null) },
-                            name = story.name,
-                            category = story.category,
-                            description = story.description,
-                            userSentence = story.userSentence,
-                            userSentenceLocale = story.userSentenceLocale,
-                            configurationName = story.configurationName,
-                            features = story.features,
-                            tags = story.tags,
-                            configuredAnswers = story.configuredAnswers.map {
-                                it.toConfiguredAnswer(
-                                        botConf.botId,
-                                        null
-                                )
-                            },
-                            configuredSteps = story.configuredSteps.mapSteps(application, botConf.botId, null),
-                            nextIntentsQualifiers = story.nextIntentsQualifiers
+                        storyId = story.storyId,
+                        botId = story.botId,
+                        intent = story.intent,
+                        currentType = story.currentType,
+                        answers = story.answers.mapNotNull { it.toStoryConfiguration(botConf.botId, null) },
+                        version = 0,
+                        namespace = namespace,
+                        mandatoryEntities = story.mandatoryEntities.map {
+                            it.toEntityConfiguration(
+                                application,
+                                botConf.botId,
+                                storyWithSameId
+                            )
+                        },
+                        steps = story.steps.map { it.toStepConfiguration(application, botConf.botId, null) },
+                        name = story.name,
+                        category = story.category,
+                        description = story.description,
+                        userSentence = story.userSentence,
+                        userSentenceLocale = story.userSentenceLocale,
+                        configurationName = story.configurationName,
+                        features = story.features,
+                        tags = story.tags,
+                        configuredAnswers = story.configuredAnswers.map {
+                            it.toConfiguredAnswer(
+                                botConf.botId,
+                                null
+                            )
+                        },
+                        configuredSteps = story.configuredSteps.mapSteps(application, botConf.botId, null),
+                        nextIntentsQualifiers = story.nextIntentsQualifiers,
+                        metricStory = story.metricStory
                     )
                 }
             }

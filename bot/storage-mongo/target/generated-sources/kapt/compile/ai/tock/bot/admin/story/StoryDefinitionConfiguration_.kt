@@ -8,6 +8,7 @@ import ai.tock.bot.definition.IntentWithoutNamespace_
 import ai.tock.bot.definition.StoryTag
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import java.util.Locale
+import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
@@ -70,6 +71,8 @@ private val __ConfiguredSteps: KProperty1<StoryDefinitionConfiguration,
 private val __NextIntentsQualifiers: KProperty1<StoryDefinitionConfiguration,
         List<NlpIntentQualifier>?>
     get() = StoryDefinitionConfiguration::nextIntentsQualifiers
+private val __MetricStory: KProperty1<StoryDefinitionConfiguration, Boolean?>
+    get() = StoryDefinitionConfiguration::metricStory
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         StoryDefinitionConfiguration?>) : KPropertyPath<T,
         StoryDefinitionConfiguration?>(previous,property) {
@@ -138,6 +141,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
         get() =
                 KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::nextIntentsQualifiers)
 
+    val metricStory: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__MetricStory)
+
     companion object {
         val StoryId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = __StoryId
@@ -187,7 +193,9 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = KCollectionSimplePropertyPath(null, __ConfiguredSteps)
         val NextIntentsQualifiers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
                 NlpIntentQualifier?>
-            get() = KCollectionSimplePropertyPath(null, __NextIntentsQualifiers)}
+            get() = KCollectionSimplePropertyPath(null, __NextIntentsQualifiers)
+        val MetricStory: KProperty1<StoryDefinitionConfiguration, Boolean?>
+            get() = __MetricStory}
 }
 
 class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -257,6 +265,9 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
     val nextIntentsQualifiers: KCollectionSimplePropertyPath<T, NlpIntentQualifier?>
         get() =
                 KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::nextIntentsQualifiers)
+
+    val metricStory: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__MetricStory)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>
@@ -329,6 +340,9 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
     val nextIntentsQualifiers: KCollectionSimplePropertyPath<T, NlpIntentQualifier?>
         get() =
                 KCollectionSimplePropertyPath(this,StoryDefinitionConfiguration::nextIntentsQualifiers)
+
+    val metricStory: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__MetricStory)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>

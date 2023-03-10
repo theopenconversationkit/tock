@@ -43,6 +43,8 @@ internal class ConfiguredStoryDefinition(
 
     override val tags: Set<StoryTag> = configuration.tags
 
+    override val metricStory = configuration.metricStory
+
     val storyId: String = configuration.storyId
 
     /**
