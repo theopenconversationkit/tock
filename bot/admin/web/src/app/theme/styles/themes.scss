@@ -50,7 +50,8 @@ $nb-themes: nb-register-theme(
     toggle-disabled-cursor: not-allowed,
 
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
-    color-basic-transparent-200: rgba(143, 155, 179, 0.4)
+    color-basic-transparent-200: rgba(143, 155, 179, 0.4),
+    tree-grid-cell-padding: 30px
   ),
   default,
   default
@@ -87,7 +88,8 @@ $nb-themes: nb-register-theme(
     toggle-disabled-cursor: not-allowed,
 
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
-    color-basic-transparent-200: rgba(143, 155, 179, 0.4)
+    color-basic-transparent-200: rgba(143, 155, 179, 0.4),
+    tree-grid-cell-padding: 30px
   ),
   dark,
   dark

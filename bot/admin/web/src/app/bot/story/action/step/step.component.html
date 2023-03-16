@@ -1,0 +1,296 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div
+  *ngIf="step && !readonly"
+  class="step"
+>
+  <div class="line">
+    <div>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        status="info"
+        nbTooltip="Move upward"
+        (click)="upwardStep()"
+        *ngIf="canUpward"
+        class="d-block"
+      >
+        <nb-icon icon="arrow-upward-outline"></nb-icon>
+      </button>
+
+      <button
+        nbButton
+        ghost
+        shape="round"
+        status="info"
+        nbTooltip="Move downward"
+        (click)="downwardStep()"
+        *ngIf="canDownward"
+        class="d-block"
+      >
+        <nb-icon icon="arrow-downward-outline"></nb-icon>
+      </button>
+    </div>
+
+    <!-- user sentence -->
+    <div>
+      <tock-form-control
+        label="User phrase"
+        name="userSentence"
+        [hasMargin]="false"
+        [required]="true"
+        [boldLabel]="false"
+        [hasMargin]="false"
+        showError="true"
+        [controls]="{ errors: step.new }"
+      >
+        <input
+          nbInput
+          fullWidth
+          type="text"
+          fieldSize="small"
+          placeholder="Enter a user phrase"
+          *ngIf="!step.new"
+          [(ngModel)]="step.userSentence.defaultLabel"
+          (blur)="userSentenceChange($event.target.value)"
+        />
+        <input
+          nbInput
+          fullWidth
+          type="text"
+          fieldSize="small"
+          placeholder="Enter a user phrase"
+          *ngIf="step.new"
+          [(ngModel)]="step.newUserSentence"
+          (blur)="userSentenceChange($event.target.value)"
+        />
+      </tock-form-control>
+    </div>
+
+    <!-- intent -->
+    <tock-form-control
+      label="Intent"
+      name="intent"
+      [hasMargin]="false"
+      [boldLabel]="false"
+      [hasMargin]="false"
+    >
+      <input
+        nbInput
+        fullWidth
+        type="text"
+        fieldSize="small"
+        placeholder="Intent starting the Action"
+        [(ngModel)]="step.intent.name"
+        (blur)="validateIntent(step)"
+        autocomplete="off"
+        (keyup)="updateIntentsAutocompleteValues($event)"
+        [nbAutocomplete]="intentssAutocomplete"
+      />
+    </tock-form-control>
+
+    <!-- entity -->
+    <tock-form-control
+      label="Entity"
+      [boldLabel]="false"
+      [hasMargin]="false"
+    >
+      <button
+        nbButton
+        shape="round"
+        size="small"
+        nbTooltip="Set Target Entity Value"
+        (click)="setEntity()"
+        *ngIf="!step.entity || step.entity.value"
+      >
+        <nb-icon
+          icon="playlist_add_check"
+          pack="material-icons"
+          class="material-icons-button-sizing"
+          [status]="step.entity ? 'primary' : 'basic'"
+        ></nb-icon>
+      </button>
+      <button
+        nbButton
+        shape="round"
+        size="small"
+        nbTooltip="Set Target Entity"
+        (click)="setEntity()"
+        *ngIf="step.entity && !step.entity.value"
+      >
+        <nb-icon
+          icon="extension"
+          pack="material-icons"
+          class="material-icons-button-sizing"
+        ></nb-icon>
+        {{ step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : '' }}
+      </button>
+    </tock-form-control>
+
+    <div></div>
+
+    <!-- answer -->
+    <tock-form-control
+      label="Answer"
+      [boldLabel]="false"
+      [hasMargin]="false"
+    >
+      <tock-answer
+        editableIconSize="small"
+        [answer]="step"
+      ></tock-answer>
+    </tock-form-control>
+
+    <tock-form-control
+      label="Target intent"
+      name="targetIntent"
+      [boldLabel]="false"
+      [hasMargin]="false"
+      nbTooltip="Intent to switch to when reaching the step"
+    >
+      <input
+        nbInput
+        fullWidth
+        type="text"
+        fieldSize="small"
+        placeholder="Target intent"
+        #targetIntent
+        [(ngModel)]="step.targetIntent.name"
+        (keyup)="onIntentChange(step, $event.target.value)"
+        (focus)="onIntentChange(step, $event.target.value)"
+        (blur)="validateIntent(step, true)"
+        autocomplete="off"
+        (keyup)="updateIntentsAutocompleteValues($event)"
+        [nbAutocomplete]="intentssAutocomplete"
+      />
+    </tock-form-control>
+
+    <tock-form-control
+      label="Indicators"
+      [boldLabel]="false"
+      [hasMargin]="false"
+    >
+      <nb-select
+        multiple
+        fullWidth
+        size="small"
+        placeholder="Associate indicators with this step"
+        optionsListClass="option-list--break-word"
+        [selected]="selectedStepsMetrics"
+        [compareWith]="matchMetrics"
+        (selectedChange)="onStepMetricChange($event)"
+      >
+        <nb-option-group
+          *ngFor="let dimension of getIndicatorsValuesGroups()"
+          [title]="dimension.dimension"
+        >
+          <nb-option
+            *ngFor="let entry of dimension.entries"
+            [value]="entry"
+            [disabled]="!indicatorValueSelectable(entry)"
+          >
+            {{ getMetricLabel(entry) }}
+          </nb-option>
+        </nb-option-group>
+      </nb-select>
+    </tock-form-control>
+  </div>
+  <div class="context-menu">
+    <!-- remove action -->
+    <div class="d-flex">
+      <button
+        nbButton
+        ghost
+        status="danger"
+        size="small"
+        (click)="removeStep()"
+      >
+        <nb-icon icon="minus-outline"></nb-icon>
+        Remove Action
+      </button>
+
+      <button
+        nbButton
+        ghost
+        status="success"
+        size="small"
+        (click)="addChild()"
+        *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
+      >
+        <nb-icon icon="plus-outline"></nb-icon>
+        Add action
+      </button>
+
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="duplicateStep()"
+      >
+        <nb-icon icon="copy-outline"></nb-icon>
+        Duplicate
+      </button>
+
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="generateChildren()"
+        *ngIf="!step.new && step.intent && !step.currentAnswer().isEmpty()"
+      >
+        <nb-icon icon="plus-square-outline"></nb-icon>
+        Generate from entity
+      </button>
+    </div>
+  </div>
+</div>
+
+<nb-autocomplete
+  #intentssAutocomplete
+  size="tiny"
+>
+  <nb-option-group
+    *ngFor="let category of intentsAutocompleteValues | async"
+    [title]="category.category"
+  >
+    <nb-option
+      *ngFor="let intent of category.intents"
+      [value]="intent.name"
+      class="text-capitalize"
+    >
+      {{ intent.intentLabel() }}
+    </nb-option>
+  </nb-option-group>
+</nb-autocomplete>
+
+<span
+  *ngIf="step && readonly"
+  class="read-only"
+  >{{ step.userSentence.defaultLocalizedLabelForLocale(state.currentLocale).label }}
+  <span
+    *ngIf="step.intent && step.intent.name"
+    class="intent"
+    nbTooltip="Action Intent"
+    >[{{ step.intent.name }}]</span
+  >:
+  <tock-answer
+    class="answer"
+    [answer]="step"
+    [editable]="false"
+  ></tock-answer
+></span>

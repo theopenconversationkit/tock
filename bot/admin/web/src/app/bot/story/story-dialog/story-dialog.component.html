@@ -1,0 +1,185 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card class="m-0">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
+    {{ create ? 'Create new story' : 'Update story ' + (name ? name : label) }}
+    <button
+      type="button"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Close"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <form #intentForm="ngForm">
+      <tock-form-control
+        label="User phrase sample"
+        name="userSentence"
+        information="User phrase provided as sample for the user"
+      >
+        <input
+          nbInput
+          fullWidth
+          name="userSentence"
+          id="userSentence"
+          placeholder="Enter a user Phrase Sample"
+          [(ngModel)]="userSentence"
+        />
+      </tock-form-control>
+      <tock-form-control
+        label="Label"
+        name="label"
+      >
+        <input
+          tockAutofocusElement
+          nbInput
+          fullWidth
+          name="label"
+          id="label"
+          placeholder="Enter a story Label"
+          [(ngModel)]="label"
+          (keyup)="copyToName()"
+          (keyup.enter)="save()"
+        />
+      </tock-form-control>
+      <tock-form-control
+        label="Story id"
+        name="name"
+        information="Story technical id"
+        [required]="true"
+      >
+        <input
+          nbInput
+          required
+          name="name"
+          fullWidth
+          placeholder="Story Id"
+          [disabled]="!create"
+          [(ngModel)]="name"
+          (keyup)="format()"
+          (keyup.enter)="save()"
+        />
+      </tock-form-control>
+      <tock-form-control
+        label="Intent"
+        name="intent"
+        information="The intent that triggers the story"
+        [required]="true"
+      >
+        <input
+          nbInput
+          fullWidth
+          id="intent"
+          name="intent"
+          placeholder="Choose an intent"
+          required
+          autocomplete="off"
+          [nbAutocomplete]="intentAuto"
+          [disabled]="freezeIntent"
+          [(ngModel)]="intent"
+          (keyup)="intentCategoryChange()"
+          (focus)="intentCategoryChange()"
+          (change)="intent = $event.target.value"
+        />
+      </tock-form-control>
+      <nb-autocomplete
+        #intentAuto
+        activeFirst
+      >
+        <nb-option-group
+          *ngFor="let category of intentCategories"
+          [title]="category.category"
+        >
+          <nb-option
+            *ngFor="let intent of category.intents"
+            [value]="intent.name"
+          >
+            {{ intent.intentLabel() }}
+          </nb-option>
+        </nb-option-group>
+      </nb-autocomplete>
+      <tock-story-tag [(selectedTag)]="tag"></tock-story-tag>
+      <tock-form-control
+        label="Category"
+        name="category"
+      >
+        <input
+          nbInput
+          fullWidth
+          id="category"
+          name="category"
+          placeholder="Choose category"
+          autocomplete="off"
+          [nbAutocomplete]="catAuto"
+          [(ngModel)]="category"
+          (keyup)="categoryChange()"
+          (focus)="categoryChange()"
+        />
+      </tock-form-control>
+      <nb-autocomplete
+        #catAuto
+        activeFirst
+      >
+        <nb-option
+          *ngFor="let category of categories"
+          [value]="category"
+        >
+          {{ category }}
+        </nb-option>
+      </nb-autocomplete>
+      <tock-form-control
+        label="Description"
+        name="description"
+      >
+        <textarea
+          nbInput
+          fullWidth
+          rows="5"
+          name="description"
+          id="description"
+          placeholder="Enter a description"
+          [(ngModel)]="description"
+        ></textarea>
+      </tock-form-control>
+    </form>
+  </nb-card-body>
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      size="small"
+      type="button"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      nbButton
+      status="primary"
+      size="small"
+      [disabled]="!intentForm.form.valid"
+      (click)="save()"
+    >
+      Save
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NbRouteTabsetModule, NbTabsetModule } from '@nebular/theme';
 
+import { TestSharedModule } from '../../shared/test-shared.module';
 import { MetricsTabsComponent } from './metrics-tabs.component';
 
 describe('MetricsTabsComponent', () => {
@@ -8,9 +10,9 @@ describe('MetricsTabsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MetricsTabsComponent ]
-    })
-    .compileComponents();
+      imports: [TestSharedModule, NbTabsetModule, NbRouteTabsetModule],
+      declarations: [MetricsTabsComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {

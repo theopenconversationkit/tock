@@ -16,6 +16,9 @@
 
 import { saveAs } from 'file-saver-es';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChange, SimpleChanges } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
+import { take } from 'rxjs';
+
 import {
   AnswerConfigurationType,
   BotConfiguredAnswer,
@@ -26,23 +29,21 @@ import {
   StoryStep
 } from '../model/story';
 import { BotService } from '../bot-service';
-import { MatDialog } from '@angular/material/dialog';
 import { StateService } from '../../core-nlp/state.service';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import { StoryDialogComponent } from './story-dialog.component';
-import { MandatoryEntitiesDialogComponent } from './mandatory-entities-dialog.component';
+import { StoryDialogComponent } from './story-dialog/story-dialog.component';
+import { MandatoryEntitiesDialogComponent } from './mandatory-entities/mandatory-entities-dialog.component';
 import { StoryNode } from '../../analytics/flow/node';
-import { StepDialogComponent } from './step-dialog.component';
+import { StepDialogComponent } from './action';
 import { AnswerController } from './controller';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { SelectBotConfigurationDialogComponent } from '../../configuration/bot/selection-dialog/select-bot-configuration-dialog.component';
-import { NbDialogService } from '@nebular/theme';
 import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-story',
   templateUrl: './story.component.html',
-  styleUrls: ['./story.component.css']
+  styleUrls: ['./story.component.scss']
 })
 export class StoryComponent implements OnChanges {
   @Input()
@@ -84,8 +85,7 @@ export class StoryComponent implements OnChanges {
     private state: StateService,
     private bot: BotService,
     private dialog: DialogService,
-    private matDialog: MatDialog,
-    private dialogService: NbDialogService
+    private nbDialogService: NbDialogService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -115,15 +115,21 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteStory() {
-    const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+    const action = 'remove';
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Remove the story ${this.story.name}`,
-        subtitle: 'Are you sure?',
-        action: 'Remove'
+        subtitle: 'Are you sure you want to delete this story?',
+        actions: [
+          //@ts-ignore TODO remove the comment when the scenario and the indicator issues are merged
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ],
+        modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
+      if (result === action) {
         this.bot.deleteStory(this.story._id).subscribe((_) => {
           this.delete.emit(this.story._id);
           this.story = null;
@@ -135,8 +141,8 @@ export class StoryComponent implements OnChanges {
   }
 
   editStory() {
-    const dialogRef = this.dialog.open(this.matDialog, StoryDialogComponent, {
-      data: {
+    const dialogRef = this.nbDialogService.open(StoryDialogComponent, {
+      context: {
         create: !this.story._id,
         name: this.story.storyId,
         label: this.story.name,
@@ -144,12 +150,13 @@ export class StoryComponent implements OnChanges {
         intent: this.story.intent.name,
         description: this.story.description,
         category: this.story.category,
+        // @ts-ignore todo fix this
         freezeIntent: this.storyNode,
         userSentence: this.story.userSentence,
         story: this.story
       }
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.onClose.pipe(take(1)).subscribe((result) => {
       if (result && result.name) {
         this.story.storyId = result.name;
         this.story.name = result.label;
@@ -165,6 +172,7 @@ export class StoryComponent implements OnChanges {
 
   private saveStory(selectStoryAfterSave: boolean) {
     this.story.steps = StoryStep.filterNew(this.story.steps);
+    if (!this.canBeMetricStory()) this.story.isMetricStory = false;
     this.story.tags = !this.storyTag || this.storyTag.length === 0 ? [] : [this.storyTag];
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe((s) => {
@@ -177,13 +185,13 @@ export class StoryComponent implements OnChanges {
   }
 
   editEntities() {
-    const dialogRef = this.dialog.open(this.matDialog, MandatoryEntitiesDialogComponent, {
-      data: {
+    const dialogRef = this.nbDialogService.open(MandatoryEntitiesDialogComponent, {
+      context: {
         entities: this.story.mandatoryEntities,
-        category: this.story.category
+        defaultCategory: this.story.category
       }
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.onClose.pipe(take(1)).subscribe((result) => {
       if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
         this.saveStory(this.story.selected);
@@ -192,14 +200,13 @@ export class StoryComponent implements OnChanges {
   }
 
   editSteps() {
-    const dialogRef = this.dialog.open(this.matDialog, StepDialogComponent, {
-      data: {
+    const dialogRef = this.nbDialogService.open(StepDialogComponent, {
+      context: {
         steps: StoryStep.filterNew(this.story.steps),
-        category: this.story.category
-      },
-      minWidth: 900
+        defaultCategory: this.story.category
+      }
     });
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.onClose.pipe(take(1)).subscribe((result) => {
       if (result && result.steps) {
         this.story.steps = result.steps;
         this.saveStory(this.story.selected);
@@ -231,6 +238,7 @@ export class StoryComponent implements OnChanges {
     if (invalidMessage) {
       this.dialog.notify(`Error: ${invalidMessage}`);
     } else {
+      if (!this.canBeMetricStory()) this.story.isMetricStory = false;
       this.bot.newStory(new CreateStoryRequest(this.story, this.state.currentLocale, [])).subscribe((intent) => {
         this.dialog.notify(`New story ${this.story.name} created for language ${this.state.currentLocale}`, 'New Story');
         this.initStoryByBotIdAndIntent();
@@ -265,7 +273,7 @@ export class StoryComponent implements OnChanges {
   }
 
   customiseMainAnswer() {
-    this.dialogService
+    this.nbDialogService
       .open(SelectBotConfigurationDialogComponent, {
         closeOnEsc: true,
         context: {
@@ -299,7 +307,7 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteCustomAnswers(answer: BotConfiguredAnswer) {
-    this.dialogService
+    this.nbDialogService
       .open(ConfirmationDialogComponent, {
         closeOnEsc: true,
         context: {
@@ -318,7 +326,8 @@ export class StoryComponent implements OnChanges {
   }
 
   addCustomSteps() {
-    this.dialogService
+    // TODO : check if all steps have a userSentence defined to avoid an error on duplication
+    this.nbDialogService
       .open(SelectBotConfigurationDialogComponent, {
         closeOnEsc: true,
         context: {
@@ -345,7 +354,7 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteCustomSteps(steps: BotConfiguredSteps) {
-    this.dialogService
+    this.nbDialogService
       .open(ConfirmationDialogComponent, {
         closeOnEsc: true,
         context: {
@@ -361,5 +370,22 @@ export class StoryComponent implements OnChanges {
           }
         }
       });
+  }
+
+  toggleStoryPanel(open: boolean): void {
+    if (!open) {
+      this.story.hideDetails = false;
+      this.story.selected = true;
+    } else {
+      this.story.selected = false;
+    }
+  }
+
+  canBeMetricStory() {
+    for (let i = 0; i < this.story.steps?.length; i++) {
+      if (this.story.steps[i].metrics?.length) return true;
+    }
+
+    return false;
   }
 }

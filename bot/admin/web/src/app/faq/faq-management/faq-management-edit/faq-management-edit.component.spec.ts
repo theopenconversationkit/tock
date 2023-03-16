@@ -596,7 +596,7 @@ describe('FaqManagementEditComponent', () => {
 
       component.checkIntentNameAndSave();
 
-      expect(component.save).toHaveBeenCalledOnceWith({ ...faq, intentName: 'titlefaq1' } as FaqDefinitionExtended);
+      expect(component.save).toHaveBeenCalledOnceWith({ ...faq, intentName: 'titlefaq' } as FaqDefinitionExtended);
     });
   });
 });
