@@ -14,369 +14,395 @@
   ~ limitations under the License.
   -->
 
-<mat-expansion-panel
-  *ngIf="story"
-  [expanded]="storyNode || !story._id || story.selected"
-  [hideToggle]="storyNode || !story._id"
-  #expansionPanel
-  (opened)="story.hideDetails = false; story.selected = true"
-  (closed)="story.selected = false"
->
-  <mat-expansion-panel-header>
-    <mat-panel-title class="panel-title">
-      <nb-icon
-        *ngIf="!storyNode && story.isBuiltIn()"
-        class="story-type"
-        nbTooltip="Built-in Story"
-        icon="cube"
-      ></nb-icon>
-      <nb-icon
-        *ngIf="!storyNode && story.isSimpleAnswer()"
-        class="story-type"
-        nbTooltip="Message Story"
-        icon="message-square-outline"
-      ></nb-icon>
-      <nb-icon
-        *ngIf="!storyNode && story.isScriptAnswer()"
-        class="story-type"
-        nbTooltip="Script Story"
-        icon="code"
-      ></nb-icon>
-      <span
-        *ngIf="!storyNode"
-        nbTooltip="Story name"
-        class="answer-title"
-        >{{ story.name }}</span
-      >
-      <span
-        *ngIf="storyNode"
-        nbTooltip="Story name"
-        [matBadge]="storyNode.displayCount()"
-        [matBadgeHidden]="!displayCount"
-        matBadgeOverlap="false"
-        class="answer-title"
-      >
-        <div class="answer-title-right-panel">{{ story.name }}</div></span
-      >
-    </mat-panel-title>
-    <mat-panel-description>
-      <tock-answer
-        *ngIf="!storyNode && story._id && !story.isBuiltIn()"
-        class="answer"
-        [answer]="story"
-        [fullDisplay]="false"
-        [wide]="true"
-      ></tock-answer>
-      <button
-        *ngIf="!story.isBuiltIn()"
-        mat-icon-button
-        color="primary"
-        matTooltip="Edit"
-        (click)="$event.stopPropagation(); editStory()"
-      >
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button
-        *ngIf="!story.isBuiltIn()"
-        mat-icon-button
-        matTooltip="Edit Mandatory Entities"
-        (click)="$event.stopPropagation(); editEntities()"
-      >
-        <mat-icon>extension</mat-icon>
-      </button>
-      <button
-        *ngIf="!story.isBuiltIn()"
-        mat-icon-button
-        matTooltip="Edit Actions"
-        (click)="$event.stopPropagation(); editSteps()"
-      >
-        <mat-icon>dns</mat-icon>
-      </button>
-      <button
-        *ngIf="story._id"
-        mat-icon-button
-        matTooltip="Export Story"
-        (click)="$event.stopPropagation(); download(story)"
-      >
-        <mat-icon>file_download</mat-icon>
-      </button>
-      <button
-        *ngIf="story._id"
-        mat-icon-button
-        color="warn"
-        matTooltip="Delete"
-        (click)="$event.stopPropagation(); deleteStory()"
-      >
-        <mat-icon>delete</mat-icon>
-      </button>
-    </mat-panel-description>
-  </mat-expansion-panel-header>
-
-  <div class="content">
-    <!-- Settings card -->
-    <mat-expansion-panel class="section-card">
-      <mat-expansion-panel-header>
-        <mat-panel-title
-          ><span
-            class="intent"
-            matTooltip="Main Intent"
-            >{{ story.intent.name }}</span
-          ><span
-            class="category"
-            matTooltip="Story category"
-            >&nbsp;[{{ story.category }}]</span
-          ></mat-panel-title
-        >
-        <mat-panel-description>
-          <!-- Story description -->
-          <span *ngIf="story.description">
-            {{ story.description }}
-          </span>
-
-          <!-- Story node -->
-          <ul *ngIf="storyNode">
-            <li *ngIf="storyNode.intent">
-              Intent: <b>{{ storyNode.intent }}</b>
-            </li>
-            <li *ngIf="storyNode.step">
-              Step: <b>{{ storyNode.step }}</b>
-            </li>
-            <li *ngIf="storyNode.entities.length !== 0">
-              Entities: <b>{{ storyNode.entities }}</b>
-            </li>
-          </ul>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-      <!-- Story tag -->
-      <tock-story-tag
-        class="story-tag"
-        [(selectedTag)]="storyTag"
-      ></tock-story-tag>
-    </mat-expansion-panel>
-
-    <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
-      <!-- Mandatory entities -->
-      <nb-card
-        *ngIf="story.mandatoryEntities.length !== 0"
-        class="section-card"
-      >
-        <nb-card-header>
-          <span>Mandatory Entities</span>
-          <span class="section-card-actions">
-            <button
-              nbButton
-              status="primary"
-              nbTooltip="Edit Mandatory Entities"
-              (click)="editEntities()"
+<nb-accordion *ngIf="story">
+  <nb-accordion-item
+    [expanded]="storyNode || !story._id || story.selected"
+    [disabled]="storyNode || !story._id"
+    (collapsedChange)="toggleStoryPanel($event)"
+  >
+    <nb-accordion-item-header>
+      <div class="story-accordion-header">
+        <div>
+          <span *ngIf="!storyNode">
+            <nb-icon
+              *ngIf="story.isBuiltIn()"
+              nbTooltip="Built-in Story"
+              icon="cube"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="story.isSimpleAnswer()"
+              nbTooltip="Message Story"
+              icon="message-square-outline"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="story.isScriptAnswer()"
+              nbTooltip="Script Story"
+              icon="code"
+            ></nb-icon>
+            <span
+              *ngIf="!storyNode"
+              nbTooltip="Story name"
+              class="answer-title"
             >
-              <mat-icon>extension</mat-icon>
-            </button>
+              {{ story.name }}
+            </span>
           </span>
-        </nb-card-header>
-        <nb-card-body class="section-card-body">
-          <ul>
-            <li *ngFor="let e of story.mandatoryEntities">
-              {{ e.role }}
-              <span
-                *ngIf="e.intent"
-                class="intent"
-                matTooltip="Intent requested"
-                >[{{ e.intent.name }}]</span
-              >:
-              <tock-answer
-                class="answer"
-                [answer]="e"
-                [editable]="false"
-              ></tock-answer>
-            </li>
-          </ul>
-        </nb-card-body>
-      </nb-card>
 
-      <!-- default answer -->
-      <nb-card class="section-card">
-        <nb-card-header>
           <span
-            *ngIf="!fullDisplay"
-            for="main_answer"
-            class="label-answer"
-            >Answer :</span
+            *ngIf="storyNode"
+            nbTooltip="Story name"
+            class="answer-title"
           >
-          <span *ngIf="fullDisplay">Answers</span>
-          <span class="section-card-actions">
-            <button
-              nbButton
-              outline
-              nbTooltip="Customise"
-              *ngIf="canCustomiseMainAnswer()"
-              (click)="customiseMainAnswer()"
-              class="section-card-header-button"
-            >
-              <nb-icon icon="copy-outline"></nb-icon>
-            </button>
+            <div>
+              <span>{{ story.name }}</span>
+              <nb-badge
+                *ngIf="displayCount"
+                [text]="storyNode.displayCount()"
+                status="info"
+                position="top right"
+              ></nb-badge>
+            </div>
           </span>
-        </nb-card-header>
-        <nb-card-body class="section-card-body">
+        </div>
+        <div>
           <tock-answer
-            id="main_answer"
+            *ngIf="!storyNode && story._id && !story.isBuiltIn()"
             class="answer"
             [answer]="story"
-            [fullDisplay]="fullDisplay"
-            [create]="!story._id"
-            [submit]="submit"
+            [fullDisplay]="false"
+            [wide]="true"
           ></tock-answer>
-        </nb-card-body>
-      </nb-card>
+          <button
+            *ngIf="!story.isBuiltIn()"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Edit story"
+            (click)="$event.stopPropagation(); editStory()"
+          >
+            <nb-icon icon="edit-outline"></nb-icon>
+          </button>
+          <button
+            *ngIf="!story.isBuiltIn()"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Edit Mandatory Entities"
+            (click)="$event.stopPropagation(); editEntities()"
+          >
+            <nb-icon
+              pack="material-icons"
+              icon="extension"
+            ></nb-icon>
+          </button>
+          <button
+            *ngIf="!story.isBuiltIn()"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Edit Actions"
+            (click)="$event.stopPropagation(); editSteps()"
+          >
+            <nb-icon
+              pack="material-icons"
+              icon="dns"
+            ></nb-icon>
+          </button>
+          <button
+            *ngIf="story._id"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Export Story"
+            (click)="$event.stopPropagation(); download(story)"
+          >
+            <nb-icon icon="download-outline"></nb-icon>
+          </button>
+          <button
+            *ngIf="story._id"
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Delete"
+            (click)="$event.stopPropagation(); deleteStory()"
+          >
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <div class="content">
+        <!-- Settings card -->
+        <nb-accordion class="story-settings">
+          <nb-accordion-item>
+            <nb-accordion-item-header>
+              <div>
+                <div>
+                  <span
+                    class="font-weight-bold initial-capitalize"
+                    nbTooltip="Main intent"
+                  >
+                    {{ story.intent.name }}
+                  </span>
+                  <span nbTooltip="Story category"> [{{ story.category }}]</span>
+                </div>
+                <div>
+                  <small
+                    *ngIf="story.description"
+                    class="text-mitigated truncate"
+                  >
+                    {{ story.description }}
+                  </small>
 
-      <!-- answers by bot configuration -->
-      <nb-card
-        *ngIf="story.configuredAnswers && story.configuredAnswers.length > 0"
-        class="section-card"
-      >
-        <nb-card-header> Custom Answers </nb-card-header>
-        <nb-card-body class="section-card-body">
-          <nb-card *ngFor="let configuredAnswer of story.configuredAnswers">
-            <nb-card-header>
-              <span><nb-icon icon="settings-2-outline"></nb-icon> {{ configuredAnswer.botConfiguration }}</span>
-              <span class="section-card-actions">
-                <button
-                  nbButton
-                  outline
-                  nbTooltip="Delete"
-                  status="danger"
-                  (click)="deleteCustomAnswers(configuredAnswer)"
-                  class="section-card-header-button"
-                >
-                  <nb-icon icon="trash-2-outline"></nb-icon>
-                </button>
-              </span>
+                  <ul *ngIf="storyNode">
+                    <li *ngIf="storyNode.intent">
+                      Intent: <b>{{ storyNode.intent }}</b>
+                    </li>
+                    <li *ngIf="storyNode.step">
+                      Step: <b>{{ storyNode.step }}</b>
+                    </li>
+                    <li *ngIf="storyNode.entities.length !== 0">
+                      Entities: <b>{{ storyNode.entities }}</b>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <tock-story-tag
+                class="story-tag"
+                [(selectedTag)]="storyTag"
+              ></tock-story-tag>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+        </nb-accordion>
+
+        <div *ngIf="!story.hideDetails && !story.isBuiltIn()">
+          <!-- Mandatory entities -->
+          <nb-card
+            *ngIf="story.mandatoryEntities.length !== 0"
+            class="section-card"
+          >
+            <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
+              Mandatory entities
+              <button
+                nbButton
+                ghost
+                shape="round"
+                nbTooltip="Edit"
+                (click)="editEntities()"
+              >
+                <nb-icon icon="edit-outline"></nb-icon>
+              </button>
             </nb-card-header>
-            <nb-card-body>
+            <nb-list>
+              <nb-list-item *ngFor="let e of story.mandatoryEntities">
+                {{ e.role }}
+                <span
+                  *ngIf="e.intent"
+                  class="font-italic"
+                  nbTooltip="Intent requested"
+                  >[{{ e.intent.name }}]</span
+                >:
+                <tock-answer
+                  class="answer"
+                  [answer]="e"
+                  [editable]="false"
+                ></tock-answer>
+              </nb-list-item>
+            </nb-list>
+          </nb-card>
+
+          <!-- default answer -->
+          <nb-card class="section-card">
+            <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
+              <span
+                *ngIf="!fullDisplay"
+                for="main_answer"
+                class="label-answer"
+                >Answer:</span
+              >
+              <span *ngIf="fullDisplay">Answers</span>
+              <button
+                *ngIf="canCustomiseMainAnswer()"
+                nbButton
+                ghost
+                shape="round"
+                nbTooltip="Customise"
+                (click)="customiseMainAnswer()"
+              >
+                <nb-icon icon="copy-outline"></nb-icon>
+              </button>
+            </nb-card-header>
+            <nb-card-body class="section-card-body">
               <tock-answer
-                class="answer"
-                [answer]="configuredAnswer.containedIn(story)"
+                id="main_answer"
+                [answer]="story"
                 [fullDisplay]="fullDisplay"
+                [create]="!story._id"
+                [submit]="submit"
               ></tock-answer>
             </nb-card-body>
           </nb-card>
-        </nb-card-body>
-      </nb-card>
 
-      <!-- Story steps/action -->
-      <nb-card class="section-card">
-        <nb-card-header>
-          <span>Actions</span>
-          <span class="section-card-actions">
-            <button
-              nbButton
-              outline
-              status="primary"
-              nbTooltip="Edit Actions"
-              (click)="editSteps()"
-              class="section-card-header-button"
-            >
-              <nb-icon icon="edit-outline"></nb-icon>
-            </button>
-            <button
-              nbButton
-              outline
-              nbTooltip="Customise"
-              (click)="addCustomSteps()"
-              class="section-card-header-button"
-            >
-              <nb-icon icon="copy-outline"></nb-icon>
-            </button>
-          </span>
-        </nb-card-header>
-        <nb-card-body class="section-card-body">
-          <tock-steps
-            [steps]="story.steps"
-            [defaultCategory]="story.category"
-            [readonly]="!displaySteps"
-          ></tock-steps>
-        </nb-card-body>
-      </nb-card>
+          <!-- answers by bot configuration -->
+          <nb-card
+            *ngIf="story.configuredAnswers && story.configuredAnswers.length > 0"
+            class="section-card"
+          >
+            <nb-card-header>Custom answers</nb-card-header>
+            <nb-card-body class="section-card-body">
+              <nb-card *ngFor="let configuredAnswer of story.configuredAnswers">
+                <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
+                  <span><nb-icon icon="settings-2-outline"></nb-icon> {{ configuredAnswer.botConfiguration }}</span>
+                  <button
+                    nbButton
+                    ghost
+                    shape="round"
+                    nbTooltip="Delete"
+                    status="danger"
+                    (click)="deleteCustomAnswers(configuredAnswer)"
+                  >
+                    <nb-icon icon="trash-2-outline"></nb-icon>
+                  </button>
+                </nb-card-header>
+                <nb-card-body>
+                  <tock-answer
+                    [answer]="configuredAnswer.containedIn(story)"
+                    [fullDisplay]="fullDisplay"
+                  ></tock-answer>
+                </nb-card-body>
+              </nb-card>
+            </nb-card-body>
+          </nb-card>
 
-      <!-- steps by bot configuration -->
-      <nb-card
-        *ngIf="story.configuredSteps && story.configuredSteps.length > 0"
-        class="section-card"
-      >
-        <nb-card-header> Custom Actions </nb-card-header>
-        <nb-card-body class="section-card-body">
-          <nb-card *ngFor="let configuredSteps of story.configuredSteps">
-            <nb-card-header>
-              <span><nb-icon icon="settings-2-outline"></nb-icon> {{ configuredSteps.botConfiguration }}</span>
-              <span class="section-card-actions">
-                <button
-                  nbButton
-                  outline
-                  nbTooltip="Delete"
-                  status="danger"
-                  (click)="deleteCustomSteps(configuredSteps)"
-                  class="section-card-header-button"
+          <!-- Story steps/action -->
+          <nb-card class="section-card">
+            <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
+              Actions
+              <div class="d-flex gap-1">
+                <nb-toggle
+                  nbTooltip="The step indicators recorded for a metric story, refer to the story with which the user has previously interacted. A metrics story must be a redirected story and is generally used to evaluate user satisfaction. At least one step must refer to an indicator to be activated."
+                  [(ngModel)]="story.isMetricStory"
+                  [disabled]="!canBeMetricStory()"
                 >
-                  <nb-icon icon="trash-2-outline"></nb-icon>
+                  Metrics story
+                </nb-toggle>
+
+                <button
+                  class="mb-2"
+                  nbButton
+                  ghost
+                  shape="round"
+                  nbTooltip="Customise"
+                  (click)="addCustomSteps()"
+                >
+                  <nb-icon icon="copy-outline"></nb-icon>
                 </button>
-              </span>
+              </div>
             </nb-card-header>
-            <nb-card-body>
+            <nb-card-body class="section-card-body">
               <tock-steps
-                [steps]="configuredSteps.steps"
+                [steps]="story.steps"
                 [defaultCategory]="story.category"
                 [readonly]="!displaySteps"
               ></tock-steps>
             </nb-card-body>
           </nb-card>
-        </nb-card-body>
-      </nb-card>
-    </div>
-  </div>
-  <mat-action-row *ngIf="storyNode || story._id">
-    <button
-      *ngIf="!story._id"
-      (click)="saveNewStory()"
-      mat-raised-button
-      color="primary"
-    >
-      Create Story
-    </button>
-    <button
-      *ngIf="story._id"
-      (click)="cancelManagingStory(); expansionPanel.close()"
-      mat-button
-    >
-      Cancel
-    </button>
-    <button
-      *ngIf="story._id && !story.isBuiltIn()"
-      (click)="saveStory(false); expansionPanel.close(); submitClose()"
-      mat-raised-button
-      color="primary"
-    >
-      Update Story
-    </button>
-    <button
-      *ngIf="story._id && story.isBuiltIn()"
-      (click)="manageStory()"
-      mat-raised-button
-      color="primary"
-    >
-      Manage Story
-    </button>
-  </mat-action-row>
-</mat-expansion-panel>
-<mat-card *ngIf="!story && storyNode">
-  <mat-card-title>
+
+          <!-- steps by bot configuration -->
+          <nb-card
+            *ngIf="story.configuredSteps && story.configuredSteps.length > 0"
+            class="section-card"
+          >
+            <nb-card-header>Custom actions</nb-card-header>
+            <nb-card-body class="section-card-body">
+              <nb-card *ngFor="let configuredSteps of story.configuredSteps">
+                <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
+                  <span><nb-icon icon="settings-2-outline"></nb-icon> {{ configuredSteps.botConfiguration }}</span>
+                  <button
+                    nbButton
+                    ghost
+                    shape="round"
+                    status="danger"
+                    nbTooltip="Delete"
+                    (click)="deleteCustomSteps(configuredSteps)"
+                  >
+                    <nb-icon icon="trash-2-outline"></nb-icon>
+                  </button>
+                </nb-card-header>
+                <nb-card-body>
+                  <tock-steps
+                    [steps]="configuredSteps.steps"
+                    [defaultCategory]="story.category"
+                    [readonly]="!displaySteps"
+                  ></tock-steps>
+                </nb-card-body>
+              </nb-card>
+            </nb-card-body>
+          </nb-card>
+        </div>
+      </div>
+      <div
+        *ngIf="storyNode || story._id"
+        class="accordion-footer card-footer-actions"
+      >
+        <button
+          *ngIf="!story._id"
+          nbButton
+          status="primary"
+          size="small"
+          (click)="saveNewStory()"
+        >
+          Create
+        </button>
+        <button
+          *ngIf="story._id"
+          nbButton
+          ghost
+          size="small"
+          (click)="cancelManagingStory()"
+        >
+          Cancel
+        </button>
+        <button
+          *ngIf="story._id && !story.isBuiltIn()"
+          nbButton
+          status="primary"
+          size="small"
+          (click)="saveStory(false); submitClose()"
+        >
+          Update
+        </button>
+        <button
+          *ngIf="story._id && story.isBuiltIn()"
+          nbButton
+          status="primary"
+          size="small"
+          (click)="manageStory()"
+        >
+          Manage
+        </button>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+</nb-accordion>
+
+<nb-card *ngIf="!story && storyNode">
+  <nb-card-header>
     <span
       class="answer-title"
-      matTooltip="Story name"
-      [matBadge]="storyNode.displayCount()"
-      matBadgeOverlap="false"
-      >{{ storyNode.nodeName() }}</span
+      nbTooltip="Story name"
     >
-  </mat-card-title>
-  <mat-card-subtitle>
+      {{ storyNode.nodeName() }}
+      <nb-badge
+        [text]="storyNode.displayCount()"
+        status="info"
+      ></nb-badge>
+    </span>
+  </nb-card-header>
+  <nb-card-body>
     <ul>
       <li *ngIf="storyNode.intent">
         Intent: <b>{{ storyNode.intent }}</b>
@@ -389,15 +415,13 @@
       </li>
       <li>{{ storyNode.count }} {{ storyNode.count === 1 ? 'instance' : 'instances' }}</li>
     </ul>
-  </mat-card-subtitle>
-
-  <mat-card-content>
+  </nb-card-body>
+  <nb-card-footer>
     <button
-      class="actionButton"
-      matTooltip="Create Story"
+      nbButton
       (click)="createStory()"
     >
       Create Managed Story
     </button>
-  </mat-card-content>
-</mat-card>
+  </nb-card-footer>
+</nb-card>

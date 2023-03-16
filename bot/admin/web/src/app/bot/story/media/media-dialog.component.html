@@ -13,242 +13,272 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<nb-card status="primary">
-  <nb-card-header> Media Card </nb-card-header>
-  <nb-card-body>
-    <span class="subTitle"> At least one of Title, Subtitle or File is required. </span>
-    <nb-toggle
-      [(checked)]="media.fillCarousel"
-      status="info"
-      class="right"
-      labelPosition="start"
-      nbTooltip="If selected, if there are consecutive cards in the answer and if current connector supports carousel, then consecutive cards will be replaced by a carousel"
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
+    Media Card
+    <button
+      type="button"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Close"
+      (click)="cancel()"
     >
-      Carousel auto
-    </nb-toggle>
-    <div class="container">
-      <form
-        #mediaForm="ngForm"
-        class="container"
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <nb-alert
+      class="d-flex align-items-center flex-row gap-1"
+      outline="info"
+    >
+      <nb-icon
+        icon="info-outline"
+        status="info"
+      ></nb-icon>
+      At least one of Title, Subtitle or File is required.
+    </nb-alert>
+    <tock-form-control
+      label="Carousel auto"
+      name="fillCarousel"
+      information="If selected, if there are consecutive cards in the answer and if current connector supports carousel, then consecutive cards will be replaced by a carousel"
+    >
+      <nb-toggle
+        id="fillCarousel"
+        name="fillCarousel"
+        [(checked)]="media.fillCarousel"
       >
-        <!-- title -->
-        <span class="nb-form-field inline">
-          <label>Card title</label>
-          <input
-            nbInput
-            name="titleLabel"
-            placeholder="Title"
-            [(ngModel)]="media.titleLabel"
-            style="width: 50%"
-            nbTooltip="Card title"
-            #titleElement
-            class="title"
-          />
-        </span>
-        <!-- subTitle -->
-        <span class="nb-form-field inline">
-          <label>Card subtitle</label>
-          <input
-            nbInput
-            name="subTitle"
-            placeholder="Subtitle"
-            [(ngModel)]="media.subTitleLabel"
-            class="width-50"
-            nbTooltip="Card Subtitle"
-          />
-        </span>
+      </nb-toggle>
+    </tock-form-control>
+    <form #mediaForm="ngForm">
+      <tock-form-control
+        label="Card title"
+        name="titleLabel"
+      >
+        <input
+          nbInput
+          fullWidth
+          tockAutofocusElement
+          id="titleLabel"
+          name="titleLabel"
+          placeholder="Enter a title"
+          [(ngModel)]="media.titleLabel"
+        />
+      </tock-form-control>
+      <tock-form-control
+        label="Card subtitle"
+        name="subTitle"
+      >
+        <input
+          nbInput
+          fullWidth
+          id="subTitle"
+          name="subTitle"
+          placeholder="Enter a subtitle"
+          [(ngModel)]="media.subTitleLabel"
+        />
+      </tock-form-control>
 
-        <!-- File -->
-        <p *ngIf="media.file">
-          File:
-          <a
-            href="{{ media.file.url(rest.url) }}"
-            target="_blank"
-            >{{ media.file.name }}</a
-          >
-          <img
-            *ngIf="media.file.isImage()"
-            class="image"
-            src="{{ media.file.url(rest.url) }}"
-          />
-          <button
-            nbButton
-            (click)="media.file = null; fileUpload = 'upload'"
-            ghost
-            status="danger"
-            size="medium"
-          >
-            <nb-icon icon="minus-circle-outline"></nb-icon>
-          </button>
-        </p>
-        <p *ngIf="!media.file">
-          <nb-radio-group (valueChange)="fileTypeChange($event)">
-            <nb-radio
-              value="upload"
-              [checked]="true"
-              class="inline-radio"
-              nbTooltip="Could be an image, a video or a binary file"
-              >File Upload</nb-radio
-            >
-            <nb-radio
-              value="url"
-              class="inline-radio"
-              nbTooltip="Could be an image, a video or a binary file"
-              >External URL</nb-radio
-            >
-          </nb-radio-group>
-          <span
-            *ngIf="fileUpload === 'upload'"
-            class="file-block"
-          >
-            <input
-              type="file"
-              ng2FileSelect
-              [uploader]="uploader"
-              class="file"
-            />
-          </span>
-          <span
-            *ngIf="fileUpload === 'url'"
-            class="file-block"
-          >
-            <input
-              nbInput
-              type="text"
-              name="url"
-              [fullWidth]="true"
-              fieldSize="small"
-              placeholder="External URL"
-              [(ngModel)]="fileExternalUrl"
-              (blur)="checkFileName()"
-            />
-          </span>
-        </p>
-        <!--- Description -->
-        <span
-          *ngIf="media.file"
-          class="nb-form-field inline"
+      <!-- File -->
+      <p *ngIf="media.file">
+        File:
+        <a
+          href="{{ media.file.url(restService.url) }}"
+          target="_blank"
+          >{{ media.file.name }}</a
         >
-          <label>File Description</label>
+        <img
+          *ngIf="media.file.isImage()"
+          class="image"
+          src="{{ media.file.url(restService.url) }}"
+        />
+        <button
+          nbButton
+          (click)="media.file = null; fileUpload = 'upload'"
+          ghost
+          shape="round"
+          status="danger"
+          size="medium"
+          nbTooltip="Remove"
+        >
+          <nb-icon icon="trash-2-outline"></nb-icon>
+        </button>
+      </p>
+      <p *ngIf="!media.file">
+        <nb-radio-group (valueChange)="fileTypeChange($event)">
+          <nb-radio
+            class="inline-radio"
+            value="upload"
+            [checked]="true"
+            nbTooltip="Could be an image, a video or a binary file"
+            >File Upload</nb-radio
+          >
+          <nb-radio
+            class="inline-radio"
+            value="url"
+            nbTooltip="Could be an image, a video or a binary file"
+            >External URL</nb-radio
+          >
+        </nb-radio-group>
+        <span
+          *ngIf="fileUpload === 'upload'"
+          class="file-block"
+        >
+          <input
+            type="file"
+            ng2FileSelect
+            [uploader]="uploader"
+            class="file"
+          />
+        </span>
+        <span
+          *ngIf="fileUpload === 'url'"
+          class="file-block"
+        >
           <input
             nbInput
             type="text"
-            name="description"
-            placeholder="Description"
-            [(ngModel)]="media.file.descriptionLabel"
-            class="width-50"
-            nbTooltip="File Description"
+            name="url"
+            fullWidth
+            fieldSize="small"
+            placeholder="External URL"
+            [(ngModel)]="fileExternalUrl"
+            (blur)="checkFileName()"
           />
         </span>
-        <hr />
-        <!-- actions -->
-        <div class="actions">
-          <h6>Actions</h6>
-          <div
-            *ngFor="let action of media.actions"
-            class="action-row"
-          >
-            <span class="nb-form-field inline">
-              <label>Action title</label>
-              <input
-                class="action"
-                [name]="'titleLabel' + action.internalId"
-                nbInput
-                placeholder="Title"
-                [(ngModel)]="action.titleLabel"
-                nbTooltip="Action Title"
-              />
-            </span>
-            <span class="nb-form-field inline">
-              <label>Optional action Url</label>
-              <input
-                class="action"
-                [name]="'url' + action.internalId"
-                nbInput
-                placeholder="Url"
-                [(ngModel)]="action.url"
-                class="left-margin-5"
-                nbTooltip="Optional Action Url"
-              />
-            </span>
-
+      </p>
+      <!--- Description -->
+      <tock-form-control
+        *ngIf="media.file"
+        label="File description"
+        name="description"
+      >
+        <input
+          nbInput
+          fullWidth
+          id="description"
+          name="description"
+          placeholder="Description"
+          [(ngModel)]="media.file.descriptionLabel"
+        />
+      </tock-form-control>
+      <hr />
+      <div>
+        <div class="h6 mb-3">Actions</div>
+        <div
+          *ngFor="let action of media.actions"
+          class="grid mb-2"
+        >
+          <div class="d-flex flex-column align-self-center">
             <button
+              *ngIf="canUpward(action)"
               nbButton
               ghost
-              nbTooltip="Remove Action"
-              (click)="removeAction(action)"
-              status="danger"
-              size="medium"
+              size="small"
+              shape="round"
+              status="info"
+              nbTooltip="Move upward"
+              (click)="upward(action)"
             >
-              <nb-icon icon="minus-circle-outline"></nb-icon>
+              <nb-icon icon="arrow-upward-outline"></nb-icon>
             </button>
             <button
               *ngIf="canDownward(action)"
               nbButton
               ghost
+              size="small"
+              shape="round"
               status="info"
-              nbTooltip="Downward"
+              nbTooltip="Move downward"
               (click)="downward(action)"
-              size="medium"
             >
-              <nb-icon icon="chevron-down-outline"></nb-icon>
-            </button>
-            <button
-              *ngIf="canUpward(action)"
-              nbButton
-              ghost
-              status="info"
-              nbTooltip="Upward"
-              (click)="upward(action)"
-              size="medium"
-            >
-              <nb-icon icon="chevron-up-outline"></nb-icon>
+              <nb-icon icon="arrow-downward-outline"></nb-icon>
             </button>
           </div>
-        </div>
+          <tock-form-control
+            label="Title"
+            name="titleLabel{{ action.internalId }}"
+            [boldLabel]="false"
+            [hasMargin]="false"
+          >
+            <input
+              tockAutofocusElement
+              nbInput
+              fieldSize="small"
+              id="titleLabel{{ action.internalId }}"
+              name="titleLabel{{ action.internalId }}"
+              placeholder="Enter a title"
+              [(ngModel)]="action.titleLabel"
+            />
+          </tock-form-control>
+          <tock-form-control
+            label="Optional action Url"
+            name="url{{ action.internalId }}"
+            [boldLabel]="false"
+            [hasMargin]="false"
+          >
+            <input
+              nbInput
+              fieldSize="small"
+              id="url{{ action.internalId }}"
+              name="url{{ action.internalId }}"
+              placeholder="Enter an url"
+              [(ngModel)]="action.url"
+            />
+          </tock-form-control>
 
-        <div class="center">
           <button
             nbButton
-            status="primary"
-            nbTooltip="Add Action"
-            (click)="addAction()"
+            ghost
             size="small"
+            status="danger"
+            shape="round"
+            nbTooltip="Remove"
+            (click)="removeAction(action)"
           >
-            <nb-icon icon="plus-circle-outline"></nb-icon>
-            Add Action
+            <nb-icon icon="trash-2-outline"></nb-icon>
           </button>
         </div>
-      </form>
-    </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <button
+          nbButton
+          status="primary"
+          (click)="addAction()"
+          size="small"
+        >
+          <nb-icon icon="plus-circle-outline"></nb-icon>
+          Add Action
+        </button>
+      </div>
+    </form>
   </nb-card-body>
-  <nb-card-footer>
+  <nb-card-footer class="card-footer-actions">
     <button
       nbButton
+      ghost
       size="small"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
       *ngIf="!create"
+      nbButton
+      size="small"
       status="danger"
       (click)="remove()"
     >
       Remove
     </button>
-    <div class="right">
-      <button
-        nbButton
-        size="small"
-        (click)="cancel()"
-      >
-        Cancel
-      </button>
-      <button
-        nbButton
-        size="small"
-        status="primary"
-        (click)="save()"
-        class="left-margin-5"
-      >
-        {{ create ? 'Create' : 'Update' }}
-      </button>
-    </div>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      (click)="save()"
+    >
+      {{ create ? 'Create' : 'Update' }}
+    </button>
   </nb-card-footer>
 </nb-card>

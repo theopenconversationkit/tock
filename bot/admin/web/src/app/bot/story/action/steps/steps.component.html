@@ -1,0 +1,84 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<table
+  [nbTreeGrid]="source"
+  [equalColumnsWidth]="false"
+  class="treeGrid"
+>
+  <tr
+    nbTreeGridRow
+    [clickToToggle]="false"
+    *nbTreeGridRowDef="let row; columns: allColumns"
+  ></tr>
+
+  <ng-container [nbTreeGridColumnDef]="customColumn">
+    <td
+      nbTreeGridCell
+      *nbTreeGridCellDef="let row"
+    >
+      <div class="step-wrapper">
+        <nb-tree-grid-row-toggle
+          [expanded]="row.expanded"
+          *ngIf="row.data.children.length"
+          class="toggler"
+        >
+        </nb-tree-grid-row-toggle>
+
+        <tock-step
+          *ngIf="indicators"
+          class="step"
+          [step]="row.data"
+          (delete)="deleteStep($event)"
+          (child)="addNewStep(row.data)"
+          (duplicate)="duplicateStep(row.data)"
+          (rebuildTree)="rebuildTree(row.data)"
+          [defaultCategory]="defaultCategory"
+          [canUpward]="canUpward(row.data)"
+          [canDownward]="canDownward(row.data)"
+          (upward)="upward(row.data)"
+          (downward)="downward(row.data)"
+          [readonly]="readonly"
+          [indicators]="indicators"
+        ></tock-step>
+      </div>
+    </td>
+  </ng-container>
+</table>
+
+<div
+  *ngIf="!readonly"
+  class="d-flex flex-wrap gap-1 mt-4"
+>
+  <button
+    nbButton
+    ghost
+    size="small"
+    (click)="generate()"
+  >
+    <nb-icon icon="plus-square-outline"></nb-icon>
+    Generate from Entity
+  </button>
+  <button
+    nbButton
+    status="primary"
+    size="small"
+    (click)="addNewStep()"
+  >
+    <nb-icon icon="plus-outline"></nb-icon>
+    Add Action
+  </button>
+</div>

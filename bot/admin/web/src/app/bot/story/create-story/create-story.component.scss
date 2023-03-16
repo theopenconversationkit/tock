@@ -1,0 +1,64 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.sentence {
+  margin-top: 20px;
+}
+
+.sentence-input {
+  width: 80%;
+  font-size: x-large;
+  margin-right: 10px;
+}
+
+.sentence-input-hidden {
+  display: none;
+}
+
+.current-analysis {
+  font-style: italic;
+}
+
+.sentence-intent {
+  font-size: small;
+  width: 60%;
+}
+
+.text-area-container {
+  min-width: 800px;
+}
+
+.text-area {
+  padding: 5px 5px 5px 5px;
+  border: inset;
+}
+
+.separator {
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.select-intent {
+  width: 80%;
+}
+
+.answer-type {
+  margin-right: 10px;
+}
+
+.phrase {
+  width: 30rem;
+}

@@ -23,7 +23,9 @@ import { ConnectorType, ConnectorTypeConfiguration } from '../core/model/configu
 import { NlpCallStats } from './model/dialog-data';
 import { AdminConfiguration } from './model/conf';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BotSharedService {
   private connectorTypes: ConnectorTypeConfiguration[];
   configuration: AdminConfiguration;

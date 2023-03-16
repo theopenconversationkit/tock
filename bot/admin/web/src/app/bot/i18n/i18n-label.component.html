@@ -30,15 +30,14 @@
           <button
             class="i18n-label__title__delete"
             nbButton
-            outline
+            ghost
+            shape="round"
             status="danger"
-            color="warn"
-            size="small"
             nbTooltip="Delete Label (including alternative, type, connector and localized configs)"
             [disabled]="!deleteLabelAllowed"
             (click)="deleteLabel(i)"
           >
-            Delete
+            <nb-icon icon="trash-2-outline"></nb-icon>
           </button>
         </div>
         <div>
@@ -76,21 +75,18 @@
 
             <!-- Interface type -->
             <div class="i18n-label__entry__mode">
-              <mat-icon
-                class="i18n-label__entry__mode__icon"
-                nbTooltip="Answer in Text Channels"
+              <nb-icon
                 *ngIf="l.interfaceType === 0"
-                mat-list-avatar
-                >chat
-              </mat-icon>
-              <mat-icon
                 class="i18n-label__entry__mode__icon"
-                nbTooltip="Answer in Voice Channels"
+                icon="message-square"
+                nbTooltip="Answer in Text Channels"
+              ></nb-icon>
+              <nb-icon
                 *ngIf="l.interfaceType === 1"
-                mat-list-avatar
-              >
-                record_voice_over
-              </mat-icon>
+                class="i18n-label__entry__mode__icon"
+                icon="phone-call"
+                nbTooltip="Answer in Voice Channels"
+              ></nb-icon>
             </div>
 
             <!-- Connector -->
@@ -183,19 +179,16 @@
               <div class="i18n-label__entry__locale">{{ l.locale }}</div>
 
               <div class="i18n-label__entry__mode">
-                <mat-icon
-                  class="i18n-label__entry__mode__icon"
+                <nb-icon
                   *ngIf="l.interfaceType === 0"
-                  mat-list-avatar
-                  >chat
-                </mat-icon>
-                <mat-icon
                   class="i18n-label__entry__mode__icon"
+                  icon="message-square"
+                ></nb-icon>
+                <nb-icon
                   *ngIf="l.interfaceType === 1"
-                  mat-list-avatar
-                >
-                  record_voice_over
-                </mat-icon>
+                  class="i18n-label__entry__mode__icon"
+                  icon="phone-call"
+                ></nb-icon>
               </div>
 
               <div
@@ -241,30 +234,33 @@
 
           <!-- Add specific label for connector -->
           <div
-            class="i18n-label__entry__connectors"
+            class="i18n-label__entry__connectors mt-3"
             *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale"
           >
-            <div class="i18n-label__entry__connector_container">
+            <div class="d-flex flex-wrap">
               <span *ngFor="let connector of connectorTypes">
-                <!-- Connectors buttons -->
-                <mat-action-list class="i18n-label__entry__connector-list">
-                  <button
-                    *ngIf="
-                      isSupportedLocale(l) && !i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)
-                    "
-                    (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)"
-                    nbTooltip="Add specific label for connector {{ connector.connectorType.id }}"
-                    mat-list-item
-                  >
-                    <img
-                      src="{{ connector.connectorType.iconUrl() }}"
-                      class="i18n-label__entry__connector__img"
-                    />
-                  </button>
-                </mat-action-list>
+                <button
+                  *ngIf="
+                    isSupportedLocale(l) && !i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)
+                  "
+                  nbButton
+                  class="i18n-label__entry__connector_button"
+                  ghost
+                  shape="round"
+                  nbTooltip="Add specific label for connector {{ connector.connectorType.id }}"
+                  (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)"
+                >
+                  <img
+                    src="{{ connector.connectorType.iconUrl() }}"
+                    class="i18n-label__entry__connector__img"
+                  />
+                </button>
               </span>
             </div>
-            <mat-divider *ngIf="!isLast"></mat-divider>
+            <hr
+              *ngIf="!isLast"
+              class="divider"
+            />
           </div>
         </div>
       </div>

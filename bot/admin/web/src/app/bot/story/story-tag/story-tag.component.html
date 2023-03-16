@@ -1,0 +1,36 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<tock-form-control
+  label="Tag"
+  name="storyTag"
+  information="Depending on its value, setting a tag on a story will trigger a bot behavior when the story is interpreted. For example a 'Bot deactivation' tag will deactivate the bot and a 'Bot activation' tag will reactivate it."
+>
+  <nb-select
+    fullWidth
+    id="storyTag"
+    name="storyTag"
+    [(ngModel)]="selectedTag"
+    (ngModelChange)="selectedTagChange.emit($event)"
+  >
+    <nb-option value="">No action</nb-option>
+    <nb-option
+      *ngFor="let tag of tags"
+      [value]="tag.value"
+    >
+      {{ tag.label }}
+    </nb-option>
+  </nb-select>
+</tock-form-control>

@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NbFormFieldModule, NbIconModule, NbInputModule, NbSelectModule, NbTooltipModule } from '@nebular/theme';
 
+import { TestSharedModule } from '../../../shared/test-shared.module';
 import { IndicatorsFiltersComponent } from './indicators-filters.component';
 
 describe('IndicatorsFiltersComponent', () => {
@@ -8,9 +10,9 @@ describe('IndicatorsFiltersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IndicatorsFiltersComponent ]
-    })
-    .compileComponents();
+      imports: [TestSharedModule, NbFormFieldModule, NbInputModule, NbSelectModule, NbIconModule, NbTooltipModule],
+      declarations: [IndicatorsFiltersComponent]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(IndicatorsFiltersComponent);
     component = fixture.componentInstance;

@@ -1,0 +1,156 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card class="m-0">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
+    Select an Entity with Predefined Values
+    <button
+      type="button"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Close"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <tock-form-control
+      *ngIf="generate"
+      label="Intent"
+      name="intent"
+      information="Intent starting the Action"
+    >
+      <input
+        nbInput
+        name="intent"
+        placeholder="Intent"
+        fullWidth
+        fieldSize="small"
+        autocomplete="off"
+        [nbAutocomplete]="intentAuto"
+        [(ngModel)]="intent.name"
+        (keyup)="onIntentChange($event.target.value)"
+        (focus)="onIntentChange($event.target.value)"
+      />
+    </tock-form-control>
+
+    <tock-form-control
+      label="Entity"
+      name="entity"
+    >
+      <nb-tag-list>
+        <nb-tag
+          *ngFor="let e of entities"
+          class="pointer"
+          [text]="e.nameWithoutNamespace(stateService.currentApplication.namespace)"
+          [status]="e.name === selectedEntity || e === selectedEntity ? 'info' : e.dictionary ? 'success' : 'basic'"
+          (click)="selectEntityType(e)"
+        ></nb-tag>
+      </nb-tag-list>
+      <small
+        *ngIf="!entities?.length"
+        class="font-italic"
+      >
+        No value found
+      </small>
+    </tock-form-control>
+    <tock-form-control
+      label="With role"
+      name="role"
+    >
+      <input
+        nbInput
+        id="role"
+        fieldSize="small"
+        fullWidth
+        placeholder="Role"
+        [(ngModel)]="role"
+      />
+    </tock-form-control>
+    <tock-form-control
+      *ngIf="!generate && entityValues.length !== 0"
+      label="Entity value"
+      name="entityValue"
+    >
+      <nb-tag-list>
+        <nb-tag
+          *ngFor="let e of entityValues"
+          class="pointer"
+          [text]="e"
+          [status]="e === entityValues ? 'basic' : 'info'"
+          (click)="selectEntityValue(e)"
+        ></nb-tag>
+      </nb-tag-list>
+    </tock-form-control>
+  </nb-card-body>
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      *ngIf="generate"
+      nbButton
+      size="small"
+      status="primary"
+      [disabled]="!selectedEntity || !role"
+      (click)="validateEntity()"
+    >
+      Generate
+    </button>
+    <button
+      *ngIf="!generate"
+      nbButton
+      size="small"
+      status="danger"
+      (click)="removeEntityValue()"
+    >
+      Remove
+    </button>
+    <button
+      *ngIf="!generate"
+      nbButton
+      size="small"
+      status="primary"
+      (click)="validateEntityValue()"
+    >
+      Change
+    </button>
+  </nb-card-footer>
+</nb-card>
+
+<nb-autocomplete
+  #intentAuto
+  activeFirst
+>
+  <nb-option-group
+    *ngFor="let category of currentIntentCategories"
+    [title]="category.category"
+  >
+    <nb-option
+      *ngFor="let intent of category.intents"
+      [value]="intent.name"
+    >
+      {{ intent.intentLabel() }}
+    </nb-option>
+  </nb-option-group>
+</nb-autocomplete>
