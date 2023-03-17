@@ -72,6 +72,8 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     private val faqCategory = "faq"
     private val userLogin: UserLogin = "whateverLogin"
 
+    private val mockedApplicationDefinition = ApplicationDefinition(_id= applicationId, name = botId,label=botId, namespace = namespace)
+
     private val faqDefinition = FaqDefinition(faqId, botId, intentId, i18nId, tagList, true, now, now)
     private val faq2Definition = FaqDefinition(faqId2,  botId, intentId2, i18nId2, tagList, true, now, now)
     private val faq3Definition = FaqDefinition(faqId3,botId2, intentId3, i18nId3, tagList, true, now, now)
@@ -347,7 +349,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            botId,
+            mockedApplicationDefinition,
             null
         )
 
@@ -434,7 +436,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //filtering on faqName2
             createFaqQuery(null, faqName2),
-            botId,
+            mockedApplicationDefinition,
             null
         )
 
@@ -511,7 +513,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            botId,
+            mockedApplicationDefinition,
             null
         )
 
@@ -550,14 +552,14 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
         )
     }
 
-    fun `A faqDefinition search with empty utterance`() {
+    private fun `A faqDefinition search with empty utterance`() {
         val createdFaq = createDataForFaqSearch(numberOfUtterances = 0)
 
         // search the actual faq
         val searchFound = faqDefinitionDao.getFaqDetailsWithCount(
             //no specific filtering
             createFaqQuery(null, null),
-            botId,
+            mockedApplicationDefinition,
             null
         )
 
