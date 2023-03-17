@@ -103,7 +103,7 @@ class FaqAdminServiceTest : AbstractTest() {
         }
 
         private val applicationId = newId<ApplicationDefinition>()
-        private val botId ="botId"
+        private val botId = "botId"
         private val intentId = "idIntent".toId<IntentDefinition>()
         private val intentId2 = "idIntent2".toId<IntentDefinition>()
         private val intentId3 = "idIntent3".toId<IntentDefinition>()
@@ -127,7 +127,7 @@ class FaqAdminServiceTest : AbstractTest() {
         private val faqDefinition = FaqDefinition(faqId, botId, intentId, i18nId, tagList, true, now, now)
 
         val applicationDefinition =
-            ApplicationDefinition("my App", namespace = namespace, supportedLocales = setOf(Locale.FRENCH))
+            ApplicationDefinition(botId, namespace = namespace, supportedLocales = setOf(Locale.FRENCH))
         val storyId = "storyId".toId<StoryDefinitionConfiguration>()
 
         private const val firstUterrance = "FAQ utterance A"
@@ -204,11 +204,12 @@ class FaqAdminServiceTest : AbstractTest() {
             type: AnswerConfigurationType,
             intentName: String,
             _id: Id<StoryDefinitionConfiguration> = newId(),
-            name: String = storyId
+            name: String = storyId,
+            botName: String = "testBotId"
         ): BotStoryDefinitionConfiguration {
             return BotStoryDefinitionConfiguration(
                 storyId = storyId,
-                botId = "testBotId",
+                botId = botName,
                 intent = IntentWithoutNamespace(intentName),
                 currentType = type,
                 namespace = namespace,
@@ -258,11 +259,20 @@ class FaqAdminServiceTest : AbstractTest() {
 
             internal fun initMocksForSingleFaq(existingFaq: FaqDefinition) {
                 every { faqDefinitionDAO.getFaqDefinitionById(any()) } answers { existingFaq }
-                every { faqDefinitionDAO.getFaqDefinitionByIntentId(any()) } answers { existingFaq }
                 every { faqDefinitionDAO.save(any()) } just Runs
+                every {
+                    faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                        eq(intentId),
+                        eq(botId)
+                    ) } answers { existingFaq }
             }
 
-            internal fun initMocksForClassifiedSentences(utterances: List<String>, existingUtterances: Boolean) {
+            internal fun initMocksForClassifiedSentences(
+                utterances: List<String>,
+                existingUtterances: Boolean,
+                applicationId: Id<ApplicationDefinition>,
+                intentId: Id<IntentDefinition>
+            ) {
                 val answers: List<ClassifiedSentence> = utterances.map {
                     ClassifiedSentence(
                         it, Locale.FRENCH, applicationId, now, now, ClassifiedSentenceStatus.model, Classification(
@@ -289,7 +299,12 @@ class FaqAdminServiceTest : AbstractTest() {
                     //Existing Faq
                     initMocksForSingleFaq(faqDefinition)
                     //Existing ClassifiedSentences
-                    initMocksForClassifiedSentences(listOf(firstUterrance, secondUterrance), false)
+                    initMocksForClassifiedSentences(
+                        listOf(firstUterrance, secondUterrance),
+                        false,
+                        applicationId,
+                        intentId
+                    )
 
                     every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
                     //mocked here to avoid multiple implementation for I18nDao
@@ -396,7 +411,12 @@ class FaqAdminServiceTest : AbstractTest() {
                     //Existing Faq
                     initMocksForSingleFaq(faqDefinition)
                     //Existing ClassifiedSentences
-                    initMocksForClassifiedSentences(listOf(firstUterrance, secondUterrance), true)
+                    initMocksForClassifiedSentences(
+                        listOf(firstUterrance, secondUterrance),
+                        true,
+                        applicationId,
+                        intentId
+                    )
 
                     every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
                     //mocked here to avoid multiple implementation for I18nDao
@@ -477,7 +497,6 @@ class FaqAdminServiceTest : AbstractTest() {
                     )
                     assertEquals(slotStory.captured.category, FAQ_CATEGORY)
                 }
-
             }
         }
 
