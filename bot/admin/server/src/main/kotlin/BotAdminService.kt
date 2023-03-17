@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin
 
+import ai.tock.bot.admin.FaqAdminService.FAQ_CATEGORY
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
@@ -818,7 +819,8 @@ object BotAdminService {
             logger.debug { "Saving story: $newStory" }
             storyDefinitionDAO.save(newStory)
 
-            if (story.userSentence.isNotBlank()) {
+            //avoid double calls for shared intent story if it is a FAQ because it is already done before
+            if (story.userSentence.isNotBlank() && story.category != FAQ_CATEGORY) {
                 val intent = createOrGetIntent(
                         namespace,
                         story.intent.name,
