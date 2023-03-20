@@ -626,7 +626,7 @@ class FaqAdminServiceTest : AbstractTest() {
 
             verify(exactly = 1) {
                 faqDefinitionDAO.getFaqDetailsWithCount(
-                    any(), applicationDefinition.name, null
+                    any(), applicationDefinition, null
                 )
             }
             verify(exactly = 1) {
