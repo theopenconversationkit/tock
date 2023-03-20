@@ -647,7 +647,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 sentenceDAO.search(capture(sentenceQuerySlot))
             }
 
-            assertTrue(sentenceQuerySlot.captured.wholeNamespace)
+            assertEquals(intentId,sentenceQuerySlot.captured.intentId)
 
             //save only one new sentence not the shared one
             verify(exactly = 1) { BotAdminService.saveSentence(eq(newOtherUtterance), any(), any(), any(), any()) }
@@ -672,8 +672,6 @@ class FaqAdminServiceTest : AbstractTest() {
             //story name must not be overwritten
             assertNotEquals(slotStory.captured.name, existingMessageStory.name)
             assertEquals(slotStory.captured.category, FAQ_CATEGORY)
-
-            println(savedFaq)
         }
 
 
@@ -738,7 +736,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 sentenceDAO.search(capture(sentenceQuerySlot))
             }
 
-            assertTrue(sentenceQuerySlot.captured.wholeNamespace)
+                  assertEquals(intentId,sentenceQuerySlot.captured.intentId)
 
             // save only one new sentence not the shared one
             verify(exactly = 1) { BotAdminService.saveSentence(eq(secondFaqUtterance), any(), any(), any(), any()) }
@@ -830,7 +828,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 sentenceDAO.search(capture(sentenceQuerySlot))
             }
 
-            assertTrue(sentenceQuerySlot.captured.wholeNamespace)
+            assertEquals(intentId,sentenceQuerySlot.captured.intentId)
 
             // save only one new sentence not the shared one
             verify(exactly = 1) { BotAdminService.saveSentence(eq(secondFaqUtterance), any(), any(), any(), any()) }
