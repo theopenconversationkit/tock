@@ -35,11 +35,12 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import ai.tock.nlp.front.shared.config.EntityDefinition
 import ai.tock.nlp.front.shared.config.FaqDefinition
 import ai.tock.nlp.front.shared.config.FaqQueryResult
-import ai.tock.nlp.front.shared.config.FaqSettingsQuery
 import ai.tock.nlp.front.shared.config.IntentDefinition
+import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.tockInternalInjector
@@ -58,10 +59,13 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.justRun
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
 import io.mockk.spyk
+import io.mockk.unmockkObject
 import io.mockk.verify
 import org.apache.commons.lang3.StringUtils
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -71,7 +75,7 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.Locale
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
@@ -264,7 +268,8 @@ class FaqAdminServiceTest : AbstractTest() {
                     faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
                         eq(intentId),
                         eq(botId)
-                    ) } answers { existingFaq }
+                    )
+                } answers { existingFaq }
             }
 
             internal fun initMocksForClassifiedSentences(
@@ -364,16 +369,6 @@ class FaqAdminServiceTest : AbstractTest() {
                             allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
                         )
                     } returns theSavedIntent
-                    every {
-                        faqAdminService["createOrUpdateStory"](
-                            allAny<FaqDefinitionRequest>(),
-                            allAny<IntentDefinition>(),
-                            allAny<UserLogin>(),
-                            allAny<I18nLabel>(),
-                            allAny<ApplicationDefinition>(),
-                            allAny<FaqSettingsQuery>()
-                        ) as Unit
-                    } just Runs
 
                     every {
                         faqAdminService["prepareCreationOrUpdatingFaqDefinition"](
@@ -386,6 +381,12 @@ class FaqAdminServiceTest : AbstractTest() {
                     } returns savedFaqDefinition
 
                     faqAdminService.saveFAQ(faqDefinitionRequest, userLogin, applicationDefinition)
+
+                    val sentenceQuerySlot = slot<SentencesQuery>()
+                    verify(exactly = 1) {
+                        sentenceDAO.search(capture(sentenceQuerySlot))
+                    }
+                    assertFalse(sentenceQuerySlot.captured.wholeNamespace)
 
                     verify(exactly = 1) { faqDefinitionDAO.save(savedFaqDefinition) }
                     verify(exactly = 1) { i18nDAO.save(listOf(mockedI18n)) }
@@ -442,6 +443,13 @@ class FaqAdminServiceTest : AbstractTest() {
                     verify(exactly = 1) { i18nDAO.save(listOf(mockedI18n)) }
                     verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
 
+                    val sentenceQuerySlot = slot<SentencesQuery>()
+                    verify(exactly = 1) {
+                        sentenceDAO.search(capture(sentenceQuerySlot))
+                    }
+
+                    assertFalse(sentenceQuerySlot.captured.wholeNamespace)
+
                     assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
                     //story name must no be overwritten
                     assertNotEquals(slotStory.captured.name, existingMessageStory.name)
@@ -496,11 +504,363 @@ class FaqAdminServiceTest : AbstractTest() {
                         "Should be equals to false, considered as disabled"
                     )
                     assertEquals(slotStory.captured.category, FAQ_CATEGORY)
+
+                    val sentenceQuerySlot = slot<SentencesQuery>()
+                    verify(exactly = 1) {
+                        sentenceDAO.search(capture(sentenceQuerySlot))
+                    }
+
+                    assertFalse(sentenceQuerySlot.captured.wholeNamespace)
                 }
             }
         }
 
     }
+
+    @Nested
+    inner class SharedIntentFaqSave {
+        /**
+         * Prepare mock datas
+         */
+        private fun initMocksForSharedIntentFaq(existingFaq: FaqDefinition) {
+            every { faqDefinitionDAO.getFaqDefinitionByIntentId(any()) } answers { existingFaq }
+            every { faqDefinitionDAO.getFaqDefinitionByBotId(eq(OTHER_APP_NAME)) } answers { emptyList() }
+            every { faqDefinitionDAO.save(any()) } just Runs
+        }
+
+        private fun initMocksForClassifiedSentences(
+            utterances: List<String>,
+            existingUtterances: Boolean,
+            applicationId: Id<ApplicationDefinition>,
+            intentId: Id<IntentDefinition>
+        ) {
+            val answers: List<ClassifiedSentence> = utterances.map {
+                ClassifiedSentence(
+                    it, Locale.FRENCH, applicationId, now, now, ClassifiedSentenceStatus.model, Classification(
+                        intentId, emptyList()
+                    ), null, null
+                )
+            }.toList()
+
+            every { sentenceDAO.search(any()) } answers {
+                SentencesQueryResult(
+                    utterances.size.toLong(), if (existingUtterances) answers else emptyList()
+                )
+            }
+            every { sentenceDAO.switchSentencesStatus(any(), ClassifiedSentenceStatus.deleted) } just Runs
+        }
+
+        /**
+         * Some variables
+         */
+        private val existingMessageStory =
+            newFaqTestStory(namespace, AnswerConfigurationType.message, theSavedIntent.name, _id = storyId)
+        private val existingStory = existingMessageStory.toStoryDefinitionConfiguration()
+
+        private val sharedIntent = existingIntent.copy()
+
+        // variable for this nested class
+        val OTHER_APP_NAME = "otherApp"
+        val FAQ_SPECIFIC_ANSWER = "new specific answer"
+
+        val newOtherUtterance = "new other utterance"
+
+        @BeforeEach
+        internal fun initMocks() {
+            //Existing Story
+            initMocksForSingleStory(existingStory)
+            //Existing Faq
+            initMocksForSharedIntentFaq(faqDefinition)
+            //Existing ClassifiedSentences
+            initMocksForClassifiedSentences(
+                listOf(firstUterrance, secondUterrance),
+                true,
+                applicationId,
+                intentId
+            )
+
+            every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
+            //mocked here to avoid multiple implementation for I18nDao
+            every { i18nDAO.save(any<I18nLabel>()) } just Runs
+
+            val mockedLabel = mockedI18n.copy(
+                i18n = linkedSetOf<I18nLocalizedLabel>(
+                    mockedDefaultLocalizedLabel.copy(label = FAQ_SPECIFIC_ANSWER)
+                ), defaultLabel = FAQ_SPECIFIC_ANSWER
+            )
+
+            every { i18nDAO.getLabelById(any()) } answers { mockedLabel }
+            every { i18nDAO.save(any<List<I18nLabel>>()) } just Runs
+            mockkObject(BotAdminService)
+            every { BotAdminService.createI18nRequest(eq(namespace), any()) } answers { mockedLabel }
+        }
+
+        @AfterEach
+        fun mockkServicesDeletion(){
+            unmockkObject(BotAdminService)
+        }
+
+        @Test
+        fun `GIVEN save new faq on another bot application on same namespace with a shared intent WHEN saving faq same existing classified sentences should not be created THEN save the story`() {
+
+            //MOCK
+            val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+
+            //shared intent in two app
+            //GIVEN
+            // new faq is created there was none before
+            every {
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                    eq(intentId),
+                    eq(OTHER_APP_NAME)
+                )
+            } answers { null }
+
+            every {
+                faqAdminService["createOrUpdateFaqIntent"](
+                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                )
+            } returns existingIntent.copy(applications = setOf(applicationId, OTHER_APP_NAME.toId()))
+
+            //faq definition request already exists with same intentId
+            val newFaqSharedIntent = faqDefinitionRequest.copy(
+                id = faqId2.toString(),
+                intentId = intentId.toString(),
+                applicationName = OTHER_APP_NAME,
+                answer = FAQ_SPECIFIC_ANSWER,
+                // add same existing utterrances and another one
+                utterances = faqDefinitionRequest.utterances.plus(newOtherUtterance)
+            )
+
+            val otherAppDefinition = applicationDefinition.copy(name = OTHER_APP_NAME)
+
+            //WHEN
+            val savedFaq = faqAdminService.saveFAQ(newFaqSharedIntent, userLogin, otherAppDefinition)
+
+            //THEN
+            val slotStory = slot<StoryDefinitionConfiguration>()
+
+            verify(exactly = 1) { faqDefinitionDAO.save(any()) }
+
+            val sentenceQuerySlot = slot<SentencesQuery>()
+            verify(exactly = 1) {
+                sentenceDAO.search(capture(sentenceQuerySlot))
+            }
+
+            assertTrue(sentenceQuerySlot.captured.wholeNamespace)
+
+            //save only one new sentence not the shared one
+            verify(exactly = 1) { BotAdminService.saveSentence(eq(newOtherUtterance), any(), any(), any(), any()) }
+
+            val switchedClassifiedSentences = slot<List<ClassifiedSentence>>()
+            verify(exactly = 1) { sentenceDAO.switchSentencesStatus(capture(switchedClassifiedSentences), eq(deleted)) }
+            assertEquals(switchedClassifiedSentences.captured.size, 0)
+
+            // save with a creation method with service not with i18nDao update
+            verify(exactly = 0) { i18nDAO.save(any<List<I18nLabel>>()) }
+            verify(exactly = 1) {
+                BotAdminService.createI18nRequest(
+                    eq(namespace), match {
+                        it.label == FAQ_SPECIFIC_ANSWER
+                    }
+                )
+            }
+            verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
+
+            assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
+
+            //story name must not be overwritten
+            assertNotEquals(slotStory.captured.name, existingMessageStory.name)
+            assertEquals(slotStory.captured.category, FAQ_CATEGORY)
+
+            println(savedFaq)
+        }
+
+
+        @Test
+        fun `GIVEN existing shared faq on a bot application on same namespace WHEN updating faq THEN added classified sentence should be created`() {
+
+            //MOCK
+            val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+
+            //shared intent in two app
+            //GIVEN
+            val secondFaqUtterance = "second FAQ utterance"
+
+            //faq definition request already exists with same intentId
+            val existingSecondBotFaqSharedIntentRequest = faqDefinitionRequest.copy(
+                id = faqId2.toString(),
+                intentId = intentId.toString(),
+                applicationName = OTHER_APP_NAME,
+                answer = FAQ_SPECIFIC_ANSWER,
+                // add same existing utterances and another one
+                utterances = faqDefinitionRequest.utterances.plus(secondFaqUtterance)
+            )
+
+            // faq is already existing to be updated
+            val existingFaqSharedIntentDefinition = FaqDefinition(
+                faqId2,
+                OTHER_APP_NAME,
+                intentId,
+                i18nId,
+                existingSecondBotFaqSharedIntentRequest.tags,
+                existingSecondBotFaqSharedIntentRequest.enabled,
+                existingSecondBotFaqSharedIntentRequest.creationDate!!,
+                existingSecondBotFaqSharedIntentRequest.updateDate!!,
+            )
+
+            every {
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                    eq(intentId),
+                    eq(OTHER_APP_NAME)
+                )
+            } answers { existingFaqSharedIntentDefinition }
+
+            every {
+                faqAdminService["createOrUpdateFaqIntent"](
+                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                )
+            } returns existingIntent.copy(applications = setOf(applicationId, OTHER_APP_NAME.toId()))
+
+            val otherAppDefinition = applicationDefinition.copy(name = OTHER_APP_NAME)
+
+            //WHEN
+            val savedFaq = faqAdminService.saveFAQ(existingSecondBotFaqSharedIntentRequest, userLogin, otherAppDefinition)
+
+            //THEN
+            // FAQ
+            verify(exactly = 1) { faqDefinitionDAO.save(any()) }
+            assertEquals(savedFaq.utterances.size,3)
+
+            // Classified Sentences
+            val sentenceQuerySlot = slot<SentencesQuery>()
+            verify(exactly = 1) {
+                sentenceDAO.search(capture(sentenceQuerySlot))
+            }
+
+            assertTrue(sentenceQuerySlot.captured.wholeNamespace)
+
+            // save only one new sentence not the shared one
+            verify(exactly = 1) { BotAdminService.saveSentence(eq(secondFaqUtterance), any(), any(), any(), any()) }
+
+            val switchedClassifiedSentences = slot<List<ClassifiedSentence>>()
+            verify(exactly = 1) { sentenceDAO.switchSentencesStatus(capture(switchedClassifiedSentences), eq(deleted)) }
+            assertEquals(switchedClassifiedSentences.captured.size, 0)
+
+            // I18n
+            // save with an update with i18nDao update
+            verify(exactly = 1) { i18nDAO.save(any<List<I18nLabel>>()) }
+            verify(exactly = 0) {
+                BotAdminService.createI18nRequest(
+                    eq(namespace), match {
+                        it.label == FAQ_SPECIFIC_ANSWER
+                    }
+                )
+            }
+
+            // Story
+            val slotStory = slot<StoryDefinitionConfiguration>()
+            verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
+            assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
+
+            //story name must not be overwritten
+            assertNotEquals(slotStory.captured.name, existingMessageStory.name)
+            assertEquals(slotStory.captured.category, FAQ_CATEGORY)
+        }
+
+        @Test
+        fun `GIVEN existing shared faq on a bot application on same namespace WHEN updating faq by erasing some existing one and adding another one THEN added classified sentence should be created and the other deleted`() {
+
+            //MOCK
+            val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+
+            //shared intent in two app
+            //GIVEN
+            val secondFaqUtterance = "second FAQ utterance"
+
+            //faq definition request already exists with same intentId
+            val existingSecondBotFaqSharedIntentRequest = faqDefinitionRequest.copy(
+                id = faqId2.toString(),
+                intentId = intentId.toString(),
+                applicationName = OTHER_APP_NAME,
+                answer = FAQ_SPECIFIC_ANSWER,
+                // add same existing utterances and another one
+                utterances = faqDefinitionRequest.utterances.plus(secondFaqUtterance)
+            )
+
+            // faq is already existing to be updated
+            val existingFaqSharedIntentDefinition = FaqDefinition(
+                faqId2,
+                OTHER_APP_NAME,
+                intentId,
+                i18nId,
+                existingSecondBotFaqSharedIntentRequest.tags,
+                existingSecondBotFaqSharedIntentRequest.enabled,
+                existingSecondBotFaqSharedIntentRequest.creationDate!!,
+                existingSecondBotFaqSharedIntentRequest.updateDate!!,
+            )
+
+            every {
+                faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(
+                    eq(intentId),
+                    eq(OTHER_APP_NAME)
+                )
+            } answers { existingFaqSharedIntentDefinition }
+
+            every {
+                faqAdminService["createOrUpdateFaqIntent"](
+                    allAny<FaqDefinitionRequest>(), allAny<ApplicationDefinition>()
+                )
+            } returns existingIntent.copy(applications = setOf(applicationId, OTHER_APP_NAME.toId()))
+
+            val otherAppDefinition = applicationDefinition.copy(name = OTHER_APP_NAME)
+
+            //WHEN
+            val removingSomeUtterancesSave = existingSecondBotFaqSharedIntentRequest.copy(utterances = listOf(secondFaqUtterance))
+            val savedFaq = faqAdminService.saveFAQ(removingSomeUtterancesSave, userLogin, otherAppDefinition)
+
+            //THEN
+            // FAQ
+            verify(exactly = 1) { faqDefinitionDAO.save(any()) }
+            assertEquals(savedFaq.utterances.size,1)
+
+            // Classified Sentences
+            val sentenceQuerySlot = slot<SentencesQuery>()
+            verify(exactly = 1) {
+                sentenceDAO.search(capture(sentenceQuerySlot))
+            }
+
+            assertTrue(sentenceQuerySlot.captured.wholeNamespace)
+
+            // save only one new sentence not the shared one
+            verify(exactly = 1) { BotAdminService.saveSentence(eq(secondFaqUtterance), any(), any(), any(), any()) }
+
+            val switchedClassifiedSentences = slot<List<ClassifiedSentence>>()
+            verify(exactly = 1) { sentenceDAO.switchSentencesStatus(capture(switchedClassifiedSentences), eq(deleted)) }
+            assertEquals(switchedClassifiedSentences.captured.size, 0)
+
+            // I18n
+            // save with an update with i18nDao update
+            verify(exactly = 1) { i18nDAO.save(any<List<I18nLabel>>()) }
+            verify(exactly = 0) {
+                BotAdminService.createI18nRequest(
+                    eq(namespace), match {
+                        it.label == FAQ_SPECIFIC_ANSWER
+                    }
+                )
+            }
+
+            // Story
+            val slotStory = slot<StoryDefinitionConfiguration>()
+            verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
+            assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
+
+            //story name must not be overwritten
+            assertNotEquals(slotStory.captured.name, existingMessageStory.name)
+            assertEquals(slotStory.captured.category, FAQ_CATEGORY)
+        }
+    }
+
 
     @Nested
     inner class DeleteFaq {
@@ -602,7 +962,12 @@ class FaqAdminServiceTest : AbstractTest() {
 
             initSearchFaqMockWithoutLabelsSearch(
                 listOf(
-                    createFaqQueryResult(faqId = faqId2, intentId = intentId2, i18nId = i18nId2, numberOfUtterances = 0),
+                    createFaqQueryResult(
+                        faqId = faqId2,
+                        intentId = intentId2,
+                        i18nId = i18nId2,
+                        numberOfUtterances = 0
+                    ),
                     createFaqQueryResult(numberOfUtterances = 1, utteranceText = expectedUtteranceLabel)
                 )
             )
@@ -690,7 +1055,6 @@ class FaqAdminServiceTest : AbstractTest() {
             val faqResult = faqAdminService.searchFAQ(faqSearchRequest, applicationDefinition)
 
             assertEquals(faqResult.total, 2, "There should be two faq found when searching for a label question")
-
         }
 
         @Test
@@ -706,7 +1070,8 @@ class FaqAdminServiceTest : AbstractTest() {
                         faqId = faqId2, intentId = intentId2, i18nId = i18nId2, numberOfUtterances = 0
                     ),
                     createFaqQueryResult(
-                        numberOfUtterances = 1, utteranceText = "testUtteranceText")
+                        numberOfUtterances = 1, utteranceText = "testUtteranceText"
+                    )
                 ),
                 stories = listOf(story1, story2)
             )
@@ -758,7 +1123,7 @@ class FaqAdminServiceTest : AbstractTest() {
             every { i18nDAO.getLabels(namespace, any()) } returns mockedI18nLabels
 
             val i18nLabelId: CapturingSlot<Id<I18nLabel>> = slot()
-            every { i18nDAO.getLabelById(capture(i18nLabelId))} answers { mockedI18nLabels.firstOrNull { it._id == i18nLabelId.captured } }
+            every { i18nDAO.getLabelById(capture(i18nLabelId)) } answers { mockedI18nLabels.firstOrNull { it._id == i18nLabelId.captured } }
 
             every { faqDefinitionDAO.getFaqDetailsWithCount(any(), any(), any()) } returns searchResult
 
@@ -817,7 +1182,17 @@ class FaqAdminServiceTest : AbstractTest() {
             }
 
             return FaqQueryResult(
-                faqId, botId, intentId, i18nId, tagList, enabled, instant, instant, utterances, createdIntent, intentName
+                faqId,
+                botId,
+                intentId,
+                i18nId,
+                tagList,
+                enabled,
+                instant,
+                instant,
+                utterances,
+                createdIntent,
+                intentName
             )
         }
 
@@ -845,6 +1220,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 category = FAQ_CATEGORY
             )
         }
+
         private fun generateStory(intent: IntentDefinition, storyId: String): StoryDefinitionConfiguration {
             return StoryDefinitionConfiguration(
                 _id = storyId.toId(),
