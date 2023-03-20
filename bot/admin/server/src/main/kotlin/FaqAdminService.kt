@@ -87,9 +87,9 @@ object FaqAdminService {
      * Make migration:
      * replace applicationId attribute (referred to Application's _id) by botId attribute (referred to Application's name)
      */
-    fun makeMigration(){
+    fun makeMigration() {
         faqDefinitionDAO.makeMigration {
-             applicationDAO.getApplicationById(it)?.name
+            applicationDAO.getApplicationById(it)?.name
         }
     }
 
@@ -205,6 +205,7 @@ object FaqAdminService {
 
     /**
      * Create or Update the story associated to the FAQ
+     * and manage shared story
      */
     private fun createOrUpdateStory(
         query: FaqDefinitionRequest,
@@ -378,14 +379,16 @@ object FaqAdminService {
         val notYetPresentSentences: List<String> = sentences.first
         notYetPresentSentences.forEach { utterance ->
             BotAdminService.saveSentence(utterance, query.language, app._id, intent._id, userLogin)
-                .also { logger.info { "Saving classified sentence"} }
+                .also { logger.info { "Saving classified sentence" } }
         }
 
         logger.info { "Create ${notYetPresentSentences.size} new utterances for FAQ" }
 
+        // double check : filter only sentence on current applicationId
         val noMorePresentSentences: List<ClassifiedSentence> = sentences.second.filter {
             it.applicationId == app._id
         }
+        //pass the empty list if needed
         classifiedSentenceDAO.switchSentencesStatus(noMorePresentSentences, ClassifiedSentenceStatus.deleted)
     }
 
@@ -401,16 +404,12 @@ object FaqAdminService {
         intent: IntentDefinition,
     ): Pair<List<String>, List<ClassifiedSentence>> {
 
-        // search in case of creation with shared intents
-        val isSharedIntent = intent.applications.size > 1
-
-        val allCurrentSentences = classifiedSentenceDAO.search(
+        val currentSentences = classifiedSentenceDAO.search(
             SentencesQuery(
                 applicationId = applicationId,
                 language = locale,
                 intentId = intent._id,
                 status = setOf(ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model),
-                wholeNamespace = isSharedIntent,
                 //use secondary database
                 onlyExactMatch = true,
                 //skip limit on search (specified in the search function)
@@ -422,7 +421,7 @@ object FaqAdminService {
         var notYetPresentSentences: Set<String> = HashSet()
 
         utterances.forEach { utterance ->
-            val existing = allCurrentSentences.firstOrNull { it.text == utterance }
+            val existing = currentSentences.firstOrNull { it.text == utterance }
             if (existing != null) {
                 existingSentences = existingSentences.plusElement(existing)
             } else {
@@ -431,8 +430,8 @@ object FaqAdminService {
         }
 
         val noMorePresentSentences: Set<ClassifiedSentence> =
-            allCurrentSentences.toSet().subtract(existingSentences)
-                //filter on current applicationId in cas of shared intents
+            currentSentences.toSet().subtract(existingSentences)
+                //filter on current applicationId in case of shared intents
                 .filter { it.applicationId == applicationId }
                 .toSet()
 
@@ -458,14 +457,15 @@ object FaqAdminService {
         )
 
         // Set the i18Label associated with the Faq if exists. Else, set the UNKNOWN_ANSWER.
-        val fromTockBotDb = mapI18LabelFaqAndConvertToFaqDefinitionRequest(faqDetailsWithCount.first, applicationDefinition)
+        val fromTockBotDb =
+            mapI18LabelFaqAndConvertToFaqDefinitionRequest(faqDetailsWithCount.first, applicationDefinition)
 
         // if no data search from tock front Db
         val fromTockFrontDb = if (fromTockBotDb.isNullOrEmpty()) {
             searchLabelsFromTockFrontDb(faqDetailsWithCount.first, applicationDefinition)
         } else emptySet()
 
-        val faqResultsTmp = if (fromTockBotDb?.isNotEmpty() == true) fromTockBotDb else fromTockFrontDb
+        val faqResultsTmp = if (fromTockBotDb.isNotEmpty() == true) fromTockBotDb else fromTockFrontDb
 
         // feed story data with name and description
         val faqResults = feedFaqDataStory(faqResultsTmp, applicationDefinition)
