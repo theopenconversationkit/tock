@@ -76,7 +76,7 @@ object FaqAdminService {
     private val faqSettingsDAO: FaqSettingsDAO get() = injector.provide()
     private val front = FrontClient
 
-    private const val FAQ_CATEGORY = "faq"
+    const val FAQ_CATEGORY = "faq"
     private const val UNKNOWN_ANSWER = "UNKNOWN ANSWER"
     internal const val MISSING_UTTERANCE = "MISSING_UTTERANCE"
 
