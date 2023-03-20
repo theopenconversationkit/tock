@@ -102,7 +102,7 @@ object FaqAdminService {
         val faqSettings = faqSettingsDAO.getFaqSettingsByApplicationId(application._id)?.toFaqSettingsQuery()
         val intent = createOrUpdateFaqIntent(query, application)
 
-        createOrUpdateUtterances(query, application, intent, userLogin)
+        createOrUpdateUtterances(query, application, intent._id, userLogin)
 
         val existingFaqInCurrentApplication =
             faqDefinitionDAO.getFaqDefinitionByIntentIdAndBotId(intent._id, query.applicationName)
@@ -371,14 +371,14 @@ object FaqAdminService {
      * Create or updates questions utterances for the specified intent
      */
     private fun createOrUpdateUtterances(
-        query: FaqDefinitionRequest, app: ApplicationDefinition, intent: IntentDefinition, userLogin: UserLogin
+        query: FaqDefinitionRequest, app: ApplicationDefinition, intentId: Id<IntentDefinition>, userLogin: UserLogin
     ) {
         val sentences: Pair<List<String>, List<ClassifiedSentence>> =
-            checkSentencesToAddOrDelete(query.utterances, query.language, app._id, intent)
+            checkSentencesToAddOrDelete(query.utterances, query.language, app._id, intentId)
 
         val notYetPresentSentences: List<String> = sentences.first
         notYetPresentSentences.forEach { utterance ->
-            BotAdminService.saveSentence(utterance, query.language, app._id, intent._id, userLogin)
+            BotAdminService.saveSentence(utterance, query.language, app._id, intentId, userLogin)
                 .also { logger.info { "Saving classified sentence" } }
         }
 
@@ -401,14 +401,14 @@ object FaqAdminService {
         utterances: List<String>,
         locale: Locale,
         applicationId: Id<ApplicationDefinition>,
-        intent: IntentDefinition,
+        intentId: Id<IntentDefinition>,
     ): Pair<List<String>, List<ClassifiedSentence>> {
 
-        val currentSentences = classifiedSentenceDAO.search(
+        val allSentences = classifiedSentenceDAO.search(
             SentencesQuery(
                 applicationId = applicationId,
                 language = locale,
-                intentId = intent._id,
+                intentId = intentId,
                 status = setOf(ClassifiedSentenceStatus.validated, ClassifiedSentenceStatus.model),
                 //use secondary database
                 onlyExactMatch = true,
@@ -421,7 +421,7 @@ object FaqAdminService {
         var notYetPresentSentences: Set<String> = HashSet()
 
         utterances.forEach { utterance ->
-            val existing = currentSentences.firstOrNull { it.text == utterance }
+            val existing = allSentences.firstOrNull { it.text == utterance }
             if (existing != null) {
                 existingSentences = existingSentences.plusElement(existing)
             } else {
@@ -430,7 +430,7 @@ object FaqAdminService {
         }
 
         val noMorePresentSentences: Set<ClassifiedSentence> =
-            currentSentences.toSet().subtract(existingSentences)
+            allSentences.toSet().subtract(existingSentences)
                 //filter on current applicationId in case of shared intents
                 .filter { it.applicationId == applicationId }
                 .toSet()
