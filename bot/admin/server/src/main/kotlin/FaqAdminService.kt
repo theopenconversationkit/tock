@@ -205,7 +205,6 @@ object FaqAdminService {
 
     /**
      * Create or Update the story associated to the FAQ
-     * and manage shared story
      */
     private fun createOrUpdateStory(
         query: FaqDefinitionRequest,
