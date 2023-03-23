@@ -83,6 +83,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             userId,
             botId,
             userPreferences,
+            listOf(),
             {
                 SendChoice(
                     userId,
@@ -118,6 +119,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             userId,
             botId,
             userPreferences,
+            listOf(),
             { message.toAction(userId, botDefinition.botId, botId) },
             tests
         )
@@ -167,8 +169,9 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         userPreferences: UserPreferences = UserPreferences(locale = locale),
+        secondaryConnectorTypes: List<ConnectorType> = listOf(),
         metadata: ActionMetadata = ActionMetadata(),
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ): BotBusMock {
         return send(
             intent,
@@ -178,6 +181,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             userId,
             botId,
             userPreferences,
+            secondaryConnectorTypes,
             {
                 SendSentence(
                     userId,
@@ -191,7 +195,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     metadata = metadata
                 )
             },
-            tests
+            tests,
         )
     }
 
@@ -206,8 +210,9 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         userPreferences: UserPreferences = UserPreferences(locale = locale),
+        secondaryConnectorTypes: List<ConnectorType> = listOf(),
         actionProvider: () -> Action,
-        tests: BotBusMock.() -> Unit
+        tests: BotBusMock.() -> Unit,
     ): BotBusMock {
         val action = actionProvider.invoke()
         val botBusMock = BotBusMock(
@@ -222,7 +227,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     botId,
                     action,
                     userInterfaceType,
-                    userPreferences
+                    userPreferences,
+                    secondaryConnectorTypes
                 )
             },
             action
@@ -385,7 +391,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         action: Action = SendSentence(userId, botDefinition.botId, botId, ""),
         userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-        userPreferences: UserPreferences = UserPreferences(locale = locale)
+        userPreferences: UserPreferences = UserPreferences(locale = locale),
+        secondaryConnectorTypes: List<ConnectorType> = listOf(),
     ): BotBusMockContext =
         botDefinition.newBusMockContext(
             testContext,
@@ -396,7 +403,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
             botId,
             action,
             userInterfaceType,
-            userPreferences
+            userPreferences,
+            secondaryConnectorTypes,
         ).apply {
             testContext.botBusMockContext = this
             lifecycle.configureTestIoc()

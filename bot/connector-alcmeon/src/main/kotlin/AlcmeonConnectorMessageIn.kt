@@ -21,6 +21,7 @@ import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.messenger.model.webhook.Attachment
 import ai.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.bot.connector.whatsapp.model.webhook.WhatsAppInteractive
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -53,7 +54,32 @@ data class AlcmeonConnectorWhatsappMessageIn(
     val event: AlcmeonConnectorWhatsappMessageEvent
 ) : AlcmeonConnectorMessageIn(whatsappBackend)
 
-data class AlcmeonConnectorWhatsappMessageEvent(val text: WhatsAppTextBody)
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type",
+    defaultImpl = AlcmeonConnectorWhatsappMessageDefaultEvent::class
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = AlcmeonConnectorWhatsappMessageTextEvent::class, name = "text"),
+    JsonSubTypes.Type(value = AlcmeonConnectorWhatsappMessageInteractiveEvent::class, name = "interactive"),
+)
+abstract class AlcmeonConnectorWhatsappMessageEvent(val type: AlcmeonConnectorWhatsappMessageEventType? = null)
+
+enum class AlcmeonConnectorWhatsappMessageEventType {
+    text, interactive
+}
+
+data class AlcmeonConnectorWhatsappMessageTextEvent(val text: WhatsAppTextBody) : AlcmeonConnectorWhatsappMessageEvent(
+    AlcmeonConnectorWhatsappMessageEventType.text
+)
+
+data class AlcmeonConnectorWhatsappMessageInteractiveEvent(val interactive: WhatsAppInteractive) : AlcmeonConnectorWhatsappMessageEvent(
+    AlcmeonConnectorWhatsappMessageEventType.interactive
+)
+
+class AlcmeonConnectorWhatsappMessageDefaultEvent : AlcmeonConnectorWhatsappMessageEvent()
 
 data class AlcmeonConnectorFacebookMessageIn(
     override val userExternalId: String,

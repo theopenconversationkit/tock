@@ -52,7 +52,8 @@ data class BotBusMockContext(
     var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
     var connectorType: ConnectorType = defaultTestConnectorType,
     val testContext: TestContext = currentTestContext,
-    val snapshots: MutableList<Snapshot> = mutableListOf()
+    val snapshots: MutableList<Snapshot> = mutableListOf(),
+    val connectorsCompatibleWith: Set<ConnectorType> = setOf(connectorType),
 ) {
 
     constructor(
@@ -65,7 +66,8 @@ data class BotBusMockContext(
         userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
         userPreferences: UserPreferences = UserPreferences(),
         connectorType: ConnectorType = defaultTestConnectorType,
-        testContext: TestContext = currentTestContext
+        testContext: TestContext = currentTestContext,
+        connectorsCompatibleWith: Set<ConnectorType> = setOf(),
     ) :
         this(
             UserTimeline(userId, userPreferences),
@@ -76,7 +78,8 @@ data class BotBusMockContext(
             storyDefinition.storyHandler as I18nKeyProvider,
             userInterfaceType,
             connectorType,
-            testContext
+            testContext,
+            connectorsCompatibleWith = connectorsCompatibleWith
         )
 
     constructor(
@@ -89,7 +92,8 @@ data class BotBusMockContext(
         userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
         userPreferences: UserPreferences = UserPreferences(),
         connectorType: ConnectorType = defaultTestConnectorType,
-        testContext: TestContext = currentTestContext
+        testContext: TestContext = currentTestContext,
+        connectorsCompatibleWith: Set<ConnectorType> = setOf(),
     ) :
         this(
             applicationId,
@@ -101,7 +105,8 @@ data class BotBusMockContext(
             userInterfaceType,
             userPreferences,
             connectorType,
-            testContext
+            testContext,
+            connectorsCompatibleWith
         )
 
     val applicationId get() = firstAction.applicationId

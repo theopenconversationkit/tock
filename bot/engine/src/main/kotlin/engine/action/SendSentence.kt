@@ -61,6 +61,9 @@ open class SendSentence(
         return messages.any { it.connectorType == type }
     }
 
+    fun hasMessage(types : List<ConnectorType>) : Boolean =
+        messages.any { types.contains(it.connectorType) }
+
     override fun toMessage(): Message {
         return Sentence(stringText, messages, state.userInterface) { nlpStats }
     }

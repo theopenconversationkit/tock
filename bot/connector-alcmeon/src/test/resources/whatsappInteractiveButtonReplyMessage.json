@@ -1,0 +1,14 @@
+{
+  "user_external_id":"userExternalId",
+  "user_name":"user",
+  "event":{
+    "interactive":{
+      "button_reply":{
+        "title":"title",
+        "payload":"payload"
+      }
+    },
+    "type":"interactive"
+  },
+  "backend":"whatsapp"
+}

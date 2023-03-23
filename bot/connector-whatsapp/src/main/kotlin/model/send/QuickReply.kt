@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.alcmeon
+package ai.tock.bot.connector.whatsapp.model.send
 
-import ai.tock.bot.engine.event.ExitEvent
-
-class AlcmeonExitEvent(applicationId: String, val exitReason: String, val delayInMs: Long = 0L) :
-    ExitEvent(applicationId)
-
+data class QuickReply(val title: String, val payload: String, val subTitle: String? = null)
