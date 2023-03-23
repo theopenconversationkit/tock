@@ -18,12 +18,18 @@ package ai.tock.bot.connector.alcmeon
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.messenger.messengerConnectorType
+import ai.tock.bot.connector.messenger.text
 import ai.tock.bot.connector.whatsapp.UserHashedIdCache
+import ai.tock.bot.connector.whatsapp.listMessage
+import ai.tock.bot.connector.whatsapp.replyButtonMessage
 import ai.tock.bot.connector.whatsapp.whatsAppConnectorType
+import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
@@ -36,6 +42,9 @@ import com.github.salomonbrys.kodein.instance
 import io.vertx.core.Handler
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+
+import ai.tock.bot.connector.messenger.nlpQuickReply as messengerNlpQuickReply
+import ai.tock.bot.connector.whatsapp.nlpQuickReply as whatsappNlpQuickReply
 
 class AlcmeonConnector(
     private val connectorId: String,
@@ -60,6 +69,20 @@ class AlcmeonConnector(
         }
     }
 
+    override fun addSuggestions(text: CharSequence, suggestions: List<CharSequence>): BotBus.() -> ConnectorMessage? = {
+        if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.WHATSAPP) {
+            if (suggestions.size > 3) {
+                listMessage(text, i18nKey("whatsapp_list_message_default_button","Choose an answer"), suggestions.map { whatsappNlpQuickReply(it) })
+            } else {
+                replyButtonMessage(text, suggestions.map { whatsappNlpQuickReply(it) })
+            }
+        } else if ((connectorData.callback as? AlcmeonConnectorCallback)?.backend == AlcmeonBackend.FACEBOOK) {
+            text(text, suggestions.map { messengerNlpQuickReply(it) })
+        } else {
+            null
+        }
+    }
+
     override fun canHandleMessageFor(otherConnectorType: ConnectorType): Boolean {
         return otherConnectorType.id in setOf(
             ALCMEON_CONNECTOR_TYPE_ID,
@@ -79,18 +102,23 @@ class AlcmeonConnector(
 
             val senderId = UserHashedIdCache.createHashedId(message.userExternalId)
 
-            val event = SendSentence(
-                PlayerId(senderId),
-                connectorId,
-                PlayerId(connectorId, PlayerType.bot),
-                when (message) {
-                    is AlcmeonConnectorWhatsappMessageIn -> message.event.text.body
-                    is AlcmeonConnectorFacebookMessageIn -> message.event.message.text
-                    else -> {
-                        null
+            val event = when(message) {
+                is AlcmeonConnectorWhatsappMessageIn -> {
+                    when(message.event) {
+                        is AlcmeonConnectorWhatsappMessageInteractiveEvent ->
+                            SendChoice.decodeChoice(
+                                message.event.interactive.payload,
+                                PlayerId(senderId),
+                                connectorId,
+                                PlayerId(connectorId, PlayerType.bot)
+                            )
+                        is AlcmeonConnectorWhatsappMessageTextEvent -> sendSentence(senderId, message.event.text.body)
+                        else -> sendSentence(senderId, null)
                     }
                 }
-            )
+                is AlcmeonConnectorFacebookMessageIn -> sendSentence(senderId, message.event.message.text)
+                else -> sendSentence(senderId, null)
+            }
 
             executor.executeBlocking {
                 controller.handle(
@@ -104,8 +132,6 @@ class AlcmeonConnector(
                     )
                 )
             }
-
-
         } catch (e: Throwable) {
             logger.error { e }
         }
@@ -123,5 +149,12 @@ class AlcmeonConnector(
             callback.sendResponseWithExit(event.exitReason, event.delayInMs)
         }
     }
+
+    private fun sendSentence(from: String, text: String?) = SendSentence(
+        PlayerId((from)),
+        connectorId,
+        PlayerId(connectorId, PlayerType.bot),
+        text
+    )
 
 }

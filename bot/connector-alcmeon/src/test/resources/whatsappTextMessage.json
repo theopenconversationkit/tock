@@ -1,0 +1,11 @@
+{
+  "user_external_id":"userExternalId",
+  "user_name":"user",
+  "event":{
+    "text":{
+      "body":"body"
+    },
+    "type":"text"
+  },
+  "backend":"whatsapp"
+}

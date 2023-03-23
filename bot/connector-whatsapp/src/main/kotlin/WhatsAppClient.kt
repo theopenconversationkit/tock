@@ -20,6 +20,7 @@ import ai.tock.bot.connector.whatsapp.model.send.WhatsAppResponse
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotImageMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotMessage
+import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotMessageInteractiveMessage
 import ai.tock.bot.connector.whatsapp.model.send.WhatsAppSendBotTextMessage
 import ai.tock.shared.addJacksonConverter
 import ai.tock.shared.basicAuthInterceptor
@@ -194,7 +195,7 @@ internal class WhatsAppClient(
         if (checkLogin()) {
             try {
                 when (message) {
-                    is WhatsAppSendBotTextMessage -> {
+                    is WhatsAppSendBotTextMessage, is WhatsAppSendBotInteractiveMessage, is WhatsAppSendBotMessageInteractiveMessage -> {
                         val response = api.sendMessage(message).execute()
                         if (!response.isSuccessful) {
                             response.logError()
@@ -216,12 +217,6 @@ internal class WhatsAppClient(
                             if (!response2.isSuccessful) {
                                 response2.logError()
                             }
-                        }
-                    }
-                    is WhatsAppSendBotInteractiveMessage -> {
-                        val response = api.sendMessage(message).execute()
-                        if (!response.isSuccessful) {
-                            response.logError()
                         }
                     }
                 }

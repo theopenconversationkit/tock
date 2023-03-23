@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.whatsapp.model.send
 
 import ai.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+import ai.tock.bot.engine.message.GenericMessage
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
@@ -35,5 +36,10 @@ data class WhatsAppBotTextMessage(
             recipientType,
             recipientId,
             previewUrl
+        )
+
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
+            texts = mapOf(GenericMessage.TEXT_PARAM to text.body),
         )
 }

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.alcmeon
+package ai.tock.bot.engine.event
 
-import ai.tock.bot.engine.event.ExitEvent
-
-class AlcmeonExitEvent(applicationId: String, val exitReason: String, val delayInMs: Long = 0L) :
-    ExitEvent(applicationId)
-
+abstract class ExitEvent(
+    /**
+     * The bot application id.
+     */
+    applicationId: String
+) : Event(applicationId)

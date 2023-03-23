@@ -72,6 +72,12 @@
             <artifactId>tock-stt-google-speech</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-shared</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
