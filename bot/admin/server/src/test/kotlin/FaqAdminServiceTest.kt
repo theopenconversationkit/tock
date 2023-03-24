@@ -866,9 +866,11 @@ class FaqAdminServiceTest : AbstractTest() {
         private fun initDeleteFaqMock(
             mockedIntentDefinition: IntentDefinition? = existingIntent,
             mockedFaqDefinition: FaqDefinition? = faqDefinition,
-            mockedStoryDefinition: StoryDefinitionConfiguration = existingStory
+            mockedStoryDefinition: StoryDefinitionConfiguration = existingStory,
+            mockedApplicationDefinition: ApplicationDefinition? = applicationDefinition
         ) {
             every { applicationDefininitionDAO.getApplicationById(eq(applicationId)) } returns applicationDefinition
+            every { applicationDefininitionDAO.getApplicationByNamespaceAndName(eq(namespace), eq(faqDefinition.botId)) } returns mockedApplicationDefinition
 
             every { faqDefinitionDAO.getFaqDefinitionById(any()) } returns mockedFaqDefinition
 
@@ -944,6 +946,17 @@ class FaqAdminServiceTest : AbstractTest() {
 
             assertFalse(isDeleted, "It should returns false because faq could not be deleted")
         }
+
+        @Test
+        fun `GIVEN delete single faq WHEN intent existing and one application is not found`() {
+            val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
+            initDeleteFaqMock(mockedApplicationDefinition = null)
+
+            assertThrows<BadRequestException> {
+                faqAdminService.deleteFaqDefinition(namespace, faqId.toString())
+            }
+        }
+
 
     }
 
