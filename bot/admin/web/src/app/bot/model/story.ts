@@ -706,6 +706,7 @@ export class MediaAction extends Media {
     const value = Object.create(MediaAction.prototype);
     const result = Object.assign(value, json, {
       title: I18nLabel.fromJSON(json.title),
+      internalId : Math.random(),
       type: MediaType.action
     });
     return result;
