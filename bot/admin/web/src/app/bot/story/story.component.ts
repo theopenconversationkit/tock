@@ -172,7 +172,7 @@ export class StoryComponent implements OnChanges {
 
   private saveStory(selectStoryAfterSave: boolean) {
     this.story.steps = StoryStep.filterNew(this.story.steps);
-    if (!this.canBeMetricStory()) this.story.isMetricStory = false;
+    if (!this.canBeMetricStory()) this.story.metricStory = false;
     this.story.tags = !this.storyTag || this.storyTag.length === 0 ? [] : [this.storyTag];
     if (this.story._id) {
       this.bot.saveStory(this.story).subscribe((s) => {
@@ -238,7 +238,7 @@ export class StoryComponent implements OnChanges {
     if (invalidMessage) {
       this.dialog.notify(`Error: ${invalidMessage}`);
     } else {
-      if (!this.canBeMetricStory()) this.story.isMetricStory = false;
+      if (!this.canBeMetricStory()) this.story.metricStory = false;
       this.bot.newStory(new CreateStoryRequest(this.story, this.state.currentLocale, [])).subscribe((intent) => {
         this.dialog.notify(`New story ${this.story.name} created for language ${this.state.currentLocale}`, 'New Story');
         this.initStoryByBotIdAndIntent();
