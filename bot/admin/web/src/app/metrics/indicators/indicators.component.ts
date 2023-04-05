@@ -72,7 +72,6 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
 
   search(): void {
     this.loading.list = true;
-
     const url = `/bot/${this.stateService.currentApplication.name}/indicators`;
     this.rest
       .get(url, (indicators) => indicators)
@@ -88,7 +87,10 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
   updateIndicatorsList(): void {
     this.filteredIndicators = this.indicators.filter((indicator) => {
       if (this.currentFilters.search) {
-        if (!indicator.label.includes(this.currentFilters.search) && !indicator.description.includes(this.currentFilters.search))
+        if (
+          !indicator.label.toLowerCase().includes(this.currentFilters.search.toLowerCase()) &&
+          !indicator.description.toLowerCase().includes(this.currentFilters.search.toLowerCase())
+        )
           return false;
       }
 
@@ -234,7 +236,7 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteIndicator(indicator: IndicatorDefinition): void {
+  private deleteIndicator(indicator: IndicatorDefinition): void {
     this.loading.delete = true;
     const indicatorName = indicator.name;
     const url = `/bot/${this.stateService.currentApplication.name}/indicators/${indicator.name}`;

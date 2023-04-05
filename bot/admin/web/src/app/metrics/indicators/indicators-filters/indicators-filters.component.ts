@@ -38,7 +38,7 @@ export class IndicatorsFiltersComponent implements OnInit, OnDestroy {
   }
 
   get isFiltered(): boolean {
-    return this.search.value || this.dimensions.value?.length;
+    return !!(this.search.value || this.dimensions.value?.length);
   }
 
   ngOnInit() {
