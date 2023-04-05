@@ -283,6 +283,7 @@
               Actions
               <div class="d-flex gap-1">
                 <nb-toggle
+                  ngDefaultControl
                   nbTooltip="The step indicators recorded for a metric story, refer to the story with which the user has previously interacted. A metrics story must be a redirected story and is generally used to evaluate user satisfaction. At least one step must refer to an indicator to be activated."
                   [(ngModel)]="story.metricStory"
                   [disabled]="!canBeMetricStory()"

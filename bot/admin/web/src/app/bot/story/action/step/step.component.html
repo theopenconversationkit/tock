@@ -194,6 +194,7 @@
         [selected]="selectedStepsMetrics"
         [compareWith]="matchMetrics"
         (selectedChange)="onStepMetricChange($event)"
+        data-testid="selected-steps-Metrics"
       >
         <nb-option-group
           *ngFor="let dimension of getIndicatorsValuesGroups()"

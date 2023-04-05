@@ -96,7 +96,6 @@ export class StepComponent implements OnInit {
 
   ngOnInit() {
     this.selectedStepsMetrics = this.getSelectedIndicatorsValuesForAllDimensions(this.step.metrics || []);
-
     this.state.currentIntentsCategories.subscribe((c) => {
       this.intentCategories = c;
       this.currentIntentCategories = c;
