@@ -17,6 +17,8 @@
 package ai.tock.shared.security.auth
 
 import ai.tock.shared.VertxMock
+import ai.tock.shared.exception.admin.AdminException
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.vertx.WebVerticle
 import io.mockk.mockk
 import io.vertx.core.AsyncResult
@@ -31,13 +33,13 @@ class SSOTockAuthProviderTest {
 
     @Test
     fun `excludedPaths match static files`() {
-        val sso = object : SSOTockAuthProvider(VertxMock()) {
+        val sso = object : SSOTockAuthProvider<AdminException>(VertxMock()) {
 
-            fun test(verticle: WebVerticle): Set<Regex> {
+            fun test(verticle: WebVerticle<AdminException>): Set<Regex> {
                 return super.excludedPaths(verticle)
             }
 
-            override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
+            override fun createAuthHandler(verticle: WebVerticle<AdminException>): AuthenticationHandler {
                 return mockk()
             }
 

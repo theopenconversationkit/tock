@@ -16,6 +16,7 @@
 
 package ai.tock.shared.vertx
 
+import ai.tock.shared.exception.rest.CommonException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -26,7 +27,7 @@ import kotlin.test.Test
 class WebVerticleTest {
 
     // check that WebVerticleImpl does not need to implement healthcheck methods to compile
-    class WebVerticleImpl : WebVerticle() {
+    class WebVerticleImpl : WebVerticle<CommonException>() {
         override fun configure() {}
     }
 

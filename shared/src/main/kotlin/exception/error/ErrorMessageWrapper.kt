@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.vertx
+package ai.tock.shared.exception.error
 
 /**
- * Http 404 exception.
+ * A wrapper of [ErrorMessage]
  */
-class NotFoundException : RestException("not found", 404)
+data class ErrorMessageWrapper(val errors: Set<ErrorMessage> = emptySet()) {
+    constructor(message: String) : this(setOf(ErrorMessage(message = message)))
+}

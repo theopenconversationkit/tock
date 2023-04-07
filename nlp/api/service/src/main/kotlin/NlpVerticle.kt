@@ -30,6 +30,7 @@ import ai.tock.nlp.front.shared.parser.ParseQuery
 import ai.tock.shared.Executor
 import ai.tock.shared.TOCK_FRONT_DATABASE
 import ai.tock.shared.TOCK_MODEL_DATABASE
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.injector
 import ai.tock.shared.namespace
 import ai.tock.shared.pingMongoDatabase
@@ -38,6 +39,7 @@ import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.initEncryptor
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.detailedHealthcheck
+import ai.tock.shared.vertx.toRequestHandler
 import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
@@ -46,7 +48,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class NlpVerticle : WebVerticle() {
+class NlpVerticle : WebVerticle<CommonException>() {
 
     private val protectPath = verticleBooleanProperty("tock_nlp_protect_path", false)
 
@@ -58,7 +60,8 @@ class NlpVerticle : WebVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 
-    override fun authProvider(): TockAuthProvider? {
+
+    override fun authProvider(): TockAuthProvider<CommonException>? {
         return if (protectPath) defaultAuthProvider() else super.authProvider()
     }
 
@@ -66,7 +69,7 @@ class NlpVerticle : WebVerticle() {
         val front = FrontClient
         initEncryptor()
 
-        blockingJsonPost("/parse") { context, query: ParseQuery ->
+        blockingJsonPost("/parse", handler = toRequestHandler { context, query: ParseQuery ->
             if (protectPath && context.organization != query.namespace) {
                 unauthorized()
             } else if (query.queries.isEmpty()) {
@@ -78,33 +81,33 @@ class NlpVerticle : WebVerticle() {
                     badRequest(e.message ?: "")
                 }
             }
-        }
+        })
 
-        blockingJsonPost("/evaluate") { context, query: EntityEvaluationQuery ->
+        blockingJsonPost("/evaluate", handler = toRequestHandler { context, query: EntityEvaluationQuery ->
             if (protectPath && context.organization != query.namespace) {
                 unauthorized()
             } else {
                 front.evaluateEntities(query)
             }
-        }
+        })
 
-        blockingJsonPost("/merge") { context, query: ValuesMergeQuery ->
+        blockingJsonPost("/merge", handler = toRequestHandler  { context, query: ValuesMergeQuery ->
             if (protectPath && context.organization != query.namespace) {
                 unauthorized()
             } else {
                 front.mergeValues(query)
             }
-        }
+        })
 
-        blockingJsonPost("/unknown") { context, query: MarkAsUnknownQuery ->
+        blockingJsonPost("/unknown", handler = toRequestHandler  { context, query: MarkAsUnknownQuery ->
             if (protectPath && context.organization != query.namespace) {
                 unauthorized()
             } else {
                 front.incrementUnknown(query)
             }
-        }
+        })
 
-        blockingJsonGet("/intents") { context ->
+        blockingJsonGet("/intents", handler = toRequestHandler  { context ->
             val namespace = context.firstQueryParam("namespace")
             if (protectPath && context.organization != namespace) {
                 unauthorized()
@@ -119,9 +122,9 @@ class NlpVerticle : WebVerticle() {
                         } ?: emptyList()
                 }
             }
-        }
+        })
 
-        blockingJsonGet("/application") { context ->
+        blockingJsonGet("/application", handler = toRequestHandler  { context ->
             val namespace = context.firstQueryParam("namespace")
             if (protectPath && context.organization != namespace) {
                 unauthorized()
@@ -133,9 +136,9 @@ class NlpVerticle : WebVerticle() {
                     front.getApplicationByNamespaceAndName(namespace, name)
                 }
             }
-        }
+        })
 
-        blockingJsonPost("/application/create") { context, query: CreateApplicationQuery ->
+        blockingJsonPost("/application/create", handler = toRequestHandler  { context, query: CreateApplicationQuery ->
             if (protectPath && context.organization != query.namespace) {
                 unauthorized()
             } else {
@@ -152,9 +155,9 @@ class NlpVerticle : WebVerticle() {
                     null
                 }
             }
-        }
+        })
 
-        blockingUploadJsonPost("/dump/import") { _, dump: ApplicationDump ->
+        blockingUploadJsonPost("/dump/import", handler = toRequestHandler  { _, dump: ApplicationDump ->
             if (protectPath) {
                 unauthorized()
             } else {
@@ -164,9 +167,9 @@ class NlpVerticle : WebVerticle() {
                     ApplicationImportConfiguration(defaultModelMayExist = true)
                 ).modified
             }
-        }
+        })
 
-        blockingJsonPost("/dump/import/plain") { _, dump: ApplicationDump ->
+        blockingJsonPost("/dump/import/plain", handler = toRequestHandler  { _, dump: ApplicationDump ->
             if (protectPath) {
                 unauthorized()
             } else {
@@ -176,23 +179,23 @@ class NlpVerticle : WebVerticle() {
                     ApplicationImportConfiguration(defaultModelMayExist = true)
                 ).modified
             }
-        }
+        })
 
-        blockingUploadJsonPost("/dump/import/sentences") { _, dump: SentencesDump ->
+        blockingUploadJsonPost("/dump/import/sentences", handler = toRequestHandler { _, dump: SentencesDump ->
             if (protectPath) {
                 unauthorized()
             } else {
                 front.importSentences(dump.applicationName.namespace(), dump).modified
             }
-        }
+        })
 
-        blockingJsonPost("/dump/import/sentences/plain") { _, dump: SentencesDump ->
+        blockingJsonPost("/dump/import/sentences/plain", handler = toRequestHandler  { _, dump: SentencesDump ->
             if (protectPath) {
                 unauthorized()
             } else {
                 front.importSentences(dump.applicationName.namespace(), dump).modified
             }
-        }
+        })
     }
 
     override fun defaultHealthcheck(): (RoutingContext) -> Unit {

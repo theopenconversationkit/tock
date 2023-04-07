@@ -1,23 +1,39 @@
-package ai.tock.bot.admin
+/*
+ * Copyright (C) 2017/2022 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByActionType
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByDate
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByDateAndConfiguration
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByDateAndConnectorType
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByDateAndIntent
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByDateAndStory
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByDayOfWeek
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByHour
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByIntent
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByStory
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByStoryCategory
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByStoryLocale
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countMessagesByStoryType
-import ai.tock.bot.admin.BotAdminAnalyticsService.Operation.countUsersByDate
+package ai.tock.bot.admin.service
+
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogFlowAggregateData
 import ai.tock.bot.admin.model.DialogFlowRequest
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByActionType
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByDate
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByDateAndConfiguration
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByDateAndConnectorType
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByDateAndIntent
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByDateAndStory
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByDayOfWeek
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByHour
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByIntent
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByStory
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByStoryCategory
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByStoryLocale
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countMessagesByStoryType
+import ai.tock.bot.admin.service.BotAdminAnalyticsService.Operation.countUsersByDate
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.user.UserAnalyticsQueryResult
 import ai.tock.bot.connector.ConnectorType
@@ -29,6 +45,9 @@ import ai.tock.shared.provide
 import com.github.salomonbrys.kodein.instance
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
+import org.bson.types.ObjectId
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
@@ -36,15 +55,11 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.time.format.TextStyle.FULL_STANDALONE
-import java.time.temporal.ChronoUnit
 import java.time.temporal.ChronoUnit.HOURS
-import java.time.temporal.ChronoUnit.MINUTES
 import java.util.stream.LongStream
 import java.util.stream.Stream
 import kotlin.streams.toList
-import org.bson.types.ObjectId
-import org.litote.kmongo.Id
-import org.litote.kmongo.toId
+
 
 object BotAdminAnalyticsService {
 

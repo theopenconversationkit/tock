@@ -18,6 +18,7 @@ package ai.tock.nlp.build
 
 import ai.tock.shared.TOCK_FRONT_DATABASE
 import ai.tock.shared.TOCK_MODEL_DATABASE
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.pingMongoDatabase
 import ai.tock.shared.vertx.WebVerticle
@@ -29,7 +30,7 @@ import io.vertx.ext.web.RoutingContext
  */
 class HealthCheckVerticle(
     private val buildVerticle: BuildModelWorkerVerticle
-) : WebVerticle() {
+) : WebVerticle<CommonException>() {
 
     override fun configure() {
         // do nothing

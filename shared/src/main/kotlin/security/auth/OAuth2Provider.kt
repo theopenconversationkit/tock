@@ -16,14 +16,8 @@
 
 package ai.tock.shared.security.auth
 
-import ai.tock.shared.Executor
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.injector
-import ai.tock.shared.intProperty
-import ai.tock.shared.mapProperty
-import ai.tock.shared.property
-import ai.tock.shared.propertyOrNull
-import ai.tock.shared.provide
+import ai.tock.shared.*
+import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
@@ -37,13 +31,13 @@ import io.vertx.ext.auth.oauth2.OAuth2Options
 import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
-import java.util.Base64
 import mu.KotlinLogging
+import java.util.*
 
 /**
  *
  */
-internal class OAuth2Provider(
+internal class OAuth2Provider<E: ToRestException>(
     vertx: Vertx,
     private val oauth2: OAuth2Auth = OAuth2Auth.create(
         vertx, OAuth2Options()
@@ -78,7 +72,7 @@ internal class OAuth2Provider(
                 }
             }
     )
-) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
+) : SSOTockAuthProvider<E>(vertx), OAuth2Auth by oauth2 {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -90,11 +84,11 @@ internal class OAuth2Provider(
 
     private val executor: Executor get() = injector.provide()
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler =
+    override fun createAuthHandler(verticle: WebVerticle<E>): AuthenticationHandler =
         OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl/rest/callback")
 
     override fun protectPaths(
-        verticle: WebVerticle,
+        verticle: WebVerticle<E>,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
     ): AuthenticationHandler {
@@ -158,10 +152,10 @@ internal class OAuth2Provider(
             .map { it.name }
             .toSet()
 
-    override fun excludedPaths(verticle: WebVerticle): Set<Regex> =
+    override fun excludedPaths(verticle: WebVerticle<E>): Set<Regex> =
         super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
-    private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
+    private fun callbackPath(verticle: WebVerticle<E>): String = "${verticle.basePath}/callback"
 
 }
 

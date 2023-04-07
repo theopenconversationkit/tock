@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.vertx
+package ai.tock.shared.exception.rest
 
-/**
- * Http 400 exception.
- */
-class BadRequestException(message: String) : RestException(message, 400)
+import ai.tock.shared.exception.ToRestException
+import ai.tock.shared.exception.error.ErrorMessageWrapper
+import io.netty.handler.codec.http.HttpResponseStatus
+
+class CommonException(override val message: String): ToRestException(message) {
+    override fun toRestException(): RestException {
+        return RestException(ErrorMessageWrapper(message), HttpResponseStatus.INTERNAL_SERVER_ERROR)
+    }
+}

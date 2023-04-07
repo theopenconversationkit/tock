@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2020 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.security.auth.spi
+package ai.tock.shared.exception.rest
 
 import ai.tock.shared.exception.ToRestException
-import ai.tock.shared.security.auth.CASAuthProvider
-import io.vertx.core.Vertx
+import ai.tock.shared.exception.error.ErrorMessageWrapper
+import io.netty.handler.codec.http.HttpResponseStatus
 
 /**
- * Construct CAS Authentication provider
- *
- * NOTE: Intended to be implemented in another JAR as SPI (Service Provider Interface)
+ * Base class for rest exceptions.
  */
-interface CASAuthProviderFactory {
+open class RestException (
+    val httpResponseBody: ErrorMessageWrapper = ErrorMessageWrapper(),
+    val httpResponseStatus: HttpResponseStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR)
+    : ToRestException(httpResponseStatus.reasonPhrase()){
+    override fun toRestException(): RestException  = this
 
-    /**
-     * Creates CAS Authentication provider
-     */
-    fun <E: ToRestException>getCasAuthProvider(vertx: Vertx): CASAuthProvider<E>
 }

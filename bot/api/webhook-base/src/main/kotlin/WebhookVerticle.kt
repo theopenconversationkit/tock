@@ -21,17 +21,19 @@ import ai.tock.bot.api.client.TockClientBus
 import ai.tock.bot.api.client.toConfiguration
 import ai.tock.bot.api.model.websocket.RequestData
 import ai.tock.bot.api.model.websocket.ResponseData
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.vertx.toRequestHandler
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.RoutingContext
 
-internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) : WebVerticle() {
+internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) : WebVerticle<CommonException>() {
 
     override fun configure() {
-        blocking(HttpMethod.POST, "/webhook") { context ->
-            val content = context.bodyAsString
+        blocking(HttpMethod.POST, "/webhook", handler = toRequestHandler { context ->
+            val content = context.body().asString()
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
                 val bus = TockClientBus(botDefinition, request) { response ->
@@ -47,10 +49,11 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
                         )
                     )
                 )
+                Unit
             } else {
                 error("unknown request: $content")
             }
-        }
+        })
     }
 
     override val defaultPort: Int = 8887

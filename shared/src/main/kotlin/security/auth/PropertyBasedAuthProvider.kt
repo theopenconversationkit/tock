@@ -16,23 +16,13 @@
 
 package ai.tock.shared.security.auth
 
-import ai.tock.shared.Executor
-import ai.tock.shared.defaultNamespace
-import ai.tock.shared.injector
+import ai.tock.shared.*
+import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.listProperty
-import ai.tock.shared.property
-import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.botUser
-import ai.tock.shared.security.TockUserRole.faqBotUser
-import ai.tock.shared.security.TockUserRole.faqNlpUser
-import ai.tock.shared.security.TockUserRole.nlpUser
-import ai.tock.shared.security.TockUserRole.technicalAdmin
-import ai.tock.shared.security.TockUserRole.values
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.WebVerticle
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.vertx.core.AsyncResult
@@ -46,9 +36,9 @@ import io.vertx.ext.web.handler.SessionHandler
 import mu.KotlinLogging
 
 /**
- * Simple [AuthProvider] used in dev mode.
+ * Simple [TockAuthProvider] used in dev mode.
  */
-internal object PropertyBasedAuthProvider : TockAuthProvider {
+internal class PropertyBasedAuthProvider<E: ToRestException>: TockAuthProvider<E> {
 
     private val logger = KotlinLogging.logger {}
 
@@ -71,7 +61,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
     private val executor: Executor get() = injector.provide()
 
     override fun protectPaths(
-        verticle: WebVerticle,
+        verticle: WebVerticle<E>,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
     ): AuthenticationHandler {
@@ -86,7 +76,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
             }
 
             router.post(authenticatePath).handler { context ->
-                val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
+                val request = mapper.readValue<AuthenticateRequest>(context.body().asString())
                 val authInfo = JsonObject().put("username", request.email).put("password", request.password)
                 authenticate(authInfo) {
                     if (it.succeeded()) {

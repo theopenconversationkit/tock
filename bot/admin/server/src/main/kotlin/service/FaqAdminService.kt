@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin
+package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.SimpleAnswer
@@ -50,7 +50,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.security.UserLogin
-import ai.tock.shared.vertx.BadRequestException
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel

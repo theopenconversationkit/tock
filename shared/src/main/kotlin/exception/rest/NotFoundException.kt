@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.vertx
+package ai.tock.shared.exception.rest
+
+import ai.tock.shared.exception.error.ErrorMessageWrapper
+import io.netty.handler.codec.http.HttpResponseStatus
 
 /**
- * Http 401 exception.
+ * Http 404 exception.
  */
-class UnauthorizedException() : RestException("Not authorized", 401)
+class NotFoundException(httpResponseBody: ErrorMessageWrapper)
+    : RestException(httpResponseBody, HttpResponseStatus.NOT_FOUND) {
+    constructor() : this(ErrorMessageWrapper())
+    constructor(message: String) : this(ErrorMessageWrapper(message))
+}

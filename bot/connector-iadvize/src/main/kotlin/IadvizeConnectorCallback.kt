@@ -36,9 +36,9 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
+import ai.tock.shared.exception.rest.RestException
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.loadProperties
-import ai.tock.shared.vertx.RestException
 import io.vertx.core.Future
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext

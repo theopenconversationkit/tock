@@ -23,10 +23,10 @@ import org.litote.kmongo.Id
  * In order to manage story activation, redirection and handling with configured "end story".
  */
 data class StoryDefinitionConfigurationFeature(
-    val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
+    val botApplicationConfigurationId: Id<BotApplicationConfiguration>? = null,
     val enabled: Boolean = true,
-    val switchToStoryId: String?,
-    val endWithStoryId: String?
+    val switchToStoryId: String? = null,
+    val endWithStoryId: String? = null
 ) {
     constructor(
         botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
@@ -52,4 +52,6 @@ data class StoryDefinitionConfigurationFeature(
     internal fun supportDedicatedConfiguration(conf: BotApplicationConfiguration): Boolean =
         botApplicationConfigurationId == conf._id ||
             botApplicationConfigurationId == conf.targetConfigurationId
+
+    fun isStoryActivationFeature() = switchToStoryId == null && endWithStoryId == null
 }

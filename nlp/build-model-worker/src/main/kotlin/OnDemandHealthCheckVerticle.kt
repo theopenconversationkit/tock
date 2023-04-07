@@ -17,6 +17,7 @@
 package ai.tock.nlp.build
 
 import ai.tock.nlp.build.ondemand.WorkerOnDemandVerticle
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.detailedHealthcheck
 import io.vertx.ext.web.RoutingContext
@@ -26,7 +27,7 @@ import io.vertx.ext.web.RoutingContext
  */
 class OnDemandHealthCheckVerticle(
     private val workerOnDemandVerticles: List<WorkerOnDemandVerticle>
-) : WebVerticle() {
+) : WebVerticle<CommonException>() {
 
     override fun configure() {
         // do nothing
