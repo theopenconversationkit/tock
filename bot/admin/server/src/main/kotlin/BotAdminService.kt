@@ -302,8 +302,20 @@ object BotAdminService {
         }
     }
 
-    fun exportStories(namespace: String, applicationName: String): List<StoryDefinitionConfigurationDump> =
-            findStories(namespace, applicationName).map { StoryDefinitionConfigurationDump(it) }
+    fun exportStories(namespace: String, applicationName: String) : List<StoryDefinitionConfigurationDump> {
+        val botConf =
+            getBotConfigurationsByNamespaceAndNlpModel(namespace, applicationName).firstOrNull()
+        return if (botConf != null) {
+            val applicationDefinition = applicationDAO.getApplicationByNamespaceAndName(
+                namespace = botConf.namespace, name = botConf.nlpModel
+            ) ?: error("no application definition found for $botConf")
+            findStories(namespace, applicationName).map {
+                StoryDefinitionConfigurationDump(
+                    convertStoryToBotStory(namespace,it,applicationDefinition,botConf)
+                )
+            }
+        } else emptyList()
+    }
 
     fun exportStory(
             namespace: String,
@@ -314,13 +326,41 @@ object BotAdminService {
                 getBotConfigurationsByNamespaceAndNlpModel(namespace, applicationName).firstOrNull()
         return if (botConf != null) {
             val story =
-                    storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                            namespace = namespace,
-                            botId = botConf.botId,
-                            storyId = storyDefinitionId
-                    )
-            story?.let { StoryDefinitionConfigurationDump(it) }
+                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                    namespace = namespace,
+                    botId = botConf.botId,
+                    storyId = storyDefinitionId
+                ) ?: error("no story found")
+            val applicationDefinition = applicationDAO.getApplicationByNamespaceAndName(
+                namespace = botConf.namespace, name = botConf.nlpModel
+            ) ?: error("no application definition found for $botConf")
+            StoryDefinitionConfigurationDump(convertStoryToBotStory(namespace,story,applicationDefinition, botConf))
         } else null
+    }
+    private fun convertStoryToBotStory(namespace: String,
+                                       story : StoryDefinitionConfiguration,
+                                       applicationDefinition : ApplicationDefinition,
+                                       botConf : BotApplicationConfiguration): StoryDefinitionConfiguration {
+        val botStory = loadStory(namespace, story)
+        return story.copy(
+            answers = botStory?.answers?.map {
+                it.toConfiguration(botConf.botId, story.answers)
+                    ?: error("technical error : cast to configuration failed $botStory")
+            }.orEmpty(),
+            configuredAnswers = botStory?.configuredAnswers?.map { it.toConfiguredAnswer(botConf.botId, story) }
+                .orEmpty(),
+            mandatoryEntities = botStory?.mandatoryEntities?.map {
+                it.toEntityConfiguration(
+                    applicationDefinition,
+                    botConf.botId,
+                    story
+                )
+            }.orEmpty(),
+            steps = botStory?.steps?.map { it.toStepConfiguration(applicationDefinition, botConf.botId, story) }
+                .orEmpty(),
+            configuredSteps = botStory?.configuredSteps?.mapSteps(applicationDefinition, botConf.botId, story)
+                .orEmpty()
+        )
     }
 
     fun findStory(namespace: String, storyDefinitionId: String): BotStoryDefinitionConfiguration? {
