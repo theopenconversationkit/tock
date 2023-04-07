@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.vertx
+package ai.tock.shared.exception.admin
 
-/**
- * Base class for rest exceptions.
- */
-open class RestException(message: String, val code: Int = 500) : Exception(message)
+import ai.tock.shared.exception.ToRestException
+
+sealed class AdminException(override val message: String?): ToRestException(message)

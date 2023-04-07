@@ -17,6 +17,7 @@
 package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
+import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
@@ -38,23 +39,23 @@ private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "h
 /**
  *
  */
-internal class GithubOAuthProvider(
+internal class GithubOAuthProvider<E:ToRestException>(
     vertx: Vertx,
     private val oauth2: OAuth2Auth = GithubAuth.create(
         vertx,
         property("tock_github_oauth_client_id", "CLIENT_ID"),
         property("tock_github_oauth_secret_key", "SECRET_KEY")
     )
-) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
+) : SSOTockAuthProvider<E>(vertx), OAuth2Auth by oauth2 {
 
     val logger: KLogger = KotlinLogging.logger {}
     private val executor: Executor get() = injector.provide()
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler =
+    override fun createAuthHandler(verticle: WebVerticle<E>): AuthenticationHandler =
         OAuth2AuthHandler.create(vertx, oauth2, "$defaultBaseUrl${callbackPath(verticle)}")
 
     override fun protectPaths(
-        verticle: WebVerticle,
+        verticle: WebVerticle<E>,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
     ): AuthenticationHandler {
@@ -84,8 +85,8 @@ internal class GithubOAuthProvider(
         return authHandler
     }
 
-    override fun excludedPaths(verticle: WebVerticle): Set<Regex> =
+    override fun excludedPaths(verticle: WebVerticle<E>): Set<Regex> =
         super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
-    private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
+    private fun callbackPath(verticle: WebVerticle<E>): String = "${verticle.basePath}/callback"
 }

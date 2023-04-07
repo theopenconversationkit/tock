@@ -2,6 +2,7 @@ package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.mapper
@@ -32,7 +33,7 @@ import org.pac4j.vertx.handler.impl.CallbackHandlerOptions
 import org.pac4j.vertx.handler.impl.SecurityHandler
 import org.pac4j.vertx.handler.impl.SecurityHandlerOptions
 
-abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
+abstract class CASAuthProvider<E: ToRestException>(vertx: Vertx) : SSOTockAuthProvider<E>(vertx) {
 
     protected val sessionStore: VertxSessionStore
     private val executor: Executor get() = injector.provide()
@@ -108,7 +109,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
      */
     abstract fun readRolesByNamespace(user: Pac4jUser): Map<String, Set<String>>
 
-    override fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler {
+    override fun createAuthHandler(verticle: WebVerticle<E>): AuthenticationHandler {
         val options: SecurityHandlerOptions = SecurityHandlerOptions().setClients("CasClient")
         options.authorizers = enabledPacAuthorizers
 
@@ -154,7 +155,7 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
     }
 
     override fun protectPaths(
-        verticle: WebVerticle,
+        verticle: WebVerticle<E>,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
     ): AuthenticationHandler {
@@ -204,8 +205,8 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
         return authHandler
     }
 
-    override fun excludedPaths(verticle: WebVerticle): Set<Regex> =
+    override fun excludedPaths(verticle: WebVerticle<E>): Set<Regex> =
         super.excludedPaths(verticle) + callbackPath(verticle).toRegex()
 
-    private fun callbackPath(verticle: WebVerticle): String = "${verticle.basePath}/callback"
+    private fun callbackPath(verticle: WebVerticle<E>): String = "${verticle.basePath}/callback"
 }

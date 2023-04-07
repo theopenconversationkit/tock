@@ -16,6 +16,7 @@
 
 package ai.tock.shared.security.auth
 
+import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.WebVerticle
 import io.vertx.core.Handler
@@ -28,7 +29,7 @@ import io.vertx.ext.web.handler.SessionHandler
 /**
  *
  */
-abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
+abstract class SSOTockAuthProvider<E: ToRestException>(val vertx: Vertx) : TockAuthProvider<E> {
 
     object AddSSOCookieHandler : Handler<RoutingContext> {
 
@@ -43,10 +44,10 @@ abstract class SSOTockAuthProvider(val vertx: Vertx) : TockAuthProvider {
 
     override val sessionCookieName: String get() = "tock-sso-session"
 
-    abstract fun createAuthHandler(verticle: WebVerticle): AuthenticationHandler
+    abstract fun createAuthHandler(verticle: WebVerticle<E>): AuthenticationHandler
 
     override fun protectPaths(
-        verticle: WebVerticle,
+        verticle: WebVerticle<E>,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
     ): AuthenticationHandler {

@@ -18,6 +18,7 @@ package ai.tock.bot.admin.test
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.test.model.BotDialogRequest
 import ai.tock.bot.admin.test.model.BotDialogResponse
 import ai.tock.bot.admin.test.model.TestPlanUpdate
@@ -29,15 +30,16 @@ import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.shared.Dice
 import ai.tock.shared.error
+import ai.tock.shared.exception.rest.UnauthorizedException
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.faqBotUser
 import ai.tock.shared.security.TockUserRole.faqNlpUser
-import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
+import ai.tock.shared.vertx.toRequestHandler
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -66,21 +68,21 @@ class TestCoreService : TestService {
             } ?: Companion.notFound()
         }
 
-        blockingJsonGet("/test/plans", botUser) { context ->
+        blockingJsonGet("/test/plans", botUser, handler = toRequestHandler{ context ->
             TestPlanService.getTestPlansByNamespace(context.organization)
-        }
+        })
 
-        blockingJsonGet("/test/plan/:planId", botUser) { context ->
+        blockingJsonGet("/test/plan/:planId", botUser, handler = toRequestHandler { context ->
             context.loadTestPlan()
-        }
+        })
 
-        blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
+        blockingJsonGet("/test/plan/:planId/executions", botUser, handler = toRequestHandler { context ->
             TestPlanService.getPlanExecutions(context.loadTestPlan())
-        }
+        })
 
-        blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser) { context ->
+        blockingJsonGet("/test/plan/:planId/executions/:executionId", botUser, handler = toRequestHandler { context ->
             TestPlanService.getTestPlanExecution(context.loadTestPlan(), context.pathId("executionId"))
-        }
+        })
 
         blockingJsonPost(
             "/test/plan",
@@ -88,61 +90,61 @@ class TestCoreService : TestService {
             logger<TestPlanUpdate>("Update Test Plan") { _, p ->
                 p?.let { FrontClient.getApplicationByNamespaceAndName(it.namespace, it.nlpModel)?._id }
             }
-        ) { context, plan: TestPlanUpdate ->
+            , handler = toRequestHandler { context, plan: TestPlanUpdate ->
             if (context.organization == plan.namespace) {
                 TestPlanService.saveTestPlan(plan.toTestPlan())
             } else {
                 WebVerticle.unauthorized()
             }
-        }
+        })
 
         blockingDelete(
             "/test/plan/:planId",
             botUser,
             simpleLogger("Delete Test Plan", { it.path("planId") to true })
-        ) { context ->
+            , handler = toRequestHandler { context ->
             TestPlanService.removeTestPlan(context.loadTestPlan())
-        }
+        })
 
         blockingJsonPost(
             "/test/plan/:planId/dialog/:dialogId",
             botUser,
             simpleLogger("Add Dialog to Test Plan", { it.path("planId") to it.path("dialogId") })
-        ) { context, _: ApplicationScopedQuery ->
+            , handler = toRequestHandler { context, _: ApplicationScopedQuery ->
             TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
-        }
+        })
 
         blockingJsonPost(
             "/test/plan/:planId/dialog/delete/:dialogId",
             botUser,
             simpleLogger("Remove Dialog from Test Plan", { it.path("planId") to it.path("dialogId") })
-        ) { context, _: ApplicationScopedQuery ->
+            , handler = toRequestHandler { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
                 context.loadTestPlan(),
                 context.pathId("dialogId")
             )
-        }
+        })
 
-        blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
+        blockingJsonPost("/test/plan/execute", botUser, handler = toRequestHandler { context, testPlan: TestPlan ->
             saveAndExecuteTestPlan(context.organization, testPlan, newId())
-        }
+        })
 
         /**
          * Triggered on click on "Launch" button.
          */
-        blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
+        blockingJsonPost("/test/plan/:planId/run", botUser, handler = toRequestHandler { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
                 executeTestPlan(this)
             }
-        }
+        })
 
-        blockingJsonPost("/test/talk", setOf(botUser,faqNlpUser,faqBotUser)) { context, query: BotDialogRequest ->
+        blockingJsonPost("/test/talk", setOf(botUser,faqNlpUser,faqBotUser), handler = toRequestHandler { context, query: BotDialogRequest ->
             if (context.organization == query.namespace) {
                 talk(query)
             } else {
                 Companion.unauthorized()
             }
-        }
+        })
     }
 
     private fun talk(request: BotDialogRequest): BotDialogResponse {

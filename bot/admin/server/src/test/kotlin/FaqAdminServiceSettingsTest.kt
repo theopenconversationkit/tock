@@ -17,6 +17,7 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.service.FaqAdminService
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.definition.IntentWithoutNamespace

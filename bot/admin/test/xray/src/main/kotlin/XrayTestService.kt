@@ -22,6 +22,7 @@ import ai.tock.bot.xray.XrayPlanExecutionConfiguration
 import ai.tock.bot.xray.XrayService
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.vertx.toRequestHandler
 
 private val testCoreService = TestCoreService()
 
@@ -33,18 +34,21 @@ class XrayTestService : TestService by testCoreService {
          * Triggered on "Create" button, after providing connector and test plan key.
          * Will reach Jira to gather all test steps and send them to the bot as a conversation
          */
-        blockingJsonPost("/xray/execute", botUser) { context, configuration: XrayPlanExecutionConfiguration ->
-            XrayService(
-                listOfNotNull(configuration.configurationId),
-                listOfNotNull(configuration.testPlanKey),
-                listOfNotNull(configuration.testKey),
-                configuration.testedBotId
-            ).execute(context.organization)
-        }
+        blockingJsonPost(
+            "/xray/execute",
+            botUser,
+            handler = toRequestHandler { context, configuration: XrayPlanExecutionConfiguration ->
+                XrayService(
+                    listOfNotNull(configuration.configurationId),
+                    listOfNotNull(configuration.testPlanKey),
+                    listOfNotNull(configuration.testKey),
+                    configuration.testedBotId
+                ).execute(context.organization)
+            })
 
-        blockingJsonGet("/xray/test/plans", botUser) {
+        blockingJsonGet("/xray/test/plans", botUser, handler = toRequestHandler { _ ->
             XrayService().getTestPlans()
-        }
+        })
     }
 
     override fun priority(): Int = 1

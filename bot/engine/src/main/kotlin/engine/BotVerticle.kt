@@ -21,6 +21,7 @@ import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.nlp.NlpProxyBotService
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.listProperty
 import ai.tock.shared.property
 import ai.tock.shared.security.auth.TockAuthProvider
@@ -45,7 +46,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal class BotVerticle(
     private val nlpProxyOnBot: Boolean = booleanProperty("tock_nlp_proxy_on_bot", false),
     private val serveUploadedFiles: Boolean = booleanProperty("tock_bot_serve_files", true)
-) : WebVerticle() {
+) : WebVerticle<CommonException>() {
 
     inner class ServiceInstaller(
         val serviceId: String,
@@ -85,7 +86,7 @@ internal class BotVerticle(
 
     override val defaultCorsWithCredentials: Boolean = false
 
-    override fun authProvider(): TockAuthProvider? = defaultAuthProvider()
+    override fun authProvider(): TockAuthProvider<CommonException>? = defaultAuthProvider()
 
     fun registerServices(serviceIdentifier: String, installer: (Router) -> Any?): ServiceInstaller {
         return ServiceInstaller(serviceIdentifier, installer).also {

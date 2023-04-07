@@ -17,10 +17,12 @@
 package ai.tock.duckling.service
 
 import ai.tock.shared.error
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.blocking
 import ai.tock.shared.vertx.detailedHealthcheck
+import ai.tock.shared.vertx.toRequestHandler
 import clojure.lang.Keyword
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
@@ -36,7 +38,7 @@ import java.time.ZonedDateTime
 /**
  *
  */
-class DucklingVerticle : WebVerticle() {
+class DucklingVerticle : WebVerticle<CommonException>() {
 
     data class ParseRequest(
         val language: String,
@@ -59,11 +61,11 @@ class DucklingVerticle : WebVerticle() {
     override val logger: KLogger = KotlinLogging.logger {}
 
     override fun configure() {
-        blockingJsonPost("/parse") { _, request: ParseRequest ->
+        blockingJsonPost("/parse", handler = toRequestHandler { _, request: ParseRequest ->
             with(request) {
                 DucklingBridge.parse(language, textToParse, dimensions, referenceDate, referenceTimezone)
             }
-        }
+        })
     }
 
     override fun defaultHealthcheck(): (RoutingContext) -> Unit {

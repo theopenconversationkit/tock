@@ -20,8 +20,10 @@ import ai.tock.bot.admin.kotlin.compiler.KotlinCompilationException
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.KotlinFileCompilation
 import ai.tock.bot.admin.kotlin.compiler.TockKotlinCompiler
+import ai.tock.shared.exception.rest.CommonException
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.vertx.toRequestHandler
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -29,19 +31,18 @@ import mu.KotlinLogging
 /**
  *
  */
-class KotlinCompilerVerticle : WebVerticle() {
+class KotlinCompilerVerticle : WebVerticle<CommonException>() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 
     override fun configure() {
-        blockingJsonPost("/compile", TockUserRole.admin) { _, file: KotlinFile ->
-
+        blockingJsonPost("/compile", TockUserRole.admin, handler = toRequestHandler{ _, file: KotlinFile ->
             try {
                 KotlinFileCompilation(TockKotlinCompiler.compile(file.script, file.fileName))
             } catch (e: KotlinCompilationException) {
                 KotlinFileCompilation(null, e.errors)
             }
-        }
+        })
     }
 
     override fun defaultHealthcheck(): (RoutingContext) -> Unit {

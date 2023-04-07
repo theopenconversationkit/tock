@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2020 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.security.auth.spi
+package ai.tock.bot.admin.verticle
 
 import ai.tock.shared.exception.ToRestException
-import ai.tock.shared.security.auth.CASAuthProvider
-import io.vertx.core.Vertx
+import ai.tock.shared.vertx.WebVerticle
 
-/**
- * Construct CAS Authentication provider
- *
- * NOTE: Intended to be implemented in another JAR as SPI (Service Provider Interface)
- */
-interface CASAuthProviderFactory {
+interface ChildVerticle<T : ToRestException> {
+    fun configure(verticle: WebVerticle<T>)
+}
 
-    /**
-     * Creates CAS Authentication provider
-     */
-    fun <E: ToRestException>getCasAuthProvider(vertx: Vertx): CASAuthProvider<E>
+interface ParentVerticle<T : ToRestException> {
+
+    fun children(): List<ChildVerticle<T>>
+
+    fun preConfigure() {
+        if (this !is WebVerticle<*>)
+            throw IllegalStateException("ParentVerticle must be a WebVerticle")
+
+        children().forEach { it.configure(this as WebVerticle<T>) }
+    }
 }

@@ -16,6 +16,7 @@
 
 package ai.tock.shared.security.auth
 
+import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.authentication.AuthenticationProvider
@@ -26,14 +27,14 @@ import io.vertx.ext.web.handler.SessionHandler
 /**
  * Base interface for [AuthenticationProvider] in Tock framework.
  */
-interface TockAuthProvider : AuthenticationProvider {
+interface TockAuthProvider<E: ToRestException> : AuthenticationProvider {
 
     /**
      * The tock session cookie name.
      */
     val sessionCookieName: String get() = "tock-session"
 
-    fun defaultExcludedPaths(verticle: WebVerticle): Set<Regex> = listOfNotNull(
+    fun <E: ToRestException>defaultExcludedPaths(verticle: WebVerticle<E>): Set<Regex> = listOfNotNull(
         verticle.healthcheckPath?.toRegex(),
         verticle.livenesscheckPath?.toRegex(),
         verticle.readinesscheckPath?.toRegex(),
@@ -43,14 +44,14 @@ interface TockAuthProvider : AuthenticationProvider {
     /**
      * Paths to exclude from the [AuthProvider].
      */
-    fun excludedPaths(verticle: WebVerticle): Set<Regex> = defaultExcludedPaths(verticle)
+    fun excludedPaths(verticle: WebVerticle<E>): Set<Regex> = defaultExcludedPaths(verticle)
 
     /**
      * Protect paths for the specified verticle.
      * @return the [AuthHandler].
      */
     fun protectPaths(
-        verticle: WebVerticle,
+        verticle: WebVerticle<E>,
         pathsToProtect: Set<String>,
         sessionHandler: SessionHandler
     ): AuthenticationHandler
