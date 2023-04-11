@@ -23,6 +23,7 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
+import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
