@@ -102,7 +102,7 @@ internal class TeamsConnector(
                     var responseSent = false
                     val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                     try {
-                        val body = context.bodyAsString
+                        val body = context.body().asString()
                         logger.debug { body }
                         val activity: Activity = mapper.readValue(body)
                         if (activity.type != ActivityTypes.MESSAGE) {

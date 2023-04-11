@@ -203,4 +203,6 @@ class VertxMock : Vertx {
     override fun close(): Future<Void> = mockk()
 
     override fun undeploy(deploymentID: String?): Future<Void> = mockk()
+
+    override fun unavailableNativeTransportCause(): Throwable = mockk()
 }

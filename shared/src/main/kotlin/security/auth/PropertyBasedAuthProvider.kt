@@ -86,7 +86,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
             }
 
             router.post(authenticatePath).handler { context ->
-                val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
+                val request = mapper.readValue<AuthenticateRequest>(context.body().asString())
                 val authInfo = JsonObject().put("username", request.email).put("password", request.password)
                 authenticate(authInfo) {
                     if (it.succeeded()) {

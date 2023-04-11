@@ -36,8 +36,8 @@ class AlcmeonAuthorisationHandler(secret: String) : Handler<RoutingContext> {
     override fun handle(routingContext: RoutingContext) {
         val alcmeonWebhookSignature = routingContext.request().getHeader("X-Alcmeon-Webhook-Signature")
 
-        val normalisedPath = routingContext.normalisedPath()
-        val requestPayload = routingContext.bodyAsString
+        val normalisedPath = routingContext.normalizedPath()
+        val requestPayload = routingContext.body().asString()
 
         val signature = calculateSignature("$normalisedPath $requestPayload")
 

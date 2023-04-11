@@ -441,10 +441,10 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingPost(
             "/feature/:applicationId/toggle",
             setOf(botUser, faqBotUser),
-            simpleLogger("Toogle Application Feature", { it.bodyAsString })
+            simpleLogger("Toogle Application Feature", { it.body().asString() })
         ) { context ->
             val applicationId = context.path("applicationId")
-            val body = context.bodyAsString
+            val body = context.body().asString()
             val feature: Feature = mapper.readValue(body)
             BotAdminService.toggleFeature(applicationId, context.organization, feature)
         }
@@ -452,10 +452,10 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingPost(
             "/feature/:applicationId/update",
             setOf(botUser, faqBotUser),
-            simpleLogger("Update Application Feature", { it.bodyAsString })
+            simpleLogger("Update Application Feature", { it.body().asString() })
         ) { context ->
             val applicationId = context.path("applicationId")
-            val body = context.bodyAsString
+            val body = context.body().asString()
             val feature: Feature = mapper.readValue(body)
             BotAdminService.updateDateAndEnableFeature(
                 applicationId,
@@ -467,10 +467,10 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingPost(
             "/feature/:applicationId/add",
             setOf(botUser, faqBotUser),
-            simpleLogger("Create Application Feature", { it.bodyAsString })
+            simpleLogger("Create Application Feature", { it.body().asString() })
         ) { context ->
             val applicationId = context.path("applicationId")
-            val body = context.bodyAsString
+            val body = context.body().asString()
             val feature: Feature = mapper.readValue(body)
             BotAdminService.addFeature(applicationId, context.organization, feature)
         }

@@ -552,7 +552,8 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonGet("/locales") {
             supportedLanguages
-                .map { it.key to it.value.getDisplayLanguage(Locale.ENGLISH).capitalize() }
+                .map { it.key to it.value.getDisplayLanguage(Locale.ENGLISH)
+                    .replaceFirstChar { c -> if (c.isLowerCase()) c.titlecase(Locale.getDefault()) else c.toString() } }
                 .sortedBy { it.second }
         }
 

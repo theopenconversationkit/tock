@@ -445,11 +445,11 @@ object FaqAdminService {
         val fromTockBotDb = mapI18LabelFaqAndConvertToFaqDefinitionRequest(faqDetailsWithCount.first, applicationDefinition)
 
         // if no data search from tock front Db
-        val fromTockFrontDb = if (fromTockBotDb.isNullOrEmpty()) {
+        val fromTockFrontDb = if (fromTockBotDb.isEmpty()) {
             searchLabelsFromTockFrontDb(faqDetailsWithCount.first, applicationDefinition)
         } else emptySet()
 
-        val faqResultsTmp = if (fromTockBotDb?.isNotEmpty() == true) fromTockBotDb else fromTockFrontDb
+        val faqResultsTmp = fromTockBotDb.ifEmpty { fromTockFrontDb }
 
         // feed story data with name and description
         val faqResults = feedFaqDataStory(faqResultsTmp, applicationDefinition)

@@ -73,7 +73,7 @@ class AlcmeonConnector(
         controller: ConnectorController
     ) {
         try {
-            val body = context.bodyAsString
+            val body = context.body().asString()
             logger.info { "message received from Alcmeon: $body" }
             val message = mapper.readValue<AlcmeonConnectorMessageIn>(body)
 

@@ -24,7 +24,7 @@ import java.net.URLDecoder
 private val logger = KotlinLogging.logger {}
 
 internal fun RoutingContext.convertUrlEncodedStringToJson(): String {
-    return parseJson(bodyAsString)
+    return parseJson(body().asString())
 }
 
 internal fun parseJson(body: String): String {

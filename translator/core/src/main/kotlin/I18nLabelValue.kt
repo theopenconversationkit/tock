@@ -56,11 +56,11 @@ class I18nLabelValue constructor(
     /**
      * Namespace of the label.
      */
-    val namespace: String = namespace.toLowerCase()
+    val namespace: String = namespace.lowercase()
     /**
      * Category of the label.
      */
-    val category: String = category.toLowerCase()
+    val category: String = category.lowercase()
 
     /**
      * Returns the value with the given namespace.

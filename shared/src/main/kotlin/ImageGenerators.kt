@@ -83,7 +83,7 @@ enum class ImageFormat(val contentType: String) {
 
     companion object {
         fun findByCode(code: String): ImageFormat? {
-            return values().firstOrNull { format -> format.name.toLowerCase() == code.toLowerCase() }
+            return values().firstOrNull { format -> format.name.equals(code, ignoreCase = true) }
         }
     }
 }

@@ -237,7 +237,7 @@ internal class ConfiguredStoryHandler(
                                     // Steps started with children
                                     (currentStep?.hasNoChildren == false) ||
                                     // Steps started with no children, no target intent, no ending story
-                                    (currentStep?.hasNoChildren == true && currentStep?.targetIntent == null && !endingStoryRule)
+                                    (currentStep?.hasNoChildren == true && currentStep.targetIntent == null && !endingStoryRule)
                         )
                     }
                 }

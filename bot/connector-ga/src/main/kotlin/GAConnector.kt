@@ -81,7 +81,7 @@ class GAConnector internal constructor(
                 try {
                     if (isValidToken(context)) {
                         executor.executeBlocking {
-                            handleRequest(controller, context, context.bodyAsString)
+                            handleRequest(controller, context, context.body().asString())
                         }
                     } else {
                         context.fail(400)

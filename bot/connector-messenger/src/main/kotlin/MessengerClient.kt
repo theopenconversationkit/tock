@@ -292,7 +292,7 @@ internal class MessengerClient(val secretKey: String) {
     }
 
     private fun <T : Any> send(request: T, call: (T) -> Response<SendResponse>, nbTries: Int): SendResponse {
-        val requestTimerData = requestTimer.start("messenger_send_${request.javaClass.simpleName?.toLowerCase()}")
+        val requestTimerData = requestTimer.start("messenger_send_${request.javaClass.simpleName.lowercase()}")
         try {
             val response = call(request)
 

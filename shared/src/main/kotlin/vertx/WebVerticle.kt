@@ -606,7 +606,7 @@ abstract class WebVerticle : AbstractVerticle() {
         logger: RequestLogger = defaultRequestLogger,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path, role?.let { setOf(role) }, logger, handler)
+        blockingDelete(path, setOf(role), logger, handler)
     }
 
     fun blockingDelete(
@@ -751,7 +751,7 @@ abstract class WebVerticle : AbstractVerticle() {
     }
 
     inline fun <reified T : Any> RoutingContext.readJson(): T {
-        return mapper.readValue(this.bodyAsString)
+        return mapper.readValue(this.body().asString())
     }
 
     inline fun <reified T : Any> readJson(upload: FileUpload): T {

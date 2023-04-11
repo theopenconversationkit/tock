@@ -443,9 +443,9 @@ object Translator {
     ): TranslatedSequence {
         return translate(
             I18nLabelValue(
-                key.toLowerCase(),
+                key.lowercase(),
                 namespace,
-                category.toLowerCase(),
+                category.lowercase(),
                 defaultLabel
             ),
             context

@@ -90,7 +90,7 @@ internal class BusinessChatConnector(
             router.post(path).handler { context ->
                 val requestTimerData = BotRepository.requestTimer.start("business chat start")
                 try {
-                    val body = context.bodyAsString
+                    val body = context.body().asString()
                     val message = mapper.readValue<ReceivedModel>(body)
 
                     if (businessId == message.sourceId && message.handoverData == null) {

@@ -45,7 +45,7 @@ object UploadedFilesService {
 
     fun attachmentType(url: String): AttachmentType =
         if (url.length > 2) {
-            url.substring(url.length - 3).toLowerCase().let { suffix ->
+            url.substring(url.length - 3).lowercase().let { suffix ->
                 when {
                     imagesTypes.contains(suffix) -> AttachmentType.image
                     audioTypes.contains(suffix) -> AttachmentType.audio
@@ -63,8 +63,8 @@ object UploadedFilesService {
         bytes: ByteArray,
         description: I18nLabel? = null
     ): MediaFileDescriptor? {
-        val id = (namespace + UUID.randomUUID().toString()).toLowerCase()
-        val name = fileName.trim().toLowerCase()
+        val id = (namespace + UUID.randomUUID().toString()).lowercase()
+        val name = fileName.trim().lowercase()
         val lastDot = name.lastIndexOf(".")
         if (lastDot == -1 || lastDot == name.length - 1) {
             return null
@@ -109,7 +109,7 @@ object UploadedFilesService {
     }
 
     fun guessContentType(fileName: String): String =
-        fileName.toLowerCase().let { id ->
+        fileName.lowercase().let { id ->
             when {
                 id.endsWith(".png") -> "image/png"
                 id.endsWith(".jpg") || id.endsWith(".jpeg") -> "image/jpeg"
@@ -128,7 +128,7 @@ object UploadedFilesService {
     internal fun configure(): (Router) -> Unit {
         return { router ->
             router.get("$basePath*").blocking { context ->
-                val id = context.request().uri().substring(basePath.length).toLowerCase()
+                val id = context.request().uri().substring(basePath.length).lowercase()
                 downloadFile(context, id)
             }
         }

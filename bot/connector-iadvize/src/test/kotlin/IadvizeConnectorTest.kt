@@ -274,7 +274,7 @@ class IadvizeConnectorTest {
     fun handlerStartConversation_shouldHandleWell_TockBot() {
         val request: String = Resources.toString(resource("/request_history.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_start_conversation.json"), Charsets.UTF_8)
-        every { context.getBodyAsString() } returns request
+        every { context.body().asString() } returns request
 
         connector.handlerStartConversation(context, controller)
 
@@ -287,7 +287,7 @@ class IadvizeConnectorTest {
     fun handlerConversation_shouldHandleWell_TockBot() {
         val request: String = Resources.toString(resource("/request_message_text.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
-        every { context.getBodyAsString() } returns request
+        every { context.body().asString() } returns request
 
         val action1 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS1")
         val action2 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS2")
@@ -312,7 +312,7 @@ class IadvizeConnectorTest {
         val requestEchoMarcus1: String = Resources.toString(resource("/request_echo_marcus1.json"), Charsets.UTF_8)
         val requestEchoMarcus2: String = Resources.toString(resource("/request_echo_marcus2.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_message_marcus.json"), Charsets.UTF_8)
-        every { context.getBodyAsString() } returns request
+        every { context.body().asString() } returns request
 
         val action1 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS1")
         val action2 = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), "MARCUS2")
@@ -331,12 +331,12 @@ class IadvizeConnectorTest {
         assertEquals(expectedResponse, messageResponse.captured)
 
         //echo1
-        every { context.getBodyAsString() } returns requestEchoMarcus1
+        every { context.body().asString() } returns requestEchoMarcus1
         connector.handlerConversation(context, controller)
         verify { response.end() }
 
         //echo2
-        every { context.getBodyAsString() } returns requestEchoMarcus2
+        every { context.body().asString() } returns requestEchoMarcus2
         connector.handlerConversation(context, controller)
         verify { response.end() }
     }
@@ -345,7 +345,7 @@ class IadvizeConnectorTest {
     fun handlerConversationUnsupport_shouldDontCrash_TockBot() {
         val request: String = Resources.toString(resource("/request_message_unsupport.json"), Charsets.UTF_8)
         val expectedResponse: String = Resources.toString(resource("/response_message_unsupport.json"), Charsets.UTF_8)
-        every { context.getBodyAsString() } returns request
+        every { context.body().asString() } returns request
 
         val properties: Properties = loadProperties("/iadvize.properties")
         val messageUnsupported: String = properties.getProperty("tock_iadvize_unsupported_message_request")

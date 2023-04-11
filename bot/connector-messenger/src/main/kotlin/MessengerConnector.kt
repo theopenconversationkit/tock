@@ -165,7 +165,7 @@ class MessengerConnector internal constructor(
                     val facebookHeader = context.request().getHeader("X-Hub-Signature")
                     logger.debug { "Facebook signature:  $facebookHeader" }
                     logger.debug { "Facebook headers:  ${context.request().headers().entries()}" }
-                    val body = context.bodyAsString
+                    val body = context.body().asString()
                     if (facebookHeader != null && isSignedByFacebook(body, facebookHeader)) {
                         try {
                             logger.debug { "Facebook request input : $body" }

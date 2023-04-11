@@ -31,7 +31,7 @@ class SlackEncoderTest {
     @Test
     fun testConvertUrlEncodedStringToJson() {
 
-        every { context.bodyAsString } returns urlEncodedString
+        every { context.body().asString() } returns urlEncodedString
 
         val expectedJson = JsonObject().put("arg1", "val1").put("arg2", "val2").put("arg3", "val3").toString()
         assertEquals(expectedJson, context.convertUrlEncodedStringToJson())

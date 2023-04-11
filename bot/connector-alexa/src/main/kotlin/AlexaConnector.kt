@@ -117,7 +117,7 @@ class AlexaConnector internal constructor(
     ) {
         val timerData = BotRepository.requestTimer.start("alexa_webhook")
         try {
-            val bytes = context.body.bytes
+            val bytes = context.body().buffer().bytes
             // Check certificate
             if (!disableRequestSignatureCheck) {
                 SpeechletRequestSignatureVerifier.checkRequestSignature(

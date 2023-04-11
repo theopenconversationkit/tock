@@ -75,7 +75,7 @@ class RestConnector(
                         context.response().setStatusCode(403).end()
                         return@blocking
                     }
-                    val message: MessageRequest = mapper.readValue(context.bodyAsString)
+                    val message: MessageRequest = mapper.readValue(context.body().asString())
                     val action = transformMessage(message)
                     val locale = Locale.forLanguageTag(context.pathParam("locale"))
                     action.state.targetConnectorType = message.targetConnectorType

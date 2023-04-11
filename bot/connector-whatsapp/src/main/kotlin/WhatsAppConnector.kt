@@ -62,7 +62,7 @@ class WhatsAppConnector(
 
                 val requestTimerData = BotRepository.requestTimer.start("whatsapp_webhook")
                 try {
-                    val body = context.bodyAsString
+                    val body = context.body().asString()
                     logger.debug { "WhatsApp request input : $body" }
                     val messages: WhatsAppMessages = mapper.readValue(body)
                     messages.messages.forEach { m ->

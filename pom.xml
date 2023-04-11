@@ -31,16 +31,16 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.8.10</kotlin>
-        <couroutine>1.6.4</couroutine>
+        <kotlin>1.8.20</kotlin>
+        <coroutine>1.6.4</coroutine>
 
-        <slf4j>2.0.6</slf4j>
-        <logback>1.4.5</logback>
+        <slf4j>2.0.7</slf4j>
+        <logback>1.4.6</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.8.0</kmongo>
+        <kmongo>4.9.0</kmongo>
         <jackson>2.14.2</jackson>
         <jackson-databind>2.14.2</jackson-databind>
         <jackson-module>2.14.2</jackson-module>
@@ -48,7 +48,7 @@
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>4.3.8</vertx>
+        <vertx>4.4.1</vertx>
         <retrofit>2.9.0</retrofit>
         <okhttp>4.10.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
@@ -56,7 +56,7 @@
         <circuitbreaker>1.7.1</circuitbreaker>
         <guava>31.1-jre</guava>
         <google-auth>1.34.1</google-auth>
-        <google-http-client>1.42.3</google-http-client>
+        <google-http-client>1.43.1</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.10.0</commons-csv>
         <commons-text>1.10.0</commons-text>
@@ -64,12 +64,12 @@
         <commons-codec>1.15</commons-codec>
         <commons-lang>3.12.0</commons-lang>
         <commonmark>0.21.0</commonmark>
-        <json>20220924</json>
+        <json>20230227</json>
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.8.0</google>
-        <aws-sdk>1.12.410</aws-sdk>
+        <google>26.12.0</google>
+        <aws-sdk>1.12.446</aws-sdk>
         <pac4j>5.7.0</pac4j>
         <vertx-pac4j>6.0.1</vertx-pac4j>
 
@@ -77,7 +77,7 @@
 
         <mockk>1.13.4</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.14.0</byte-buddy>
+        <byte-buddy>1.14.4</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M7</plugin.surefire>
@@ -151,12 +151,12 @@
             <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
                 <artifactId>kotlinx-coroutines-core</artifactId>
-                <version>${couroutine}</version>
+                <version>${coroutine}</version>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlinx</groupId>
                 <artifactId>kotlinx-coroutines-slf4j</artifactId>
-                <version>${couroutine}</version>
+                <version>${coroutine}</version>
             </dependency>
 
 

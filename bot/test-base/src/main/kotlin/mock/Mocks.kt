@@ -37,7 +37,8 @@ import io.mockk.mockk
 /**
  * Runs [StoryDefinitionBase.checkPreconditions].
  */
-fun StoryDefinitionBase.checkPreconditions(bus: BotBus) = (storyHandler as StoryHandlerBase<*>).checkPreconditions()(bus)
+fun StoryDefinitionBase.checkPreconditions(bus: BotBus) =
+    (storyHandler as StoryHandlerBase<*>).checkPreconditions()(bus)
 
 /**
  * Runs the select step from Bus phase.
@@ -57,13 +58,7 @@ inline fun <reified T : ConnectorDef<*>> mockConnector(
         tockInternalInjector = KodeinInjector()
         injector.inject(
             Kodein {
-                bind<ConnectorHandlerProvider>() with provider {
-                    object : ConnectorHandlerProvider {
-                        override fun provide(storyDef: StoryHandlerDefinition, connectorType: ConnectorType): ConnectorStoryHandlerBase<*>? = connector
-
-                        override fun provide(storyDef: StoryHandlerDefinition, connectorId: String): ConnectorStoryHandlerBase<*>? = connector
-                    }
-                }
+                bind<ConnectorHandlerProvider>() with provider { MyProvider(connector) }
             }
         )
         test(bus)
@@ -71,4 +66,13 @@ inline fun <reified T : ConnectorDef<*>> mockConnector(
         tockInternalInjector = KodeinInjector()
     }
     return connector
+}
+
+@PublishedApi
+internal class MyProvider<T : ConnectorDef<*>>(private val connector: T) : ConnectorHandlerProvider {
+    override fun provide(storyDef: StoryHandlerDefinition, connectorType: ConnectorType): ConnectorStoryHandlerBase<*> =
+        connector
+
+    override fun provide(storyDef: StoryHandlerDefinition, connectorId: String): ConnectorStoryHandlerBase<*> =
+        connector
 }

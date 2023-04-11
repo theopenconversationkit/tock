@@ -141,7 +141,7 @@ internal class TwitterConnector internal constructor(
                     val twitterHeader = context.request().getHeader("X-Twitter-Webhooks-Signature")
                     logger.debug { "Twitter signature:  $twitterHeader" }
                     logger.debug { "Twitter headers:  ${context.request().headers().entries()}" }
-                    val body = context.bodyAsString
+                    val body = context.body().asString()
                     if (twitterHeader != null && isSignedByTwitter(body, twitterHeader)) {
                         try {
                             logger.debug { "Twitter request input : $body" }

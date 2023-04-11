@@ -76,8 +76,8 @@ internal val collectionBuilder: (KClass<*>) -> String = {
         .replace("storage", "", true)
         .toCharArray()
         .fold("") { s, t ->
-            if (s.isEmpty()) t.toLowerCase().toString()
-            else if (t.isUpperCase()) "${s}_${t.toLowerCase()}"
+            if (s.isEmpty()) t.lowercase()
+            else if (t.isUpperCase()) "${s}_${t.lowercase()}"
             else "$s$t"
         }
 }

@@ -56,7 +56,7 @@ class GoogleChatConnector(
                 .handler(authorisationHandler)
                 .handler { context ->
                     try {
-                        val body = context.bodyAsString
+                        val body = context.body().asString()
                         logger.info { "message received from Google chat: $body" }
 
                         // answer immediately

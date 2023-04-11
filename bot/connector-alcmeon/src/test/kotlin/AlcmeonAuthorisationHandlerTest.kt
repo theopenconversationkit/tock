@@ -27,8 +27,8 @@ internal class AlcmeonAuthorisationHandlerTest{
     internal fun `authorization success`() {
         val routingContext = mockk<RoutingContext>(relaxed = true){
             every { request().getHeader("X-Alcmeon-Webhook-Signature") } returns "4d737b25de54f0ec47bc9b5fee2b3baf7231733cabe7731830912bb9c0c548a9"
-            every { normalisedPath() } returns "/alcmeon/start"
-            every { bodyAsString } returns "{\"backend\": \"whatsapp\", \"parameters\": [], \"user_external_id\": \"33671485945\", \"user_name\": \"Germain\", \"event\": {\"type\": \"text\", \"text\": {\"body\": \"Bonjour\"}}, \"global_variables\": {}}"
+            every { normalizedPath() } returns "/alcmeon/start"
+            every { body().asString() } returns "{\"backend\": \"whatsapp\", \"parameters\": [], \"user_external_id\": \"33671485945\", \"user_name\": \"Germain\", \"event\": {\"type\": \"text\", \"text\": {\"body\": \"Bonjour\"}}, \"global_variables\": {}}"
         }
 
         AlcmeonAuthorisationHandler("1309768d3f6f8462").handle(routingContext)

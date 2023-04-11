@@ -73,7 +73,7 @@ class SlackConnector(
             router.post(path).handler { context ->
                 val requestTimerData = requestTimer.start("slack_webhook")
                 try {
-                    val body = context.bodyAsString.let {
+                    val body = context.body().asString().let {
                         if (it.startsWith("payload=")) {
                             URLDecoder.decode(it.substring("payload=".length), "UTF-8")
                         } else {

@@ -31,7 +31,7 @@ internal class WebhookVerticle(private val botDefinition: ClientBotDefinition) :
 
     override fun configure() {
         blocking(HttpMethod.POST, "/webhook") { context ->
-            val content = context.bodyAsString
+            val content = context.body().asString()
             val request: RequestData = mapper.readValue(content)
             if (request.botRequest != null) {
                 val bus = TockClientBus(botDefinition, request) { response ->
