@@ -23,34 +23,31 @@ private fun defaultUnknownStory() = unknownStory { end("Sorry I didn't understan
 
 /**
  * Create a story addressing [Intent.unknown] intent.
+ * @param handler The handler for the story.
  */
 fun unknownStory(
-    /**
-     * The handler for the story.
-     */
     handler: (ClientBus).() -> Unit
 ) = ClientStoryDefinition(Intent.unknown, handler = newStoryHandler(handler))
 
 /**
- * Creates a new bot.
+ * Creates a [definition for a new bot][ClientBotDefinition] in bot Api mode
+ * @param apiKey the api key for the bot configuration, as found in  Tock Studio
+ * @param stories List of [stories][ClientStoryDefinition] supported by the bot.
+ * @param unknownStory the story to trigger when the `unknown` intent is selected
  */
 fun newBot(
     apiKey: String,
-    /**
-     * List of stories supported by the bot.
-     */
     stories: List<ClientStoryDefinition>,
     unknownStory: ClientStoryDefinition = defaultUnknownStory()
 ): ClientBotDefinition = ClientBotDefinition(apiKey, stories, unknownStory)
 
 /**
- * Creates a new bot.
+ * Creates a new [bot][ClientBotDefinition] in bot Api mode
+ * @param apiKey the api key for the bot configuration, as found in  Tock Studio
+ * @param stories List of [stories][ClientStoryDefinition] supported by the bot.
  */
 fun newBot(
     apiKey: String,
-    /**
-     * List of stories supported by the bot.
-     */
     vararg stories: ClientStoryDefinition
 ): ClientBotDefinition =
     newBot(
@@ -60,20 +57,20 @@ fun newBot(
     )
 
 /**
- * Creates a new story.
+ * Creates a new [story][ClientStoryDefinition] in bot Api mode
+ * @param mainIntent [String] The main intent name.
+ * @param otherStarterIntents other intents that triggers the story
+ * @param secondaryIntents other intents available in the story scope when it is triggered
+ * @param steps List of [story steps][ClientStep]
+ * @param storyId default is [mainIntent] name
+ * @param handler lamdba handler for the story
  */
 fun newStory(
-    /**
-     * The main intent.
-     */
     mainIntent: String,
     otherStarterIntents: Set<IntentAware> = emptySet(),
     secondaryIntents: Set<IntentAware> = emptySet(),
     steps: List<ClientStep> = emptyList(),
     storyId: String = mainIntent,
-    /**
-     * The handler for the story.
-     */
     handler: (ClientBus).() -> Unit
 ): ClientStoryDefinition =
     ClientStoryDefinition(
@@ -86,20 +83,20 @@ fun newStory(
     )
 
 /**
- * Creates a new story.
+ * Creates a new story [ClientStoryDefinition] in bot Api mode
+ * @param mainIntent [IntentAware] The main intent name.
+ * @param otherStarterIntents other intents that triggers the story
+ * @param secondaryIntents other intents available in the story scope when it is triggered
+ * @param steps List of steps stories [ClientStep]
+ * @param storyId default is [mainIntent] with wrappedIntent name
+ * @param handler lamdba handler for the story
  */
 fun newStory(
-    /**
-     * The main intent.
-     */
     mainIntent: IntentAware,
     otherStarterIntents: Set<IntentAware> = emptySet(),
     secondaryIntents: Set<IntentAware> = emptySet(),
     steps: List<ClientStep> = emptyList(),
     storyId: String = mainIntent.wrappedIntent().name,
-    /**
-     * The handler for the story.
-     */
     handler: (ClientBus).() -> Unit
 ): ClientStoryDefinition =
     ClientStoryDefinition(
@@ -113,6 +110,7 @@ fun newStory(
 
 /**
  * Creates a new [ClientStoryHandler].
+ * @param handler lamdba handler for the story
  */
 fun newStoryHandler(handler: (ClientBus).() -> Unit): ClientStoryHandler =
     object : ClientStoryHandler {

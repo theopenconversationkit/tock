@@ -22,19 +22,23 @@ import ai.tock.bot.api.model.configuration.StoryConfiguration
 
 fun ClientBotDefinition.toConfiguration(): ClientConfiguration =
     ClientConfiguration(
-        stories.map { s ->
-            StoryConfiguration(
-                s.mainIntent.wrappedIntent().name,
-                s.otherStarterIntents.map { it.wrappedIntent().name }.toSet(),
-                s.secondaryIntents.map { it.wrappedIntent().name }.toSet(),
-                s.steps.map { step ->
-                    StepConfiguration(
-                        step.name,
-                        step.mainIntent.wrappedIntent().name,
-                        step.otherStarterIntents.map { it.wrappedIntent().name }.toSet(),
-                        step.secondaryIntents.map { it.wrappedIntent().name }.toSet()
-                    )
-                }
+        stories.map {
+            it.mapToStoryConfiguration()
+        },
+    )
+
+private fun ClientStoryDefinition.mapToStoryConfiguration(): StoryConfiguration {
+    return StoryConfiguration(
+        this.mainIntent.wrappedIntent().name,
+        this.otherStarterIntents.map { it.wrappedIntent().name }.toSet(),
+        this.secondaryIntents.map { it.wrappedIntent().name }.toSet(),
+        this.steps.map { step ->
+            StepConfiguration(
+                step.name,
+                step.mainIntent.wrappedIntent().name,
+                step.otherStarterIntents.map { it.wrappedIntent().name }.toSet(),
+                step.secondaryIntents.map { it.wrappedIntent().name }.toSet()
             )
         }
     )
+}
