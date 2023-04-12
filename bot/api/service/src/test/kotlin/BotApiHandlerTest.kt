@@ -27,6 +27,7 @@ import ai.tock.bot.api.service.BotApiHandler
 import ai.tock.bot.api.service.toUserRequest
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
@@ -63,6 +64,7 @@ class BotApiHandlerTest {
 
     private val bus: BotBus = mockk(relaxed = true) {
         every { action } returns mockk<SendSentence> {
+            every { metadata } returns ActionMetadata()
             every { stringText } returns "user text"
             every { getBusContextValue<Set<StoryDefinition>>("_viewed_stories_tock_switch") } returns emptySet()
         }
