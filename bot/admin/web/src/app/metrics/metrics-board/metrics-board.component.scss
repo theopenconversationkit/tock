@@ -1,5 +1,14 @@
+.main-card-body {
+  overflow: visible;
+}
+
+.dimension-chart {
+  border-top: 1px solid var(--color-basic-transparent-400);
+  padding-top: 1rem;
+}
+
 .stats-line {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--color-basic-transparent-400);
   .stats-line-value {
     float: right;
     font-weight: bold;
