@@ -25,6 +25,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IndicatorsEditComponent } from './indicators/indicators-edit/indicators-edit.component';
 import { IndicatorsFiltersComponent } from './indicators/indicators-filters/indicators-filters.component';
+import { AnalyticsService } from '../analytics/analytics.service';
 
 @NgModule({
   declarations: [MetricsBoardComponent, MetricsTabsComponent, IndicatorsComponent, IndicatorsEditComponent, IndicatorsFiltersComponent],
@@ -51,6 +52,7 @@ import { IndicatorsFiltersComponent } from './indicators/indicators-filters/indi
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
     })
-  ]
+  ],
+  providers: [AnalyticsService]
 })
 export class MetricsModule {}
