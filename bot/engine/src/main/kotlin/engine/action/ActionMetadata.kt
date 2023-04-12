@@ -21,9 +21,9 @@ data class ActionMetadata(
     var lastAnswer: Boolean = false,
     /** Significance deals with the notification level. */
     var priority: ActionPriority = ActionPriority.normal,
-    /** tag deals with type of message notification. */
+    /** Tag deals with type of message notification. */
     var notificationType: ActionNotificationType? = null,
-    /** visibility of the message. */
+    /** Visibility of the message. */
     var visibility: ActionVisibility = ActionVisibility.UNKNOWN,
     /** Message which is a reply to another. */
     var replyMessage: ActionReply = ActionReply.UNKNOWN,
@@ -32,5 +32,8 @@ data class ActionMetadata(
     /** The message triggers an orchestration lock.*/
     var orchestrationLock: Boolean = false,
     /** Message delegated by another bot.*/
-    val orchestratedBy: String? = null
+    val orchestratedBy: String? = null,
+    /** Does the action returns history ? **/
+    val returnsHistory: Boolean = false,
 )
+

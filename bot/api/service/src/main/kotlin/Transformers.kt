@@ -67,14 +67,11 @@ private fun Action.toApiMessage(): UserMessage =
         else -> error("unsupported action $this")
     }
 
-
 /**
  * Transform to [RequestContext] from [BotBus] variables
  */
-private fun BotBus.toRequestContext(): RequestContext {
-    val returnsAlwaysHistory = booleanProperty("tock_bot_api_actions_history_to_client_bus", false)
-
-    return RequestContext(
+private fun BotBus.toRequestContext(): RequestContext =
+    RequestContext(
         botDefinition.namespace,
         userLocale,
         targetConnectorType,
@@ -84,9 +81,9 @@ private fun BotBus.toRequestContext(): RequestContext {
         botId,
         userPreferences.toUserData(),
         connectorData.metadata,
-        if (returnsAlwaysHistory) toActionsHistory() else null
+        if (action.metadata.returnsHistory || booleanProperty("tock_bot_api_actions_history_to_client_bus", false))
+            toActionsHistory() else null
     )
-}
 
 /**
  * Retrieve the action history from the dialog

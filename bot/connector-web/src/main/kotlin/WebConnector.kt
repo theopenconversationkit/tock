@@ -247,7 +247,8 @@ class WebConnector internal constructor(
             controller.handle(
                 event,
                 ConnectorData(
-                    callback = callback, metadata = extraHeadersAsMetadata(requestInfos)
+                    callback = callback,
+                    metadata = extraHeadersAsMetadata(requestInfos)
                 )
             )
         } catch (t: Throwable) {
@@ -263,7 +264,7 @@ class WebConnector internal constructor(
      * accessible if "tock_web_connector_use_extra_header_as_metadata_request" is true
      * @param requestInfos [WebRequestInfos]
      */
-    private fun extraHeadersAsMetadata(requestInfos: WebRequestInfos): MutableMap<String, String> {
+    private fun extraHeadersAsMetadata(requestInfos: WebRequestInfos): Map<String, String> {
         val metaDataExtraHeaders: MutableMap<String, String> = mutableMapOf()
         if (webConnectorUseExtraHeadersAsMetadata) {
             webConnectorExtraHeaders.forEach { header ->
