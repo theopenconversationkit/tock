@@ -18,8 +18,24 @@ package ai.tock.nlp.admin
 
 import ai.tock.nlp.admin.AdminService.front
 import ai.tock.nlp.admin.CsvCodec.newPrinter
-import ai.tock.nlp.admin.model.*
-import ai.tock.shared.exception.admin.AdminException
+import ai.tock.nlp.admin.model.ApplicationScopedQuery
+import ai.tock.nlp.admin.model.ApplicationWithIntents
+import ai.tock.nlp.admin.model.CreateEntityQuery
+import ai.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
+import ai.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
+import ai.tock.nlp.admin.model.LogStatsQuery
+import ai.tock.nlp.admin.model.LogsQuery
+import ai.tock.nlp.admin.model.PaginatedQuery
+import ai.tock.nlp.admin.model.ParseQuery
+import ai.tock.nlp.admin.model.PredefinedLabelQuery
+import ai.tock.nlp.admin.model.PredefinedValueQuery
+import ai.tock.nlp.admin.model.SearchQuery
+import ai.tock.nlp.admin.model.SentenceReport
+import ai.tock.nlp.admin.model.SentencesTextQuery
+import ai.tock.nlp.admin.model.TestBuildQuery
+import ai.tock.nlp.admin.model.TranslateSentencesQuery
+import ai.tock.nlp.admin.model.UpdateEntityDefinitionQuery
+import ai.tock.nlp.admin.model.UpdateSentencesQuery
 import ai.tock.nlp.core.DictionaryData
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.PredefinedValue
@@ -38,14 +54,30 @@ import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.namespace.NamespaceConfiguration
 import ai.tock.nlp.front.shared.user.UserNamespace
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.TOCK_BOT_DATABASE
+import ai.tock.shared.TOCK_FRONT_DATABASE
+import ai.tock.shared.TOCK_MODEL_DATABASE
+import ai.tock.shared.devEnvironment
+import ai.tock.shared.error
+import ai.tock.shared.exception.admin.AdminException
+import ai.tock.shared.injector
+import ai.tock.shared.name
+import ai.tock.shared.namespace
+import ai.tock.shared.pingMongoDatabase
+import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.decrypt
 import ai.tock.shared.security.initEncryptor
-import ai.tock.shared.vertx.*
+import ai.tock.shared.supportedLanguages
+import ai.tock.shared.vertx.RequestLogger
+import ai.tock.shared.vertx.RequestSucceeded
+import ai.tock.shared.vertx.WebVerticle
+import ai.tock.shared.vertx.detailedHealthcheck
+import ai.tock.shared.vertx.toRequestHandler
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.vertx.core.Handler
 import io.vertx.core.buffer.Buffer
@@ -53,12 +85,12 @@ import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.StaticHandler
+import java.nio.charset.StandardCharsets.UTF_8
+import java.util.Locale
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.nio.charset.StandardCharsets.UTF_8
-import java.util.*
 
 /**
  *
@@ -159,7 +191,8 @@ open class AdminVerticle : WebVerticle<AdminException>() {
         blockingJsonPost(
             "/application/:applicationId/model/:engine/configuration",
             admin,
-            simpleLogger("Model Configuration"), handler = toRequestHandler { context, conf: NlpApplicationConfiguration ->
+            simpleLogger("Model Configuration"),
+            handler = toRequestHandler { context, conf: NlpApplicationConfiguration ->
                 front.getApplicationById(context.pathId("applicationId"))
                     ?.takeIf { it.namespace == context.organization && it.supportedLocales.isNotEmpty() }
                     ?.let {
@@ -172,7 +205,7 @@ open class AdminVerticle : WebVerticle<AdminException>() {
             })
 
         // Retrieve full application dump that matches given identifier
-        blockingJsonGet("/application/dump/:id", technicalAdmin, handler =  toRequestHandler { context ->
+        blockingJsonGet("/application/dump/:id", technicalAdmin, handler = toRequestHandler { context ->
             val id: Id<ApplicationDefinition> = context.pathId("id")
             if (context.organization == front.getApplicationById(id)?.namespace) {
                 front.export(id, DumpType.full)
@@ -229,18 +262,21 @@ open class AdminVerticle : WebVerticle<AdminException>() {
             })
 
         // Retrieve qualified sentences dum<p that matches given application identifier and intent
-        blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent", admin, handler = toRequestHandler { context ->
-            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
-            if (context.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(
-                    id,
-                    DumpType.parseDumpType(context.path("dumpType")),
-                    context.path("intent")
-                )
-            } else {
-                unauthorized()
-            }
-        })
+        blockingJsonGet(
+            "/sentences/dump/:dumpType/:applicationId/:intent",
+            admin,
+            handler = toRequestHandler { context ->
+                val id: Id<ApplicationDefinition> = context.pathId("applicationId")
+                if (context.organization == front.getApplicationById(id)?.namespace) {
+                    front.exportSentences(
+                        id,
+                        DumpType.parseDumpType(context.path("dumpType")),
+                        context.path("intent")
+                    )
+                } else {
+                    unauthorized()
+                }
+            })
 
         // Retrieve qualified sentences dump that matches given application identifier, intent and locale
         blockingJsonGet(
@@ -534,13 +570,16 @@ open class AdminVerticle : WebVerticle<AdminException>() {
                 .sortedBy { it.second }
         })
 
-        blockingJsonPost("/parse", setOf(nlpUser, faqNlpUser), handler = toRequestHandler { context, query: ParseQuery ->
-            if (context.organization == query.namespace) {
-                service.parseSentence(query)
-            } else {
-                unauthorized()
-            }
-        })
+        blockingJsonPost(
+            "/parse",
+            setOf(nlpUser, faqNlpUser),
+            handler = toRequestHandler { context, query: ParseQuery ->
+                if (context.organization == query.namespace) {
+                    service.parseSentence(query)
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonPost(
             "/sentence",
@@ -615,13 +654,16 @@ open class AdminVerticle : WebVerticle<AdminException>() {
                 }
             })
 
-        blockingJsonPost("/users/logs/search", technicalAdmin, handler = toRequestHandler { context, s: UserActionLogQuery ->
-            if (context.organization == s.namespace) {
-                front.search(s)
-            } else {
-                unauthorized()
-            }
-        })
+        blockingJsonPost(
+            "/users/logs/search",
+            technicalAdmin,
+            handler = toRequestHandler { context, s: UserActionLogQuery ->
+                if (context.organization == s.namespace) {
+                    front.search(s)
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonPost("/logs/search", nlpUser, handler = toRequestHandler { context, s: LogsQuery ->
             if (context.organization == s.namespace) {
@@ -727,129 +769,135 @@ open class AdminVerticle : WebVerticle<AdminException>() {
         blockingUploadJsonPost(
             "/dump/dictionary/:entityName",
             admin,
-            simpleLogger("Update Dictionary")
-            , handler = toRequestHandler { context, dump: DictionaryData ->
-            val data = dump.copy(namespace = context.organization, entityName = context.path("entityName"))
-            front.save(data)
-            data
-        })
+            simpleLogger("Update Dictionary"), handler = toRequestHandler { context, dump: DictionaryData ->
+                val data = dump.copy(namespace = context.organization, entityName = context.path("entityName"))
+                front.save(data)
+                data
+            })
 
         blockingJsonGet("/nlp-engines") { RequestSucceeded(front.getSupportedNlpEngineTypes()) }
 
         blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>(
             "/entity-type/create",
             nlpUser,
-            simpleLogger("Create Entity")
-            , handler = toRequestHandler { context, query ->
-            val entityName = "${context.organization}:${query.type.lowercase().name()}"
-            if (front.getEntityTypeByName(entityName) == null) {
-                val entityType = EntityTypeDefinition(entityName, "")
-                front.save(entityType)
-                entityType
-            } else {
-                null
-            }
-        })
+            simpleLogger("Create Entity"), handler = toRequestHandler { context, query ->
+                val entityName = "${context.organization}:${query.type.lowercase().name()}"
+                if (front.getEntityTypeByName(entityName) == null) {
+                    val entityType = EntityTypeDefinition(entityName, "")
+                    front.save(entityType)
+                    entityType
+                } else {
+                    null
+                }
+            })
 
         blockingJsonPost(
             "/entity-type",
             nlpUser,
-            simpleLogger("Update Entity")
-            , handler = toRequestHandler { context, entityType: EntityTypeDefinition ->
-            if (context.organization == entityType.name.namespace()) {
-                val update = front.getEntityTypeByName(entityType.name)
-                    ?.run {
-                        copy(
-                            description = entityType.description,
-                            subEntities = entityType.subEntities,
-                            dictionary = entityType.dictionary,
-                            obfuscated = entityType.obfuscated
-                        )
+            simpleLogger("Update Entity"), handler = toRequestHandler { context, entityType: EntityTypeDefinition ->
+                if (context.organization == entityType.name.namespace()) {
+                    val update = front.getEntityTypeByName(entityType.name)
+                        ?.run {
+                            copy(
+                                description = entityType.description,
+                                subEntities = entityType.subEntities,
+                                dictionary = entityType.dictionary,
+                                obfuscated = entityType.obfuscated
+                            )
+                        }
+                    if (update != null) {
+                        front.save(update)
+                    } else {
+                        error("not existing entity $entityType")
                     }
-                if (update != null) {
-                    front.save(update)
                 } else {
-                    error("not existing entity $entityType")
+                    unauthorized()
                 }
-            } else {
-                unauthorized()
-            }
-        })
+            })
 
         blockingJsonDelete("/entity-type/:name", nlpUser, simpleLogger("Delete Entity", { it.path("name") to true }),
             handler = toRequestHandler { context ->
-            val entityType = context.path("name")
-            if (context.organization == entityType.namespace()) {
-                front.deleteEntityTypeByName(entityType)
-            } else {
-                unauthorized()
-            }
-        })
+                val entityType = context.path("name")
+                if (context.organization == entityType.namespace()) {
+                    front.deleteEntityTypeByName(entityType)
+                } else {
+                    unauthorized()
+                }
+            })
 
-        blockingJsonPost("/test/intent-errors", setOf(nlpUser, faqNlpUser), handler = toRequestHandler { context, query: TestBuildQuery ->
-            if (context.organization == query.namespace) {
-                val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
-                    ?: error("application for $query not found")
-                AdminService.searchTestIntentErrors(query.toTestErrorQuery(app))
-            } else {
-                unauthorized()
-            }
-        })
+        blockingJsonPost(
+            "/test/intent-errors",
+            setOf(nlpUser, faqNlpUser),
+            handler = toRequestHandler { context, query: TestBuildQuery ->
+                if (context.organization == query.namespace) {
+                    val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+                        ?: error("application for $query not found")
+                    AdminService.searchTestIntentErrors(query.toTestErrorQuery(app))
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonPost(
             "/test/intent-error/delete",
             setOf(nlpUser, faqNlpUser),
-            logger<IntentTestErrorWithSentenceReport>("Delete Intent Test Error") { _, e -> e?.sentence?.applicationId }
-            , handler = toRequestHandler { context, error: IntentTestErrorWithSentenceReport ->
-            if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
-                front.deleteTestIntentError(
-                    error.sentence.applicationId,
-                    error.sentence.language,
-                    error.sentence.toClassifiedSentence().text
-                )
-            } else {
-                unauthorized()
-            }
-        })
+            logger<IntentTestErrorWithSentenceReport>("Delete Intent Test Error") { _, e -> e?.sentence?.applicationId },
+            handler = toRequestHandler { context, error: IntentTestErrorWithSentenceReport ->
+                if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
+                    front.deleteTestIntentError(
+                        error.sentence.applicationId,
+                        error.sentence.language,
+                        error.sentence.toClassifiedSentence().text
+                    )
+                } else {
+                    unauthorized()
+                }
+            })
 
-        blockingJsonPost("/test/entity-errors", setOf(nlpUser, faqNlpUser), handler = toRequestHandler { context, query: TestBuildQuery ->
-            if (context.organization == query.namespace) {
-                val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
-                    ?: error("application for $query not found")
-                service.searchTestEntityErrors(query.toTestErrorQuery(app))
-            } else {
-                unauthorized()
-            }
-        })
+        blockingJsonPost(
+            "/test/entity-errors",
+            setOf(nlpUser, faqNlpUser),
+            handler = toRequestHandler { context, query: TestBuildQuery ->
+                if (context.organization == query.namespace) {
+                    val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+                        ?: error("application for $query not found")
+                    service.searchTestEntityErrors(query.toTestErrorQuery(app))
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonPost(
             "/test/entity-error/delete",
             setOf(nlpUser, faqNlpUser),
-            logger<EntityTestErrorWithSentenceReport>("Delete Entity Test Error") { _, e -> e?.sentence?.applicationId }
-            , handler = toRequestHandler { context, error: EntityTestErrorWithSentenceReport ->
-            if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
-                front.deleteTestEntityError(
-                    error.sentence.applicationId,
-                    error.sentence.language,
-                    error.originalSentence.toClassifiedSentence().text
-                )
-            } else {
-                unauthorized()
-            }
-        })
+            logger<EntityTestErrorWithSentenceReport>("Delete Entity Test Error") { _, e -> e?.sentence?.applicationId },
+            handler = toRequestHandler { context, error: EntityTestErrorWithSentenceReport ->
+                if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
+                    front.deleteTestEntityError(
+                        error.sentence.applicationId,
+                        error.sentence.language,
+                        error.originalSentence.toClassifiedSentence().text
+                    )
+                } else {
+                    unauthorized()
+                }
+            })
 
-        blockingJsonPost("/test/stats", setOf(nlpUser, faqNlpUser), handler = toRequestHandler { context, query: TestBuildQuery ->
-            val app = front.getApplicationByNamespaceAndName(
-                query.namespace,
-                query.applicationName
-            )
-            if (context.organization == app?.namespace
-            ) {
-                AdminService.testBuildStats(query, app)
-            } else {
-                unauthorized()
-            }
-        })
+        blockingJsonPost(
+            "/test/stats",
+            setOf(nlpUser, faqNlpUser),
+            handler = toRequestHandler { context, query: TestBuildQuery ->
+                val app = front.getApplicationByNamespaceAndName(
+                    query.namespace,
+                    query.applicationName
+                )
+                if (context.organization == app?.namespace
+                ) {
+                    AdminService.testBuildStats(query, app)
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonPost("/alexa/export", admin, handler = toRequestHandler { context, query: ApplicationScopedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
@@ -863,82 +911,82 @@ open class AdminVerticle : WebVerticle<AdminException>() {
         blockingJsonPost(
             "/dictionary/predefined-values",
             nlpUser,
-            simpleLogger("Update Predefined Value")
-            , handler = toRequestHandler { context, query: PredefinedValueQuery ->
+            simpleLogger("Update Predefined Value"),
+            handler = toRequestHandler { context, query: PredefinedValueQuery ->
 
-            front.getDictionaryDataByEntityName(query.entityTypeName)
-                ?.takeIf { it.namespace == context.organization }
-                ?.run {
-                    val value = query.oldPredefinedValue ?: query.predefinedValue
-                    copy(
-                        values = values.filter { it.value != value } +
-                                (
-                                        values.find { it.value == value }
-                                            ?.copy(value = query.predefinedValue)
-                                            ?: PredefinedValue(
-                                                query.predefinedValue,
-                                                mapOf(query.locale to listOf(query.predefinedValue))
+                front.getDictionaryDataByEntityName(query.entityTypeName)
+                    ?.takeIf { it.namespace == context.organization }
+                    ?.run {
+                        val value = query.oldPredefinedValue ?: query.predefinedValue
+                        copy(
+                            values = values.filter { it.value != value } +
+                                    (
+                                            values.find { it.value == value }
+                                                ?.copy(value = query.predefinedValue)
+                                                ?: PredefinedValue(
+                                                    query.predefinedValue,
+                                                    mapOf(query.locale to listOf(query.predefinedValue))
+                                                )
                                             )
-                                        )
-                    )
-                }
-                ?.also {
-                    front.save(it)
-                }
-                ?: unauthorized()
-        })
+                        )
+                    }
+                    ?.also {
+                        front.save(it)
+                    }
+                    ?: unauthorized()
+            })
 
         blockingDelete(
             "/dictionary/predefined-values/:entityType/:value",
             nlpUser,
-            simpleLogger("Delete Predefined Value", { it.path("entityType") to it.path("value") })
-            , handler = toRequestHandler { context ->
-            val entityType = context.path("entityType")
-            if (context.organization == entityType.namespace()) {
-                front.deletePredefinedValueByName(entityType, context.path("value"))
-            } else {
-                unauthorized()
-            }
-        })
+            simpleLogger("Delete Predefined Value", { it.path("entityType") to it.path("value") }),
+            handler = toRequestHandler { context ->
+                val entityType = context.path("entityType")
+                if (context.organization == entityType.namespace()) {
+                    front.deletePredefinedValueByName(entityType, context.path("value"))
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonPost(
             "/dictionary/predefined-value/labels",
             nlpUser,
-            simpleLogger("Update Predefined Labels")
-            , handler = toRequestHandler { context, query: PredefinedLabelQuery ->
+            simpleLogger("Update Predefined Labels"),
+            handler = toRequestHandler { context, query: PredefinedLabelQuery ->
 
-            front.getDictionaryDataByEntityName(query.entityTypeName)
-                ?.takeIf { it.namespace == context.organization }
-                ?.run {
-                    copy(
-                        values = values.filter { it.value != query.predefinedValue } +
-                                (
-                                        values.find { it.value == query.predefinedValue }
-                                            ?.run {
-                                                copy(
-                                                    labels = labels.filter { it.key != query.locale } +
-                                                            mapOf(
-                                                                query.locale to (
-                                                                        (
-                                                                                labels[query.locale]?.filter { it != query.label }
-                                                                                    ?: emptyList()
-                                                                                ) + listOf(query.label)
-                                                                        ).sorted()
-                                                            )
+                front.getDictionaryDataByEntityName(query.entityTypeName)
+                    ?.takeIf { it.namespace == context.organization }
+                    ?.run {
+                        copy(
+                            values = values.filter { it.value != query.predefinedValue } +
+                                    (
+                                            values.find { it.value == query.predefinedValue }
+                                                ?.run {
+                                                    copy(
+                                                        labels = labels.filter { it.key != query.locale } +
+                                                                mapOf(
+                                                                    query.locale to (
+                                                                            (
+                                                                                    labels[query.locale]?.filter { it != query.label }
+                                                                                        ?: emptyList()
+                                                                                    ) + listOf(query.label)
+                                                                            ).sorted()
+                                                                )
+                                                    )
+                                                }
+                                                ?: PredefinedValue(
+                                                    query.predefinedValue,
+                                                    mapOf(query.locale to listOf(query.label))
                                                 )
-                                            }
-                                            ?: PredefinedValue(
-                                                query.predefinedValue,
-                                                mapOf(query.locale to listOf(query.label))
                                             )
-                                        )
-                    )
-                }
-                ?.also {
-                    front.save(it)
-                }
-                ?: unauthorized()
-        })
+                        )
+                    }
+                    ?.also {
+                        front.save(it)
+                    }
+                    ?: unauthorized()
+            })
 
         blockingDelete(
             "/dictionary/predefined-value/labels/:entityType/:value/:locale/:label",
@@ -953,20 +1001,19 @@ open class AdminVerticle : WebVerticle<AdminException>() {
                         it.path("label")
                     ).toTypedArray()
                 }
-            )
-            , handler = toRequestHandler { context ->
-            val entityType = context.path("entityType")
-            if (context.organization == entityType.namespace()) {
-                front.deletePredefinedValueLabelByName(
-                    entityType,
-                    context.path("value"),
-                    context.pathToLocale("locale"),
-                    context.path("label")
-                )
-            } else {
-                unauthorized()
-            }
-        })
+            ), handler = toRequestHandler { context ->
+                val entityType = context.path("entityType")
+                if (context.organization == entityType.namespace()) {
+                    front.deletePredefinedValueLabelByName(
+                        entityType,
+                        context.path("value"),
+                        context.pathToLocale("locale"),
+                        context.path("label")
+                    )
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonPost(
             "/translation/sentence",
@@ -975,16 +1022,15 @@ open class AdminVerticle : WebVerticle<AdminException>() {
                 s?.applicationName?.let {
                     front.getApplicationByNamespaceAndName(context.organization, it)?._id
                 }
-            }
-            , handler = toRequestHandler { context, s: TranslateSentencesQuery ->
-            if (context.organization == s.namespace &&
-                (s.searchQuery == null || context.organization == s.searchQuery.namespace)
-            ) {
-                service.translateSentences(s)
-            } else {
-                unauthorized()
-            }
-        })
+            }, handler = toRequestHandler { context, s: TranslateSentencesQuery ->
+                if (context.organization == s.namespace &&
+                    (s.searchQuery == null || context.organization == s.searchQuery.namespace)
+                ) {
+                    service.translateSentences(s)
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonGet("/namespaces") {
             RequestSucceeded(front.getNamespaces(it.userLogin))
@@ -1002,45 +1048,43 @@ open class AdminVerticle : WebVerticle<AdminException>() {
         blockingPost(
             "/namespace/:namespace",
             admin,
-            simpleLogger("Create Namespace")
-            , handler = toRequestHandler { context ->
-            val n = context.path("namespace").trim()
-            // get the namespace of the current user
-            if (supportCreateNamespace) {
-                if (front.isExistingNamespace(n)) {
-                    badRequest("Namespace already exists")
+            simpleLogger("Create Namespace"), handler = toRequestHandler { context ->
+                val n = context.path("namespace").trim()
+                // get the namespace of the current user
+                if (supportCreateNamespace) {
+                    if (front.isExistingNamespace(n)) {
+                        badRequest("Namespace already exists")
+                    } else {
+                        front.saveNamespace(UserNamespace(context.userLogin, n, true))
+                    }
                 } else {
-                    front.saveNamespace(UserNamespace(context.userLogin, n, true))
+                    unauthorized()
                 }
-            } else {
-                unauthorized()
-            }
-        })
+            })
 
         blockingJsonPost(
             "/namespace",
             admin,
-            simpleLogger("Add or Update Namespace for User")
-            , handler = toRequestHandler { context, namespace: UserNamespace ->
-            // get the namespace of the current user
-            if (front.isNamespaceOwner(context.userLogin, namespace.namespace)) {
-                front.saveNamespace(namespace)
-            } else {
-                unauthorized()
-            }
-        })
+            simpleLogger("Add or Update Namespace for User"),
+            handler = toRequestHandler { context, namespace: UserNamespace ->
+                // get the namespace of the current user
+                if (front.isNamespaceOwner(context.userLogin, namespace.namespace)) {
+                    front.saveNamespace(namespace)
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingPost(
-            "/namespace/select/:namespace"
-            , handler = toRequestHandler { context ->
-            val n = context.path("namespace").trim()
-            if (front.hasNamespace(context.userLogin, n)) {
-                front.setCurrentNamespace(context.userLogin, n)
-                context.setUser(context.user!!.copy(namespace = n))
-            } else {
-                unauthorized()
-            }
-        })
+            "/namespace/select/:namespace", handler = toRequestHandler { context ->
+                val n = context.path("namespace").trim()
+                if (front.hasNamespace(context.userLogin, n)) {
+                    front.setCurrentNamespace(context.userLogin, n)
+                    context.setUser(context.user!!.copy(namespace = n))
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingDelete(
             "/namespace/:user/:namespace",
@@ -1049,16 +1093,15 @@ open class AdminVerticle : WebVerticle<AdminException>() {
                 {
                     it.path("user") to it.path("namespace")
                 }
-            )
-            , handler = toRequestHandler { context ->
-            val user = context.path("user")
-            val namespace = context.path("namespace")
-            if (front.isNamespaceOwner(context.userLogin, namespace)) {
-                front.deleteNamespace(user, namespace)
-            } else {
-                unauthorized()
-            }
-        })
+            ), handler = toRequestHandler { context ->
+                val user = context.path("user")
+                val namespace = context.path("namespace")
+                if (front.isNamespaceOwner(context.userLogin, namespace)) {
+                    front.deleteNamespace(user, namespace)
+                } else {
+                    unauthorized()
+                }
+            })
 
         blockingJsonGet("/configuration/namespaces/shared") {
             RequestSucceeded(front.getSharableNamespaceConfiguration())
@@ -1076,14 +1119,14 @@ open class AdminVerticle : WebVerticle<AdminException>() {
         blockingJsonPost(
             "/configuration/namespace",
             admin,
-            simpleLogger("Create or Update Namespace")
-            , handler = toRequestHandler { context, conf: NamespaceConfiguration ->
-            if (front.isNamespaceOwner(context.userLogin, conf.namespace)) {
-                front.saveNamespaceConfiguration(conf)
-            } else {
-                unauthorized()
-            }
-        })
+            simpleLogger("Create or Update Namespace"),
+            handler = toRequestHandler { context, conf: NamespaceConfiguration ->
+                if (front.isNamespaceOwner(context.userLogin, conf.namespace)) {
+                    front.saveNamespaceConfiguration(conf)
+                } else {
+                    unauthorized()
+                }
+            })
     }
 
     // cache index.html content

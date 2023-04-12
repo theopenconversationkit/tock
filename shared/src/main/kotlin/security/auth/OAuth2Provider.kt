@@ -16,8 +16,15 @@
 
 package ai.tock.shared.security.auth
 
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.exception.ToRestException
+import ai.tock.shared.injector
+import ai.tock.shared.intProperty
+import ai.tock.shared.mapProperty
+import ai.tock.shared.property
+import ai.tock.shared.propertyOrNull
+import ai.tock.shared.provide
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
@@ -32,7 +39,7 @@ import io.vertx.ext.web.handler.AuthenticationHandler
 import io.vertx.ext.web.handler.OAuth2AuthHandler
 import io.vertx.ext.web.handler.SessionHandler
 import mu.KotlinLogging
-import java.util.*
+import java.util.Base64
 
 /**
  *
