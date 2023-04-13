@@ -1,30 +1,39 @@
-package security.auth
+package security.auth.cas
 
+import ai.tock.shared.exception.rest.ForbiddenException
 import ai.tock.shared.property
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.security.auth.CASAuthProvider
+import ai.tock.shared.vertx.WebVerticle
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.vertx.core.Vertx
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.AuthenticationHandler
 import mu.KotlinLogging
 import org.pac4j.cas.client.CasClient
 import org.pac4j.cas.config.CasConfiguration
 import org.pac4j.core.config.Config
+import org.pac4j.vertx.auth.Pac4jAuthProvider
 import org.pac4j.vertx.auth.Pac4jUser
+import org.pac4j.vertx.handler.impl.SecurityHandler
+import org.pac4j.vertx.handler.impl.SecurityHandlerOptions
 
 /**
  * Sample of CAS based Auth provider with Customer specific Role mapping
  */
-class SampleCASAuthProvider(vertx: Vertx) : CASAuthProvider(vertx) {
+class SampleCASAuthProvider(vertx: Vertx) : CASAuthProvider<ForbiddenException>(vertx) {
 
     private val pacConfig: Config
     private val genericErrorPage: String
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private const val CAS_CLIENT_PROFILE = "CasClient"
+        private const val USERID = "userId"
     }
 
     init {
+        logger.info { "init ${this::class.java.name}"}
         val casLoginUrl = property("cas_login_url", "https://casserver.herokuapp.com/cas/login")
         val casCallbackUrl = property("cas_callback_url", "http://localhost:7999/rest/callback")
 
@@ -44,10 +53,9 @@ class SampleCASAuthProvider(vertx: Vertx) : CASAuthProvider(vertx) {
     }
 
     override fun readCasLogin(user: Pac4jUser): String {
-        val userProfiles = user.pac4jUserProfiles()
-
-        return userProfiles["CasClient"]?.id
+        val userProfile = user.principal().getJsonObject(CAS_CLIENT_PROFILE)
             ?: throw IllegalStateException("Pac4J user must contains a CasClient property")
+        return userProfile.getString(USERID)
     }
 
     override fun readRolesByNamespace(user: Pac4jUser): Map<String, Set<String>> {
@@ -72,4 +80,13 @@ class SampleCASAuthProvider(vertx: Vertx) : CASAuthProvider(vertx) {
             .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
             .end(genericErrorPage)
     }
+
+
+    override fun createAuthHandler(verticle: WebVerticle<ForbiddenException>): AuthenticationHandler {
+        val options: SecurityHandlerOptions = SecurityHandlerOptions().setClients("CasClient")
+        options.authorizers = enabledPacAuthorizers
+
+        return SecurityHandler(vertx, sessionStore, getConfig(), Pac4jAuthProvider(), options)
+    }
+
 }
