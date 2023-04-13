@@ -28,11 +28,11 @@ git init
 ```
 
 Edit following line in `my-company-cas/pom.xml` according to `tock/` location
-```
+```xml
  <relativePath>../../pom.xml</relativePath>
 ```
 
-Using JDK 8+
+Using JDK 11+
 ```shell
 mvn clean install
 ```
@@ -40,7 +40,6 @@ mvn clean install
 >> **Warning**
 >>
 >> By default, CAS login page is configured to https://casserver.herokuapp.com/cas/login Which is only meant for test purposes
-
 
 
 ## How to run locally (Intellij)
@@ -61,7 +60,36 @@ Plus Button -> JARs or Directories
 
 Select from this project `target/XX-shaded.jar`, and configure it as `Runtime` dependency
 
+#### An example
+Add in `tock-bot` pom.xml when built locally or pushed on repository manager like Nexus or Artifactory  
+And also added as a module in your Tock project  
+File -> New -> Module from existing sources and select the project you created for example `my-company-cas`
+```xml
 
+<module>module file name</module>
+        
+...
+
+<dependency>
+    <groupId>ai.tock</groupId>
+    <artifactId>artifact name</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
+For example with this project added as a module project:
+```xml
+
+<module>my-company-cas</module>
+        
+...
+
+<dependency>
+    <groupId>ai.tock</groupId>
+    <artifactId>tock-sample-cas-auth-provider</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
 
 ### Configure BotAdmin runner
 
@@ -80,11 +108,8 @@ Plug then activate  [conf/dev/tock-bot-admin-server.env](conf/dev/tock-bot-admin
 ### Test result in Chrome
 
 - Launch BotAdmin (default port is `7999`)
-- Open http://localhost:7999 
+- Open http://localhost:7999
 
 By default you would be prompted for user/password by demo CAS
 
 Demo CAS Credentials: `casuser` / `Mellon`.
-
-
-

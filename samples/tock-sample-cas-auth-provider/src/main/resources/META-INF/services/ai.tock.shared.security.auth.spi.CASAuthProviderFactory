@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-security.auth.SampleAuthProvidersFactory
+security.auth.cas.SampleAuthProvidersFactory

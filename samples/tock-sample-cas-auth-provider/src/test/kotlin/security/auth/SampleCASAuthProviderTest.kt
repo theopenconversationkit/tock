@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package security.auth
+package security.auth.cas
 
-import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertEquals
+import ai.tock.shared.vertx.vertx
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.pac4j.vertx.auth.Pac4jUser
+import kotlin.test.assertEquals
 
 internal class SampleCASAuthProviderTest {
 
-    @DisplayName("Ability to read login from principal")
+    @DisplayName("Ability to read userId attribute from principal")
     @Test
-    fun `Ability to read login from principal`() {
+    fun `Ability to read userId attribute from principal`() {
         //GIVEN
-        val cas = SampleCASAuthProvider(mockk(relaxed = true))
+        val cas = SampleCASAuthProvider(vertx)
 
-        val profileMap = HashMap<String, CommonProfile>()
-        profileMap["CasClient"] = CommonProfile()
+        val profileMap = HashMap<String, UserProfile>()
+        profileMap["CasClient"] = CommonProfile(true)
         profileMap["CasClient"]!!.id = "123"
+        profileMap["CasClient"]!!.addAttribute("userId", "123")
 
         val user = Pac4jUser()
         user.setUserProfiles(profileMap)

@@ -5,7 +5,10 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
-        <version>21.9.7-SNAPSHOT</version>
+        <!-- when fully operationnal as explained in README can be moved to the following parent
+         <artifactId>tock-bot</artifactId>-->
+        <version>22.9.6-SNAPSHOT</version>
+        <!-- when fully operationnal as explained in README can be removed-->
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -74,7 +77,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test</artifactId>
+            <artifactId>kotlin-test-junit</artifactId>
             <version>${kotlin}</version>
             <scope>test</scope>
         </dependency>
@@ -85,8 +88,46 @@
         <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin}</version>
+
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${plugin.surefire}</version>
+                <configuration>
+
+                    <argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+                    <includes>
+                        <include>**/*Test.*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

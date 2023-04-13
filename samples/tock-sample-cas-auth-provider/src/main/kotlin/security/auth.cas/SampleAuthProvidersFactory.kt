@@ -1,5 +1,6 @@
-package security.auth
+package security.auth.cas
 
+import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.security.auth.CASAuthProvider
 import ai.tock.shared.security.auth.spi.CASAuthProviderFactory
 import io.vertx.core.Vertx
@@ -18,8 +19,7 @@ class SampleAuthProvidersFactory : CASAuthProviderFactory {
         // Ease SPI
     }
 
-    override fun getCasAuthProvider(vertx: Vertx): CASAuthProvider {
-
-        return SampleCASAuthProvider(vertx)
+    override fun <E: ToRestException>getCasAuthProvider (vertx: Vertx): CASAuthProvider<E> {
+        return SampleCASAuthProvider(vertx) as CASAuthProvider<E>
     }
 }
