@@ -561,10 +561,8 @@ object BotAdminService {
                 var newIntent = front.getIntentByNamespaceAndName(app.namespace, intent.name)
                 val existingEntity = newIntent?.findEntity(role)
                 val entityTypeName = entity.entityTypeName
-                if (existingEntity == null) {
-                    if (front.getEntityTypeByName(entityTypeName) == null) {
-                        front.save(EntityTypeDefinition(entityTypeName))
-                    }
+                if (existingEntity == null && front.getEntityTypeByName(entityTypeName) == null) {
+                    front.save(EntityTypeDefinition(entityTypeName))
                 }
                 if (newIntent == null) {
                     newIntent = IntentDefinition(
@@ -734,11 +732,8 @@ object BotAdminService {
                     }
                 }
             }
-            if (storyWithSameNsBotAndName != null && storyWithSameNsBotAndName._id != storyWithSameId?._id
-            ) {
-                if (storyWithSameNsBotAndName.currentType != builtin) {
-                    badRequest("Story ${story.name} (${story.currentType}) already exists")
-                }
+            if (storyWithSameNsBotAndName != null && storyWithSameNsBotAndName._id != storyWithSameId?._id && storyWithSameNsBotAndName.currentType != builtin) {
+                badRequest("Story ${story.name} (${story.currentType}) already exists")
             }
 
             val newStory = when {
