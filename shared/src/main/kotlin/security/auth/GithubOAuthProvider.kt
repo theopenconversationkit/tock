@@ -39,7 +39,7 @@ private val defaultBaseUrl = property("tock_bot_admin_rest_default_base_url", "h
 /**
  *
  */
-internal class GithubOAuthProvider<E:ToRestException>(
+internal class GithubOAuthProvider<E : ToRestException>(
     vertx: Vertx,
     private val oauth2: OAuth2Auth = GithubAuth.create(
         vertx,
@@ -62,7 +62,7 @@ internal class GithubOAuthProvider<E:ToRestException>(
         val authHandler =
             super.protectPaths(verticle, pathsToProtect, sessionHandler)
         (authHandler as OAuth2AuthHandler).apply {
-                setupCallback(verticle.router.get(callbackPath(verticle)))
+            setupCallback(verticle.router.get(callbackPath(verticle)))
         }
 
         verticle.router.route("/*")
