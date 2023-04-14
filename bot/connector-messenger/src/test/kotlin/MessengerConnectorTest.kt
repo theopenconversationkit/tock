@@ -140,12 +140,12 @@ internal class MessengerConnectorTest {
         var time: Long? = null
 
         every { connector.sendEvent(any()) } answers {
-            // check the second call occurs at least 100s after the first (as we wait 100 for the first call)
+            // check the second call occurs at least 100s after the first (as we wait 500 for the first call)
             if (time != null) {
                 assert(System.currentTimeMillis() - time!! >= 100)
             } else {
                 time = System.currentTimeMillis()
-                Thread.sleep(100)
+                Thread.sleep(500)
             }
             null
         }

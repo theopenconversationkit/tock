@@ -16,6 +16,7 @@
 
 package ai.tock.bot.api.model
 
+import ai.tock.bot.admin.dialog.ActionReport
 import ai.tock.bot.api.model.context.UserData
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.user.PlayerId
@@ -30,5 +31,12 @@ data class RequestContext(
     val applicationId: String,
     val userId: PlayerId,
     val botId: PlayerId,
-    val user: UserData
+    val user: UserData,
+    val metadata: Map<String, String> = emptyMap(),
+    val actionsHistory: ActionsHistory? = null
 )
+
+/**
+ * The action history from the dialog [DialogReport] with [ActionReport]
+ */
+typealias ActionsHistory = List<ActionReport>

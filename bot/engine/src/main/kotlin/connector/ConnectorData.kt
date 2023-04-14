@@ -43,7 +43,11 @@ open class ConnectorData(
     /**
      * An optional referer.
      */
-    val referer: String? = null
+    val referer: String? = null,
+    /**
+     * optional metadata metadata from connector
+     */
+    val metadata: Map<String, String> = emptyMap()
 ) {
     /**
      * Set to true if the bot does not make any answer to a user sentence.

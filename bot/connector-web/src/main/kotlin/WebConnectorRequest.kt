@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.web
 
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendChoice.Companion.REFERRAL_PARAMETER
 import ai.tock.bot.engine.action.SendSentence
@@ -32,7 +33,8 @@ data class WebConnectorRequest(
     override val userId: String,
     override val locale: Locale = defaultLocale,
     override val ref: String? = null,
-    override val connectorId: String? = null
+    override val connectorId: String? = null,
+    override val returnsHistory: Boolean = false,
 ) : WebConnectorRequestContract {
 
     fun toEvent(applicationId: String): Event =
@@ -41,7 +43,8 @@ data class WebConnectorRequest(
                 PlayerId(userId),
                 applicationId,
                 PlayerId(applicationId, bot),
-                query
+                query,
+                metadata = ActionMetadata(returnsHistory = returnsHistory)
             )
         } else if (payload != null) {
             val (intent, parameters) = SendChoice.decodeChoiceId(payload)
@@ -50,7 +53,8 @@ data class WebConnectorRequest(
                 applicationId = applicationId,
                 recipientId = PlayerId(applicationId, bot),
                 intentName = intent,
-                parameters = parameters + (if (ref == null) emptyMap() else mapOf(REFERRAL_PARAMETER to ref))
+                parameters = parameters + (if (ref == null) emptyMap() else mapOf(REFERRAL_PARAMETER to ref)),
+                metadata = ActionMetadata(returnsHistory = returnsHistory)
             )
         } else {
             if (ref != null) {
