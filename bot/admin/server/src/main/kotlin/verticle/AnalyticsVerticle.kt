@@ -31,18 +31,9 @@ class AnalyticsVerticle : ChildVerticle<AdminException>{
     override fun configure(parent: WebVerticle<AdminException>) {
         with(parent) {
 
-            fun <R> measureTimeMillis(context: RoutingContext, function: () -> R): R {
-                val before = System.currentTimeMillis()
-                val result = function()
-                logger.debug { "${context.normalizedPath()} took ${System.currentTimeMillis() - before} ms." }
-                return result
-            }
-
             fun <R> checkAndMeasure(context: RoutingContext, request: ApplicationScopedQuery, function: () -> R): R =
                 if (context.organization == request.namespace) {
-                    measureTimeMillis(context){
-                        function()
-                    }
+                    measureTimeMillis(logger, context){ function() }
                 } else {
                     WebVerticle.unauthorized()
                 }

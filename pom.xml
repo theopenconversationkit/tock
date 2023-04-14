@@ -97,6 +97,7 @@
         <plugin.deploy>3.0.0</plugin.deploy>
         <plugin.gitid>4.9.10</plugin.gitid>
         <plugin.ktlint>1.15.2</plugin.ktlint>
+        <chtutteli>0.18.0</chtutteli>
 
         <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
 
@@ -622,6 +623,11 @@
                         <artifactId>pac4j-oidc</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>ch.tutteli.atrium</groupId>
+                <artifactId>atrium-core</artifactId>
+                <version>${chtutteli}</version>
             </dependency>
 
             <dependency>

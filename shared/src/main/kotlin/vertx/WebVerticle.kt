@@ -470,7 +470,7 @@ abstract class WebVerticle<E : ToRestException> : AbstractVerticle() {
         blockingPost(path = path, roles = setOf(role), logger = logger, basePath = basePath, handler = handler)
     }
 
-    protected fun blockingPost(
+    fun blockingPost(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
@@ -488,7 +488,7 @@ abstract class WebVerticle<E : ToRestException> : AbstractVerticle() {
         }
     }
 
-    protected fun blockingGet(
+    fun blockingGet(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         basePath: String = rootPath,
@@ -538,7 +538,7 @@ abstract class WebVerticle<E : ToRestException> : AbstractVerticle() {
         blockingUploadPost(path, setOf(role), logger, basePath, handler)
     }
 
-    protected inline fun <O> blockingUploadPost(
+    inline fun <O> blockingUploadPost(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
@@ -557,7 +557,7 @@ abstract class WebVerticle<E : ToRestException> : AbstractVerticle() {
         }
     }
 
-    protected inline fun <O> blockingUploadBinaryPost(
+    inline fun <O> blockingUploadBinaryPost(
         path: String,
         role: TockUserRole,
         crossinline handler: BiRequestHandler<Pair<String, ByteArray>, O, E>
@@ -565,7 +565,7 @@ abstract class WebVerticle<E : ToRestException> : AbstractVerticle() {
         blockingUploadBinaryPost(path, setOf(role), handler)
     }
 
-    protected inline fun <O> blockingUploadBinaryPost(
+    inline fun <O> blockingUploadBinaryPost(
         path: String,
         roles: Set<TockUserRole>? = defaultRoles(),
         crossinline handler: BiRequestHandler<Pair<String, ByteArray>, O, E>

@@ -18,9 +18,10 @@ package ai.tock.bot.admin.verticle
 
 import ai.tock.shared.exception.ToRestException
 import ai.tock.shared.vertx.WebVerticle
+import ch.tutteli.atrium.core.polyfills.fullName
 
 interface ChildVerticle<T : ToRestException> {
-    fun configure(verticle: WebVerticle<T>)
+    fun configure(parent: WebVerticle<T>)
 }
 
 interface ParentVerticle<T : ToRestException> {
@@ -29,8 +30,16 @@ interface ParentVerticle<T : ToRestException> {
 
     fun preConfigure() {
         if (this !is WebVerticle<*>)
-            throw IllegalStateException("ParentVerticle must be a WebVerticle")
+            throw IllegalStateException("ParentVerticle ${this::class.fullName} must be a WebVerticle")
 
-        children().forEach { it.configure(this as WebVerticle<T>) }
+        var verticles = "\n"
+
+        children().forEach {
+            verticles +=  "    🚀  ${it.javaClass.simpleName}\n"
+            @Suppress("UNCHECKED_CAST")
+            it.configure(this as WebVerticle<T>)
+        }
+
+        this.logger.info("\nList of configured verticles : $verticles")
     }
 }
