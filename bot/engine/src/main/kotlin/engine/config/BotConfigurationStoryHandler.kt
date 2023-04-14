@@ -14,12 +14,27 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.answer
+package ai.tock.bot.engine.config
 
-import ai.tock.bot.connector.media.MediaMessageDescriptor
-import ai.tock.translator.I18nLabelValue
+import ai.tock.bot.engine.BotBus
 
-/**
- * Answer that contains only i18n label with an optional [delay] and [MediaMessageDescriptor].
- */
-data class SimpleAnswer(val key: I18nLabelValue, val delay: Long = 0, val mediaMessage: MediaMessageDescriptor? = null)
+interface BotConfigurationStoryHandler {
+
+    /**
+     * The id of the story.
+     */
+    val id: String
+
+    /**
+     * Receive a message from the bus.
+     *
+     * @param bus the bus used to get the message and send the answer
+     */
+    fun handle(bus: BotBus)
+}
+
+open class BotConfigurationStoryHandlerBase(override val id:String, private val handler: (BotBus).() -> Unit) : BotConfigurationStoryHandler {
+    override fun handle(bus: BotBus) {
+        handler(bus)
+    }
+}

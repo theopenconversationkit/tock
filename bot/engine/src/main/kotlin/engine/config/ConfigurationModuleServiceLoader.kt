@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.answer
+package ai.tock.bot.engine.config
 
-import ai.tock.bot.connector.media.MediaMessageDescriptor
-import ai.tock.translator.I18nLabelValue
+import ai.tock.shared.Loader
 
-/**
- * Answer that contains only i18n label with an optional [delay] and [MediaMessageDescriptor].
- */
-data class SimpleAnswer(val key: I18nLabelValue, val delay: Long = 0, val mediaMessage: MediaMessageDescriptor? = null)
+interface ConfigurationModuleServiceLoader {
+
+    fun modules(): Set<BotConfigurationModule>
+}
+
+private val modulesMap: Map<String, BotConfigurationModule> =
+        Loader.loadServices<ConfigurationModuleServiceLoader>()
+                .flatMap { it.modules() }
+                .associateBy { it.id }
+
+internal fun findActivatedModules(storyIds: List<String>): Set<BotConfigurationModule> =
+        storyIds.mapNotNull { modulesMap[it] }.toSet()

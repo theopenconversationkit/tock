@@ -71,6 +71,16 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         if(_namespace_ == null) { gen.writeNull() } else {
                 gen.writeString(_namespace_)
                 }
+        gen.writeFieldName("rating")
+        val _rating_ = value.rating
+        if(_rating_ == null) { gen.writeNull() } else {
+                gen.writeNumber(_rating_)
+                }
+        gen.writeFieldName("review")
+        val _review_ = value.review
+        if(_review_ == null) { gen.writeNull() } else {
+                gen.writeString(_review_)
+                }
         gen.writeEndObject()
     }
 }

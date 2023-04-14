@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.engine.BotBus
 import ai.tock.translator.UserInterfaceType
 
@@ -23,21 +24,20 @@ import ai.tock.translator.UserInterfaceType
  * Default [StoryDefinition] implementation.
  */
 open class StoryDefinitionBase(
-    val name: String,
-    override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
-    otherStarterIntents: Set<IntentAware> = emptySet(),
-    secondaryIntents: Set<IntentAware> = emptySet(),
-    stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-    unsupportedUserInterface: UserInterfaceType? = null,
-    override val tags: Set<StoryTag> = emptySet()
+        val name: String,
+        override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
+        otherStarterIntents: Set<IntentAware> = emptySet(),
+        secondaryIntents: Set<IntentAware> = emptySet(),
+        stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+        unsupportedUserInterface: UserInterfaceType? = null,
+        override val tags: Set<StoryTag> = emptySet(),
+        val storyDefinitionConfiguration: StoryDefinitionConfiguration? = null,
 ) : StoryDefinition {
 
     override val steps: Set<StoryStep<out StoryHandlerDefinition>> =
-        stepsList.apply {
-            forEach {
-                if (it.intent == null) {
-                    stepToIntentRepository[it] = this@StoryDefinitionBase
-                }
+        stepsList.onEach {
+            if (it.intent == null) {
+                stepToIntentRepository[it] = this@StoryDefinitionBase
             }
         }.toSet()
 

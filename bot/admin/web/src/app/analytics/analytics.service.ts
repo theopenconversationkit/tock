@@ -132,7 +132,7 @@ export class AnalyticsService {
   isActiveSatisfactionByBot(): Observable<Boolean> {
     let request = new StorySearchQuery(this.state.currentApplication.namespace, this.state.currentApplication.name, this.state.currentLocale, 0, 1000, "Builtin Satisfaction", "builtin_satisfaction", true);
     return this.rest.post(
-      '/analytics/satisfaction/isActive', request, (res: string) => BooleanResponse.fromJSON(res || {}).success);
+      '/analytics/satisfaction/active', request, (res: string) => BooleanResponse.fromJSON(res || {}).success);
   }
 
   createSatisfactionModule(): Observable<Boolean> {

@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.engine.dialog
+package ai.tock.bot.admin.content
 
-enum class SatisfactionStoryEnum(val storyId: String) {
-    STORY_REVIEW_ID("builtin_satisfaction_review"),
-    STORY_REVIEW_ASK_ID("builtin_satisfaction_review_ask"),
-    STORY_REVIEW_ADDED_ID("builtin_satisfaction_review_added"),
-    STORY_SATISFACTION_ID("builtin_satisfaction")
+import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.model.BotAnswerConfiguration
+import java.util.Locale
+
+abstract class AnswerConfigurationContent(val answerType: AnswerConfigurationType) {
+    companion object {
+        fun fromLabel(label: String): List<AnswerConfigurationContent> =
+                listOf(SimpleAnswerConfigurationContent(listOf(SimpleAnswerContent(label))))
+    }
+
+    abstract fun toBotAnswerConfiguration(namespace: String, locale: Locale): BotAnswerConfiguration
 }

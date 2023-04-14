@@ -60,7 +60,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
           this.refresh();
         }
       )
-    });    this.botSharedService.getConnectorTypes().subscribe((confConf) => {
+    });
+    this.botSharedService.getConnectorTypes().subscribe((confConf) => {
       this.connectorTypes = confConf.map((it) => it.connectorType);
     });
   }

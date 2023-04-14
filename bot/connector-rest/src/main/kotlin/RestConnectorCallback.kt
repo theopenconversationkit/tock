@@ -74,6 +74,7 @@ internal class RestConnectorCallback(
                             applicationId,
                             userAction.id.toString(),
                             nlpStats?.locale ?: locale,
+                            userAction is SendSentence
                     )
             )
             logger.debug { "response : $r" }

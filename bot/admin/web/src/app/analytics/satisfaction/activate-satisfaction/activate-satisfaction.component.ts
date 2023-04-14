@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import {Component, Output, EventEmitter} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Component, EventEmitter, Output} from '@angular/core';
 import {AnalyticsService} from "../../analytics.service";
+import {StateService} from '../../../core-nlp/state.service';
+import {DialogService} from '../../../core-nlp/dialog.service';
+
 
 @Component({
   selector: 'tock-activate-satisfaction',
@@ -26,19 +28,27 @@ import {AnalyticsService} from "../../analytics.service";
 export class ActivateSatisfactionComponent {
 
   @Output() enableSatisfaction = new EventEmitter<boolean>();
-  constructor(private _formBuilder: FormBuilder, private analytics: AnalyticsService) {
+  loading = false;
+
+  constructor(
+    private analytics: AnalyticsService,
+    private state: StateService,
+    private dialog: DialogService,) {
   }
 
-  formGroup = this._formBuilder.group({
-    enableSatisfaction: false
-  });
-
-  alertFormValues(formGroup: FormGroup) {
-    if (formGroup.value.enableSatisfaction) {
-      this.analytics.createSatisfactionModule().subscribe(() => {
-          this.enableSatisfaction.emit(formGroup.value.enableSatisfaction)
-        },
-        err => console.error(err));
-    }
+  activate() {
+    this.loading = true;
+    this.analytics.createSatisfactionModule().subscribe(() => {
+      this.enableSatisfaction.emit(true)
+      this.state.resetConfiguration()
+      this.loading = false;
+      this.dialog.notify(
+        "Satisfaction Module Activated",
+        "Module Activation",
+        {
+          duration: 2000,
+          status: 'success'
+        })
+    })
   }
 }

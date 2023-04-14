@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.answer
+package ai.tock.bot.engine.config
 
-import ai.tock.bot.connector.media.MediaMessageDescriptor
-import ai.tock.translator.I18nLabelValue
+data class BotConfigurationModule(val id: String, val stories: List<BotConfigurationStoryHandler>) {
 
-/**
- * Answer that contains only i18n label with an optional [delay] and [MediaMessageDescriptor].
- */
-data class SimpleAnswer(val key: I18nLabelValue, val delay: Long = 0, val mediaMessage: MediaMessageDescriptor? = null)
+    internal val storiesById : Map<String, BotConfigurationStoryHandler> = stories.associateBy { it.id }
+}

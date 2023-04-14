@@ -34,6 +34,7 @@ import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
@@ -86,8 +87,10 @@ class ConfiguredStoryHandlerTest {
             every { userId } returns PlayerId("userId")
             every { applicationId } returns "appId"
             every { currentAnswerIndex } returns 1
+            every { userTimeline } returns UserTimeline(PlayerId("userId"))
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns mockk()
+            every { dialog.lastAction } returns null
             every { dialog.stories } returns mutableListOf<Story>()
             every { translate(I18nLabelValue(originalLabel)) } returns RawString("translated label")
             every { translate(RawString("Step 1 not translated")) } returns RawString("Step 1 translated")
@@ -184,7 +187,9 @@ class ConfiguredStoryHandlerTest {
             every { userId } returns PlayerId("userId")
             every { applicationId } returns "appId"
             every { currentAnswerIndex } returns 1
+            every { userTimeline } returns UserTimeline(PlayerId("userId"))
             every { botDefinition } returns BotDefinitionTest()
+            every { dialog.lastAction } returns null
             every { step } returns mockk()
             every { dialog.stories } returns mutableListOf<Story>()
             every { translate(any<I18nLabelValue>()) } returns RawString("translated label")
@@ -324,7 +329,9 @@ class ConfiguredStoryHandlerTest {
             every { userId } returns PlayerId("userId")
             every { applicationId } returns "appId"
             every { currentAnswerIndex } returns 1
+            every { userTimeline } returns UserTimeline(PlayerId("userId"))
             every { botDefinition } returns BotDefinitionTest()
+            every { dialog.lastAction } returns null
             every { step } returns mockk()
             every { dialog.stories } returns mutableListOf<Story>()
             every { translate(any<I18nLabelValue>()) } answers { RawString(it.invocation.args[0].toString()) }
