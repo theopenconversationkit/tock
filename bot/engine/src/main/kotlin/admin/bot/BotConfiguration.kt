@@ -50,5 +50,5 @@ data class BotConfiguration(
     /**
      * Supported locales.
      */
-    val supportedLocales: Set<Locale> = emptySet()
+    val supportedLocales: Set<Locale> = emptySet(),
 )

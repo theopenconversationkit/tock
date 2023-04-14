@@ -22,7 +22,7 @@ import { IntentName } from '../../bot/model/story';
 export class DialogReport {
   displayActions: boolean;
 
-  constructor(public actions: ActionReport[], public id: string, public obfuscated: boolean = false) {}
+  constructor(public actions: ActionReport[], public id: string, public obfuscated: boolean = false, public rating?: number, public review?: string) {}
 
   static fromJSON(json?: any): DialogReport {
     const value = Object.create(DialogReport.prototype);

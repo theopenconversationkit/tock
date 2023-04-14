@@ -33,7 +33,8 @@ import ai.tock.translator.UserInterfaceType
 internal class ConfiguredStoryDefinition(
     definition: BotDefinitionWrapper,
     val configuration: StoryDefinitionConfiguration,
-    private val botApplicationConfigurationKey: BotApplicationConfigurationKey? = null
+    botApplicationConfigurationKey: BotApplicationConfigurationKey? = null,
+    val configurationStoryHandler: BotConfigurationStoryHandler? = null
 ) : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
@@ -58,7 +59,7 @@ internal class ConfiguredStoryDefinition(
         setOf(configuration.mainIntent) +
             (configuration.storyDefinition(definition, configuration)?.starterIntents ?: emptySet())
 
-    override val storyHandler: StoryHandler = ConfiguredStoryHandler(definition, configuration)
+    override val storyHandler: StoryHandler = ConfiguredStoryHandler(definition, configuration, configurationStoryHandler)
 
     override val steps: Set<StoryStep<*>> =
         (configuration.storyDefinition(definition, configuration)?.steps ?: emptySet()) +

@@ -122,12 +122,10 @@ data class StoryDefinitionConfiguration(
      * Steps by bot application configuration
      */
     val configuredSteps: List<StoryDefinitionConfigurationByBotStep> = emptyList(),
-
     /**
      * To filter/re-qualify next intents
      */
-    val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList()
-
+    val nextIntentsQualifiers: List<NlpIntentQualifier> = emptyList(),
 ) : StoryDefinitionAnswersContainer {
 
     constructor(botDefinition: BotDefinition, storyDefinition: StoryDefinition, configurationName: String?) :

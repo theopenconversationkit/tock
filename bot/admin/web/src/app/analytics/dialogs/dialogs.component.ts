@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { mergeMap } from 'rxjs/operators';
-import { Component } from '@angular/core';
+import { mergeMap, filter } from 'rxjs/operators';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import { ScrollComponent } from '../../scroll/scroll.component';
 import { Observable } from 'rxjs';
 import { PaginatedResult } from '../../model/nlp';
@@ -25,7 +25,7 @@ import { AnalyticsService } from '../analytics.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { StateService } from '../../core-nlp/state.service';
 import { DialogReportQuery } from './dialogs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { ConnectorType } from '../../core/model/configuration';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { NbToastrService } from '@nebular/theme';
@@ -35,11 +35,12 @@ import { NbToastrService } from '@nebular/theme';
   templateUrl: './dialogs.component.html',
   styleUrls: ['./dialogs.component.css']
 })
-export class DialogsComponent extends ScrollComponent<DialogReport> {
+export class DialogsComponent extends ScrollComponent<DialogReport>  implements OnChanges{
   filter: DialogFilter = new DialogFilter(true, false);
   state: StateService;
   connectorTypes: ConnectorType[] = [];
   private loaded = false;
+  @Input() ratingFilter: number[];
 
   constructor(
     state: StateService,
@@ -51,12 +52,26 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
   ) {
     super(state);
     this.state = state;
-    this.botConfiguration.configurations.subscribe((_) => this.refresh());
+    this.botConfiguration.configurations.subscribe((_) => {
+      this.isSatisfactionRoute().subscribe( res => {
+          if (res) {
+            this.ratingFilter = [1, 2, 3, 4, 5];
+          }
+          this.refresh();
+        }
+      )
+    });
     this.botSharedService.getConnectorTypes().subscribe((confConf) => {
       this.connectorTypes = confConf.map((it) => it.connectorType);
     });
   }
 
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes["ratingFilter"].currentValue != changes["ratingFilter"].previousValue ){
+      this.refresh()
+    }
+  }
   waitAndRefresh() {
     setTimeout((_) => this.refresh());
   }
@@ -97,7 +112,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
       this.filter.text,
       this.filter.intentName,
       this.filter.connectorType,
-      this.filter.displayTests
+      this.filter.displayTests,
+      this.ratingFilter
     );
   }
 
@@ -110,6 +126,14 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
       .addDialogToTestPlan(planId, dialog.id)
       .subscribe((_) => this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 }));
   }
+
+  isSatisfactionRoute() {
+    return this.route.url.pipe(
+      filter((val : UrlSegment[]) => {
+        return val[0].path == "satisfaction";
+      }),
+    )
+  }
 }
 
 export class DialogFilter {
@@ -119,6 +143,7 @@ export class DialogFilter {
     public dialogId?: string,
     public text?: string,
     public intentName?: string,
-    public connectorType?: ConnectorType
+    public connectorType?: ConnectorType,
+    public ratings?: number[]
   ) {}
 }

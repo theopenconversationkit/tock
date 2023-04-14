@@ -18,6 +18,10 @@
   class="dialog"
 >
   <nb-card-body>
+    <ng-container *ngIf="dialog.rating">
+      <nb-icon  *ngFor="let _ of [].constructor(dialog.rating)" icon="star-outline"></nb-icon>
+      <p>{{dialog.review}}</p>
+    </ng-container>
     <div *ngIf="dialog.actions.length === 0">No dialog</div>
     <div *ngIf="dialog.actions.length !== 0">
       <ng-content></ng-content>

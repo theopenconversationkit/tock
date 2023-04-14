@@ -24,6 +24,9 @@ import { TestPlan } from '../test/model/test';
 import { DialogReport } from '../shared/model/dialog-data';
 import { ApplicationDialogFlow, DialogFlowRequest } from './flow/flow';
 import { UserAnalyticsPreferences } from './preferences/UserAnalyticsPreferences';
+import { StorySearchQuery } from "../bot/model/story";
+import {RatingReportQueryResult} from "./satisfaction/satisfaction-details/RatingReportQueryResult";
+
 
 @Injectable()
 export class AnalyticsService {
@@ -124,5 +127,30 @@ export class AnalyticsService {
     } else {
       return UserAnalyticsPreferences.defaultConfiguration();
     }
+  }
+
+  isActiveSatisfactionByBot(): Observable<Boolean> {
+    let request = new StorySearchQuery(this.state.currentApplication.namespace, this.state.currentApplication.name, this.state.currentLocale, 0, 1000, "Builtin Satisfaction", "builtin_satisfaction", true);
+    return this.rest.post(
+      '/analytics/satisfaction/active', request, (res: string) => BooleanResponse.fromJSON(res || {}).success);
+  }
+
+  createSatisfactionModule(): Observable<Boolean> {
+    return this.rest.post(
+      '/analytics/satisfaction/init', this.state.createApplicationScopedQuery(), (res: string) => BooleanResponse.fromJSON(res || {}).success);
+  }
+
+  getSatisfactionStat(): Observable<RatingReportQueryResult> {
+    return this.rest.post(
+      '/analytics/satisfaction', this.state.createApplicationScopedQuery());
+  }
+}
+
+export class BooleanResponse {
+  constructor(public success: boolean) {}
+
+  static fromJSON(json: any): BooleanResponse {
+    const value = Object.create(BooleanResponse.prototype);
+    return Object.assign(value, json, {});
   }
 }

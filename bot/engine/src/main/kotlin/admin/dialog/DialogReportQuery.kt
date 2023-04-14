@@ -45,5 +45,11 @@ data class DialogReportQuery(
     /**
      * Is the result is obfuscated ?.
      */
-    val obfuscated: Boolean = false
+    val obfuscated: Boolean = false,
+
+    /**
+     * [ratings] list of number between 1 and 5 to filter dialog by rating
+     */
+
+    val ratings : Set<Int> = emptySet()
 )
