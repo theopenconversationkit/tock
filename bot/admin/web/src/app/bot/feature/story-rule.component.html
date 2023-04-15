@@ -67,12 +67,18 @@
           </nb-radio-group>
         </span>
 
-        <nb-select
-          outline
-          status="primary"
-          [(selected)]="feature.story"
-          class="story new"
-          nbTooltip="Story"
+        <input *ngIf="feature"
+               [(ngModel)]="valueActivation"
+               (ngModelChange)="onChange($event)"
+               nbInput
+               type="text"
+               placeholder="Story"
+               [nbAutocomplete]="auto"
+        />
+
+        <nb-autocomplete #auto
+                         class="story new"
+                         (selectedChange)="onSelectionChange($event)"
         >
           <nb-select-label
             *ngIf="feature"
@@ -96,7 +102,7 @@
             <span class="story-label">{{ feature.story.name }}</span>
           </nb-select-label>
           <nb-option
-            *ngFor="let s of storiesToDisplay"
+            *ngFor="let s of filteredOptions"
             [value]="s"
             class="story-label"
           >
@@ -117,16 +123,21 @@
             ></nb-icon>
             {{ s.name }}
           </nb-option>
-        </nb-select>
-        <nb-select
-          outline
-          status="primary"
-          placeholder="Story Redirection"
-          [(selected)]="feature.switchToStory"
-          class="story new"
-          nbTooltip="Story Redirection"
-          (selectedChange)="onSwitchStoryChange($event)"
-          *ngIf="isRedirectionRule()"
+        </nb-autocomplete>
+
+
+        <input *ngIf="feature && isRedirectionRule()"
+               [(ngModel)]="valueRedirection"
+               (ngModelChange)="onChangeRedirection($event)"
+               nbInput
+               type="text"
+               placeholder="Story Redirection"
+               [nbAutocomplete]="autoRedirection"
+        />
+
+        <nb-autocomplete #autoRedirection
+                         class="story new"
+                         (selectedChange)="onSelectionRedirectionChange($event)"
         >
           <nb-select-label
             *ngIf="feature && feature.switchToStory"
@@ -151,7 +162,7 @@
           </nb-select-label>
           <nb-option class="story-label">No Redirection</nb-option>
           <nb-option
-            *ngFor="let s of stories"
+            *ngFor="let s of filtredSecondStories"
             [value]="s"
             class="story-label"
           >
@@ -172,16 +183,19 @@
             ></nb-icon>
             <span class="story-label">{{ s.name }}</span>
           </nb-option>
-        </nb-select>
-        <nb-select
-          outline
-          status="primary"
-          placeholder="Story Ending"
-          [(selected)]="feature.endWithStory"
-          class="story new"
-          nbTooltip="Story Ending"
-          (selectedChange)="onSwitchStoryEnding($event)"
-          *ngIf="isEndingRule()"
+        </nb-autocomplete>
+        <input *ngIf="feature && isEndingRule()"
+               [(ngModel)]="valueEnding"
+               (ngModelChange)="onChangeEnding($event)"
+               nbInput
+               type="text"
+               placeholder="Story Ending"
+               [nbAutocomplete]="autoEnding"
+        />
+
+        <nb-autocomplete #autoEnding
+                         class="story new"
+                         (selectedChange)="onSelectionEndingChange($event)"
         >
           <nb-select-label
             *ngIf="feature && feature.endWithStory"
@@ -206,7 +220,7 @@
           </nb-select-label>
           <nb-option>No Ending</nb-option>
           <nb-option
-            *ngFor="let s of stories"
+            *ngFor="let s of filtredSecondStories"
             [value]="s"
             class="story-label"
           >
@@ -227,7 +241,7 @@
             ></nb-icon>
             <span class="story-label">{{ s.name }}</span>
           </nb-option>
-        </nb-select>
+        </nb-autocomplete>
         <nb-toggle
           class="new-toggle"
           status="primary"
@@ -575,7 +589,7 @@
     >
       Cancel
     </button>
-    <button
+    <button [disabled]="!isValidRule()"
       nbButton
       size="small"
       status="primary"
