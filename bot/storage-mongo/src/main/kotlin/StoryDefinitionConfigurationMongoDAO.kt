@@ -195,6 +195,25 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
+    fun customTextSearch(textSearch: String):String {
+        val builder = StringBuilder("^")
+        val trim: String = textSearch.trim()
+        val count = if (trim.isEmpty()) {
+            0
+        } else {
+            trim.split("\\s+".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().size
+        }
+
+        return if (count > 0) {
+            for (i in 1..count) {
+                builder.append("(.*?(").append(allowDiacriticsInRegexp(trim.split("\\s+".toRegex()).dropLastWhile { it.isEmpty() }[i-1])).append(")[^\$]*)")
+            }
+            builder.append("\$").toString().trim()
+        }else {
+            allowDiacriticsInRegexp(textSearch.trim())
+        }
+
+    }
     override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> {
         //get last date from history
         val dateById = historyCol
@@ -213,8 +232,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
                 Namespace eq request.namespace,
                 BotId eq request.botId,
                 if (request.category.isNullOrBlank()) null else Category eq request.category,
-                request.textSearch?.takeUnless { it.isBlank() }
-                    ?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "i") },
+                request.textSearch?.takeUnless { it.isBlank() } ?.let { Name.regex(customTextSearch(request.textSearch ?: ""), "i") },
                 if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
             )
             .projection(
