@@ -8,7 +8,8 @@ import {
   NbIconModule,
   NbInputModule,
   NbTooltipModule,
-  NbSelectModule
+  NbSelectModule,
+  NbDialogService
 } from '@nebular/theme';
 import { of } from 'rxjs';
 import { AnalyticsService } from '../../analytics/analytics.service';
@@ -151,6 +152,10 @@ describe('MetricsBoardComponent', () => {
               }
             }
           }
+        },
+        {
+          provide: NbDialogService,
+          useValue: { open: () => {} }
         }
       ],
       schemas: [NO_ERRORS_SCHEMA]

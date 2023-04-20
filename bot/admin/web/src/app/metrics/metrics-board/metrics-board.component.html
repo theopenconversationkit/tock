@@ -162,7 +162,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row mt-3">
       <div class="col-12">
         <div class="row mb-3">
           <div class="col-6">
@@ -202,9 +202,23 @@
             *ngFor="let chart of currentDimensionCharts"
           >
             <div class="dimension-chart">
-              <span class="initial-capitalize"
-                ><strong>{{ chart.name }} : </strong></span
-              >
+              <div class="row">
+                <div class="col-8 initial-capitalize">
+                  <strong>{{ chart.name }}</strong>
+                </div>
+                <div class="col-4 text-right">
+                  <button
+                    nbButton
+                    ghost
+                    size="tiny"
+                    nbTooltip="Display indicator metrics for each story"
+                    (click)="loadIndicatorMetrics(chart.indicatorName)"
+                  >
+                    Detail by stories
+                  </button>
+                </div>
+              </div>
+
               <div
                 echarts
                 [options]="chart"

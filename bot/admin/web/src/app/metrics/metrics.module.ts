@@ -26,9 +26,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IndicatorsEditComponent } from './indicators/indicators-edit/indicators-edit.component';
 import { IndicatorsFiltersComponent } from './indicators/indicators-filters/indicators-filters.component';
 import { AnalyticsService } from '../analytics/analytics.service';
+import { MetricsByStoriesComponent } from './metrics-board/metrics-by-stories/metrics-by-stories.component';
 
 @NgModule({
-  declarations: [MetricsBoardComponent, MetricsTabsComponent, IndicatorsComponent, IndicatorsEditComponent, IndicatorsFiltersComponent],
+  declarations: [
+    MetricsBoardComponent,
+    MetricsTabsComponent,
+    MetricsByStoriesComponent,
+    IndicatorsComponent,
+    IndicatorsEditComponent,
+    IndicatorsFiltersComponent
+  ],
   imports: [
     ReactiveFormsModule,
     CommonModule,

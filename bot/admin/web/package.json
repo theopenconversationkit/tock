@@ -40,7 +40,7 @@
     "jsoneditor": "^9.5.6",
     "material-design-icons-iconfont": "^6.7.0",
     "ng2-file-upload": "^1.4.0",
-    "ngx-echarts": "^7.0.0",
+    "ngx-echarts": "^14.0.0",
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-moment": "^6.0.2",
     "normalize.css": "6.0.0",
