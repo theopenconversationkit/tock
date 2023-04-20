@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NbCalendarRange, NbDatepickerDirective, NbDateService } from '@nebular/theme';
+import { NbCalendarRange, NbDatepickerDirective, NbDateService, NbDialogService } from '@nebular/theme';
 import type { EChartsOption } from 'echarts';
 import { forkJoin, Observable, Subject, take, takeUntil } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -11,7 +11,9 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { IndicatorDefinition, MetricResult, StorySummary } from '../models';
+import { heuristicValueColorDetection } from '../commons/utils';
+import { IndicatorDefinition, IndicatorValueDefinition, MetricResult, StorySummary } from '../models';
+import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
 
 export enum TimeRanges {
   day = 1,
@@ -50,7 +52,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     private dateService: NbDateService<Date>,
     private analyticsService: AnalyticsService,
     private botConfiguration: BotConfigurationService,
-    private rest: RestService
+    private rest: RestService,
+    private nbDialogService: NbDialogService
   ) {
     this.range = {
       start: this.dateService.addDay(this.dateService.today(), -this.timeRanges.week),
@@ -286,12 +289,16 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
       const indicatorMetricsReplies = indicatorMetrics.filter((indMetric) => indMetric.row.type === 'QUESTION_REPLIED');
 
       let repliesCount = 0;
-
       indicatorMetricsReplies.forEach((imr) => {
-        entries.push({
-          value: imr.count,
-          name: this.getIndicatorValueLabelByName(imr.row.indicatorName, imr.row.indicatorValueName)
-        });
+        let indicatorValue = this.getIndicatorValueByName(imr.row.indicatorName, imr.row.indicatorValueName);
+        if (indicatorValue) {
+          const valueLabel = this.getIndicatorValueLabelByName(imr.row.indicatorName, imr.row.indicatorValueName);
+          entries.push({
+            value: imr.count,
+            name: valueLabel,
+            itemStyle: { color: heuristicValueColorDetection(valueLabel) }
+          });
+        }
         repliesCount += imr.count;
       });
 
@@ -309,6 +316,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
       this.currentDimensionCharts.push({
         name: indicatorLabel,
+        indicatorName: indicator.name,
         tooltip: {
           trigger: 'item',
           formatter: function (params) {
@@ -331,6 +339,18 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadIndicatorMetrics(indicatorName: string) {
+    this.nbDialogService.open(MetricsByStoriesComponent, {
+      context: {
+        indicatorName: indicatorName,
+        indicatorLabel: this.getIndicatorLabelByName(indicatorName),
+        range: this.range,
+        indicators: this.indicators,
+        stories: this.stories
+      }
+    });
+  }
+
   private getStorySummaryById(id: string): StorySummary {
     return this.stories.find((story) => story._id === id);
   }
@@ -347,8 +367,12 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     return this.getIndicatorByName(name).label;
   }
 
+  private getIndicatorValueByName(indicatorname: string, indicatorValueName: string): IndicatorValueDefinition {
+    return this.getIndicatorByName(indicatorname).values.find((value) => value.name === indicatorValueName);
+  }
+
   private getIndicatorValueLabelByName(indicatorname: string, indicatorValueName: string): string {
-    return this.getIndicatorByName(indicatorname).values.find((value) => value.name === indicatorValueName).label;
+    return this.getIndicatorValueByName(indicatorname, indicatorValueName).label;
   }
 
   get userMessagesSum(): number {
