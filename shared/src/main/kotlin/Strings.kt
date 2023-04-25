@@ -95,3 +95,4 @@ fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", 
         .replace("u", "[uùúûü]", ignoreCase = true)
         .replace("n", "[nñ]", ignoreCase = true)
         .replace(" ", "['-_ ]")
+        .replace("c", "[cç]", ignoreCase = true)
