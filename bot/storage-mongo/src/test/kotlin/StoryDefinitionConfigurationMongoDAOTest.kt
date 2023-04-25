@@ -27,5 +27,6 @@ class StoryDefinitionConfigurationMongoDAOTest: AbstractTest() {
     fun `TEST custom Text Search`() {
         assertEquals(customRegexToFindWord("Action"),"^(.*?([aàáâãä][cç]t[iìíîï][oòóôõöø][nñ])[^\$]*)\$")
         assertEquals(customRegexToFindWord("story action "),"^(.*?(st[oòóôõöø]ry)[^\$]*)(.*?([aàáâãä][cç]t[iìíîï][oòóôõöø][nñ])[^\$]*)\$")
+        assertEquals(customRegexToFindWord(""),"")
     }
 }

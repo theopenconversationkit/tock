@@ -210,7 +210,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             }
             builder.append("\$").toString().trim()
         }else {
-            allowDiacriticsInRegexp(textSearch.trim())
+            allowDiacriticsInRegexp(trim)
         }
     }
 
