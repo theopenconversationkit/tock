@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.definition.BotDefinition
@@ -26,6 +27,7 @@ import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryTag
+import ai.tock.bot.definition.TickStoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.UserTimeline
@@ -133,6 +135,16 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
 
     internal fun builtInStory(storyId: String): StoryDefinition =
             builtInStoriesMap[storyId] ?: returnsUnknownStory(storyId)
+
+    internal fun builtTickStory(story: StoryDefinitionConfiguration, botDefinition: BotDefinitionWrapper): StoryDefinition {
+        val tickAnswer = (story.answers.first() as TickAnswerConfiguration)
+        return TickStoryDefinition(
+            name = story.name,
+            handler = ConfiguredStoryHandler(botDefinition, story),
+            otherStarterIntents = tickAnswer.primaryIntents.map { Intent(it) }.toSet(),
+            secondaryIntents = tickAnswer.secondaryIntents.map {Intent(it) }.toSet()
+        )
+    }
 
     private fun returnsUnknownStory(storyId: String): StoryDefinition =
             unknownStory.also {

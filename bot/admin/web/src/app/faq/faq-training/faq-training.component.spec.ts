@@ -4,12 +4,13 @@ import { By } from '@angular/platform-browser';
 import { NbSpinnerModule, NbToastrService, NbToggleModule } from '@nebular/theme';
 import { of, Subject } from 'rxjs';
 
+import { FaqTrainingComponent, SentenceExtended } from './faq-training.component';
+import { Action } from '../models';
 import { StateService } from '../../core-nlp/state.service';
 import { Classification, Intent, PaginatedResult, Sentence, SentenceStatus } from '../../model/nlp';
 import { NlpService } from '../../nlp-tabs/nlp.service';
-import { TestSharedModule } from '../../shared/test-shared.module';
-import { Action } from '../models';
-import { FaqTrainingComponent, SentenceExtended } from './faq-training.component';
+import { TestingModule } from '../../../testing';
+import { StubNbToastrService } from '../../../testing/stubs';
 
 const mockSentences: SentenceExtended[] = [
   {
@@ -109,11 +110,11 @@ describe('FaqTrainingComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FaqTrainingComponent],
-      imports: [TestSharedModule, NbSpinnerModule, NbToggleModule],
+      imports: [TestingModule, NbSpinnerModule, NbToggleModule],
       providers: [
         { provide: NlpService, useClass: NlpServiceMock },
         { provide: StateService, useClass: StateServiceMock },
-        { provide: NbToastrService, useValue: { success: () => {} } }
+        { provide: NbToastrService, useClass: StubNbToastrService }
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

@@ -1,0 +1,58 @@
+<nb-card>
+  <nb-card-header>
+    <div class="d-flex justify-content-between align-items-start gap-1">
+      {{ title }}
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Close"
+        type="button"
+        (click)="close()"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body>
+    <pre
+      class="previewer"
+      [class]="theme"
+    >
+      <div class="lines-number">
+        <div *ngFor="let item of [].constructor(data.length); let i = index">{{ i + 1 }}</div>
+      </div>
+
+      <div class="lines-container">
+        <div class="d-flex" *ngFor="let d of data">
+          <span [innerHtml]="syntaxHighlight(d)"></span>
+        </div>
+
+      </div>
+    </pre>
+  </nb-card-body>
+  <nb-card-footer class="d-flex flex-wrap justify-content-end gap-1">
+    <nb-select
+      placeholder="Change spacing"
+      nbTooltip="Change indent"
+      [(ngModel)]="spacing"
+      (ngModelChange)="spacingChange()"
+    >
+      <nb-option
+        *ngFor="let i of [].constructor(2, 4, 6, 8)"
+        [value]="i"
+        >{{ i }}</nb-option
+      >
+    </nb-select>
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Copy to clipboard"
+      (click)="copyToClipboard()"
+    >
+      <nb-icon icon="copy-outline"></nb-icon>
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -21,10 +21,13 @@ import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultNamespace
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLocalizedLabel
+import ai.tock.translator.UserInterfaceType
 import ai.tock.translator.defaultUserInterface
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
+import org.litote.kmongo.toId
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  *
@@ -43,5 +46,54 @@ class I18nMongoDAOTest : AbstractTest() {
             getAlternativeIndexes(label, localized, "id")
 
         )
+    }
+
+    private val i18nId = "idI18n".toId<I18nLabel>()
+    private val namespace = "test"
+    private val label = "the answer"
+    private val mockedDefaultLocalizedLabel: I18nLocalizedLabel = I18nLocalizedLabel(
+        locale = defaultLocale,
+        interfaceType = UserInterfaceType.textChat,
+        label = label,
+        validated = true,
+        alternatives = emptyList()
+    )
+    val mockedI18n = I18nLabel(
+        _id = i18nId, namespace = namespace, category = "category", linkedSetOf(
+            mockedDefaultLocalizedLabel
+        ), defaultLabel = label, version=1
+    )
+
+    val unknownRandomId = "unknownI18n".toId<I18nLabel>()
+
+    @Test
+    fun `GIVEN answer WHEN saveI18 THEN getLabelById should be same as created and version +1`() {
+        I18nMongoDAO.save(mockedI18n)
+        val label = I18nMongoDAO.getLabelById(i18nId)
+        assertEquals(label?._id,i18nId)
+        assertEquals(label?.defaultLabel,mockedI18n.defaultLabel)
+        assertEquals(label?.category,mockedI18n.category)
+        assertEquals(label?.i18n,mockedI18n.i18n)
+        assertEquals(label?.version,mockedI18n.version+1)
+    }
+
+    @Test
+    fun `GIVEN answer WHEN not created THEN getLabelById should be null`() {
+        assertNull(I18nMongoDAO.getLabelById(unknownRandomId))
+    }
+
+    @Test
+    fun `GIVEN answer WHEN saveI18 THEN getLabelsByIds should be same as created and version +1`() {
+        I18nMongoDAO.save(mockedI18n)
+        val reallyLongId400chars = "word".repeat(10).toId<I18nLabel>()
+        I18nMongoDAO.save(mockedI18n.copy(reallyLongId400chars))
+
+        val labels = I18nMongoDAO.getLabelsByIds(setOf(i18nId,reallyLongId400chars))
+        assertEquals(labels.size,2)
+    }
+
+    @Test
+    fun `GIVEN answer WHEN not created THEN getLabelsByIds should be empty`() {
+        assertEquals(emptyList(), I18nMongoDAO.getLabelsByIds(setOf(unknownRandomId)))
     }
 }

@@ -1,27 +1,35 @@
 <nb-card [status]="modalStatus">
-  <nb-card-header class="d-flex justify-content-between align-items-center">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
     {{ title }}
-
     <button
       *ngIf="cancellable"
-      status="primary"
+      [status]="modalStatus"
       type="button"
       nbButton
       shape="round"
       nbTooltip="Close"
-      (click)="dialogRef.close()"
+      (click)="dialogRef.close('cancel')"
     >
       <nb-icon icon="close-outline"></nb-icon>
     </button>
   </nb-card-header>
+
   <nb-card-body class="message">
     <label>{{ subtitle }}</label>
+
+    <ul *ngIf="list?.length">
+      <li *ngFor="let str of list">
+        {{ str }}
+      </li>
+    </ul>
   </nb-card-body>
-  <nb-card-footer class="d-flex gap-1 flex-wrap justify-content-end">
+
+  <nb-card-footer class="card-footer-actions">
     <button
       *ngFor="let actionDef of actions"
       nbButton
       size="small"
+      [ghost]="actionDef.ghost"
       [status]="actionDef.buttonStatus"
       (click)="dialogRef.close(actionDef.actionName.toLowerCase())"
     >

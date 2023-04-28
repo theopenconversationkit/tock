@@ -1,0 +1,104 @@
+{
+  "id": "root",
+  "type": "parallel",
+  "states": {
+    "Global": {
+      "id": "Global",
+      "states": {
+        "hello": {
+          "id": "hello",
+          "states": {}
+        },
+        "bye": {
+          "id": "bye",
+          "states": {}
+        },
+        "introduction": {
+          "id": "introduction",
+          "states": {}
+        },
+        "S_BOOK_MEETING": {
+          "id": "S_BOOK_MEETING",
+          "states": {
+            "S_ASK_CHANNEL": {
+              "id": "S_ASK_CHANNEL",
+              "states": {}
+            },
+            "S_SHOW_PROCEDURE_BOOK_MEETING": {
+              "id": "S_SHOW_PROCEDURE_BOOK_MEETING",
+              "states": {}
+            },
+            "S_BOOK_VISIO": {
+              "id": "S_BOOK_VISIO",
+              "states": {
+                "S_ASK_CONFIRM_CAMERA_AVAILABLE": {
+                  "id": "S_ASK_CONFIRM_CAMERA_AVAILABLE",
+                  "states": {},
+                  "on": {
+                    "confirm": "#S_REDIRECT",
+                    "refuse": "#S_SHOW_ERROR_CAMERA_NEEDED"
+                  }
+                },
+                "S_ASK_AVAILABILITIES": {
+                  "id": "S_ASK_AVAILABILITIES",
+                  "states": {},
+                  "on": {
+                    "i_send_availabilities": "#S_REDIRECT"
+                  }
+                },
+                "S_SHOW_OPEN_HOURS": {
+                  "id": "S_SHOW_OPEN_HOURS",
+                  "states": {}
+                },
+                "S_REDIRECT": {
+                  "id": "S_REDIRECT",
+                  "states": {}
+                },
+                "S_SHOW_ERROR_CAMERA_NEEDED": {
+                  "id": "S_SHOW_ERROR_CAMERA_NEEDED",
+                  "states": {}
+                }
+              },
+              "initial": "S_REDIRECT",
+              "on": {
+                "i_ask_open_hours": "#S_SHOW_OPEN_HOURS"
+              }
+            }
+          },
+          "initial": "S_SHOW_PROCEDURE_BOOK_MEETING",
+          "on": {
+            "i_book_physical_or_tel" : "#S_SHOW_PROCEDURE_BOOK_MEETING",
+            "i_ask_book_visio" : "#S_REDIRECT"
+          }
+        },
+        "S_BOOK_MEETING_2": {
+          "id": "S_BOOK_MEETING_2",
+          "states": {
+            "S_ASK_CHANNEL_2": {
+              "id": "S_ASK_CHANNEL_2",
+              "states": {}
+            },
+            "S_SHOW_PROCEDURE_BOOK_MEETING_2": {
+              "id": "S_SHOW_PROCEDURE_BOOK_MEETING_2",
+              "states": {}
+            }
+          },
+          "initial": "S_SHOW_PROCEDURE_BOOK_MEETING_2",
+          "on": {
+            "i_book_physical_or_tel" : "#S_SHOW_PROCEDURE_BOOK_MEETING_2"
+          }
+        }
+      },
+      "initial": "introduction",
+      "on": {
+        "i_ask_for_meeting": "#S_BOOK_MEETING",
+        "i_ask_for_meeting_2": "#S_BOOK_MEETING_2",
+        "i_ask_book_visio": "#S_REDIRECT",
+        "greetings": "#hello",
+        "farewell": "#bye"
+      }
+    }
+  },
+  "initial": "Global",
+  "on": {}
+}

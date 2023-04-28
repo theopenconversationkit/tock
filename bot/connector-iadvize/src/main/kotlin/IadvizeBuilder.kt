@@ -19,7 +19,7 @@ package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMultipartReply

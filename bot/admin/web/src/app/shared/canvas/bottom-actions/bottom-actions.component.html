@@ -1,0 +1,37 @@
+<nb-button-group
+  size="small"
+  status="basic"
+>
+  <button
+    nbButton
+    [class.d-none]="hideActions.includes(action.resetPosition)"
+    nbTooltip="Reset the position"
+    (click)="resetPosition()"
+  >
+    <nb-icon icon="pin-outline"></nb-icon>
+  </button>
+  <button
+    nbButton
+    [class.d-none]="hideActions.includes(action.fullscreen)"
+    [nbTooltip]="isFullscreen ? 'Leave fullscreen' : 'Fullscreen'"
+    (click)="fullscreen(!isFullscreen)"
+  >
+    <nb-icon [icon]="isFullscreen ? 'collapse-outline' : 'expand-outline'"></nb-icon>
+  </button>
+  <button
+    nbButton
+    [class.d-none]="hideActions.includes(action.zoomOut)"
+    nbTooltip="Zoom out"
+    (click)="zoom(zoomValue.OUT)"
+  >
+    <nb-icon icon="minus-outline"></nb-icon>
+  </button>
+  <button
+    nbButton
+    [class.d-none]="hideActions.includes(action.zoomIn)"
+    nbTooltip="Zoom in"
+    (click)="zoom(zoomValue.IN)"
+  >
+    <nb-icon icon="plus-outline"></nb-icon>
+  </button>
+</nb-button-group>

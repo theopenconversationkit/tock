@@ -1,0 +1,43 @@
+@import '@nebular/theme/styles/global/breakpoints';
+
+:host {
+  --layout-side-margin: -2.25rem;
+  --layout-bottom-margin: -0.75rem;
+  --layout-padding-top: 2.25rem;
+  --navbar-height: 4.75rem;
+  --margin-height: 0.75rem;
+}
+
+@include media-breakpoint-down(md) {
+  :host {
+    --layout-padding-top: 1.25rem;
+    --layout-side-margin: -1.5rem;
+    --layout-bottom-margin: -0.5rem;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  :host {
+    --layout-padding-top: 0.25rem;
+    --layout-side-margin: -1rem;
+    --layout-bottom-margin: -0rem;
+  }
+}
+
+section {
+  height: calc(100vh - var(--layout-padding-top) - var(--navbar-height) - var(--margin-height));
+  display: flex;
+  flex-direction: column;
+
+  tock-scenario-conception,
+  tock-scenario-production {
+    overflow: hidden;
+    margin: 0 var(--layout-side-margin) var(--layout-bottom-margin);
+    height: 100%;
+  }
+
+  &[data-fullscreen='true'] > tock-scenario-conception,
+  &[data-fullscreen='true'] > tock-scenario-production {
+    margin: 0 -1rem -1rem;
+  }
+}

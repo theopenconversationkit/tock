@@ -5,6 +5,7 @@ import {
   NbCardModule,
   NbCheckboxModule,
   NbDialogRef,
+  NbDialogService,
   NbIconModule,
   NbSelectModule,
   NbSpinnerModule,
@@ -14,14 +15,14 @@ import {
 import { of } from 'rxjs';
 
 import { BotService } from '../../../bot/bot-service';
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { FormControlComponent } from '../../../shared/components';
-import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqService } from '../../services/faq.service';
 import { FaqManagementSettingsComponent } from './faq-management-settings.component';
 import { StoryDefinitionConfigurationSummary } from '../../../bot/model/story';
 import { Settings } from '../../models';
+import { TestingModule } from '../../../../testing';
+import { StubNbDialogService, StubNbToastrService, StubStateService } from '../../../../testing/stubs';
 
 const mockStories = [
   { _id: '1', name: 'story 1', category: 'category' } as StoryDefinitionConfigurationSummary,
@@ -47,16 +48,6 @@ class FaqServiceMock {
   }
 }
 
-class StateServiceMock {
-  currentApplication = {
-    namespace: 'namespace/test',
-    name: 'test',
-    _id: '1'
-  };
-
-  currentLocal = 'fr';
-}
-
 describe('FaqManagementSettingsComponent', () => {
   let component: FaqManagementSettingsComponent;
   let fixture: ComponentFixture<FaqManagementSettingsComponent>;
@@ -65,7 +56,7 @@ describe('FaqManagementSettingsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqManagementSettingsComponent, FormControlComponent],
       imports: [
-        TestSharedModule,
+        TestingModule,
         NbButtonModule,
         NbCardModule,
         NbCheckboxModule,
@@ -76,10 +67,10 @@ describe('FaqManagementSettingsComponent', () => {
       ],
       providers: [
         { provide: BotService, useClass: BotServiceMock },
-        { provide: StateService, useClass: StateServiceMock },
+        { provide: StateService, useClass: StubStateService },
         { provide: FaqService, useClass: FaqServiceMock },
-        { provide: DialogService, useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) } },
-        { provide: NbToastrService, useValue: {} }
+        { provide: NbDialogService, useClass: StubNbDialogService },
+        { provide: NbToastrService, useClass: StubNbToastrService }
       ]
     }).compileComponents();
   });
@@ -151,72 +142,72 @@ describe('FaqManagementSettingsComponent', () => {
     });
 
     it('should call the onClose method without displaying a confirmation request message when the form is not dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       component.close();
 
-      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component['nbDialogService'].open).not.toHaveBeenCalled();
       expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
     });
 
     it('should call the onClose method after displaying a confirmation request message and confirm when the form is dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       // To display the confirmation message, the form must have been modified
       component.form.markAsDirty();
       component.close();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.onClose.emit).toHaveBeenCalledOnceWith(true);
     });
 
     it('should not call the onClose method after displaying a confirmation request message and cancel when the form is dirty', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component.onClose, 'emit');
 
       // To display the confirmation message, the form must have been modified
       component.form.markAsDirty();
       component.close();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.onClose.emit).not.toHaveBeenCalled();
     });
   });
 
   describe('#save', () => {
     it('should call the method to save settings after displaying a confirmation request message and confirm if the satisfaction enabled field is false', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('yes') } as NbDialogRef<any>);
       spyOn(component, 'saveSettings');
 
       component.satisfactionEnabled.setValue(false);
       component.save();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value as Settings);
     });
 
     it('should not call the method to save settings after displaying a confirmation request message and cancel if the satisfaction enabled field is false', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component, 'saveSettings');
 
       component.satisfactionEnabled.setValue(false);
       component.save();
 
-      expect(component['dialogService'].openDialog).toHaveBeenCalled();
+      expect(component['nbDialogService'].open).toHaveBeenCalled();
       expect(component.saveSettings).not.toHaveBeenCalled();
     });
 
     it('should call the method to save settings if the satisfaction enabled field is true', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component, 'saveSettings');
 
       component.satisfactionEnabled.setValue(true);
       component.satisfactionStoryId.setValue('1');
       component.save();
 
-      expect(component['dialogService'].openDialog).not.toHaveBeenCalled();
+      expect(component['nbDialogService'].open).not.toHaveBeenCalled();
       expect(component.saveSettings).toHaveBeenCalledOnceWith(component.form.value as Settings);
     });
   });

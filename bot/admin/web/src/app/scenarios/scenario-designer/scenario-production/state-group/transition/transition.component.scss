@@ -1,0 +1,21 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+@include nb-install-component {
+  background-color: nb-theme(color-info-active);
+  color: nb-theme(text-control-color);
+}
+
+:host {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  max-width: 180px;
+  margin-left: 25px;
+
+  &.hovered {
+    background-color: nb-theme(color-info-hover);
+  }
+}

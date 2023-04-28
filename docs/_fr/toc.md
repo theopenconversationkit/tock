@@ -28,6 +28,7 @@ title: Table des matières
         - [Le menu _Settings_](../user/studio/configuration)
         - [Le menu _FAQ Training_](../user/studio/faq-training)
         - [Le menu _FAQ Management_](../user/studio/faq-management)
+        - [Le menu _Scenarios Management_](../user/studio/scenarios-management)
     - [Guides](../user/guides) :
         - [Construire un modèle conversationnel](../user/guides/build-model)
         - [Créer un bot multicanal (connecteurs)](../user/guides/canaux)

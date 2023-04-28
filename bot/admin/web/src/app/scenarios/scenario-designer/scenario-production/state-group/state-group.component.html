@@ -1,0 +1,111 @@
+<div
+  #stateWrapper
+  class="stateGroup unselectable"
+  [dndDropzone]="getDraggableTypes()"
+  [dndDisableIf]="this.state.id === 'root' || isReadonly"
+  dndDragoverClass="dragHover"
+  (dndDrop)="onDrop($event)"
+>
+  <div class="stateGroup-header cursor-default">
+    <span class="text-nowrap">
+      <nb-icon
+        *ngIf="state.id !== 'root' && isInitialParentState()"
+        icon="flash-outline"
+        status="primary"
+        nbTooltip="Initial action"
+      ></nb-icon>
+
+      <nb-icon
+        *ngIf="state.id !== 'root' && !isInitialParentState() && !isReadonly"
+        icon="flash-outline"
+        status="basic"
+        class="pointer"
+        (click)="setActionInitial()"
+        nbTooltip="Define this action as the initial action of its parent container"
+      ></nb-icon>
+
+      <nb-icon
+        icon="info-outline"
+        [nbTooltip]="getActionTooltip()"
+      ></nb-icon>
+
+      {{ state.id }}
+
+      <nb-icon
+        *ngIf="getNextActionError()"
+        icon="alert-triangle-outline"
+        status="danger"
+        [nbTooltip]="getNextActionError()"
+      ></nb-icon>
+    </span>
+
+    <div>
+      <nb-icon
+        *ngIf="!isReadonly && state.states && state.id !== 'root'"
+        class="pointer"
+        icon="plus-circle-outline"
+        nbTooltip="Add a state group"
+        (click)="addStateGroup()"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="!isReadonly && state.id !== 'root' && state.id !== 'Global'"
+        class="pointer"
+        icon="minus-circle-outline"
+        nbTooltip="Remove this state"
+        (click)="removeState()"
+      ></nb-icon>
+    </div>
+  </div>
+
+  <div
+    class="stateGroup-body d-flex position-relative"
+    *ngIf="state.states"
+  >
+    <div
+      class="transitions-wrapper"
+      [ngStyle]="{ 'width.px': transitionWrapperWidth }"
+    >
+      <ng-container *ngFor="let transition of state.on | keyvalue">
+        <tock-scenario-transition
+          class="cursor-default"
+          [isReadonly]="isReadonly"
+          [transition]="{ name: transition.key, target: transition.value }"
+          [parentState]="state"
+          [intents]="intents"
+          [actions]="actions"
+          (removeTransition)="removeTransition($event)"
+        ></tock-scenario-transition>
+      </ng-container>
+    </div>
+
+    <div class="actions-wrapper">
+      <tock-scenario-state-group
+        *ngFor="let state of state.states | keyvalue"
+        [isReadonly]="isReadonly"
+        [state]="state.value"
+        [stateMachine]="stateMachine"
+        [usedNames]="usedNames"
+        [intents]="intents"
+        [actions]="actions"
+      ></tock-scenario-state-group>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="!state.states && hasOutgoingTransitions()">
+  <div
+    class="outgoing-transitions-wrapper"
+    *ngFor="let transition of state.on | keyvalue"
+    [ngStyle]="{ 'width.px': transitionWrapperWidth }"
+  >
+    <tock-scenario-transition
+      class="cursor-default"
+      [isReadonly]="isReadonly"
+      [transition]="{ name: transition.key, target: transition.value }"
+      [parentState]="state"
+      [intents]="intents"
+      [actions]="actions"
+      (removeTransition)="removeTransition($event)"
+    ></tock-scenario-transition>
+  </div>
+</ng-container>

@@ -1,0 +1,108 @@
+<nb-card>
+  <nb-card-body id="modal-body">
+    <button
+      id="closeButton"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Close"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+
+    <div
+      class="my-5 p-5 text-center"
+      *ngIf="noGraphInScenario"
+    >
+      <h5 class="my-5">This scenario does not contain a valid constraint graph.</h5>
+    </div>
+
+    <div
+      *ngIf="!noGraphInScenario"
+      #canvasWrapperElem
+      id="canvas-wrapper"
+      tock-canvas
+      [maxScale]="5"
+      [centerCanvasY]="true"
+      [position]="canvasPosition"
+      [hideActions]="[canvaAction.fullscreen]"
+    >
+      <div id="canvas">
+        <div class="htmlGraph">
+          <ng-container *ngFor="let node of nodes">
+            <div
+              [ngClass]="{
+                node: true,
+                action: node.type === 'action',
+                context: node.type === 'context',
+                dimmed: isNodeDimmed(node.name)
+              }"
+              [style.transform]="'translate(' + (node.x - node.offsetx) + 'px,' + (node.y - node.offsety) + 'px)'"
+              [nbTooltip]="getNodeTooltip(node)"
+              (mouseenter)="highlight(node)"
+              (mouseleave)="highlight()"
+            >
+              {{ node.label }}
+            </div>
+          </ng-container>
+
+          <svg:svg
+            *ngIf="graphReady"
+            id="svgDoc"
+            [ngStyle]="{
+              'left.px': graphPadding * -1,
+              'top.px': graphPadding * -1
+            }"
+            [attr.width]="graphAttributes.width + graphPadding * 4"
+            [attr.height]="graphAttributes.height + graphPadding * 4"
+            attr.viewBox="{{ graphPadding * -1 }} {{ graphPadding * -1 }} {{ graphAttributes.width + graphPadding * 4 }} {{
+              graphAttributes.height + graphPadding * 4
+            }}"
+          >
+            <svg:defs>
+              <svg:marker
+                id="arrow"
+                class="arrow"
+                orient="auto"
+                markerWidth="4"
+                markerHeight="4"
+                refX="0"
+                refY="1.8"
+              >
+                <svg:polygon points="0 0, 3.5 1.75, 0 3.5"></svg:polygon>
+              </svg:marker>
+            </svg:defs>
+
+            <svg:g
+              class="edge"
+              *ngFor="let edge of edges"
+              [ngClass]="{
+                dimmed: isEdgeDimmed(edge.id)
+              }"
+            >
+              <svg:path
+                class="line"
+                [attr.d]="edge.infos.rpath"
+                marker-end="url(#arrow)"
+              ></svg:path>
+            </svg:g>
+          </svg:svg>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<div
+  id="dummyContainer"
+  #dummyContainer
+>
+  <div
+    *ngIf="dummyNode"
+    class="node"
+    [ngClass]="{ action: dummyNode.type === 'action', context: dummyNode.type === 'context' }"
+  >
+    {{ dummyNode.name }}
+  </div>
+</div>

@@ -66,6 +66,10 @@ const routes: Routes = [
     loadChildren: () => import('./analytics/analytics.module').then((m) => m.BotAnalyticsModule)
   },
   {
+    path: 'scenarios',
+    loadChildren: () => import('./scenarios/scenarios.module').then((m) => m.ScenariosModule)
+  },
+  {
     path: 'faq',
     loadChildren: () => import('./faq/faq.module').then((m) => m.FaqModule)
   },

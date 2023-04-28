@@ -1,0 +1,62 @@
+<nb-card class="mb-0">
+  <nb-card-header class="d-flex justify-content-between gap-1">
+    Filters
+    <button
+      *ngIf="isFiltered"
+      nbButton
+      nbTooltip="Clear all filters"
+      ghost
+      shape="round"
+      (click)="clearFilters()"
+      data-testid="clear-button"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <form
+      class="grid"
+      [formGroup]="form"
+    >
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="search-outline"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          placeholder="Search"
+          type="text"
+          formControlName="search"
+        />
+      </nb-form-field>
+
+      <nb-select
+        multiple
+        placeholder="Tags"
+        fullWidth
+        optionsListClass="option-list--break-word"
+        formControlName="tags"
+      >
+        <nb-option
+          *ngFor="let tag of tagsCache"
+          value="{{ tag }}"
+        >
+          <span class="initial-capitalize">{{ tag }}</span>
+        </nb-option>
+      </nb-select>
+
+      <nb-checkbox
+        class="lineHeight-0"
+        formControlName="enabled"
+        [checked]="enabled.value"
+        [indeterminate]="enabled.value === null"
+        (checkedChange)="enabledCheckChanged()"
+      >
+        Tick story active
+      </nb-checkbox>
+    </form>
+  </nb-card-body>
+</nb-card>

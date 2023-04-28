@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { SentenceFilter, SentencesScrollComponent } from '../sentences-scroll/sentences-scroll.component';
 import {
   EntityDefinition,
@@ -32,13 +32,16 @@ import { NlpService } from '../nlp-tabs/nlp.service';
 import { UserRole } from '../model/auth';
 import { NbToastrService } from '@nebular/theme';
 import { FilterOption, Group } from './filter/search-filter.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'tock-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
   UserRole = UserRole;
   filter: SentenceFilter = new SentenceFilter();
   status: string;
@@ -49,7 +52,7 @@ export class SearchComponent implements OnInit {
   update: SentencesUpdate = new SentencesUpdate();
   targetLocale: string;
   users: string[];
-  configurations : string[];
+  configurations: string[];
 
   private firstSearch = false;
   @ViewChild(SentencesScrollComponent) scroll;
@@ -61,14 +64,14 @@ export class SearchComponent implements OnInit {
 
   ngOnInit() {
     this.status = null;
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams.pipe(takeUntil(this.destroy)).subscribe((params) => {
       if (params['text']) {
         this.filter.search = params['text'];
       }
       if (params['status']) {
         this.status = SentenceStatus[SentenceStatus[params['status']]];
       }
-      this.state.currentIntents.subscribe((i) => {
+      this.state.currentIntents.pipe(takeUntil(this.destroy)).subscribe((i) => {
         this.nlp.findUsers(this.state.currentApplication).subscribe((u) => (this.users = u));
         this.nlp.findConfigurations(this.state.currentApplication).subscribe((res) => (this.configurations = res));
         const search = this.filter.search;
@@ -83,6 +86,11 @@ export class SearchComponent implements OnInit {
         }
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 
   intentGroups(): Group[] {

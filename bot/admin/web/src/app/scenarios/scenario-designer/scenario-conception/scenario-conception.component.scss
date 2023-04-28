@@ -1,0 +1,116 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+:host ::ng-deep nb-accordion nb-accordion-item {
+  background-color: inherit;
+
+  &:not(:first-child) {
+    border-top: 1px solid nb-theme(color-basic-transparent-400);
+  }
+
+  nb-accordion-item-body .item-body,
+  nb-accordion-item-header {
+    padding: 0.5rem 1rem;
+  }
+}
+
+.menu-item-no-data {
+  font-size: small;
+  text-align: center;
+}
+
+@include nb-install-component {
+  nb-list {
+    @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+  }
+}
+
+.list-item {
+  display: grid;
+  grid-template-columns: minmax(auto, 1rem) minmax(5rem, 1fr) minmax(auto, 1rem);
+  align-items: start;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+
+  .entity {
+    border-radius: 0.45rem;
+    padding: 0rem 0.3rem 0rem 0.3rem;
+    font-size: 0.7rem;
+    line-height: 1.25rem;
+    max-width: fit-content;
+    overflow-wrap: break-word;
+  }
+}
+
+@include nb-install-component {
+  .conception-canvas-wrapper {
+    height: 100%;
+
+    .canvas {
+      z-index: 1;
+      padding: 1.5rem;
+      width: fit-content;
+      height: fit-content;
+      transition: transform 0.3s;
+      transform-origin: 0 0;
+      .initialItem {
+        width: 1px;
+        margin: auto;
+      }
+    }
+  }
+
+  .chat-wrapper {
+    position: fixed;
+    overflow-y: auto;
+    z-index: 10000;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.35);
+  }
+
+  .chat-container {
+    width: 550px;
+
+    & nb-chat {
+      box-shadow: none;
+    }
+  }
+
+  .chat-controls {
+    display: flex;
+    text-align: center;
+    background-color: nb-theme(background-basic-color-3);
+    padding: 1rem;
+    box-shadow: 0 0.5rem 1rem 0 #0e0e0e24;
+    border-radius: 0 0 0.25rem 0.25rem;
+    transform: translateY(-0.25rem);
+
+    .from {
+      IMG {
+        width: 5rem;
+      }
+    }
+
+    .propositions {
+      flex-grow: 1;
+      .prop-button {
+        display: inline-block;
+        cursor: pointer;
+        padding: 0.5rem;
+        border: 1px solid gray;
+        border-radius: 0.3rem;
+        margin: 0.3rem;
+        background-color: nb-theme(color-basic-600);
+        &:hover {
+          background-color: nb-theme(color-basic-transparent-600);
+        }
+      }
+    }
+  }
+}

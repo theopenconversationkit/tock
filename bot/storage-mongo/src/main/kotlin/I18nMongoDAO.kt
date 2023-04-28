@@ -77,6 +77,7 @@ import org.litote.kmongo.upsert
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 import java.util.concurrent.TimeUnit
+import org.litote.kmongo.`in`
 
 /**
  *
@@ -119,6 +120,10 @@ internal object I18nMongoDAO : I18nDAO {
         asyncCol.watch {
             it.documentKey?.get("_id")?.let { id -> listener((id as BsonString).value.toId()) }
         }
+    }
+
+    override fun getLabelsByIds(ids: Set<Id<I18nLabel>>): List<I18nLabel> {
+        return col.find(_id `in` ids).toList()
     }
 
     override fun getLabels(namespace: String, filter: I18nLabelFilter?): List<I18nLabel> {

@@ -1,0 +1,174 @@
+<nb-card>
+  <nb-card-body>
+    <div *ngIf="dependencies">
+      <ng-container *ngFor="let intentJobsType of [dependencies.intentsToCreate, dependencies.intentsToUpdate]">
+        <div *ngIf="intentJobsType.length">
+          <h5>
+            The <span *ngIf="intentJobsType.length > 1">{{ intentJobsType.length }}</span> following intent<span
+              *ngIf="intentJobsType.length > 1"
+              >s</span
+            >
+
+            <span *ngIf="!areAllJobsTypeDone(intentJobsType)"> will be </span>
+            <span *ngIf="areAllJobsTypeDone(intentJobsType)"> have been </span>
+
+            <span *ngIf="getJobsType(intentJobsType) === 'creation'"> created </span>
+            <span *ngIf="getJobsType(intentJobsType) === 'update'"> updated </span>
+          </h5>
+          <div class="row">
+            <div
+              *ngFor="let intent of intentJobsType"
+              class="col-12 col-md-6 mb-2 d-flex break-word"
+            >
+              <nb-icon
+                icon="checkmark-outline"
+                status="success"
+                *ngIf="intent.done"
+              ></nb-icon>
+              <div>
+                <strong>{{ intent.item.intentDefinition.name }}</strong>
+                <div>
+                  label :
+                  <span class="text-mitigated">
+                    {{ intent.item.intentDefinition.label }}
+                  </span>
+                </div>
+                <div>
+                  category :
+                  <span class="text-mitigated">
+                    {{ intent.item.intentDefinition.category }}
+                  </span>
+                </div>
+                <div *ngIf="intent.item.intentDefinition.description">
+                  description :
+                  <span class="text-mitigated">
+                    {{ intent.item.intentDefinition.description }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngFor="let answerJobsType of [dependencies.answersToCreate, dependencies.answersToUpdate]">
+        <div
+          *ngIf="answerJobsType.length"
+          class="mt-3"
+        >
+          <h5>
+            The <span *ngIf="answerJobsType.length > 1">{{ answerJobsType.length }}</span> following answer<span
+              *ngIf="answerJobsType.length > 1"
+              >s</span
+            >
+            <span *ngIf="!areAllJobsTypeDone(answerJobsType)"> will be </span>
+            <span *ngIf="areAllJobsTypeDone(answerJobsType)"> have been </span>
+            <span *ngIf="getJobsType(answerJobsType) === 'creation'"> created </span>
+            <span *ngIf="getJobsType(answerJobsType) === 'update'"> updated </span>
+          </h5>
+
+          <div class="row">
+            <div
+              *ngFor="let item of answerJobsType"
+              class="col-12 col-md-6 mb-2 d-flex break-word"
+            >
+              <nb-icon
+                icon="checkmark-outline"
+                status="success"
+                *ngIf="item.done"
+              ></nb-icon>
+              <span class="text-uppercase text-nowrap">[{{ item.answer.locale }}]</span>
+              {{ item.answer.answer }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngFor="let unknownAnswerJobsType of [dependencies.unknownAnswersToCreate, dependencies.unknownAnswersToUpdate]">
+        <div
+          *ngIf="unknownAnswerJobsType.length"
+          class="mt-3"
+        >
+          <h5>
+            The <span *ngIf="unknownAnswerJobsType.length > 1">{{ unknownAnswerJobsType.length }}</span> following question<span
+              *ngIf="unknownAnswerJobsType.length > 1"
+              >s</span
+            >
+            for an unknown answer
+            <span *ngIf="!areAllJobsTypeDone(unknownAnswerJobsType)"> will be </span>
+            <span *ngIf="areAllJobsTypeDone(unknownAnswerJobsType)"> have been </span>
+            <span *ngIf="getJobsType(unknownAnswerJobsType) === 'creation'"> created </span>
+            <span *ngIf="getJobsType(unknownAnswerJobsType) === 'update'"> updated </span>
+          </h5>
+
+          <div class="row">
+            <div
+              *ngFor="let item of unknownAnswerJobsType"
+              class="col-12 col-md-6 mb-2 d-flex break-word"
+            >
+              <nb-icon
+                icon="checkmark-outline"
+                status="success"
+                *ngIf="item.done"
+              ></nb-icon>
+              <span class="text-uppercase text-nowrap">[{{ item.answer.locale }}] </span>
+              {{ item.answer.answer }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div
+      *ngIf="!isReadonly && !isScenarioUnPublishable() && !processingDependencies"
+      class="text-center mt-3"
+    >
+      <button
+        nbButton
+        status="danger"
+        (click)="processDependencies()"
+        data-testid="publish-button"
+      >
+        Publish scenario
+      </button>
+    </div>
+
+    <div
+      *ngIf="isScenarioUnPublishable()"
+      class="text-danger text-center my-3"
+    >
+      <h4 class="text-danger">This scenario is not publishable</h4>
+      {{ isScenarioUnPublishable() }}
+    </div>
+
+    <div *ngIf="tickStoryErrors">
+      <h5>Some errors occured :</h5>
+
+      <ul>
+        <li
+          *ngFor="let error of tickStoryErrors"
+          class="text-danger"
+        >
+          {{ error.message }}
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="tickStoryPostSuccessfull">
+      <h5>The story has been successfully saved</h5>
+      You will be redirected in a few seconds...
+    </div>
+
+    <div
+      *ngIf="isReadonly"
+      class="text-danger text-center"
+    >
+      <h4 class="text-danger">This scenario is read-only</h4>
+      It corresponds to a published TickStory.
+      <br />
+      No changes can be made to it and it cannot be published.
+      <br />
+      If you wish to modify it, please make a copy first.
+    </div>
+  </nb-card-body>
+</nb-card>

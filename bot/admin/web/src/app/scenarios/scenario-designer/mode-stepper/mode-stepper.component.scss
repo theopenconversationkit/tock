@@ -1,0 +1,102 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+
+  > div {
+    display: flex;
+
+    &:not(:last-child) {
+      flex: 1;
+    }
+  }
+
+  .step {
+    position: relative;
+
+    .label-index {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      color: nb-theme(color-basic-600);
+      border-radius: 50%;
+      border: 1px solid nb-theme(color-basic-600);
+      min-width: 2rem;
+      width: 2rem;
+      height: 2rem;
+    }
+
+    .label {
+      color: nb-theme(color-basic-transparent-focus-border);
+    }
+
+    &.valid {
+      .label-index {
+        border-color: nb-theme(color-primary-active);
+        color: nb-theme(color-primary-active);
+      }
+      .label {
+        color: nb-theme(color-primary-active);
+      }
+    }
+
+    &.selected {
+      .label-index {
+        border-color: nb-theme(color-primary-active);
+        background-color: nb-theme(color-primary-active);
+        color: nb-theme(text-control-color);
+      }
+      .label {
+        color: nb-theme(color-primary-active);
+      }
+    }
+
+    .error-indicator {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+
+      .success {
+        color: nb-theme(text-success-active-color);
+      }
+
+      .error {
+        color: nb-theme(text-danger-active-color);
+      }
+    }
+  }
+
+  .connector {
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    flex: auto;
+
+    .line {
+      height: 1px;
+      background-color: nb-theme(color-basic-600);
+      flex: auto;
+    }
+
+    .arrow {
+      display: inline-block;
+      border: solid nb-theme(color-basic-600);
+      border-width: 0 1px 1px 0;
+      padding: 3px;
+      margin-left: -6px;
+      transform: rotate(-45deg);
+    }
+  }
+
+  .connectorpassed {
+    .line {
+      background-color: nb-theme(color-primary-default);
+    }
+    .arrow {
+      border-color: nb-theme(color-primary-default);
+    }
+  }
+}

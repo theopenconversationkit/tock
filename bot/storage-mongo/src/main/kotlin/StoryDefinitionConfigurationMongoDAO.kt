@@ -46,6 +46,7 @@ import ai.tock.shared.trace
 import ai.tock.shared.warn
 import ai.tock.shared.watch
 import com.mongodb.client.model.Collation
+import com.mongodb.client.model.UnwindOptions
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -188,6 +189,16 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
     }
 
+    override fun deleteStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ) {
+        getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId, storyId)?.let {
+            delete(it)
+        }
+    }
+
     override fun getStoryDefinitionsByNamespaceAndBotId(
         namespace: String,
         botId: String
@@ -262,6 +273,22 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             } catch (e: Exception) {
                 logger.trace(e)
             }
+        }
+    }
+
+    override fun getStoryDefinitionByCategory(category: String): List<StoryDefinitionConfiguration> {
+       return col.find(Category eq category).toList()
+    }
+
+    override fun getStoryDefinitionByCategoryAndStoryId(
+        category: String,
+        storyId: String
+    ): StoryDefinitionConfiguration? {
+        return col.findOne {
+         and(
+            Category eq category,
+            StoryId eq storyId
+         )
         }
     }
 }

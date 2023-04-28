@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ */ 
 
 package ai.tock.bot.admin.model
 
@@ -21,6 +21,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -36,6 +37,7 @@ internal fun List<AnswerConfiguration>.mapAnswers(locale: Locale?, readOnly: Boo
             is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it, locale, readOnly)
             is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
             is BuiltInAnswerConfiguration -> BotBuiltinAnswerConfiguration(it)
+            is TickAnswerConfiguration -> BotTickAnswerConfiguration(it)
             else -> error("unsupported conf $it")
         }
     }

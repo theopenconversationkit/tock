@@ -1,0 +1,59 @@
+@import '@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+@import '../../../theme/styles/utilities.scss';
+
+.grid-columns {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-template-columns: 1fr;
+  width: 100%;
+  margin-right: 1.5rem;
+
+  &-header {
+    font-size: nb-theme(text-label-font-size);
+    color: nb-theme(color-basic-600);
+    padding: 0 2.75rem 0 1.25rem;
+  }
+}
+
+.grid-accordion-item-body {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  &:not(:first-child) {
+    padding-top: 1rem;
+  }
+
+  &:not(:last-child) {
+    border-bottom: 1px solid nb-theme(color-basic-transparent-200);
+    padding-bottom: 1rem;
+  }
+
+  &-header {
+    display: none;
+    font-size: nb-theme(text-label-font-size);
+    color: nb-theme(color-basic-600);
+  }
+}
+
+@include media-breakpoint-up(sm) {
+  .grid-accordion-item-body {
+    grid-template-columns: minmax(5rem, 1fr) minmax(5rem, 1fr) minmax(5rem, 1fr) minmax(5rem, 4fr) minmax(10rem, auto);
+
+    &-header {
+      display: grid;
+    }
+  }
+}
+@include media-breakpoint-up(md) {
+  .grid-columns {
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: minmax(5rem, 4fr) minmax(5rem, 1fr) minmax(5rem, 2fr) minmax(11.25rem, auto);
+  }
+}
+
+.truncate {
+  @include truncate(4);
+}

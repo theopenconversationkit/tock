@@ -23,6 +23,7 @@ import ai.tock.bot.admin.answer.MessageAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.story.dump.AnswerConfigurationDump
 import ai.tock.bot.admin.story.dump.BuiltInAnswerConfigurationDump
 import ai.tock.bot.admin.story.dump.MediaActionDescriptorDump
@@ -124,6 +125,7 @@ private object BotEngineJacksonConfiguration {
                         AnswerConfigurationType.builtin.name
                     )
                 )
+                registerSubtypes(NamedType(TickAnswerConfiguration::class.java, AnswerConfigurationType.tick.name))
 
                 setMixInAnnotation(AnswerConfigurationDump::class.java, MixinAnswerConfigurationDump::class.java)
                 registerSubtypes(

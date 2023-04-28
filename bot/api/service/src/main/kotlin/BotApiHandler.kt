@@ -47,6 +47,7 @@ import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.Translator
 import ai.tock.translator.raw
 import com.github.salomonbrys.kodein.instance
+import mu.KotlinLogging
 
 internal class BotApiHandler(
     provider: BotApiDefinitionProvider,
@@ -56,6 +57,7 @@ internal class BotApiHandler(
 
     companion object {
         private const val VIEWED_STORIES_BUS_KEY = "_viewed_stories_tock_switch"
+        private val logger = KotlinLogging.logger {}
     }
 
     private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
@@ -140,6 +142,7 @@ internal class BotApiHandler(
     }
 
     private fun BotBus.switchEndingStory(target: StoryDefinition) {
+        logger.debug { "Switch to ending story ${target.id} (intent: ${target.mainIntent()}) " }
         step = step?.takeUnless { story.definition == target }
         setBusContextValue(VIEWED_STORIES_BUS_KEY, viewedStories + target)
         handleAndSwitchStory(target)

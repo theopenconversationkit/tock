@@ -19,7 +19,7 @@ import { RestService } from '../core-nlp/rest/rest.service';
 import { CreateStoryRequest, StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery } from './model/story';
 import { Intent, TranslateReport } from '../model/nlp';
 import { Observable } from 'rxjs';
-import { CreateI18nLabelRequest, I18LabelQuery, I18nLabel, I18nLabels } from './model/i18n';
+import { CreateI18nLabelRequest, CreateI18nLabelsRequest, I18LabelQuery, I18nLabel, I18nLabels } from './model/i18n';
 import { FileUploader } from 'ng2-file-upload';
 import { Feature } from './model/feature';
 
@@ -62,12 +62,8 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON);
   }
 
-
   findStoryDefinitionsByNamespaceAndBotIdWithFileAttached(botId: string): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.get(
-      `/bot/story/${botId}/with_document`,
-      StoryDefinitionConfiguration.fromJSONArray
-    );
+    return this.rest.get(`/bot/story/${botId}/with_document`, StoryDefinitionConfiguration.fromJSONArray);
   }
   findRuntimeStorySettings(botId: string): Observable<StoryDefinitionConfiguration[]> {
     return this.rest.get(`/bot/story/${botId}/settings`, StoryDefinitionConfiguration.fromJSONArray);
@@ -85,6 +81,14 @@ export class BotService {
     return this.rest.get('/i18n', I18nLabels.fromJSON);
   }
 
+  searchI18nLabels(i18nIds: string[]): Observable<I18nLabels> {
+    return this.rest.post('/i18n/search', { i18nIds: i18nIds }, I18nLabels.fromJSON);
+  }
+
+  i18nLabel(id: string): Observable<I18nLabel> {
+    return this.rest.get(`/i18n/${id}`, I18nLabel.fromJSON);
+  }
+
   completeI18nLabels(labels: I18nLabel[]): Observable<TranslateReport> {
     return this.rest.post('/i18n/complete', labels, TranslateReport.fromJSON);
   }
@@ -98,6 +102,10 @@ export class BotService {
   }
 
   createI18nLabel(request: CreateI18nLabelRequest): Observable<I18nLabel> {
+    return this.rest.post('/i18n/create', request, I18nLabel.fromJSON);
+  }
+
+  createI18nLabels(request: CreateI18nLabelsRequest): Observable<I18nLabel> {
     return this.rest.post('/i18n/create', request, I18nLabel.fromJSON);
   }
 

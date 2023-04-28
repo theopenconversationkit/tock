@@ -20,10 +20,10 @@ import { BehaviorSubject } from 'rxjs';
 import { Classification, SentenceStatus } from '../../../model/nlp';
 import { StateService } from '../../../core-nlp/state.service';
 import { Pagination, PaginationComponent } from '../../../shared/components';
-import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqTrainingComponent, SentenceExtended } from '../faq-training.component';
 import { FaqTrainingListComponent } from './faq-training-list.component';
 import { Action } from '../../models';
+import { TestingModule } from '../../../../testing';
 
 const mockSentences: SentenceExtended[] = [
   {
@@ -102,7 +102,7 @@ describe('FaqTrainingListComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqTrainingListComponent, PaginationComponent],
       imports: [
-        TestSharedModule,
+        TestingModule,
         RouterTestingModule.withRoutes([
           { path: 'faq/training', component: FaqTrainingComponent },
           { path: 'faq/management', component: MockFaqManagementComponent }

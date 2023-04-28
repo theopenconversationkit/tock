@@ -99,6 +99,11 @@
               class="story-type"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="feature.story.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
+            ></nb-icon>
             <span class="story-label">{{ feature.story.name }}</span>
           </nb-select-label>
           <nb-option
@@ -120,6 +125,11 @@
               *ngIf="s.isScriptAnswer()"
               class="story-type"
               icon="code"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
             ></nb-icon>
             {{ s.name }}
           </nb-option>
@@ -158,6 +168,11 @@
               class="story-type"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="feature.switchToStory.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
+            ></nb-icon>
             <span class="story-label">{{ feature.switchToStory.name }}</span>
           </nb-select-label>
           <nb-option class="story-label">No Redirection</nb-option>
@@ -180,6 +195,11 @@
               *ngIf="s.isScriptAnswer()"
               class="story-type"
               icon="code"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
             ></nb-icon>
             <span class="story-label">{{ s.name }}</span>
           </nb-option>
@@ -216,6 +236,11 @@
               class="story-type"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="feature.endWithStory.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
+            ></nb-icon>
             <span class="story-label">{{ feature.endWithStory.name }}</span>
           </nb-select-label>
           <nb-option>No Ending</nb-option>
@@ -238,6 +263,11 @@
               *ngIf="s.isScriptAnswer()"
               class="story-type"
               icon="code"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="s.isTickAnswer()"
+              class="story-type"
+              icon="film-outline"
             ></nb-icon>
             <span class="story-label">{{ s.name }}</span>
           </nb-option>
@@ -294,6 +324,11 @@
                   *ngIf="f.story.isScriptAnswer()"
                   class="story-type"
                   icon="code"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isTickAnswer()"
+                  class="story-type"
+                  icon="film-outline"
                 ></nb-icon>
                 {{ f.story.name }}
               </div>
@@ -386,6 +421,11 @@
                   class="story-type"
                   icon="code"
                 ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isTickAnswer()"
+                  class="story-type"
+                  icon="film-outline"
+                ></nb-icon>
                 {{ f.story.name }}
               </div>
               <div class="feature-property conf cell">
@@ -427,6 +467,11 @@
                     *ngIf="f.switchToStory.isScriptAnswer()"
                     class="story-type"
                     icon="code"
+                  ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.switchToStory.isTickAnswer()"
+                    class="story-type"
+                    icon="film-outline"
                   ></nb-icon>
                   <span class="story-label">{{ f.switchToStory.name }}</span>
                 </div>
@@ -502,6 +547,11 @@
                   class="story-type"
                   icon="code"
                 ></nb-icon>
+                <nb-icon
+                  *ngIf="f.story.isTickAnswer()"
+                  class="story-type"
+                  icon="film-outline"
+                ></nb-icon>
                 {{ f.story.name }}
               </div>
               <div class="feature-property conf cell">
@@ -543,6 +593,11 @@
                     *ngIf="f.endWithStory.isScriptAnswer()"
                     class="story-type"
                     icon="code"
+                  ></nb-icon>
+                  <nb-icon
+                    *ngIf="f.endWithStory.isTickAnswer()"
+                    class="story-type"
+                    icon="film-outline"
                   ></nb-icon>
                   <span class="story-label">{{ f.endWithStory.name }}</span>
                 </div>

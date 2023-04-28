@@ -268,3 +268,12 @@ export class XRayField {
     return result;
   }
 }
+
+export class ScenarioDebug {
+  constructor(public imgBase64: string) {}
+  static fromJSON(json?: any): ScenarioDebug {
+    const value = Object.create(ScenarioDebug.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+}

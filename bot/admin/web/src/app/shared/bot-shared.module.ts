@@ -28,6 +28,7 @@ import { BotSharedService } from './bot-shared.service';
 import { DisplayDialogComponent } from './bot-dialog/display-dialog.component';
 import { MomentModule } from 'ngx-moment';
 import { SelectBotComponent } from './select-bot/select-bot.component';
+
 import {
   NbCalendarRangeModule,
   NbCardModule,
@@ -35,72 +36,100 @@ import {
   NbSelectModule,
   NbTooltipModule,
   NbPopoverModule,
-  NbButtonModule
+  NbButtonModule,
+  NbButtonGroupModule,
+  NbAlertModule,
+  NbAutocompleteModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
+import { CanvasModule } from './canvas/canvas.module';
 import {
+  AutocompleteInputComponent,
   ChatUiComponent,
   ChatUiMessageComponent,
   ChoiceDialogComponent,
   ErrorHelperComponent,
+  FileUploadComponent,
   FormControlComponent,
+  JsonPreviewerComponent,
+  NoBotConfigurationComponent,
   NoDataFoundComponent,
   PaginationComponent
 } from './components';
 
-import { AutofocusDirective } from './directives';
+import { AutofocusDirective, FullscreenDirective, MouseWheelListnerDirective } from './directives';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        MomentModule,
-        NbCalendarRangeModule,
-        NbCardModule,
-        NbSelectModule,
-        NbTooltipModule,
-        NbIconModule,
-        NbPopoverModule,
-        NbButtonModule
-    ],
-    declarations: [
-        BotMessageComponent,
-        SentenceElementComponent,
-        BotMessageSentenceComponent,
-        BotMessageChoiceComponent,
-        BotMessageLocationComponent,
-        BotMessageAttachmentComponent,
-        DisplayDialogComponent,
-        SelectBotComponent,
-        DateRangeCalendarComponent,
-        InfoButtonComponent,
-        ConfirmationDialogComponent,
-        ErrorHelperComponent,
-        PaginationComponent,
-        NoDataFoundComponent,
-        FormControlComponent,
-        ChatUiComponent,
-        ChatUiMessageComponent,
-        ChoiceDialogComponent,
-        AutofocusDirective
-    ],
-    exports: [
-        BotMessageComponent,
-        DisplayDialogComponent,
-        SelectBotComponent,
-        DateRangeCalendarComponent,
-        InfoButtonComponent,
-        ErrorHelperComponent,
-        PaginationComponent,
-        NoDataFoundComponent,
-        FormControlComponent,
-        ChatUiComponent,
-        ChatUiMessageComponent,
-        ChoiceDialogComponent,
-        AutofocusDirective
-    ],
-    providers: [BotSharedService]
+  imports: [
+    CommonModule,
+    SharedModule,
+    MomentModule,
+    NbAlertModule,
+    NbAutocompleteModule,
+    NbCalendarRangeModule,
+    NbCardModule,
+    NbSelectModule,
+    NbTooltipModule,
+    NbIconModule,
+    NbPopoverModule,
+    NbButtonModule,
+    NbButtonGroupModule,
+    CanvasModule
+  ],
+  declarations: [
+    AutocompleteInputComponent,
+    BotMessageComponent,
+    SentenceElementComponent,
+    BotMessageSentenceComponent,
+    BotMessageChoiceComponent,
+    BotMessageLocationComponent,
+    BotMessageAttachmentComponent,
+    DisplayDialogComponent,
+    SelectBotComponent,
+    DateRangeCalendarComponent,
+    InfoButtonComponent,
+    ConfirmationDialogComponent,
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
+    ChoiceDialogComponent,
+    JsonPreviewerComponent,
+    FileUploadComponent,
+    NoBotConfigurationComponent,
+    AutofocusDirective,
+    FullscreenDirective,
+    MouseWheelListnerDirective
+  ],
+  exports: [
+    AutocompleteInputComponent,
+    BotMessageComponent,
+    DisplayDialogComponent,
+    SelectBotComponent,
+    DateRangeCalendarComponent,
+    InfoButtonComponent,
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
+    ChoiceDialogComponent,
+    JsonPreviewerComponent,
+    FileUploadComponent,
+    NoBotConfigurationComponent,
+
+    AutofocusDirective,
+    FullscreenDirective,
+    MouseWheelListnerDirective,
+
+    CanvasModule
+  ],
+  providers: [BotSharedService],
+  entryComponents: []
 })
 export class BotSharedModule {}

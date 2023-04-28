@@ -47,6 +47,7 @@ import { AuthService } from '../../../core-nlp/auth/auth.service';
       <nb-layout-footer
         fixed
         *ngIf="auth.isLoggedIn()"
+        id="app-layout-footer"
       >
         <tock-footer></tock-footer>
       </nb-layout-footer>

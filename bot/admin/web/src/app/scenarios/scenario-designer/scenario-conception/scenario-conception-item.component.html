@@ -1,0 +1,314 @@
+<div
+  class="arrow-wrapper"
+  *ngIf="item.id > 0"
+>
+  <div
+    class="arrow-top-left"
+    *ngIf="shouldShowArrowTop('left')"
+  ></div>
+  <div
+    class="arrow-top-right"
+    *ngIf="shouldShowArrowTop('right')"
+  ></div>
+  <div
+    class="arrow"
+    *ngIf="shouldShowArrowTop('leftAndRight')"
+  >
+    <div class="arrow-line"></div>
+  </div>
+</div>
+
+<div
+  [dndDisableIf]="!(scenario.data.mode === SCENARIO_MODE.writing) || isReadonly"
+  [dndDraggable]="draggable.data"
+>
+  <div
+    class="item-card"
+    #itemCard
+    [ngClass]="getItemCardCssClass()"
+    dndDropzone
+    (dndDrop)="onDrop($event)"
+    dndDragoverClass="dragHover"
+    (click)="selectItem()"
+    tockMouseWheelListner
+    (onMouseWheel)="stopPropagation($event)"
+    (mousedown)="stopPropagation($event)"
+  >
+    <div
+      class="from-icon client"
+      (click)="switchItemType(SCENARIO_ITEM_FROM_CLIENT)"
+    >
+      <img
+        src="assets/images/scenario-client.svg"
+        [class.cursor-move]="scenario.data.mode === SCENARIO_MODE.writing"
+        dndHandle
+        *ngIf="item.from === SCENARIO_ITEM_FROM_CLIENT"
+      />
+      <img
+        nbTooltip="Change this item in client intervention"
+        src="assets/images/scenario-client.svg"
+        *ngIf="item.from !== SCENARIO_ITEM_FROM_CLIENT && mode === SCENARIO_MODE.writing && !isReadonly"
+      />
+      <div
+        class="duplication-count"
+        dndHandle
+        *ngIf="item.from === SCENARIO_ITEM_FROM_CLIENT && item.parentIds?.length > 1"
+      >
+        {{ item.parentIds?.length }}
+      </div>
+    </div>
+    <div
+      class="from-icon bot"
+      (click)="switchItemType(SCENARIO_ITEM_FROM_BOT)"
+      *ngIf="item.parentIds?.length"
+    >
+      <img
+        src="assets/images/scenario-bot.svg"
+        [class.cursor-move]="scenario.data.mode === SCENARIO_MODE.writing"
+        dndHandle
+        *ngIf="item.from === SCENARIO_ITEM_FROM_BOT"
+      />
+      <img
+        nbTooltip="Change this item in bot intervention"
+        src="assets/images/scenario-bot.svg"
+        *ngIf="item.from !== SCENARIO_ITEM_FROM_BOT && mode === SCENARIO_MODE.writing && !isReadonly"
+      />
+      <div
+        class="duplication-count"
+        dndHandle
+        *ngIf="item.from === SCENARIO_ITEM_FROM_BOT && item.parentIds?.length > 1"
+      >
+        {{ item.parentIds?.length }}
+      </div>
+    </div>
+
+    <div class="item-infos d-flex align-items-start flex-column">
+      <div class="align-self-stretch">
+        <textarea
+          *ngIf="!itemHasDefinition()"
+          #itemTextarea
+          fullWidth
+          rows="4"
+          placeholder="Question"
+          [(ngModel)]="item.text"
+          data-testid="item-text-textarea"
+        ></textarea>
+
+        <ng-container *ngIf="item.from === SCENARIO_ITEM_FROM_CLIENT && itemHasDefinition()">
+          <div
+            class="ellipsis font-weight-bold"
+            data-testid="item-intent-definition-details"
+          >
+            <nb-icon
+              *ngIf="item.intentDefinition.primary"
+              icon="award-outline"
+              class="valign-middle"
+              data-testid="item-intent-definition-primary"
+            ></nb-icon>
+            {{ item.intentDefinition.name }}
+          </div>
+
+          <div
+            *ngIf="item.intentDefinition.outputContextNames?.length"
+            class="tiny-text ellipsis"
+            nbTooltip="INTENT OUTPUTS : {{ item.intentDefinition.outputContextNames.join(' | ') }}"
+          >
+            <strong>OUTPUTS</strong>
+            <span *ngFor="let outputCtx of item.intentDefinition.outputContextNames">
+              {{ outputCtx }}
+            </span>
+          </div>
+
+          <div
+            class="sentences mb-2"
+            [nbSpinner]="item._sentencesLoading"
+          >
+            <strong *ngIf="item.intentDefinition.sentences?.length || item.intentDefinition._sentences?.length">SENTENCES</strong>
+            <div class="questions">
+              <ul>
+                <li
+                  *ngFor="let sentence of item.intentDefinition.sentences"
+                  class="ellipsis"
+                  [title]="sentence.query"
+                >
+                  {{ sentence.query }}
+                </li>
+              </ul>
+              <ul>
+                <li
+                  *ngFor="let sentence of item.intentDefinition._sentences"
+                  class="ellipsis text-mitigated"
+                  [title]="sentence.text"
+                >
+                  {{ sentence.text }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="item.from === SCENARIO_ITEM_FROM_BOT && itemHasDefinition()">
+          <div
+            class="ellipsis font-weight-bold"
+            data-testid="item-action-definition-details"
+            nbTooltip="ACTION NAME : {{ item.actionDefinition.name }}"
+          >
+            {{ item.actionDefinition.name }}
+          </div>
+
+          <div
+            *ngIf="item.actionDefinition.inputContextNames?.length"
+            class="tiny-text ellipsis"
+            nbTooltip="ACTION INPUTS : {{ item.actionDefinition.inputContextNames.join(' & ') }}"
+          >
+            <strong>INPUTS</strong>
+            <span *ngFor="let inputCtx of item.actionDefinition.inputContextNames">
+              {{ inputCtx }}
+            </span>
+          </div>
+
+          <div
+            *ngIf="item.actionDefinition.handler"
+            class="tiny-text ellipsis"
+            nbTooltip="ACTION HANDLER : {{ item.actionDefinition.handler }}"
+          >
+            <strong>HANDLER</strong>
+            {{ item.actionDefinition.handler }}
+          </div>
+
+          <div
+            *ngIf="item.actionDefinition.outputContextNames?.length"
+            class="tiny-text ellipsis"
+            nbTooltip="ACTION OUTPUTS : {{ item.actionDefinition.outputContextNames.join(' | ') }}"
+          >
+            <strong>OUTPUTS</strong>
+            <span *ngFor="let outputCtx of item.actionDefinition.outputContextNames">
+              {{ outputCtx }}
+            </span>
+          </div>
+
+          <ng-container *ngIf="item.actionDefinition.answers?.length">
+            <div
+              class="tiny-text"
+              nbTooltip="ANSWER : {{ getCurrentLocaleAnswer() }}"
+            >
+              <strong>ANSWER</strong>
+              {{ getCurrentLocaleAnswer() }}
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <div class="mt-auto align-self-stretch">
+        <div class="d-flex justify-content-between mt-1">
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="mode === SCENARIO_MODE.casting && item.from === SCENARIO_ITEM_FROM_CLIENT && item.text?.length"
+            (click)="manageIntent()"
+            nbTooltip="Intent infos and edition"
+            data-testid="item-define-intent"
+          >
+            <span *ngIf="!isReadonly">Define intent</span>
+            <span *ngIf="isReadonly">View intent</span>
+          </button>
+
+          <button
+            nbButton
+            size="tiny"
+            status="info"
+            *ngIf="mode === SCENARIO_MODE.casting && item.from === SCENARIO_ITEM_FROM_BOT && item.text?.length"
+            (click)="manageAction()"
+            nbTooltip="Action infos and edition"
+            data-testid="item-define-action"
+          >
+            <span *ngIf="!isReadonly">Define action</span>
+            <span *ngIf="isReadonly">View action</span>
+          </button>
+
+          <button
+            nbButton
+            size="tiny"
+            status="primary"
+            *ngIf="!itemHasNoChildren()"
+            (click)="test()"
+            nbTooltip="Test the conversation from this point"
+          >
+            Test
+          </button>
+
+          <button
+            nbButton
+            size="tiny"
+            status="warning"
+            *ngIf="mode === SCENARIO_MODE.writing && item.id > 0 && itemHasNoChildren() && !isReadonly"
+            (click)="delete()"
+            nbTooltip="Remove this item"
+            data-testid="item-delete"
+          >
+            Delete
+          </button>
+        </div>
+
+        <div
+          *ngIf="
+            mode === SCENARIO_MODE.writing &&
+            item.from === SCENARIO_ITEM_FROM_BOT &&
+            itemHasNoChildren() &&
+            !itemHasDefinition() &&
+            !isReadonly
+          "
+          class="mt-2"
+        >
+          <nb-checkbox
+            (checkedChange)="toggleFinal($event)"
+            [checked]="item.final"
+            nbTooltip="Define this item as ending the conversation"
+          >
+            End of chat
+          </nb-checkbox>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-wrapper">
+    <div class="arrow">
+      <div
+        class="arrow-line long"
+        *ngIf="!itemHasNoChildren()"
+      ></div>
+
+      <button
+        class="add-control pointer"
+        *ngIf="mode === SCENARIO_MODE.writing && itemCanHaveAnswer() && !isReadonly"
+        data-testid="item-answer"
+      >
+        <nb-icon
+          icon="plus-circle-outline"
+          (click)="answering()"
+          [nbTooltip]="item.from === SCENARIO_ITEM_FROM_CLIENT ? 'Add a bot intervention' : 'Add a client intervention'"
+        ></nb-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="card-row">
+    <ng-container *ngFor="let childItem of getChildItems()">
+      <div class="card-col">
+        <tock-scenario-conception-item
+          [isReadonly]="isReadonly"
+          [item]="childItem"
+          [parentId]="item.id"
+          [contexts]="contexts"
+          [selectedItem]="selectedItem"
+          [mode]="mode"
+          [scenario]="scenario"
+          [avalaibleHandlers]="avalaibleHandlers"
+          [availableStories]="availableStories"
+        ></tock-scenario-conception-item>
+      </div>
+    </ng-container>
+  </div>
+</div>

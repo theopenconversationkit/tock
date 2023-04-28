@@ -1,12 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NbButtonModule, NbCardModule, NbDialogRef, NbIconModule, NbTagModule, NbToggleModule, NbTooltipModule } from '@nebular/theme';
+import {
+  NbButtonModule,
+  NbCardModule,
+  NbDialogRef,
+  NbDialogService,
+  NbIconModule,
+  NbTagModule,
+  NbToggleModule,
+  NbTooltipModule
+} from '@nebular/theme';
 import { of } from 'rxjs';
 
-import { StateService } from '../../../core-nlp/state.service';
-import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqManagementListComponent } from './faq-management-list.component';
 import { FaqDefinitionExtended } from '../faq-management.component';
-import { DialogService } from '../../../core-nlp/dialog.service';
+import { StateService } from '../../../core-nlp/state.service';
+import { TestingModule } from '../../../../testing';
+import { StubNbDialogService, StubStateService } from '../../../../testing/stubs';
 
 const mockFaqs: FaqDefinitionExtended[] = [
   {
@@ -59,20 +68,10 @@ describe('FaqManagementListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FaqManagementListComponent],
-      imports: [TestSharedModule, NbIconModule, NbCardModule, NbButtonModule, NbTagModule, NbToggleModule, NbTooltipModule],
+      imports: [TestingModule, NbIconModule, NbCardModule, NbButtonModule, NbTagModule, NbToggleModule, NbTooltipModule],
       providers: [
-        {
-          provide: StateService,
-          useValue: {
-            currentApplication: { name: 'app' },
-            currentLocale: 'fr',
-            intentIdExistsInOtherApplication: () => false
-          }
-        },
-        {
-          provide: DialogService,
-          useValue: { openDialog: () => ({ onClose: (val: any) => of(val) }) }
-        }
+        { provide: StateService, useClass: StubStateService },
+        { provide: NbDialogService, useClass: StubNbDialogService }
       ]
     }).compileComponents();
   });
@@ -144,7 +143,7 @@ describe('FaqManagementListComponent', () => {
     });
 
     it('should emit faq when confirmation message is confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('delete') } as NbDialogRef<any>);
       spyOn(component.onDelete, 'emit');
 
       component.delete(mockFaqs[0]);
@@ -153,7 +152,7 @@ describe('FaqManagementListComponent', () => {
     });
 
     it('should not emit faq when confirmation message is not confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component.onDelete, 'emit');
 
       component.delete(mockFaqs[0]);
@@ -175,7 +174,7 @@ describe('FaqManagementListComponent', () => {
     });
 
     it('should emit faq to disable when confirmation message is confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('disable') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('disable') } as NbDialogRef<any>);
       spyOn(component.onEnable, 'emit');
 
       component.toggleEnabled(mockFaqs[0]);
@@ -184,7 +183,7 @@ describe('FaqManagementListComponent', () => {
     });
 
     it('should emit faq to enable when confirmation message is confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('enable') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('enable') } as NbDialogRef<any>);
       spyOn(component.onEnable, 'emit');
 
       component.toggleEnabled(mockFaqs[3]);
@@ -193,7 +192,7 @@ describe('FaqManagementListComponent', () => {
     });
 
     it('should not emit faq when confirmation message is not confirmed', () => {
-      spyOn(component['dialogService'], 'openDialog').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
+      spyOn(component['nbDialogService'], 'open').and.returnValue({ onClose: of('cancel') } as NbDialogRef<any>);
       spyOn(component.onEnable, 'emit');
 
       component.toggleEnabled(mockFaqs[0]);

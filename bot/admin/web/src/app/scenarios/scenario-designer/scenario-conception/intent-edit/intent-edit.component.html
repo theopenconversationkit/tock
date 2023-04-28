@@ -1,0 +1,281 @@
+<nb-card id="modal-wrapper">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    Intent definition
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Cancel"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div class="row">
+      <div class="col-12">
+        <nb-toggle
+          [formControl]="primary"
+          nbTooltip="Primary intentions are intentions that can be triggered outside the execution of a scenario. Be careful with this option."
+          >Primary intent</nb-toggle
+        >
+      </div>
+
+      <div class="col-12">
+        <label class="font-weight-bold">Status :</label>
+        <span *ngIf="item.intentDefinition.intentId"> Already exists. Will be reassigned upon publication. </span>
+        <span *ngIf="!item.intentDefinition.intentId"> Does not exist. Will be created upon publishing. </span>
+      </div>
+
+      <div
+        *ngIf="item.intentDefinition.intentId"
+        class="col-12"
+      >
+        <label class="font-weight-bold">Id :</label>
+        <span>
+          {{ item.intentDefinition.intentId }}
+        </span>
+      </div>
+      <div class="col-12">
+        <label class="font-weight-bold">Name :</label>
+        <span *ngIf="!doesIntentBelongToCurrentNameSpace(item.intentDefinition)"
+          >{{ getIntentDefinitionIntent(item.intentDefinition).namespace }}:</span
+        >{{ item.intentDefinition.name }}
+      </div>
+      <div
+        *ngIf="item.intentDefinition.label"
+        class="col-12"
+      >
+        <label class="font-weight-bold">Label :</label>
+        <span>
+          {{ item.intentDefinition.label }}
+        </span>
+
+        <nb-icon
+          *ngIf="!isLabelASentence() && !isReadonly"
+          icon="arrowhead-down-outline"
+          status="basic"
+          nbTooltip="Use label as a sentence"
+          class="pointer valign-middle"
+          (click)="copyLabelToSentences()"
+        ></nb-icon>
+      </div>
+      <div
+        *ngIf="item.intentDefinition.category"
+        class="col-12"
+      >
+        <label class="font-weight-bold">Category :</label>
+        <span>
+          {{ item.intentDefinition.category }}
+        </span>
+      </div>
+
+      <div
+        *ngIf="item.intentDefinition.description"
+        class="col-12"
+      >
+        <label class="font-weight-bold">Description :</label>
+        <span>
+          {{ item.intentDefinition.description }}
+        </span>
+      </div>
+    </div>
+
+    <hr class="my-2" />
+
+    <strong> Sentences matching this Intent :</strong>
+    <div class="questions mt-1">
+      <ul class="sentences-list">
+        <li
+          *ngFor="let sentence of sentences.value"
+          class="sentences-list-item p-0 d-flex justify-content-between align-items-start"
+        >
+          <tock-scenario-sentence-edit
+            [scenario]="scenario"
+            [sentence]="sentence"
+            [contexts]="contexts"
+            [isReadonly]="isReadonly"
+            [contextsEntities]="contextsEntities"
+            [allEntities]="entitiesCache"
+            (componentActivated)="componentActivated($event)"
+            (entityAdded)="entityAdded()"
+          ></tock-scenario-sentence-edit>
+
+          <nb-icon
+            icon="trash-2-outline"
+            status="danger"
+            (click)="removeSentence(sentence)"
+            class="pointer mx-2 mt-2 min-width-1em"
+            nbTooltip="Remove this formulation"
+          ></nb-icon>
+        </li>
+      </ul>
+
+      <ul class="sentences-list">
+        <ng-container *ngFor="let sentence of _sentences">
+          <li
+            *ngIf="!isSentenceModified(sentence)"
+            class="sentences-list-item p-0 d-flex justify-content-between text-mitigated"
+          >
+            <tock-scenario-sentence-edit
+              [scenario]="scenario"
+              [sentence]="sentence"
+              [contexts]="contexts"
+              [isReadonly]="isReadonly"
+              [contextsEntities]="contextsEntities"
+              [allEntities]="entitiesCache"
+              (componentActivated)="componentActivated($event)"
+              (entityAdded)="entityAdded()"
+              (storeModifiedSentence)="storeModifiedSentence($event)"
+            ></tock-scenario-sentence-edit>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+
+    <div
+      class="d-flex mt-2"
+      *ngIf="!isReadonly"
+    >
+      <input
+        #addSentenceInput
+        tockAutofocusElement
+        nbInput
+        fullWidth
+        id="newQuestion"
+        type="text"
+        placeholder="Add a new sentence formulation and press enter"
+        (keyup.enter)="addSentence()"
+      />
+
+      <button
+        type="button"
+        nbButton
+        ghost
+        size="small"
+        class="ml-1"
+        [disabled]="!addSentenceInput.value.length"
+        (click)="addSentence()"
+      >
+        Add
+      </button>
+    </div>
+
+    <div
+      *ngIf="!primary.value"
+      class="mt-3"
+    >
+      <hr class="my-3" />
+
+      <tock-form-control
+        *ngIf="!isReadonly"
+        label="Output contexts"
+        name="outputContexts"
+        [controls]="outputContextsAddError"
+        [showError]="true"
+      >
+        <nb-list class="contexts-list">
+          <nb-list-item
+            *ngFor="let outputContext of outputContextNames.value"
+            class="p-2 d-flex justify-content-between"
+          >
+            <div class="ellipsis font-weight-bold">
+              {{ outputContext }}
+            </div>
+
+            <ng-container *ngFor="let context of getContextByName(outputContext)">
+              <span
+                *ngIf="context?.entityType"
+                nbTooltip="Entity associated with the context"
+                class="entity"
+                [style.background]="getContextEntityColor(context)"
+                [style.color]="getContextEntityContrast(context)"
+              >
+                {{ qualifiedName(stateService.user, context.entityType, context.entityRole) }}
+              </span>
+            </ng-container>
+
+            <nb-icon
+              *ngIf="!isReadonly"
+              icon="trash-2-outline"
+              status="danger"
+              class="min-width-1em ml-2 pointer"
+              nbTooltip="Remove this context from outputs"
+              (click)="removeContext(outputContext)"
+            ></nb-icon>
+          </nb-list-item>
+        </nb-list>
+
+        <div class="d-flex mt-2">
+          <input
+            #addContextInput
+            nbInput
+            fullWidth
+            id="newContext"
+            type="text"
+            placeholder="Add an output context and press enter"
+            (keyup)="resetContextsAddErrors()"
+            (keyup.enter)="addContext()"
+            autocomplete="off"
+            [nbAutocomplete]="outputContextsAutocomplete"
+            (focus)="updateContextsAutocompleteValues()"
+            (keyup)="updateContextsAutocompleteValues($event)"
+          />
+          <nb-autocomplete #outputContextsAutocomplete>
+            <nb-option
+              *ngFor="let option of contextsAutocompleteValues | async"
+              [value]="option"
+            >
+              {{ option }}
+            </nb-option>
+          </nb-autocomplete>
+
+          <button
+            type="button"
+            nbButton
+            ghost
+            size="small"
+            class="ml-1"
+            [disabled]="!addContextInput.value.length"
+            (click)="addContext()"
+          >
+            Add
+          </button>
+        </div>
+      </tock-form-control>
+    </div>
+  </nb-card-body>
+
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="cancel()"
+    >
+      <span *ngIf="!isReadonly">Cancel</span>
+      <span *ngIf="isReadonly">Close</span>
+    </button>
+    <button
+      *ngIf="!isReadonly"
+      nbButton
+      size="small"
+      status="danger"
+      (click)="dissociateIntent()"
+    >
+      <span *ngIf="item.intentDefinition.intentId"> Dissociate intent </span>
+      <span *ngIf="!item.intentDefinition.intentId"> Delete intent </span>
+    </button>
+
+    <button
+      *ngIf="!isReadonly"
+      nbButton
+      size="small"
+      status="primary"
+      (click)="save()"
+    >
+      Save
+    </button>
+  </nb-card-footer>
+</nb-card>

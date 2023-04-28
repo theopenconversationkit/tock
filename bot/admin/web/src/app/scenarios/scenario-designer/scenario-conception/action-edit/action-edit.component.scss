@@ -1,0 +1,68 @@
+@import '@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+@include nb-install-component {
+  #formMiddleSection {
+    border-top: 1px solid nb-theme(border-basic-color-3);
+    padding-top: 1rem;
+
+    display: grid;
+    grid-template-columns: minmax(5rem, 80vw);
+
+    > :nth-child(5) {
+      display: none;
+    }
+
+    .contexts-list {
+      @include nb-scrollbars(nb-theme(card-scrollbar-color), nb-theme(card-scrollbar-background-color), nb-theme(card-scrollbar-width));
+      scrollbar-gutter: stable;
+      max-height: 16vh;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  @include media-breakpoint-up(sm) {
+    #formMiddleSection {
+      grid-template-columns: minmax(5rem, 20rem) minmax(5rem, 20rem);
+      column-gap: 0.5rem;
+      grid-template-rows: auto auto;
+      grid-auto-flow: column;
+
+      > :nth-child(5) {
+        display: block;
+        grid-row-start: 2;
+        align-self: center;
+      }
+
+      > :nth-child(6) {
+        grid-row-start: 2;
+      }
+
+      .contexts-list {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.entity {
+  border-radius: 0.45rem;
+  padding: 0rem 0.3rem 0rem 0.3rem;
+  font-size: 0.7rem;
+  display: inline-block;
+  line-height: 1.25rem;
+}
+
+@include nb-install-component {
+  #formBottomSection {
+    border-top: 1px solid nb-theme(border-basic-color-3);
+    padding-top: 1rem;
+  }
+}
+
+.arrowhead-centered {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

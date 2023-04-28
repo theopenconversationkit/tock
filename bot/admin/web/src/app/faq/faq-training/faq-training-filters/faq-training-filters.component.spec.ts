@@ -10,8 +10,8 @@ import {
   NbTooltipModule
 } from '@nebular/theme';
 
-import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqTrainingFiltersComponent } from './faq-training-filters.component';
+import { TestingModule } from '../../../../testing';
 
 describe('FaqTrainingFiltersComponent', () => {
   let component: FaqTrainingFiltersComponent;
@@ -21,7 +21,7 @@ describe('FaqTrainingFiltersComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [FaqTrainingFiltersComponent],
       imports: [
-        TestSharedModule,
+        TestingModule,
         NbButtonModule,
         NbCardModule,
         NbFormFieldModule,

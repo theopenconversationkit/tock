@@ -20,6 +20,7 @@ import { StateService } from '../core-nlp/state.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ApplicationScopedQuery } from '../model/commons';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType } from './model/configuration';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Injectable()
 export class BotConfigurationService implements OnDestroy {
@@ -47,23 +48,30 @@ export class BotConfigurationService implements OnDestroy {
 
   updateConfigurations() {
     if (this.state.currentApplication) {
-      this.getBots(this.state.currentApplication.name).subscribe((bots) => {
-        this.bots.next(bots);
-        this.getConfigurations(this.state.createApplicationScopedQuery()).subscribe((c) => {
-          this.configurations.next(c);
-          let rest = c.filter((c) => c.connectorType.isRest());
-          this.restConfigurations.next(rest);
-          this.hasRestConfigurations.next(rest.length !== 0);
-          const connectors = [];
-          c.forEach((conf) => {
-            if (!conf.connectorType.isRest() && !connectors.some((e) => conf.connectorType.id === e.id)) {
-              connectors.push(conf.connectorType);
-            }
-          });
-          this.supportedConnectors.next(connectors);
-        });
-      });
+      this.grabConfigurations().subscribe();
     }
+  }
+
+  grabConfigurations(): Observable<BotApplicationConfiguration[]> {
+    return this.getBots(this.state.currentApplication.name).pipe(
+      tap((bots) => {
+        this.bots.next(bots);
+      }),
+      switchMap(() => this.getConfigurations(this.state.createApplicationScopedQuery())),
+      tap((configurations) => {
+        this.configurations.next(configurations);
+        let rest = configurations.filter((c) => c.connectorType.isRest());
+        this.restConfigurations.next(rest);
+        this.hasRestConfigurations.next(rest.length !== 0);
+        const connectors = [];
+        configurations.forEach((conf) => {
+          if (!conf.connectorType.isRest() && !connectors.some((e) => conf.connectorType.id === e.id)) {
+            connectors.push(conf.connectorType);
+          }
+        });
+        this.supportedConnectors.next(connectors);
+      })
+    );
   }
 
   private getConfigurations(query: ApplicationScopedQuery): Observable<BotApplicationConfiguration[]> {

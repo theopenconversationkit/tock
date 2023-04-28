@@ -38,12 +38,16 @@ import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.I18LabelQuery
+import ai.tock.bot.admin.model.I18nLabelSummarySearchQuery
 import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.verticle.ScenarioVerticle
 import ai.tock.bot.admin.module.satisfactionContentModule
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
+import ai.tock.bot.admin.verticle.StoryVerticle
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
+import ai.tock.bot.admin.verticle.ScenarioSettingsVerticle
 import ai.tock.bot.connector.ConnectorType.Companion.rest
 import ai.tock.bot.connector.ConnectorTypeConfiguration
 import ai.tock.bot.connector.rest.addRestConnector
@@ -81,6 +85,7 @@ import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 
 /**
@@ -89,6 +94,10 @@ import org.litote.kmongo.toId
 open class BotAdminVerticle : AdminVerticle() {
 
     private val botAdminConfiguration = BotAdminConfiguration()
+
+    private val scenarioVerticle = ScenarioVerticle()
+    private val storyVerticle = StoryVerticle()
+    private val scenarioSettingsVerticle = ScenarioSettingsVerticle()
 
     override val logger: KLogger = KotlinLogging.logger {}
 
@@ -100,6 +109,8 @@ open class BotAdminVerticle : AdminVerticle() {
 
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
+    override fun protectedPaths(): Set<String> = setOf(rootPath)
+
     override fun configureServices() {
         vertx.eventBus().consumer<Boolean>(ServerStatus.SERVER_STARTED) {
             if (it.body() && booleanProperty(Properties.FAQ_MIGRATION_ENABLED, false)) {
@@ -108,7 +119,6 @@ open class BotAdminVerticle : AdminVerticle() {
         }
         initTranslator()
         dialogFlowDAO.initFlowStatCrawl()
-
         super.configureServices()
     }
 
@@ -130,6 +140,10 @@ open class BotAdminVerticle : AdminVerticle() {
 
     override fun configure() {
         configureServices()
+
+        scenarioVerticle.configureScenario(this)
+        storyVerticle.configure(this)
+        scenarioSettingsVerticle.configure(this)
 
         blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
@@ -677,14 +691,6 @@ open class BotAdminVerticle : AdminVerticle() {
             )
         }
 
-        blockingJsonDelete(
-                "/bot/story/:storyId",
-                setOf(botUser, faqBotUser),
-                simpleLogger("Delete Story", { it.path("storyId") })
-        ) { context ->
-            BotAdminService.deleteStory(context.organization, context.path("storyId"))
-        }
-
         blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
             if (context.organization == request.namespace) {
                 measureTimeMillis(
@@ -700,15 +706,53 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonGet("/i18n", setOf(botUser, faqBotUser)) { context ->
             val stats = i18n.getLabelStats(context.organization).groupBy { it.labelId }
             BotI18nLabels(
-                    i18n
-                            .getLabels(context.organization)
-                            .map {
-                                BotI18nLabel(
-                                        it,
-                                        stats[it._id] ?: emptyList()
-                                )
-                            }
+                i18n
+                    .getLabels(context.organization)
+                    .map {
+                        BotI18nLabel(
+                            it,
+                            stats[it._id] ?: emptyList()
+                        )
+                    }
             )
+        }
+
+        /**
+         * endpoint useful to search on i18n ids with persistent ids
+         */
+        blockingJsonPost(
+            "/i18n/search",
+            setOf(botUser, faqBotUser),
+            simpleLogger("search i18n with ids")
+        ) { _: RoutingContext, query: I18nLabelSummarySearchQuery ->
+            if (query.i18nIds.isEmpty()) {
+                badRequest("no filter found on i18nIds")
+            } else {
+                return@blockingJsonPost BotI18nLabels(
+                    i18n.getLabelsByIds(query.i18nIds)
+                        .ifEmpty { notFound() }
+                        .map {
+                            BotI18nLabel(
+                                it,
+                                //stats not needed here
+                                emptyList()
+                            )
+                        })
+            }
+        }
+
+        blockingGet(
+            "/i18n/:id",
+            setOf(botUser, faqBotUser),
+        ) { context ->
+            val i18nId = context.queryId<I18nLabel>("id")
+            if (i18nId == null || i18nId.toString().isBlank()) {
+                badRequest("Missing parameter id for i18n")
+            } else {
+                i18n.getLabelById(i18nId)?.let {
+                    mapper.writeValueAsString(it)
+                } ?: notFound()
+            }
         }
 
         blockingJsonPost(

@@ -26,5 +26,6 @@ data class BotDialogResponse(
     val messages: List<ClientMessage>,
     val userLocale: Locale? = null,
     val userActionId: String? = null,
-    val hasNlpStats: Boolean = false
+    val hasNlpStats: Boolean = false,
+    val debug: DialogDebugData? = null
 )
