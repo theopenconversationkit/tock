@@ -262,12 +262,13 @@ Celle-ci configure [Logback](http://logback.qos.ch/) programmatiquement, avec le
 Des variables d'environnement permettent de configurer ces différents modes de journalisation. 
 Elles peuvent être définies indépendamment sur chaque composant produisant des logs.
 
-| Variable d'environnement      | Valeur par défaut                            | Description |
-|-------------------------------|----------------------------------------------|-------------|
-| `tock_env`                    | `dev`                                        | Environnement (attention : contrôle d'autres mécanismes que les logs). |
-| `tock_logback_enabled`        | `true`                                       | Activation des logs. |
-| `tock_default_log_level`      | `DEBUG` si `tock_env=dev` (autrement `INFO`) | Niveau de log général (hors exceptions, voir plus haut). |
-| `tock_logback_file_appender`  | `false`                                      | Logs fichiers (voir détails plus haut) à la place des logs console (sortie standard). |
+| Variable d'environnement     | Valeur par défaut                            | Description                                                                                                                                                   |
+|------------------------------|----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `tock_env`                   | `dev`                                        | Environnement (attention : contrôle d'autres mécanismes que les logs).                                                                                        |
+| `tock_logback_enabled`       | `true`                                       | Activation des logs.                                                                                                                                          |
+| `tock_default_log_level`     | `DEBUG` si `tock_env=dev` (autrement `INFO`) | Niveau de log général (hors exceptions, voir plus haut).                                                                                                      |
+| `tock_retrofit_log_level`                       | `BASIC` si `tock_env=dev` (autrement `NONE`) | Niveau de logs (requêtes et réponses) pour les services clients applicatifs utilisant Retrofit (TockNlpClient, BotApiClient, et bon nombre de connecteurs...) |
+| `tock_logback_file_appender` | `false`                                      | Logs fichiers (voir détails plus haut) à la place des logs console (sortie standard).                                                                         |
 
 Selon le mode de déploiement utilisé, ces variables d'environnement peuvent être ajoutées soit 
 directement en ligne de commande, soit dans un descripteur type `docker-compose.yml`, `dockerrun.aws.json` ou autre.
