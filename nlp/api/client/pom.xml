@@ -29,6 +29,19 @@
     <description>Client interface for Tock NLP API</description>
 
     <dependencies>
+
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-shared</artifactId>
+            <scope>provided</scope>
+            <!-- Just need to import some code from Retrofit.kt not the dependencies-->
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>

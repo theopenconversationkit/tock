@@ -16,6 +16,8 @@
 
 package ai.tock.shared
 
+import ai.tock.shared.Level.BODY
+import ai.tock.shared.Level.NONE
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.resilience4j.circuitbreaker.CircuitBreaker
@@ -32,6 +34,7 @@ import okhttp3.Protocol
 import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http.promisesBody
+import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import okio.BufferedSink
 import okio.GzipSink
@@ -68,12 +71,29 @@ fun tryToFindLocalIp(): String {
 inline fun <reified T : Any> Retrofit.create(): T = create(T::class.java)
 
 /**
+ * Retrofit log level environment variable
+ */
+val retrofitDefaultLogLevel = propertyOrNull("tock_retrofit_log_level")
+
+/**
+ * Adapt retrofit log level to [logLevel] following the [Level] (inspired from [HttpLoggingInterceptor.Level])
+ * Default is [BODY] when using dev environment, [NONE] in Production
+ * @param logLevel the [Level] wanted, easy to use the environment variable [logLevel]
+ * @return [Level]
+ */
+fun retrofitLogLevel(logLevel: String?): Level =
+    if (devEnvironment && logLevel.isNullOrEmpty()) BODY
+    else {
+        logLevel?.let { Level.valueOf(logLevel) } ?: NONE
+    }
+
+/**
  * Init a [Retrofit.Builder] with specified timeout, logger and interceptors.
  */
 fun retrofitBuilderWithTimeoutAndLogger(
     ms: Long,
     logger: KLogger = KotlinLogging.logger {},
-    level: Level = Level.BODY,
+    level: Level = retrofitLogLevel(retrofitDefaultLogLevel),
     interceptors: List<Interceptor> = emptyList(),
     /**
      * Gzip the request for servers that support it.
@@ -204,6 +224,7 @@ private class GzipRequestInterceptor : Interceptor {
 enum class Level {
     /** No logs.  */
     NONE,
+
     /**
      * Logs request and response lines.
 
@@ -212,9 +233,10 @@ enum class Level {
      * <pre>`--> POST /greeting http/1.1 (3-byte body)
 
      * <-- 200 OK (22ms, 6-byte body)
-     `</pre> *
+    `</pre> *
      */
     BASIC,
+
     /**
      * Logs request and response lines and their respective headers.
 
@@ -230,9 +252,10 @@ enum class Level {
      * Content-Type: plain/text
      * Content-Length: 6
      * <-- END HTTP
-     `</pre> *
+    `</pre> *
      */
     HEADERS,
+
     /**
      * Logs request and response lines and their respective headers and bodies (if present).
 
@@ -252,7 +275,7 @@ enum class Level {
 
      * Hello!
      * <-- END HTTP
-     `</pre> *
+    `</pre> *
      */
     BODY
 }
@@ -328,12 +351,12 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                     logger.info(buffer.readString(charset))
                     logger.info(
                         "--> END " + request.method +
-                            " (" + requestBody.contentLength() + "-byte body)"
+                                " (" + requestBody.contentLength() + "-byte body)"
                     )
                 } else {
                     logger.info(
                         "--> END " + request.method + " (binary " +
-                            requestBody.contentLength() + "-byte body omitted)"
+                                requestBody.contentLength() + "-byte body omitted)"
                     )
                 }
             }
@@ -355,13 +378,13 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         val bodySize = if (contentLength != -1L) contentLength.toString() + "-byte" else "unknown-length"
         logger.info(
             "<-- " + response.code + ' ' + response.message + ' ' +
-                response.request.url + " (" + tookMs + "ms" + (
-                if (!logHeaders)
-                    ", " +
-                        bodySize + " body"
-                else
-                    ""
-                ) + ')'
+                    response.request.url + " (" + tookMs + "ms" + (
+                    if (!logHeaders)
+                        ", " +
+                                bodySize + " body"
+                    else
+                        ""
+                    ) + ')'
         )
 
         if (logHeaders) {
