@@ -82,15 +82,15 @@
   <nb-card-body class="main-card-body">
     <div class="row mt-3">
       <div class="col-12 mb-3">
-        <div class="stats-line d-flex justify-content-between gap-1 p-2">
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
           Number of user inputs
           <div>{{ userMessagesSum }}</div>
         </div>
-        <div class="stats-line d-flex justify-content-between gap-1 p-2">
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
           Number of answers
           <div>{{ answeredQuestions }}</div>
         </div>
-        <div class="stats-line d-flex justify-content-between gap-1 p-2">
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
           Number of questions not understood
           <small
             class="stats-line-value text-danger pointer"
@@ -106,7 +106,7 @@
             {{ notUnderstoodQuestions }}
           </div>
         </div>
-        <div class="stats-line d-flex justify-content-between gap-1 p-2">
+        <div class="stats-line d-flex justify-content-between gap-1 py-2">
           <strong>Bot response rate</strong>
           <small
             class="stats-line-value text-danger pointer"
@@ -125,16 +125,24 @@
     </div>
 
     <div class="row mt-3">
-      <div class="col-12 col-md-6">
+      <div
+        class="col-12 col-xl-6"
+        [ngClass]="{ 'force-col-12': doesStoriesHitsEcxeed(24) }"
+      >
         <h6>Number of user messages</h6>
         <div
           *ngIf="messagesChartOptions"
           echarts
           [options]="messagesChartOptions"
+          class="messages-height"
+          [ngClass]="{ 'height-250': doesStoriesHitsEcxeed(24) }"
         ></div>
       </div>
 
-      <div class="col-12 col-md-6">
+      <div
+        class="col-12 col-xl-6"
+        [ngClass]="{ 'force-col-12': doesStoriesHitsEcxeed(24) }"
+      >
         <div class="row mb-3">
           <div class="col-6">
             <h6>Distribution of stories</h6>
@@ -181,6 +189,7 @@
         <div
           echarts
           [options]="storiesChart"
+          (chartClick)="onStoriesChartClick($event)"
         ></div>
       </div>
     </div>

@@ -27,6 +27,7 @@ import { IndicatorsEditComponent } from './indicators/indicators-edit/indicators
 import { IndicatorsFiltersComponent } from './indicators/indicators-filters/indicators-filters.component';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { MetricsByStoriesComponent } from './metrics-board/metrics-by-stories/metrics-by-stories.component';
+import { StoriesHitsComponent } from './metrics-board/stories-hits/stories-hits.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { MetricsByStoriesComponent } from './metrics-board/metrics-by-stories/me
     MetricsByStoriesComponent,
     IndicatorsComponent,
     IndicatorsEditComponent,
-    IndicatorsFiltersComponent
+    IndicatorsFiltersComponent,
+    StoriesHitsComponent
   ],
   imports: [
     ReactiveFormsModule,

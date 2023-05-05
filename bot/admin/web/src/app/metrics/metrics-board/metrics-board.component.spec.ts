@@ -225,24 +225,32 @@ describe('MetricsBoardComponent', () => {
   it('should init stories hits chart', () => {
     expect(component.storiesChart.series[0].data).toEqual([
       {
-        value: 1,
-        name: 'unknown Story',
-        itemStyle: { color: '#aaaaaa' }
-      },
-      {
-        value: 2,
-        name: 'test Story',
-        itemStyle: { color: undefined }
+        value: 6,
+        name: 'test Story 2',
+        itemStyle: { color: undefined },
+        otherStories: undefined
       },
       {
         value: 3,
         name: 'Deleted Stories',
-        itemStyle: { color: '#000000' }
+        itemStyle: {
+          color: '#000000'
+        },
+        otherStories: undefined
       },
       {
-        value: 6,
-        name: 'test Story 2',
-        itemStyle: { color: undefined }
+        value: 2,
+        name: 'test Story',
+        itemStyle: { color: undefined },
+        otherStories: undefined
+      },
+      {
+        value: 1,
+        name: 'unknown Story',
+        itemStyle: {
+          color: '#aaaaaa'
+        },
+        otherStories: undefined
       }
     ]);
   });

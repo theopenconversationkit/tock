@@ -14,6 +14,7 @@ import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { heuristicValueColorDetection } from '../commons/utils';
 import { IndicatorDefinition, IndicatorValueDefinition, MetricResult, StorySummary } from '../models';
 import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
+import { StoriesHitsComponent } from './stories-hits/stories-hits.component';
 
 export enum TimeRanges {
   day = 1,
@@ -30,7 +31,7 @@ enum StoriesFilterType {
 
 export type StoriesFilter = { type: StoriesFilterType; value: string | AnswerConfigurationType };
 
-const unknownIntentName = 'unknown';
+export const unknownIntentName = 'unknown';
 
 @Component({
   selector: 'tock-metrics-board',
@@ -228,6 +229,19 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
       });
     }
 
+    filteredMetrics.sort((a, b) => {
+      return b.value - a.value;
+    });
+
+    let mainMetrics = filteredMetrics;
+
+    const maxDisplayedStories = 30;
+    if (mainMetrics.length > maxDisplayedStories) {
+      mainMetrics = filteredMetrics.slice(0, maxDisplayedStories);
+      const othersCount = filteredMetrics.slice(maxDisplayedStories).reduce((acc, current) => acc + current.value, 0);
+      mainMetrics.push({ value: othersCount, name: `Other stories (${filteredMetrics.length - maxDisplayedStories})`, otherStories: true });
+    }
+
     this.storiesChart = {
       tooltip: {
         trigger: 'item',
@@ -247,20 +261,26 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
             borderRadius: 4
           },
 
-          data: filteredMetrics
-            .map((hit) => {
-              return {
-                value: hit.value,
-                name: hit.name,
-                itemStyle: { color: hit.color }
-              };
-            })
-            .sort((a, b) => {
-              return a.value - b.value;
-            })
+          data: mainMetrics.map((hit) => {
+            return {
+              value: hit.value,
+              name: hit.name,
+              itemStyle: { color: hit.color },
+              otherStories: hit.otherStories
+            };
+          })
         }
       ]
     };
+  }
+
+  onStoriesChartClick(event) {
+    this.nbDialogService.open(StoriesHitsComponent, {
+      context: {
+        storiesMetrics: this.storiesMetrics,
+        stories: this.stories
+      }
+    });
   }
 
   currentDimension: string;
@@ -483,6 +503,10 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     if (event.end) {
       this.loadMetrics();
     }
+  }
+
+  doesStoriesHitsEcxeed(nb: number): boolean {
+    return this.storiesMetrics?.length > nb;
   }
 
   helpModalRef;
