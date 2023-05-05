@@ -30,6 +30,8 @@ enum StoriesFilterType {
 
 export type StoriesFilter = { type: StoriesFilterType; value: string | AnswerConfigurationType };
 
+const unknownIntentName = 'unknown';
+
 @Component({
   selector: 'tock-metrics-board',
   templateUrl: './metrics-board.component.html',
@@ -191,7 +193,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
 
   private initStoriesHitsChart(): void {
     const filteredMetrics = [];
-
+    let deletedStoriesHits = 0;
     this.storiesMetrics.forEach((metric) => {
       const story = this.getStorySummaryById(metric.row.trackedStoryId);
 
@@ -206,11 +208,25 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
               return filter.type === StoriesFilterType.category && filter.value === story.category;
             })
           ) {
-            filteredMetrics.push(metric);
+            filteredMetrics.push({
+              value: metric.count,
+              name: this.getStoryNameById(metric.row.trackedStoryId),
+              color: story.intent.name === unknownIntentName ? '#aaaaaa' : undefined
+            });
           }
         }
+      } else {
+        deletedStoriesHits += metric.count;
       }
     });
+
+    if (deletedStoriesHits > 0) {
+      filteredMetrics.push({
+        value: deletedStoriesHits,
+        name: 'Deleted Stories',
+        color: '#000000'
+      });
+    }
 
     this.storiesChart = {
       tooltip: {
@@ -234,8 +250,9 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
           data: filteredMetrics
             .map((hit) => {
               return {
-                value: hit.count,
-                name: this.getStoryNameById(hit.row.trackedStoryId)
+                value: hit.value,
+                name: hit.name,
+                itemStyle: { color: hit.color }
               };
             })
             .sort((a, b) => {
@@ -375,20 +392,41 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     return this.getIndicatorValueByName(indicatorname, indicatorValueName).label;
   }
 
+  hasUnknownStory(): boolean {
+    if (!this.stories?.length) return false;
+    return this.stories.some((story) => {
+      return story.intent.name === unknownIntentName;
+    });
+  }
+
   get userMessagesSum(): number {
     return this.messagesStatsData?.usersData?.reduce((acc, current) => acc + current[0], 0) || 0;
   }
 
-  get answeredMessages(): number {
-    return this.storiesMetrics?.reduce((acc, current) => acc + current.count, 0) || 0;
+  get answeredQuestions(): number {
+    const unknownStorySummary = this.stories?.find((story) => story.intent.name === unknownIntentName);
+    if (unknownStorySummary) {
+      return (
+        this.storiesMetrics
+          ?.filter((story) => story.row.trackedStoryId !== unknownStorySummary._id)
+          .reduce((acc, current) => acc + current.count, 0) || 0
+      );
+    } else {
+      return this.storiesMetrics?.reduce((acc, current) => acc + current.count, 0) || 0;
+    }
   }
 
-  get unAnsweredMessages(): number {
-    return this.userMessagesSum - this.answeredMessages;
+  get notUnderstoodQuestions(): number {
+    if (!this.stories?.length || !this.storiesMetrics?.length) return 0;
+
+    const unknownStorySummary = this.stories.find((story) => story.intent.name === unknownIntentName);
+
+    const unknownStoryMetrics = this.storiesMetrics.find((story) => story.row.trackedStoryId === unknownStorySummary._id);
+    return unknownStoryMetrics ? unknownStoryMetrics.count : 0;
   }
 
   get responseRate(): number {
-    return Math.round(((this.answeredMessages * 100) / this.userMessagesSum) * 100) / 100;
+    return Math.round((100 - (this.notUnderstoodQuestions * 100) / this.answeredQuestions) * 100) / 100;
   }
 
   get indicatorsDimensions(): string[] {
@@ -445,6 +483,15 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
     if (event.end) {
       this.loadMetrics();
     }
+  }
+
+  helpModalRef;
+  displayHelpModal(modalTemplateRef) {
+    this.helpModalRef = this.nbDialogService.open(modalTemplateRef);
+  }
+
+  closeHelpModal() {
+    this.helpModalRef.close();
   }
 
   ngOnDestroy() {

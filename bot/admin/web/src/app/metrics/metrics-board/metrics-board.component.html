@@ -82,21 +82,44 @@
   <nb-card-body class="main-card-body">
     <div class="row mt-3">
       <div class="col-12 mb-3">
-        <div class="stats-line p-2">
-          Number of user messages
-          <span class="stats-line-value">{{ userMessagesSum }}</span>
+        <div class="stats-line d-flex justify-content-between gap-1 p-2">
+          Number of user inputs
+          <div>{{ userMessagesSum }}</div>
         </div>
-        <div class="stats-line p-2">
+        <div class="stats-line d-flex justify-content-between gap-1 p-2">
           Number of answers
-          <span class="stats-line-value">{{ answeredMessages }}</span>
+          <div>{{ answeredQuestions }}</div>
         </div>
-        <div class="stats-line p-2">
-          Number of unanswered messages
-          <span class="stats-line-value">{{ unAnsweredMessages }}</span>
+        <div class="stats-line d-flex justify-content-between gap-1 p-2">
+          Number of questions not understood
+          <small
+            class="stats-line-value text-danger pointer"
+            *ngIf="!hasUnknownStory()"
+            (click)="displayHelpModal(unknownStoryHelpModal)"
+            >No unknown story defined <span class="help-badge">?</span></small
+          >
+
+          <div
+            class="stats-line-value font-weight-bold"
+            *ngIf="hasUnknownStory()"
+          >
+            {{ notUnderstoodQuestions }}
+          </div>
         </div>
-        <div class="stats-line p-2 font-weight-bold">
-          Bot response rate
-          <span class="stats-line-value">{{ responseRate }}%</span>
+        <div class="stats-line d-flex justify-content-between gap-1 p-2">
+          <strong>Bot response rate</strong>
+          <small
+            class="stats-line-value text-danger pointer"
+            *ngIf="!hasUnknownStory()"
+            (click)="displayHelpModal(unknownStoryHelpModal)"
+            >No unknown story defined <span class="help-badge">?</span></small
+          >
+          <div
+            *ngIf="hasUnknownStory()"
+            class="stats-line-value font-weight-bold"
+          >
+            {{ responseRate }}%
+          </div>
         </div>
       </div>
     </div>
@@ -230,3 +253,46 @@
     </div>
   </nb-card-body>
 </nb-card>
+
+<ng-template #unknownStoryHelpModal>
+  <nb-card class="help-modal">
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      How to create an Unknown Story
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="closeHelpModal()"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </nb-card-header>
+    <nb-card-body>
+      In order to obtain reliable statistics, it is necessary to create an "Unknown story". The "Unknown story" allows to determine the
+      response of the bot when it does not understand the user request. Moreover, being a story, it allows to internationalize this answer.
+      <br />
+      <br />
+      To create an "Unknown story" in your bot:
+      <br />
+      <br />
+      <ol>
+        <li>Go to "Stories & Answers" then "New story" tab.</li>
+        <li>Give a name to your "Unknown story" (for example: Unknown Story) then validate</li>
+        <li>Click on the "Edit story" icon and in the "Intent" field, enter the word "unknown"</li>
+        <li>In the "Answers" part, enter the message to return to users when the bot does not understand their request.</li>
+        <li>Click on "Create story"</li>
+      </ol>
+    </nb-card-body>
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="closeHelpModal()"
+      >
+        Close
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>

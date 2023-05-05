@@ -47,12 +47,22 @@ const messagesStats: UserAnalyticsQueryResult = {
 
 const storiesSummaries: StorySummary[] = [
   {
+    _id: '789',
+    category: 'testCategory',
+    currentType: AnswerConfigurationType.simple,
+    metricStory: false,
+    name: 'unknown Story',
+    storyId: 'unknownStory',
+    intent: { name: 'unknown' }
+  },
+  {
     _id: '123',
     category: 'testCategory',
     currentType: AnswerConfigurationType.simple,
     metricStory: false,
     name: 'test Story',
-    storyId: 'testStory'
+    storyId: 'testStory',
+    intent: { name: 'testIntent' }
   },
   {
     _id: '456',
@@ -60,11 +70,18 @@ const storiesSummaries: StorySummary[] = [
     currentType: AnswerConfigurationType.simple,
     metricStory: false,
     name: 'test Story 2',
-    storyId: 'testStory2'
+    storyId: 'testStory2',
+    intent: { name: 'testIntent2' }
   }
 ];
 
 const storiesHits: MetricResult[] = [
+  {
+    row: {
+      trackedStoryId: '789'
+    },
+    count: 1
+  },
   {
     row: {
       trackedStoryId: '123'
@@ -76,6 +93,12 @@ const storiesHits: MetricResult[] = [
       trackedStoryId: '456'
     },
     count: 6
+  },
+  {
+    row: {
+      trackedStoryId: 'deletedStoryId'
+    },
+    count: 3
   }
 ];
 
@@ -202,12 +225,24 @@ describe('MetricsBoardComponent', () => {
   it('should init stories hits chart', () => {
     expect(component.storiesChart.series[0].data).toEqual([
       {
+        value: 1,
+        name: 'unknown Story',
+        itemStyle: { color: '#aaaaaa' }
+      },
+      {
         value: 2,
-        name: 'test Story'
+        name: 'test Story',
+        itemStyle: { color: undefined }
+      },
+      {
+        value: 3,
+        name: 'Deleted Stories',
+        itemStyle: { color: '#000000' }
       },
       {
         value: 6,
-        name: 'test Story 2'
+        name: 'test Story 2',
+        itemStyle: { color: undefined }
       }
     ]);
   });
@@ -216,20 +251,24 @@ describe('MetricsBoardComponent', () => {
     expect(component.messagesChartOptions.series[0].data).toEqual([0, 5, 12]);
   });
 
+  it('should check if an unknown story exists', () => {
+    expect(component.hasUnknownStory()).toBeTrue();
+  });
+
   it('should compute sum of messages', () => {
     expect(component.userMessagesSum).toEqual(17);
   });
 
   it('should compute sum of answered messages', () => {
-    expect(component.answeredMessages).toEqual(8);
+    expect(component.answeredQuestions).toEqual(11);
   });
 
   it('should compute sum of unanswered messages', () => {
-    expect(component.unAnsweredMessages).toEqual(9);
+    expect(component.notUnderstoodQuestions).toEqual(1);
   });
 
   it('should compute response rate', () => {
-    expect(component.responseRate).toEqual(47.06);
+    expect(component.responseRate).toEqual(90.91);
   });
 
   it('should retrieve indicators by name', () => {
@@ -266,7 +305,8 @@ describe('MetricsBoardComponent', () => {
     expect(component.currentDimensionCharts[0].series[0].data).toEqual([
       {
         value: 1,
-        name: 'oui label'
+        name: 'oui label',
+        itemStyle: { color: undefined }
       },
       {
         value: 1,
