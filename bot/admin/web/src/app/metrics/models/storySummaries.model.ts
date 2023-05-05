@@ -7,4 +7,5 @@ export interface StorySummary {
   metricStory: boolean;
   name: string;
   storyId: string;
+  intent: { name: string };
 }
