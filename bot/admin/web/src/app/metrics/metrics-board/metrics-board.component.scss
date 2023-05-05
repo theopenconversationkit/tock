@@ -1,3 +1,6 @@
+@import '@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/global/breakpoints';
+
 .main-card-body {
   overflow: visible;
 }
@@ -24,4 +27,22 @@
 
 .help-modal {
   max-width: 90vw;
+}
+
+.force-col-12 {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.messages-height {
+  height: 250px;
+}
+@include media-breakpoint-up(xl) {
+  .messages-height {
+    height: 400px;
+  }
+}
+
+.height-250 {
+  height: 250px !important;
 }
