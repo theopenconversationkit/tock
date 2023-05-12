@@ -30,8 +30,6 @@ interface DialogReportDAO {
 
     fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult?
 
-    fun findBotDialogStatsByRating(query: DialogReportQuery): List<DialogRating>
-
     fun getDialog(id: Id<Dialog>): DialogReport?
 
     fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats?

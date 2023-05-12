@@ -58,5 +58,32 @@ export class SatisfactionDetailsComponent implements OnInit {
     const res = this.satisfactionStat.ratingDetails.find(it => it.rating == note)
     return res ? res.nbUsers : 0;
   }
+
+
+  getStarArray(): any[] {
+    const roundedRating = Math.round(this.satisfactionStat.ratingBot);
+    return Array(roundedRating).fill(0);
+  }
+
+
+  getStyles() {
+    const percent = this.satisfactionStat.ratingBot / 5 * 100;
+    return {
+      background: `conic-gradient(${this.getColorFromRating(this.satisfactionStat.ratingBot)} ${percent}%, #e6e6e6 ${percent}% 100%)`
+    };
+  }
+
+  getColorFromRating(rating: number): string {
+    const maxRating = 5; // Maximum rating
+    const minHue = 0; // Minimum hue (red)
+    const maxHue = 120; // Maximum hue (green)
+
+    //  Calculate the hue based on the rating (from 0 to 120)
+    const hue = (rating / maxRating) * (maxHue - minHue) + minHue;
+
+    // Convert the hue to a CSS color
+    return `hsl(${hue}, 70%, 50%)`;
+  }
+
 }
 

@@ -392,7 +392,7 @@ internal data class DialogCol(
 @Data(internal = true)
 @JacksonData(internal = true)
 data class ParseRequestSatisfactionStatCol(
-        val rating: Int,
+        val rating: Double,
         val count: Int = 1
 ) {
 
