@@ -223,8 +223,7 @@ object BotAdminService {
     }
 
     fun searchRating(query: DialogsSearchQuery): RatingReportQueryResult? {
-        val res = dialogReportDAO.findBotDialogStats(query.toDialogReportQuery()) ?: return null
-        return res.copy(ratingDetails = dialogReportDAO.findBotDialogStatsByRating(query.toDialogReportQuery()))
+        return dialogReportDAO.findBotDialogStats(query.toDialogReportQuery())
     }
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {

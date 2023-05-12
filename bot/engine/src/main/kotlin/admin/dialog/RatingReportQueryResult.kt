@@ -33,7 +33,7 @@ data class RatingReportQueryResult(
      * the average rating must be between 1 and 5
      * it can be null if no user has rated the bot or satisfaction is not activated
      */
-    val ratingBot: Int?,
+    val ratingBot: Double?,
 
     /**
      * [nbUsersRated] the number of users who rated the bot
