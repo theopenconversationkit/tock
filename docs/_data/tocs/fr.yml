@@ -36,6 +36,10 @@ content:
             url: 'fr/user/studio/nlu-qa'
           - title: 'Le menu Settings'
             url: 'fr/user/studio/configuration'
+          - title: 'Le menu FAQ Management'
+            url: 'fr/user/studio/faq-management'
+          - title: 'Le menu FAQ Training'
+            url: 'fr/user/studio/faq-training'
       - title: 'Guides'
         url: 'fr/user/guides'
         children:
