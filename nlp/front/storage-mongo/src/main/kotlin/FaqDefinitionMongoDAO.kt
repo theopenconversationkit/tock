@@ -215,44 +215,42 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     /**
      * @see FaqDefinitionDAO.makeMigration
      */
-    override fun makeMigration(botIdSupplier: (Id<ApplicationDefinition>) -> String?) {
+    override fun makeMigration(intentIdSupplier: (Id<IntentDefinition>) -> String?) {
 
         // Faq projection represents the old structure of FaqDefinition
+        // May 2023
         data class FaqProjection(
             val _id: Id<FaqDefinition> = newId(),
-            val applicationId: Id<ApplicationDefinition>?,
+            val botId: String,
             val intentId: Id<IntentDefinition>,
             val i18nId: Id<I18nLabel>,
             val tags: List<String>,
             val enabled: Boolean,
             val creationDate: Instant,
-            val updateDate: Instant
+            val updateDate: Instant,
         )
 
-        col.aggregate<FaqProjection>(match(FaqDefinition::botId exists false)).forEach { projection ->
+        col.aggregate<FaqProjection>(match(FaqDefinition::namespace exists false)).forEach { projection ->
             thread(true) {
 
-                if (projection.applicationId != null) {
-                    with(projection) {
-                        logger.info { "Migrate FaqDefinition with applicationId $applicationId and intendId $intentId" }
+                with(projection) {
+                    logger.info { "Migrate FaqDefinition with namespace ${FaqDefinition::namespace} and intendId $intentId" }
 
-                        val botId = botIdSupplier.invoke(applicationId!!)
-                            ?: throw Exception("Fail to migrate Faq with intent $intentId  due to Application not found with id $applicationId")
+                    val namespace = intentIdSupplier.invoke(intentId)
+                        ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
 
-                        FaqDefinition(
-                            _id,
-                            botId,
-                            intentId,
-                            i18nId,
-                            tags,
-                            enabled,
-                            creationDate,
-                            updateDate
-                        )
-                    }.let { faq -> col.save(faq) }
-                } else {
-                    logger.warn { "Migrate FaqDefinition - applicationId=Null, faq=$projection" }
-                }
+                    FaqDefinition(
+                        _id,
+                        botId,
+                        namespace,
+                        intentId,
+                        i18nId,
+                        tags,
+                        enabled,
+                        creationDate,
+                        updateDate
+                    )
+                }.let { faq -> col.save(faq) }
             }
         }
     }
