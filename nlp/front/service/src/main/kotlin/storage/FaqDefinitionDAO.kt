@@ -28,7 +28,11 @@ interface FaqDefinitionDAO {
 
     fun deleteFaqDefinitionById(id: Id<FaqDefinition>)
 
-    fun deleteFaqDefinitionByBotId(id: String)
+    /**
+     * Delete the FaqDefinition by filtering on the application [id][ApplicationDefinition]
+     * @param id the application name [ApplicationDefinition]
+     */
+    fun deleteFaqDefinitionByBotIdAndNamespace(id: String, namespace: String)
 
     fun save(faqDefinition: FaqDefinition)
 

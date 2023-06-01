@@ -16,7 +16,9 @@
 
 package ai.tock.nlp.front.storage.mongo
 
+import ai.tock.nlp.front.service.faqDefinitionDAO
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -25,9 +27,9 @@ import ai.tock.nlp.front.shared.config.FaqDefinitionTag
 import ai.tock.nlp.front.shared.config.FaqQuery
 import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.IntentDefinition
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.isDocumentDB
+import ai.tock.shared.vertx.BadRequestException
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
@@ -47,11 +49,9 @@ import org.litote.kmongo.descending
 import org.litote.kmongo.div
 import org.litote.kmongo.document
 import org.litote.kmongo.ensureUniqueIndex
-import org.litote.kmongo.newId
-import org.litote.kmongo.exists
-import org.litote.kmongo.save
 import org.litote.kmongo.eq
 import org.litote.kmongo.excludeId
+import org.litote.kmongo.exists
 import org.litote.kmongo.expr
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -65,11 +65,13 @@ import org.litote.kmongo.limit
 import org.litote.kmongo.lookup
 import org.litote.kmongo.match
 import org.litote.kmongo.ne
+import org.litote.kmongo.newId
 import org.litote.kmongo.or
 import org.litote.kmongo.project
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.save
 import org.litote.kmongo.skip
 import org.litote.kmongo.sort
 import org.litote.kmongo.unwind
@@ -108,8 +110,8 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         col.deleteOneById(id)
     }
 
-    override fun deleteFaqDefinitionByBotId(id: String) {
-        col.deleteMany(FaqDefinition::botId eq id)
+    override fun deleteFaqDefinitionByBotIdAndNamespace(id: String, namespace: String) {
+        col.deleteMany(and(FaqDefinition::botId eq id, FaqDefinition::namespace eq namespace))
     }
 
     override fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition? {
@@ -234,8 +236,8 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             thread(true) {
 
                 with(projection) {
-                    logger.info { "Migrate FaqDefinition with namespace ${FaqDefinition::namespace} and intendId $intentId" }
 
+                   logger.info { "Migrate FaqDefinition ${projection._id} with namespace "}
                     val namespace = intentIdSupplier.invoke(intentId)
                         ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
 

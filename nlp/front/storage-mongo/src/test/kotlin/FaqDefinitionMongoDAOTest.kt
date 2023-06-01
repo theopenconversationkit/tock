@@ -243,7 +243,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         assertEquals(2, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
 
-        faqDefinitionDao.deleteFaqDefinitionByBotId(botId1)
+        faqDefinitionDao.deleteFaqDefinitionByBotIdAndNamespace(botId1,namespace)
 
         assertEquals(0, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
         assertEquals(1, faqDefinitionDao.getFaqDefinitionByBotId(botId2).size)
