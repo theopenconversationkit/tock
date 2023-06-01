@@ -300,6 +300,7 @@ internal object ApplicationCodecService : ApplicationCodec {
                     val newFaq = it.copy(
                         _id = newId(),
                         botId =  botId,
+                        namespace = namespace,
                         intentId = intentDB._id
                     )
                     report.add(newFaq)

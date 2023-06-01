@@ -74,9 +74,9 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
     private val mockedApplicationDefinition = ApplicationDefinition(_id= applicationId, name = botId,label=botId, namespace = namespace)
 
-    private val faqDefinition = FaqDefinition(faqId, botId, intentId, i18nId, tagList, true, now, now)
-    private val faq2Definition = FaqDefinition(faqId2,  botId, intentId2, i18nId2, tagList, true, now, now)
-    private val faq3Definition = FaqDefinition(faqId3,botId2, intentId3, i18nId3, tagList, true, now, now)
+    private val faqDefinition = FaqDefinition(faqId, botId, namespace, intentId, i18nId, tagList, true, now, now)
+    private val faq2Definition = FaqDefinition(faqId2,  botId,namespace, intentId2, i18nId2, tagList, true, now, now)
+    private val faq3Definition = FaqDefinition(faqId3,botId2,namespace, intentId3, i18nId3, tagList, true, now, now)
 
     private val col: MongoCollection<FaqDefinition> by lazy { FaqDefinitionMongoDAO.col }
 
@@ -195,6 +195,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             FaqDefinition(
                 faqId2,
                 botId,
+                namespace,
                 intentId2,
                 i18nId2,
                 tagList2,
@@ -212,6 +213,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             FaqDefinition(
                 faqId3,
                 botId,
+                namespace,
                 intentId3,
                 i18nId3,
                 tagList3,
@@ -271,6 +273,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             FaqDefinition(
                 faqId3,
                 botId,
+                namespace,
                 intentId3,
                 i18nId,
                 otherTagList,
@@ -613,7 +616,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     ): FaqDefinition {
 
         val faqDefinition =
-            FaqDefinition(faqId,  botId, intentId, i18nId, tagList, enabled, instant, instant)
+            FaqDefinition(faqId,  botId, namespace, intentId, i18nId, tagList, enabled, instant, instant)
 
         val createdIntent = IntentDefinition(
             faqName,

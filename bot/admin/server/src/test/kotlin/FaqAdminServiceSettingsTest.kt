@@ -112,6 +112,7 @@ class FaqAdminServiceSettingsTest : AbstractTest() {
         return FaqDefinition(
             _id = faqId.toId(),
             "botId",
+            namespace,
             intentId = intent._id,
             i18nId = "i18nId-$faqId".toId(),
             emptyList(), true, Instant.now(), Instant.now()
