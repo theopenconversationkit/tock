@@ -10,6 +10,8 @@
 
 * Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface,
  and create a new configuration with these parameters. 
+
+For a more detailed guide, refer to https://doc.tock.ai/tock/en/guide/messenger/
  
 ## Bot API 
  
@@ -48,3 +50,10 @@ Tock supports subscription of many bots to the same messenger app, linked to a d
 You need to set a different path for each connector configuration ( there is an unique constraint restriction ).
 
 When subscribing to the messenger facebook, just use one of these connector paths. Other bots will work automatically.
+
+## Proxy authentication
+
+TOCK uses the default proxy selector for calls to the Messenger API.
+If the bot is deployed behind an HTTP proxy that requires authentication to perform these calls,
+you will need to set credentials in the form of the `tock_proxy_user` and `tock_proxy_password` properties (only Basic auth is supported).
+These properties can be set either as Java system properties or as environment variables.
