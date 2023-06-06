@@ -58,7 +58,7 @@ class IndicatorVerticle {
     private val front = FrontClient
 
     fun configure(webVerticle: WebVerticle) {
-        val authorizedRoles = setOf(TockUserRole.botUser, TockUserRole.admin, TockUserRole.technicalAdmin)
+        val authorizedRoles = setOf(TockUserRole.faqBotUser, TockUserRole.botUser, TockUserRole.admin, TockUserRole.technicalAdmin)
 
         with(webVerticle) {
 
