@@ -730,7 +730,6 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 return@blockingJsonPost BotI18nLabels(
                     i18n.getLabelsByIds(query.i18nIds)
-                        .ifEmpty { notFound() }
                         .map {
                             BotI18nLabel(
                                 it,
