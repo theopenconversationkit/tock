@@ -77,7 +77,8 @@ To run the site locally, follow these steps:
    >    Server address: http://127.0.0.1:4000/
    >  Server running... press ctrl-c to stop.
    ```
-5. Preview your copy of the site in your web browser at [http://localhost:4000](http://localhost:4000).
+6. Don't forget to comment the window redirection in `docs/index.html` to avoid default redirection on `https://doc.tock.ai/tock`
+7. Preview your copy of the site in your web browser at [http://localhost:4000](http://localhost:4000).
 
 > If you want to modify the port you can always add the `-P <PORT>` parameter (see also [serve command options](https://jekyllrb.com/docs/configuration/options/#serve-command-options)).
 
