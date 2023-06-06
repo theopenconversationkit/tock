@@ -34,6 +34,8 @@ content:
             url: 'fr/user/studio/analytics'
           - title: 'Le menu Model Quality'
             url: 'fr/user/studio/nlu-qa'
+          - title: 'Le menu Scénario Management'
+            url: 'fr/user/studio/scenarios-management'
           - title: 'Le menu Settings'
             url: 'fr/user/studio/configuration'
       - title: 'Guides'
