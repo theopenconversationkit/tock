@@ -85,7 +85,7 @@ import com.mongodb.client.model.Filters.exists
 internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
 
     private val logger = KotlinLogging.logger {}
-
+    private const val LIMIT_MAX_WORDS = 10
     @Data(internal = true)
     @JacksonData(internal = true)
     data class StoryDefinitionConfigurationHistoryCol(
@@ -202,7 +202,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             .trim()
             .split("\\s+".toRegex())
             .filter { it.isNotEmpty() }
-            .joinToString("", "^", "\$", 10) { wordTextSearch ->
+            .joinToString("", "^", "\$", LIMIT_MAX_WORDS) { wordTextSearch ->
                 "(.*?(${allowDiacriticsInRegexp(wordTextSearch)})[^\$]*)"
             }
     }
