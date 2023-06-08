@@ -195,23 +195,16 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
-    fun customRegexToFindWord(textSearch: String):String {
-        val builder = StringBuilder("^")
-        val trim: String = textSearch.trim()
-        val count = if (trim.isEmpty()) {
-            0
-        } else {
-            trim.split("\\s+".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray().size
-        }
-
-        return if (count > 0) {
-            for (i in 1..count) {
-                builder.append("(.*?(").append(allowDiacriticsInRegexp(trim.split("\\s+".toRegex()).dropLastWhile { it.isEmpty() }[i-1])).append(")[^\$]*)")
+    fun customRegexToFindWord(textSearch: String) = if (textSearch.trim().isEmpty()) {
+        ""
+    } else {
+        textSearch
+            .trim()
+            .split("\\s+".toRegex())
+            .filter { it.isNotEmpty() }
+            .joinToString("", "^", "\$", 10) { wordTextSearch ->
+                "(.*?(${allowDiacriticsInRegexp(wordTextSearch)})[^\$]*)"
             }
-            builder.append("\$").toString().trim()
-        }else {
-            allowDiacriticsInRegexp(trim)
-        }
     }
 
     override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> {
