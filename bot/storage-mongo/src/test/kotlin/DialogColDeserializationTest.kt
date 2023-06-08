@@ -93,7 +93,7 @@ class DialogColDeserializationTest : AbstractTest(false) {
             UserLocation(1.0, 2.0),
             NextUserActionState(
                 listOf(NlpIntentQualifier("test")),
-                ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")),
+                ZonedDateTime.now().withZoneSameInstant(ZoneId.of("Z")),
                 ZoneId.systemDefault()
             )
         )
