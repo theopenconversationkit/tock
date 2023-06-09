@@ -71,8 +71,7 @@ export class NlpAdminAppComponent implements AuthListener, OnInit, OnDestroy {
       {
         title: 'Settings',
         icon: 'settings-outline',
-        link: '/applications/nlu',
-        hidden: !this.state.hasRole(UserRole.admin)
+        link: '/applications/nlu'
       }
     ];
   }
