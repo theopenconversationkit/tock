@@ -16,10 +16,12 @@ import {
 import { getContrastYIQ, getScenarioActionDefinitions, getScenarioActions, normalizedSnakeCaseUpper } from '../../../commons/utils';
 import { entityColor, qualifiedName, qualifiedRole } from '../../../../model/nlp';
 import { UserInterfaceType } from '../../../../core/model/configuration';
-import { deepCopy } from '../../../../shared/utils';
 import { StoryDefinitionConfigurationSummary } from '../../../../bot/model/story';
 
-type InputOrOutputContext = 'input' | 'output';
+enum InOrOut {
+  input = 'input',
+  output = 'output'
+}
 
 interface ActionEditForm {
   description: FormControl<string>;
@@ -211,8 +213,15 @@ export class ActionEditComponent implements OnInit {
         return { custom: 'This name is already used by another action' };
       }
 
-      if (this.scenario.data.contexts.find((ctx) => ctx.name === formatedValue))
-        return { custom: 'Action cannot have the same name as a context' };
+      const sameNameAsContext = 'Action cannot have the same name as a context';
+
+      for (let which in InOrOut) {
+        if (this.getContextNamesRef(which as InOrOut).value.find((ctxName) => ctxName === formatedValue)) {
+          return { custom: sameNameAsContext };
+        }
+      }
+
+      if (this.scenario.data.contexts.find((ctx) => ctx.name === formatedValue)) return { custom: sameNameAsContext };
 
       return null;
     };
@@ -258,9 +267,9 @@ export class ActionEditComponent implements OnInit {
   updateContextsAutocompleteValues(event?: KeyboardEvent): void {
     let results = this.contexts.map((ctx) => ctx.name);
 
-    ['inputContextNames', 'outputContextNames'].forEach((wich: string) => {
+    ['inputContextNames', 'outputContextNames'].forEach((which: string) => {
       results = results.filter((r: string) => {
-        return !this[wich].value.includes(r);
+        return !this[which].value.includes(r);
       });
     });
 
@@ -289,23 +298,23 @@ export class ActionEditComponent implements OnInit {
     this.outputContextsAddError = {};
   }
 
-  getContextInputElemRef(wich: InputOrOutputContext): ElementRef {
-    if (wich === 'input') return this.inputContextsInput;
-    if (wich === 'output') return this.outputContextsInput;
+  getContextInputElemRef(which: InOrOut): ElementRef {
+    if (which === InOrOut.input) return this.inputContextsInput;
+    if (which === InOrOut.output) return this.outputContextsInput;
   }
 
-  getContextNamesRef(wich: InputOrOutputContext): FormArray {
-    if (wich === 'input') return this.inputContextNames;
-    if (wich === 'output') return this.outputContextNames;
+  getContextNamesRef(which: InOrOut): FormArray {
+    if (which === InOrOut.input) return this.inputContextNames;
+    if (which === InOrOut.output) return this.outputContextNames;
   }
 
-  getContextAddErrorRef(wich: InputOrOutputContext): { errors: {} } {
-    if (wich === 'input') return this.inputContextsAddError;
-    if (wich === 'output') return this.outputContextsAddError;
+  getContextAddErrorRef(which: InOrOut): { errors: {} } {
+    if (which === InOrOut.input) return this.inputContextsAddError;
+    if (which === InOrOut.output) return this.outputContextsAddError;
   }
 
-  addContext(wich: InputOrOutputContext): void {
-    const eventTarget = this.getContextInputElemRef(wich).nativeElement;
+  addContext(which: InOrOut): void {
+    const eventTarget = this.getContextInputElemRef(which).nativeElement;
     const ctxName = normalizedSnakeCaseUpper(eventTarget.value);
 
     this.resetContextsAddErrors();
@@ -313,7 +322,7 @@ export class ActionEditComponent implements OnInit {
     if (!ctxName) return;
 
     if (ctxName.length < ACTION_OR_CONTEXT_NAME_MINLENGTH) {
-      this.getContextAddErrorRef(wich).errors = { minlength: { requiredLength: ACTION_OR_CONTEXT_NAME_MINLENGTH } };
+      this.getContextAddErrorRef(which).errors = { minlength: { requiredLength: ACTION_OR_CONTEXT_NAME_MINLENGTH } };
 
       return;
     }
@@ -321,31 +330,30 @@ export class ActionEditComponent implements OnInit {
     const actions = getScenarioActionDefinitions(this.scenario);
 
     if (actions.find((act) => act.name === ctxName)) {
-      this.getContextAddErrorRef(wich).errors = { custom: 'A context cannot have the same name as an action' };
+      this.getContextAddErrorRef(which).errors = { custom: 'A context cannot have the same name as an action' };
       return;
     }
 
-    if (this.getContextNamesRef(wich).value.find((ctx: string) => ctx == ctxName)) {
-      this.getContextAddErrorRef(wich).errors = { custom: `This ${wich} context is already associated with this action` };
+    if (this.getContextNamesRef(which).value.find((ctx: string) => ctx === ctxName)) {
+      this.getContextAddErrorRef(which).errors = { custom: `This ${which} context is already associated with this action` };
       return;
     }
-
-    const otherWich = wich == 'input' ? 'output' : 'input';
-    if (this.getContextNamesRef(otherWich).value.find((ctx: string) => ctx == ctxName)) {
-      this.getContextAddErrorRef(wich).errors = {
-        custom: `This context is already associated with the ${otherWich} contexts of this action`
+    const otherWhich = which === InOrOut.input ? InOrOut.output : InOrOut.input;
+    if (this.getContextNamesRef(otherWhich).value.find((ctx: string) => ctx === ctxName)) {
+      this.getContextAddErrorRef(which).errors = {
+        custom: `This context is already associated with the ${otherWhich} contexts of this action`
       };
       return;
     }
 
-    this.getContextNamesRef(wich).push(new FormControl(ctxName));
+    this.getContextNamesRef(which).push(new FormControl(ctxName));
     eventTarget.value = '';
     this.form.markAsDirty();
     this.updateContextsAutocompleteValues();
   }
 
-  removeContext(wich: InputOrOutputContext, contextName: string): void {
-    const contextNamesArray = this.getContextNamesRef(wich);
+  removeContext(which: InOrOut, contextName: string): void {
+    const contextNamesArray = this.getContextNamesRef(which);
     contextNamesArray.removeAt(contextNamesArray.value.findIndex((ctx: string) => ctx === contextName));
     this.form.markAsDirty();
   }
