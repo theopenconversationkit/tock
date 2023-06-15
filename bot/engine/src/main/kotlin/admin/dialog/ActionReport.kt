@@ -36,5 +36,7 @@ data class ActionReport(
     val connectorType: ConnectorType?,
     val userInterfaceType: UserInterfaceType,
     val test: Boolean = false,
-    val id: Id<Action> = newId()
+    val id: Id<Action> = newId(),
+    val intent : String?,
+    val applicationId : String?
 )

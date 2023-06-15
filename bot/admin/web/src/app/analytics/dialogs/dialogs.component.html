@@ -15,8 +15,9 @@
   -->
 
 <div class="dialogs">
-  <nb-card  *ngIf="!(isSatisfactionRoute()| async)">
+  <nb-card >
     <nb-card-body>
+      <ng-container *ngIf="!(isSatisfactionRoute()| async); else satisfaction">
       <span class="search-input">
         <input
           nbInput
@@ -80,6 +81,17 @@
       >
         GO
       </button>
+      </ng-container>
+      <ng-template #satisfaction>
+        <button
+          nbButton
+          ghost
+          (click)="exportDialogs()"
+          matTooltip="Export Dialogs"
+        >
+          <mat-icon>file_download</mat-icon>
+        </button>
+      </ng-template>
     </nb-card-body>
   </nb-card>
   <div *ngIf="total !== -1">

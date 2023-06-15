@@ -137,7 +137,9 @@ internal data class DialogCol(
                                         a.state.targetConnectorType,
                                         a.state.userInterface ?: textChat,
                                         a.state.testEvent,
-                                        a.toActionId()
+                                        a.toActionId(),
+                                        a.state.intent,
+                                        a.applicationId
                                 )
                             }
                         }

@@ -98,7 +98,9 @@ private fun BotBus.toActionsHistory(): ActionsHistory =
             targetConnectorType,
             userInterfaceType,
             test,
-            it.toActionId()
+            it.toActionId(),
+            it.state.intent,
+            it.applicationId
         )
     }
 

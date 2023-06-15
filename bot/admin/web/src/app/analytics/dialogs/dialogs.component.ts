@@ -29,6 +29,7 @@ import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { ConnectorType } from '../../core/model/configuration';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { NbToastrService } from '@nebular/theme';
+import { saveAs } from 'file-saver-es';
 
 @Component({
   selector: 'tock-dialogs',
@@ -133,6 +134,33 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
         return val[0].path == "satisfaction";
       }),
     )
+  }
+
+  private buildDialogSatisfactionQuery(): DialogReportQuery {
+    return new DialogReportQuery(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      this.state.currentLocale,
+      null,
+      null,
+      true,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      [1,2,3,4,5]
+    );
+  }
+
+  exportDialogs(){
+    this.analytics.downloadDialogsCsv(this.buildDialogSatisfactionQuery()).subscribe((blob) => {
+      saveAs(blob, 'dialogs_with_rating.csv');
+    });
+    this.analytics.downloadDialogsWithIntentsCsv(this.buildDialogSatisfactionQuery()).subscribe((blob) => {
+      saveAs(blob, 'dialogs_with_rating_and_intents.csv');
+    });
   }
 }
 
