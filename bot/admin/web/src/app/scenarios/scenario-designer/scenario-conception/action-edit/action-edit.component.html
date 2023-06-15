@@ -211,6 +211,7 @@
                 <nb-autocomplete
                   #inputContextsAutocomplete
                   optionsListClass="option-list--break-word"
+                  (selectedChange)="addContext('input')"
                 >
                   <nb-option
                     *ngFor="let option of contextsAutocompleteValues | async"
@@ -226,7 +227,7 @@
                 nbButton
                 ghost
                 size="small"
-                class="ml-1"
+                class="active-add-context-button ml-1"
                 [disabled]="!inputContextsInput.value.length"
                 (click)="addContext('input')"
               >
@@ -322,6 +323,7 @@
                 <nb-autocomplete
                   #outputContextsAutocomplete
                   optionsListClass="option-list--break-word"
+                  (selectedChange)="addContext('output')"
                 >
                   <nb-option
                     *ngFor="let option of contextsAutocompleteValues | async"
@@ -337,7 +339,7 @@
                 nbButton
                 ghost
                 size="small"
-                class="ml-1"
+                class="active-add-context-button ml-1"
                 [disabled]="!outputContextsInput.value.length"
                 (click)="addContext('output')"
               >
@@ -522,6 +524,9 @@
       status="primary"
       (click)="save()"
       [disabled]="!canSave"
+      nbTooltip="You have entered a context name but not added it. Click SAVE to ignore it."
+      [nbTooltipDisabled]="checkUnvalidatedInputs()"
+      nbTooltipStatus="warning"
     >
       Save
     </button>

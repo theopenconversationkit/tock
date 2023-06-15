@@ -20,3 +20,7 @@
   display: inline-block;
   line-height: 1.25rem;
 }
+
+.active-add-context-button:not([disabled]) {
+  color: var(--button-ghost-warning-text-color) !important;
+}

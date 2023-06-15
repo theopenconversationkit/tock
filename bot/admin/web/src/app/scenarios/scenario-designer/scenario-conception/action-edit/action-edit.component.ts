@@ -341,6 +341,7 @@ export class ActionEditComponent implements OnInit {
     this.getContextNamesRef(wich).push(new FormControl(ctxName));
     eventTarget.value = '';
     this.form.markAsDirty();
+    this.updateContextsAutocompleteValues();
   }
 
   removeContext(wich: InputOrOutputContext, contextName: string): void {
@@ -374,9 +375,19 @@ export class ActionEditComponent implements OnInit {
 
     if (this.canSave) {
       if (this.handler.value === '') this.handler.setValue(null);
-
       this.saveModifications.emit(this.form.value);
     }
+  }
+
+  checkUnvalidatedInputs() {
+    for (let wich in InOrOut) {
+      const ctxInput = this.getContextInputElemRef(wich as InOrOut)?.nativeElement;
+      if (ctxInput?.value.trim().length) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   cancel(): void {

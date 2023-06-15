@@ -66,3 +66,7 @@
   left: 50%;
   transform: translateX(-50%);
 }
+
+.active-add-context-button:not([disabled]) {
+  color: var(--button-ghost-warning-text-color) !important;
+}

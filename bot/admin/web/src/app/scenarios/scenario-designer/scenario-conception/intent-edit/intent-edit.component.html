@@ -164,7 +164,7 @@
         nbButton
         ghost
         size="small"
-        class="ml-1"
+        class="active-add-context-button ml-1"
         [disabled]="!addSentenceInput.value.length"
         (click)="addSentence()"
       >
@@ -284,6 +284,9 @@
       size="small"
       status="primary"
       (click)="save()"
+      nbTooltip="You have entered a sentence but not added it. Click SAVE to ignore it."
+      [nbTooltipDisabled]="checkUnvalidatedInputs()"
+      nbTooltipStatus="warning"
     >
       Save
     </button>
