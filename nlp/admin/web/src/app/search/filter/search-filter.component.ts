@@ -90,7 +90,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
   }
 
   filter(value: string): Group[] {
-    const filterValue = value.toLowerCase();
+    const filterValue = value?.toLowerCase();
     return this.groups
       .map((group) => {
         return {
@@ -128,7 +128,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
     if (selected === this.noFilter) {
       this.filteredGroups$ = of(this.filter(''));
     } else {
-      this.filteredGroups$ = of(this.filter(selected.toString()));
+      this.filteredGroups$ = of(this.filter(selected?.toString()));
     }
     if (selected) {
       this.cachedValue = selected.label ?? selected.toString();
@@ -137,7 +137,7 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
   }
 
   onModelChange(value: string) {
-    const inputValue = value.toString().trim();
+    const inputValue = value?.toString().trim();
     this.filteredGroups$ = of(this.filter(inputValue));
     if (inputValue === '' && this.noFilter) {
       this.filterChange.emit(this.noFilter.value);
