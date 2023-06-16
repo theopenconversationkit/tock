@@ -16,6 +16,13 @@
       *
     </abbr>
     {{ label }}
+
+    <nb-icon
+      *ngIf="help"
+      icon="info-outline"
+      [nbTooltip]="help"
+      class="align-bottom"
+    ></nb-icon>
   </label>
   <ng-content></ng-content>
   <tock-error-helper

@@ -15,11 +15,14 @@
   <nb-card-body>
     <div class="row">
       <div class="col-12">
-        <nb-toggle
-          [formControl]="primary"
-          nbTooltip="Primary intentions are intentions that can be triggered outside the execution of a scenario. Be careful with this option."
-          >Primary intent</nb-toggle
-        >
+        <nb-toggle [formControl]="primary">
+          Primary intent
+          <nb-icon
+            icon="info-outline"
+            class="align-bottom"
+            nbTooltip="Defines whether the intention is primary or secondary (primary intentions trigger the underlying story, while secondary intentions are only recognized once the story is executed)"
+          ></nb-icon>
+        </nb-toggle>
       </div>
 
       <div class="col-12">
@@ -84,7 +87,14 @@
 
     <hr class="my-2" />
 
-    <strong> Sentences matching this Intent :</strong>
+    <strong>
+      Sentences matching this Intent
+      <nb-icon
+        icon="info-outline"
+        class="align-bottom"
+        nbTooltip="Set of sentences to train intention. Entities can be associated with phrases by selecting a word and clicking on Add entity. You can associate a context with an entity by clicking on the word and selecting the context to associate. If, when the user message is received, the entity is detected, the associated context will be created with the entity's text as its value."
+      ></nb-icon>
+    </strong>
     <div class="questions mt-1">
       <ul class="sentences-list">
         <li

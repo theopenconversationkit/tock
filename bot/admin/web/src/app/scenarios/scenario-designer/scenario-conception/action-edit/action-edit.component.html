@@ -27,6 +27,7 @@
           required="true"
           [controls]="name"
           [showError]="isSubmitted"
+          help="Action name"
         >
           <input
             *ngIf="!isReadonly"
@@ -64,6 +65,7 @@
             name="description"
             [controls]="description"
             [showError]="isSubmitted"
+            help="Textual description of the role fulfilled by the action"
           >
             <textarea
               *ngIf="!isReadonly"
@@ -103,6 +105,7 @@
                       name="answer{{ i }}"
                       [label]="first ? 'Answer' : ''"
                       [hasMargin]="false"
+                      help="Response sent to the user when the action is performed"
                     >
                       <nb-form-field *ngIf="!isReadonly">
                         <div
@@ -162,6 +165,7 @@
         <tock-form-control
           label="Api handler"
           name="handler"
+          help="Business code that will be executed when the action is performed. Execution of an action including a handler does not hand over to the user, but triggers a new round of the dialog handler, as execution of the business code has potentially produced new information useful for advancing the scenario."
           [controls]="handler"
           [showError]="isSubmitted"
         >
@@ -183,6 +187,7 @@
             name="inputContexts"
             [controls]="inputContextsAddError"
             [showError]="true"
+            help="Contexts required to execute the action. An action can only be executed if all the contexts defined in the input exist."
           >
             <div
               *ngIf="!isReadonly"
@@ -272,6 +277,7 @@
           name="trigger"
           [controls]="trigger"
           [showError]="isSubmitted"
+          help="Internal event resulting in a transition in the state machine. Only available for actions that have a handler (i.e. that do not hand over to the user)."
         >
           <tock-autocomplete-input
             *ngIf="!isReadonly"
@@ -292,6 +298,7 @@
             name="outputContexts"
             [controls]="outputContextsAddError"
             [showError]="true"
+            help="Contexts that can be generated when the action is executed either directly via the execution of a handler (e.g. an Api handler) which will produce this context or indirectly via the user's response to the action."
           >
             <div
               *ngIf="!isReadonly"
@@ -381,6 +388,7 @@
           name="targetStory"
           [controls]="targetStory"
           [showError]="isSubmitted"
+          help="Force a redirection to another story"
         >
           <nb-select
             *ngIf="!isReadonly"
@@ -426,7 +434,14 @@
         *ngIf="!targetStory.value"
         data-testid="unknown-answers-block"
       >
-        <label class="font-weight-bold text-mitigated"> Question for unknown answer </label>
+        <label class="font-weight-bold text-mitigated">
+          Question for unknown answer
+          <nb-icon
+            icon="info-outline"
+            class="align-bottom"
+            nbTooltip="Message sent if the response given by the user following this action is not recognized (unknown intent received)."
+          ></nb-icon>
+        </label>
 
         <small class="d-block text-muted mb-2">Question to ask the user if their answer was not understood.</small>
 
