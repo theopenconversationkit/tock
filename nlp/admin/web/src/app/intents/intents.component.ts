@@ -15,7 +15,7 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { StateService } from '../core-nlp/state.service';
 import { EntityDefinition, Intent, IntentsCategory } from '../model/nlp';
 import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -24,42 +24,19 @@ import { ApplicationService } from '../core-nlp/applications.service';
 import { AddStateDialogComponent } from './add-state/add-state-dialog.component';
 import { UserRole } from '../model/auth';
 import { IntentDialogComponent } from '../sentence-analysis/intent-dialog/intent-dialog.component';
-import { BehaviorSubject } from 'rxjs';
 import { DialogService } from '../core-nlp/dialog.service';
 import { AddSharedIntentDialogComponent } from './add-shared-intent/add-shared-intent-dialog.component';
-
-interface TreeNode<T> {
-  data: T;
-  children?: TreeNode<T>[];
-  expanded?: boolean;
-}
 
 @Component({
   selector: 'tock-intents',
   templateUrl: './intents.component.html',
-  styleUrls: ['./intents.component.css']
+  styleUrls: ['./intents.component.scss']
 })
 export class IntentsComponent implements OnInit {
   UserRole = UserRole;
-  intentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
-  expandedCategories: Set<string> = new Set(['default']);
   selectedIntent: Intent;
 
-  intentColumn = 'Intent';
-  descriptionColumn = 'Description';
-  entitiesColumn = 'Entities';
-  sharedIntentsColumn = 'Shared Intents';
-  mandatoryStatesColumn = 'Mandatory States';
-  actionsColumn = 'Actions';
-  allColumns = [
-    this.intentColumn,
-    this.descriptionColumn,
-    this.entitiesColumn,
-    this.sharedIntentsColumn,
-    this.mandatoryStatesColumn,
-    this.actionsColumn
-  ];
-  nodes: TreeNode<any>[];
+  intentsCategories: IntentsCategory[];
 
   constructor(
     public state: StateService,
@@ -70,25 +47,11 @@ export class IntentsComponent implements OnInit {
 
   ngOnInit() {
     this.state.currentNamespaceIntentsCategories.subscribe((it) => {
-      this.nodes = Array.from(it, (element) => {
-        return {
-          expanded: element.category === 'default',
-          data: {
-            category: element.category,
-            expandable: true
-          },
-          children: element.intents.map((s) => {
-            return {
-              data: s
-            };
-          })
-        };
-      });
-      this.intentsCategories.next(it);
+      this.intentsCategories = it;
     });
   }
 
-  updateIntent(intent: Intent) {
+  updateIntent(intent: Intent): void {
     const dialogRef = this.dialog.openDialog(IntentDialogComponent, {
       context: {
         name: intent.name,
@@ -122,7 +85,7 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  deleteIntent(intent: Intent) {
+  deleteIntent(intent: Intent): void {
     const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
       context: {
         title: `Remove the Intent ${intent.name}`,
@@ -143,7 +106,7 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  removeState(intent: Intent, state: string) {
+  removeState(intent: Intent, state: string): void {
     this.nlp.removeState(this.state.currentApplication, intent, state).subscribe(
       (_) => {
         intent.mandatoryStates.splice(intent.mandatoryStates.indexOf(state), 1);
@@ -155,7 +118,7 @@ export class IntentsComponent implements OnInit {
     );
   }
 
-  addState(intent: Intent) {
+  addState(intent: Intent): void {
     const dialogRef = this.dialog.openDialog(AddStateDialogComponent, {
       context: {
         title: `Add a state for intent \"${intent.name}\"`
@@ -177,7 +140,7 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  removeEntity(intent: Intent, entity: EntityDefinition) {
+  removeEntity(intent: Intent, entity: EntityDefinition): void {
     const entityName = entity.qualifiedName(this.state.user);
     const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
       context: {
@@ -199,7 +162,7 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  removeSharedIntent(intent: Intent, intentId: string) {
+  removeSharedIntent(intent: Intent, intentId: string): void {
     this.selectedIntent = null;
     this.nlp.removeSharedIntent(this.state.currentApplication, intent, intentId).subscribe(
       (_) => {
@@ -212,7 +175,7 @@ export class IntentsComponent implements OnInit {
     );
   }
 
-  displayAddSharedIntentDialog(intent: Intent) {
+  displayAddSharedIntentDialog(intent: Intent): void {
     this.selectedIntent = intent;
     const dialogRef = this.dialog.openDialog(AddSharedIntentDialogComponent, {
       context: {
@@ -229,7 +192,7 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  addSharedIntent(intent: Intent, intentId: string) {
+  addSharedIntent(intent: Intent, intentId: string): void {
     if (intent.sharedIntents.indexOf(intentId) === -1) {
       this.selectedIntent = null;
       intent.sharedIntents.push(intentId);
@@ -245,7 +208,7 @@ export class IntentsComponent implements OnInit {
     }
   }
 
-  downloadSentencesDump(intent: Intent) {
+  downloadSentencesDump(intent: Intent): void {
     this.applicationService
       .getSentencesDumpForIntent(
         this.state.currentApplication,
@@ -257,5 +220,26 @@ export class IntentsComponent implements OnInit {
         saveAs(blob, intent.name + '_sentences.json');
         this.dialog.notify(`Dump provided`, 'Dump');
       });
+  }
+
+  expandedCategory: string = 'default';
+
+  isCategoryExpanded(category: IntentsCategory): boolean {
+    return category.category.toLowerCase() === this.expandedCategory.toLowerCase();
+  }
+
+  collapsedChange(category: IntentsCategory): void {
+    this.expandedCategory = category.category;
+  }
+
+  // To share with Scenario's version after merge
+  getContrastYIQ(hexcolor: string): '' | 'black' | 'white' {
+    if (!hexcolor) return '';
+    hexcolor = hexcolor.replace('#', '');
+    let r = parseInt(hexcolor.substring(0, 2), 16);
+    let g = parseInt(hexcolor.substring(2, 4), 16);
+    let b = parseInt(hexcolor.substring(4, 6), 16);
+    let yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 128 ? 'black' : 'white';
   }
 }
