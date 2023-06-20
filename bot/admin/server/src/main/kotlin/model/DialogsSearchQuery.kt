@@ -33,7 +33,8 @@ data class DialogsSearchQuery(
     val connectorType: ConnectorType?,
     val displayTests: Boolean = false,
     val skipObfuscation: Boolean = false,
-    val ratings: Set<Int> = emptySet()
+    val ratings: Set<Int> = emptySet(),
+    val applicationId: String?
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -51,7 +52,8 @@ data class DialogsSearchQuery(
             connectorType = connectorType,
             displayTests = displayTests,
             obfuscated = true,
-            ratings = ratings
+            ratings = ratings,
+            applicationId = applicationId
         )
     }
 }

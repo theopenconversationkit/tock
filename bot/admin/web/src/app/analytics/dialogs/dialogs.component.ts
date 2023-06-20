@@ -40,6 +40,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   filter: DialogFilter = new DialogFilter(true, false);
   state: StateService;
   connectorTypes: ConnectorType[] = [];
+  configurationNameList: string[];
   private loaded = false;
   @Input() ratingFilter: number[];
 
@@ -53,8 +54,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   ) {
     super(state);
     this.state = state;
-    this.botConfiguration.configurations.subscribe((_) => {
+    this.botConfiguration.configurations.subscribe(configs => {
       this.isSatisfactionRoute().subscribe( res => {
+          this.configurationNameList = configs.filter(item=> item.targetConfigurationId == null).map(item=> item.applicationId);
           if (res) {
             this.ratingFilter = [1, 2, 3, 4, 5];
           }
@@ -114,8 +116,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
       this.filter.intentName,
       this.filter.connectorType,
       this.filter.displayTests,
-      this.ratingFilter
-    );
+      this.ratingFilter,
+      this.filter.configuration);
   }
 
   addDialogToTestPlan(planId: string, dialog: DialogReport) {
@@ -149,8 +151,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
       null,
       null,
       null,
-      null,
-      [1,2,3,4,5]
+      false,
+      [1,2,3,4,5],
+      null
     );
   }
 
@@ -172,6 +175,7 @@ export class DialogFilter {
     public text?: string,
     public intentName?: string,
     public connectorType?: ConnectorType,
-    public ratings?: number[]
+    public ratings?: number[],
+    public configuration? : string
   ) {}
 }

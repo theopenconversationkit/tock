@@ -51,5 +51,10 @@ data class DialogReportQuery(
      * [ratings] list of number between 1 and 5 to filter dialog by rating
      */
 
-    val ratings : Set<Int> = emptySet()
+    val ratings : Set<Int> = emptySet(),
+
+    /**
+     * [applicationId] configuration canal
+     */
+    val applicationId : String? = null
 )
