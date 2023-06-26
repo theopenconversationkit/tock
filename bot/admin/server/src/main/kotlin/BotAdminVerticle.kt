@@ -357,7 +357,7 @@ open class BotAdminVerticle : AdminVerticle() {
             if (context.organization == query.namespace) {
                 val sb = StringBuilder()
                 val printer = CsvCodec.newPrinter(sb)
-                printer.printRecord(listOf("Timestamp", "Intent", "Dialog ID", "Player Type", "Applicatiion ID", "Message"))
+                printer.printRecord(listOf("Timestamp", "Intent", "Dialog ID", "Player Type", "Application ID", "Message"))
                 BotAdminService.search(query)
                     .dialogs
                     .forEach { dialog ->
@@ -369,7 +369,7 @@ open class BotAdminVerticle : AdminVerticle() {
                                     dialog.id,
                                     it.playerId.type,
                                     it.applicationId,
-                                    if (it.message.isSimpleMessage()) it.message.toPrettyString() else (it.message as Sentence).messages.map { it.texts.values }
+                                    if (it.message.isSimpleMessage()) it.message.toPrettyString().replace("\n"," ") else (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }.replace("\n"," ")
                                 )
                             )
                         }
