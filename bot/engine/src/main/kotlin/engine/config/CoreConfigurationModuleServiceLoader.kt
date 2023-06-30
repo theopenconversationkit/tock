@@ -47,6 +47,7 @@ private val satisfactionModule = BotConfigurationModule(
                     val rating = userText?.trim()?.toIntOrNull()
                     if(rating != null) {
                         dialog.rating = rating
+                        changeContextValue(REVIEW_COMMENT_PARAMETER, false)
                     }
                 },
                 BotConfigurationStoryHandlerBase(REVIEW_COMMENT.id) {
