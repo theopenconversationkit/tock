@@ -27,7 +27,7 @@
     "@nebular/theme": "10.0.0",
     "@ng-bootstrap/ng-bootstrap": "^13.1.1",
     "ang-jsoneditor": "^1.10.5",
-    "bootstrap": "^5.2.0",
+    "bootstrap": "^4.4.1",
     "echarts": "^5.3.3",
     "file-saver-es": "^2.0.5",
     "jsoneditor": "^9.5.6",
