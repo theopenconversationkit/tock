@@ -26,6 +26,7 @@ import { UserRole } from '../model/auth';
 import { IntentDialogComponent } from '../sentence-analysis/intent-dialog/intent-dialog.component';
 import { DialogService } from '../core-nlp/dialog.service';
 import { AddSharedIntentDialogComponent } from './add-shared-intent/add-shared-intent-dialog.component';
+import { IntentsFilter } from './intents-filters/intents-filters.component';
 
 @Component({
   selector: 'tock-intents',
@@ -49,6 +50,30 @@ export class IntentsComponent implements OnInit {
     this.state.currentNamespaceIntentsCategories.subscribe((it) => {
       this.intentsCategories = it;
     });
+  }
+
+  filters: IntentsFilter;
+
+  filteredIntents: Intent[];
+
+  filterIntents(filters: IntentsFilter) {
+    this.filters = filters;
+    this.updateFilteredIntents();
+  }
+
+  updateFilteredIntents(): void {
+    if (this.filters.search?.trim().length) {
+      let allIntents = [];
+      this.intentsCategories.forEach((cat) => {
+        allIntents = [...allIntents, ...cat.intents];
+      });
+      const searchStr = this.filters.search.toLowerCase();
+      this.filteredIntents = allIntents.filter((intent) => {
+        return intent.label?.toLowerCase().search(searchStr) > -1 || intent.name?.toLowerCase().search(searchStr) > -1;
+      });
+    } else {
+      this.filteredIntents = undefined;
+    }
   }
 
   updateIntent(intent: Intent): void {
@@ -99,6 +124,7 @@ export class IntentsComponent implements OnInit {
           (_) => {
             this.state.removeIntent(intent);
             this.dialog.notify(`Intent ${intent.name} removed`, 'Remove Intent');
+            this.updateFilteredIntents();
           },
           (_) => this.dialog.notify(`Delete Intent ${intent.name} failed`)
         );
@@ -106,11 +132,11 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  removeState(intent: Intent, state: string): void {
-    this.nlp.removeState(this.state.currentApplication, intent, state).subscribe(
+  removeState(event: { intent: Intent; state: string }): void {
+    this.nlp.removeState(this.state.currentApplication, event.intent, event.state).subscribe(
       (_) => {
-        intent.mandatoryStates.splice(intent.mandatoryStates.indexOf(state), 1);
-        this.dialog.notify(`State ${state} removed from Intent ${intent.name}`, 'Remove State');
+        event.intent.mandatoryStates.splice(event.intent.mandatoryStates.indexOf(event.state), 1);
+        this.dialog.notify(`State ${event.state} removed from Intent ${event.intent.name}`, 'Remove State');
       },
       (_) => {
         this.dialog.notify(`Remove State failed`);
@@ -140,8 +166,8 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  removeEntity(intent: Intent, entity: EntityDefinition): void {
-    const entityName = entity.qualifiedName(this.state.user);
+  removeEntity(event: { intent: Intent; entity: EntityDefinition }): void {
+    const entityName = event.entity.qualifiedName(this.state.user);
     const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
       context: {
         title: `Remove the Entity ${entityName}`,
@@ -151,10 +177,10 @@ export class IntentsComponent implements OnInit {
     });
     dialogRef.onClose.subscribe((result) => {
       if (result === 'remove') {
-        this.nlp.removeEntity(this.state.currentApplication, intent, entity).subscribe((deleted) => {
-          this.state.currentApplication.intentById(intent._id).removeEntity(entity);
+        this.nlp.removeEntity(this.state.currentApplication, event.intent, event.entity).subscribe((deleted) => {
+          this.state.currentApplication.intentById(event.intent._id).removeEntity(event.entity);
           if (deleted) {
-            this.state.removeEntityTypeByName(entity.entityTypeName);
+            this.state.removeEntityTypeByName(event.entity.entityTypeName);
           }
           this.dialog.notify(`Entity ${entityName} removed from intent`, 'Remove Entity');
         });
@@ -162,12 +188,12 @@ export class IntentsComponent implements OnInit {
     });
   }
 
-  removeSharedIntent(intent: Intent, intentId: string): void {
+  removeSharedIntent(event: { intent: Intent; intentId: string }): void {
     this.selectedIntent = null;
-    this.nlp.removeSharedIntent(this.state.currentApplication, intent, intentId).subscribe(
+    this.nlp.removeSharedIntent(this.state.currentApplication, event.intent, event.intentId).subscribe(
       (_) => {
-        intent.sharedIntents.splice(intent.sharedIntents.indexOf(intentId), 1);
-        this.dialog.notify(`Shared Intent removed from Intent ${intent.name}`, 'Remove Intent');
+        event.intent.sharedIntents.splice(event.intent.sharedIntents.indexOf(event.intentId), 1);
+        this.dialog.notify(`Shared Intent removed from Intent ${event.intent.name}`, 'Remove Intent');
       },
       (_) => {
         this.dialog.notify(`Remove Shared Intent failed`);
@@ -230,16 +256,5 @@ export class IntentsComponent implements OnInit {
 
   collapsedChange(category: IntentsCategory): void {
     this.expandedCategory = category.category;
-  }
-
-  // To share with Scenario's version after merge
-  getContrastYIQ(hexcolor: string): '' | 'black' | 'white' {
-    if (!hexcolor) return '';
-    hexcolor = hexcolor.replace('#', '');
-    let r = parseInt(hexcolor.substring(0, 2), 16);
-    let g = parseInt(hexcolor.substring(2, 4), 16);
-    let b = parseInt(hexcolor.substring(4, 6), 16);
-    let yiq = (r * 299 + g * 587 + b * 114) / 1000;
-    return yiq >= 128 ? 'black' : 'white';
   }
 }
