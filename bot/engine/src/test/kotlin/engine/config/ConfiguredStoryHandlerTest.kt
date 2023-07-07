@@ -486,11 +486,13 @@ class ConfiguredStoryHandlerTest {
             every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
+            every { userTimeline } returns UserTimeline(userId)
             every { applicationId } returns "appId"
             every { currentAnswerIndex } returns 1
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns null
             every { dialog.stories } returns mutableListOf()
+            every { dialog.lastAction } returns null
             every { translate(any()) } answers { RawString(it.invocation.args[0].toString()) }
             every { underlyingConnector } returns connector
             every { end(messages = any(), initialDelay = any()) } returns mockk()
@@ -570,11 +572,13 @@ class ConfiguredStoryHandlerTest {
             every { targetConnectorType } returns ConnectorType("a")
             every { botId } returns PlayerId("botId")
             every { userId } returns PlayerId("userId")
+            every { userTimeline } returns UserTimeline(userId)
             every { applicationId } returns "appId"
             every { currentAnswerIndex } returns 1
             every { botDefinition } returns BotDefinitionTest()
             every { step } returns storyDefinitionConfigurationStep.toStoryStep(configuration)
             every { dialog.stories } returns mutableListOf()
+            every { dialog.lastAction } returns null
             every { translate(any()) } answers { RawString(it.invocation.args[0].toString()) }
             every { underlyingConnector } returns connector
             every { end(messages = any(), initialDelay = any()) } returns mockk()
