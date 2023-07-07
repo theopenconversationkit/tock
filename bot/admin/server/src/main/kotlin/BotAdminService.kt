@@ -102,11 +102,11 @@ object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
 
-    private val userReportDAO: UserReportDAO by injector.instance()
-    internal val dialogReportDAO: DialogReportDAO by injector.instance()
-    private val applicationConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
-    private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
-    private val featureDAO: FeatureDAO by injector.instance()
+    private val userReportDAO: UserReportDAO get() = injector.provide()
+    internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
+    private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
+    private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
+    private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val front = FrontClient
 
