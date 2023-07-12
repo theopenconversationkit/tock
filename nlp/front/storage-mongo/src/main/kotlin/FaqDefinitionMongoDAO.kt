@@ -418,6 +418,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             listOf(
                 FaqQueryResult::botId first FaqQueryResult::botId,
                 FaqQueryResult::intentId first FaqQueryResult::intentId,
+                FaqQueryResult::namespace first FaqQueryResult::namespace,
                 FaqQueryResult::i18nId first FaqQueryResult::i18nId,
                 FaqQueryResult::tags first FaqQueryResult::tags,
                 FaqQueryResult::enabled first FaqQueryResult::enabled,

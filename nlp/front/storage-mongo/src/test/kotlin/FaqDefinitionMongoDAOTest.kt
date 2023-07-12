@@ -542,17 +542,57 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             message = "There should be three faq"
         )
 
+        //The last faq in the search list should be the first created because of the creation date order
         assertEquals(
             //compare list of faq
             searchFound.first.last()._id,
             firstFaq._id,
             "The last faq in the list should be the first created because of the creation date order"
         )
+
+        assertEquals(
+            searchFound.first.last().botId,
+            firstFaq.botId,
+            "botId is different than expected"
+        )
+
+        assertEquals(
+            searchFound.first.last().intentId,
+            firstFaq.intentId,
+            "intentId is different than expected"
+        )
+
+        assertEquals(
+            searchFound.first.last().namespace,
+            firstFaq.namespace,
+            "namespace is different than expected"
+        )
+
+        //The first faq in the list should be the last created because of the creation date order
         assertEquals(
             searchFound.first.first()._id,
             lastFaq._id,
             "The first faq in the list should be the last created because of the creation date order"
         )
+
+        assertEquals(
+            searchFound.first.first().intentId,
+            lastFaq.intentId,
+            "intentId is different than expected"
+        )
+
+        assertEquals(
+            searchFound.first.first().botId,
+            lastFaq.botId,
+            "The first faq in the list should be the last created because of the creation date order"
+        )
+
+        assertEquals(
+            searchFound.first.first().namespace,
+            lastFaq.namespace,
+            "namespace is different than expected"
+        )
+
     }
 
     private fun `A faqDefinition search with empty utterance`() {

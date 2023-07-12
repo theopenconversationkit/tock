@@ -22,6 +22,7 @@ import java.time.Instant
 
 /**
  * Faq result after queried
+ * Please note when updating the model, consider to update the group pipeline result in [FaqDefintionMongoDAO] in DocumentDb Mode
  */
 data class FaqQueryResult(
     /**
