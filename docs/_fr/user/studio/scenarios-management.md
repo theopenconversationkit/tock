@@ -101,7 +101,7 @@ Dans ce menu vous pouvez spécifier :
 
 Pour créer un nouveau scénario, cliquer sur le bouton _+ Create_.
 
-![schéma Tock](../../../img/scenarios_parameters.png "Création d'un' scénario")
+![schéma Tock](../../../img/scenario_creation.png "Création d'un' scénario")
 
 Les informations suivantes sont à renseigner :
 * _Name_ (Obligatoire) : nom du scénario
