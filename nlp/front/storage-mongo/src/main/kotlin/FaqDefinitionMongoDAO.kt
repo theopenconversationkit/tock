@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.storage.mongo
 
-import ai.tock.nlp.front.service.faqDefinitionDAO
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
@@ -29,7 +28,6 @@ import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.isDocumentDB
-import ai.tock.shared.vertx.BadRequestException
 import ai.tock.shared.watch
 import ai.tock.translator.I18nLabel
 import com.mongodb.client.MongoCollection
