@@ -86,34 +86,39 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
-        title: 'Settings',
-        icon: 'settings-outline',
-        link: '/configuration',
-        hidden: !this.state.hasRole(UserRole.admin)
+        title: 'FAQ',
+        icon: 'message-square-outline',
+        hidden: !this.state.hasRole(UserRole.faqBotUser),
+        children: [
+          {
+            link: '/faq/management',
+            title: 'Management',
+            icon: 'book-open-outline'
+          },
+          {
+            link: '/faq/training',
+            title: 'Training',
+            icon: 'checkmark-square-outline'
+          }
+        ]
       },
       {
-        title: 'FAQ Training',
-        icon: {
-          icon: 'school',
-          pack: 'material-icons'
-        },
+        title: 'FAQ training',
+        icon: 'checkmark-square-outline',
         link: '/faq/training',
-        hidden: !this.state.hasRole(UserRole.faqNlpUser)
-      },
-      {
-        title: 'FAQ Management',
-        icon: {
-          icon: 'question_answer',
-          pack: 'material-icons'
-        },
-        link: '/faq/management',
-        hidden: !this.state.hasRole(UserRole.faqBotUser)
+        hidden: !this.state.hasRole(UserRole.faqNlpUser) || this.state.hasRole(UserRole.faqBotUser)
       },
       {
         title: 'Answers',
         icon: 'color-palette-outline',
         link: '/build/i18n',
         hidden: this.state.hasRole(UserRole.botUser) || !this.state.hasRole(UserRole.faqBotUser)
+      },
+      {
+        title: 'Settings',
+        icon: 'settings-outline',
+        link: '/configuration',
+        hidden: !this.state.hasRole(UserRole.admin)
       }
     ];
   }
