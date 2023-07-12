@@ -232,14 +232,22 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             val updateDate: Instant,
         )
 
-        col.aggregate<FaqProjection>(match(FaqDefinition::namespace exists false)).forEach { projection ->
+        col.aggregate<FaqProjection>(
+            match(
+                FaqDefinition::namespace exists false,
+                // to ensure old faq migration if not done (see Tock version 23.3.0)
+                FaqDefinition::botId exists true
+            )
+        ).forEach { projection ->
             thread(true) {
 
                 with(projection) {
 
-                   logger.info { "Migrate FaqDefinition ${projection._id} with namespace "}
+
                     val namespace = intentIdSupplier.invoke(intentId)
                         ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
+
+                    logger.info { "Migrate FaqDefinition ${projection._id} with namespace $namespace" }
 
                     FaqDefinition(
                         _id,
