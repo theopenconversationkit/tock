@@ -37,6 +37,7 @@ import {
   NbInputModule
 } from '@nebular/theme';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ScenariosModule } from '../scenarios/scenarios.module';
 
 const routes: Routes = [
   {
@@ -70,24 +71,26 @@ const routes: Routes = [
 export class BotTestRoutingModule {}
 
 @NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        BotTestRoutingModule,
-        BotSharedModule,
-        MomentModule,
-        NbRouteTabsetModule,
-        NbCardModule,
-        NbButtonModule,
-        NbActionsModule,
-        NbSelectModule,
-        NbTooltipModule,
-        NbAccordionModule,
-        NbInputModule,
-        ReactiveFormsModule
-    ],
-    declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, DisplayNlpStatsComponent],
-    exports: [],
-    providers: [TestService]
+  imports: [
+    CommonModule,
+    SharedModule,
+    BotTestRoutingModule,
+    BotSharedModule,
+    MomentModule,
+    NbRouteTabsetModule,
+    NbCardModule,
+    NbButtonModule,
+    NbActionsModule,
+    NbSelectModule,
+    NbTooltipModule,
+    NbAccordionModule,
+    NbInputModule,
+    ReactiveFormsModule,
+    ScenariosModule
+  ],
+  declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, DisplayNlpStatsComponent],
+  exports: [],
+  providers: [TestService],
+  entryComponents: [DisplayNlpStatsComponent]
 })
 export class BotTestModule {}

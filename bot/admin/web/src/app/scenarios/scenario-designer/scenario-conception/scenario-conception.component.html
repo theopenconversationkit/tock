@@ -1,0 +1,278 @@
+<tock-scenario-canvas-wrapper
+  [hasSidePanel]="scenario.data.mode === SCENARIO_MODE.casting"
+  (onSidePanelChange)="sidePanelChange($event)"
+>
+  <nb-accordion
+    multi
+    menu-body
+  >
+    <nb-accordion-item expanded>
+      <nb-accordion-item-header>Contexts</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngIf="!scenario.data.contexts.length"
+          class="menu-item-no-data"
+        >
+          No context defined
+        </div>
+
+        <nb-list *ngIf="scenario.data.contexts.length">
+          <nb-list-item
+            *ngFor="let context of scenario.data.contexts"
+            class="list-item"
+          >
+            <div>
+              <nb-icon
+                *ngIf="isContextUsed(context)"
+                nbTooltip="This context is correctly defined as the output context of at least one action and the input context of at least one other action"
+                icon="checkmark-outline"
+                status="success"
+              ></nb-icon>
+            </div>
+
+            <div class="d-flex flex-column">
+              <div class="ellipsis">
+                <span [nbTooltip]="context.name">{{ context.name }}</span>
+              </div>
+
+              <div
+                *ngIf="context.entityType"
+                nbTooltip="Entity associated with the context"
+                class="entity"
+                [style.background]="getContextEntityColor(context)"
+                [style.color]="getContextEntityContrast(context)"
+              >
+                <span>
+                  {{ qualifiedName(stateService.user, context.entityType, context.entityRole) }}
+                </span>
+              </div>
+            </div>
+            <nb-icon
+              *ngIf="!isReadonly"
+              class="pointer ml-2"
+              nbTooltip="Delete"
+              status="danger"
+              icon="trash-2-outline"
+              (click)="confirmDeleteContext(context)"
+            ></nb-icon>
+          </nb-list-item>
+        </nb-list>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+
+    <nb-accordion-item>
+      <nb-accordion-item-header>Events</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngIf="!scenario.data.triggers?.length"
+          class="menu-item-no-data"
+        >
+          No event defined
+        </div>
+
+        <nb-list *ngIf="scenario.data.triggers?.length">
+          <nb-list-item
+            *ngFor="let trigger of scenario.data.triggers"
+            class="list-item"
+          >
+            <div>
+              <nb-icon
+                *ngIf="isTriggerUsed(trigger)"
+                nbTooltip="This event is associated with at least one action"
+                icon="checkmark-outline"
+                status="success"
+              ></nb-icon>
+            </div>
+
+            <div class="ellipsis">
+              <span [nbTooltip]="trigger">{{ trigger }}</span>
+            </div>
+
+            <nb-icon
+              *ngIf="!isReadonly"
+              icon="trash-2-outline"
+              status="danger"
+              class="pointer ml-2"
+              nbTooltip="Delete"
+              (click)="confirmDeleteTrigger(trigger)"
+            ></nb-icon>
+          </nb-list-item>
+        </nb-list>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+  </nb-accordion>
+
+  <div menu-actions>
+    <div [class.d-none]="!isSidePanelOpen">
+      <button
+        *ngIf="!isReadonly && isSidePanelOpen"
+        nbButton
+        size="tiny"
+        fullWidth
+        status="info"
+        nbTooltip="Add context"
+        (click)="addContext()"
+      >
+        Add context
+      </button>
+      <button
+        class="mt-1"
+        *ngIf="!isReadonly && isSidePanelOpen"
+        nbButton
+        size="tiny"
+        fullWidth
+        status="info"
+        nbTooltip="Add event"
+        (click)="addTrigger()"
+      >
+        Add Event
+      </button>
+      <button
+        *ngIf="isSidePanelOpen && scenario.data.contexts?.length"
+        class="mt-1"
+        nbButton
+        size="tiny"
+        fullWidth
+        status="basic"
+        nbTooltip="Graph of contexts constraints"
+        (click)="displayGraph()"
+      >
+        Graph of constraints
+      </button>
+    </div>
+    <div [class.d-none]="isSidePanelOpen">
+      <button
+        *ngIf="!isReadonly"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Add context"
+        (click)="addContext()"
+      >
+        <nb-icon icon="plus-outline"></nb-icon>
+      </button>
+      <button
+        class="mt-1"
+        *ngIf="!isReadonly"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Add Event"
+        (click)="addTrigger()"
+      >
+        <nb-icon icon="activity-outline"></nb-icon>
+      </button>
+      <button
+        *ngIf="scenario.data.contexts?.length"
+        class="mt-1"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Graph of contexts constraints"
+        (click)="displayGraph()"
+      >
+        <nb-icon icon="map-outline"></nb-icon>
+      </button>
+    </div>
+  </div>
+  <div
+    canvas-wrapper
+    class="conception-canvas-wrapper flex-fill"
+    #canvasWrapperElem
+    tock-canvas
+    [position]="elementPosition"
+    [isFullscreen]="isFullscreen"
+    (onFullscreen)="toggleFullscreen($event)"
+    tockMouseWheelListner
+  >
+    <div
+      class="canvas"
+      #canvasElem
+      id="canvas"
+    >
+      <div class="card-row">
+        <div class="card-col">
+          <tock-scenario-conception-item
+            *ngIf="scenario?.data.scenarioItems.length"
+            [isReadonly]="isReadonly"
+            [mode]="scenario.data.mode"
+            [scenario]="scenario"
+            [item]="scenario.data.scenarioItems[0]"
+            [selectedItem]="selectedItem"
+            [contexts]="scenario.data.contexts"
+            [avalaibleHandlers]="avalaibleHandlers"
+            [availableStories]="availableStories"
+            (onSelectElement)="handleSeletedElement($event)"
+          ></tock-scenario-conception-item>
+        </div>
+      </div>
+    </div>
+  </div>
+</tock-scenario-canvas-wrapper>
+
+<div
+  class="chat-wrapper"
+  (click)="closeChat()"
+  *ngIf="chatDisplayed"
+>
+  <div
+    class="chat-container"
+    (click)="stopPropagation($event)"
+  >
+    <nb-chat
+      title="Test story"
+      status="primary"
+      size="large"
+    >
+      <nb-chat-message
+        *ngFor="let msg of messages"
+        [type]="msg.type"
+        [message]="msg.text"
+        [reply]="msg.reply"
+        [sender]="msg.user.name"
+        [date]="msg.date"
+        [files]="msg.files"
+        [quote]="msg.quote"
+        [latitude]="msg.latitude"
+        [longitude]="msg.longitude"
+        [avatar]="msg.user.avatar"
+      >
+      </nb-chat-message>
+    </nb-chat>
+
+    <div
+      class="chat-controls"
+      *ngIf="chatControlsDisplay"
+    >
+      <div
+        class="from"
+        [ngSwitch]="chatControlsFrom"
+      >
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_CLIENT">
+          <img src="assets/images/scenario-client.svg" />
+        </ng-container>
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_BOT">
+          <img src="assets/images/scenario-bot.svg" />
+        </ng-container>
+        <ng-container *ngSwitchCase="SCENARIO_ITEM_FROM_API">
+          <img src="assets/images/scenario-verification.svg" />
+        </ng-container>
+      </div>
+      <div class="propositions">
+        <span
+          class="prop-button"
+          *ngFor="let proposition of chatPropositions"
+          (click)="chooseProposition(proposition)"
+        >
+          {{ proposition.text }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

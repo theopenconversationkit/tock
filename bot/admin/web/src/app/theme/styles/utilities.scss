@@ -1,3 +1,15 @@
+@import '@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+@mixin truncate($line) {
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @for $i from 1 through 4 {
   .gap-#{$i} {
     gap: #{$i}rem;
@@ -8,22 +20,30 @@
   line-height: 0;
 }
 
-.text-muted {
-  color: #8f959b;
+.nb-theme-default .text-mitigated {
+  color: #6c757d;
+}
+
+.nb-theme-dark .text-mitigated {
+  color: nb-theme(color-basic-600);
 }
 
 .valign-middle {
   vertical-align: middle;
 }
+
 .pointer {
   cursor: pointer;
 }
+
 .cursor-move {
   cursor: move;
 }
+
 .cursor-default {
   cursor: default;
 }
+
 .initial-capitalize::first-letter {
   text-transform: uppercase;
 }
@@ -38,13 +58,10 @@ nb-select.appearance-outline .select-button {
   min-width: auto !important;
 }
 
-// Makes the disabled ghost button more discreet. By default, the background color makes it more visible than the non-deactivated buttons.
-.nb-theme-default [nbButton].appearance-ghost.status-basic[disabled],
-.nb-theme-default .appearance-ghost.status-basic[disabled][nbButtonToggle],
-.nb-theme-dark [nbButton].appearance-ghost.status-basic[disabled],
-.nb-theme-dark .appearance-ghost.status-basic[disabled][nbButtonToggle] {
-  background-color: unset;
-  color: #8f9bb354;
+// remove the top used by nebular to center the toggle button in the header
+.nb-theme-default .header-container .darkmode-toggle,
+.nb-theme-dark .header-container .darkmode-toggle {
+  top: 0 !important;
 }
 
 .option-list--break-word {
@@ -84,4 +101,93 @@ nb-card.selected {
 .nb-theme-default nb-tabset .tab-link,
 .nb-theme-dark nb-tabset .tab-link {
   padding: 1rem 1.5rem;
+}
+
+.min-width-1em {
+  min-width: 1em;
+}
+
+.unselectable {
+  user-select: none;
+}
+
+nb-accordion.selected {
+  border-left: 0.5rem solid var(--success);
+
+  nb-accordion-item {
+    padding-left: 1rem;
+  }
+}
+
+.break-word {
+  word-break: break-word;
+}
+
+.header-actions {
+  gap: 0.5rem;
+}
+
+.card-header-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.card-footer-actions {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+}
+
+@media screen and (min-width: 400px) {
+  .card-footer-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}
+
+nb-toggle > label {
+  margin: 0;
+}
+
+.cdk-global-overlay-wrapper nb-dialog-container nb-card {
+  max-width: 95vw;
+  max-height: 95vh;
+  margin: 0;
+}
+
+@include media-breakpoint-up(md) {
+  .cdk-global-overlay-wrapper nb-dialog-container nb-card {
+    max-width: 80vw;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .cdk-global-overlay-wrapper nb-dialog-container nb-card {
+    max-width: 60vw;
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .cdk-global-overlay-wrapper nb-dialog-container nb-card {
+    max-width: 40vw;
+  }
+}
+
+.cdk-global-overlay-wrapper .full-width-dialog nb-dialog-container nb-card {
+  min-width: 95vw;
+}
+
+.wrapperFullscreen {
+  position: absolute !important;
+  z-index: 1040 !important;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 1rem;
 }

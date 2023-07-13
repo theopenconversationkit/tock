@@ -1,0 +1,10 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  nb-card {
+    overflow: hidden;
+    margin: 0;
+  }
+}

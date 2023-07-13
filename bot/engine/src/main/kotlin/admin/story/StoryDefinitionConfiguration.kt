@@ -190,6 +190,8 @@ data class StoryDefinitionConfiguration(
         return dedicatedFeature?.switchToStoryId ?: features.find { it.switchToStoryId != null }?.switchToStoryId
     }
 
+    fun isTickAnswerType() = AnswerConfigurationType.tick == currentType
+
      fun findEnabledEndWithStoryId(applicationId: String?): String? {
         val features = findEnabledFeatures(applicationId)
 

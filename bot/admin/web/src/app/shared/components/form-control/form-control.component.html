@@ -1,10 +1,11 @@
 <div
-  class="d-flex flex-column mb-3"
+  class="d-flex flex-column"
+  [class.mb-3]="hasMargin"
   data-testid="form-control"
 >
   <label
     *ngIf="label"
-    [class.required]="required"
+    [ngClass]="{ 'font-weight-bold': boldLabel, 'text-mitigated': true, required: required, hasError: showError && controls.invalid }"
     [for]="name"
     data-testid="label"
   >
@@ -15,6 +16,13 @@
       *
     </abbr>
     {{ label }}
+
+    <nb-icon
+      *ngIf="help"
+      icon="info-outline"
+      [nbTooltip]="help"
+      class="align-bottom"
+    ></nb-icon>
   </label>
   <ng-content></ng-content>
   <tock-error-helper

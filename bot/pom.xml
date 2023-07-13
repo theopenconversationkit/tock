@@ -66,6 +66,8 @@
 
         <module>chatbase</module>
 
+        <module>dialog-manager</module>
+
     </modules>
 
     <dependencyManagement>
@@ -73,6 +75,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-xray-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-dialog-manager</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

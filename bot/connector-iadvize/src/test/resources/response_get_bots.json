@@ -1,1 +1,7 @@
-[{"idBot":"botId","name":"botName","editorUrl":"/editorUrl"}]
+[
+  {
+    "idBot": "botId",
+    "name": "botName",
+    "editorUrl": "/editorUrl"
+  }
+]

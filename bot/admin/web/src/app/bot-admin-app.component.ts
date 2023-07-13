@@ -86,12 +86,6 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
-        title: 'Settings',
-        icon: 'settings-outline',
-        link: '/configuration',
-        hidden: !this.state.hasRole(UserRole.admin)
-      },
-      {
         title: 'FAQ Training',
         icon: {
           icon: 'school',
@@ -110,10 +104,22 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         hidden: !this.state.hasRole(UserRole.faqBotUser)
       },
       {
+        title: 'Scenarios Management',
+        icon: 'film-outline',
+        link: '/scenarios',
+        hidden: !this.state.hasRole(UserRole.botUser)
+      },
+      {
         title: 'Answers',
         icon: 'color-palette-outline',
         link: '/build/i18n',
         hidden: this.state.hasRole(UserRole.botUser) || !this.state.hasRole(UserRole.faqBotUser)
+      },
+      {
+        title: 'Settings',
+        icon: 'settings-outline',
+        link: '/configuration',
+        hidden: !this.state.hasRole(UserRole.admin)
       }
     ];
   }

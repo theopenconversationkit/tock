@@ -20,10 +20,15 @@ import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.*
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
+import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.bot.BotVersion
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryHandler
+import ai.tock.bot.definition.TickStoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.config.BotDefinitionWrapper
+import ai.tock.bot.engine.config.ConfiguredStoryHandler
 
 /**
  * Contains list of [AnswerConfiguration].
@@ -56,6 +61,7 @@ internal interface StoryDefinitionAnswersContainer {
                 ?.findBestVersion(BotVersion.getCurrentBotVersion(botDefinition.botId))
                 ?.storyDefinition
             builtin -> botDefinition.builtInStory(storyDefinitionConfiguration.storyId)
+            tick -> botDefinition.builtTickStory(storyDefinitionConfiguration, botDefinition)
             else -> null
         }
 

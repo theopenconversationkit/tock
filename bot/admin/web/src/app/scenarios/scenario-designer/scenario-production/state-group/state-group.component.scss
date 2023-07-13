@@ -1,0 +1,52 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+@include nb-install-component {
+  .stateGroup {
+    font-size: 0.8rem;
+    border: 2px solid nb-theme(color-basic-700);
+    min-width: 10rem;
+    width: fit-content;
+    margin-top: 20px;
+    border-radius: 0.25rem;
+
+    .stateGroup-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      color: nb-theme(text-control-color);
+      background-color: nb-theme(color-basic-700);
+      padding: 0.3rem 0.7rem;
+      margin: -1px;
+
+      > span,
+      > div {
+        display: flex;
+        gap: 0.25rem;
+      }
+    }
+
+    .stateGroup-body {
+      min-height: 3rem;
+      .transitions-wrapper {
+        position: relative;
+      }
+      .actions-wrapper {
+        padding: 0 30px 30px 30px;
+      }
+    }
+
+    &.dragHover {
+      border-color: nb-theme(color-basic-transparent-600);
+      > .stateGroup-header {
+        background-color: nb-theme(color-basic-transparent-600);
+      }
+    }
+  }
+
+  .outgoing-transitions-wrapper {
+    position: relative;
+    height: 30px;
+  }
+}

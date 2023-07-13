@@ -23,5 +23,6 @@ enum class AnswerConfigurationType {
     simple,
     message,
     script,
-    builtin
+    builtin,
+    tick
 }

@@ -307,28 +307,25 @@
     </form>
   </nb-card-body>
 
-  <nb-card-footer>
-    <div class="grid-button">
-      <button
-        type="button"
-        nbButton
-        outline
-        status="primary"
-        size="small"
-        (click)="close()"
-      >
-        Cancel
-      </button>
-      <button
-        type="button"
-        nbButton
-        status="primary"
-        size="small"
-        [disabled]="!canSave"
-        (click)="checkIntentNameAndSave()"
-      >
-        Save
-      </button>
-    </div>
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      size="small"
+      type="button"
+      (click)="close()"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      nbButton
+      status="primary"
+      size="small"
+      [disabled]="!canSave"
+      (click)="checkIntentNameAndSave()"
+    >
+      Save
+    </button>
   </nb-card-footer>
 </nb-card>

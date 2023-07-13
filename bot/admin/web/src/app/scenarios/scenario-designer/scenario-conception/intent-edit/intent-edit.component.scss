@@ -1,0 +1,26 @@
+#modal-wrapper {
+  .questions {
+    overflow-y: auto;
+    max-height: 15rem;
+
+    .sentences-list {
+      padding: 0;
+      margin-bottom: 0;
+      .sentences-list-item {
+        border-bottom: 1px solid #edf1f7;
+      }
+    }
+  }
+}
+
+.entity {
+  border-radius: 0.45rem;
+  padding: 0rem 0.3rem 0rem 0.3rem;
+  font-size: 0.7rem;
+  display: inline-block;
+  line-height: 1.25rem;
+}
+
+.active-add-context-button:not([disabled]) {
+  color: var(--button-ghost-warning-text-color) !important;
+}

@@ -1,0 +1,196 @@
+$inactive-color: transparent;
+$bot-color: #90c3ea;
+$bot-final-color: #43abf5;
+$client-color: white;
+
+.tiny-text {
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.card-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.card-col {
+  margin: 0 1.5rem;
+}
+
+.arrow-wrapper {
+  .arrow-top-right {
+    float: right;
+    height: 2px;
+    width: 50%;
+    background-color: rgba(128, 128, 128, 0.4);
+  }
+  .arrow-top-left {
+    float: left;
+    height: 2px;
+    margin-left: -3rem;
+    width: calc(50% + 3rem);
+    background-color: rgba(128, 128, 128, 0.4);
+  }
+  .arrow {
+    position: relative;
+    margin: auto;
+
+    .arrow-line {
+      margin: auto;
+      width: 2px;
+      background-color: rgba(128, 128, 128, 0.4);
+      height: 0.7rem;
+      &.long {
+        height: 1.8rem;
+      }
+    }
+    .add-control {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      background-color: rgb(184, 187, 190);
+      padding: 1px;
+      display: inline-block;
+      border: none;
+      border-bottom-left-radius: 100%;
+      border-bottom-right-radius: 100%;
+      &:hover {
+        background-color: rgba(184, 187, 190, 0.5);
+      }
+    }
+  }
+}
+
+.item-card {
+  color: #000;
+  background-color: white;
+  padding: 0.5rem;
+  margin: auto;
+  width: 14rem;
+  position: relative;
+  box-shadow: 0px 5px 5px -5px rgba($color: #000000, $alpha: 0.3);
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+
+  &.dragHover {
+    border: 2px dotted rgba(128, 128, 128, 0.5);
+    box-shadow: 0px 5px 8px -2px rgba($color: #000000, $alpha: 0.5);
+  }
+
+  .item-infos {
+    min-height: 140px;
+  }
+
+  textarea {
+    font-size: 80%;
+    padding: 0.3rem 0.5rem;
+    line-height: 1.4;
+    min-height: 7rem;
+    width: 100%;
+    max-width: 100%;
+    background-color: transparent;
+    border-color: #00000030;
+  }
+
+  .sentences {
+    font-size: 0.7rem;
+    .questions {
+      overflow-y: auto;
+      max-height: 6rem;
+
+      UL {
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+        LI {
+          color: #000;
+          font-size: 0.6rem;
+          line-height: 1.4;
+          padding: 0.2rem;
+          border-bottom: 1px solid #bebebe;
+        }
+      }
+    }
+  }
+
+  .from-icon {
+    position: absolute;
+    left: -2.4rem;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    box-shadow: 0px 12px 15px -12px rgba($color: #000000, $alpha: 0.3);
+    cursor: pointer;
+
+    IMG {
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+      width: 2.5rem;
+      margin-top: 3px;
+    }
+
+    &.client {
+      top: 0rem;
+    }
+    &.bot {
+      top: 3.2rem;
+    }
+
+    .duplication-count {
+      position: absolute;
+      bottom: -2px;
+      right: 0;
+      border-radius: 1rem;
+      color: white;
+      background-color: #ffaa00;
+      padding: 0 0.5rem;
+      font-size: 0.7rem;
+      box-shadow: 1px 1px 3px rgba($color: #000000, $alpha: 0.3);
+    }
+  }
+
+  &.client {
+    background-color: $client-color;
+    .from-icon {
+      background-color: $client-color;
+      &.bot {
+        background-color: $inactive-color;
+      }
+    }
+  }
+  &.bot {
+    background-color: $bot-color;
+    .from-icon {
+      background-color: $bot-color;
+      &.client {
+        background-color: $inactive-color;
+      }
+    }
+    &.final {
+      background-color: $bot-final-color;
+      .from-icon {
+        background-color: $bot-final-color;
+        &.client {
+          background-color: $inactive-color;
+        }
+      }
+    }
+  }
+
+  &.selected {
+    border-right: 5px solid gray;
+    border-bottom: 5px solid gray;
+    &.bot {
+      border-color: #{scale-color($bot-color, $lightness: -25%)};
+    }
+    &.final {
+      border-color: #{scale-color($bot-final-color, $lightness: -25%)};
+    }
+    &.client {
+      border-color: #{scale-color($client-color, $lightness: -25%)};
+    }
+  }
+}

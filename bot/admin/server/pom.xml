@@ -39,6 +39,10 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>bot-test-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-rest-client</artifactId>
         </dependency>
         <dependency>

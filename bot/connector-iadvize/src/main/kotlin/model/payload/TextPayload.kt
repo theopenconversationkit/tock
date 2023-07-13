@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation.payload
+package ai.tock.bot.connector.iadvize.model.payload
 
-data class TextPayload(val value: String) : Payload("text")
+data class TextPayload(val value: CharSequence) : Payload("text")

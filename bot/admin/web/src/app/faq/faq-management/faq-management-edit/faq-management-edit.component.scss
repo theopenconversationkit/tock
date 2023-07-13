@@ -2,23 +2,6 @@
 @import '@nebular/theme/styles/theming';
 @import '@nebular/theme/styles/themes';
 
-.grid-button {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-gap: 0.5rem;
-}
-
-@include media-breakpoint-up(sm) {
-  .grid-button {
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-
-    button {
-      width: fit-content;
-    }
-  }
-}
-
 @include nb-install-component() {
   .entries-list {
     max-height: 35vh;

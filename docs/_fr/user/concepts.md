@@ -103,12 +103,12 @@ Par défaut, les entités de namespace "duckling" seront automatiquement valoris
 
 Voir [_Tock Studio > Language Understanding_](studio/nlu).
 
-### _Scénario_ (ou _Story_)
+### _Story_
 
-Un scénario ou _story_ est un regroupement fonctionnel qui permet de répondre aux questions
+Une _story_ est un regroupement fonctionnel qui permet de répondre aux questions
  sur un sujet bien délimité.
  
-Il est en général initié par une intention principale et peut aussi utiliser, de manière optionelle,
+Elle est en général initiée par une intention principale et peut aussi utiliser, de manière optionelle,
 une arborescence d'intentions dites "secondaires".
 
 Pour reprendre l'exemple de la météo, à quelqu'un demandant "Quel temps fait-il ?", 
@@ -119,6 +119,29 @@ de la question initiale.
 La _Story_ est l'unité principale du framework conversationnel de Tock.
 
 Voir [_Tock Studio > Stories & Answers_](studio/stories-and-answers).
+
+### _FAQ_
+
+Une FAQ (Foire Aux Questions) correspond à une représentation simple d'un ensemble questions/réponse.
+C'est une abstraction ajoutée au-dessus des concepts ci-dessus afin de s'adresser à un public non familier des concepts conversationnels.
+
+Une FAQ va regrouper dans un ensemble cohérent et à travers des interfaces dédiées :
+* Des informations descriptives de la FAQ (nom, description...)
+* Un ensemble de questions (_Sentences_) permettant de comprendre la thématique adressée par cette FAQ
+* Une _Intention_ dédiée à laquelle seront associées les questions
+* Une _Story_ qui sera déclenchée après détection de l'intention et qui va envoyer la réponse (_Answer_) qui est définie pour cette FAQ
+
+Voir [_Tock Studio > FAQ Management_](studio/faq-management).
+
+### _Scénario_
+
+Un scénario est la modélisation sous forme conversationnelle d'un cas d'usage complexe comme par exemple l'activation d'une carte bancaire.
+Modéliser un scénario revient à définir de quelle manière on imagine l'échange entre un utilisateur humain et le bot.
+Cela va permettre de déterminer quelles informations sont attendues de la part de l'utilisateur et ainsi organiser la collecte de ces informations afin d'apporter une réponse ciblée et précise à sa demande en offrant un parcours optimisé.
+
+L'optimisation du parcours décrit dans un scénario est possible grâce à l'utilisation d'un gestionnaire de dialogue avancé qui va, à chaque round de discussion, évaluer quelle est la meilleure question à poser afin d'améliorer l'expérience utilisateur en minimisant le nombre de questions posées.
+
+Voir [_Tock Studio > Scenarios Management_](studio/scenarios-management).
 
 ## Termes & correspondances
 

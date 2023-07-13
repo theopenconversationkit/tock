@@ -35,6 +35,6 @@ data class IadvizeTransfer(
      * When an IadvizeTransfer is created on a story, distribution rule is not known.
      * Distribution rule is added when response is built.
      */
-    constructor(timout: Duration)
-            : this(null, TransferOptions(timout))
+    constructor(timeout: Duration)
+            : this(null, TransferOptions(timeout))
 }

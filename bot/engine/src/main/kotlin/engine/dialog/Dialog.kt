@@ -54,7 +54,13 @@ data class Dialog(
 
     var rating: Int? = null,
 
-    var review: String? = null
+    var review: String? = null,
+
+    /**
+     * the tick states
+     */
+    val tickStates: MutableMap<String, TickState> = mutableMapOf()
+
 ) {
 
     companion object {
@@ -76,7 +82,8 @@ data class Dialog(
                     }
                 ).toMutableList(),
                 rating = dialog.rating,
-                review = dialog.review
+                review = dialog.review,
+                tickStates = dialog.tickStates
             )
         }
     }

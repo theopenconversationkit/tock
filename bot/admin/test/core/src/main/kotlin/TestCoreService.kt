@@ -18,27 +18,33 @@ package ai.tock.bot.admin.test
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.test.model.BotDialogRequest
 import ai.tock.bot.admin.test.model.BotDialogResponse
+import ai.tock.bot.admin.test.model.DialogDebugData
 import ai.tock.bot.admin.test.model.TestPlanUpdate
 import ai.tock.bot.connector.rest.client.ConnectorRestClient
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientSentence
+import ai.tock.bot.engine.user.PlayerId
+import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.processor.debugEnabled
 import ai.tock.nlp.admin.AdminVerticle
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.shared.Dice
 import ai.tock.shared.error
+import ai.tock.shared.exception.rest.UnauthorizedException
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole.botUser
 import ai.tock.shared.security.TockUserRole.faqBotUser
 import ai.tock.shared.security.TockUserRole.faqNlpUser
-import ai.tock.shared.vertx.UnauthorizedException
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
 import io.vertx.ext.web.RoutingContext
+import model.ScenarioDebugResponse
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -53,6 +59,9 @@ class TestCoreService : TestService {
     private val defaultRestConnectorBaseUrl =
         property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
     private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
+    private val userTimelineDAO: UserTimelineDAO get() = injector.provide()
+    private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
+
 
     override fun registerServices(): (AdminVerticle).() -> Unit = {
 
@@ -138,15 +147,42 @@ class TestCoreService : TestService {
 
         blockingJsonPost("/test/talk", setOf(botUser,faqNlpUser,faqBotUser)) { context, query: BotDialogRequest ->
             if (context.organization == query.namespace) {
-                talk(query)
+                val conf = getBotConfiguration(query.botApplicationConfigurationId, query.namespace)
+                val debug = context.firstQueryParam("debug")?.toBoolean() ?: false
+                var response = talk(query, conf)
+
+                if(debug){
+                    val userId = "test_${conf._id}_${query.currentLanguage}_${query.userIdModifier}"
+                    // wait 1s for updating user Timeline
+                    Thread.sleep(1_000)
+                    val lastDialogState = userTimelineDAO.getLastDialogState(query.namespace, PlayerId(userId))
+                    val story = lastDialogState?.storyId?.let {
+                        storyDefinitionDAO.getStoryDefinitionById(it.toId())
+                    }
+
+                    response.copy(debug = DialogDebugData(lastDialogState, story))
+                } else {
+                    response
+                }
+            } else {
+                Companion.unauthorized()
+            }
+        }
+
+        blockingJsonGet("/test/talk/debug", setOf(botUser,faqNlpUser,faqBotUser)) { context ->
+            val botApplicationConfigurationId = context.firstQueryParam("botApplicationConfigurationId")!!
+            val namespace = context.firstQueryParam("namespace")!!
+
+            if (context.organization == namespace) {
+                val conf = getBotConfiguration(botApplicationConfigurationId.toId(), namespace)
+                getDebugLog(conf)
             } else {
                 Companion.unauthorized()
             }
         }
     }
 
-    private fun talk(request: BotDialogRequest): BotDialogResponse {
-        val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
+    private fun talk(request: BotDialogRequest, conf: BotApplicationConfiguration): BotDialogResponse {
         return try {
             val restClient = getRestClient(conf)
             val response = restClient.talk(
@@ -172,6 +208,21 @@ class TestCoreService : TestService {
             logger.error(throwable)
             BotDialogResponse(listOf(ClientSentence("technical error :( ${throwable.message}")))
         }
+    }
+
+    // FIXME (WITH DERCBOT-321)
+    private fun getDebugLog(conf: BotApplicationConfiguration): ScenarioDebugResponse {
+        if(!debugEnabled) return ScenarioDebugResponse(imgBase64 = "")
+
+        val restClient = getRestClient(conf)
+        val response = restClient.getDebugLog(conf.path ?: conf.applicationId)
+
+        val debug = when(response.isSuccessful){
+            true -> response.body()?.run { this }
+            else -> null
+        }
+
+        return debug ?: ScenarioDebugResponse()
     }
 
     private fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {

@@ -24,6 +24,7 @@ import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqDefinitionSearchResult
 import ai.tock.bot.admin.model.FaqSearchRequest
+import ai.tock.bot.admin.service.StoryService
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
@@ -50,7 +51,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UNKNOWN_USER_LOGIN
 import ai.tock.shared.security.UserLogin
-import ai.tock.shared.vertx.BadRequestException
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -74,6 +74,7 @@ object FaqAdminService {
     private val classifiedSentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val faqSettingsDAO: FaqSettingsDAO get() = injector.provide()
+
     private val front = FrontClient
 
     const val FAQ_CATEGORY = "faq"
@@ -774,7 +775,7 @@ object FaqAdminService {
         storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
             application.namespace, application.name, intentName
         )?.let {
-            BotAdminService.deleteStory(it.namespace, it._id.toString())
+            StoryService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(it.namespace, it._id.toString())
         }
 
         return true

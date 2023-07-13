@@ -15,7 +15,7 @@
  */
 
 import { defaultUserInterfaceType, UserInterfaceType } from '../../core/model/configuration';
-import { isNullOrUndefined } from 'src/app/model/commons';
+import { isNullOrUndefined } from '../../model/commons';
 import { RestService } from '../../core-nlp/rest/rest.service';
 
 export const userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
@@ -223,6 +223,10 @@ export class I18nLabelStat {
 
 export class CreateI18nLabelRequest {
   constructor(public category: string, public label: string, public locale: string) {}
+}
+
+export class CreateI18nLabelsRequest {
+  constructor(public category: string, public label: string, public locale: string, public i18n: I18nLocalizedLabel[]) {}
 }
 
 export enum I18nLabelStateQuery {

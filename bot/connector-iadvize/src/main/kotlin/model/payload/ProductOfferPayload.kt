@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation.payload
+package ai.tock.bot.connector.iadvize.model.payload
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Action
 import ai.tock.bot.connector.iadvize.model.response.conversation.payload.genericjson.Image

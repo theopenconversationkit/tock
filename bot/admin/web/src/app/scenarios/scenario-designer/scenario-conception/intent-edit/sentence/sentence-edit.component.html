@@ -1,0 +1,102 @@
+<span
+  *ngFor="let token of sentence._tokens"
+  [title]="'Entity : ' + token.entity?.role"
+  [ngClass]="{ token: token.entity, pointer: token.entity, 'cursor-default': !token.entity }"
+  [style.background]="token.color()"
+  [style.color]="getContrastYIQ(token.color())"
+  [nbTooltip]="getTokenTooltip(token)"
+  (click)="displayTokenMenu($event, token)"
+  ><!-- NO carriage return here ! -->{{ token.text
+  }}<nb-icon
+    icon="code-download-outline"
+    class="valign-middle ml-1"
+    *ngIf="getContextOfEntity(token)"
+  ></nb-icon
+></span>
+
+<div
+  *ngIf="txtSelection"
+  class="my-3 d-flex flex-wrap align-items-center gap-1"
+>
+  <div
+    *ngFor="let entity of allEntities"
+    class="entity pointer d-inline-block"
+    [style.background]="entity.entityColor"
+    [style.color]="getContrastYIQ(entity.entityColor)"
+    [nbTooltip]="getEntityTooltip(entity)"
+    (click)="addEntityToSentence(entity)"
+  >
+    {{ qualifiedName(stateService.user, entity.entityTypeName, entity.role) }}
+  </div>
+
+  <button
+    nbButton
+    ghost
+    shape="round"
+    nbTooltip="Choose or create another entity"
+    (click)="callEntitiesModal($event)"
+  >
+    <nb-icon icon="plus-circle-outline"></nb-icon> Add an entity
+  </button>
+</div>
+
+<ng-template
+  #userMenu
+  let-token
+>
+  <section class="token-menu pt-1">
+    <button
+      type="button"
+      nbButton
+      ghost
+      size="small"
+      class="d-block w-100"
+      (click)="removeEntityFromSentence(token)"
+    >
+      <nb-icon icon="trash-2-outline"></nb-icon> Remove entity
+    </button>
+    <button
+      *ngIf="getContextOfEntity(token)"
+      type="button"
+      nbButton
+      ghost
+      size="small"
+      class="d-block w-100"
+      (click)="dissociateContextFromEntity(token)"
+    >
+      <nb-icon icon="code-outline"></nb-icon> Dissociate context
+    </button>
+
+    <div
+      *ngIf="!getContextOfEntity(token) && contexts.length"
+      class="px-3 pb-3"
+    >
+      <hr class="mt-0 mb-2" />
+
+      Associate a context :
+      <div
+        *ngFor="let ctx of contexts"
+        (click)="associateContextWithEntity(token, ctx)"
+        class="pointer text-mitigated py-1"
+      >
+        <nb-icon
+          icon="code-download-outline"
+          class="valign-middle"
+        ></nb-icon>
+        {{ ctx.name }}
+      </div>
+    </div>
+
+    <button
+      *ngIf="!getContextOfEntity(token)"
+      type="button"
+      nbButton
+      ghost
+      size="small"
+      class="d-block w-100"
+      (click)="addContext(token)"
+    >
+      <nb-icon icon="plus-circle-outline"></nb-icon> Create a context
+    </button>
+  </section>
+</ng-template>

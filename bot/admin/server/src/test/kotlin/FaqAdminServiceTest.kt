@@ -21,6 +21,9 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqSearchRequest
+import ai.tock.bot.admin.service.ScenarioGroupService
+import ai.tock.bot.admin.service.ScenarioSettingsService
+import ai.tock.bot.admin.service.StoryService
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.ConnectorType
@@ -44,7 +47,7 @@ import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.tockInternalInjector
-import ai.tock.shared.vertx.BadRequestException
+import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLocalizedLabel
@@ -55,6 +58,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import io.mockk.CapturingSlot
 import io.mockk.Runs
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
 import io.mockk.justRun
@@ -66,10 +70,7 @@ import io.mockk.unmockkObject
 import io.mockk.verify
 import org.apache.commons.lang3.StringUtils
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.*
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -89,6 +90,7 @@ class FaqAdminServiceTest : AbstractTest() {
         val i18nDAO: I18nDAO = mockk(relaxed = false)
         val faqSettingsDAO: FaqSettingsDAO = mockk(relaxed = true)
 
+
         init {
             // IOC
             tockInternalInjector = KodeinInjector()
@@ -99,12 +101,14 @@ class FaqAdminServiceTest : AbstractTest() {
                 bind<IntentDefinitionDAO>() with provider { intentDAO }
                 bind<I18nDAO>() with provider { i18nDAO }
                 bind<FaqSettingsDAO>() with provider { faqSettingsDAO }
+                //bind<StoryService>() with provider { storyService }
             }
             tockInternalInjector.inject(Kodein {
                 import(defaultModulesBinding())
                 import(specificModule)
             })
         }
+
 
         private val applicationId = newId<ApplicationDefinition>()
         private val botId = "botId"
@@ -863,6 +867,20 @@ class FaqAdminServiceTest : AbstractTest() {
     @Nested
     inner class DeleteFaq {
 
+        @BeforeEach
+        fun setUp() {
+            mockkObject(ScenarioSettingsService)
+            mockkObject(ScenarioGroupService)
+            every { ScenarioSettingsService.listenChanges(any()) } answers {}
+            every { ScenarioGroupService.listenChanges(any()) } answers {}
+            mockkObject(StoryService)
+        }
+
+        @AfterEach
+        fun tearDown() {
+            clearAllMocks()
+        }
+
         private fun initDeleteFaqMock(
             mockedIntentDefinition: IntentDefinition? = existingIntent,
             mockedFaqDefinition: FaqDefinition? = faqDefinition,
@@ -896,10 +914,21 @@ class FaqAdminServiceTest : AbstractTest() {
             )
         }
 
+        private fun initDeleteStoryMock(){
+            mockkObject(StoryService)
+            every {
+                StoryService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(
+                    existingStory.namespace,
+                    existingStory._id.toString()
+                )
+            } returns true
+        }
+
         @Test
         fun `GIVEN delete single faq WHEN intent existing and one applicationId is found`() {
             val faqAdminService = spyk<FaqAdminService>(recordPrivateCalls = true)
             initDeleteFaqMock()
+            initDeleteStoryMock()
 
             val isDeleted = faqAdminService.deleteFaqDefinition(namespace, faqId.toString())
 
@@ -909,7 +938,7 @@ class FaqAdminServiceTest : AbstractTest() {
                 faqDefinitionDAO.deleteFaqDefinitionById(eq(faqId))
                 intentDAO.getIntentById(any())
                 i18nDAO.deleteByNamespaceAndId(any(), any())
-                storyDefinitionDAO.delete(any())
+                StoryService.deleteStoryByNamespaceAndStoryDefinitionConfigurationId(any(), any())
             }
         }
 

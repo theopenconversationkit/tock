@@ -1,0 +1,47 @@
+<main
+  class="main"
+  [class.column]="hasSidePanel"
+  [class.displayed]="isSidePanelOpen"
+>
+  <section
+    *ngIf="hasSidePanel"
+    class="menu"
+    [class.displayed]="isSidePanelOpen"
+  >
+    <div class="menu-body">
+      <div [class.d-none]="!isSidePanelOpen">
+        <ng-content select="[menu-body]"></ng-content>
+      </div>
+    </div>
+
+    <hr />
+
+    <div [class.px-3]="isSidePanelOpen">
+      <ng-content select="[menu-actions]"></ng-content>
+    </div>
+
+    <hr />
+
+    <div class="menu-footer">
+      <ng-content select="[menu-footer]"></ng-content>
+
+      <button
+        class="sidePanelIndicator"
+        nbButton
+        size="small"
+        shape="round"
+        ghost
+        [nbTooltip]="isSidePanelOpen ? 'Reduce' : 'Develop'"
+        (click)="toggleSidePanel()"
+      >
+        <nb-icon
+          [class.rotate]="!isSidePanelOpen"
+          icon="chevron-left-outline"
+        ></nb-icon>
+      </button>
+    </div>
+  </section>
+  <section class="canvas-wrapper">
+    <ng-content select="[canvas-wrapper]"></ng-content>
+  </section>
+</main>

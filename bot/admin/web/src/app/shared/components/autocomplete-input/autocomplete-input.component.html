@@ -1,0 +1,27 @@
+<input
+  nbInput
+  autocomplete="off"
+  type="text"
+  [id]="name"
+  [name]="name"
+  [placeholder]="placeholder"
+  [disabled]="disabled"
+  [nbAutocomplete]="autocomplete"
+  [fullWidth]="fullWidth"
+  [value]="value"
+  (input)="valueChange($event)"
+  (keyup)="keyUp($event)"
+/>
+<nb-autocomplete
+  #autocomplete
+  optionsListClass="option-list--break-word"
+  (selectedChange)="valueSelectionChange($event)"
+  [activeFirst]="activeFirst"
+>
+  <nb-option
+    *ngFor="let option of filteredOptions$ | async"
+    [value]="option"
+  >
+    {{ option }}
+  </nb-option>
+</nb-autocomplete>

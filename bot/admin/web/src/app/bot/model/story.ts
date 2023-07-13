@@ -71,7 +71,7 @@ export abstract class AnswerContainer {
   }
 
   isConfiguredAnswer(): boolean {
-    return this.isSimpleAnswer() || this.isMessageAnswer() || this.isScriptAnswer();
+    return this.isSimpleAnswer() || this.isMessageAnswer() || this.isScriptAnswer() || this.isTickAnswer();
   }
 
   isSimpleAnswer(): boolean {
@@ -88,6 +88,10 @@ export abstract class AnswerContainer {
 
   isBuiltIn(): boolean {
     return this.currentType === AnswerConfigurationType.builtin;
+  }
+
+  isTickAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.tick;
   }
 
   simpleAnswer(): SimpleAnswerConfiguration {
@@ -163,6 +167,10 @@ export class StoryDefinitionConfigurationSummary {
 
   isBuiltIn(): boolean {
     return this.currentType === AnswerConfigurationType.builtin;
+  }
+
+  isTickAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.tick;
   }
 }
 
@@ -276,7 +284,8 @@ export enum AnswerConfigurationType {
   simple,
   message,
   script,
-  builtin
+  builtin,
+  tick
 }
 
 export class MandatoryEntity extends AnswerContainer {
@@ -506,6 +515,8 @@ export abstract class AnswerConfiguration {
         return ScriptAnswerConfiguration.fromJSON(json);
       case AnswerConfigurationType.builtin:
         return BuiltinAnswerConfiguration.fromJSON(json);
+      case AnswerConfigurationType.tick:
+        return TickAnswerConfiguration.fromJSON(json);
       default:
         throw new Error('unknown type : ' + json.answerType);
     }
@@ -962,5 +973,35 @@ export class BotConfiguredSteps {
     return Object.assign(value, json, {
       steps: StoryStep.fromJSONArray(json.steps)
     });
+  }
+}
+
+export class TickAnswerConfiguration extends AnswerConfiguration {
+  constructor() {
+    super(AnswerConfigurationType.tick);
+  }
+
+  isEmpty(): boolean {
+    return false;
+  }
+
+  simpleTextView(_wide: boolean): string {
+    return '[Tick]';
+  }
+
+  clone(): AnswerConfiguration {
+    return new TickAnswerConfiguration();
+  }
+
+  duplicate(_bot: BotService): AnswerConfiguration {
+    return this.clone();
+  }
+
+  static fromJSON(json: any): TickAnswerConfiguration {
+    const value = Object.create(TickAnswerConfiguration.prototype);
+    const result = Object.assign(value, json, {});
+
+    result.answerType = AnswerConfigurationType.tick;
+    return result;
   }
 }

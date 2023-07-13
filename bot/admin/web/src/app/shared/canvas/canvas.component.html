@@ -1,0 +1,9 @@
+<ng-content></ng-content>
+<tock-bottom-actions
+  *ngIf="canvas"
+  [hideActions]="hideActions"
+  [isFullscreen]="isFullscreen"
+  (onFullscreen)="fullscreen($event)"
+  (onResetPosition)="resetPosition()"
+  (onZoom)="zoom($event)"
+></tock-bottom-actions>

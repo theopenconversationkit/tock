@@ -1,0 +1,118 @@
+{
+  "name": "name",
+  "botId": "botId",
+  "storyId": "storyId",
+  "description": "description",
+  "mainIntent": "mainIntent",
+  "primaryIntents": ["primaryIntents_1", "primaryIntents_2", "primaryIntents_3"],
+  "secondaryIntents": ["secondaryIntents_1", "secondaryIntents_2", "unknown"],
+  "actions" : [
+    {
+      "name": "HELLO",
+      "description": "description",
+      "handler": null,
+      "answerId": "answerId",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": false,
+      "targetStory": "targetStory"
+    },
+    {
+      "name": "BYE",
+      "description": "description",
+      "handler": null,
+      "answerId": "answerId",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": false
+    },
+    {
+      "name": "INTRODUCTION",
+      "description": "description",
+      "handler": null,
+      "answerId": "answerId",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": false
+    },
+    {
+      "name": "ACTION_1",
+      "description": "description",
+      "handler": null,
+      "answerId": "answerId",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": false
+    },
+    {
+      "name": "ACTION_2",
+      "description": "description",
+      "handler": null,
+      "answerId": "answerId",
+      "inputContextNames": [],
+      "outputContextNames": [],
+      "final": false
+    }
+  ],
+  "contexts": [],
+  "unknownAnswerConfigs":[
+    {
+      "action": "ACTION_1",
+      "answerId": "answer_id"
+    }
+  ],
+  "stateMachine": {
+    "id": "root",
+    "type": "parallel",
+    "states": {
+      "Global": {
+        "id": "Global",
+        "states": {
+          "HELLO": {
+            "id": "HELLO",
+            "states": {}
+          },
+          "BYE": {
+            "id": "BYE",
+            "states": {}
+          },
+          "INTRODUCTION": {
+            "id": "INTRODUCTION",
+            "states": {}
+          },
+          "GROUP_1": {
+            "id": "GROUP_1",
+            "states": {
+              "ACTION_1": {
+                "id": "ACTION_1",
+                "states": {}
+              },
+              "ACTION_2": {
+                "id": "ACTION_2",
+                "states": {}
+              },
+              "ACTION_3": {
+                "id": "ACTION_3",
+                "states": {}
+              }
+            },
+            "initial": "ACTION_1",
+            "on": {
+              "secondaryIntents_1-test": "#ACTION_2",
+              "secondaryIntents_2-test": "#ACTION_3"
+            }
+          }
+        },
+        "initial": "INTRODUCTION",
+        "on": {
+          "mainIntent-test": "#GROUP_1",
+          "primaryIntents_1-test": "#INTRODUCTION",
+          "primaryIntents_2-test": "#HELLO",
+          "primaryIntents_3-test": "#BYE"
+        }
+      }
+    },
+    "initial": "Global",
+    "on": {}
+  }
+}

@@ -54,6 +54,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
+import mu.KotlinLogging
 
 /**
  * Bus implementation for Tock integrated mode.
@@ -67,6 +68,8 @@ interface BotBus : Bus<BotBus> {
          * (warning: advanced usage only).
          */
         fun retrieveCurrentBus(): BotBus? = Bot.retrieveCurrentBus()
+
+        private val logger = KotlinLogging.logger {}
     }
 
     /**
@@ -427,6 +430,7 @@ interface BotBus : Bus<BotBus> {
      * Switches the context to the specified story definition (start a new [Story]).
      */
     fun switchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
+        logger.debug { "Switch to new story ${storyDefinition.id} (intent: ${storyDefinition.mainIntent()})" }
         story = Story(storyDefinition, starterIntent, story.step)
         hasCurrentSwitchStoryProcess = true
         story.computeCurrentStep(userTimeline, currentDialog, action, starterIntent)

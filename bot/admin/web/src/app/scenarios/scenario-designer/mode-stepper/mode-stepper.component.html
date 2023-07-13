@@ -1,0 +1,39 @@
+<div *ngFor="let step of steps; let i = index; let l = last">
+  <button
+    nbButton
+    ghost
+    size="small"
+    shape="round"
+    class="step"
+    [ngClass]="{ valid: isStepSequenceValid(step.mode), selected: mode === step.mode }"
+    (click)="switchMode(step.mode)"
+    [attr.data-testid]="'step-ctrl-' + step.mode"
+  >
+    <div class="error-indicator">
+      <nb-icon
+        *ngIf="hasStepError(step.mode)"
+        class="success"
+        icon="checkmark-circle-2-outline"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="!hasStepError(step.mode)"
+        class="error"
+        icon="alert-circle-outline"
+        [nbTooltip]="getStepErrorTooltip(step.mode)"
+        (click)="$event.stopPropagation(); displayNotMetConditionToAccesNextStage(step.mode)"
+      ></nb-icon>
+    </div>
+    <div class="label-index">
+      <nb-icon [icon]="step.icon"></nb-icon>
+    </div>
+    <span class="label">{{ step.label }}</span>
+  </button>
+  <div
+    *ngIf="!l"
+    class="connector"
+    [class.connectorpassed]="isStepPassed(step.mode)"
+  >
+    <div class="line"></div>
+    <div class="arrow"></div>
+  </div>
+</div>

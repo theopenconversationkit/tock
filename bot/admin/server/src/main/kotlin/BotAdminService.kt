@@ -18,6 +18,7 @@ package ai.tock.bot.admin
 
 import ai.tock.bot.admin.FaqAdminService.FAQ_CATEGORY
 import ai.tock.bot.admin.answer.AnswerConfiguration
+import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
@@ -44,6 +45,7 @@ import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
+import ai.tock.bot.admin.model.BotTickAnswerConfiguration
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
@@ -90,22 +92,21 @@ import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
-import com.github.salomonbrys.kodein.instance
+import java.time.Instant
+import java.util.Locale
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.time.Instant
-import java.util.Locale
 
 object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
 
-    private val userReportDAO: UserReportDAO by injector.instance()
-    internal val dialogReportDAO: DialogReportDAO by injector.instance()
-    private val applicationConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
-    private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
-    private val featureDAO: FeatureDAO by injector.instance()
+    private val userReportDAO: UserReportDAO get() = injector.provide()
+    internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
+    private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
+    private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
+    private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val front = FrontClient
 
@@ -303,7 +304,9 @@ object BotAdminService {
     }
 
     fun exportStories(namespace: String, applicationName: String): List<StoryDefinitionConfigurationDump> =
-            findStories(namespace, applicationName).map { StoryDefinitionConfigurationDump(it) }
+            findStories(namespace, applicationName)
+            .filterNot { AnswerConfigurationType.tick == it.currentType }
+            .map { StoryDefinitionConfigurationDump(it) }
 
     fun exportStory(
             namespace: String,
@@ -451,23 +454,11 @@ object BotAdminService {
         )
     }
 
-    fun deleteStory(namespace: String, storyDefinitionId: String): Boolean {
-        val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
-        if (story != null) {
-            val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
-            if (botConf != null) {
-                storyDefinitionDAO.delete(story)
-            }
-        }
-        return false
-    }
-
     fun createStory(
             namespace: String,
             request: CreateStoryRequest,
             user: UserLogin
     ): IntentDefinition? {
-
         val botConf =
                 getBotConfigurationsByNamespaceAndBotId(namespace, request.story.botId).firstOrNull()
         return if (botConf != null) {
@@ -547,8 +538,9 @@ object BotAdminService {
                     )
 
                 is BotBuiltinAnswerConfiguration -> BuiltInAnswerConfiguration(storyHandlerClassName)
-                else -> error("unsupported type $this")
-            }
+                is BotTickAnswerConfiguration -> toTickAnswerConfiguration()
+            else -> error("unsupported type $this")
+        }
 
     private fun BotAnswerConfiguration.toStoryConfiguration(
             botId: String,
@@ -932,10 +924,27 @@ object BotAdminService {
 
     fun createI18nRequest(namespace: String, request: CreateI18nLabelRequest): I18nLabel {
         val labelKey =
-                I18nKeyProvider
-                        .simpleKeyProvider(namespace, request.category)
-                        .i18n(request.label)
-        return Translator.create(labelKey, request.locale)
+            I18nKeyProvider
+                .simpleKeyProvider(namespace, request.category)
+                .i18n(request.label)
+
+        val createdI18nLabel = Translator.create(labelKey, request.locale)
+        createdI18nLabel.apply {
+            createI18nRequestWithMultiLocales(request,this)
+        }
+        //return data with i18n label and multi locales or just use simply created
+        return request.i18n?.let { createdI18nLabel.copy(i18n = it) } ?: createdI18nLabel
+    }
+
+    /**
+     * Add locales to current created [I18nLabel]
+     * @param request the [CreateI18nLabelRequest]
+     * @param i18nLabel the current created [I18nLabel]
+     */
+    private fun createI18nRequestWithMultiLocales(request: CreateI18nLabelRequest, i18nLabel: I18nLabel) {
+        if (request.i18n?.isNotEmpty() == true) {
+            Translator.completeAllLabels(listOf(i18nLabel.copy(i18n = request.i18n)))
+        }
     }
 
     fun getFeatures(botId: String, namespace: String): List<FeatureState> {

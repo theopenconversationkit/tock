@@ -2,15 +2,14 @@ import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/cor
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable, of, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 
 import { BotService } from '../../../bot/bot-service';
-import { DialogService } from '../../../core-nlp/dialog.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../../bot/model/story';
 import { StateService } from '../../../core-nlp/state.service';
 import { Settings } from '../../models';
 import { FaqService } from '../../services/faq.service';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 interface SettingsForm {
   satisfactionEnabled: FormControl<boolean>;
@@ -24,7 +23,6 @@ interface SettingsForm {
 })
 export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
   @Output() onClose = new EventEmitter<boolean>();
-  @Output() onSave = new EventEmitter<Settings>();
 
   private readonly destroy$: Subject<boolean> = new Subject();
   loading: boolean = false;
@@ -53,7 +51,7 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
     private botService: BotService,
     private stateService: StateService,
     private faqService: FaqService,
-    private dialogService: DialogService,
+    private nbDialogService: NbDialogService,
     private toastrService: NbToastrService
   ) {}
 
@@ -120,11 +118,15 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Cancel edit settings`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: validAction, buttonStatus: 'danger' }
+          ],
+          modalStatus: 'danger'
         }
       });
       dialogRef.onClose.subscribe((result) => {
@@ -145,11 +147,12 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
     if (this.canSave) {
       if (!this.satisfactionEnabled.value) {
         const validAction = 'yes';
-        const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+        const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
           context: {
             title: `Disable satisfaction`,
             subtitle: 'This will disable the satisfaction question for all FAQs. Do you confirm ?',
-            action: validAction
+            actions: [{ actionName: 'cancel', buttonStatus: 'basic', ghost: true }, { actionName: validAction }],
+            cancellable: false
           }
         });
         dialogRef.onClose.subscribe((result) => {

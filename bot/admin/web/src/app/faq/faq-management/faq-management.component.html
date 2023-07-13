@@ -27,18 +27,7 @@
 </div>
 
 <section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings">
-  <nb-alert
-    *ngIf="configurations?.length === 0"
-    class="alert-config flex-row align-items-center"
-    accent="warning"
-  >
-    <nb-icon
-      class="mr-1"
-      icon="alert-triangle-outline"
-      status="warning"
-    ></nb-icon>
-    No bot configuration detected
-  </nb-alert>
+  <tock-no-bot-configuration *ngIf="configurations?.length === 0"></tock-no-bot-configuration>
 
   <div
     *ngIf="configurations?.length"

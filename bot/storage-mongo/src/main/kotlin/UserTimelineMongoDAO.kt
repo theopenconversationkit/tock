@@ -16,8 +16,17 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.dialog.*
-import ai.tock.bot.admin.user.*
+import ai.tock.bot.admin.dialog.DialogRating
+import ai.tock.bot.admin.dialog.DialogReport
+import ai.tock.bot.admin.dialog.DialogReportDAO
+import ai.tock.bot.admin.dialog.DialogReportQuery
+import ai.tock.bot.admin.dialog.DialogReportQueryResult
+import ai.tock.bot.admin.dialog.RatingReportQueryResult
+import ai.tock.bot.admin.user.AnalyticsQuery
+import ai.tock.bot.admin.user.UserAnalytics
+import ai.tock.bot.admin.user.UserReportDAO
+import ai.tock.bot.admin.user.UserReportQuery
+import ai.tock.bot.admin.user.UserReportQueryResult
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.StoryDefinition
@@ -26,6 +35,7 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.ArchivedEntityValue
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
+import ai.tock.bot.engine.dialog.LastDialogState
 import ai.tock.bot.engine.dialog.Snapshot
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
@@ -50,17 +60,62 @@ import ai.tock.bot.mongo.UserTimelineCol_.Companion.LastUserActionDate
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.Namespace
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.PlayerId
 import ai.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.defaultCountOptions
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.ensureUniqueIndex
+import ai.tock.shared.error
+import ai.tock.shared.injector
+import ai.tock.shared.intProperty
 import ai.tock.shared.jackson.AnyValueWrapper
+import ai.tock.shared.longProperty
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
 import mu.KotlinLogging
-import org.litote.kmongo.*
-import org.litote.kmongo.MongoOperator.*
+import org.litote.kmongo.Id
+import org.litote.kmongo.MongoOperator.and
+import org.litote.kmongo.MongoOperator.gt
+import org.litote.kmongo.MongoOperator.or
+import org.litote.kmongo.MongoOperator.type
+import org.litote.kmongo.addEachToSet
+import org.litote.kmongo.addToSet
+import org.litote.kmongo.aggregate
+import org.litote.kmongo.and
+import org.litote.kmongo.ascending
+import org.litote.kmongo.ascendingSort
+import org.litote.kmongo.avg
+import org.litote.kmongo.bson
+import org.litote.kmongo.contains
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.descending
+import org.litote.kmongo.descendingSort
+import org.litote.kmongo.eq
+import org.litote.kmongo.find
+import org.litote.kmongo.findOne
+import org.litote.kmongo.findOneById
+import org.litote.kmongo.from
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.group
+import org.litote.kmongo.gt
+import org.litote.kmongo.`in`
+import org.litote.kmongo.json
+import org.litote.kmongo.limit
+import org.litote.kmongo.lt
+import org.litote.kmongo.match
+import org.litote.kmongo.orderBy
+import org.litote.kmongo.pull
+import org.litote.kmongo.regex
+import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.save
+import org.litote.kmongo.setValue
+import org.litote.kmongo.sort
+import org.litote.kmongo.sum
+import org.litote.kmongo.toId
+import org.litote.kmongo.updateOneById
+import org.litote.kmongo.upsert
 import java.time.Instant
 import java.time.Instant.now
 import java.time.ZoneOffset
@@ -548,6 +603,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 Namespace eq query.namespace,
                 if (query.playerId != null || query.displayTests) null else DialogCol_.Test eq false,
                 if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
+                if (query.dialogId == null) null else _id eq query.dialogId!!.toId(),
                 if (dialogIds.isEmpty()) null else _id `in` dialogIds,
                 if (from == null) null else DialogCol_.LastUpdateDate gt from?.toInstant(),
                 if (to == null) null else DialogCol_.LastUpdateDate lt to?.toInstant(),
@@ -704,6 +760,22 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun getLastStoryId(namespace: String, playerId: PlayerId): String? {
         return try {
             loadLastValidDialogCol(namespace, playerId)?.stories?.lastOrNull()?.storyDefinitionId
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
+    }
+
+    override fun getLastDialogState(namespace: String, playerId: PlayerId): LastDialogState? {
+        return try {
+            val lastValidDialog = loadLastValidDialogCol(namespace, playerId)
+            val lastStoryId = lastValidDialog?.stories?.lastOrNull()?.storyDefinitionId
+
+            LastDialogState(
+                intentName = lastValidDialog?.state?.currentIntent?.name,
+                storyId = lastStoryId,
+                tickState = lastValidDialog?.tickStates?.get(lastStoryId)
+            )
         } catch (e: Exception) {
             logger.error(e)
             null

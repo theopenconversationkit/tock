@@ -1,0 +1,89 @@
+<form [formGroup]="form">
+  <nb-card
+    class="mb-0"
+    [nbSpinner]="loading"
+  >
+    <nb-card-header>
+      <div class="d-flex justify-content-between align-items-start">
+        Scenario parameters
+        <button
+          type="button"
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Close"
+          (click)="close()"
+          data-testid="close-button"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </div>
+    </nb-card-header>
+
+    <nb-card-body>
+      <tock-form-control
+        label="Number of repetitions"
+        name="actionRepetitionNumber"
+        [controls]="actionRepetitionNumber"
+        [showError]="isSubmitted"
+        [required]="true"
+      >
+        <input
+          tockAutofocusElement
+          nbInput
+          id="actionRepetitionNumber"
+          type="number"
+          formControlName="actionRepetitionNumber"
+          [fullWidth]="true"
+          min="0"
+        />
+      </tock-form-control>
+
+      <tock-form-control
+        label="Select story"
+        name="redirectStoryId"
+        [controls]="redirectStoryId"
+        [showError]="isSubmitted"
+        [required]="actionRepetitionNumber.value > 0"
+      >
+        <nb-select
+          id="redirectStoryId"
+          placeholder="Select story"
+          formControlName="redirectStoryId"
+          [fullWidth]="true"
+          [optionsListClass]="'option-list--break-word'"
+        >
+          <nb-option
+            *ngFor="let story of availableStories"
+            [value]="story.storyId"
+          >
+            {{ story.name }}
+          </nb-option>
+        </nb-select>
+      </tock-form-control>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        type="button"
+        (click)="close()"
+        data-testid="cancel-button"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        [disabled]="!canSave"
+        (click)="save()"
+      >
+        Save
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</form>

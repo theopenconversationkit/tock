@@ -1,1 +1,7 @@
-{"idConversation":"ba4e1f71-7012-4b1a-86c3-d2fce8883dc7","idOperator":"operateurId","createdAt":"2022-04-08T16:52:37Z","updatedAt":"2022-04-08T16:52:37Z","replies":[]}
+{
+  "idConversation": "ba4e1f71-7012-4b1a-86c3-d2fce8883dc7",
+  "idOperator": "operateurId",
+  "createdAt": "2022-04-08T16:52:37Z",
+  "updatedAt": "2022-04-08T16:52:37Z",
+  "replies": []
+}

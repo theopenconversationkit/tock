@@ -37,7 +37,6 @@
     "ngx-echarts": "^7.0.0",
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-moment": "^5.0.0",
-    "normalize.css": "6.0.0",
     "rxjs": "^7.4.0",
     "tslib": "^2.4.1",
     "zone.js": "~0.11.8"

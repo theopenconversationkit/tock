@@ -1,0 +1,702 @@
+{
+	"info": {
+		"_postman_id": "e057bd12-65a8-424f-a3ba-f72bdc76f642",
+		"name": "scenario",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authenticate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\":\"admin@app.com\",\"password\":\"password\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/authenticate",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"authenticate"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all scenario group",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin@app.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/groups",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get one scenario group",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin@app.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin//bot/new_assistant/scenarios/groups/640f3ed2c8e3b87bf49203ba",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"640f3ed2c8e3b87bf49203ba"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all scenario versions for a scenario group",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin@app.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin//bot/new_assistant/scenarios/groups/640f3ed2c8e3b87bf49203ba/versions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"640f3ed2c8e3b87bf49203ba",
+						"versions"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get one scenario version for a scenario group",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin//bot/new_assistant/scenarios/groups/640f3ed2c8e3b87bf49203ba/versions/640f3ed2c8e3b87bf49203bb",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"640f3ed2c8e3b87bf49203ba",
+						"versions",
+						"640f3ed2c8e3b87bf49203bb"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create one scenario group",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin@app.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Card activation\",\n    \"category\": \"Card\",\n    \"tags\": [\n        \"Card\",\n        \"Process\",\n        \"Welcome\"\n    ],\n    \"description\": \"Scenario to activate a card\",\n    \"enabled\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/groups",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create one scenario version on a specific scenario group (the payload is an example, you need to create answers and intents in frontend to have the associated elements, otherwise you wil get error like removed intents or answers)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_name\": \"new_assistant\",\n    \"_scenarioGroupId\": \"640f3ed2c8e3b87bf49203ba\",\n    \"state\": \"DRAFT\",\n    \"comment\": \"V1\",\n    \"data\": {\n        \"mode\": \"publishing\",\n        \"scenarioItems\": [\n            {\n                \"id\": 0,\n                \"from\": \"client\",\n                \"text\": \"Hello Robot\",\n                \"main\": true,\n                \"intentDefinition\": {\n                    \"label\": \"Hello Robot\",\n                    \"name\": \"helloRobot\",\n                    \"category\": \"scenarios\",\n                    \"primary\": true,\n                    \"sentences\": [],\n                    \"outputContextNames\": [],\n                    \"intentId\": \"63cfaff0ddec7b1b5273e5a3\"\n                }\n            },\n            {\n                \"id\": 1,\n                \"parentIds\": [\n                    0\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Hello Human, want to play ?\",\n                \"actionDefinition\": {\n                    \"name\": \"HELLO_HUMAN_WANT_TO_PLAY\",\n                    \"description\": \"asking human if want to play?\",\n                    \"inputContextNames\": [],\n                    \"outputContextNames\": [\n                        \"WANT_TO_PLAY\",\n                        \"DONT_WANT_TO_PLAY\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Hello Human, want to play ?\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Hello Human, want to play ?\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 2,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"yes\",\n                \"intentDefinition\": {\n                    \"label\": \"yes\",\n                    \"name\": \"yes\",\n                    \"category\": \"scenarios\",\n                    \"intentId\": \"63b4315942c057098dab67f8\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"WANT_TO_PLAY\"\n                    ]\n                }\n            },\n            {\n                \"id\": 3,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"no\",\n                \"intentDefinition\": {\n                    \"label\": \"no\",\n                    \"name\": \"no\",\n                    \"category\": \"scenarios\",\n                    \"intentId\": \"63b4315942c057098dab67fa\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"DONT_WANT_TO_PLAY\"\n                    ]\n                }\n            },\n            {\n                \"id\": 4,\n                \"parentIds\": [\n                    3\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Too bad\",\n                \"actionDefinition\": {\n                    \"name\": \"TOO_BAD\",\n                    \"description\": \"Too bad\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"DONT_WANT_TO_PLAY\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Too bad\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Too bad\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 5,\n                \"parentIds\": [\n                    2\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Good\",\n                \"actionDefinition\": {\n                    \"name\": \"GOOD\",\n                    \"description\": \"Good\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"WANT_TO_PLAY\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Good\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Good\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 6,\n                \"parentIds\": [\n                    5\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Goodbye human !\",\n                \"final\": true,\n                \"actionDefinition\": {\n                    \"name\": \"GOODBYE_HUMAN\",\n                    \"description\": \"Goodbye human !\",\n                    \"answers\": [],\n                    \"inputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"outputContextNames\": [],\n                    \"unknownAnswers\": [],\n                    \"final\": true\n                }\n            }\n        ],\n        \"contexts\": [\n            {\n                \"name\": \"WANT_TO_PLAY\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"DONT_WANT_TO_PLAY\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"DEV_CONTEXT_1\",\n                \"type\": \"string\"\n            }\n        ],\n        \"triggers\": [],\n        \"stateMachine\": {\n            \"id\": \"root\",\n            \"type\": \"parallel\",\n            \"states\": {\n                \"Global\": {\n                    \"id\": \"Global\",\n                    \"states\": {\n                        \"GROUP\": {\n                            \"id\": \"GROUP\",\n                            \"states\": {\n                                \"TOO_BAD\": {\n                                    \"id\": \"TOO_BAD\"\n                                },\n                                \"GOOD\": {\n                                    \"id\": \"GOOD\"\n                                },\n                                \"GOODBYE_HUMAN\": {\n                                    \"id\": \"GOODBYE_HUMAN\"\n                                },\n                                \"HELLO_HUMAN_WANT_TO_PLAY\": {\n                                    \"id\": \"HELLO_HUMAN_WANT_TO_PLAY\"\n                                }\n                            },\n                            \"on\": {\n                                \"yes\": \"#GOODBYE_HUMAN\",\n                                \"no\": \"#GOODBYE_HUMAN\"\n                            },\n                            \"initial\": \"GOODBYE_HUMAN\"\n                        }\n                    },\n                    \"on\": {\n                        \"bonjourRobot\": \"#GROUP\"\n                    },\n                    \"initial\": \"GROUP\"\n                }\n            },\n            \"initial\": \"Global\",\n            \"on\": {}\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/groups/640f3ed2c8e3b87bf49203ba/versions/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"640f3ed2c8e3b87bf49203ba",
+						"versions",
+						""
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "import scenario group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"example\",\n    \"category\": \"\",\n    \"tags\": [],\n    \"description\": \"example import scenario group\",\n    \"creationDate\": \"2023-03-14T13:45:03.030651219Z\",\n    \"updateDate\": \"2023-03-14T13:45:03.030658902Z\",\n    \"versions\": [\n        {\n            \"id\": \"64107a5f0f6a0a562ae3fe66\",\n            \"creationDate\": \"2023-03-14T13:45:03.030607078Z\",\n            \"updateDate\": \"2023-03-14T13:45:03.030638787Z\",\n            \"state\": \"DRAFT\",\n            \"comment\": \"v1\"\n        }\n    ],\n    \"enabled\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/import/groups",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"import",
+						"groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "import multiple scenario versions to a scenario group",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n    \"state\": \"DRAFT\",\n    \"comment\": \"V1\",\n    \"data\": {\n        \"mode\": \"publishing\",\n        \"scenarioItems\": [\n            {\n                \"id\": 0,\n                \"from\": \"client\",\n                \"text\": \"Hello Robot\",\n                \"main\": true,\n                \"intentDefinition\": {\n                    \"label\": \"Hello Robot\",\n                    \"name\": \"helloRobot\",\n                    \"category\": \"scenarios\",\n                    \"primary\": true,\n                    \"sentences\": [],\n                    \"outputContextNames\": [],\n                    \"intentId\": \"63cfaff0ddec7b1b5273e5a3\"\n                }\n            },\n            {\n                \"id\": 1,\n                \"parentIds\": [\n                    0\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Hello Human, want to play ?\",\n                \"actionDefinition\": {\n                    \"name\": \"HELLO_HUMAN_WANT_TO_PLAY\",\n                    \"description\": \"asking human if want to play?\",\n                    \"inputContextNames\": [],\n                    \"outputContextNames\": [\n                        \"WANT_TO_PLAY\",\n                        \"DONT_WANT_TO_PLAY\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Hello Human, want to play ?\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Hello Human, want to play ?\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 2,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"yes\",\n                \"intentDefinition\": {\n                    \"label\": \"yes\",\n                    \"name\": \"yes\",\n                    \"category\": \"scenarios\",\n                    \"intentId\": \"63b4315942c057098dab67f8\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"WANT_TO_PLAY\"\n                    ]\n                }\n            },\n            {\n                \"id\": 3,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"no\",\n                \"intentDefinition\": {\n                    \"label\": \"no\",\n                    \"name\": \"no\",\n                    \"category\": \"scenarios\",\n                    \"intentId\": \"63b4315942c057098dab67fa\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"DONT_WANT_TO_PLAY\"\n                    ]\n                }\n            },\n            {\n                \"id\": 4,\n                \"parentIds\": [\n                    3\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Too bad\",\n                \"actionDefinition\": {\n                    \"name\": \"TOO_BAD\",\n                    \"description\": \"Too bad\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"DONT_WANT_TO_PLAY\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Too bad\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Too bad\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 5,\n                \"parentIds\": [\n                    2\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Good\",\n                \"actionDefinition\": {\n                    \"name\": \"GOOD\",\n                    \"description\": \"Good\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"WANT_TO_PLAY\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Good\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Good\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 6,\n                \"parentIds\": [\n                    5\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Goodbye human !\",\n                \"final\": true,\n                \"actionDefinition\": {\n                    \"name\": \"GOODBYE_HUMAN\",\n                    \"description\": \"Goodbye human !\",\n                    \"answers\": [],\n                    \"inputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"outputContextNames\": [],\n                    \"unknownAnswers\": [],\n                    \"final\": true\n                }\n            }\n        ],\n        \"contexts\": [\n            {\n                \"name\": \"WANT_TO_PLAY\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"DONT_WANT_TO_PLAY\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"DEV_CONTEXT_1\",\n                \"type\": \"string\"\n            }\n        ],\n        \"triggers\": [],\n        \"stateMachine\": {\n            \"id\": \"root\",\n            \"type\": \"parallel\",\n            \"states\": {\n                \"Global\": {\n                    \"id\": \"Global\",\n                    \"states\": {\n                        \"GROUP\": {\n                            \"id\": \"GROUP\",\n                            \"states\": {\n                                \"TOO_BAD\": {\n                                    \"id\": \"TOO_BAD\"\n                                },\n                                \"GOOD\": {\n                                    \"id\": \"GOOD\"\n                                },\n                                \"GOODBYE_HUMAN\": {\n                                    \"id\": \"GOODBYE_HUMAN\"\n                                },\n                                \"HELLO_HUMAN_WANT_TO_PLAY\": {\n                                    \"id\": \"HELLO_HUMAN_WANT_TO_PLAY\"\n                                }\n                            },\n                            \"on\": {\n                                \"yes\": \"#GOODBYE_HUMAN\",\n                                \"no\": \"#GOODBYE_HUMAN\"\n                            },\n                            \"initial\": \"GOODBYE_HUMAN\"\n                        }\n                    },\n                    \"on\": {\n                        \"bonjourRobot\": \"#GROUP\"\n                    },\n                    \"initial\": \"GROUP\"\n                }\n            },\n            \"initial\": \"Global\",\n            \"on\": {}\n        }\n    }\n},\n    {\n    \"state\": \"ARCHIVED\",\n    \"comment\": \"V0\",\n    \"data\": {\n        \"mode\": \"casting\",\n        \"scenarioItems\": [\n            {\n                \"id\": 0,\n                \"from\": \"client\",\n                \"text\": \"Hello Robot\",\n                \"main\": true,\n                \"intentDefinition\": {\n                    \"label\": \"Hello Robot\",\n                    \"name\": \"helloRobot\",\n                    \"category\": \"scenarios\",\n                    \"primary\": true,\n                    \"sentences\": [],\n                    \"outputContextNames\": [],\n                    \"intentId\": \"63cfaff0ddec7b1b5273e5a3\"\n                }\n            },\n            {\n                \"id\": 1,\n                \"parentIds\": [\n                    0\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Hello Human, want to play ?\",\n                \"actionDefinition\": {\n                    \"name\": \"HELLO_HUMAN_WANT_TO_PLAY\",\n                    \"description\": \"asking human if want to play?\",\n                    \"inputContextNames\": [],\n                    \"outputContextNames\": [\n                        \"WANT_TO_PLAY\",\n                        \"DONT_WANT_TO_PLAY\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Hello Human, want to play ?\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Hello Human, want to play ?\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 2,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"yes\",\n                \"intentDefinition\": {\n                    \"label\": \"yes\",\n                    \"name\": \"yes\",\n                    \"category\": \"scenarios\",\n                    \"intentId\": \"63b4315942c057098dab67f8\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"WANT_TO_PLAY\"\n                    ]\n                }\n            },\n            {\n                \"id\": 3,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"no\",\n                \"intentDefinition\": {\n                    \"label\": \"no\",\n                    \"name\": \"no\",\n                    \"category\": \"scenarios\",\n                    \"intentId\": \"63b4315942c057098dab67fa\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"DONT_WANT_TO_PLAY\"\n                    ]\n                }\n            },\n            {\n                \"id\": 4,\n                \"parentIds\": [\n                    3\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Too bad\",\n                \"actionDefinition\": {\n                    \"name\": \"TOO_BAD\",\n                    \"description\": \"Too bad\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"DONT_WANT_TO_PLAY\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Too bad\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Too bad\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 5,\n                \"parentIds\": [\n                    2\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Good\",\n                \"actionDefinition\": {\n                    \"name\": \"GOOD\",\n                    \"description\": \"Good\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"WANT_TO_PLAY\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answerId\": \"01_scenario_Good\",\n                    \"answers\": [\n                        {\n                            \"answer\": \"Good\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"en\"\n                        }\n                    ]\n                }\n            },\n            {\n                \"id\": 6,\n                \"parentIds\": [\n                    5\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Goodbye human !\",\n                \"final\": true,\n                \"actionDefinition\": {\n                    \"name\": \"GOODBYE_HUMAN\",\n                    \"description\": \"Goodbye human !\",\n                    \"answers\": [],\n                    \"inputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"outputContextNames\": [],\n                    \"unknownAnswers\": [],\n                    \"final\": true\n                }\n            }\n        ],\n        \"contexts\": [\n            {\n                \"name\": \"WANT_TO_PLAY\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"DONT_WANT_TO_PLAY\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"DEV_CONTEXT_1\",\n                \"type\": \"string\"\n            }\n        ],\n        \"triggers\": [],\n        \"stateMachine\": {\n            \"id\": \"root\",\n            \"type\": \"parallel\",\n            \"states\": {\n                \"Global\": {\n                    \"id\": \"Global\",\n                    \"states\": {\n                        \"GROUP\": {\n                            \"id\": \"GROUP\",\n                            \"states\": {\n                                \"TOO_BAD\": {\n                                    \"id\": \"TOO_BAD\"\n                                },\n                                \"GOOD\": {\n                                    \"id\": \"GOOD\"\n                                },\n                                \"GOODBYE_HUMAN\": {\n                                    \"id\": \"GOODBYE_HUMAN\"\n                                },\n                                \"HELLO_HUMAN_WANT_TO_PLAY\": {\n                                    \"id\": \"HELLO_HUMAN_WANT_TO_PLAY\"\n                                }\n                            },\n                            \"on\": {\n                                \"yes\": \"#GOODBYE_HUMAN\",\n                                \"no\": \"#GOODBYE_HUMAN\"\n                            },\n                            \"initial\": \"GOODBYE_HUMAN\"\n                        }\n                    },\n                    \"on\": {\n                        \"bonjourRobot\": \"#GROUP\"\n                    },\n                    \"initial\": \"GROUP\"\n                }\n            },\n            \"initial\": \"Global\",\n            \"on\": {}\n        }\n    }\n}\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/import/groups/64107b680f6a0a562ae3fe67/versions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"import",
+						"groups",
+						"64107b680f6a0a562ae3fe67",
+						"versions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update one scenario group",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"640f5007c8e3b87bf49203be\",\n    \"category\": \"Card\",\n    \"description\": \"Scenario to activate a card  \",\n    \"name\": \"Card activation\",\n    \"tags\": [\n        \"Card\",\n        \"Process\",\n        \"Welcoming\"\n    ],\n    \"enabled\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/groups/640f5007c8e3b87bf49203be",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"640f5007c8e3b87bf49203be"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update one scenario version",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"64108a180f6a0a562ae3fe7b\",\n    \"state\": \"DRAFT\",\n    \"comment\": \"V2\",\n    \"data\": {\n        \"mode\": \"casting\",\n        \"scenarioItems\": [\n            {\n                \"id\": 0,\n                \"from\": \"client\",\n                \"text\": \"Bonjour Robot\",\n                \"main\": true,\n                \"intentDefinition\": {\n                    \"label\": \"Bonjour Robot\",\n                    \"name\": \"bonjourRobot\",\n                    \"category\": \"scenarios\",\n                    \"primary\": true,\n                    \"sentences\": [\n                        {\n                            \"namespace\": \"app\",\n                            \"applicationName\": \"new_assistant\",\n                            \"language\": \"fr\",\n                            \"query\": \"salut robot\",\n                            \"checkExistingQuery\": false,\n                            \"state\": \"\",\n                            \"classification\": {\n                                \"entities\": []\n                            }\n                        },\n                        {\n                            \"namespace\": \"app\",\n                            \"applicationName\": \"new_assistant\",\n                            \"language\": \"fr\",\n                            \"query\": \"hey robot\",\n                            \"checkExistingQuery\": false,\n                            \"state\": \"\",\n                            \"classification\": {\n                                \"entities\": []\n                            }\n                        }\n                    ],\n                    \"outputContextNames\": [],\n                    \"intentId\": \"641080350f6a0a562ae3fe69\"\n                }\n            },\n            {\n                \"id\": 1,\n                \"parentIds\": [\n                    0\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Bonjour Humain, veux-tu jouer ?\",\n                \"actionDefinition\": {\n                    \"name\": \"BONJOUR_HUMAIN_VEUX_TU_JOUER\",\n                    \"description\": \"Bonjour Humain, veux-tu jouer ?\",\n                    \"inputContextNames\": [],\n                    \"outputContextNames\": [\n                        \"JE_VEUX_JOUER\",\n                        \"JE_NE_VEUX_PAS_JOUER\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answers\": [\n                        {\n                            \"answer\": \"Bonjour Humain, veux-tu jouer ?\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"fr\"\n                        }\n                    ],\n                    \"answerId\": \"app_scenario_Bonjour Humain, veux-tu jouer ?_1\"\n                }\n            },\n            {\n                \"id\": 2,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"oui\",\n                \"intentDefinition\": {\n                    \"label\": \"oui\",\n                    \"name\": \"oui\",\n                    \"category\": \"scenarios\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"JE_VEUX_JOUER\"\n                    ],\n                    \"intentId\": \"641080360f6a0a562ae3fe6c\"\n                }\n            },\n            {\n                \"id\": 3,\n                \"parentIds\": [\n                    1\n                ],\n                \"from\": \"client\",\n                \"text\": \"non\",\n                \"intentDefinition\": {\n                    \"label\": \"non\",\n                    \"name\": \"non\",\n                    \"category\": \"scenarios\",\n                    \"sentences\": [],\n                    \"outputContextNames\": [\n                        \"JE_NE_VEUX_PAS_JOUER\"\n                    ],\n                    \"intentId\": \"641080360f6a0a562ae3fe6e\"\n                }\n            },\n            {\n                \"id\": 4,\n                \"parentIds\": [\n                    3\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Tant pis\",\n                \"actionDefinition\": {\n                    \"name\": \"TANT_PIS\",\n                    \"description\": \"Tant pis\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"JE_NE_VEUX_PAS_JOUER\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answers\": [\n                        {\n                            \"answer\": \"Tant pis\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"fr\"\n                        }\n                    ],\n                    \"answerId\": \"app_scenario_Tant pis_1\"\n                }\n            },\n            {\n                \"id\": 5,\n                \"parentIds\": [\n                    2\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Tant mieux\",\n                \"actionDefinition\": {\n                    \"name\": \"TANT_MIEUX\",\n                    \"description\": \"Tant mieux\",\n                    \"handler\": \"dev-tools:set_context_1\",\n                    \"inputContextNames\": [\n                        \"JE_VEUX_JOUER\"\n                    ],\n                    \"outputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"final\": false,\n                    \"unknownAnswers\": [],\n                    \"answers\": [\n                        {\n                            \"answer\": \"Tant mieux\",\n                            \"interfaceType\": 0,\n                            \"locale\": \"fr\"\n                        }\n                    ],\n                    \"answerId\": \"app_scenario_Tant mieux_1\"\n                }\n            },\n            {\n                \"id\": 6,\n                \"parentIds\": [\n                    5\n                ],\n                \"from\": \"bot\",\n                \"text\": \"Au revoir Humain !\",\n                \"final\": true,\n                \"actionDefinition\": {\n                    \"name\": \"AU_REVOIR_HUMAIN\",\n                    \"description\": \"Au revoir Humain !\",\n                    \"answers\": [],\n                    \"inputContextNames\": [\n                        \"DEV_CONTEXT_1\"\n                    ],\n                    \"outputContextNames\": [],\n                    \"unknownAnswers\": [],\n                    \"final\": true\n                }\n            }\n        ],\n        \"contexts\": [\n            {\n                \"name\": \"JE_VEUX_JOUER\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"JE_NE_VEUX_PAS_JOUER\",\n                \"type\": \"string\"\n            },\n            {\n                \"name\": \"DEV_CONTEXT_1\",\n                \"type\": \"string\"\n            }\n        ],\n        \"triggers\": [],\n        \"stateMachine\": {\n            \"id\": \"root\",\n            \"type\": \"parallel\",\n            \"states\": {\n                \"Global\": {\n                    \"id\": \"Global\",\n                    \"states\": {\n                        \"GROUP\": {\n                            \"id\": \"GROUP\",\n                            \"states\": {\n                                \"TANT_PIS\": {\n                                    \"id\": \"TANT_PIS\"\n                                },\n                                \"TANT_MIEUX\": {\n                                    \"id\": \"TANT_MIEUX\"\n                                },\n                                \"AU_REVOIR_HUMAIN\": {\n                                    \"id\": \"AU_REVOIR_HUMAIN\"\n                                },\n                                \"BONJOUR_HUMAIN_VEUX_TU_JOUER\": {\n                                    \"id\": \"BONJOUR_HUMAIN_VEUX_TU_JOUER\"\n                                }\n                            },\n                            \"on\": {\n                                \"oui\": \"#AU_REVOIR_HUMAIN\",\n                                \"non\": \"#AU_REVOIR_HUMAIN\"\n                            },\n                            \"initial\": \"AU_REVOIR_HUMAIN\"\n                        }\n                    },\n                    \"on\": {\n                        \"bonjourRobot\": \"#GROUP\"\n                    },\n                    \"initial\": \"GROUP\"\n                }\n            },\n            \"initial\": \"Global\",\n            \"on\": {}\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/groups/641079f30f6a0a562ae3fe63/versions/64108a180f6a0a562ae3fe7b",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"641079f30f6a0a562ae3fe63",
+						"versions",
+						"64108a180f6a0a562ae3fe7b"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete scenario group",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/groups/64107b680f6a0a562ae3fe67",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"64107b680f6a0a562ae3fe67"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete scenario version",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  ",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/scenarios/groups/640f3ed2c8e3b87bf49203ba/versions/640f3ed2c8e3b87bf49203bb",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"scenarios",
+						"groups",
+						"640f3ed2c8e3b87bf49203ba",
+						"versions",
+						"640f3ed2c8e3b87bf49203bb"
+					],
+					"query": [
+						{
+							"key": "email",
+							"value": "admin@app.com",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get action-handlers",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin@app.com",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7999/rest/admin/bot/new_assistant/dialog-manager/action-handlers/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7999",
+					"path": [
+						"rest",
+						"admin",
+						"bot",
+						"new_assistant",
+						"dialog-manager",
+						"action-handlers",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

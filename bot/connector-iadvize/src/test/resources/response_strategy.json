@@ -1,1 +1,6 @@
-[{"strategy":"customAvailability","availability":true}]
+[
+  {
+    "strategy": "customAvailability",
+    "availability": true
+  }
+]

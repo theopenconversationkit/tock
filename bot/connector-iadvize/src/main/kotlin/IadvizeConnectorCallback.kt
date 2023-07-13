@@ -24,7 +24,7 @@ import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
 import ai.tock.bot.connector.iadvize.model.response.conversation.MessageResponse
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeAwait
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
@@ -34,28 +34,28 @@ import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
-import ai.tock.shared.defaultLocale
+import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.loadProperties
-import ai.tock.shared.vertx.RestException
-import io.vertx.core.Future
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
+import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.Locale
 import java.util.Properties
-import mu.KotlinLogging
+
 
 private const val UNSUPPORTED_MESSAGE_REQUEST = "tock_iadvize_unsupported_message_request"
 
-class IadvizeConnectorCallback(
-    override val applicationId: String,
-    val controller: ConnectorController,
-    val context: RoutingContext,
-    val request: IadvizeRequest,
-    val distributionRule: String?,
-    val actions: MutableList<ActionWithDelay> = mutableListOf()
+class IadvizeConnectorCallback(override val  applicationId: String,
+                               controller: ConnectorController,
+                               val locale: Locale,
+                               val context: RoutingContext,
+                               val request: IadvizeRequest,
+                               distributionRule: String?,
+                               distributionRuleUnvailableMessage: String,
+                               val actions: MutableList<ActionWithDelay> = mutableListOf()
 ) : ConnectorCallbackBase(applicationId, iadvizeConnectorType) {
 
     companion object {
@@ -65,16 +65,16 @@ class IadvizeConnectorCallback(
     @Volatile
     private var answered: Boolean = false
 
-    @Volatile
-    private var locale: Locale = defaultLocale
-
     private val translator: I18nTranslator = controller.botDefinition.i18nTranslator(locale, iadvizeConnectorType)
 
     private val properties: Properties = loadProperties("/iadvize.properties")
 
+    internal var iadvizeGraphQLClient = IadvizeGraphQLClient()
+
     data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
 
     fun addAction(event: Event, delayInMs: Long) {
+
         if (event is Action) {
             actions.add(ActionWithDelay(event, delayInMs))
         } else {
@@ -109,10 +109,9 @@ class IadvizeConnectorCallback(
             request.idConversation,
             request.idOperator,
             LocalDateTime.now(),
-            LocalDateTime.now()
-        )
+            LocalDateTime.now())
 
-        return when (request) {
+        return when(request) {
             is ConversationsRequest -> response
 
             is MessageRequest -> {
@@ -123,8 +122,7 @@ class IadvizeConnectorCallback(
             is UnsupportedRequest -> {
                 logger.error("Request type ${request.type} is not supported by connector")
                 //TODO: to be replaced by a transfer to a human when this type of message is supported
-                val configuredMessage: String =
-                    properties.getProperty(UNSUPPORTED_MESSAGE_REQUEST, UNSUPPORTED_MESSAGE_REQUEST)
+                val configuredMessage: String = properties.getProperty(UNSUPPORTED_MESSAGE_REQUEST, UNSUPPORTED_MESSAGE_REQUEST)
                 val message: String = translator.translate(configuredMessage).toString()
                 response.replies.add(IadvizeMessage(TextPayload(message)))
                 return response
@@ -137,19 +135,22 @@ class IadvizeConnectorCallback(
     private fun toListIadvizeReply(actions: List<ActionWithDelay>): List<IadvizeReply> {
         return actions.map {
             if (it.action is SendSentence) {
-                try {
-                    val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
+                val listIadvizeReply: List<IadvizeReply> = it.action.messages.filterAndEnhanceIadvizeReply()
 
-                    if (it.action.text != null) {
-                        val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
-                        //Combine 1 MessageTextPayload with messages enhanced IadvizeReply
-                        listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
-                    } else {
-                        //No simple MessageTextPayload, just return enhanced IadvizeReply
-                        listIadvizeReply
+                if (it.action.text != null) {
+                    val simpleTextPayload = mapToMessageTextPayload(it.action.text!!)
+                    //Combine 1 MessageTextPayload with messages enhanced IadvizeReply
+                    listOf(listOf(simpleTextPayload), listIadvizeReply).flatten()
+                } else {
+                    // No simple MessageTextPayload
+                    // translate all TextPayloads if they exist
+                    listIadvizeReply.map {reply ->
+                        if(reply is IadvizeMessage){
+                            reply.copy(payload = TextPayload(translator.translate((reply.payload as TextPayload).value)))
+                        }else{
+                            reply
+                        }
                     }
-                } catch (exception: RestException) {
-                    listOf()
                 }
             } else {
                 emptyList()
@@ -160,21 +161,28 @@ class IadvizeConnectorCallback(
     private fun List<ConnectorMessage>.filterAndEnhanceIadvizeReply(): List<IadvizeReply> {
         // Filter Message not IadvizeConnectorMessage for other connector
         return filterIsInstance<IadvizeConnectorMessage>()
-            .map { connectorMessage -> connectorMessage.replies }
+            .map{ connectorMessage -> connectorMessage.replies }
             .flatten()
-            .map(addDistributionRulesOnTransfer)
+            .map (addDistributionRulesOnTransfer)
+
     }
 
     /*
      * For IadvizeReply instance of IadvizeTransfer
      * return new IadvizeTransfer with distribution rule configured on connector
      */
-    private val addDistributionRulesOnTransfer: (IadvizeReply) -> IadvizeReply = {
-        if (it is IadvizeTransfer) {
-            if (distributionRule == null) {
+     private val addDistributionRulesOnTransfer:  (IadvizeReply) -> IadvizeReply = {
+
+        if(it is IadvizeTransfer) {
+            if(distributionRule == null) {
                 IadvizeAwait(Duration(3, seconds))
             } else {
-                IadvizeTransfer(distributionRule, it.transferOptions)
+                val available = iadvizeGraphQLClient.isAvailable(distributionRule)
+
+                if (available)
+                    IadvizeTransfer(distributionRule, it.transferOptions)
+                else
+                    IadvizeMessage(distributionRuleUnvailableMessage)
             }
         } else {
             it
@@ -197,17 +205,17 @@ class IadvizeConnectorCallback(
         context.fail(throwable)
     }
 
-    private fun <T> HttpServerResponse.endWithJson(response: T?): Future<Void> {
-        if (response != null) {
+    private fun <T> HttpServerResponse.endWithJson(response: T?) {
+        if(response != null) {
             logger.debug { "iAdvize response : $response" }
 
             val writeValueAsString = mapper.writeValueAsString(response)
 
             logger.debug { "iAdvize json response: $writeValueAsString" }
 
-            return putHeader("Content-Type", "application/json").end(writeValueAsString)
+             putHeader("Content-Type", "application/json").end(writeValueAsString)
         } else {
-            return end()
+           end()
         }
     }
 }

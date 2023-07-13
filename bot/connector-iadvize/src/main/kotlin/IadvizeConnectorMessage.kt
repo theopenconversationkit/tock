@@ -18,7 +18,7 @@ package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.iadvize.model.response.conversation.payload.TextPayload
+import ai.tock.bot.connector.iadvize.model.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMultipartReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
@@ -44,11 +44,12 @@ data class IadvizeConnectorMessage(val replies: List<IadvizeReply>) : ConnectorM
                 .slice(0..indexOfFirst)
         } else {
             replies
-        }).filterIsInstance<IadvizeMessage>()
+        })
+            .filterIsInstance<IadvizeMessage>()
             .map { message ->
                 GenericMessage(
                     connectorType = connectorType,
-                    texts = mapOf("text" to (message.payload as TextPayload).value),
+                    texts = mapOf("text" to (message.payload as TextPayload).value.toString()),
                     choices = message.quickReplies.map { Choice.fromText(it.value) }
                 )
             }

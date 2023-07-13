@@ -27,24 +27,34 @@ import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType.audio
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.engine.event.TypingOnEvent
 import ai.tock.bot.engine.event.MetadataEvent
+import ai.tock.bot.engine.event.TypingOnEvent
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLock
 import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.engine.user.UserTimelineDAO
+import ai.tock.bot.processor.debugEnabled
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
+import ai.tock.shared.jackson.mapper
 import ai.tock.shared.longProperty
 import ai.tock.shared.provide
 import ai.tock.stt.STT
 import com.github.salomonbrys.kodein.instance
+import io.vertx.core.Future
+import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import org.apache.commons.codec.binary.Base64
+import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 import java.net.URL
 import java.time.Duration
 import java.util.concurrent.CopyOnWriteArrayList
@@ -80,6 +90,11 @@ internal class TockConnectorController constructor(
                 .apply {
                     logger.info { "Register connector $connector for bot $bot" }
                     connector.register(this)
+
+                    if(debugEnabled) {
+                        // FIXME (WITH DERCBOT-321)
+                        exposePythonLog()
+                    }
                 }
 
         internal fun unregister(
@@ -164,6 +179,7 @@ internal class TockConnectorController constructor(
                         userTimelineDAO.save(userTimeline, bot.botDefinition)
                     }
                 } catch (t: Throwable) {
+                    logger.error { "error while handling action $action : ${t.message}" }
                     send(data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))
                     callback.exceptionThrown(action, t)
                 } finally {
@@ -249,4 +265,53 @@ internal class TockConnectorController constructor(
     }
 
     override fun toString(): String = configuration.toString()
+
+
+    // FIXME (WITH DERCBOT-321)
+    // ----------------------------------- DEBUG -------------------------------------
+    fun exposePythonLog() {
+        val path = "/dialog-manager"
+        registerServices(path) { router ->
+            router.get("$path/debug")
+                .handler { context -> context.response().endWithJson(debugScenario(context)) }
+        }
+    }
+
+    private fun <T> HttpServerResponse.endWithJson(response: T) : Future<Void> {
+        val responseAsString: String = mapper.writeValueAsString(response)
+        return putHeader("Content-Type", "application/json").end(responseAsString)
+    }
+
+    private val debugScenario: (RoutingContext) -> ScenarioDebugResponse =
+        { _ ->
+
+            if(!debugEnabled) {
+                ScenarioDebugResponse("")
+            }
+            else {
+                val inputStream: InputStream = FileInputStream("/tmp/action-graph-full-new.png")
+                val buffer = ByteArray(8192 * 4)
+                var bytesRead: Int
+                val output = ByteArrayOutputStream()
+
+                try {
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        output.write(buffer, 0, bytesRead)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } finally {
+                    inputStream.close()
+                }
+
+                ScenarioDebugResponse(Base64.encodeBase64String(output.toByteArray()))
+            }
+        }
+
+    data class ScenarioDebugResponse(
+        val imgBase64: String
+    )
+
+    // ----------------------------------- DEBUG -------------------------------------
+
 }

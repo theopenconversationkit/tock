@@ -1,0 +1,83 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    <div>
+      {{ title }}
+      <div
+        *ngIf="deduplicatedIntents?.length"
+        class="card-header-subtitle"
+      >
+        <span *ngIf="deduplicatedIntents.length === 1">
+          There is one intent matching the given sentence "{{ intentSentence }}"
+          <br />
+          Do you want to use it as intent for this scenario ?
+        </span>
+        <span *ngIf="deduplicatedIntents.length > 1">
+          There are {{ deduplicatedIntents.length }} intents matching the given sentence "{{ intentSentence }}"
+          <br />
+          Do you want to use one of them as intent for this scenario ?
+        </span>
+      </div>
+    </div>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Cancel"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body [nbSpinner]="loading">
+    <div *ngIf="!loading">
+      <nb-card *ngFor="let deduplicatedIntent of deduplicatedIntents">
+        <nb-card-header>
+          <span *ngIf="!doesIntentBelongToCurrentNameSpace(deduplicatedIntent.intent)">{{ deduplicatedIntent.intent.namespace }}:</span
+          >{{ deduplicatedIntent.intent?.label }}
+          <span *ngIf="!deduplicatedIntent.intent?.label">
+            {{ deduplicatedIntent.intent?.name }}
+          </span>
+
+          <button
+            nbButton
+            size="small"
+            status="primary"
+            class="m-1 float-right"
+            (click)="useIntent(deduplicatedIntent)"
+          >
+            Use this intent
+            <nb-icon icon="chevron-right-outline"></nb-icon>
+          </button>
+        </nb-card-header>
+        <nb-card-body class="p-0">
+          <nb-list>
+            <nb-list-item *ngFor="let sentence of deduplicatedIntent.sentences">
+              {{ sentence }}
+            </nb-list-item>
+          </nb-list>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </nb-card-body>
+
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      size="small"
+      status="primary"
+      (click)="createNewIntent()"
+    >
+      Create a new intent
+    </button>
+  </nb-card-footer>
+</nb-card>

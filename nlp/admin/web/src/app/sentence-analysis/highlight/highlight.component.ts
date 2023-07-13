@@ -351,7 +351,7 @@ export class HighlightComponent implements OnInit, OnChanges {
 export class SelectedResult {
   alreadyCount: number;
 
-  constructor(public selectedNode: any, public startOffset: Number, public endOffset) {
+  constructor(public selectedNode: any, public startOffset: number, public endOffset) {
     this.alreadyCount = 0;
   }
 }

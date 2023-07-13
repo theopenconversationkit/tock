@@ -21,6 +21,7 @@ import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
+import ai.tock.bot.admin.answer.TickAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
@@ -31,6 +32,7 @@ import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.TickStoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryHandlerBase.Companion.isEndCalled
 import ai.tock.bot.definition.StoryTag
@@ -41,6 +43,7 @@ import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
 import ai.tock.nlp.api.client.model.Entity
+import ai.tock.bot.engine.config.tickstory.TickAnswerHandler
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 import mu.KotlinLogging
 
@@ -121,12 +124,14 @@ internal class ConfiguredStoryHandler(
                 configurationName?.let { name -> configuration.configuredAnswers.firstOrNull { it.botConfiguration == name } }
                         ?: configuration
         removeAskAgainProcess(bus)
+
+        // When sending the answer, a redirection (switch to another type of story) can be performed
         answerContainer.send(bus)
 
+        // switch to ending story if it exists
         switchStoryIfEnding(null, bus)
 
         // Restrict next intents if defined in story settings:
-
         if (configuration.nextIntentsQualifiers.isNotEmpty()) {
             val nextIntentsQualifiers: MutableList<NlpIntentQualifier> = configuration.nextIntentsQualifiers.toMutableList()
 
@@ -174,12 +179,31 @@ internal class ConfiguredStoryHandler(
 
     private fun switchStoryIfEnding(
             step: StoryDefinitionConfigurationStep?,
-            bus: BotBus
+            bus: BotBus,
     ) {
-        if (!isMissingMandatoryEntities(bus) && bus.story.definition.steps.isEmpty() || step?.hasNoChildren == true) {
-            configuration.findEnabledEndWithStoryId(bus.applicationId)
-                    ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.applicationId) }
+        val storyDefinition = bus.story.definition
+
+        // Check story type because TickStory are only available as ConfiguredStoryDefinition
+        val isTickStory = when(storyDefinition){
+            is ConfiguredStoryDefinition -> this.configuration.isTickAnswerType()
+            else -> false
+        }
+
+        // Check if ready to switch
+        val readyToSwitch = if(!isTickStory) {
+            !isMissingMandatoryEntities(bus) && storyDefinition.steps.isEmpty() || step?.hasNoChildren == true
+        }else{
+            bus.dialog.tickStates[storyDefinition.id]?.finished
+        }
+
+        // Switch to story if ending rule exists and is enabled, and if story exists
+        if (readyToSwitch == true) {
+            configuration
+                .findEnabledEndWithStoryId(bus.applicationId)
                     ?.let {
+                    bus.botDefinition.findStoryDefinitionById(it, bus.applicationId) }
+                    ?.let {
+                    logger.debug { "Switch to ending story ${it.id} (intent: ${it.mainIntent()}) " }
                         bus.switchConfiguredStory(it, it.mainIntent().name)
                     }
         }
@@ -203,8 +227,8 @@ internal class ConfiguredStoryHandler(
                 is ScriptAnswerConfiguration -> bus.handleScriptAnswer(this@send)
                 is BuiltInAnswerConfiguration ->
                     (bus.botDefinition as BotDefinitionWrapper).builtInStory(configuration.storyId)
-                            .storyHandler.handle(bus)
-
+                        .storyHandler.handle(bus)
+                is TickAnswerConfiguration -> bus.handleTickAnswer(this@send, this)
                 else -> error("type not supported for now: $this")
             }
         }
@@ -248,6 +272,25 @@ internal class ConfiguredStoryHandler(
                             )
                         }
                     }
+        }
+    }
+
+    /**
+     * A tick story handler
+     * @param container answers container [StoryDefinitionAnswersContainer]
+     * @param configuration the tick answer configuration [TickAnswerConfiguration]
+     */
+    private fun BotBus.handleTickAnswer(
+        container: StoryDefinitionAnswersContainer,
+        configuration: TickAnswerConfiguration
+    ) {
+        TickAnswerHandler.handle(this, container, configuration) {
+            botDefinition.stories.firstOrNull { def ->
+                (def as ConfiguredStoryDefinition).storyId == it
+            }?.let {
+                // Switch to the redirect configured story when redirection is required
+                switchConfiguredStory(it, it.mainIntent().name)
+            } ?: fallbackAnswer()
         }
     }
 

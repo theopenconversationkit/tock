@@ -1,0 +1,22 @@
+:host {
+  padding: 0.7rem;
+  width: 100%;
+}
+
+.token {
+  border-radius: 0.45rem;
+  padding: 0rem 0.3rem 0.1rem 0.3rem;
+}
+
+.entity {
+  border-radius: 2em;
+  padding: 0.5rem 1rem;
+}
+
+.token-menu {
+  background-color: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  BUTTON {
+    text-align: left;
+  }
+}

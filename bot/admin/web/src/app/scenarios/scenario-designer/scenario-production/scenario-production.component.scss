@@ -1,0 +1,113 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+:host ::ng-deep nb-accordion nb-accordion-item {
+  background-color: inherit;
+
+  &:not(:first-child) {
+    border-top: 1px solid nb-theme(color-basic-transparent-400);
+  }
+
+  nb-accordion-item-body .item-body,
+  nb-accordion-item-header {
+    padding: 0.5rem 1rem;
+  }
+}
+
+.menu-item-no-data {
+  font-size: small;
+  text-align: center;
+}
+
+@include nb-install-component {
+  nb-accordion {
+    .intent,
+    .action,
+    .event {
+      padding: 0.2rem 0.6rem;
+      cursor: move;
+
+      &.disabled {
+        cursor: not-allowed;
+      }
+
+      &.isReadonly {
+        cursor: default;
+      }
+
+      & :first-child {
+        overflow: hidden;
+      }
+    }
+
+    .intent {
+      background-color: nb-theme(color-info-active);
+      color: nb-theme(text-control-color);
+      border-radius: 1rem;
+
+      &.disabled {
+        background-color: nb-theme(color-info-disabled);
+        color: nb-theme(text-basic-color);
+      }
+
+      & nb-icon {
+        overflow: initial;
+        flex: initial;
+      }
+    }
+
+    .event {
+      background-color: nb-theme(color-success-active);
+      color: nb-theme(text-control-color);
+      border-radius: 1rem;
+
+      &.disabled {
+        background-color: nb-theme(color-success-disabled);
+        color: nb-theme(text-basic-color);
+      }
+    }
+
+    .action {
+      background-color: nb-theme(color-basic-700);
+      color: nb-theme(text-control-color);
+      border-radius: 0.25rem;
+
+      &.disabled {
+        background-color: nb-theme(color-basic-transparent-600);
+        color: nb-theme(text-basic-color);
+      }
+    }
+  }
+
+  .production-canvas-wrapper {
+    height: 100%;
+
+    .production-canvas {
+      position: relative;
+      width: fit-content;
+      height: fit-content;
+      transition: transform 0.3s;
+      transform-origin: 0 0;
+      padding: 20px;
+
+      .pathHandler {
+        position: absolute;
+        z-index: 1;
+        border-radius: 100%;
+        width: 20px;
+        height: 20px;
+        background-color: none;
+        nb-icon {
+          display: none;
+        }
+        &:hover {
+          background-color: nb-theme(color-info-active);
+          color: white;
+          nb-icon {
+            display: inline;
+          }
+        }
+      }
+    }
+  }
+}

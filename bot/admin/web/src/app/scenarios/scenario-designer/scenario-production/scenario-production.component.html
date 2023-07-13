@@ -1,0 +1,175 @@
+<tock-scenario-canvas-wrapper (onSidePanelChange)="sidePanelChange($event)">
+  <nb-accordion
+    multi
+    menu-body
+  >
+    <nb-accordion-item expanded>
+      <nb-accordion-item-header>Actions</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngFor="let action of scenarioDefinition.actions"
+          class="action p-2 my-1 unselectable"
+          [ngClass]="{ disabled: isActionInUse(action), isReadonly: isReadonly }"
+          [nbTooltip]="getActionTooltip(action)"
+          dndType="action"
+          [dndDraggable]="{ type: 'action', name: action.name }"
+          [dndDisableIf]="isActionInUse(action) || isReadonly"
+        >
+          <div class="ellipsis">{{ action.name }}</div>
+        </div>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+
+    <nb-accordion-item>
+      <nb-accordion-item-header>Intents</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngFor="let intent of scenarioDefinition.intents"
+          class="intent d-flex my-1 unselectable"
+          [ngClass]="{ disabled: !isIntentDraggable(intent), isReadonly: isReadonly }"
+          [nbTooltip]="getIntentTooltip(intent)"
+          [dndDraggable]="{ type: 'intent', name: intent.name }"
+          [dndType]="getDraggableIntentType(intent)"
+          [dndDisableIf]="!isIntentDraggable(intent) || isReadonly"
+        >
+          <nb-icon
+            *ngIf="intent.primary"
+            icon="award-outline"
+          ></nb-icon>
+          <span class="ellipsis">
+            {{ intent.name }}
+          </span>
+        </div>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+
+    <nb-accordion-item>
+      <nb-accordion-item-header>Events</nb-accordion-item-header>
+      <nb-accordion-item-body>
+        <div
+          *ngIf="!scenarioDefinition.triggers.length"
+          class="menu-item-no-data"
+        >
+          No event defined
+        </div>
+        <div *ngIf="scenarioDefinition.triggers.length">
+          <div
+            *ngFor="let trigger of scenarioDefinition.triggers"
+            class="event d-flex my-1 unselectable"
+            [ngClass]="{ isReadonly: isReadonly }"
+            [nbTooltip]="trigger"
+            dndType="intent"
+            [dndDraggable]="{ type: 'intent', name: trigger }"
+            [dndDisableIf]="isReadonly"
+          >
+            <span class="ellipsis">{{ trigger }}</span>
+          </div>
+        </div>
+      </nb-accordion-item-body>
+    </nb-accordion-item>
+  </nb-accordion>
+
+  <div menu-actions>
+    <div [class.d-none]="!isSidePanelOpen">
+      <button
+        (click)="displayStateMachineCode()"
+        fullWidth
+        nbButton
+        size="tiny"
+        status="primary"
+      >
+        Display state machine code
+      </button>
+      <button
+        *ngIf="!isReadonly"
+        (click)="resetStateMachine()"
+        fullWidth
+        nbButton
+        size="tiny"
+        status="warning"
+        class="mt-1"
+      >
+        Reset state machine
+      </button>
+    </div>
+    <div [class.d-none]="isSidePanelOpen">
+      <button
+        (click)="displayStateMachineCode()"
+        nbButton
+        class="mt-1"
+        ghost
+        shape="round"
+        size="small"
+        nbTooltip="Display state machine code"
+      >
+        <nb-icon icon="code-outline"></nb-icon>
+      </button>
+      <button
+        *ngIf="!isReadonly"
+        (click)="resetStateMachine()"
+        nbButton
+        shape="round"
+        size="small"
+        ghost
+        class="mt-1"
+        nbTooltip="Reset state machine"
+      >
+        <nb-icon icon="refresh-outline"></nb-icon>
+      </button>
+    </div>
+  </div>
+
+  <div
+    canvas-wrapper
+    class="production-canvas-wrapper flex-fill"
+    tock-canvas
+    [centerCanvasAtInitialisation]="false"
+    [isFullscreen]="isFullscreen"
+    (onFullscreen)="toggleFullscreen($event)"
+  >
+    <div
+      class="production-canvas"
+      #canvasElem
+    >
+      <tock-scenario-state-group
+        [isReadonly]="isReadonly"
+        [state]="scenario.data.stateMachine.states.Global"
+        [stateMachine]="scenario.data.stateMachine"
+        [usedNames]="collectAllUsedNames()"
+        [intents]="transitionsDefinition"
+        [actions]="scenarioDefinition.actions"
+      ></tock-scenario-state-group>
+
+      <ng-container *ngFor="let handler of pathHandlers">
+        <div
+          *ngIf="!isReadonly"
+          class="pathHandler pointer"
+          [ngStyle]="{ 'top.px': handler.transStartTop, 'left.px': handler.transStartLeft }"
+          [dndDraggable]="{
+            type: 'transitionSource',
+            source: handler.transitionSource,
+            name: handler.transitionName
+          }"
+          (mousedown)="preventDefault($event)"
+          nbTooltip="Drag to the state to which this transition should be attached"
+        >
+          <nb-icon icon="arrow-circle-left-outline"></nb-icon>
+        </div>
+        <div
+          *ngIf="!isReadonly"
+          class="pathHandler pointer"
+          [ngStyle]="{ 'top.px': handler.transEndTop, 'left.px': handler.transEndLeft }"
+          [dndDraggable]="{
+            type: 'transitionTarget',
+            source: handler.transitionSource,
+            name: handler.transitionName
+          }"
+          (mousedown)="preventDefault($event)"
+          nbTooltip="Drag to the state to which you want to direct this transition"
+        >
+          <nb-icon icon="arrow-circle-right-outline"></nb-icon>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</tock-scenario-canvas-wrapper>

@@ -91,7 +91,7 @@ internal class BotDefinitionWrapperTest {
     inner class SingleRedirection {
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN story redirection for all apps WHEN find story THEN return other story`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, test.id))
@@ -171,7 +171,7 @@ internal class BotDefinitionWrapperTest {
         }
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN story redirection to disabled story WHEN find story THEN return story`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, "target"))
@@ -185,7 +185,7 @@ internal class BotDefinitionWrapperTest {
         }
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN disabled story redirection WHEN find story THEN return story`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, false, test.id))
@@ -198,7 +198,7 @@ internal class BotDefinitionWrapperTest {
         }
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN story redirection with missing target WHEN find story THEN return story`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, null))
@@ -211,7 +211,7 @@ internal class BotDefinitionWrapperTest {
         }
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN story redirection for other app WHEN find story THEN return story`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(mockk(), true, test.id))
@@ -228,7 +228,7 @@ internal class BotDefinitionWrapperTest {
     inner class MultipleRedirections {
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN chained redirections WHEN find story THEN return last story`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, "story2"))
@@ -289,7 +289,7 @@ internal class BotDefinitionWrapperTest {
         }
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN chained redirections with one disabled WHEN find story THEN return last redirection enabled`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, "story2"))
@@ -312,7 +312,7 @@ internal class BotDefinitionWrapperTest {
         }
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN chained redirections with story disabled WHEN find story THEN return last story enabled`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, "story2"))
@@ -327,7 +327,7 @@ internal class BotDefinitionWrapperTest {
         }
 
         @ParameterizedTest
-        @EnumSource(AnswerConfigurationType::class)
+        @EnumSource(value = AnswerConfigurationType::class, names = ["tick"], mode = EnumSource.Mode.EXCLUDE)
         fun `GIVEN cycling redirections WHEN find story THEN return story`(type: AnswerConfigurationType) {
 
             val inputStory = story(inputStoryId, type, StoryDefinitionConfigurationFeature(null, true, "story2"))

@@ -20,7 +20,7 @@
 
       <div class="row">
         <div class="col-md-6">
-          <div class="truncate text-muted">
+          <div class="truncate text-mitigated">
             <small
               class="d-block"
               *ngIf="faq.utterances.length === 1"
@@ -38,7 +38,7 @@
         </div>
 
         <div class="col-md-6">
-          <div class="truncate text-muted">
+          <div class="truncate text-mitigated">
             <small class="d-block">Answer</small>
             {{ faq.answer }}
           </div>
@@ -73,7 +73,6 @@
           ghost
           shape="round"
           nbTooltip="Edit"
-          class="mb-2"
           (click)="editFaq(faq)"
           data-testid="edit"
         >
@@ -84,7 +83,6 @@
           ghost
           shape="round"
           nbTooltip="Download"
-          class="mb-2"
           (click)="download(faq)"
           data-testid="download"
         >
@@ -95,7 +93,6 @@
           ghost
           shape="round"
           nbTooltip="Delete"
-          class="mb-2"
           (click)="delete(faq)"
           data-testid="delete"
         >

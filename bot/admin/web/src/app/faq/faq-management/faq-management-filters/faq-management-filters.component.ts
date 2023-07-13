@@ -42,7 +42,7 @@ export class FaqManagementFiltersComponent implements OnInit, OnDestroy {
   }
 
   get isFiltered(): boolean {
-    return this.search.value || this.tags.value?.length || this.enabled.value !== null;
+    return this.search.value || !!this.tags.value.length || this.enabled.value !== null;
   }
 
   ngOnInit(): void {

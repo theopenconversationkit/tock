@@ -1,5 +1,5 @@
 <nb-card class="mb-0">
-  <nb-card-header class="d-flex align-items-center justify-content-between">
+  <nb-card-header class="d-flex justify-content-between gap-1">
     Filters
     <button
       *ngIf="isFiltered"
@@ -49,9 +49,10 @@
       </nb-select>
 
       <nb-checkbox
+        class="lineHeight-0"
+        formControlName="enabled"
         [checked]="enabled.value"
         [indeterminate]="enabled.value === null"
-        formControlName="enabled"
         (checkedChange)="enabledCheckChanged()"
       >
         Active

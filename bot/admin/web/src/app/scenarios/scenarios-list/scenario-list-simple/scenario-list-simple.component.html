@@ -1,0 +1,227 @@
+<div class="grid-columns grid-columns-header mb-1">
+  <div>
+    <span
+      (click)="setOrderBy('name')"
+      class="pointer"
+      data-testid="order-by-name"
+    >
+      Name
+      <nb-icon
+        *ngIf="orderBy === 'name'"
+        [icon]="'chevron-' + (orderByReverse ? 'up' : 'down') + '-outline'"
+        class="valign-middle"
+      ></nb-icon>
+    </span>
+  </div>
+  <div>
+    <span
+      (click)="setOrderBy('category')"
+      class="pointer"
+      data-testid="order-by-category"
+    >
+      Category
+      <nb-icon
+        *ngIf="orderBy === 'category'"
+        [icon]="'chevron-' + (orderByReverse ? 'up' : 'down') + '-outline'"
+        class="valign-middle"
+      ></nb-icon>
+    </span>
+  </div>
+  <div>Tags</div>
+</div>
+
+<nb-accordion
+  *ngFor="let scenarioGroup of scenariosGroups"
+  class="mb-2"
+  [class.selected]="selectedScenarioGroup?.id === scenarioGroup.id"
+  [nbSpinner]="scenarioGroup._loading"
+  data-testid="list"
+>
+  <nb-accordion-item
+    [expanded]="scenarioGroup._expanded"
+    (collapsedChange)="onScenarioGroupCollapsedChange(scenarioGroup, $event)"
+  >
+    <nb-accordion-item-header>
+      <div class="grid-columns">
+        <div>
+          <div
+            class="font-weight-bold initial-capitalize"
+            data-testid="name"
+          >
+            {{ scenarioGroup.name }}
+          </div>
+          <span class="text-mitigated truncate">
+            {{ scenarioGroup.description }}
+          </span>
+        </div>
+
+        <div class="text-truncate text-wrap initial-capitalize">
+          {{ scenarioGroup.category }}
+        </div>
+
+        <div class="text-truncate text-wrap">
+          <nb-tag-list *ngIf="scenarioGroup.tags?.length">
+            <nb-tag
+              appearance="filled"
+              *ngFor="let tag of scenarioGroup.tags"
+              [text]="tag"
+              status="basic"
+              size="tiny"
+            ></nb-tag>
+          </nb-tag-list>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <nb-toggle
+            class="mr-2"
+            [nbTooltip]="
+              scenarioGroup.enabled === null
+                ? 'There is no tick story associated'
+                : scenarioGroup.enabled
+                ? 'Disable this tick story'
+                : 'Enable this tick story'
+            "
+            [disabled]="scenarioGroup.enabled === null"
+            [ngModel]="scenarioGroup.enabled"
+            (click)="$event.stopPropagation()"
+            (mousedown)="toggleTickEnabled(scenarioGroup)"
+            data-testid="toggle-tick"
+          ></nb-toggle>
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Open latest version"
+            (click)="design($event, scenarioGroup)"
+            data-testid="open-last-scenario-version"
+          >
+            <nb-icon
+              [icon]="scenarioGroupHasState(scenarioGroup, SCENARIO_STATE.draft) ? 'color-palette-outline' : 'eye-outline'"
+            ></nb-icon>
+          </button>
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Edit scenario group"
+            (click)="editScenarioGroup($event, scenarioGroup)"
+            data-testid="edit-scenario-group"
+          >
+            <nb-icon icon="edit-outline"></nb-icon>
+          </button>
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Delete scenarios group and corresponding story"
+            (click)="deleteScenarioGroup($event, scenarioGroup)"
+            data-testid="delete-scenario-group"
+          >
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </nb-accordion-item-header>
+
+    <nb-accordion-item-body>
+      <div class="grid-accordion-item-body grid-accordion-item-body-header text-nowrap gap-1">
+        <span>Creation date</span>
+        <span>Update date</span>
+        <span>Status</span>
+        <span>Version comment</span>
+      </div>
+      <div
+        class="grid-accordion-item-body gap-1"
+        *ngFor="let scenarioVersion of scenarioGroup.versions"
+        data-testid="list-versions"
+      >
+        <div>
+          <span class="d-inline d-sm-none text-mitigated">Creation date : </span>
+          <span
+            [ngClass]="{ 'font-weight-bold': scenarioVersion.state === SCENARIO_STATE.current }"
+            [nbTooltip]="scenarioVersion.creationDate | date: 'y/MM/dd HH:mm:ss'"
+          >
+            {{ scenarioVersion.creationDate | date: 'y/MM/dd' }}
+          </span>
+        </div>
+        <div>
+          <span class="d-inline d-sm-none text-mitigated">Update date : </span>
+          <span
+            [ngClass]="{ 'font-weight-bold': scenarioVersion.state === SCENARIO_STATE.current }"
+            [nbTooltip]="scenarioVersion.updateDate | date: 'y/MM/dd HH:mm:ss'"
+          >
+            {{ scenarioVersion.updateDate | date: 'y/MM/dd' }}
+          </span>
+        </div>
+        <div
+          class="d-flex"
+          [ngClass]="{ 'font-weight-bold': scenarioVersion.state === SCENARIO_STATE.current }"
+        >
+          <span class="d-inline d-sm-none text-mitigated">Status : </span>
+          <span data-testid="version-state">
+            {{ scenarioVersion.state }}
+          </span>
+          <nb-icon
+            *ngIf="scenarioVersion.state === SCENARIO_STATE.current"
+            status="success"
+            icon="checkmark-outline"
+            class="min-width-1em"
+          ></nb-icon>
+        </div>
+
+        <div class="text-mitigated truncate">
+          <span class="d-inline d-sm-none text-mitigated">Version comment : </span>
+          <span class="font-italic">
+            {{ scenarioVersion.comment }}
+          </span>
+        </div>
+
+        <div class="d-flex align-items-start">
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Open scenario version"
+            [routerLink]="'./' + scenarioGroup.id + '/' + scenarioVersion.id"
+            data-testid="open-scenario-version"
+          >
+            <nb-icon [icon]="scenarioVersion.state === SCENARIO_STATE.draft ? 'color-palette-outline' : 'eye-outline'"></nb-icon>
+          </button>
+
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Copy and edit a new version"
+            (click)="duplicate(scenarioGroup, scenarioVersion)"
+            data-testid="duplicate-scenario-version"
+          >
+            <nb-icon icon="copy-outline"></nb-icon>
+          </button>
+
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Export scenario version"
+            (click)="download(scenarioGroup, scenarioVersion)"
+            data-testid="export-scenario-version"
+          >
+            <nb-icon icon="download-outline"></nb-icon>
+          </button>
+
+          <button
+            nbButton
+            ghost
+            shape="round"
+            nbTooltip="Delete scenario version"
+            (click)="deleteScenarioVersion($event, scenarioGroup, scenarioVersion)"
+            data-testid="delete-scenario-version"
+          >
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+</nb-accordion>

@@ -6,8 +6,8 @@
       "role": "visitor"
     },
     "payload": {
-      "contentType":"text",
-      "value":"Hi, my name is robot and I'm here to help"
+      "contentType": "text",
+      "value": "Hi, my name is robot and I'm here to help"
     },
     "createdAt": "2017-11-22T12:04:00.762Z[Etc/UTC]"
   }

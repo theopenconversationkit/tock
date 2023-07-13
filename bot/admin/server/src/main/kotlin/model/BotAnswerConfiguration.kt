@@ -34,6 +34,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "2"),
     JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script"),
     JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "3"),
-    JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "builtin")
+    JsonSubTypes.Type(value = BotBuiltinAnswerConfiguration::class, name = "builtin"),
+    JsonSubTypes.Type(value = BotTickAnswerConfiguration::class, name = "4"),
+    JsonSubTypes.Type(value = BotTickAnswerConfiguration::class, name = "tick")
 )
 abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType)

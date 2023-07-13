@@ -1,0 +1,44 @@
+{
+  "id": "root",
+  "type": "parallel",
+  "states": {
+    "Global": {
+      "id": "Global",
+      "states": {
+        "ENROLEMENT_MOBILE": {
+          "id": "ENROLEMENT_MOBILE",
+          "states": {
+            "DEMANDER_CHANGEMENT_MOBILE": {
+              "id": "DEMANDER_CHANGEMENT_MOBILE",
+              "on": {
+                "accept": "#DEMANDER_ACCES_ANCIEN_MOBILE",
+                "refuse": "#REDIRECTION_ASSISTANT"
+              }
+            },
+            "DEMANDER_ACCES_ANCIEN_MOBILE": {
+              "id": "DEMANDER_ACCES_ANCIEN_MOBILE",
+              "on": {
+                "accept": "#PROCEDURE_ENROLEMENT",
+                "refuse": "#REDIRECTION_ASSISTANT"
+              }
+            },
+            "PROCEDURE_ENROLEMENT": {
+              "id": "PROCEDURE_ENROLEMENT"
+            },
+            "REDIRECTION_ASSISTANT": {
+              "id": "REDIRECTION_ASSISTANT"
+            }
+          },
+          "on": {},
+          "initial": "DEMANDER_CHANGEMENT_MOBILE"
+        }
+      },
+      "on": {
+        "bonjourJeSouhaiteraisAssocierMonTelephoneALApplication": "#ENROLEMENT_MOBILE"
+      },
+      "initial": "ENROLEMENT_MOBILE"
+    }
+  },
+  "initial": "Global",
+  "on": {}
+}

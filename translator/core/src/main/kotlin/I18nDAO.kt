@@ -40,6 +40,11 @@ interface I18nDAO {
     fun getLabelById(id: Id<I18nLabel>): I18nLabel?
 
     /**
+     * Gets labels by ids.
+     */
+    fun getLabelsByIds(ids: Set<Id<I18nLabel>>): List<I18nLabel>
+
+    /**
      * Saves label.
      */
     fun save(label: I18nLabel)

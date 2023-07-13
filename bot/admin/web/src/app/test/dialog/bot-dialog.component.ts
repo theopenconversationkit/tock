@@ -59,6 +59,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   testContext = false;
 
+  imgBase64: String;
+
   constructor(
     public state: StateService,
     private test: TestService,
@@ -134,6 +136,18 @@ export class BotDialogComponent implements OnInit, OnDestroy {
         r.messages.forEach((m) => {
           this.messages.push(new TestMessage(true, m));
         });
+
+        // FIXME (WITH DERCBOT-321)
+        (async () => {
+          await new Promise( resolve => setTimeout(resolve, 750) )
+          this.test.getDebugLog(
+            this.state.currentApplication.namespace,
+            this.currentConfigurationId
+          ).subscribe((response) => {
+            this.imgBase64 = response.imgBase64;
+          });
+        })();
+
       });
   }
 
