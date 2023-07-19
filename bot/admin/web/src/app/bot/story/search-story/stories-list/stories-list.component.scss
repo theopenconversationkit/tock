@@ -1,0 +1,39 @@
+.table-list {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 8rem;
+  column-gap: 0.5rem;
+  min-width: 50rem;
+
+  &.table-list-header {
+    font-size: smaller;
+    font-weight: bold;
+    opacity: 0.6;
+  }
+  &:not(:last-child) {
+    .table-list-entry {
+      border-bottom: 1px solid var(--border-basic-color-3);
+    }
+  }
+
+  .table-list-entry {
+    min-width: 8rem;
+    padding: 1rem 0;
+    &.bordered {
+      border-right: 1px solid var(--border-basic-color-3);
+    }
+  }
+}
+
+.tag {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 8rem;
+  padding: 0rem 0.3rem 0rem 0.9rem;
+  margin-right: 2px;
+  margin-bottom: 2px;
+  border-radius: 10rem;
+  background-color: var(--border-basic-color-3);
+  font-size: 0.7rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}

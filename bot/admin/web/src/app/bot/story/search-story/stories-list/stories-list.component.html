@@ -1,0 +1,85 @@
+<div
+  *ngIf="stories?.length"
+  class="table-list table-list-header"
+>
+  <div class="table-list-entry">Story</div>
+  <div class="table-list-entry bordered text-center">Main intent</div>
+  <div class="table-list-entry bordered text-center">Last edited</div>
+  <div class="table-list-entry text-center">Actions</div>
+</div>
+<div
+  class="table-list"
+  *ngFor="let story of stories"
+>
+  <div class="table-list-entry">
+    <div
+      class="font-weight-bold ellipsis"
+      [nbTooltip]="story.name"
+    >
+      <nb-icon
+        *ngIf="story.isBuiltIn()"
+        class="valign-middle"
+        nbTooltip="Built-in Story"
+        icon="cube"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="story.isSimpleAnswer()"
+        class="valign-middle"
+        nbTooltip="Message Story"
+        icon="message-square-outline"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="story.isScriptAnswer()"
+        class="valign-middle"
+        nbTooltip="Script Story"
+        icon="code"
+      ></nb-icon>
+      {{ story.name }}
+    </div>
+    <span class="text-muted">{{ story.description }}</span>
+  </div>
+
+  <div
+    class="table-list-entry bordered text-center ellipsis"
+    [nbTooltip]="story.intent.getIntentLabel(state)"
+  >
+    {{ story.intent.getIntentLabel(state) }}
+  </div>
+
+  <div class="table-list-entry bordered text-center">
+    {{ story.lastEdited | date: dateFormat }}
+  </div>
+
+  <div class="table-list-entry text-center">
+    <div class="d-flex justify-content-center">
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="View/Edit Story"
+        (click)="editStory(story)"
+      >
+        <nb-icon icon="edit-outline"></nb-icon>
+      </button>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Export Story"
+        (click)="downloadStory(story)"
+      >
+        <nb-icon icon="download-outline"></nb-icon>
+      </button>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        status="danger"
+        nbTooltip="Delete Story"
+        (click)="deleteStory(story)"
+      >
+        <nb-icon icon="trash-2-outline"></nb-icon>
+      </button>
+    </div>
+  </div>
+</div>

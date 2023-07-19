@@ -1,0 +1,33 @@
+<nb-card [nbSpinner]="loading">
+  <nb-card-header>Upload Stories</nb-card-header>
+  <nb-card-body>
+    <p>
+      <label for="file">Select a story dump file:&nbsp;</label>
+      <br />
+      <input
+        id="file"
+        type="file"
+        ng2FileSelect
+        [uploader]="uploader"
+      />
+    </p>
+  </nb-card-body>
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      nbButton
+      outline
+      (click)="upload()"
+      [disabled]="!uploader.getNotUploadedItems().length"
+      status="primary"
+    >
+      Upload
+    </button>
+  </nb-card-footer>
+</nb-card>

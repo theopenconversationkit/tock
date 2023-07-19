@@ -1,0 +1,82 @@
+<nb-card class="mt-3 mb-2">
+  <nb-card-body>
+    <form
+      class="grid"
+      [formGroup]="form"
+    >
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="search-outline"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          placeholder="Search story"
+          type="text"
+          formControlName="search"
+        />
+        <button
+          *ngIf="!!search.value"
+          nbButton
+          nbSuffix
+          nbTooltip="Clear"
+          ghost
+          (click)="clearSearch()"
+          data-testid="clear-button"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </nb-form-field>
+
+      <nb-select
+        multiple
+        placeholder="Categories"
+        fullWidth
+        optionsListClass="option-list--break-word"
+        formControlName="categories"
+      >
+        <nb-option
+          *ngFor="let tag of categories"
+          value="{{ tag }}"
+        >
+          <span class="initial-capitalize">{{ tag }}</span>
+        </nb-option>
+      </nb-select>
+
+      <nb-checkbox
+        [checked]="configuredStoriesOnly.value"
+        formControlName="configuredStoriesOnly"
+      >
+        Configured stories only
+      </nb-checkbox>
+
+      <nb-checkbox
+        [checked]="sortStoriesByModificationDate.value"
+        formControlName="sortStoriesByModificationDate"
+      >
+        Sort by edition date
+      </nb-checkbox>
+
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Export Stories"
+        (click)="download()"
+      >
+        <nb-icon icon="download-outline"></nb-icon>
+      </button>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Import Stories"
+        (click)="prepareUpload()"
+      >
+        <nb-icon icon="upload-outline"></nb-icon>
+      </button>
+    </form>
+  </nb-card-body>
+</nb-card>
