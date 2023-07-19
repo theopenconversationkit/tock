@@ -90,6 +90,7 @@ import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
+import ai.tock.translator.I18nDAO
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -108,6 +109,9 @@ object BotAdminService {
     private val featureDAO: FeatureDAO by injector.instance()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val front = FrontClient
+
+    private val i18n: I18nDAO by injector.instance()
+
 
     private class BotStoryDefinitionConfigurationDumpController(
             override val targetNamespace: String,
@@ -494,6 +498,11 @@ object BotAdminService {
     fun deleteStory(namespace: String, storyDefinitionId: String): Boolean {
         val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
         if (story != null) {
+            val allLabels = I18nCsvCodec.extractLabelsFromStory(loadStory(namespace,story))
+            // delete all labels related to story
+            allLabels.forEach { label ->
+                this.i18n.deleteByNamespaceAndId(namespace,label._id)
+            }
             val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
             if (botConf != null) {
                 storyDefinitionDAO.delete(story)

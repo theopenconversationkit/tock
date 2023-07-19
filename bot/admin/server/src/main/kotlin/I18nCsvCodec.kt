@@ -17,6 +17,12 @@
 package ai.tock.bot.admin
 
 import ai.tock.bot.admin.model.I18LabelQuery
+import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
+import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
+import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
+import ai.tock.bot.admin.model.BotConfiguredSteps
+import ai.tock.bot.admin.model.BotConfiguredAnswer
+import ai.tock.bot.admin.model.BotAnswerConfiguration
 import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.CsvCodec.csvFormat
 import ai.tock.shared.error
@@ -150,5 +156,46 @@ object I18nCsvCodec {
             logger.error(t)
             0
         }
+    }
+
+    fun extractLabelsFromStory(fullStory : BotStoryDefinitionConfiguration?) : List<I18nLabel> {
+        val allLabels = mutableListOf<I18nLabel>()
+        allLabels.addAll(extractLabelsFromAnswer(fullStory?.answers.orEmpty()))
+        allLabels.addAll(extractLabelsFromSteps(fullStory?.steps.orEmpty()))
+        allLabels.addAll(extractLabelsFromConfiguredAnswers(fullStory?.configuredAnswers.orEmpty()))
+        allLabels.addAll(extractLabelsFromConfiguredSteps(fullStory?.configuredSteps.orEmpty()))
+        return allLabels
+    }
+    private fun extractLabelsFromAnswer(answers: List<BotAnswerConfiguration>): List<I18nLabel> {
+        val allLabels = mutableListOf<I18nLabel>()
+        for (answer in answers) {
+            allLabels.addAll((answer as BotSimpleAnswerConfiguration).answers.mapNotNull { it.label })
+        }
+        return allLabels
+    }
+
+    private fun extractLabelsFromSteps(steps: List<BotStoryDefinitionConfigurationStep>): List<I18nLabel> {
+        val allLabels = mutableListOf<I18nLabel>()
+        for (step in steps) {
+            allLabels.add(step.userSentence)
+            allLabels.addAll(extractLabelsFromAnswer(step.answers))
+        }
+        return allLabels
+    }
+
+    private fun extractLabelsFromConfiguredAnswers(configuredAnswers: List<BotConfiguredAnswer>): List<I18nLabel> {
+        val allLabels = mutableListOf<I18nLabel>()
+        for (configuredAnswer in configuredAnswers) {
+            allLabels.addAll(extractLabelsFromAnswer(configuredAnswer.answers))
+        }
+        return allLabels
+    }
+
+    private fun extractLabelsFromConfiguredSteps(configuredSteps: List<BotConfiguredSteps>): List<I18nLabel> {
+        val allLabels = mutableListOf<I18nLabel>()
+        for (configuredStep in configuredSteps) {
+            allLabels.addAll(extractLabelsFromSteps(configuredStep.steps))
+        }
+        return allLabels
     }
 }

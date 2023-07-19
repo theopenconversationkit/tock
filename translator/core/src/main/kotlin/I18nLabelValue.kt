@@ -50,7 +50,7 @@ class I18nLabelValue constructor(
             label._id.toString(),
             label.namespace,
             label.category,
-            label.defaultLabel ?: ""
+            label.i18n.last { it.interfaceType == UserInterfaceType.textChat }.label
         )
 
     /**
