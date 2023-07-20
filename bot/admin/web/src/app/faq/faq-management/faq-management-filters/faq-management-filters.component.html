@@ -1,18 +1,4 @@
 <nb-card class="mb-0">
-  <nb-card-header class="d-flex align-items-center justify-content-between">
-    Filters
-    <button
-      *ngIf="isFiltered"
-      nbButton
-      nbTooltip="Clear all filters"
-      ghost
-      shape="round"
-      (click)="clearFilters()"
-      data-testid="clear-button"
-    >
-      <nb-icon icon="close-outline"></nb-icon>
-    </button>
-  </nb-card-header>
   <nb-card-body>
     <form
       class="grid"
@@ -27,7 +13,7 @@
           nbInput
           fullWidth
           fieldSize="medium"
-          placeholder="Search"
+          placeholder="Search a faq"
           type="text"
           formControlName="search"
         />
@@ -56,6 +42,18 @@
       >
         Active
       </nb-checkbox>
+
+      <button
+        *ngIf="isFiltered"
+        nbButton
+        nbTooltip="Clear all filters"
+        ghost
+        shape="round"
+        (click)="clearFilters()"
+        data-testid="clear-button"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
     </form>
   </nb-card-body>
 </nb-card>
