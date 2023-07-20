@@ -84,8 +84,8 @@
         <plugin.source>3.2.1</plugin.source>
         <plugin.release>3.0.0-M6</plugin.release>
         <plugin.gpg>3.0.1</plugin.gpg>
-        <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>1.7.20</plugin.dokka>
+        <plugin.nexus-staging>1.6.13</plugin.nexus-staging>
+        <plugin.dokka>1.9.0</plugin.dokka>
         <plugin.assembly>3.4.2</plugin.assembly>
         <plugin.frontend>1.12.1</plugin.frontend>
         <plugin.clean>3.2.0</plugin.clean>
