@@ -51,13 +51,19 @@ internal class GithubOAuthProvider(
                 HttpClientOptions().apply {
                     val proxyHost = propertyOrNull("tock_oauth2_proxy_host")
                     val proxyPort = intProperty("tock_oauth2_proxy_port", 0)
+                    val proxyUsername= propertyOrNull("tock_oauth2_proxy_username")
+                    val proxyPassword = propertyOrNull("tock_oauth2_proxy_password")
                     if (proxyHost != null) {
                         logger.info { "set proxy $proxyHost:$proxyPort" }
                         proxyOptions = ProxyOptions().apply {
                             host = proxyHost
                             port = proxyPort
+                            if (proxyUsername != null && proxyPassword != null) {
+                                username = proxyUsername
+                                password = proxyPassword
+                            }
+                            }
                         }
-                    }
                 }
         )
 ) : SSOTockAuthProvider(vertx), OAuth2Auth by oauth2 {
