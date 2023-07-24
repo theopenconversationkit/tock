@@ -54,6 +54,7 @@ open class BotDefinitionBase(
     override val flowDefinition: DialogFlowDefinition? = null,
     override val botEnabledListener: (Action) -> Unit = {},
     override val ragConfigurationEnabled: Boolean = false,
+    override val ragExcludedStory: StoryDefinition = defaultRagExcludedStory,
 ) : BotDefinition {
 
     companion object {
@@ -72,6 +73,20 @@ open class BotDefinitionBase(
                     }
                 },
                 setOf(Intent.unknown)
+            )
+
+        /**
+         * The default [ragExcludedStory].
+         */
+        val defaultRagExcludedStory =
+            SimpleStoryDefinition(
+                "tock_ragexcluded_story",
+                object : SimpleStoryHandlerBase() {
+                    override fun action(bus: BotBus) {
+                        bus.end(bus.botDefinition.defaultRAGExcludedAnswer)
+                    }
+                },
+                setOf(Intent.ragexcluded)
             )
 
         /**
@@ -210,6 +225,11 @@ open class BotDefinitionBase(
      * The default unknown answer.
      */
     override val defaultUnknownAnswer: I18nLabelValue get() = i18n("Sorry, I didn't understand :(")
+
+    /**
+     * The default ragExcluded answer.
+     */
+    override val defaultRAGExcludedAnswer: I18nLabelValue get() = i18n("Sorry, I can't answer your question (Topic not covered)")
 
     override fun toString(): String {
         return botId

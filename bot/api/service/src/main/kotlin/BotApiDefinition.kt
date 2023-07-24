@@ -92,7 +92,9 @@ internal class BotApiDefinition(
 ) {
     override fun findIntent(intent: String, applicationId: String): Intent =
         super.findIntent(intent, applicationId).let {
-            if (it.wrap(Intent.unknown)) {
+            if (it.wrap(Intent.ragexcluded)) {
+                Intent(intent)
+            } else if (it.wrap(Intent.unknown)) {
                 Intent(intent)
             } else {
                 it

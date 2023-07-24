@@ -270,6 +270,7 @@ export abstract class EntityContainer {
 
 export class Intent {
   public static readonly unknown = 'tock:unknown';
+  public static readonly ragExcluded = 'tock:ragexcluded';
 
   constructor(
     public name: string,

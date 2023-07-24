@@ -231,6 +231,18 @@
       Unknown
     </button>
     <button
+      nbButton
+      status="warning"
+      size="small"
+      shape="semi-round"
+      class="btn"
+      (click)="onRagExcluded()"
+      *ngIf="displayUnknownButton"
+      nbTooltip="Set as ragexcluded to use later"
+    >
+      RAG Excluded
+    </button>
+    <button
       [disabled]="state.isOtherNamespaceIntent(selectedIntent)"
       nbButton
       status="primary"

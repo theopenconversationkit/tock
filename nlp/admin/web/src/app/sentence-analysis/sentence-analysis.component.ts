@@ -186,6 +186,12 @@ export class SentenceAnalysisComponent implements OnInit {
     this.update(SentenceStatus.validated);
   }
 
+  onRagExcluded() {
+      this.sentence.classification.intentId = Intent.ragExcluded;
+      this.sentence.classification.entities = [];
+      this.update(SentenceStatus.validated);
+  }
+
   onDelete() {
     this.update(SentenceStatus.deleted);
   }
