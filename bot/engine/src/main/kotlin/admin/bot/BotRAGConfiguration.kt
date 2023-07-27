@@ -29,4 +29,15 @@ data class BotRAGConfiguration(
     val prompt: String,
     val params: Map<String, String>,
     val noAnswerRedirection: String,
-)
+) {
+    fun toRAGConfiguration(): RAGConfiguration =
+        RAGConfiguration(
+            enabled,
+            engine,
+            embeddingEngine,
+            temperature,
+            prompt,
+            params,
+            noAnswerRedirection
+        )
+}

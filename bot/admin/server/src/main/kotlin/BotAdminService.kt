@@ -286,15 +286,6 @@ object BotAdminService {
         }
     }
 
-    fun saveRAGConfiguration(conf: BotRAGConfiguration): BotRAGConfiguration {
-        // TODO MASS - Control before saving
-        return ragConfigurationDAO.save(conf)
-    }
-
-    fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
-        return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-    }
-
     fun searchStories(request: StorySearchRequest): List<StoryDefinitionConfigurationSummaryExtended> =
         storyDefinitionDAO.searchStoryDefinitionSummariesExtended(request.toSummaryRequest())
 
