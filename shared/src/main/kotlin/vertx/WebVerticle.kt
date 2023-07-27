@@ -32,6 +32,7 @@ import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.security.auth.CASAuthProvider
 import ai.tock.shared.security.auth.GithubOAuthProvider
 import ai.tock.shared.security.auth.OAuth2Provider
+import ai.tock.shared.security.auth.KeycloakOAuth2Provider
 import ai.tock.shared.security.auth.PropertyBasedAuthProvider
 import ai.tock.shared.security.auth.TockAuthProvider
 import ai.tock.shared.security.auth.spi.CASAuthProviderFactory
@@ -264,6 +265,7 @@ abstract class WebVerticle : AbstractVerticle() {
         when {
             booleanProperty("tock_github_oauth_enabled", false) -> GithubOAuthProvider(sharedVertx)
             booleanProperty("tock_oauth2_enabled", false) -> OAuth2Provider(sharedVertx)
+            booleanProperty("tock_keycloak_enabled", false) -> KeycloakOAuth2Provider(sharedVertx)
             booleanProperty("tock_cas_auth_enabled", false) ->
                 loadCasAuthProvider(sharedVertx) ?: PropertyBasedAuthProvider
 

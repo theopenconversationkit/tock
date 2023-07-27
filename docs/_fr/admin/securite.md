@@ -18,6 +18,8 @@ Le code est disponible dans la classe [`PropertyBasedAuthProvider`](https://gith
 
 - Un modèle [_OAuth2_](https://oauth.net/2/) générique.
 
+- Un modèle [_OAuth2_](https://oauth.net/2/) adapté à [`Keycloak`](https://www.keycloak.org/).
+
 - Un modèle [_OAuth2_](https://oauth.net/2/) spécifique pour Github dont un exemple est donné par [`GithubOAuthProvider`](https://github.com/theopenconversationkit/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt)
 
 Il est également possible d'intégrer une authentification CAS (SSO), dans le cas d'une installation de type entreprise.
@@ -102,13 +104,49 @@ Voici les propriétés et leurs valeurs par défaut :
 | `tock_oauth2_secret_key`             | `SECRET_KEY`       | Mot de passe pour interroger l'API GitHub         |
 | `tock_oauth2_site_url`               | `https://provider` | Url du provider oauth2                            |
 | `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token      |
-| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Timeout vérification de l'identité (API GitHub)   |
-| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Timeout vérification de l'identité (API GitHub)   |
+| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Chemin relatif pour récupérer l'authorize         |
+| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Chemin relatif pour récupérer les userinfo        |
 | `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)   |
 | `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                           |
 | `tock_oauth2_user_role_attribute`    | `custom:roles`     | Attribut lu dans le token pour le mapping du role |
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
+
+
+
+### Implémentation 0Auth2 pour Keycloak
+
+Cette implémentation OAuth2 Keycloak est à utiliser dès que vous souhaitez paramétrer une configuration OAuth2 avec Keycloak.
+
+Voici les propriétés et leurs valeurs proposées :
+
+> Attention, par défaut, aucun adapteur n'étant activé, il faut impérativement mettre la clé tock_keycloak_enabled correspondant à notre adaptateur à true.
+
+
+| Variable d'environnement             | Exemple de valeur                     | Description                                       |
+|--------------------------------------|---------------------------------------|---------------------------------------------------|
+| `tock_keycloak_enabled`              | `true`                                | Activation de l'authentification 0Auth2           |
+| `tock_keycloak_client_id`            | `CLIENT_ID`                           | Client id crée sur Keycloak                       |
+| `tock_keycloak_secret_key`           | `SECRET_KEY`                          | Secret key générée par Keycloak                   |
+| `tock_keycloak_site_url`             | `https://keycloak/realms/myrealm`     | Url du Realm Keycloak                             |
+| `tock_keycloak_access_token_path`    | `/protocol/openid-connect/token`      | Chemin relatif pour récupérer l'access token      |
+| `tock_keycloak_authorize_path`       | `/protocol/openid-connect/auth`       | Chemin relatif pour l'authorize                   |
+| `tock_keycloak_userinfo_path`        | `/protocol/openid-connect/userinfo`   | Chemin relatif pour les userinfo                  |
+| `tock_keycloak_proxy_host`           |                                       | host du proxy (ne pas indiquer si pas de proxy)   |
+| `tock_keycloak_proxy_port`           |                                       | port optionnel du proxy                           |
+| `tock_custom_namespace_mapping`      | `tock_namespace`                      | Attribut lu dans le token pour le namespace       |
+| `tock_keycloak_user_role_attribute`  | `tock_roles`                          | Attribut lu dans le token pour les roles          |
+
+Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`. 
+
+Une configuration basique nécessite de définir tock_keycloak_client_id et tock_keycloak_secret_key avec les valeurs correspondantes sur Keycloak.
+
+Il est également nécessaire de passer l'adresse du Realm keycloak via tock_keycloak_site_url. 
+
+Il n'est en revanche alors pas nécessaire de définir tock_keycloak_access_token_path, tock_keycloak_authorize_path et tock_keycloak_userinfo_path puisque les valeurs par défaut conviennent pour Keycloak si l'on spécifie bien l'adresse du realm.
+
+Si tock_custom_namespace_mapping n'est pas défini ou si l'attribut n'est pas trouvé, le namespace "app" par défaut est utilisé.
+
 
 ### Implémentation 0Auth/GitHub
 
