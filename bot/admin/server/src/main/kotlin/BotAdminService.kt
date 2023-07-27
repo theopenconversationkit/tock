@@ -446,7 +446,7 @@ object BotAdminService {
                 story.storyId
         )?.also {
             if (existingStory1 != null) {
-                storyDefinitionDAO.delete(it)
+                this.deleteStoryWithLabels(namespace,it)
             }
         }
 
@@ -498,17 +498,21 @@ object BotAdminService {
     fun deleteStory(namespace: String, storyDefinitionId: String): Boolean {
         val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
         if (story != null) {
-            val allLabels = I18nCsvCodec.extractLabelsFromStory(loadStory(namespace,story))
-            // delete all labels related to story
-            allLabels.forEach { label ->
-                this.i18n.deleteByNamespaceAndId(namespace,label._id)
-            }
-            val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
-            if (botConf != null) {
-                storyDefinitionDAO.delete(story)
-            }
+            this.deleteStoryWithLabels(namespace,story)
         }
         return false
+    }
+
+    private fun deleteStoryWithLabels(namespace: String, story : StoryDefinitionConfiguration){
+        val allLabels = I18nCsvCodec.extractLabelsFromStory(loadStory(namespace,story))
+        // delete all labels related to story
+        allLabels.forEach { label ->
+            this.i18n.deleteByNamespaceAndId(namespace,label._id)
+        }
+        val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
+        if (botConf != null) {
+            storyDefinitionDAO.delete(story)
+        }
     }
 
     fun createStory(
@@ -1095,7 +1099,7 @@ object BotAdminService {
         storyDefinitionDAO.getStoryDefinitionsByNamespaceAndBotId(
                 app.namespace, app.name
         ).forEach { story ->
-            storyDefinitionDAO.delete(story)
+            this.deleteStoryWithLabels(app.namespace,story)
         }
     }
 
