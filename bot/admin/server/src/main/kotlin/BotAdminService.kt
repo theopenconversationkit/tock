@@ -28,6 +28,8 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.bot.BotRAGConfiguration
+import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogReportDAO
@@ -105,6 +107,7 @@ object BotAdminService {
     private val userReportDAO: UserReportDAO get() = injector.provide()
     internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
+    private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
@@ -281,6 +284,15 @@ object BotAdminService {
                 )
             )
         }
+    }
+
+    fun saveRAGConfiguration(conf: BotRAGConfiguration): BotRAGConfiguration {
+        // TODO MASS - Control before saving
+        return ragConfigurationDAO.save(conf)
+    }
+
+    fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
+        return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
     }
 
     fun searchStories(request: StorySearchRequest): List<StoryDefinitionConfigurationSummaryExtended> =

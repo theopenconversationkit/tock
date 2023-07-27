@@ -53,6 +53,7 @@ open class BotDefinitionBase(
     override val keywordStory: StoryDefinition = defaultKeywordStory,
     override val flowDefinition: DialogFlowDefinition? = null,
     override val botEnabledListener: (Action) -> Unit = {},
+    override val ragConfigurationEnabled: Boolean = false,
 ) : BotDefinition {
 
     companion object {

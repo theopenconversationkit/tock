@@ -109,6 +109,11 @@ interface BotDefinition : I18nKeyProvider {
     val nlpModelName: String
 
     /**
+     * Is the RAG enabled ?
+     */
+    val ragConfigurationEnabled: Boolean
+
+    /**
      * The list of each stories.
      */
     val stories: List<StoryDefinition>

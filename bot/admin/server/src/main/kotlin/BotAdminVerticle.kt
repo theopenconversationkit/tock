@@ -23,12 +23,14 @@ import ai.tock.bot.admin.BotAdminService.getBotConfigurationsByNamespaceAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.model.BotAdminConfiguration
 import ai.tock.bot.admin.model.BotConnectorConfiguration
 import ai.tock.bot.admin.model.BotI18nLabel
 import ai.tock.bot.admin.model.BotI18nLabels
+import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
@@ -379,6 +381,18 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost("/configuration/bots/:botId/rag", setOf(botUser, faqBotUser)) { context, configuration: BotRAGConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                BotAdminService.saveRAGConfiguration(configuration.toBotRAGConfiguration())
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/rag", setOf(botUser, faqBotUser)) { context  ->
+            BotAdminService.getRAGConfiguration(context.organization, context.path("botId"))
         }
 
         blockingJsonPost(
