@@ -67,6 +67,7 @@ import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.engine.config.SatisfactionIntent
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
@@ -212,9 +213,12 @@ object BotAdminService {
                                 obfuscatedDialog = obfuscatedDialog || it.message != obfuscatedMessage
                                 it.copy(message = obfuscatedMessage)
                             }
+                            val reviewCommentAction = actions.find { it.intent == SatisfactionIntent.REVIEW_COMMENT.id }
+                            val reviewMessage = reviewCommentAction?.message?.toPrettyString() ?: d.review
                             d.copy(
                                 actions = actions,
-                                obfuscated = obfuscatedDialog
+                                obfuscated = obfuscatedDialog,
+                                review = reviewMessage
                             )
                         }
                     )
