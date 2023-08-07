@@ -580,6 +580,17 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
+    override fun intents(namespace: String,nlpModel : String): Set<String> {
+        val applicationsIds = getApplicationIds(namespace, nlpModel)
+
+
+        return dialogCol.distinct(
+             Stories.actions.state.intent,
+            and(DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() })
+        ).filterNotNull().toSet()
+
+    }
+
 
     override fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult? {
         val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)

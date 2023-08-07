@@ -33,6 +33,10 @@ export class DisplayDialogComponent {
   @Input()
   userPicture: string;
 
+
+  @Input()
+  intentsToHide: string[];
+
   constructor(private state: StateService, private analyticsService: AnalyticsService, @Inject(APP_BASE_HREF) public baseHref: string) {}
 
   canReveal(): boolean {
@@ -40,6 +44,8 @@ export class DisplayDialogComponent {
   }
 
   reveal() {
-    this.analyticsService.dialog(this.state.currentApplication._id, this.dialog.id).subscribe((d) => (this.dialog = d));
+    (this.intentsToHide == null) ?
+      this.analyticsService.dialog(this.state.currentApplication._id, this.dialog.id).subscribe((d) => (this.dialog = d)) :
+      this.analyticsService.dialogWithIntentFilter(this.state.currentApplication._id, this.dialog.id,this.intentsToHide).subscribe((d) => (this.dialog = d));
   }
 }

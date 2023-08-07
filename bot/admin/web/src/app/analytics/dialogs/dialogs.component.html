@@ -100,6 +100,22 @@
                 {{ config }}
               </nb-option>
             </nb-select>
+        <nb-select
+          class="select-plan"
+          multiple
+          placeholder="Intents"
+          status="primary"
+          [(ngModel)]="filter.intentsToHide"
+          (selectedChange)="refresh()"
+        >
+          <nb-option>Clear selection</nb-option>
+          <nb-option
+            *ngFor="let intent of intents"
+            [value]="intent"
+          >
+            {{ intent }}
+          </nb-option>
+        </nb-select>
             <mat-slide-toggle
               class="test"
               [(ngModel)]="filter.displayTests"
@@ -157,7 +173,7 @@
       (scrolled)="onScroll()"
     >
       <div *ngFor="let dialog of data">
-        <tock-display-dialog [dialog]="dialog">
+        <tock-display-dialog [dialog]="dialog" [intentsToHide]="filter.intentsToHide">
           <div *ngIf="dialog.actions.length === 0">No dialog</div>
         </tock-display-dialog>
         <p></p>

@@ -33,6 +33,7 @@ import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.dialog.DialogReportQueryResult
 import ai.tock.bot.admin.dialog.RatingReportQueryResult
+import ai.tock.bot.admin.dialog.DialogReport
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import ai.tock.bot.admin.model.BotAnswerConfiguration
@@ -68,9 +69,11 @@ import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.engine.config.SatisfactionIntent
+import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogFlowDAO
 import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
+import ai.tock.bot.engine.user.PlayerType
 import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
@@ -202,18 +205,24 @@ object BotAdminService {
     fun search(query: DialogsSearchQuery): DialogReportQueryResult {
         return dialogReportDAO.search(query.toDialogReportQuery())
             .run {
+                val searchResult = if (query.intentsToHide.isEmpty()) this else this.copy(
+                    dialogs = filterIntentFromDialogActions(
+                        this.dialogs,
+                        query.intentsToHide
+                    )
+                )
                 if (query.skipObfuscation) {
-                    this
+                    searchResult
                 } else {
-                    copy(
-                        dialogs = dialogs.map { d ->
+                    searchResult.copy(
+                        dialogs = searchResult.dialogs.map { d ->
                             var obfuscatedDialog = false
                             val actions = d.actions.map {
                                 val obfuscatedMessage = it.message.obfuscate()
                                 obfuscatedDialog = obfuscatedDialog || it.message != obfuscatedMessage
                                 it.copy(message = obfuscatedMessage)
                             }
-                            val reviewCommentAction = actions.find { it.intent == SatisfactionIntent.REVIEW_COMMENT.id }
+                            val reviewCommentAction = actions.findLast { it.intent == SatisfactionIntent.REVIEW_COMMENT.id }
                             val reviewMessage = reviewCommentAction?.message?.toPrettyString() ?: d.review
                             d.copy(
                                 actions = actions,
@@ -224,6 +233,39 @@ object BotAdminService {
                     )
                 }
             }
+    }
+
+    fun getIntentsInDialogs(namespace: String,nlpModel : String) : Set<String>{
+        return dialogReportDAO.intents(namespace,nlpModel)
+    }
+
+    fun getDialogObfuscatedById(id: Id<Dialog>, intentsToHide: Set<String>): DialogReport? {
+        val dialog = dialogReportDAO.getDialog(id)
+        return if (dialog == null) null else filterIntentFromDialogActions(listOf(dialog), intentsToHide).firstOrNull()
+    }
+
+
+    private fun filterIntentFromDialogActions(dialogs: List<DialogReport>, intentsToHide: Set<String>): List<DialogReport> {
+        return dialogs.map { dialog ->
+            val groupedLists = dialog.actions.groupBy { it.playerId.type }
+            var list = dialog.actions.toMutableList()
+            groupedLists[PlayerType.user]?.forEach { action ->
+                if (intentsToHide.contains(action.intent)) {
+                    val index = dialog.actions.indexOf(action)
+                    val items = dialog.actions.subList(
+                        index,
+                        if (groupedLists[PlayerType.user]?.indexOf(action) == (groupedLists[PlayerType.user]?.size?.minus(
+                                1
+                            ))
+                        ) dialog.actions.size else dialog.actions.indexOf(
+                            groupedLists[PlayerType.user]?.indexOf(action)?.plus(1)
+                                ?.let { groupedLists[PlayerType.user]?.get(it) })
+                    )
+                    list = list.filterNot { it in items }.toMutableList()
+                }
+            }
+            dialog.copy(actions = list)
+        }
     }
 
     fun searchRating(query: DialogsSearchQuery): RatingReportQueryResult? {

@@ -42,6 +42,11 @@ export class BotSharedService {
     }
   }
 
+
+  getIntentsByApplication(applicationId : string): Observable<string[]> {
+      return this.rest.get(`/dialogs/intents/`+applicationId, (i) => i);
+  }
+
   findConnectorConfiguration(connectorType: ConnectorType): ConnectorTypeConfiguration {
     let r = undefined;
     if (this.connectorTypes) {

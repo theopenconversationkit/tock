@@ -27,6 +27,7 @@ import org.litote.kmongo.Id
 interface DialogReportDAO {
 
     fun search(query: DialogReportQuery): DialogReportQueryResult
+    fun intents(namespace: String,nlpModel : String): Set<String>
 
     fun findBotDialogStats(query: DialogReportQuery): RatingReportQueryResult?
 
