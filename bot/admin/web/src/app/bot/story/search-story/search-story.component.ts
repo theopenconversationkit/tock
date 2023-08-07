@@ -238,7 +238,10 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   prepareUpload() {
-    this.nbDialogService.open(StoriesUploadComponent);
+    const modal = this.nbDialogService.open(StoriesUploadComponent);
+    modal.componentRef.instance.onImportComplete.subscribe((res) => {
+      this.search();
+    });
   }
 
   ngOnDestroy(): void {

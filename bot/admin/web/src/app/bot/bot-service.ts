@@ -50,10 +50,6 @@ export class BotService {
     );
   }
 
-  prepareStoryDumpUploader(uploader: FileUploader, applicationName: string, locale: string) {
-    this.rest.setFileUploaderOptions(uploader, `/bot/story/${applicationName}/${locale}/import`);
-  }
-
   saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
     return this.rest.post('/bot/story', story.prepareBeforeSend(), StoryDefinitionConfiguration.fromJSON);
   }

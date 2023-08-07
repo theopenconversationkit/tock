@@ -36,7 +36,9 @@ import {
   NbToastrModule,
   NbTooltipModule,
   NbStepperModule,
-  NbFormFieldModule, NbCheckboxModule
+  NbFormFieldModule,
+  NbRadioModule,
+  NbCheckboxModule
 } from '@nebular/theme';
 import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -85,8 +87,9 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbIconModule,
     NbSelectModule,
     NbStepperModule,
-    NbCheckboxModule,
-    NbFormFieldModule
+    NbFormFieldModule,
+    NbRadioModule,
+    NbCheckboxModule
   ],
   providers: [
     {

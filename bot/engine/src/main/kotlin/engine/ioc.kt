@@ -19,6 +19,8 @@ import ai.tock.bot.definition.ConnectorHandlerProvider
 import ai.tock.bot.definition.DefaultConnectorHandlerProvider
 import ai.tock.bot.engine.nlp.Nlp
 import ai.tock.bot.engine.nlp.NlpController
+import ai.tock.bot.llm.rag.core.client.RagClient
+import ai.tock.bot.llm.rag.core.client.RagServiceApiClient
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.TockNlpClient
 import com.github.salomonbrys.kodein.Kodein
@@ -33,4 +35,5 @@ val botModule = Kodein.Module {
     bind<NlpClient>() with singleton { TockNlpClient() }
     bind<NlpController>() with singleton { Nlp() }
     bind<ConnectorHandlerProvider>() with provider { DefaultConnectorHandlerProvider }
+    bind<RagClient>() with singleton { RagServiceApiClient() }
 }
