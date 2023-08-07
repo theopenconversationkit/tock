@@ -56,5 +56,7 @@ data class DialogReportQuery(
     /**
      * [applicationId] configuration canal
      */
-    val applicationId : String? = null
+    val applicationId : String? = null,
+
+    val intentsToHide : Set<String> =  emptySet()
 )

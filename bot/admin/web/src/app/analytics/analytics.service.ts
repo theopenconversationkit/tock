@@ -104,6 +104,10 @@ export class AnalyticsService {
     return this.rest.get(`/dialog/${applicationId}/${dialogId}`, DialogReport.fromJSON);
   }
 
+  dialogWithIntentFilter(applicationId: string, dialogId: string, intentsToHide: string[]) : Observable<DialogReport> {
+    return this.rest.post(`/dialog/${applicationId}/${dialogId}/satisfaction`,intentsToHide, DialogReport.fromJSON);
+  }
+
   getTestPlansByNamespaceAndNlpModel(): Observable<TestPlan[]> {
     return this.rest.post(`/application/plans`, this.state.createApplicationScopedQuery(), TestPlan.fromJSONArray);
   }
@@ -152,6 +156,8 @@ export class AnalyticsService {
   downloadDialogsWithIntentsCsv(dialogReportQuery: DialogReportQuery): Observable<Blob> {
     return this.rest.post('/dialogs/ratings/intents/export',dialogReportQuery, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
   }
+
+
 }
 
 export class BooleanResponse {

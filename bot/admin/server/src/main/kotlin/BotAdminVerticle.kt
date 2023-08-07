@@ -24,7 +24,6 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
-import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.model.BotAdminConfiguration
 import ai.tock.bot.admin.model.BotConnectorConfiguration
 import ai.tock.bot.admin.model.BotI18nLabel
@@ -385,17 +384,16 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonGet("/dialog/:applicationId/:dialogId", setOf(botUser, faqBotUser)) { context ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {
-                dialogReportDAO
-                    .search(
-                        DialogReportQuery(
-                            context.organization,
-                            app.name,
-                            dialogId = context.path("dialogId")
-                        )
-                    )
-                    .run {
-                        dialogs.firstOrNull()
-                    }
+                dialogReportDAO.getDialog(context.path("dialogId").toId())
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/dialog/:applicationId/:dialogId/satisfaction", setOf(botUser, faqBotUser)) { context, query: Set<String> ->
+            val app = FrontClient.getApplicationById(context.pathId("applicationId"))
+            if (context.organization == app?.namespace) {
+                BotAdminService.getDialogObfuscatedById(context.pathId("dialogId"),query)
             } else {
                 unauthorized()
             }
@@ -410,6 +408,14 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonGet(
+            "/dialogs/intents/:applicationId",
+            setOf(botUser, faqNlpUser, faqBotUser)
+        ) { context ->
+            val app = FrontClient.getApplicationById(context.path("applicationId").toId())
+            app?.let { BotAdminService.getIntentsInDialogs(app.namespace,app.name) }
         }
 
         blockingJsonGet("/bots/:botId", setOf(botUser, faqNlpUser, faqBotUser)) { context ->
