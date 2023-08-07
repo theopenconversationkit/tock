@@ -5,3 +5,4 @@ export * from './error-helper/error-helper.component';
 export * from './form-control/form-control.component';
 export * from './no-data-found/no-data-found.component';
 export * from './pagination/pagination.component';
+export * from './slider/slider.component';

@@ -1,0 +1,190 @@
+<form [formGroup]="form">
+  <nb-card class="mt-3">
+    <nb-card-header>Retrieval Augmented Generation settings</nb-card-header>
+
+    <nb-card-body [nbSpinner]="loading">
+      <tock-form-control
+        label="Activate RAG"
+        name="enabled"
+        [controls]="enabled"
+        [showError]="isSubmitted"
+      >
+        <nb-toggle formControlName="enabled">
+          <span *ngIf="enabled.value">Rag activated</span>
+          <span *ngIf="!enabled.value">Rag deactivated</span>
+        </nb-toggle>
+      </tock-form-control>
+
+      <tock-form-control
+        label="LLM Engine"
+        name="engine"
+        [controls]="engine"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <nb-radio-group
+          formControlName="engine"
+          class="d-flex"
+        >
+          <nb-radio
+            *ngFor="let engine of LlmEngines"
+            [value]="engine.key"
+          >
+            {{ engine.label }}
+          </nb-radio>
+        </nb-radio-group>
+      </tock-form-control>
+
+      <div
+        *ngIf="engine.value"
+        class="mt-2"
+        formGroupName="params"
+      >
+        <div class="font-weight-bold mb-3">{{ currentEngineLabel }} parameters</div>
+
+        <div class="engine-params mb-3">
+          <div *ngFor="let param of currentEngineParams">
+            <tock-form-control
+              [label]="param.label"
+              [name]="param.key"
+              [controls]="getFormControlByName(param.key)"
+              [required]="true"
+              [boldLabel]="false"
+              [showError]="isSubmitted"
+              [hasMargin]="false"
+            >
+              <ng-container *ngIf="param.type === 'string'">
+                <input
+                  nbInput
+                  fullWidth
+                  [formControlName]="param.key"
+                />
+              </ng-container>
+
+              <ng-container *ngIf="param.type === 'list'">
+                <nb-select
+                  fullWidth
+                  [formControlName]="param.key"
+                >
+                  <nb-option
+                    *ngFor="let source of param.source"
+                    [value]="source"
+                  >
+                    {{ source }}
+                  </nb-option>
+                </nb-select>
+              </ng-container>
+            </tock-form-control>
+          </div>
+        </div>
+      </div>
+
+      <tock-form-control
+        label="Temperature"
+        name="temperature"
+        [controls]="temperature"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <tock-slider
+          min="0"
+          max="1"
+          step="0.05"
+          formControlName="temperature"
+        ></tock-slider>
+      </tock-form-control>
+
+      <tock-form-control
+        label="Embedding Engine"
+        name="embeddingEngine"
+        [controls]="embeddingEngine"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <nb-select
+          formControlName="embeddingEngine"
+          class="d-flex"
+        >
+          <nb-option
+            *ngFor="let embedding of EmbeddingEngines"
+            [value]="embedding"
+          >
+            {{ embedding }}
+          </nb-option>
+        </nb-select>
+      </tock-form-control>
+
+      <tock-form-control
+        label="Prompt"
+        name="prompt"
+        [controls]="prompt"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <textarea
+          formControlName="prompt"
+          nbInput
+          fullWidth
+          rows="8"
+          placeholder="Enter prompt string"
+        ></textarea>
+
+        <div class="mt-1">
+          <button
+            nbButton
+            size="tiny"
+            (click)="restoreDefaultPrompt()"
+          >
+            Restore default prompt
+          </button>
+        </div>
+      </tock-form-control>
+
+      <tock-form-control
+        label="No answer story redirection"
+        name="noAnswerRedirection"
+        [controls]="noAnswerRedirection"
+        [showError]="isSubmitted"
+      >
+        <nb-select formControlName="noAnswerRedirection">
+          <nb-option
+            class="text-muted"
+            value="null"
+          >
+            none
+          </nb-option>
+
+          <nb-option
+            *ngFor="let story of availableStories"
+            [value]="story.storyId"
+          >
+            {{ story.name }}
+          </nb-option>
+        </nb-select>
+      </tock-form-control>
+
+      <div class="grid-button mt-3">
+        <button
+          type="button"
+          nbButton
+          outline
+          status="primary"
+          size="small"
+          (click)="cancel()"
+          [disabled]="!form.dirty || !settingsBackup"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          nbButton
+          status="primary"
+          size="small"
+          (click)="submit()"
+        >
+          Save
+        </button>
+      </div>
+    </nb-card-body>
+  </nb-card>
+</form>

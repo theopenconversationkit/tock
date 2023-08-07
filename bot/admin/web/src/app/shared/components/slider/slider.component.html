@@ -1,0 +1,17 @@
+<div
+  class="d-flex align-items-center justify-content-between range-slider"
+  [ngClass]="{ disabled: disabled }"
+>
+  <input
+    type="range"
+    [min]="min"
+    [max]="max"
+    [step]="step"
+    [(ngModel)]="value"
+    (change)="changeValue($event)"
+    [disabled]="disabled"
+  />
+  <div class="range-slider-value">
+    {{ value }}
+  </div>
+</div>

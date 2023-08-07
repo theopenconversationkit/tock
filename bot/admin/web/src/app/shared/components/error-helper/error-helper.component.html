@@ -1,7 +1,41 @@
 <div class="text-danger">
   <small *ngIf="field?.errors?.required">This field is required</small>
   <small *ngIf="field?.errors?.minlength">
-    This field must contain at least {{ field?.errors?.minlength.requiredLength }} characters
+    This field must contain at least {{ field?.errors?.minlength.requiredLength }} character<span
+      *ngIf="field?.errors?.minlength.requiredLength > 1"
+      >s</span
+    >
   </small>
-  <small *ngIf="field?.errors?.maxlength"> This field is limited to {{ field?.errors?.maxlength.requiredLength }} characters </small>
+  <small *ngIf="field?.errors?.maxlength">
+    This field is limited to {{ field?.errors?.maxlength.requiredLength }} character<span
+      *ngIf="field?.errors?.maxlength.requiredLength > 1"
+      >s</span
+    >
+  </small>
+  <small *ngIf="field?.errors?.min">The minimum value is {{ field?.errors?.min.min }}</small>
+  <small *ngIf="field?.errors?.max">The maximum value is {{ field?.errors?.max.max }}</small>
+  <small *ngIf="field?.errors?.filesNameWithWrongType">
+    The following files are not accepted file types:
+    <ul>
+      <li
+        *ngFor="let file of field.errors.filesNameWithWrongType"
+        class="text-danger"
+      >
+        <small>{{ file }}</small>
+      </li>
+    </ul>
+  </small>
+  <small *ngIf="field?.errors?.filesNameWithWrongFormat">
+    <span *ngIf="field?.errors?.message">{{ field.errors.message }}<br /></span>
+    The following files do not have the required format:
+    <ul>
+      <li
+        *ngFor="let file of field.errors.filesNameWithWrongFormat"
+        class="text-danger"
+      >
+        <small>{{ file }}</small>
+      </li>
+    </ul>
+  </small>
+  <small *ngIf="field?.errors?.custom">{{ field.errors.custom }}</small>
 </div>

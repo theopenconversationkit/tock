@@ -42,6 +42,11 @@ export class ConfigurationTabsComponent implements OnInit {
       icon: 'folder-outline'
     },
     {
+      title: 'Rag',
+      route: 'rag',
+      icon: 'bulb-outline'
+    },
+    {
       title: 'Log',
       route: 'users/logs',
       icon: 'eye-outline'
