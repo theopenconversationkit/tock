@@ -28,6 +28,8 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.bot.BotRAGConfiguration
+import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogReportDAO
@@ -57,13 +59,16 @@ import ai.tock.bot.admin.model.UserSearchQueryResult
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryExtended
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryMinimumMetrics
 import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
+import ai.tock.bot.admin.story.dump.StoriesImportMode
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
@@ -75,6 +80,7 @@ import ai.tock.bot.engine.feature.FeatureDAO
 import ai.tock.bot.engine.feature.FeatureState
 import ai.tock.bot.engine.user.PlayerType
 import ai.tock.nlp.admin.AdminService
+import ai.tock.nlp.core.Intent
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -92,6 +98,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
+import ai.tock.shared.withoutNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
@@ -109,6 +116,7 @@ object BotAdminService {
     private val userReportDAO: UserReportDAO get() = injector.provide()
     internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
+    private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
@@ -329,6 +337,10 @@ object BotAdminService {
         }
     }
 
+    fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
+        return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+    }
+
     fun searchStories(request: StorySearchRequest): List<StoryDefinitionConfigurationSummaryExtended> =
         storyDefinitionDAO.searchStoryDefinitionSummariesExtended(request.toSummaryRequest())
 
@@ -410,8 +422,8 @@ object BotAdminService {
         namespace: String,
         botId: String,
         locale: Locale,
-        stories: List<StoryDefinitionConfigurationDump>,
-        user: UserLogin
+        dump: StoryDefinitionConfigurationDumpImport,
+        user: UserLogin,
     ) {
         val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, botId).firstOrNull()
 
@@ -419,12 +431,14 @@ object BotAdminService {
             badRequest("No bot configuration is defined yet")
         } else {
             val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
-            stories.forEach {
+            val ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botConf.botId)
+
+            dump.stories.forEach {
                 try {
                     val controller =
                         BotStoryDefinitionConfigurationDumpController(namespace, botId, it, application, locale, user)
                     val storyConf = it.toStoryDefinitionConfiguration(controller)
-                    importStory(namespace, storyConf, botConf, controller)
+                    importStory(namespace, storyConf, botConf, ragConfiguration, controller, dump.mode)
                 } catch (e: Exception) {
                     logger.error("import error with story $it", e)
                 }
@@ -434,38 +448,68 @@ object BotAdminService {
 
     private fun importStory(
         namespace: String,
-        story: StoryDefinitionConfiguration,
+        storyToImport: StoryDefinitionConfiguration,
         botConf: BotApplicationConfiguration,
-        controller: BotStoryDefinitionConfigurationDumpController
+        ragConfiguration: BotRAGConfiguration?,
+        controller: BotStoryDefinitionConfigurationDumpController,
+        importMode: StoriesImportMode
     ) {
+        var storyToSave = manageExistingStory(botConf, storyToImport)
+
+        // Manage the import of an unknown story, taking into account the RAG configuration
+        if(ragConfiguration?.enabled == true && Intent.UNKNOWN_INTENT.name.withoutNamespace() == storyToImport.intent.name) {
+            if(importMode == StoriesImportMode.RAG_OFF){
+                ragConfigurationDAO.findByNamespaceAndBotId(namespace, botConf.botId)
+                    ?.let {
+                        ragConfigurationDAO.save(it.copy(enabled = false))
+                    }
+            } else if(importMode == StoriesImportMode.RAG_ON){
+                storyToSave = storyToSave.copy(features = prepareEndingFeatures(storyToSave, false))
+            }
+        }
+
+        // save the story
+        storyDefinitionDAO.save(storyToSave)
+
+        saveSentences(botConf, storyToImport, controller)
+    }
+
+    /**
+     * Manage the existing Story that match the intent name or the storyId, of the imported story
+     * @param botConf the [BotApplicationConfiguration]
+     * @param storyToImport the [StoryDefinitionConfiguration]
+     */
+    private fun manageExistingStory(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration): StoryDefinitionConfiguration {
         val existingStory1 = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-            namespace,
+            botConf.namespace,
             botConf.botId,
-            story.intent.name
+            storyToImport.intent.name
         )
 
         val existingStory2 = storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-            namespace,
+            botConf.namespace,
             botConf.botId,
-            story.storyId
+            storyToImport.storyId
         )?.also {
             if (existingStory1 != null) {
                 storyDefinitionDAO.delete(it)
             }
         }
 
-        storyDefinitionDAO.save(story.copy(_id = existingStory1?._id ?: existingStory2?._id ?: story._id))
+        return storyToImport.copy(_id = existingStory1?._id ?: existingStory2?._id ?: storyToImport._id)
+    }
 
+    private fun saveSentences(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration, controller: BotAdminService.BotStoryDefinitionConfigurationDumpController) {
         val mainIntent = createOrGetIntent(
-            namespace,
-            story.intent.name,
+            botConf.namespace,
+            storyToImport.intent.name,
             controller.application._id,
-            story.category
+            storyToImport.category
         )
-        if (story.userSentence.isNotBlank()) {
+        if (storyToImport.userSentence.isNotBlank()) {
             saveSentence(
-                story.userSentence,
-                story.userSentenceLocale ?: controller.mainLocale,
+                storyToImport.userSentence,
+                storyToImport.userSentenceLocale ?: controller.mainLocale,
                 controller.application._id,
                 mainIntent._id,
                 controller.user
@@ -473,7 +517,22 @@ object BotAdminService {
         }
 
         // save all intents of steps
-        story.steps.forEach { saveUserSentenceOfStep(controller.application, it, controller.user) }
+        storyToImport.steps.forEach { saveUserSentenceOfStep(controller.application, it, controller.user) }
+    }
+
+    /**
+     * Update and get the story features
+     * @param story the [StoryDefinitionConfiguration]
+     * @param enabled the feature state
+     */
+    private fun prepareEndingFeatures(
+        story: StoryDefinitionConfiguration, enabled: Boolean
+    ): List<StoryDefinitionConfigurationFeature> {
+        val features = mutableListOf<StoryDefinitionConfigurationFeature>()
+        features.addAll(story.features)
+        features.removeIf { feature -> feature.enabled != null }
+        features.add(StoryDefinitionConfigurationFeature(null, enabled, null, null))
+        return features
     }
 
     fun findConfiguredStoryByBotIdAndIntent(
@@ -763,6 +822,9 @@ object BotAdminService {
         createdIntent: IntentDefinition? = null
     ): BotStoryDefinitionConfiguration? {
 
+        // Manage unknown story when RAG is enabled
+        manageUnknownStory(story)
+
         if (!story.validateMetrics()) {
             badRequest("Story is not valid : Metric story must have at least one step that handles at least one metric.")
         }
@@ -898,6 +960,19 @@ object BotAdminService {
             BotStoryDefinitionConfiguration(newStory, story.userSentenceLocale)
         } else {
             null
+        }
+    }
+
+    /**
+     * Manage unknown story when RAG is enabled
+     */
+    private fun manageUnknownStory(story: BotStoryDefinitionConfiguration) {
+        if(Intent.UNKNOWN_INTENT.name.withoutNamespace() == story.intent.name.withoutNamespace()) {
+            ragConfigurationDAO.findByNamespaceAndBotId(story.namespace, story.botId)?.let {
+                if (it.enabled) {
+                    badRequest("It is not allowed to create or update unknown story when RAG is enabled.")
+                }
+            }
         }
     }
 

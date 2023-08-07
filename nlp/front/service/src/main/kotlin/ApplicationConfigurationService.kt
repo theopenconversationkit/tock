@@ -17,6 +17,7 @@
 package ai.tock.nlp.front.service
 
 import ai.tock.nlp.core.Intent
+import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT_NAME
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.core.ModelCore
 import ai.tock.nlp.core.NlpCore
@@ -181,6 +182,7 @@ object ApplicationConfigurationService :
 
     override fun getIntentIdByQualifiedName(name: String): Id<IntentDefinition>? {
         return if (name == UNKNOWN_INTENT_NAME) UNKNOWN_INTENT_NAME.toId()
+        else if (name == RAG_EXCLUDED_INTENT_NAME) RAG_EXCLUDED_INTENT_NAME.toId()
         else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
     }
 
@@ -238,8 +240,9 @@ object ApplicationConfigurationService :
             }
             .distinct()
 
-        // 2 create entities where there are not present in the new intent (except if it's the unknown intent)
-        if (targetIntentId.toString() != UNKNOWN_INTENT_NAME) {
+        // 2 create entities where there are not present in the new intent (except if it's the unknown or ragexcluded intent)
+        if (targetIntentId.toString() != UNKNOWN_INTENT_NAME
+            && targetIntentId.toString() != RAG_EXCLUDED_INTENT_NAME) {
             val intent = getIntentById(targetIntentId)!!
             entities.filterNot { intent.hasEntity(it) }.apply {
                 if (isNotEmpty()) {

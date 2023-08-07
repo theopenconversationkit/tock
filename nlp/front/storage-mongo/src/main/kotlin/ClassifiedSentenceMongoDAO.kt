@@ -517,7 +517,8 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     ) {
         // TODO what if new intent does not contains existing entities?
         sentences.forEach {
-            if (newIntentId.toString() == Intent.UNKNOWN_INTENT_NAME) {
+            if (newIntentId.toString() == Intent.UNKNOWN_INTENT_NAME
+                || newIntentId.toString() == Intent.RAG_EXCLUDED_INTENT_NAME) {
                 save(it.copy(classification = it.classification.copy(newIntentId, emptyList())))
             } else {
                 save(it.copy(classification = it.classification.copy(newIntentId)))

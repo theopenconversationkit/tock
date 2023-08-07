@@ -1,0 +1,219 @@
+<div class="grid-columns-header">
+  <div class="d-flex gap-1 align-items-center">
+    <nb-checkbox
+      class="lineHeight-0"
+      [checked]="selection?.selected?.length === sentences?.length"
+      [indeterminate]="selection?.selected?.length && selection.selected.length < sentences?.length"
+      (checkedChange)="handleToggleSelectAll($event)"
+    ></nb-checkbox>
+    <div
+      *ngIf="selection.selected.length"
+      class="d-flex gap-1"
+      data-testid="batch-action"
+    >
+      <button
+        nbButton
+        nbTooltip="Validate all selected sentences"
+        class="text-success"
+        ghost
+        shape="round"
+        (click)="handleBatchAction(Action.VALIDATE)"
+        data-testid="batch-action-validate"
+      >
+        <nb-icon icon="checkmark-circle-2"></nb-icon>
+      </button>
+      <button
+        *ngIf="!isFilteredUnknown"
+        nbButton
+        nbTooltip="Set all selected sentences as unknown"
+        class="text-danger"
+        ghost
+        shape="round"
+        (click)="handleBatchAction(Action.UNKNOWN)"
+        data-testid="batch-action-unknown"
+      >
+        <nb-icon icon="close-circle-outline"></nb-icon>
+      </button>
+      <button
+        *ngIf="sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED"
+        nbButton
+        nbTooltip="Set all selected sentences as ragexcluded"
+        class="text-danger"
+        ghost
+        shape="round"
+        (click)="handleBatchAction(Action.RAGEXCLUDED)"
+        data-testid="batch-action-ragexcluded"
+      >
+        <nb-icon icon="alert-triangle-outline"></nb-icon>
+      </button>
+      <button
+        nbButton
+        nbTooltip="Delete all selected sentences"
+        ghost
+        shape="round"
+        (click)="handleBatchAction(Action.DELETE)"
+        data-testid="batch-action-delete"
+      >
+        <nb-icon icon="trash-2-outline"></nb-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
+    <span
+      class="pointer"
+      (click)="toggleSort()"
+      data-testid="sort"
+    >
+      Sort by creation date
+      <nb-icon
+        *ngIf="!isSorted"
+        icon="chevron-down-outline"
+        class="valign-middle"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="isSorted"
+        icon="chevron-up-outline"
+        class="valign-middle"
+      ></nb-icon>
+    </span>
+
+    <tock-pagination
+      [pagination]="pagination"
+      (onPaginationChange)="paginationChange($event)"
+    ></tock-pagination>
+  </div>
+</div>
+
+<nb-card
+  *ngFor="let sentence of sentences"
+  [ngClass]="{ 'my-2': true, selected: sentence._selected }"
+  [id]="getSentenceId(sentence)"
+  data-testid="list"
+>
+  <nb-card-body class="grid-columns">
+    <nb-checkbox
+      [checked]="isSentenceSelected(sentence)"
+      (checkedChange)="toggle(sentence)"
+    ></nb-checkbox>
+
+    <div
+      class="pointer"
+      (click)="toggle(sentence)"
+    >
+      <small class="d-block text-muted">
+        <time>{{ sentence.creationDate | date: 'MM/dd HH:mm' }}</time>
+      </small>
+      <span data-testid="text">
+        {{ sentence.text }}
+      </span>
+    </div>
+
+    <div class="select-intent">
+      <input
+        nbInput
+        fullWidth
+        type="text"
+        placeholder="{{ selectIntent(sentence, 'placeholder') }}"
+        (focus)="onFocus($event)"
+        (blur)="onBlur($event)"
+        (keyup.escape)="onBlur($event)"
+        (keyup)="filterIntentsList($event)"
+        autocomplete="off"
+        [nbAutocomplete]="intentsAutocomplete"
+      />
+      <nb-autocomplete
+        size="tiny"
+        #intentsAutocomplete
+        (selectedChange)="addIntentToSentence($event, sentence)"
+      >
+        <nb-option-group
+          *ngFor="let group of filteredIntentGroups | async"
+          [title]="group.category"
+        >
+          <nb-option
+            *ngFor="let intent of group.intents"
+            [value]="intent._id"
+          >
+            {{ intent.label || intent.name }}
+          </nb-option>
+        </nb-option-group>
+      </nb-autocomplete>
+
+      <span nbTooltip="Detection probability"> {{ selectIntent(sentence, 'probability') }}% </span>
+    </div>
+
+    <div>
+      <button
+        *ngIf="state.hasRole(UserRole.botUser)"
+        nbButton
+        nbTooltip="Create new FAQ"
+        ghost
+        shape="round"
+        (click)="redirectToFaqManagement(sentence)"
+        data-testid="redirectToFaqManagement"
+      >
+        <nb-icon icon="plus-circle-outline"></nb-icon>
+      </button>
+      <button
+        nbButton
+        nbTooltip="Validate"
+        class="text-success"
+        ghost
+        shape="round"
+        (click)="handleAction(Action.VALIDATE, sentence)"
+        data-testid="validate"
+      >
+        <nb-icon icon="checkmark-circle-2"></nb-icon>
+      </button>
+
+      <button
+        *ngIf="!isFilteredUnknown"
+        nbButton
+        nbTooltip="Set as unknown"
+        class="text-danger"
+        ghost
+        shape="round"
+        (click)="handleAction(Action.UNKNOWN, sentence)"
+        data-testid="unknown"
+      >
+        <nb-icon icon="close-circle-outline"></nb-icon>
+      </button>
+
+      <button
+        *ngIf="sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED"
+        nbButton
+        nbTooltip="Exclude from Rag handling"
+        class="text-danger"
+        ghost
+        shape="round"
+        (click)="handleAction(Action.RAGEXCLUDED, sentence)"
+        data-testid="ragexcluded"
+      >
+        <nb-icon icon="alert-triangle-outline"></nb-icon>
+      </button>
+
+      <button
+        nbButton
+        nbTooltip="Delete"
+        ghost
+        shape="round"
+        (click)="handleAction(Action.DELETE, sentence)"
+        data-testid="delete"
+      >
+        <nb-icon icon="trash-2-outline"></nb-icon>
+      </button>
+
+      <button
+        nbButton
+        nbTooltip="Details"
+        ghost
+        shape="round"
+        (click)="showDetails(sentence)"
+        data-testid="details"
+      >
+        <nb-icon icon="message-circle-outline"></nb-icon>
+      </button>
+    </div>
+  </nb-card-body>
+</nb-card>

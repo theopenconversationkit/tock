@@ -17,6 +17,7 @@
 package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.configuration.StepConfiguration
 import ai.tock.bot.api.model.configuration.StoryConfiguration
@@ -75,7 +76,8 @@ internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition>
 internal class BotApiDefinition(
     configuration: BotConfiguration,
     clientConfiguration: ClientConfiguration?,
-    handler: BotApiHandler
+    handler: BotApiHandler,
+    ragConfiguration: BotRAGConfiguration? = null
 ) : BotDefinitionBase(
     configuration.botId,
     configuration.namespace,
@@ -85,11 +87,14 @@ internal class BotApiDefinition(
         //map stories to SimpleStoryDefinition otherwise empty list
         ?.map { it.mapToSimpleStoryDefinition(handler) } ?: emptyList(),
     configuration.nlpModel,
-    FallbackStoryDefinition(defaultUnknownStory, handler)
+    FallbackStoryDefinition(defaultUnknownStory, handler),
+    ragConfiguration = ragConfiguration
 ) {
     override fun findIntent(intent: String, applicationId: String): Intent =
         super.findIntent(intent, applicationId).let {
-            if (it.wrap(Intent.unknown)) {
+            if (it.wrap(Intent.ragexcluded)) {
+                Intent(intent)
+            } else if (it.wrap(Intent.unknown)) {
                 Intent(intent)
             } else {
                 it

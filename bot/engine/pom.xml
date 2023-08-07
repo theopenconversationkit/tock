@@ -46,6 +46,11 @@
             <artifactId>tock-stt-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-rag-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>

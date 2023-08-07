@@ -33,6 +33,7 @@ import { FilterOption, Group } from '../search/filter/search-filter.component';
 export class SentenceAnalysisComponent implements OnInit {
   @Input() @Output() sentence: Sentence;
   @Input() displayUnknownButton: boolean = true;
+  @Input() displayRagExcludedButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
   @Output() closed = new EventEmitter();
@@ -41,8 +42,9 @@ export class SentenceAnalysisComponent implements OnInit {
   @Input() displayClose: boolean = false;
   intentBeforeClassification: string;
   UNKNOWN_INTENT_FILTER = new FilterOption('tock:unknown', 'Unknown');
+  RAGEXCLUDED_INTENT_FILTER = new FilterOption('tock:ragexcluded', 'Rag excluded');
   intentId: string;
-  selectedIntent:Intent;
+  selectedIntent: Intent;
   selectedIntentLabel: string;
 
   constructor(
@@ -57,9 +59,13 @@ export class SentenceAnalysisComponent implements OnInit {
 
   ngOnInit() {
     this.intentBeforeClassification = this.sentence.classification.intentId;
+
     if (this.intentBeforeClassification === this.UNKNOWN_INTENT_FILTER.value) {
       this.selectedIntent = null;
       this.selectedIntentLabel = this.UNKNOWN_INTENT_FILTER.label;
+    } else if (this.intentBeforeClassification === this.RAGEXCLUDED_INTENT_FILTER.value) {
+      this.selectedIntent = null;
+      this.selectedIntentLabel = this.RAGEXCLUDED_INTENT_FILTER.label;
     } else {
       this.selectedIntent = this.state.findSharedNamespaceIntentById(this.intentBeforeClassification);
       this.selectedIntentLabel = this.selectedIntent.name;
@@ -186,6 +192,12 @@ export class SentenceAnalysisComponent implements OnInit {
     this.update(SentenceStatus.validated);
   }
 
+  onRagExcluded() {
+    this.sentence.classification.intentId = Intent.ragExcluded;
+    this.sentence.classification.entities = [];
+    this.update(SentenceStatus.validated);
+  }
+
   onDelete() {
     this.update(SentenceStatus.deleted);
   }
@@ -207,7 +219,11 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   private createIntent(name: string, label: string, description: string, category: string): boolean {
-    if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === nameFromQualifiedName(Intent.unknown)) {
+    if (
+      StateService.intentExistsInApp(this.state.currentApplication, name) ||
+      name === nameFromQualifiedName(Intent.unknown) ||
+      name === nameFromQualifiedName(Intent.ragExcluded)
+    ) {
       this.dialog.notify(`Intent ${name} already exists`);
       return false;
     } else {

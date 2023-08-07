@@ -65,6 +65,7 @@
         <module>admin</module>
 
         <module>chatbase</module>
+        <module>llm</module>
 
     </modules>
 

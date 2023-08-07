@@ -16,8 +16,10 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent.Companion.keyword
+import ai.tock.bot.definition.Intent.Companion.ragexcluded
 import ai.tock.bot.definition.Intent.Companion.unknown
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
@@ -65,30 +67,37 @@ interface BotDefinition : I18nKeyProvider {
             ) {
                 targetIntent
             } else {
-                if (intent == keyword.name) {
-                    keyword
-                } else {
-                    unknown
+                when(intent){
+                    keyword.name -> keyword
+                    ragexcluded.intentWithoutNamespace().name -> ragexcluded
+                    else -> unknown
                 }
             }
         }
 
         /**
          * Finds a [StoryDefinition] from a list of [StoryDefinition] and an intent name.
-         * Is no valid [StoryDefinition] found, returns the [unknownStory].
+         * Is no valid [StoryDefinition] found, returns the ragStory if enabled, otherwise returns [unknownStory]
          */
         internal fun findStoryDefinition(
             stories: List<StoryDefinition>,
             intent: String?,
             unknownStory: StoryDefinition,
-            keywordStory: StoryDefinition
+            keywordStory: StoryDefinition,
+            ragExcludedStory: StoryDefinition? = null,
+            ragStory: StoryDefinition? = null,
+            ragConfiguration: BotRAGConfiguration? = null
         ): StoryDefinition {
             return if (intent == null) {
-                unknownStory
+               unknownStory
             } else {
                 val i = findIntent(stories, intent)
                 stories.find { it.isStarterIntent(i) }
-                    ?: if (intent == keyword.name) keywordStory else unknownStory
+                    ?: when(intent) {
+                        keyword.name -> keywordStory
+                        ragexcluded.intentWithoutNamespace().name -> ragExcludedStory ?: unknownStory
+                        else -> (if(ragConfiguration?.enabled == true) ragStory else null) ?: unknownStory
+                    }
             }
         }
     }
@@ -107,6 +116,11 @@ interface BotDefinition : I18nKeyProvider {
      * The name of the main nlp model.
      */
     val nlpModelName: String
+
+    /**
+     * RAG configuration
+     */
+    val ragConfiguration: BotRAGConfiguration?
 
     /**
      * The list of each stories.
@@ -149,7 +163,18 @@ interface BotDefinition : I18nKeyProvider {
      * @param applicationId the optional applicationId
      */
     fun findStoryDefinition(intent: String?, applicationId: String): StoryDefinition {
-        return findStoryDefinition(stories, intent, unknownStory, keywordStory)
+        return findStoryDefinition(
+            stories,
+            intent,
+            unknownStory,
+            keywordStory,
+            // TODO MASS : j'ai mis en commentaire,
+            // car je n'ai pas réussi à provoquer le cas fonctionnel qui déclanche cette méthode
+            // comment faire ? on laisse ce code ou on le supprime ?
+//            ragExcludedStory,
+//            ragStory,
+//            ragConfiguration
+        )
     }
 
     /**
@@ -158,9 +183,24 @@ interface BotDefinition : I18nKeyProvider {
     val unknownStory: StoryDefinition
 
     /**
+     * The ragExcluded Story. Used where ragexcluded intent is found.
+     */
+    val ragExcludedStory: StoryDefinition
+
+    /**
+     * The ragStory. Used if RAG is enabled.
+     */
+    val ragStory: StoryDefinition
+
+    /**
      * The default unknown answer.
      */
     val defaultUnknownAnswer: I18nLabelValue
+
+    /**
+     * The default rag excluded answer.
+     */
+    val defaultRagExcludedAnswer: I18nLabelValue
 
     /**
      * To handle keywords - used to bypass nlp.

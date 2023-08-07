@@ -28,6 +28,7 @@ import ai.tock.bot.admin.model.BotAdminConfiguration
 import ai.tock.bot.admin.model.BotConnectorConfiguration
 import ai.tock.bot.admin.model.BotI18nLabel
 import ai.tock.bot.admin.model.BotI18nLabels
+import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
@@ -37,11 +38,12 @@ import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.StorySearchRequest
+import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.module.satisfactionContentModule
-import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
+import ai.tock.bot.admin.service.RagService
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
 import ai.tock.bot.admin.verticle.IndicatorVerticle
@@ -447,6 +449,21 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonPost("/configuration/bots/:botId/rag", setOf(botUser, faqBotUser)) { context, configuration: BotRAGConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                RagService.saveRag(configuration)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/rag", setOf(botUser, faqBotUser)) { context  ->
+            RagService.getRAGConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotRAGConfigurationDTO(it)
+                }
+        }
+
         blockingJsonPost(
             "/configuration/bot", admin,
             logger = logger<BotConnectorConfiguration>("Create or Update Bot Connector Configuration") { _, c ->
@@ -678,16 +695,16 @@ open class BotAdminVerticle : AdminVerticle() {
             exportStory?.let { listOf(it) } ?: emptyList()
         }
 
-        blockingUploadJsonPost(
+        blockingJsonPost(
             "/bot/story/:appName/:locale/import",
             botUser,
             simpleLogger("JSON Import Response Labels")
-        ) { context, stories: List<StoryDefinitionConfigurationDump> ->
+        ) { context, dump: StoryDefinitionConfigurationDumpImport ->
             importStories(
                 context.organization,
                 context.path("appName"),
                 context.pathToLocale("locale"),
-                stories,
+                dump,
                 context.userLogin
             )
         }

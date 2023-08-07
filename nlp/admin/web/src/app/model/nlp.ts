@@ -270,6 +270,7 @@ export abstract class EntityContainer {
 
 export class Intent {
   public static readonly unknown = 'tock:unknown';
+  public static readonly ragExcluded = 'tock:ragexcluded';
 
   constructor(
     public name: string,
@@ -350,7 +351,7 @@ export class Sentence extends EntityContainer {
     public reviewComment: string,
     public qualifier: string,
     public key?: string,
-    public configuration? : string
+    public configuration?: string
   ) {
     super();
   }
@@ -362,7 +363,15 @@ export class Sentence extends EntityContainer {
   getIntentLabel(state: StateService): string {
     if (!this.intentLabel) {
       const intent = state.findIntentById(this.classification.intentId);
-      this.intentLabel = intent ? (intent.label ? intent.label : intent.name) : nameFromQualifiedName(Intent.unknown);
+      if (intent) {
+        this.intentLabel = intent.label ? intent.label : intent.name;
+      }
+      if (this.classification.intentId === Intent.unknown) {
+        this.intentLabel = nameFromQualifiedName(Intent.unknown);
+      }
+      if (this.classification.intentId === Intent.ragExcluded) {
+        this.intentLabel = nameFromQualifiedName(Intent.ragExcluded);
+      }
     }
     return this.intentLabel;
   }

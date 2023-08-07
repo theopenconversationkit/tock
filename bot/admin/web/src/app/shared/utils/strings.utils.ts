@@ -25,6 +25,11 @@ export function normalizedCamelCase(str: string): string {
     .replace(/[^A-Za-z0-9]*/g, '');
 }
 
+export function isUrl(str: string): boolean {
+  const reg = /^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+  return reg.test(str);
+}
+
 export const toISOStringWithoutOffset = (date: Date) => {
   if (!date) return null;
   const pad = n => `${Math.floor(Math.abs(n))}`.padStart(2, '0');

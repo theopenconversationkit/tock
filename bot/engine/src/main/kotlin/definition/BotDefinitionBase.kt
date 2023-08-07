@@ -16,9 +16,11 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.config.rag.RagAnswerHandler
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener.endTestContextKeyword
@@ -53,6 +55,9 @@ open class BotDefinitionBase(
     override val keywordStory: StoryDefinition = defaultKeywordStory,
     override val flowDefinition: DialogFlowDefinition? = null,
     override val botEnabledListener: (Action) -> Unit = {},
+    override val ragExcludedStory: StoryDefinition = defaultRagExcludedStory,
+    override val ragStory: StoryDefinition = defaultRagStory,
+    override val ragConfiguration: BotRAGConfiguration? = null
 ) : BotDefinition {
 
     companion object {
@@ -68,6 +73,35 @@ open class BotDefinitionBase(
                     override fun action(bus: BotBus) {
                         bus.markAsUnknown()
                         bus.end(bus.botDefinition.defaultUnknownAnswer)
+                    }
+                },
+                setOf(Intent.unknown)
+            )
+
+        /**
+         * The default [ragExcludedStory].
+         */
+        val defaultRagExcludedStory =
+            SimpleStoryDefinition(
+                "tock_ragexcluded_story",
+                object : SimpleStoryHandlerBase() {
+                    override fun action(bus: BotBus) {
+                        bus.end(bus.botDefinition.defaultRagExcludedAnswer)
+                    }
+                },
+                setOf(Intent.ragexcluded)
+            )
+
+        val defaultRagStory =
+            // TODO MASS : use RagStoryDefinition
+            SimpleStoryDefinition(
+                "tock_rag_story",
+                object : SimpleStoryHandlerBase() {
+                    override fun action(bus: BotBus) {
+                        bus.markAsUnknown()
+                            // TODO MASS : use RagAnswerHandler
+                            bus.send("RAG - IA answer")
+                            RagAnswerHandler.handle(bus)
                     }
                 },
                 setOf(Intent.unknown)
@@ -209,6 +243,11 @@ open class BotDefinitionBase(
      * The default unknown answer.
      */
     override val defaultUnknownAnswer: I18nLabelValue get() = i18n("Sorry, I didn't understand :(")
+
+    /**
+     * The default ragExcluded answer.
+     */
+    override val defaultRagExcludedAnswer: I18nLabelValue get() = i18n("Sorry, I can't answer your question (Topic not covered)")
 
     override fun toString(): String {
         return botId

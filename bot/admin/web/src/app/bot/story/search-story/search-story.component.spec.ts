@@ -19,52 +19,38 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { BotService } from '../../bot-service';
-import { StoryDefinitionConfigurationSummary } from '../../model/story';
+import { AnswerConfigurationType, IntentName, StoryDefinitionConfigurationSummary } from '../../model/story';
 import { SearchStoryComponent } from './search-story.component';
+import { deepCopy } from '../../../shared/utils';
 
 const stories = [
-  {
-    _id: '641c1753bdc29e7464b6eacc',
-    storyId: 'logement',
-    botId: 'new_assistant',
-    intent: {
-      name: 'logement'
-    },
-    currentType: 'simple',
-    name: '1% logement',
-    category: 'faq',
-    description: '',
-    lastEdited: '2023-07-11T12:28:31.065Z'
-  } as unknown as StoryDefinitionConfigurationSummary,
-  {
-    _id: '641c1754bdc29e7464b6eae1',
-    storyId: 'mois',
-    botId: 'new_assistant',
-    intent: {
-      name: 'mois'
-    },
-    currentType: 'simple',
-    name: '14,5 mois',
-    category: 'faq',
-    description: '',
-    lastEdited: '2023-07-11T12:28:31.426Z'
-  } as unknown as StoryDefinitionConfigurationSummary,
-  {
-    _id: '641c174fbdc29e7464b6ea2a',
-    storyId: 'annuaire',
-    botId: 'new_assistant',
-    intent: {
-      name: 'annuaire'
-    },
-    currentType: 'simple',
-    name: 'Annuaire',
-    category: 'faq',
-    description: '',
-    lastEdited: '2023-07-11T12:28:28.106Z'
-  } as unknown as StoryDefinitionConfigurationSummary
+  new StoryDefinitionConfigurationSummary(
+    'teststorytwo',
+    'new_assistant',
+    { name: 'logement' } as IntentName,
+    AnswerConfigurationType.simple,
+    'faq',
+    'Test story two',
+    '987654321',
+    '',
+    new Date('2023-07-11T12:28:31.065Z'),
+    undefined
+  ),
+  new StoryDefinitionConfigurationSummary(
+    'teststoryone',
+    'new_assistant',
+    { name: 'logement' } as IntentName,
+    AnswerConfigurationType.simple,
+    'faq',
+    'Test story one',
+    '123456789',
+    '',
+    new Date('2023-07-12T10:00:00.065Z'),
+    undefined
+  )
 ];
 
-fdescribe('SearchStoryComponent', () => {
+describe('SearchStoryComponent', () => {
   let component: SearchStoryComponent;
   let fixture: ComponentFixture<SearchStoryComponent>;
 
@@ -141,94 +127,14 @@ fdescribe('SearchStoryComponent', () => {
     const storyCategories = [
       {
         category: 'faq',
-        stories: [
-          {
-            _id: '641c1753bdc29e7464b6eacc',
-            storyId: 'logement',
-            botId: 'new_assistant',
-            intent: {
-              name: 'logement'
-            },
-            currentType: 'simple',
-            name: '1% logement',
-            category: 'faq',
-            description: '',
-            lastEdited: '2023-07-11T12:28:31.065Z'
-          } as unknown as StoryDefinitionConfigurationSummary,
-          {
-            _id: '641c1754bdc29e7464b6eae1',
-            storyId: 'mois',
-            botId: 'new_assistant',
-            intent: {
-              name: 'mois'
-            },
-            currentType: 'simple',
-            name: '14,5 mois',
-            category: 'faq',
-            description: '',
-            lastEdited: '2023-07-11T12:28:31.426Z'
-          } as unknown as StoryDefinitionConfigurationSummary,
-          {
-            _id: '641c174fbdc29e7464b6ea2a',
-            storyId: 'annuaire',
-            botId: 'new_assistant',
-            intent: {
-              name: 'annuaire'
-            },
-            currentType: 'simple',
-            name: 'Annuaire',
-            category: 'faq',
-            description: '',
-            lastEdited: '2023-07-11T12:28:28.106Z'
-          } as unknown as StoryDefinitionConfigurationSummary
-        ]
+        stories: [stories[1], stories[0]]
       }
     ];
+
     expect(component.storyCategories).toEqual(storyCategories);
   });
 
   it('should initialize filtered stories', () => {
-    const filteredStories = [
-      {
-        _id: '641c1753bdc29e7464b6eacc',
-        storyId: 'logement',
-        botId: 'new_assistant',
-        intent: {
-          name: 'logement'
-        },
-        currentType: 'simple',
-        name: '1% logement',
-        category: 'faq',
-        description: '',
-        lastEdited: '2023-07-11T12:28:31.065Z'
-      } as unknown as StoryDefinitionConfigurationSummary,
-      {
-        _id: '641c1754bdc29e7464b6eae1',
-        storyId: 'mois',
-        botId: 'new_assistant',
-        intent: {
-          name: 'mois'
-        },
-        currentType: 'simple',
-        name: '14,5 mois',
-        category: 'faq',
-        description: '',
-        lastEdited: '2023-07-11T12:28:31.426Z'
-      } as unknown as StoryDefinitionConfigurationSummary,
-      {
-        _id: '641c174fbdc29e7464b6ea2a',
-        storyId: 'annuaire',
-        botId: 'new_assistant',
-        intent: {
-          name: 'annuaire'
-        },
-        currentType: 'simple',
-        name: 'Annuaire',
-        category: 'faq',
-        description: '',
-        lastEdited: '2023-07-11T12:28:28.106Z'
-      } as unknown as StoryDefinitionConfigurationSummary
-    ];
-    expect(component.filteredStories).toEqual(filteredStories);
+    expect(component.filteredStories).toEqual([stories[1], stories[0]]);
   });
 });

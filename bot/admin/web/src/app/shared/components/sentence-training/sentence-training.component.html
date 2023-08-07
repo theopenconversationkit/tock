@@ -1,0 +1,63 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<section [class.grid]="dialogDetailsSentence">
+  <div class="main">
+    <tock-sentence-training-filters
+      #sentenceTrainingFilter
+      [sentenceTrainingMode]="sentenceTrainingMode"
+      (onFilter)="filterSentenceTraining($event)"
+      class="d-block mb-2"
+    ></tock-sentence-training-filters>
+
+    <div
+      class="loading"
+      [nbSpinner]="loading"
+      infinite-scroll
+      [infiniteScrollDistance]="1"
+      (scrolled)="onScroll()"
+    >
+      <tock-no-data-found
+        *ngIf="!loading && !sentences?.length"
+        title="No sentences found"
+      ></tock-no-data-found>
+
+      <tock-sentence-training-list
+        #sentenceTrainingList
+        *ngIf="sentences?.length"
+        [isFilteredUnknown]="isFilteredUnknown"
+        [sentences]="sentences"
+        [selection]="selection"
+        [sentenceTrainingMode]="sentenceTrainingMode"
+        (onDetails)="showDetails($event)"
+        (onAction)="handleAction($event)"
+        (onBatchAction)="handleBatchAction($event)"
+        (onSort)="sortSentenceTraining($event)"
+        [pagination]="pagination"
+        (onPaginationChange)="paginationChange($event)"
+      ></tock-sentence-training-list>
+    </div>
+  </div>
+
+  <tock-sentence-training-dialog
+    #sentenceTrainingDialog
+    *ngIf="dialogDetailsSentence"
+    class="aside"
+    [sentence]="dialogDetailsSentence"
+    (onClose)="closeDetails()"
+    (onSearchSentence)="retrieveSentence($event)"
+  ></tock-sentence-training-dialog>
+</section>

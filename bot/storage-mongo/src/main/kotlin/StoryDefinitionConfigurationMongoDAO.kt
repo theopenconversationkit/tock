@@ -49,6 +49,8 @@ import ai.tock.shared.trace
 import ai.tock.shared.warn
 import ai.tock.shared.watch
 import com.mongodb.client.model.Collation
+import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.exists
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
@@ -79,8 +81,6 @@ import org.litote.kmongo.save
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 import java.time.ZonedDateTime
-import com.mongodb.client.model.Filters.and
-import com.mongodb.client.model.Filters.exists
 
 
 /**

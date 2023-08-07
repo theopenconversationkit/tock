@@ -50,10 +50,6 @@ export class BotService {
     );
   }
 
-  prepareStoryDumpUploader(uploader: FileUploader, applicationName: string, locale: string) {
-    this.rest.setFileUploaderOptions(uploader, `/bot/story/${applicationName}/${locale}/import`);
-  }
-
   saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
     return this.rest.post('/bot/story', story.prepareBeforeSend(), StoryDefinitionConfiguration.fromJSON);
   }
@@ -62,12 +58,8 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON);
   }
 
-
   findStoryDefinitionsByNamespaceAndBotIdWithFileAttached(botId: string): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.get(
-      `/bot/story/${botId}/with_document`,
-      StoryDefinitionConfiguration.fromJSONArray
-    );
+    return this.rest.get(`/bot/story/${botId}/with_document`, StoryDefinitionConfiguration.fromJSONArray);
   }
   findRuntimeStorySettings(botId: string): Observable<StoryDefinitionConfiguration[]> {
     return this.rest.get(`/bot/story/${botId}/settings`, StoryDefinitionConfiguration.fromJSONArray);
