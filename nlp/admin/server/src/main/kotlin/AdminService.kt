@@ -33,6 +33,7 @@ import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.admin.model.TranslateSentencesQuery
 import ai.tock.nlp.admin.model.UpdateSentencesQuery
 import ai.tock.nlp.admin.model.UpdateSentencesReport
+import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT_NAME
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
@@ -64,9 +65,13 @@ object AdminService {
 
     fun parseSentence(query: ParseQuery): SentenceReport {
         val result = front.parse(query.toQuery())
+        val intentWithNamespace = result.intent.withNamespace(result.intentNamespace)
         val intentId =
-            if (result.intent.withNamespace(result.intentNamespace) == UNKNOWN_INTENT_NAME) UNKNOWN_INTENT_NAME.toId()
-            else front.getIntentIdByQualifiedName(result.intent.withNamespace(result.intentNamespace))!!
+            when (intentWithNamespace) {
+                UNKNOWN_INTENT_NAME -> UNKNOWN_INTENT_NAME.toId()
+                RAG_EXCLUDED_INTENT_NAME ->  RAG_EXCLUDED_INTENT_NAME.toId()
+                else -> front.getIntentIdByQualifiedName(intentWithNamespace)!!
+            }
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
         return SentenceReport(result, query.currentLanguage, application._id, intentId)
     }
@@ -85,7 +90,7 @@ object AdminService {
             front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
         }
         return if (query.newIntentId != null &&
-            (query.unknownNewIntent || application.intents.contains(query.newIntentId))
+            (query.unknownNewIntent || query.ragExcludedNewIntent || application.intents.contains(query.newIntentId))
         ) {
             val nbUpdates = front.switchSentencesIntent(sentences, application, query.newIntentId)
             UpdateSentencesReport(nbUpdates)

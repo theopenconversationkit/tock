@@ -44,6 +44,7 @@
     "ngx-echarts": "^14.0.0",
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-moment": "^6.0.2",
+    "papaparse": "^5.4.1",
     "normalize.css": "6.0.0",
     "papaparse": "^5.4.1",
     "rxjs": "^7.4.0",

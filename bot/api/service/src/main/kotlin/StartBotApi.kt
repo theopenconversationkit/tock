@@ -18,6 +18,7 @@ package ai.tock.bot.api.service
 
 import ai.tock.bot.BotIoc
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -30,17 +31,22 @@ fun main() {
     Translator.enabled = true
     BotIoc.setup()
     val dao: BotApplicationConfigurationDAO = injector.provide()
+    val daoRag: BotRAGConfigurationDAO = injector.provide()
     dao.getBotConfigurations().forEach {
         logger.info("register configuration ${it.name}")
-        BotRepository.registerBotProvider(BotApiDefinitionProvider(it))
+        BotRepository.registerBotProvider(BotApiDefinitionProvider(it, daoRag.findByNamespaceAndBotId(it.namespace, it.botId)))
     }
     BotRepository.installBots(emptyList())
-    dao.listenBotChanges {
+
+    val updateChanges = {
         logger.info("reload bot configurations")
         dao.getBotConfigurations().forEach {
-            val provider = BotApiDefinitionProvider(it)
+            val provider = BotApiDefinitionProvider(it, daoRag.findByNamespaceAndBotId(it.namespace, it.botId))
             BotRepository.registerBotProvider(provider)
         }
         BotRepository.checkBotConfigurations()
     }
+
+    dao.listenBotChanges { updateChanges() }
+    daoRag.listenChanges { updateChanges() }
 }
