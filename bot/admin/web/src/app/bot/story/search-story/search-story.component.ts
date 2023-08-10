@@ -45,7 +45,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
 
   stories: StoryDefinitionConfigurationSummary[];
 
-  storiesFilters: StoriesFilters;
+  storiesFilters: StoriesFilters = { configuredStoriesOnly: true };
   filteredStories: StoryDefinitionConfigurationSummary[];
 
   displayStoriesByCategory: boolean = true;
@@ -106,7 +106,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     this.storiesFilters = filters;
     this.filterStories();
 
-    if (this.storiesFilters.search?.length || this.storiesFilters.categories.length) {
+    if (this.storiesFilters.search?.length || this.storiesFilters.categories?.length) {
       this.displayStoriesByCategory = false;
     } else {
       this.computeStoriesCategories();
@@ -131,7 +131,7 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (this.storiesFilters?.categories.length) {
+      if (this.storiesFilters?.categories?.length) {
         if (!this.storiesFilters.categories.includes(story.category)) {
           return false;
         }

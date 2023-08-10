@@ -10,10 +10,10 @@ interface StoriesFiltersForm {
 }
 
 export interface StoriesFilters {
-  search: string;
-  categories: string[];
-  configuredStoriesOnly: boolean;
-  sortStoriesByModificationDate: boolean;
+  search?: string;
+  categories?: string[];
+  configuredStoriesOnly?: boolean;
+  sortStoriesByModificationDate?: boolean;
 }
 
 @Component({
@@ -32,7 +32,7 @@ export class StoriesFilterComponent implements OnInit {
   form = new FormGroup<StoriesFiltersForm>({
     search: new FormControl(),
     categories: new FormControl([]),
-    configuredStoriesOnly: new FormControl(false),
+    configuredStoriesOnly: new FormControl(true),
     sortStoriesByModificationDate: new FormControl(false)
   });
 
