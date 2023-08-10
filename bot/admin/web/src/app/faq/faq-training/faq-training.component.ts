@@ -254,6 +254,11 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
         sentence.classification.entities = [];
         sentence.status = SentenceStatus.validated;
         break;
+      case Action.RAGEXCLUDED:
+        sentence.classification.intentId = Intent.ragExcluded;
+        sentence.classification.entities = [];
+        sentence.status = SentenceStatus.validated;
+        break;
       case Action.VALIDATE:
         const intentId = sentence.classification.intentId;
 
@@ -276,6 +281,8 @@ export class FaqTrainingComponent implements OnInit, OnDestroy {
         return 'Delete';
       case Action.UNKNOWN:
         return 'Unknown';
+      case Action.RAGEXCLUDED:
+        return 'Rag excluded';
       case Action.VALIDATE:
         return 'Validate';
     }

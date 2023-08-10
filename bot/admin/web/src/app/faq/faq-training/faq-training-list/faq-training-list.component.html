@@ -35,6 +35,18 @@
         <nb-icon icon="close-circle-outline"></nb-icon>
       </button>
       <button
+        *ngIf="!isFilteredUnknown"
+        nbButton
+        nbTooltip="Set all selected sentences as ragexcluded"
+        class="text-danger"
+        ghost
+        shape="round"
+        (click)="handleBatchAction(Action.RAGEXCLUDED)"
+        data-testid="batch-action-ragexcluded"
+      >
+        <nb-icon icon="alert-triangle-outline"></nb-icon>
+      </button>
+      <button
         nbButton
         nbTooltip="Delete all selected sentences"
         ghost
@@ -158,7 +170,7 @@
       <button
         *ngIf="!isFilteredUnknown"
         nbButton
-        nbTooltip="Unknown"
+        nbTooltip="Set as unknown"
         class="text-danger"
         ghost
         shape="round"
@@ -166,6 +178,19 @@
         data-testid="unknown"
       >
         <nb-icon icon="close-circle-outline"></nb-icon>
+      </button>
+
+      <button
+        *ngIf="!isFilteredUnknown"
+        nbButton
+        nbTooltip="Exclude from Rag handling"
+        class="text-danger"
+        ghost
+        shape="round"
+        (click)="handleAction(Action.RAGEXCLUDED, sentence)"
+        data-testid="ragexcluded"
+      >
+        <nb-icon icon="alert-triangle-outline"></nb-icon>
       </button>
 
       <button

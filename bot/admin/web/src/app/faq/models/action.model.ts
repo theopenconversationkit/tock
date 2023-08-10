@@ -1,5 +1,6 @@
 export enum Action {
   DELETE = 'DELETE',
   VALIDATE = 'VALIDATE',
-  UNKNOWN = 'UNKNOWN'
+  UNKNOWN = 'UNKNOWN',
+  RAGEXCLUDED = 'RAGEXCLUDED'
 }
