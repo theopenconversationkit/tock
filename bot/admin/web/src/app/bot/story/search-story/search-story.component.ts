@@ -88,7 +88,10 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
           this.state.currentApplication.name,
           this.state.currentLocale,
           0,
-          10000
+          10000,
+          '',
+          '',
+          false
         )
       )
       .subscribe((stories) => {
