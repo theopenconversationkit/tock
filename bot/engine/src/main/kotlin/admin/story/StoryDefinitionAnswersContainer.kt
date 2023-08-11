@@ -56,6 +56,9 @@ internal interface StoryDefinitionAnswersContainer {
                 ?.findBestVersion(BotVersion.getCurrentBotVersion(botDefinition.botId))
                 ?.storyDefinition
             builtin -> botDefinition.builtInStory(storyDefinitionConfiguration.storyId)
+            // retrieval augmented generation story
+            // just for filtering ?? not really needed otherwise or
+            rag -> botDefinition.builtRagStory(storyDefinitionConfiguration,botDefinition)
             else -> null
         }
 

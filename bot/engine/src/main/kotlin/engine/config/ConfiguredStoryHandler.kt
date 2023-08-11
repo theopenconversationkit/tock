@@ -265,7 +265,21 @@ internal class ConfiguredStoryHandler(
     override fun support(bus: BotBus): Double = 1.0
 
     private fun BotBus.fallbackAnswer() =
-        botDefinition.unknownStory.storyHandler.handle(this)
+        // fallback answer du handler de rag si activé
+        if (botDefinition.ragConfigurationEnabled) {
+            fallbackRagAnswer()
+        } else {
+            botDefinition.unknownStory.storyHandler.handle(this)
+        }
+
+    private fun BotBus.fallbackRagAnswer() {
+        return if (botDefinition.ragConfigurationEnabled) {
+            //rag handle
+        } else {
+            logger.error { "could not retrieve ragUnknownStory, using default fallback answer" }
+            botDefinition.unknownStory.storyHandler.handle(this)
+        }
+    }
 
     private fun BotBus.handleSimpleAnswer(
         container: StoryDefinitionAnswersContainer,

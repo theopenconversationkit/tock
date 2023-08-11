@@ -16,13 +16,30 @@
 
 package ai.tock.bot.admin.answer
 
+import ai.tock.bot.admin.bot.RAGConfiguration
+
 /**
- * The types of [AnswerConfiguration] available.
+ * Configuration for Retrieval Augmented Generation Story
  */
-enum class AnswerConfigurationType {
-    simple,
-    message,
-    script,
-    builtin,
-    rag
+data class RagAnswerConfiguration(
+    val activation: Boolean?,
+    val engine: String,
+    val embeddingEngine: String,
+    val temperature: String,
+    val prompt: String,
+    val params: Map<String, String>,
+    val noAnswerRedirection: String?
+) : AnswerConfiguration(AnswerConfigurationType.rag) {
+
+    fun toRagConfiguration() =
+        RAGConfiguration(
+            activation,
+            engine,
+            embeddingEngine,
+            temperature,
+            prompt,
+            params,
+            noAnswerRedirection
+        )
+
 }

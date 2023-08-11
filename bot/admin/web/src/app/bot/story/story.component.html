@@ -39,6 +39,11 @@
               nbTooltip="Script Story"
               icon="code"
             ></nb-icon>
+            <nb-icon
+              *ngIf="story.isRagAnswer()"
+              nbTooltip="Rag Story"
+              icon="question-mark-circle-outline"
+            ></nb-icon>
             <span
               *ngIf="!storyNode"
               nbTooltip="Story name"

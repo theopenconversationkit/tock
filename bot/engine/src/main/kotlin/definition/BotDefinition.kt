@@ -81,14 +81,17 @@ interface BotDefinition : I18nKeyProvider {
             stories: List<StoryDefinition>,
             intent: String?,
             unknownStory: StoryDefinition,
-            keywordStory: StoryDefinition
+            keywordStory: StoryDefinition,
         ): StoryDefinition {
             return if (intent == null) {
                 unknownStory
             } else {
                 val i = findIntent(stories, intent)
                 stories.find { it.isStarterIntent(i) }
-                    ?: if (intent == keyword.name) keywordStory else unknownStory
+                    ?: when(intent) {
+                        keyword.name -> keywordStory
+                        else -> unknownStory
+                    }
             }
         }
     }
@@ -107,6 +110,11 @@ interface BotDefinition : I18nKeyProvider {
      * The name of the main nlp model.
      */
     val nlpModelName: String
+
+    /**
+     * Is the RAG enabled ?
+     */
+    val ragConfigurationEnabled: Boolean
 
     /**
      * The list of each stories.
