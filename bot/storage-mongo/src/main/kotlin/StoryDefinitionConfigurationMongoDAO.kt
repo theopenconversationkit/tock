@@ -18,6 +18,7 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.answer.AnswerConfigurationType.rag
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationExtendedSummaryRequest
@@ -48,7 +49,10 @@ import ai.tock.shared.safeCollation
 import ai.tock.shared.trace
 import ai.tock.shared.warn
 import ai.tock.shared.watch
+import com.mongodb.MongoException
 import com.mongodb.client.model.Collation
+import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.exists
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
@@ -190,6 +194,45 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         storyId: String
     ): StoryDefinitionConfiguration? {
         return col.findOne(Namespace eq namespace, BotId eq botId, StoryId eq storyId)
+    }
+
+    override fun deleteStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    ) {
+        getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace, botId, storyId)?.let {
+            delete(it)
+        }
+    }
+
+    override fun getRagStoryDefinitionByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ): StoryDefinitionConfiguration? {
+
+        val search =col.find(Namespace eq namespace, BotId eq botId, CurrentType eq rag)
+
+        return  search.filter(
+            CurrentType eq AnswerConfigurationType.rag).toList()
+            .let {
+                val oneRagMessageError = "There should be only one rag story definition"
+                if (it.size > 1) {
+                    logger.error { oneRagMessageError }
+                    throw MongoException(oneRagMessageError)
+                } else {
+                    it.firstOrNull()
+                }
+            }
+    }
+
+    override fun deleteRagStoryDefinitionByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ) {
+        getRagStoryDefinitionByNamespaceAndBotId(namespace, botId)?.let {
+            delete(it)
+        }
     }
 
     override fun getStoryDefinitionsByNamespaceAndBotId(

@@ -58,9 +58,31 @@ interface StoryDefinitionConfigurationDAO {
 
     fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration>
     fun getStoryDefinitionsByNamespaceAndBotIdWithFileAttached(namespace: String, botId: String): List<StoryDefinitionConfiguration>
+
+    fun deleteStoryDefinitionByNamespaceAndBotIdAndStoryId(
+        namespace: String,
+        botId: String,
+        storyId: String
+    )
     fun save(story: StoryDefinitionConfiguration)
 
     fun delete(story: StoryDefinitionConfiguration)
+
+    /**
+     * Since there is only one representation of StoryDefinition from type Rag
+     */
+    fun deleteRagStoryDefinitionByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    )
+
+    /**
+     * Since there is only one representation of StoryDefinition from type Rag
+     */
+    fun getRagStoryDefinitionByNamespaceAndBotId(
+        namespace: String,
+        botId: String,
+    ) : StoryDefinitionConfiguration?
 
     /**
      * Search [StoryDefinitionConfigurationSummaryMinimumMetrics] implementations
