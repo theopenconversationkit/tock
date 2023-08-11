@@ -76,7 +76,7 @@ interface BotDefinition : I18nKeyProvider {
 
         /**
          * Finds a [StoryDefinition] from a list of [StoryDefinition] and an intent name.
-         * Is no valid [StoryDefinition] found, returns the [unknownStory].
+         * Is no valid [StoryDefinition] found, returns the [unknownStory] or [ragUnknownStory] if configured
          */
         internal fun findStoryDefinition(
             stories: List<StoryDefinition>,
@@ -84,16 +84,17 @@ interface BotDefinition : I18nKeyProvider {
             unknownStory: StoryDefinition,
             keywordStory: StoryDefinition,
             ragExcludedStory: StoryDefinition? = null,
+            ragStoryDefinition: StoryDefinition? = null
         ): StoryDefinition {
             return if (intent == null) {
-                unknownStory
+                ragStoryDefinition ?: unknownStory
             } else {
                 val i = findIntent(stories, intent)
                 stories.find { it.isStarterIntent(i) }
                     ?: when(intent) {
                         keyword.name -> keywordStory
                         ragexcluded.intentWithoutNamespace().name -> ragExcludedStory ?: unknownStory
-                        else -> unknownStory
+                        else -> ragStoryDefinition ?: unknownStory
                     }
             }
         }
@@ -160,9 +161,14 @@ interface BotDefinition : I18nKeyProvider {
      * @param applicationId the optional applicationId
      */
     fun findStoryDefinition(intent: String?, applicationId: String): StoryDefinition {
-        return findStoryDefinition(stories, intent, unknownStory, keywordStory,
+        return findStoryDefinition(
+            stories,
+            intent,
+            if(ragUnknownStory != null && ragConfigurationEnabled) ragUnknownStory!! else unknownStory,
+            keywordStory,
             if(ragConfigurationEnabled) ragExcludedStory
-            else null
+            else null,
+            if(ragUnknownStory != null && ragConfigurationEnabled) ragUnknownStory else unknownStory
         )
     }
 
@@ -220,6 +226,11 @@ interface BotDefinition : I18nKeyProvider {
      * The story that handles [ai.tock.bot.engine.action.SendAttachment] action. If it's null, current intent is used.
      */
     val handleAttachmentStory: StoryDefinition?
+
+    /**
+     * The [RagStoryDefinition] that handles unknown action, used when [ragConfigurationEnabled] is true
+     */
+    val ragUnknownStory: StoryDefinition?
 
     /**
      * To handle custom events.

@@ -90,6 +90,10 @@ export abstract class AnswerContainer {
     return this.currentType === AnswerConfigurationType.builtin;
   }
 
+  isRagAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.rag;
+  }
+
   simpleAnswer(): SimpleAnswerConfiguration {
     return this.findAnswer(AnswerConfigurationType.simple) as SimpleAnswerConfiguration;
   }
@@ -278,7 +282,8 @@ export enum AnswerConfigurationType {
   simple,
   message,
   script,
-  builtin
+  builtin,
+  rag
 }
 
 export class MandatoryEntity extends AnswerContainer {
@@ -514,6 +519,8 @@ export abstract class AnswerConfiguration {
         return ScriptAnswerConfiguration.fromJSON(json);
       case AnswerConfigurationType.builtin:
         return BuiltinAnswerConfiguration.fromJSON(json);
+      case AnswerConfigurationType.rag:
+        return RagAnswerConfiguration.fromJSON(json)
       default:
         throw new Error('unknown type : ' + json.answerType);
     }
@@ -972,3 +979,35 @@ export class BotConfiguredSteps {
     });
   }
 }
+
+export class RagAnswerConfiguration extends AnswerConfiguration {
+  constructor() {
+    super(AnswerConfigurationType.rag);
+  }
+
+  isEmpty(): boolean {
+    return false;
+  }
+
+  simpleTextView(_wide: boolean): string {
+    return '[Rag]';
+  }
+
+  clone(): AnswerConfiguration {
+    return new RagAnswerConfiguration();
+  }
+
+  duplicate(_bot: BotService): AnswerConfiguration {
+    return this.clone();
+  }
+
+  static fromJSON(json: any): RagAnswerConfiguration {
+    const value = Object.create(RagAnswerConfiguration.prototype);
+    const result = Object.assign(value, json, {});
+
+    result.answerType = AnswerConfigurationType.rag;
+    return result;
+  }
+}
+
+

@@ -196,6 +196,8 @@ data class StoryDefinitionConfiguration(
             }
         }
 
+    fun isRagAnswerType() = AnswerConfigurationType.rag == currentType
+
     internal fun findEnabledStorySwitchId(applicationId: String?): String? {
         val features = findEnabledFeatures(applicationId)
 

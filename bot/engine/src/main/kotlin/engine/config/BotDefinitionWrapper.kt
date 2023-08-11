@@ -17,6 +17,7 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.definition.BotDefinition
@@ -24,9 +25,13 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
 import ai.tock.bot.definition.Intent.Companion.unknown
 import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.RagStoryDefinition
+import ai.tock.bot.definition.SimpleStoryHandlerBase
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryTag
+import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.UserTimeline
@@ -119,30 +124,96 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     }
 
     private fun findStory(intent: String?, applicationId: String): StoryDefinition =
-            BotDefinition.findStoryDefinition(
-                    stories
-                            .asSequence()
-                            .filter {
-                                when (it) {
-                                    is ConfiguredStoryDefinition -> !it.isDisabled(applicationId)
-                                    else -> true
-                                }
-                            }
-                            .map { it.checkApplicationId(applicationId) }
-                            .toList(),
-                    intent,
-                    unknownStory,
-                    keywordStory,
-                    if(ragConfigurationEnabled) ragExcludedStory else null
-            )
+        BotDefinition.findStoryDefinition(
+            stories
+                .asSequence()
+                .filter {
+                    when (it) {
+                        is ConfiguredStoryDefinition -> !it.isDisabled(applicationId)
+                        else -> true
+                    }
+                }
+                .map { it.checkApplicationId(applicationId) }
+                .toList(),
+            intent,
+            if (ragConfigurationEnabled && ragUnknownStory != null) ragUnknownStory else unknownStory,
+            keywordStory,
+            if (ragConfigurationEnabled) ragExcludedStory else null
+        )
 
     internal fun builtInStory(storyId: String): StoryDefinition =
             builtInStoriesMap[storyId] ?: returnsUnknownStory(storyId)
 
+    /**
+     * Build the rag story with its configuration
+     * @param story
+     * @param botDefinition
+     */
+    internal fun builtRagStory(
+        story: StoryDefinitionConfiguration,
+        botDefinition: BotDefinitionWrapper
+    ): StoryDefinition {
+        // TODO : what todo with configuration here nothing?
+        // rien à faire car la configuration n'est pas ici// au final le handler est géré dans un autre module dédié au LLM
+        logger.info { "builtRagStory enabled ? ${botDefinition.botDefinition.ragConfigurationEnabled}" }
+
+        // à gérer dans la conf RAG en config mongo
+//        listOf(StoryDefinitionConfigurationFeature(
+//            val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
+//        val enabled: Boolean = true,
+//        val switchToStoryId: String?,
+//        val endWithStoryId: String?
+//        )
+//
+//        if(story.features.isEmpty()){
+//            story.configuredAnswers
+//            botDefinition.botDefinition.ragConfigurationEnabled
+//        }
+//        val rag = (story.answers.first() as RagAnswerConfiguration)
+
+        return ragStoryDefinitionHandler(story.answers as RagAnswerConfiguration)
+    }
+
+
+    /**
+     * the RagStoryHandler which could be modified due to parameters
+     * so won't be here
+     * and this is an object right now so not modifiable
+     */
+    private fun ragStoryDefinitionHandler(conf: RagAnswerConfiguration) =
+        RagStoryDefinition(
+            object : SimpleStoryHandlerBase() {
+                override fun action(bus: BotBus) {
+                    bus.markAsUnknown()
+                    //        BotRepository.getConfigurationRag() si besoin
+                    bus.end(
+                        """doing my rag story process here with following data :
+                    - ${
+                            BotRepository.getConfigurationByApplicationId(
+                                BotApplicationConfigurationKey(
+                                    bus.applicationId,
+                                    bus.botDefinition
+                                )
+                            )?.namespace
+                        }
+                    - engine : ${conf.engine}
+                    - is active : ${conf.activation}
+                    - embedding engine : ${conf.embeddingEngine}
+                    """
+                    )
+                }
+            })
+
     private fun returnsUnknownStory(storyId: String): StoryDefinition =
+        if (ragConfigurationEnabled && ragUnknownStory != null) {
+            ragUnknownStory.also {
+                logger.warn { "unknown story: $storyId calling rag story" }
+            }
+        } else {
             unknownStory.also {
                 logger.warn { "unknown story: $storyId" }
             }
+        }
 
     private fun findStoryDefinition(intent: String?, applicationId: String, initialIntent: String?): StoryDefinition {
         val story = findStory(intent, applicationId)

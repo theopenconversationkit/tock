@@ -19,6 +19,7 @@ package ai.tock.bot.admin.model
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
@@ -36,6 +37,7 @@ internal fun List<AnswerConfiguration>.mapAnswers(locale: Locale?, readOnly: Boo
             is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it, locale, readOnly)
             is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
             is BuiltInAnswerConfiguration -> BotBuiltinAnswerConfiguration(it)
+            is RagAnswerConfiguration -> BotRagAnswerConfiguration(it)
             else -> error("unsupported conf $it")
         }
     }

@@ -23,5 +23,5 @@ data class RAGConfiguration(
     val temperature: String,
     val prompt: String,
     val params: Map<String, String>,
-    val noAnswerRedirection: String,
+    val noAnswerRedirection: String?,
 )

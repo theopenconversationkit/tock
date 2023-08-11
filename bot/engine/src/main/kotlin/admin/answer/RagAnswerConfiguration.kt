@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot
+package ai.tock.bot.admin.answer
 
-import org.litote.kmongo.Id
+import ai.tock.bot.admin.bot.RAGConfiguration
 
-data class BotRAGConfiguration(
-    val _id: Id<BotRAGConfiguration>,
-    val namespace: String,
-    val botId: String,
-    val enabled: Boolean?,
+/**
+ * Configuration for Retrieval Augmented Generation Story
+ */
+data class RagAnswerConfiguration(
+    val activation: Boolean?,
     val engine: String,
     val embeddingEngine: String,
     val temperature: String,
     val prompt: String,
     val params: Map<String, String>,
-    val noAnswerRedirection: String? = null,
-) {
-    fun toRAGConfiguration(): RAGConfiguration =
+    val noAnswerRedirection: String?
+) : AnswerConfiguration(AnswerConfigurationType.rag) {
+
+    fun toRagConfiguration() =
         RAGConfiguration(
-            enabled,
+            activation,
             engine,
             embeddingEngine,
             temperature,
@@ -40,4 +41,5 @@ data class BotRAGConfiguration(
             params,
             noAnswerRedirection
         )
+
 }

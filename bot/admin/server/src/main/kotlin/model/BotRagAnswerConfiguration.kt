@@ -16,34 +16,41 @@
 
 package ai.tock.bot.admin.model
 
-import ai.tock.bot.admin.bot.BotRAGConfiguration
-import org.litote.kmongo.Id
-import org.litote.kmongo.newId
+import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.answer.RagAnswerConfiguration
 
-data class BotRAGConfigurationDTO(
-    val _id: Id<BotRAGConfiguration>?,
-    val namespace: String,
-    val botId: String,
-    val enabled: Boolean = false,
+/**
+ * A bot rag answer configuration
+ */
+data class BotRagAnswerConfiguration(
+    val activation: Boolean?,
     val engine: String,
     val embeddingEngine: String,
     val temperature: String,
     val prompt: String,
     val params: Map<String, String>,
-    val noAnswerRedirection: String?,
+    val noAnswerRedirection: String?
+) :
+    BotAnswerConfiguration(AnswerConfigurationType.rag) {
 
-) {
-    fun toBotRAGConfiguration(): BotRAGConfiguration =
-        BotRAGConfiguration(
-            _id ?: newId(),
-            namespace,
-            botId,
-            enabled ?: false,
-            engine,
-            embeddingEngine,
-            temperature,
-            prompt,
-            params,
-            noAnswerRedirection
-        )
+    constructor(conf: RagAnswerConfiguration) : this(
+        conf.activation,
+        conf.engine,
+        conf.embeddingEngine,
+        conf.temperature,
+        conf.prompt,
+        conf.params,
+        conf.noAnswerRedirection,
+    )
+
+
+    fun toRagAnswerConfiguration(): RagAnswerConfiguration = RagAnswerConfiguration(
+        activation,
+        engine,
+        embeddingEngine,
+        temperature,
+        prompt,
+        params,
+        noAnswerRedirection
+    )
 }
