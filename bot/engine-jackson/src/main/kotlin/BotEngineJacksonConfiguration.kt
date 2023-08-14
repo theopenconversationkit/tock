@@ -20,6 +20,7 @@ import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.MessageAnswerConfiguration
+import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
@@ -124,6 +125,7 @@ private object BotEngineJacksonConfiguration {
                         AnswerConfigurationType.builtin.name
                     )
                 )
+                registerSubtypes(NamedType(RagAnswerConfiguration::class.java, AnswerConfigurationType.rag.name))
 
                 setMixInAnnotation(AnswerConfigurationDump::class.java, MixinAnswerConfigurationDump::class.java)
                 registerSubtypes(
@@ -172,9 +174,11 @@ private object BotEngineJacksonConfiguration {
                                 beanProperties.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
                                     .toList()
                             }
+
                             CharSequence::class.java.isAssignableFrom(beanDesc.beanClass) -> {
                                 beanProperties.filter { it.name != "length" && it.name != "empty" }.toList()
                             }
+
                             else -> {
                                 super.changeProperties(config, beanDesc, beanProperties)
                             }
