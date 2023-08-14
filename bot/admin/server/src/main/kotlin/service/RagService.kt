@@ -26,8 +26,8 @@ import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
-import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.definition.RagStoryDefinition
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -43,11 +43,6 @@ import org.litote.kmongo.Id
 object RagService {
 
     private const val RAG = "rag"
-
-    /**
-     * override default [Intent.unknown]
-     */
-    private const val OVERRIDDEN_UNKNOWN_INTENT= "unknown"
 
     private val logger: KLogger = KotlinLogging.logger {}
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
@@ -116,9 +111,9 @@ object RagService {
     private fun saveRagStory(ragConfig: BotRAGConfigurationDTO,botConfId: Id<BotApplicationConfiguration>?) : StoryDefinitionConfiguration {
         return StoryDefinitionConfiguration(
             //story id devrait être généré // update du précédent
-            storyId = "RagStory",
+            storyId = RagStoryDefinition.RAG_STORY_NAME,
             botId = ragConfig.botId,
-            intent = IntentWithoutNamespace(OVERRIDDEN_UNKNOWN_INTENT),
+            intent = IntentWithoutNamespace(RagStoryDefinition.OVERRIDDEN_UNKNOWN_INTENT),
             currentType = AnswerConfigurationType.rag,
             answers = listOf(
                 RagAnswerConfiguration(
@@ -134,7 +129,6 @@ object RagService {
 
             ),
             namespace = ragConfig.namespace,
-            name = ragConfig.namespace,
             //category RAG to be sure to not see it in frontend ?
             category = RAG,
             description = "the retrieval augmented generation story which overrides unknown",

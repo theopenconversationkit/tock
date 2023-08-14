@@ -76,7 +76,7 @@ interface BotDefinition : I18nKeyProvider {
 
         /**
          * Finds a [StoryDefinition] from a list of [StoryDefinition] and an intent name.
-         * Is no valid [StoryDefinition] found, returns the [unknownStory] or [ragUnknownStory] if configured
+         * Is no valid [StoryDefinition] found, returns the [unknownStory]
          */
         internal fun findStoryDefinition(
             stories: List<StoryDefinition>,
@@ -84,17 +84,16 @@ interface BotDefinition : I18nKeyProvider {
             unknownStory: StoryDefinition,
             keywordStory: StoryDefinition,
             ragExcludedStory: StoryDefinition? = null,
-            ragStoryDefinition: StoryDefinition? = null
         ): StoryDefinition {
             return if (intent == null) {
-                ragStoryDefinition ?: unknownStory
+               unknownStory
             } else {
                 val i = findIntent(stories, intent)
                 stories.find { it.isStarterIntent(i) }
                     ?: when(intent) {
                         keyword.name -> keywordStory
                         ragexcluded.intentWithoutNamespace().name -> ragExcludedStory ?: unknownStory
-                        else -> ragStoryDefinition ?: unknownStory
+                        else -> unknownStory
                     }
             }
         }
@@ -164,11 +163,10 @@ interface BotDefinition : I18nKeyProvider {
         return findStoryDefinition(
             stories,
             intent,
-            if(ragUnknownStory != null && ragConfigurationEnabled) ragUnknownStory!! else unknownStory,
+            unknownStory,
             keywordStory,
             if(ragConfigurationEnabled) ragExcludedStory
             else null,
-            if(ragUnknownStory != null && ragConfigurationEnabled) ragUnknownStory else unknownStory
         )
     }
 
@@ -230,7 +228,7 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * The [RagStoryDefinition] that handles unknown action, used when [ragConfigurationEnabled] is true
      */
-    val ragUnknownStory: StoryDefinition?
+    var ragUnknownStory: RagStoryDefinition?
 
     /**
      * To handle custom events.

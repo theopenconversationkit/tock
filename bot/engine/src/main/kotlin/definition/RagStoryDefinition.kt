@@ -22,11 +22,16 @@ package ai.tock.bot.definition
  * @param handler : the configured handler
  *
  */
-private const val OVERRIDDEN_UNKNOWN_INTENT = "unknown"
-private const val RAG_STORY_NAME = "ragStory"
 
 class RagStoryDefinition(handler: StoryHandler) : SimpleStoryDefinition(
     id = RAG_STORY_NAME,
     starterIntents = setOf(Intent(OVERRIDDEN_UNKNOWN_INTENT), Intent.unknown),
     storyHandler = handler,
-)
+) {
+
+    companion object {
+        const val OVERRIDDEN_UNKNOWN_INTENT = "unknown"
+        const val RAG_STORY_NAME = "UnknownRagStory"
+    }
+
+}

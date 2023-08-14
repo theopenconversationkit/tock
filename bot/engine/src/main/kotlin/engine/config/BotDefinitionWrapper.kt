@@ -136,7 +136,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                 .map { it.checkApplicationId(applicationId) }
                 .toList(),
             intent,
-            if (ragConfigurationEnabled && ragUnknownStory != null) ragUnknownStory else unknownStory,
+            unknownStory,
             keywordStory,
             if (ragConfigurationEnabled) ragExcludedStory else null
         )
@@ -150,37 +150,23 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
      * @param botDefinition
      */
     internal fun builtRagStory(
-        story: StoryDefinitionConfiguration,
+        storyConfig: StoryDefinitionConfiguration,
         botDefinition: BotDefinitionWrapper
-    ): StoryDefinition {
+    ): StoryDefinition? {
         // TODO : what todo with configuration here nothing?
         // rien à faire car la configuration n'est pas ici// au final le handler est géré dans un autre module dédié au LLM
-        logger.info { "builtRagStory enabled ? ${botDefinition.botDefinition.ragConfigurationEnabled}" }
+        if(botDefinition.botDefinition.ragConfigurationEnabled) {
+//            logger.info { "builtRagStory enabled ? ${botDefinition.botDefinition.ragConfigurationEnabled}" }
+            val ragStory = ragStoryDefinitionHadler(storyConfig.answers.first() as RagAnswerConfiguration)
+            botDefinition.botDefinition.ragUnknownStory = ragStory
+        } else{
+            botDefinition.botDefinition.ragUnknownStory = null
+        }
 
-        // à gérer dans la conf RAG en config mongo
-//        listOf(StoryDefinitionConfigurationFeature(
-//            val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
-//        val enabled: Boolean = true,
-//        val switchToStoryId: String?,
-//        val endWithStoryId: String?
-//        )
-//
-//        if(story.features.isEmpty()){
-//            story.configuredAnswers
-//            botDefinition.botDefinition.ragConfigurationEnabled
-//        }
-//        val rag = (story.answers.first() as RagAnswerConfiguration)
-
-        return ragStoryDefinitionHandler(story.answers.first() as RagAnswerConfiguration)
+        return botDefinition.botDefinition.ragUnknownStory
     }
 
-
-    /**
-     * the RagStoryHandler which could be modified due to parameters
-     * so won't be here
-     * and this is an object right now so not modifiable
-     */
-    private fun ragStoryDefinitionHandler(conf: RagAnswerConfiguration) =
+    fun ragStoryDefinitionHadler(conf: RagAnswerConfiguration) =
         RagStoryDefinition(
             object : SimpleStoryHandlerBase() {
                 override fun action(bus: BotBus) {

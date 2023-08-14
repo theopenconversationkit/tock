@@ -18,6 +18,7 @@ package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.simple
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.answer.ScriptAnswerConfiguration
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
@@ -32,6 +33,7 @@ import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.RagStoryDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryHandlerBase.Companion.isEndCalled
@@ -257,6 +259,8 @@ internal class ConfiguredStoryHandler(
                 is BuiltInAnswerConfiguration ->
                     (bus.botDefinition as BotDefinitionWrapper).builtInStory(configuration.storyId)
                         .storyHandler.handle(bus)
+
+                is RagAnswerConfiguration -> bus.handleRag(this@send)
                 else -> error("type not supported for now: $this")
             }
         }
@@ -264,20 +268,32 @@ internal class ConfiguredStoryHandler(
 
     override fun support(bus: BotBus): Double = 1.0
 
-    private fun BotBus.fallbackAnswer() =
+    private fun BotBus.fallbackAnswer() {
         // fallback answer du handler de rag si activé
-        if (botDefinition.ragConfigurationEnabled) {
-            fallbackRagAnswer()
+        logger.debug { "passing by fallback answer" }
+        return if (botDefinition.ragConfigurationEnabled) {
+            handleRag(null)
         } else {
             botDefinition.unknownStory.storyHandler.handle(this)
         }
+    }
 
-    private fun BotBus.fallbackRagAnswer() {
-        return if (botDefinition.ragUnknownStory != null) {
-            botDefinition.ragUnknownStory!!.storyHandler.handle(this)
-        } else {
-            logger.error { "could not retrieve ragUnknownStory, using default fallback answer" }
-            botDefinition.unknownStory.storyHandler.handle(this)
+    private fun BotBus.handleRag(container: StoryDefinitionAnswersContainer?) {
+        //handler de conf à appeler ici
+        botDefinition.stories.firstOrNull { def ->
+            (def as ConfiguredStoryDefinition).storyId == RagStoryDefinition.RAG_STORY_NAME
+        }?.let {
+            logger.debug { "using fallback rag handler" }
+            // Switch to the redirect configured story when redirection is required
+//            handleAndSwitchStory(it, it.wrappedIntent())
+//            send()
+            container.let {
+                logger.debug { "answers ${it?.answers}" }
+            }
+            botDefinition.ragUnknownStory?.storyHandler?.handle(this) ?: {
+                logger.error { "could not retrieve ragUnknownStory, using default fallback answer" }
+                botDefinition.unknownStory.storyHandler.handle(this)
+            }
         }
     }
 
