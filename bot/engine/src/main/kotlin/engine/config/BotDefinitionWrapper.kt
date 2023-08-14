@@ -166,7 +166,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
 //        }
 //        val rag = (story.answers.first() as RagAnswerConfiguration)
 
-        return ragStoryDefinitionHandler(story.answers as RagAnswerConfiguration)
+        return ragStoryDefinitionHandler(story.answers.first() as RagAnswerConfiguration)
     }
 
 
