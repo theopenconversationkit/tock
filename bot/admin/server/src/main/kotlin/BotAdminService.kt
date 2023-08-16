@@ -18,7 +18,6 @@ package ai.tock.bot.admin
 
 import ai.tock.bot.admin.FaqAdminService.FAQ_CATEGORY
 import ai.tock.bot.admin.answer.AnswerConfiguration
-import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
@@ -29,6 +28,7 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
