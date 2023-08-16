@@ -17,31 +17,20 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
-import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.unknown
-import ai.tock.bot.engine.BotBus
-import ai.tock.bot.engine.BotRepository
-import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.dialog.Dialog
-import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.bot.definition.IntentAware
 import ai.tock.bot.definition.RagStoryDefinition
-import ai.tock.bot.definition.SimpleStoryHandlerBase
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryTag
-import ai.tock.bot.llm.rag.core.client.RagClient
-import ai.tock.bot.llm.rag.core.client.models.RagQuery
-import ai.tock.shared.exception.rest.RestException
-import ai.tock.shared.injector
-import ai.tock.shared.property
-import ai.tock.shared.provide
+import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.dialog.Dialog
+import ai.tock.bot.engine.user.UserTimeline
 import mu.KotlinLogging
-import java.net.ConnectException
 
 /**
  *
@@ -49,7 +38,6 @@ import java.net.ConnectException
 internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefinition by botDefinition {
 
     private val logger = KotlinLogging.logger {}
-    private val defaultUnknownRagAnswer = property("tock_rag_default_unknown_answer", "Pardon ! je ne sais pas.").replace("\"", "")
 
     // stories with configuration (including built-in)
     @Volatile
@@ -63,16 +51,16 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     private var allStories: List<StoryDefinition> = botDefinition.stories
 
     override fun disableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        super.disableBot(timeline, dialog, action)
+            super.disableBot(timeline, dialog, action)
 
     override fun enableBot(timeline: UserTimeline, dialog: Dialog, action: Action): Boolean =
-        super.enableBot(timeline, dialog, action)
+            super.enableBot(timeline, dialog, action)
 
     override fun hasDisableTagIntent(dialog: Dialog): Boolean =
-        super.hasDisableTagIntent(dialog)
+            super.hasDisableTagIntent(dialog)
 
     private fun findStoryDefinitionByTag(tag: StoryTag): List<StoryDefinition> =
-        stories.filter { it.tags.contains(tag) }
+            stories.filter { it.tags.contains(tag) }
 
     override val botDisabledStories: List<StoryDefinition>
         get() = findStoryDefinitionByTag(StoryTag.DISABLE)
@@ -88,26 +76,26 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         val botStoryHandlers = activatedModules.flatMap { it.storiesById.entries }.associateBy({ it.key }) { it.value }
 
         this.configuredStories =
-            configuredStories
-                .map {
-                    ConfiguredStoryDefinition(
-                        definition = this,
-                        configuration = it,
-                        configurationStoryHandler = botStoryHandlers[it.storyId]
-                    )
-                }
-                .groupBy { it.storyId }
+                configuredStories
+                        .map {
+                            ConfiguredStoryDefinition(
+                                    definition = this,
+                                    configuration = it,
+                                    configurationStoryHandler = botStoryHandlers[it.storyId]
+                            )
+                        }
+                        .groupBy { it.storyId }
 
         allStories = (
                 this.configuredStories +
                         // in order to handle built-in not yet configured...
                         botDefinition
-                            .stories
-                            .asSequence()
-                            .filterNot { this.configuredStories.containsKey(it.id) }
-                            .groupBy { it.id }
+                                .stories
+                                .asSequence()
+                                .filterNot { this.configuredStories.containsKey(it.id) }
+                                .groupBy { it.id }
                 )
-            .values.flatten()
+                .values.flatten()
 
         this.allStoriesById = allStories.associateBy { it.id }
     }
@@ -145,7 +133,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             )
 
     internal fun builtInStory(storyId: String): StoryDefinition =
-        builtInStoriesMap[storyId] ?: returnsUnknownStory(storyId)
+            builtInStoriesMap[storyId] ?: returnsUnknownStory(storyId)
 
     /**
      * Build the rag story with its configuration
@@ -153,53 +141,14 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
      * @param botDefinition
      */
     internal fun builtRagStory(
-        story: StoryDefinitionConfiguration,
-        botDefinition: BotDefinitionWrapper
-    ): StoryDefinition {
-        // TODO : what todo with configuration here nothing?
-        // rien à faire car la configuration n'est pas ici// au final le handler est géré dans un autre module dédié au LLM
-        logger.info { "builtRagStory enabled ? ${botDefinition.botDefinition.ragConfigurationEnabled}" }
-
-        // à gérer dans la conf RAG en config mongo
-//        listOf(StoryDefinitionConfigurationFeature(
-//            val botApplicationConfigurationId: Id<BotApplicationConfiguration>?,
-//        val enabled: Boolean = true,
-//        val switchToStoryId: String?,
-//        val endWithStoryId: String?
-//        )
-//
-//        if(story.features.isEmpty()){
-//            story.configuredAnswers
-//            botDefinition.botDefinition.ragConfigurationEnabled
-//        }
-//        val rag = (story.answers.first() as RagAnswerConfiguration)
-
-        return ragStoryDefinitionHadler(story.answers.first() as RagAnswerConfiguration)
+            story: StoryDefinitionConfiguration,
+            botDefinition: BotDefinitionWrapper
+    ): RagStoryDefinition {
+        return RagStoryDefinition(
+                ConfiguredStoryHandler(botDefinition, story)
+        )
     }
 
-    fun ragStoryDefinitionHadler(conf: RagAnswerConfiguration) =
-        RagStoryDefinition(
-            object : SimpleStoryHandlerBase() {
-                override fun action(bus: BotBus) {
-                    bus.markAsUnknown()
-                    //        BotRepository.getConfigurationRag() si besoin
-                    bus.end(
-                        """doing my rag story process here with following data :
-                    - ${
-                            BotRepository.getConfigurationByApplicationId(
-                                BotApplicationConfigurationKey(
-                                    bus.applicationId,
-                                    bus.botDefinition
-                                )
-                            )?.namespace
-                        }
-                    - engine : ${conf.engine}
-                    - is active : ${conf.activation}
-                    - embedding engine : ${conf.embeddingEngine}
-                    """
-                    )
-                }
-            })
 
     private fun returnsUnknownStory(storyId: String): StoryDefinition =
             unknownStory.also {
@@ -213,27 +162,27 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
             val switchId = it.findEnabledStorySwitchId(applicationId)
             if (switchId != null) {
                 (configuredStories[switchId] ?: listOfNotNull(builtInStoriesMap[switchId]))
-                    .let { stories ->
-                        val targetStory = stories
-                            .asSequence()
-                            .filterIsInstance<ConfiguredStoryDefinition>()
-                            .filterNot { c -> c.isDisabled(applicationId) }
-                            .run {
-                                firstOrNull { c -> c.answerType != builtin } ?: firstOrNull()
-                            }
-                            ?: stories.firstOrNull { c -> c !is ConfiguredStoryDefinition }
+                        .let { stories ->
+                            val targetStory = stories
+                                    .asSequence()
+                                    .filterIsInstance<ConfiguredStoryDefinition>()
+                                    .filterNot { c -> c.isDisabled(applicationId) }
+                                    .run {
+                                        firstOrNull { c -> c.answerType != builtin } ?: firstOrNull()
+                                    }
+                                    ?: stories.firstOrNull { c -> c !is ConfiguredStoryDefinition }
 
-                        targetStory
-                            ?.let { toStory ->
-                                val storyMainIntent = toStory.mainIntent().name
-                                if (storyMainIntent == initialIntent) {
-                                    toStory.checkApplicationId(applicationId)
-                                } else {
-                                    findStoryDefinition(storyMainIntent, applicationId, initialIntent)
-                                }
-                            }
-                    }
-                    ?: story
+                            targetStory
+                                    ?.let { toStory ->
+                                        val storyMainIntent = toStory.mainIntent().name
+                                        if (storyMainIntent == initialIntent) {
+                                            toStory.checkApplicationId(applicationId)
+                                        } else {
+                                            findStoryDefinition(storyMainIntent, applicationId, initialIntent)
+                                        }
+                                    }
+                        }
+                        ?: story
             } else {
                 it
             }
@@ -241,42 +190,42 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     }
 
     override fun findStoryDefinition(intent: String?, applicationId: String): StoryDefinition =
-        findStoryDefinition(intent, applicationId, intent).let {
-            if (it is ConfiguredStoryDefinition && it.answerType == builtin) {
-                builtInStory(it.storyId)
-            } else {
-                it
+            findStoryDefinition(intent, applicationId, intent).let {
+                if (it is ConfiguredStoryDefinition && it.answerType == builtin) {
+                    builtInStory(it.storyId)
+                } else {
+                    it
+                }
             }
-        }
 
     override fun findStoryDefinitionById(storyId: String, applicationId: String): StoryDefinition =
-        // first search into built-in then in configured, fallback to search by intent
-        builtInStoriesMap[storyId] ?: allStoriesById[storyId]?.checkApplicationId(applicationId)
-        ?: findStoryDefinition(
-            storyId,
-            applicationId
-        )
+            // first search into built-in then in configured, fallback to search by intent
+            builtInStoriesMap[storyId] ?: allStoriesById[storyId]?.checkApplicationId(applicationId)
+            ?: findStoryDefinition(
+                    storyId,
+                    applicationId
+            )
 
     override fun findStoryByStoryHandler(storyHandler: StoryHandler, applicationId: String): StoryDefinition? =
-        (
-                botDefinition.stories.find { it.storyHandler == storyHandler }
-                    ?: stories.find { it.storyHandler == storyHandler }
-                )
-            ?.checkApplicationId(applicationId)
+            (
+                    botDefinition.stories.find { it.storyHandler == storyHandler }
+                            ?: stories.find { it.storyHandler == storyHandler }
+                    )
+                    ?.checkApplicationId(applicationId)
 
     private fun StoryDefinition.checkApplicationId(applicationId: String): StoryDefinition =
-        if (this is ConfiguredStoryDefinition &&
-            configuration.configuredSteps.isNotEmpty() &&
-            answerType != builtin
-        ) {
-            ConfiguredStoryDefinition(
-                this@BotDefinitionWrapper,
-                configuration,
-                BotApplicationConfigurationKey(applicationId, this@BotDefinitionWrapper)
-            )
-        } else {
-            this
-        }
+            if (this is ConfiguredStoryDefinition &&
+                    configuration.configuredSteps.isNotEmpty() &&
+                    answerType != builtin
+            ) {
+                ConfiguredStoryDefinition(
+                        this@BotDefinitionWrapper,
+                        configuration,
+                        BotApplicationConfigurationKey(applicationId, this@BotDefinitionWrapper)
+                )
+            } else {
+                this
+            }
 
     override fun toString(): String {
         return "Wrapper($botDefinition)"
