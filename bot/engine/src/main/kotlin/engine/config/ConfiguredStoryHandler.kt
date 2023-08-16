@@ -33,7 +33,6 @@ import ai.tock.bot.connector.ConnectorFeature.CAROUSEL
 import ai.tock.bot.connector.media.MediaCardDescriptor
 import ai.tock.bot.connector.media.MediaCarouselDescriptor
 import ai.tock.bot.definition.Intent
-import ai.tock.bot.definition.RagStoryDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryHandlerBase.Companion.isEndCalled
@@ -41,6 +40,7 @@ import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.config.rag.RagAnswerHandler
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
@@ -279,21 +279,14 @@ internal class ConfiguredStoryHandler(
     }
 
     private fun BotBus.handleRag(container: StoryDefinitionAnswersContainer?) {
-        //handler de conf à appeler ici
-        botDefinition.stories.firstOrNull { def ->
-            (def as ConfiguredStoryDefinition).storyId == RagStoryDefinition.RAG_STORY_NAME
-        }?.let {
-            logger.debug { "using fallback rag handler" }
-            // Switch to the redirect configured story when redirection is required
-//            handleAndSwitchStory(it, it.wrappedIntent())
-//            send()
-            container.let {
-                logger.debug { "answers ${it?.answers}" }
-            }
-            botDefinition.ragUnknownStory?.storyHandler?.handle(this) ?: {
-                logger.error { "could not retrieve ragUnknownStory, using default fallback answer" }
-                botDefinition.unknownStory.storyHandler.handle(this)
-            }
+        logger.debug { "using fallback rag handler" }
+        RagAnswerHandler.handle(this, container, container?.answers?.first() as RagAnswerConfiguration) {
+            botDefinition.stories.firstOrNull { def ->
+                (def as ConfiguredStoryDefinition).storyId == it
+            }?.let {
+                // Switch to the redirect configured story when redirection is required
+                switchConfiguredStory(it, it.mainIntent().name)
+            } ?: fallbackAnswer()
         }
     }
 

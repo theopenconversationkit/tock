@@ -17,25 +17,21 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
-import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.definition.*
+import ai.tock.bot.definition.BotDefinition
+import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
 import ai.tock.bot.definition.Intent.Companion.unknown
-import ai.tock.bot.engine.BotBus
-import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.RagStoryDefinition
+import ai.tock.bot.definition.StoryDefinition
+import ai.tock.bot.definition.StoryHandler
+import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.UserTimeline
-import ai.tock.bot.llm.rag.core.client.RagClient
-import ai.tock.bot.llm.rag.core.client.models.RagQuery
-import ai.tock.shared.exception.rest.RestException
-import ai.tock.shared.injector
-import ai.tock.shared.property
-import ai.tock.shared.provide
 import mu.KotlinLogging
-import java.net.ConnectException
 
 /**
  *
@@ -43,7 +39,6 @@ import java.net.ConnectException
 internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefinition by botDefinition {
 
     private val logger = KotlinLogging.logger {}
-    private val defaultUnknownRagAnswer = property("tock_rag_default_unknown_answer", "Pardon ! je ne sais pas.").replace("\"", "")
 
     // stories with configuration (including built-in)
     @Volatile
@@ -151,62 +146,12 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
      * @param botDefinition
      */
     internal fun builtRagStory(
-            storyConfig: StoryDefinitionConfiguration,
+            story: StoryDefinitionConfiguration,
             botDefinition: BotDefinitionWrapper
-    ): RagStoryDefinition? {
-
-        if (botDefinition.botDefinition.ragConfigurationEnabled) {
-            val ragStory = ragStoryDefinitionHandler(storyConfig.answers.first() as RagAnswerConfiguration)
-            //configuration générale pour prise en compte de la story dans la botdefinition
-            botDefinition.botDefinition.ragUnknownStory = ragStory
-        } else {
-            botDefinition.botDefinition.ragUnknownStory = null
-        }
-
-        return botDefinition.botDefinition.ragUnknownStory
-    }
-
-    /**
-     * Creates the [RagStoryDefinition] with its handler and according to its configuration [RagAnswerConfiguration]
-     */
-    private fun ragStoryDefinitionHandler(conf: RagAnswerConfiguration): RagStoryDefinition {
-        val ragClient: RagClient = injector.provide()
+    ): RagStoryDefinition {
         return RagStoryDefinition(
-                object : SimpleStoryHandlerBase() {
-                    override fun action(bus: BotBus) {
-                        bus.markAsUnknown()
-                        with(bus) {
-                            try {
-                                logger.debug { "Rag config : $conf" }
-                                val response =
-                                        ragClient.ask(RagQuery(userText.toString(), applicationId, userId.id))
-                                //handle rag redirection in case answer is not known
-                                if (response?.answer == defaultUnknownRagAnswer && conf.noAnswerRedirection != null && allStories.firstOrNull { it.id == conf.noAnswerRedirection.toString() } != null) {
-                                    allStories.firstOrNull { it.id == conf.noAnswerRedirection.toString() }!!.storyHandler.handle(this)
-                                } else {
-                                    //handle rag response
-                                    response?.answer?.let {
-//                                        bus.underlyingConnector.notify()
-                                        if (it != defaultUnknownRagAnswer) {
-                                            //TODO to format per connector or other ?
-                                            end("$it " +
-                                                    "${response.sourceDocuments}")
-                                        } else {
-                                            end(it)
-                                        }
-
-                                    } ?: botDefinition.unknownStory.storyHandler.handle(this)
-                                }
-                            } catch (conn: ConnectException) {
-                                logger.error { "failed to connect to ${conn.message}" }
-                                botDefinition.unknownStory.storyHandler.handle(this)
-                            } catch (e: RestException) {
-                                logger.error { "error during rag call ${e.message}" }
-                                botDefinition.unknownStory.storyHandler.handle(this)
-                            }
-                        }
-                    }
-                })
+                ConfiguredStoryHandler(botDefinition, story)
+        )
     }
 
 
