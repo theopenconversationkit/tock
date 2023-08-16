@@ -18,10 +18,16 @@ package ai.tock.bot.llm.rag.core.client
 
 import ai.tock.bot.llm.rag.core.client.models.RagQuery
 import ai.tock.bot.llm.rag.core.client.models.RagResult
+import retrofit2.Call
 
 
 interface RagClient {
 
     fun ask(query: RagQuery): RagResult?
+
+    /**
+     * Check Rag client is up
+     */
+    fun healthcheck() : Call<Void>
 
 }

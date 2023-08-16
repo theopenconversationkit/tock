@@ -32,6 +32,7 @@ import retrofit2.Response
 import ai.tock.bot.llm.rag.core.client.models.RagQuery
 import ai.tock.bot.llm.rag.core.client.models.RagResult
 import com.fasterxml.jackson.databind.ObjectMapper
+import retrofit2.Call
 
 /**
  *  Wraps calls to the Rag (retrieval augmented generation) stack.
@@ -73,6 +74,10 @@ class RagServiceApiClient(baseUrl: String = property("tock_rag_client_service_ur
 
     override fun ask(query: RagQuery): RagResult? {
         return ragService.ask(query).execute().parseAndReturns()
+    }
+
+    override fun healthcheck(): Call<Void> {
+        TODO("Not yet implemented")
     }
 
 }
