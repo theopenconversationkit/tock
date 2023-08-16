@@ -84,18 +84,16 @@ object RagService {
         val newStory = saveRagStory(ragConfig,botConf._id)
 
         try {
-            // Delete the rag story
-            // comment retrouver la derniere rag ?
-           ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId)?.let {previousRagConf ->
+           ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId)?.let { previousRagConf ->
                 storyDefinitionDAO.deleteRagStoryDefinitionByNamespaceAndBotId(
                     ragConfig.namespace,
                     previousRagConf.botId
-                )
-            }
-
+                ).apply {
+                    logger.debug {"Delete and recreate a new rag story <storyId:${newStory.storyId}>"}
+                }
+            } ?: logger.debug { "Creation of a new rag story <storyId:${newStory.storyId}>" }
             //update actual configuration
             storyDefinitionDAO.save(newStory)
-            logger.debug { "Creation of a new rag story <storyId:${newStory.storyId}>" }
             return ragConfigurationDAO.save(ragConfig.toBotRAGConfiguration())
         } catch (e: MongoException) {
             throw BadRequestException(e.message ?: "Rag Story: registration failed ")
