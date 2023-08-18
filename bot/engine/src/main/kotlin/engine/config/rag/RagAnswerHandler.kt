@@ -18,7 +18,6 @@ package ai.tock.bot.engine.config.rag
 
 import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
-import ai.tock.bot.admin.story.StoryDefinitionAnswersContainer
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.llm.rag.core.client.RagClient
@@ -27,8 +26,8 @@ import ai.tock.shared.exception.rest.RestException
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
-import java.net.ConnectException
 import mu.KotlinLogging
+import java.net.ConnectException
 
 /**
  * Handler of a rag story answer
@@ -39,13 +38,12 @@ object RagAnswerHandler {
     private val ragClient: RagClient = injector.provide()
     private val ragConfigurationDAO: BotRAGConfigurationDAO = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = injector.provide()
-    private val defaultUnknownRagAnswer = property("tock_rag_default_unknown_answer", "Pardon ! je ne sais pas.").replace("\"", "")
+    private val defaultUnknownRagAnswer =
+        property("tock_rag_default_unknown_answer", "Pardon ! je ne sais pas.").replace("\"", "")
 
     internal fun handle(
-            botBus: BotBus,
-            container: StoryDefinitionAnswersContainer?,
-            configuration: RagAnswerConfiguration?,
-            redirectFn : (String) -> Unit
+        botBus: BotBus,
+        configuration: RagAnswerConfiguration,
     ) {
         with(botBus) {
             // check api is UP via healthcheck
@@ -53,37 +51,63 @@ object RagAnswerHandler {
             // Appel api ici !
             //TODO
 //            val currentRagConfig = ragConfigurationDAO.findByNamespaceAndBotId(this.botDefinition.namespace, this.botDefinition.botId)
-            val storyConfig = container?.answers?.firstOrNull() as RagAnswerConfiguration?
-            if(storyConfig?.activation == true) {
+            if (configuration.activation == true) {
                 //TODO: careful if connector notify needed
                 markAsUnknown()
                 try {
                     logger.debug { "Rag config : $configuration" }
                     val response =
-                            ragClient.ask(RagQuery(userText.toString(), applicationId, userId.id))
-                    //handle rag redirection in case answer is not known
-//                    if (response?.answer == defaultUnknownRagAnswer && conf.noAnswerRedirection != null && allStories.firstOrNull { it.id == conf.noAnswerRedirection.toString() } != null) {
-//                        allStories.firstOrNull { it.id == conf.noAnswerRedirection.toString() }!!.storyHandler.handle(this)
-//                    } else {
+                        ragClient.ask(RagQuery(userText.toString(), applicationId, userId.id))
+
                     //handle rag response
                     response?.answer?.let {
 //                  bus.underlyingConnector.notify()
                         if (it != defaultUnknownRagAnswer) {
                             //TODO to format per connector or other ?
-                            end("$it " +
-                                    "${response.sourceDocuments}")
+                            end(
+                                "$it " +
+                                        "${response.sourceDocuments}"
+                            )
                         } else {
-                            end(it)
+                            logger.debug { "no answer found in documents" }
+                            if (configuration.noAnswerRedirection != null) {
+                                manageNoAnswerRedirection(botBus, configuration)
+                            } else {
+                                end(it)
+                            }
                         }
-
-                    } ?: botDefinition.unknownStory.storyHandler.handle(this)
+                    } ?: manageNoAnswerRedirection(botBus, configuration)
                 } catch (conn: ConnectException) {
                     logger.error { "failed to connect to ${conn.message}" }
                 } catch (e: RestException) {
                     logger.error { "error during rag call ${e.message}" }
                 } finally {
-                    botDefinition.unknownStory.storyHandler.handle(this)
+                    manageNoAnswerRedirection(botBus, configuration)
                 }
+            } else {
+                manageNoAnswerRedirection(botBus, configuration)
+            }
+        }
+    }
+
+    /**
+     * Manage story redirection when no answer redirection is filled
+     * Use the handler of the configured story otherwise launch default unknown
+     * @param botBus
+     * @param configuration
+     */
+    private fun manageNoAnswerRedirection(botBus: BotBus, configuration: RagAnswerConfiguration) {
+        with(botBus) {
+            //handle rag redirection in case answer is not known
+            val redirectStory = storyDefinitionConfigurationDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                botBus.botDefinition.namespace,
+                botBus.botDefinition.botId,
+                configuration.noAnswerRedirection!!
+            )
+
+            val noAnswerRedirectionStory= botBus.botDefinition.stories.firstOrNull { it.id == redirectStory?._id.toString() }
+            if(noAnswerRedirectionStory != null){
+                noAnswerRedirectionStory.storyHandler.handle(this)
             } else{
                 botDefinition.unknownStory.storyHandler.handle(this)
             }

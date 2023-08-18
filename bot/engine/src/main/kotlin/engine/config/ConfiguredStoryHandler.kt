@@ -280,14 +280,7 @@ internal class ConfiguredStoryHandler(
 
     private fun BotBus.handleRag(container: StoryDefinitionAnswersContainer?) {
         logger.debug { "using fallback rag handler" }
-        RagAnswerHandler.handle(this, container, container?.answers?.first() as RagAnswerConfiguration) {
-            botDefinition.stories.firstOrNull { def ->
-                (def as ConfiguredStoryDefinition).storyId == it
-            }?.let {
-                // Switch to the redirect configured story when redirection is required
-                switchConfiguredStory(it, it.mainIntent().name)
-            } ?: fallbackAnswer()
-        }
+        RagAnswerHandler.handle(this, container?.answers?.first() as RagAnswerConfiguration)
     }
 
     private fun BotBus.handleSimpleAnswer(
