@@ -19,6 +19,7 @@ package ai.tock.bot.admin
 import ai.tock.bot.admin.FaqAdminService.FAQ_CATEGORY
 import ai.tock.bot.admin.answer.AnswerConfiguration
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
+import ai.tock.bot.admin.answer.AnswerConfigurationType.rag
 import ai.tock.bot.admin.answer.AnswerConfigurationType.script
 import ai.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import ai.tock.bot.admin.answer.DedicatedAnswerConfiguration
@@ -756,7 +757,13 @@ object BotAdminService {
                 )?.also { logger.debug { "Found story with same namespace, type and intent: $it" } }
 
             storyWithSameNsBotAndIntent.let {
-                if (it == null || it.currentType == builtin) {
+                if (it == null || it.currentType == builtin || it.currentType == rag) {
+                    //could be done more properly
+                    if(it?.isRagAnswerType() == true){
+                        ragConfigurationDAO.findByNamespaceAndBotId(namespace,botConf.botId)?.let { currentRagConfig ->
+                            ragConfigurationDAO.save(currentRagConfig.copy(enabled = false))
+                        }
+                    }
                     // intent change
                     if (storyWithSameId?._id != null && createdIntent == null) {
                         createOrGetIntent(

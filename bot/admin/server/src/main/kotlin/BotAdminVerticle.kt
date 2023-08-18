@@ -23,7 +23,6 @@ import ai.tock.bot.admin.BotAdminService.getBotConfigurationsByNamespaceAndBotId
 import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
-import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.dialog.DialogReportQuery
 import ai.tock.bot.admin.model.BotAdminConfiguration
@@ -40,8 +39,8 @@ import ai.tock.bot.admin.model.FaqDefinitionRequest
 import ai.tock.bot.admin.model.FaqSearchRequest
 import ai.tock.bot.admin.model.Feature
 import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.StorySearchRequest
+import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.module.satisfactionContentModule
 import ai.tock.bot.admin.service.RagService
@@ -386,7 +385,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/configuration/bots/:botId/rag", setOf(botUser, faqBotUser)) { context, configuration: BotRAGConfigurationDTO  ->
             if (context.organization == configuration.namespace) {
-                RagService.saveRag(configuration)
+                RagService.saveRag(configuration,context.userLogin)
             } else {
                 unauthorized()
             }

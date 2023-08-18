@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.bot.BotRAGConfiguration
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
@@ -31,19 +32,23 @@ data class BotRAGConfigurationDTO(
     val prompt: String,
     val params: Map<String, String>,
     val noAnswerRedirection: String?,
-
+    /**
+     * if it exists, keep the old unknown Story because it is replaced by the ragStory
+     */
+    val backupUnknownStory: StoryDefinitionConfiguration?
 ) {
     fun toBotRAGConfiguration(): BotRAGConfiguration =
         BotRAGConfiguration(
             _id ?: newId(),
             namespace,
             botId,
-            enabled ?: false,
+            enabled,
             engine,
             embeddingEngine,
             temperature,
             prompt,
             params,
-            noAnswerRedirection
+            noAnswerRedirection,
+            backupUnknownStory
         )
 }

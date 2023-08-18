@@ -29,10 +29,11 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.RagStoryDefinition
 import ai.tock.shared.exception.rest.BadRequestException
+import ai.tock.shared.exception.rest.RestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle
-import com.mongodb.MongoException
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -55,12 +56,12 @@ object RagService {
      * @return [BotRAGConfiguration]
      */
     fun saveRag(
-        ragConfig: BotRAGConfigurationDTO
+        ragConfig: BotRAGConfigurationDTO, userLogin: UserLogin
     ): BotRAGConfiguration {
         try {
-            return saveRagConfigurationStory(ragConfig)
-        } catch (e: MongoException) {
-            throw BadRequestException(e.message ?: "an error occurred when saving Rag")
+            return saveRagConfigurationStory(ragConfig, userLogin)
+        } catch (e: BadRequestException) {
+            throw RestException(e.httpResponseBody, e.httpResponseStatus)
         }
     }
 
@@ -73,7 +74,8 @@ object RagService {
      * @param ragConfig [BotRAGConfigurationDTO]
      */
     private fun saveRagConfigurationStory(
-        ragConfig: BotRAGConfigurationDTO
+        ragConfig: BotRAGConfigurationDTO,
+        userLogin: UserLogin
     ): BotRAGConfiguration {
         val botConf =
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId)
@@ -81,23 +83,66 @@ object RagService {
         botConf
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${ragConfig.namespace}, botId = ${ragConfig.botId}]")
 
-        val newStory = saveRagStory(ragConfig,botConf._id)
-
+        var savedRagConfig: BotRAGConfiguration?
         try {
-           ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId)?.let { previousRagConf ->
-                storyDefinitionDAO.deleteRagStoryDefinitionByNamespaceAndBotId(
-                    ragConfig.namespace,
-                    previousRagConf.botId
-                ).apply {
-                    logger.debug {"Delete and recreate a new rag story <storyId:${newStory.storyId}>"}
+                //save rag new Story
+                savedRagConfig = manageUnknownIntents(ragConfig) ?: ragConfig.toBotRAGConfiguration()
+                if(ragConfig.enabled) {
+                    //remove rag story if it exists
+                    storyDefinitionDAO.getAndDeleteRagStoryDefinitionByNamespaceAndBotId(
+                        ragConfig.namespace,
+                        ragConfig.botId,
+                    )
+                    val newRagStory = prepareRagStory(ragConfig, botConf._id)
+                    logger.info { "Saving ${newRagStory.storyId}" }
+                    storyDefinitionDAO.save(newRagStory)
                 }
-            } ?: logger.debug { "Creation of a new rag story <storyId:${newStory.storyId}>" }
-            //update actual configuration
-            storyDefinitionDAO.save(newStory)
-            return ragConfigurationDAO.save(ragConfig.toBotRAGConfiguration())
-        } catch (e: MongoException) {
+            return savedRagConfig
+        } catch (e: Exception) {
             throw BadRequestException(e.message ?: "Rag Story: registration failed ")
         }
+    }
+
+    /**
+     * Manage unknown Stories associated with unknown intents
+     * @param ragConfig [BotRAGConfiguration]
+     * @return null or [BotRAGConfiguration]
+     */
+    private fun manageUnknownIntents(ragConfig: BotRAGConfigurationDTO): BotRAGConfiguration? {
+        var savedRagConfig: BotRAGConfiguration? = null
+        storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+            ragConfig.namespace,
+            ragConfig.botId,
+            RagStoryDefinition.OVERRIDDEN_UNKNOWN_INTENT
+            //manage existing unknownStory
+        )?.let {
+            val currentRagConfig =
+                ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId)
+
+            //TODO : what is happening with other type than simple ?
+            if (!it.isRagAnswerType() && ragConfig.enabled) {
+                logger.debug { "Found other type ${it.currentType} story with same namespace ${it.namespace}, and intent: ${it.intent}" }
+                val ragWithUnknown = ragConfig.copy(backupUnknownStory = it)
+                    .apply { logger.info { "\"${it.name}\" was saved in the ragConfiguration in case of disabling" } }
+                storyDefinitionDAO.delete(it)
+                    .apply { logger.info { "\"${it.name}\" was deleted to create the ragStory" } }
+                savedRagConfig = ragWithUnknown.toBotRAGConfiguration()
+                ragConfigurationDAO.save(savedRagConfig as BotRAGConfiguration)
+            } else if (currentRagConfig?.backupUnknownStory != null && it.isRagAnswerType()) {
+                logger.debug { "Deletion of previous ${it.storyId}" }
+                //remove rag story if it exists
+                storyDefinitionDAO.getAndDeleteRagStoryDefinitionByNamespaceAndBotId(
+                    ragConfig.namespace,
+                    ragConfig.botId,
+                )
+                logger.debug { "put back old replaced unknown story \"${ragConfig.backupUnknownStory!!.storyId}\"" }
+                storyDefinitionDAO.save(currentRagConfig.backupUnknownStory!!)
+                savedRagConfig = ragConfig.copy(backupUnknownStory = null).toBotRAGConfiguration()
+            } else {
+                savedRagConfig = null
+            }
+        }
+        return savedRagConfig
     }
 
     /**
@@ -106,7 +151,10 @@ object RagService {
      * @param botConfId
      * @return [StoryDefinitionConfiguration]
      */
-    private fun saveRagStory(ragConfig: BotRAGConfigurationDTO,botConfId: Id<BotApplicationConfiguration>?) : StoryDefinitionConfiguration {
+    private fun prepareRagStory(
+        ragConfig: BotRAGConfigurationDTO,
+        botConfId: Id<BotApplicationConfiguration>?
+    ): StoryDefinitionConfiguration {
         return StoryDefinitionConfiguration(
             //story id devrait être généré // update du précédent
             storyId = RagStoryDefinition.RAG_STORY_NAME,

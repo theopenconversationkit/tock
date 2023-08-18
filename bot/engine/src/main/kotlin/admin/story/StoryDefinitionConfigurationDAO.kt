@@ -71,7 +71,7 @@ interface StoryDefinitionConfigurationDAO {
     /**
      * Since there is only one representation of StoryDefinition from type Rag
      */
-    fun deleteRagStoryDefinitionByNamespaceAndBotId(
+    fun getAndDeleteRagStoryDefinitionByNamespaceAndBotId(
         namespace: String,
         botId: String,
     )

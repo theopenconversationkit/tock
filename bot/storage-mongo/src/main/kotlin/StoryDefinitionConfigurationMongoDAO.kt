@@ -83,8 +83,6 @@ import org.litote.kmongo.save
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 import java.time.ZonedDateTime
-import com.mongodb.client.model.Filters.and
-import com.mongodb.client.model.Filters.exists
 
 
 /**
@@ -226,7 +224,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             }
     }
 
-    override fun deleteRagStoryDefinitionByNamespaceAndBotId(
+    override fun getAndDeleteRagStoryDefinitionByNamespaceAndBotId(
         namespace: String,
         botId: String,
     ) {

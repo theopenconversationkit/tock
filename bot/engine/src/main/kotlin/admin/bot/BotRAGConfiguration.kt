@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.bot
 
+import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import org.litote.kmongo.Id
 
 data class BotRAGConfiguration(
@@ -29,6 +30,7 @@ data class BotRAGConfiguration(
     val prompt: String,
     val params: Map<String, String>,
     val noAnswerRedirection: String? = null,
+    val backupUnknownStory: StoryDefinitionConfiguration?= null
 ) {
     fun toRAGConfiguration(): RAGConfiguration =
         RAGConfiguration(
