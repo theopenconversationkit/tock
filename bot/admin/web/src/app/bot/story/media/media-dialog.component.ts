@@ -43,7 +43,7 @@ export class MediaDialogComponent implements OnInit {
 
   private loadingSubtitle: boolean;
 
-  private loadingDescription : boolean;
+  private loadingDescription: boolean;
 
   constructor(
     public dialogRef: NbDialogRef<MediaDialogComponent>,
@@ -122,11 +122,18 @@ export class MediaDialogComponent implements OnInit {
         if (this.media.title) {
           this.botService
             .saveI18nLabel(this.media.title.changeDefaultLabelForLocale(this.stateService.currentLocale, this.media.titleLabel.trim()))
-            .subscribe((_) => {});
+            .subscribe((_) => {
+              this.loading = false;
+              this.closeModal();
+            });
         } else {
           this.botService
             .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.titleLabel.trim(), this.stateService.currentLocale))
-            .subscribe((i18n) => (this.media.title = i18n));
+            .subscribe((i18n) => {
+              this.media.title = i18n;
+              this.loading = false;
+              this.closeModal();
+            });
         }
       } else {
         this.media.title = null;
@@ -139,7 +146,10 @@ export class MediaDialogComponent implements OnInit {
             .saveI18nLabel(
               this.media.subTitle.changeDefaultLabelForLocale(this.stateService.currentLocale, this.media.subTitleLabel.trim())
             )
-            .subscribe((_) => {});
+            .subscribe((_) => {
+              this.loadingSubtitle = false;
+              this.closeModal();
+            });
         } else {
           this.botService
             .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.subTitleLabel.trim(), this.stateService.currentLocale))
@@ -158,7 +168,10 @@ export class MediaDialogComponent implements OnInit {
         if (this.media.file && this.media.file.description) {
           this.botService
             .saveI18nLabel(
-              this.media.file.description.changeDefaultLabelForLocale(this.stateService.currentLocale, this.media.file.descriptionLabel.trim())
+              this.media.file.description.changeDefaultLabelForLocale(
+                this.stateService.currentLocale,
+                this.media.file.descriptionLabel.trim()
+              )
             )
             .subscribe((_) => {
               this.loadingDescription = false;
