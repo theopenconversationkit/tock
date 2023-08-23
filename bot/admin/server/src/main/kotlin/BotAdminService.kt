@@ -758,7 +758,7 @@ object BotAdminService {
 
             storyWithSameNsBotAndIntent.let {
                 if (it == null || it.currentType == builtin || it.currentType == rag) {
-                    //could be done more properly
+                    //deactivate RAG config if a new story is created with unknown intent
                     if(it?.isRagAnswerType() == true){
                         ragConfigurationDAO.findByNamespaceAndBotId(namespace,botConf.botId)?.let { currentRagConfig ->
                             ragConfigurationDAO.save(currentRagConfig.copy(enabled = false))
