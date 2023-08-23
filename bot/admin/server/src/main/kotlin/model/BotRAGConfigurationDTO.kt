@@ -32,10 +32,7 @@ data class BotRAGConfigurationDTO(
     val prompt: String,
     val params: Map<String, String>,
     val noAnswerRedirection: String?,
-    /**
-     * if it exists, keep the old unknown Story because it is replaced by the ragStory
-     */
-    val backupUnknownStory: StoryDefinitionConfiguration?
+    val unknownStoryBackupId: Id<StoryDefinitionConfiguration>? = null
 ) {
     fun toBotRAGConfiguration(): BotRAGConfiguration =
         BotRAGConfiguration(
@@ -49,6 +46,6 @@ data class BotRAGConfigurationDTO(
             prompt,
             params,
             noAnswerRedirection,
-            backupUnknownStory
+            unknownStoryBackupId
         )
 }

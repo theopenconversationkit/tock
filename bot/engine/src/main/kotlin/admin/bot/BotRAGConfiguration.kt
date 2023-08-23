@@ -30,7 +30,7 @@ data class BotRAGConfiguration(
     val prompt: String,
     val params: Map<String, String>,
     val noAnswerRedirection: String? = null,
-    val backupUnknownStory: StoryDefinitionConfiguration?= null
+    val unknownStoryBackupId: Id<StoryDefinitionConfiguration>? = null
 ) {
     fun toRAGConfiguration(): RAGConfiguration =
         RAGConfiguration(
