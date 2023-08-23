@@ -36,37 +36,29 @@ object RagAnswerHandler {
 
     private val logger = KotlinLogging.logger {}
     private val ragClient: RagClient = injector.provide()
-    private val ragConfigurationDAO: BotRAGConfigurationDAO = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = injector.provide()
     private val defaultUnknownRagAnswer =
-        property("tock_rag_default_unknown_answer", "Pardon ! je ne sais pas.").replace("\"", "")
+            property("tock_rag_default_unknown_answer", "Pardon ! je ne sais pas.")
 
     internal fun handle(
-        botBus: BotBus,
-        configuration: RagAnswerConfiguration,
+            botBus: BotBus,
+            configuration: RagAnswerConfiguration,
     ) {
         with(botBus) {
-            // check api is UP via healthcheck
-            // check qu'il est up sinon unknown
-            // Appel api ici !
-            //TODO
-//            val currentRagConfig = ragConfigurationDAO.findByNamespaceAndBotId(this.botDefinition.namespace, this.botDefinition.botId)
             if (configuration.activation == true) {
-                //TODO: careful if connector notify needed
                 markAsUnknown()
                 try {
                     logger.debug { "Rag config : $configuration" }
                     val response =
-                        ragClient.ask(RagQuery(userText.toString(), applicationId, userId.id))
+                            ragClient.ask(RagQuery(userText.toString(), applicationId, userId.id))
 
                     //handle rag response
                     response?.answer?.let {
-//                  bus.underlyingConnector.notify()
                         if (it != defaultUnknownRagAnswer) {
                             //TODO to format per connector or other ?
                             end(
-                                "$it " +
-                                        "${response.sourceDocuments}"
+                                    "$it " +
+                                            "${response.sourceDocuments}"
                             )
                         } else {
                             logger.debug { "no answer found in documents" }
