@@ -99,16 +99,17 @@ object RagAnswerHandler {
     private fun manageNoAnswerRedirection(botBus: BotBus, configuration: RagAnswerConfiguration) {
         with(botBus) {
             //handle rag redirection in case answer is not known
-            val redirectStory = storyDefinitionConfigurationDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
-                botBus.botDefinition.namespace,
-                botBus.botDefinition.botId,
-                configuration.noAnswerRedirection!!
-            )
+            if (configuration.noAnswerRedirection != null) {
+                val redirectStory = storyDefinitionConfigurationDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
+                        botBus.botDefinition.namespace,
+                        botBus.botDefinition.botId,
+                        configuration.noAnswerRedirection
+                )
 
-            val noAnswerRedirectionStory= botBus.botDefinition.stories.firstOrNull { it.id == redirectStory?._id.toString() }
-            if(noAnswerRedirectionStory != null){
-                noAnswerRedirectionStory.storyHandler.handle(this)
-            } else{
+                val noAnswerRedirectionStory = botBus.botDefinition.stories.firstOrNull { it.id == redirectStory?._id.toString() }
+                noAnswerRedirectionStory?.storyHandler?.handle(this)
+                        ?: botDefinition.unknownStory.storyHandler.handle(this)
+            } else {
                 botDefinition.unknownStory.storyHandler.handle(this)
             }
         }
