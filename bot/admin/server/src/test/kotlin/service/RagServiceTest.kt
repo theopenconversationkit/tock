@@ -22,9 +22,7 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.RagAnswerConfiguration
 import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
-import ai.tock.bot.admin.indicators.IndicatorError
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
-import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -42,7 +40,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.toId
-import service.IndicatorServiceTest
 
 class RagServiceTest : AbstractTest() {
 
@@ -101,7 +98,7 @@ class RagServiceTest : AbstractTest() {
 
         val ragNotYetExists: TRunnable = {
             every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(eq(NAMESPACE), eq(BOT_ID)) } returns listOf(DEFAULT_BOT_CONFIG)
-            every { storyDao.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), RagStoryDefinition.OVERRIDDEN_UNKNOWN_INTENT) } returns null
+            every { storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), RagStoryDefinition.OVERRIDDEN_UNKNOWN_INTENT) } returns null
             every { storyDao.getAndDeleteRagStoryDefinitionByNamespaceAndBotId(eq(NAMESPACE), eq(BOT_ID)) } just Runs
             every { ragDao.save(any()) } returns saveEnableRagRequest().toBotRAGConfiguration()
         }
@@ -117,7 +114,7 @@ class RagServiceTest : AbstractTest() {
         }
 
         val daoExistByFnIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { storyDao.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), RagStoryDefinition.OVERRIDDEN_UNKNOWN_INTENT) }
+            verify(exactly = 1) { storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), RagStoryDefinition.OVERRIDDEN_UNKNOWN_INTENT) }
         }
 
         val daoGetAndDeletedRagByFnNotCalled: TRunnable = {
@@ -172,7 +169,7 @@ class RagServiceTest : AbstractTest() {
                 )
                 .and("The rag config and story definition to persist in database is captured", captureRagAndStoryToSave)
                 .`when`("RagService's save method is called", callServiceSave)
-                .then("The dao's getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", daoExistByFnIsCalledOnce)
+                .then("The dao's getStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", daoExistByFnIsCalledOnce)
                 .and("The dao's getAndDeleteRagStoryDefinitionByNamespaceAndBotId must not be called", daoGetAndDeletedRagByFnNotCalled)
                 .and("The dao's saveEnableRagRequest must be called exactly once", daoSaveByFnIsCalledOnce)
                 .and("The dao's to find current unknown story must be not called", findCurrentUnknownFnNotCalled)
@@ -204,7 +201,7 @@ class RagServiceTest : AbstractTest() {
 
         val currentStoryUnknownExists: TRunnable = {
             every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(eq(NAMESPACE), eq(BOT_ID)) } returns listOf(DEFAULT_BOT_CONFIG)
-            every { storyDao.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), eq(UNKNOWN_INTENT)) } returns currentUnknownStory
+            every { storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), eq(UNKNOWN_INTENT)) } returns currentUnknownStory
             every { storyDao.getAndDeleteRagStoryDefinitionByNamespaceAndBotId(eq(NAMESPACE), eq(BOT_ID)) } just Runs
             every { ragDao.save(any()) } returns saveEnableRagRequestWithSavedUnknownBackupStory().toBotRAGConfiguration()
         }
@@ -220,7 +217,7 @@ class RagServiceTest : AbstractTest() {
         }
 
         val storyDaoExistByFnIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { storyDao.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), UNKNOWN_INTENT) }
+            verify(exactly = 1) { storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), UNKNOWN_INTENT) }
         }
 
         val storyDaoSaveFnIsCalledTwiceSpecifically: TRunnable = {
@@ -279,7 +276,7 @@ class RagServiceTest : AbstractTest() {
                 )
                 .and("The rag config and story definition to persist in database is captured", captureRagAndStoryToSave)
                 .`when`("RagService's save method is called", callServiceSave)
-                .then("The dao's getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", storyDaoExistByFnIsCalledOnce)
+                .then("The dao's getStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", storyDaoExistByFnIsCalledOnce)
                 .and("The dao's getAndDeleteRagStoryDefinitionByNamespaceAndBotId must not be not called", daoGetAndDeletedRagByFnNotCalled)
                 .and("The dao's saveEnableRagRequest must be called exactly once", daoSaveByFnIsCalledOnce)
                 .and("The dao's saveStory must be called exactly twice specifically about each save", storyDaoSaveFnIsCalledTwiceSpecifically)
@@ -302,7 +299,7 @@ class RagServiceTest : AbstractTest() {
     }
 
     @Test
-    fun `Save rag configuration disabled when unknown story already exists in configuration and current rag story active`() {
+    fun `Save rag configuration disabled when unknown story simple already exists in configuration and current rag story active`() {
 
         val currentUnknownStory = StoryDefinitionConfiguration(storyId = "unknown", botId = BOT_ID, intent = IntentWithoutNamespace("unknownBackup"), AnswerConfigurationType.simple, emptyList(), namespace = NAMESPACE, _id = saveEnableRagRequestWithSavedUnknownBackupStory().unknownStoryBackupId!!)
         val currentRagStory = StoryDefinitionConfiguration(storyId = RagStoryDefinition.RAG_STORY_NAME, botId = BOT_ID, intent = IntentWithoutNamespace(UNKNOWN_INTENT), AnswerConfigurationType.rag, emptyList(), namespace = NAMESPACE, _id = RAG_STORY_ID)
@@ -315,7 +312,7 @@ class RagServiceTest : AbstractTest() {
 
         val previousStoryWithUnknownIntent: TRunnable = {
             every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(eq(NAMESPACE), eq(BOT_ID)) } returns listOf(DEFAULT_BOT_CONFIG)
-            every { storyDao.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), eq(UNKNOWN_INTENT)) } returns currentRagStory
+            every { storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), eq(UNKNOWN_INTENT)) } returns currentRagStory
 
 
             every { ragDao.findByNamespaceAndBotId(eq(NAMESPACE), eq(BOT_ID)) } returns currentActiveRagConfig
@@ -341,7 +338,7 @@ class RagServiceTest : AbstractTest() {
         }
 
         val storyDaoExistByFnIsCalledOnce: TRunnable = {
-            verify(exactly = 1) { storyDao.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), UNKNOWN_INTENT) }
+            verify(exactly = 1) { storyDao.getStoryDefinitionByNamespaceAndBotIdAndIntent(eq(NAMESPACE), eq(BOT_ID), UNKNOWN_INTENT) }
         }
 
         val storyDaoGetAndSaveFnPreviousUnknownStoryBack: TRunnable = {
@@ -398,7 +395,7 @@ class RagServiceTest : AbstractTest() {
                 )
                 .and("The rag config and story definition to persist in database is captured", captureRagAndStoryToSave)
                 .`when`("RagService's save method is called", callServiceSave)
-                .then("The dao's getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", storyDaoExistByFnIsCalledOnce)
+                .then("The dao's getStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", storyDaoExistByFnIsCalledOnce)
                 .and("The dao's getAndDeleteRagStoryDefinitionByNamespaceAndBotId must be called to delete the current RagStory", daoGetAndDeletedRagByFnCalledOnce)
                 .and("The dao's saveEnableRagRequest must be called exactly once", daoSaveByFnIsCalledOnce)
                 .and("The dao's rag Config must be called once to get the current config", ragDaoFindByFnIsCalledOnce)
@@ -458,7 +455,7 @@ class RagServiceTest : AbstractTest() {
                         previousStoryWithUnknownIntent
                 )
                 .`when`("RagService's save method is called", callServiceSave)
-                .then("The BotAdminServce getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", serviceCalledOnlyOnce)
+                .then("The BotAdminServce getStoryDefinitionByNamespaceAndBotIdAndIntent must be called exactly once", serviceCalledOnlyOnce)
                 .and(
                         """
                 - Error is not null

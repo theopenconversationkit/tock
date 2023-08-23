@@ -29,11 +29,11 @@ import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.RagStoryDefinition
 import ai.tock.shared.exception.rest.BadRequestException
-import ai.tock.shared.exception.rest.RestException
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.WebVerticle
+import com.mongodb.MongoWriteException
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -88,14 +88,17 @@ object RagService {
 
             val savedRagConfig: BotRAGConfiguration = managePreviousStoryWithUnknownIntents(ragConfig)
                     ?: ragConfig.toBotRAGConfiguration()
-            ragConfigurationDAO.save(savedRagConfig)
             if (ragConfig.enabled) {
                 // save rag new Story
                 val newRagStory = prepareRagStory(ragConfig, botConfId)
                 logger.info { "Saving ${newRagStory.storyId}" }
                 storyDefinitionDAO.save(newRagStory)
             }
+            //saved after story config to be sure to be allowed to save it
+            ragConfigurationDAO.save(savedRagConfig)
             return savedRagConfig
+        } catch (e: MongoWriteException) {
+            throw BadRequestException(e.message ?: "Rag Story: registration failed on mongo ")
         } catch (e: Exception) {
             throw BadRequestException(e.message ?: "Rag Story: registration failed ")
         }
@@ -108,7 +111,7 @@ object RagService {
      */
     private fun managePreviousStoryWithUnknownIntents(ragConfig: BotRAGConfigurationDTO): BotRAGConfiguration? {
         var savedRagConfig: BotRAGConfiguration? = null
-        storyDefinitionDAO.getConfiguredStoryDefinitionByNamespaceAndBotIdAndIntent(
+        storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
                 ragConfig.namespace,
                 ragConfig.botId,
                 UNKNOWN_INTENT
@@ -118,6 +121,19 @@ object RagService {
             if (!currentUnknown.isRagAnswerType() && ragConfig.enabled) {
                 logger.debug { "Found other type ${currentUnknown.currentType} story with same namespace ${currentUnknown.namespace}, and intent: ${currentUnknown.intent}" }
                         .apply { logger.info { "\"${currentUnknown.name}\" was saved in the ragConfiguration in case of disabling" } }
+
+                //permits to avoid conflicts between clientStory Definition from botApi vs ConfiguredStories from TockStudio
+//                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+//                        ragConfig.namespace,
+//                        ragConfig.botId,
+//                        unknownStoryBackupIntentName
+//                        //manage existing unknownStoryBackup
+//                )?.let {
+//                    logger.debug {"Found other type ${currentUnknown.currentType} story with same namespace ${currentUnknown.namespace}, and intent: ${currentUnknown.intent}"}
+//                    logger.debug { "delete existing backup unknown story" }
+//                    storyDefinitionDAO.delete(it)
+//                }
+
                 storyDefinitionDAO.save(currentUnknown.copy(intent = IntentWithoutNamespace(unknownStoryBackupIntentName)))
                         .apply { logger.info { "\"${currentUnknown.name}\" changed its intent to $unknownStoryBackupIntentName to be allowed create the ragStory" } }
                 val ragWithUnknown = ragConfig.copy(unknownStoryBackupId = currentUnknown._id)
