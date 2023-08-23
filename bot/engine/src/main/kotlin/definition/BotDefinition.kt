@@ -226,11 +226,6 @@ interface BotDefinition : I18nKeyProvider {
     val handleAttachmentStory: StoryDefinition?
 
     /**
-     * The [RagStoryDefinition] that handles unknown action, used when [ragConfigurationEnabled] is true
-     */
-    var ragUnknownStory: RagStoryDefinition?
-
-    /**
      * To handle custom events.
      */
     val eventListener: EventListener
