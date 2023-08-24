@@ -53,7 +53,7 @@ object RagService {
     /**
      * unknown backup intent if unknown story exists
      */
-    private val unknownStoryBackupIntentName = property("tock_rag_unknown_backup_intent_name", "unknownBackup")
+    val unknownStoryBackupIntentName = property("tock_rag_unknown_backup_intent_name", "unknownBackup")
 
     /**
      * Save Rag configuration and filter errors
@@ -122,18 +122,6 @@ object RagService {
                 logger.debug { "Found other type ${currentUnknown.currentType} story with same namespace ${currentUnknown.namespace}, and intent: ${currentUnknown.intent}" }
                         .apply { logger.info { "\"${currentUnknown.name}\" was saved in the ragConfiguration in case of disabling" } }
 
-                //permits to avoid conflicts between clientStory Definition from botApi vs ConfiguredStories from TockStudio
-//                storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-//                        ragConfig.namespace,
-//                        ragConfig.botId,
-//                        unknownStoryBackupIntentName
-//                        //manage existing unknownStoryBackup
-//                )?.let {
-//                    logger.debug {"Found other type ${currentUnknown.currentType} story with same namespace ${currentUnknown.namespace}, and intent: ${currentUnknown.intent}"}
-//                    logger.debug { "delete existing backup unknown story" }
-//                    storyDefinitionDAO.delete(it)
-//                }
-
                 storyDefinitionDAO.save(currentUnknown.copy(intent = IntentWithoutNamespace(unknownStoryBackupIntentName)))
                         .apply { logger.info { "\"${currentUnknown.name}\" changed its intent to $unknownStoryBackupIntentName to be allowed create the ragStory" } }
                 val ragWithUnknown = ragConfig.copy(unknownStoryBackupId = currentUnknown._id)
@@ -149,7 +137,13 @@ object RagService {
                 // put back unknown story backup if it exists when ragConfig is disabled
                 if(!ragConfig.enabled) {
                     ragConfigurationDAO.findByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId)?.let { currentRagConfig ->
-                        currentRagConfig.unknownStoryBackupId?.let { unknownStoryBackupStoryId ->
+
+                        //check current unknownBackup is present, if not in config check it is present in database with its intent backup name
+                        (currentRagConfig.unknownStoryBackupId ?:
+                            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(ragConfig.namespace,ragConfig.botId, unknownStoryBackupIntentName)?._id)
+
+                                ?.let {
+                                    unknownStoryBackupStoryId ->
                             storyDefinitionDAO.getStoryDefinitionById(unknownStoryBackupStoryId)?.let { unknownStoryBackup ->
                                 logger.debug { "put back old replaced unknown story \"${unknownStoryBackup.storyId}\"" }
                                 storyDefinitionDAO.save(unknownStoryBackup.copy(intent = IntentWithoutNamespace(UNKNOWN_INTENT)))

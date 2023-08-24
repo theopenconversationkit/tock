@@ -17,38 +17,56 @@
 package ai.tock.bot.llm.rag.core.client
 
 
-import ai.tock.shared.addJacksonConverter
-import ai.tock.shared.longProperty
-import ai.tock.shared.property
-import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.bot.llm.rag.core.client.models.RagQuery
+import ai.tock.bot.llm.rag.core.client.models.RagResult
+import ai.tock.shared.*
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
-import retrofit2.Response
-import ai.tock.bot.llm.rag.core.client.models.RagQuery
-import ai.tock.bot.llm.rag.core.client.models.RagResult
-import com.fasterxml.jackson.databind.ObjectMapper
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 
 /**
  *  Wraps calls to the Rag (retrieval augmented generation) stack.
  */
 class RagServiceApiClient(baseUrl: String = property("tock_rag_client_service_url", "http://localhost:8000")) :
-    RagClient {
+        RagClient {
 
     private val logger = KotlinLogging.logger {}
     private val ragService: RagService
 
     init {
         val timeout = longProperty("tock_rag_client_request_timeout_ms", 25000)
-        val retrofit = retrofitBuilderWithTimeoutAndLogger(timeout, logger)
-            .addJacksonConverter(initMapper())
-            .baseUrl(baseUrl)
-            .build()
+        val retrofit = Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addJacksonConverter(initMapper())
+                .client(
+                        OkHttpClient.Builder()
+                                .readTimeout(timeout, TimeUnit.MILLISECONDS)
+                                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                                .writeTimeout(timeout, TimeUnit.MILLISECONDS)
+                                .addInterceptor(
+                                        // adapt log level to use specific log interceptors
+                                        HttpLoggingInterceptor().setLevel(
+                                                HttpLoggingInterceptor.Level.valueOf(
+                                                        retrofitLogLevel(
+                                                                retrofitDefaultLogLevel
+                                                        ).toString()
+                                                )
+                                        )
+                                )
+                                .build()
+                )
+                .build()
 
         ragService = retrofit.create(RagService::class.java)
     }
@@ -66,11 +84,11 @@ class RagServiceApiClient(baseUrl: String = property("tock_rag_client_service_ur
     }
 
     private fun <T> Response<T>.parseAndReturns(): T? =
-        body()
-            ?: run {
-                logger.error { "rag client ERROR !!! : ${errorBody()?.string()}" }
-                null as Nothing?
-            }
+            body()
+                    ?: run {
+                        logger.error { "rag client ERROR !!! : ${errorBody()?.string()}" }
+                        null as Nothing?
+                    }
 
     override fun ask(query: RagQuery): RagResult? {
         return ragService.ask(query).execute().parseAndReturns()

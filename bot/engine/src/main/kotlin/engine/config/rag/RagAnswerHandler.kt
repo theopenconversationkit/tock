@@ -17,7 +17,6 @@
 package ai.tock.bot.engine.config.rag
 
 import ai.tock.bot.admin.answer.RagAnswerConfiguration
-import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.llm.rag.core.client.RagClient
@@ -26,8 +25,8 @@ import ai.tock.shared.exception.rest.RestException
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
-import mu.KotlinLogging
 import java.net.ConnectException
+import mu.KotlinLogging
 
 /**
  * Handler of a rag story answer
@@ -54,7 +53,7 @@ object RagAnswerHandler {
 
                     //handle rag response
                     response?.answer?.let {
-                        if (it != defaultUnknownRagAnswer) {
+                        if (!it.contains(defaultUnknownRagAnswer)) {
                             //TODO to format per connector or other ?
                             end(
                                     "$it " +
@@ -71,9 +70,9 @@ object RagAnswerHandler {
                     } ?: manageNoAnswerRedirection(botBus, configuration)
                 } catch (conn: ConnectException) {
                     logger.error { "failed to connect to ${conn.message}" }
+                    manageNoAnswerRedirection(botBus, configuration)
                 } catch (e: RestException) {
                     logger.error { "error during rag call ${e.message}" }
-                } finally {
                     manageNoAnswerRedirection(botBus, configuration)
                 }
             } else {
