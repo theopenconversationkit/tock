@@ -44,7 +44,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   private loaded = false;
   @Input() ratingFilter: number[];
 
-  intents : string[]
+  intents : string[];
+
+  dialogReportQuery : DialogReportQuery;
 
   constructor(
     state: StateService,
@@ -84,6 +86,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
+    this.buildDialogQuery(query)
     return this.route.queryParams.pipe(
       mergeMap((params) => {
         if (!this.loaded) {
@@ -92,7 +95,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
           if (params['intentName']) this.filter.intentName = params['intentName'];
           this.loaded = true;
         }
-        return this.analytics.dialogs(this.buildDialogQuery(query));
+        return this.analytics.dialogs(this.dialogReportQuery);
       })
     );
   }
@@ -106,8 +109,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
     this.refresh();
   }
 
-  private buildDialogQuery(query: PaginatedQuery): DialogReportQuery {
-    return new DialogReportQuery(
+  private buildDialogQuery(query: PaginatedQuery){
+    this.dialogReportQuery = new DialogReportQuery(
       query.namespace,
       query.applicationName,
       query.language,
@@ -125,16 +128,6 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
       this.filter.intentsToHide);
   }
 
-  addDialogToTestPlan(planId: string, dialog: DialogReport) {
-    if (!planId) {
-      this.toastrService.show(`Please select a Plan first`, 'Error', { duration: 3000 });
-      return;
-    }
-    this.analytics
-      .addDialogToTestPlan(planId, dialog.id)
-      .subscribe((_) => this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 }));
-  }
-
   isSatisfactionRoute() {
     return this.route.url.pipe(
       filter((val : UrlSegment[]) => {
@@ -143,30 +136,11 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
     )
   }
 
-  private buildDialogSatisfactionQuery(): DialogReportQuery {
-    return new DialogReportQuery(
-      this.state.currentApplication.namespace,
-      this.state.currentApplication.name,
-      this.state.currentLocale,
-      null,
-      null,
-      true,
-      null,
-      null,
-      null,
-      null,
-      null,
-      false,
-      [1,2,3,4,5],
-      null
-    );
-  }
-
   exportDialogs(){
-    this.analytics.downloadDialogsCsv(this.buildDialogSatisfactionQuery()).subscribe((blob) => {
+    this.analytics.downloadDialogsCsv(this.dialogReportQuery).subscribe((blob) => {
       saveAs(blob, 'dialogs_with_rating.csv');
     });
-    this.analytics.downloadDialogsWithIntentsCsv(this.buildDialogSatisfactionQuery()).subscribe((blob) => {
+    this.analytics.downloadDialogsWithIntentsCsv(this.dialogReportQuery).subscribe((blob) => {
       saveAs(blob, 'dialogs_with_rating_and_intents.csv');
     });
   }
