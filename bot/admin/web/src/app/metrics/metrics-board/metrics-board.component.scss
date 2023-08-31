@@ -1,0 +1,48 @@
+@import '@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/global/breakpoints';
+
+.main-card-body {
+  overflow: visible;
+}
+
+.dimension-chart {
+  border-top: 1px solid var(--color-basic-transparent-400);
+  padding-top: 1rem;
+}
+
+.stats-line {
+  border-bottom: 1px solid var(--color-basic-transparent-400);
+}
+
+.help-badge {
+  display: inline-block;
+  border-radius: 10rem;
+  background-color: var(--text-danger-color);
+  color: white;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.8rem;
+  line-height: 1rem;
+  font-weight: bold;
+}
+
+.help-modal {
+  max-width: 90vw;
+}
+
+.force-col-12 {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.messages-height {
+  height: 250px;
+}
+@include media-breakpoint-up(xl) {
+  .messages-height {
+    height: 400px;
+  }
+}
+
+.height-250 {
+  height: 250px !important;
+}

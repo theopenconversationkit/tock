@@ -70,7 +70,11 @@ data class StoryDefinitionConfigurationStep(
     /**
      * Entity selection.
      */
-    val entity: EntityStepSelection? = null
+    val entity: EntityStepSelection? = null,
+    /**
+     * The step metrics.
+     */
+    val metrics: List<StoryDefinitionStepMetric> = emptyList()
 ) : StoryDefinitionAnswersContainer {
 
     internal class Step(
@@ -98,6 +102,9 @@ data class StoryDefinitionConfigurationStep(
         override val hasNoChildren: Boolean get() = children.isEmpty()
 
         override val entityStepSelection: EntityStepSelection? = configuration.entity
+
+        override val metrics: List<StoryDefinitionStepMetric>
+            get() = configuration.metrics
     }
 
     val hasNoChildren: Boolean get() = children.isEmpty()

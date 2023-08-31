@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.Locale
+import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.List
@@ -78,6 +79,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _configuredSteps_set : Boolean = false
             var _nextIntentsQualifiers_: MutableList<NlpIntentQualifier>? = null
             var _nextIntentsQualifiers_set : Boolean = false
+            var _metricStory_: Boolean? = null
+            var _metricStory_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -193,6 +196,11 @@ internal class StoryDefinitionConfiguration_Deserializer :
                              else p.readValueAs(_nextIntentsQualifiers__reference);
                             _nextIntentsQualifiers_set = true
                             }
+                    "metricStory" -> {
+                            _metricStory_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
+                            _metricStory_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -206,7 +214,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     _name_set && _category_set && _description_set && _userSentence_set &&
                     _userSentenceLocale_set && _configurationName_set && _features_set && __id_set
                     && _tags_set && _configuredAnswers_set && _configuredSteps_set &&
-                    _nextIntentsQualifiers_set)
+                    _nextIntentsQualifiers_set && _metricStory_set)
                     StoryDefinitionConfiguration(storyId = _storyId_!!, botId = _botId_!!, intent =
                             _intent_!!, currentType = _currentType_!!, answers = _answers_!!,
                             version = _version_!!, namespace = _namespace_!!, mandatoryEntities =
@@ -216,7 +224,7 @@ internal class StoryDefinitionConfiguration_Deserializer :
                             configurationName = _configurationName_, features = _features_!!, _id =
                             __id_!!, tags = _tags_!!, configuredAnswers = _configuredAnswers_!!,
                             configuredSteps = _configuredSteps_!!, nextIntentsQualifiers =
-                            _nextIntentsQualifiers_!!)
+                            _nextIntentsQualifiers_!!, metricStory = _metricStory_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_storyId_set)
@@ -260,7 +268,9 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     if(_configuredSteps_set)
                     map[parameters.getValue("configuredSteps")] = _configuredSteps_
                     if(_nextIntentsQualifiers_set)
-                    map[parameters.getValue("nextIntentsQualifiers")] = _nextIntentsQualifiers_ 
+                    map[parameters.getValue("nextIntentsQualifiers")] = _nextIntentsQualifiers_
+                    if(_metricStory_set)
+                    map[parameters.getValue("metricStory")] = _metricStory_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -293,7 +303,8 @@ internal class StoryDefinitionConfiguration_Deserializer :
                 primaryConstructor.findParameterByName("tags")!!, "configuredAnswers" to
                 primaryConstructor.findParameterByName("configuredAnswers")!!, "configuredSteps" to
                 primaryConstructor.findParameterByName("configuredSteps")!!, "nextIntentsQualifiers"
-                to primaryConstructor.findParameterByName("nextIntentsQualifiers")!!) }
+                to primaryConstructor.findParameterByName("nextIntentsQualifiers")!!, "metricStory"
+                to primaryConstructor.findParameterByName("metricStory")!!) }
 
         private val _answers__reference: TypeReference<List<AnswerConfiguration>> = object :
                 TypeReference<List<AnswerConfiguration>>() {}

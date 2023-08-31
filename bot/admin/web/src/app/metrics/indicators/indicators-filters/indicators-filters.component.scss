@@ -1,0 +1,14 @@
+@import '@nebular/theme/styles/global/breakpoints';
+
+.grid {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 100%;
+  align-items: center;
+}
+
+@include media-breakpoint-up(sm) {
+  .grid {
+    grid-template-columns: 1fr 1fr auto;
+  }
+}

@@ -1,0 +1,224 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card class="m-0">
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1 flex-wrap">
+    Mandatory entities
+    <button
+      type="button"
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Close"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+  <nb-card-body>
+    <div class="d-flex flex-column gap-3">
+      <div class="d-flex flex-column gap-1">
+        <div
+          *ngFor="let e of entities; let i = index"
+          class="grid"
+        >
+          <tock-form-control
+            label="Answer"
+            name="answer_{{ i }}"
+            [required]="true"
+            [hasMargin]="false"
+          >
+            <tock-answer
+              id="answer_{{ i }}"
+              answerLabel="question"
+              editableIconSize="small"
+              [answer]="e"
+            ></tock-answer>
+          </tock-form-control>
+          <tock-form-control
+            label="Entity"
+            name="entity_{{ i }}"
+            [required]="true"
+            [hasMargin]="false"
+          >
+            <span
+              *ngIf="e.entity"
+              id="entity_{{ i }}"
+              class="pointer entity"
+              [style.background-color]="e.entity.entityColor"
+              (click)="selectEntity(e)"
+            >
+              {{ e.entity.qualifiedName(stateService.user) }}
+            </span>
+            <div *ngIf="!e.entity">
+              <button
+                nbButton
+                id="entity_{{ i }}"
+                size="small"
+                outline
+                (click)="selectEntity(e)"
+              >
+                Select
+              </button>
+            </div>
+          </tock-form-control>
+          <tock-form-control
+            label="Intent"
+            name="intent_{{ i }}"
+            information="Intent used to find the Entity"
+            [required]="true"
+            [hasMargin]="false"
+          >
+            <input
+              nbInput
+              id="intent_{{ i }}"
+              name="intent"
+              autocomplete="off"
+              placeholder="Choose intent"
+              fieldSize="small"
+              [(ngModel)]="e.intent.name"
+              [nbAutocomplete]="intentAuto"
+              (keyup)="onIntentChange(e, $event.target.value)"
+              (focus)="onIntentChange(e, $event.target.value)"
+              (blur)="validateIntent(e)"
+            />
+          </tock-form-control>
+          <button
+            nbButton
+            ghost
+            status="danger"
+            shape="round"
+            size="small"
+            nbTooltip="Remove"
+            (click)="removeEntity(e)"
+          >
+            <nb-icon icon="trash-2-outline"></nb-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <tock-form-control
+          label="Answer"
+          name="answer"
+          [required]="true"
+          [hasMargin]="false"
+        >
+          <tock-answer
+            answerLabel="question"
+            editableIconSize="small"
+            [answer]="newEntity"
+          ></tock-answer>
+        </tock-form-control>
+        <tock-form-control
+          label="Entity"
+          name="entity"
+          [required]="true"
+          [hasMargin]="false"
+        >
+          <span
+            *ngIf="newEntity.entity"
+            id="entity"
+            class="pointer entity"
+            [style.background-color]="newEntity.entity.entityColor"
+            (click)="selectEntity(newEntity)"
+          >
+            {{ newEntity.entity.qualifiedName(stateService.user) }}
+          </span>
+          <div *ngIf="!newEntity.entity">
+            <button
+              id="entity"
+              nbButton
+              outline
+              size="small"
+              (click)="selectEntity(newEntity)"
+            >
+              Select
+            </button>
+          </div>
+        </tock-form-control>
+        <tock-form-control
+          label="Intent"
+          name="intent"
+          information="Intent used to find the Entity"
+          [hasMargin]="false"
+        >
+          <input
+            nbInput
+            id="intent"
+            name="intent"
+            autocomplete="off"
+            placeholder="Choose intent"
+            fieldSize="small"
+            [(ngModel)]="newEntity.intent.name"
+            [nbAutocomplete]="intentAuto"
+            (keyup)="onIntentChange(newEntity, $event.target.value)"
+            (focus)="onIntentChange(newEntity, $event.target.value)"
+            (blur)="validateIntent(newEntity)"
+          />
+        </tock-form-control>
+        <button
+          nbButton
+          shape="round"
+          status="primary"
+          size="small"
+          nbTooltip="Add"
+          class="entity-button"
+          (click)="addEntity()"
+        >
+          <nb-icon icon="plus-outline"></nb-icon>
+        </button>
+      </div>
+    </div>
+  </nb-card-body>
+  <nb-card-footer class="card-footer-actions">
+    <button
+      nbButton
+      ghost
+      size="small"
+      type="button"
+      (click)="cancel()"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      nbButton
+      status="primary"
+      size="small"
+      (click)="save()"
+    >
+      Save
+    </button>
+  </nb-card-footer>
+</nb-card>
+
+<nb-autocomplete
+  #intentAuto
+  activeFirst
+>
+  <nb-option-group
+    *ngFor="let category of currentIntentCategories"
+    [title]="category.category"
+  >
+    <nb-option
+      *ngFor="let intent of category.intents"
+      [value]="intent.name"
+    >
+      {{ intent.intentLabel() }}
+    </nb-option>
+  </nb-option-group>
+</nb-autocomplete>

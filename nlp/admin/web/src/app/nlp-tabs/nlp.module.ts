@@ -22,6 +22,8 @@ import { NlpTabsComponent } from './nlp-tabs.component';
 import { InboxComponent } from '../inbox/inbox.component';
 import { ArchiveComponent } from '../archive/archive.component';
 import { IntentsComponent } from '../intents/intents.component';
+import { IntentsFiltersComponent } from '../intents/intents-filters/intents-filters.component';
+import { IntentsListComponent } from '../intents/intents-list/intents-list.component';
 import { SearchComponent } from '../search/search.component';
 import { SearchFilterComponent } from '../search/filter/search-filter.component';
 import { DisplayFullLogComponent, LogsComponent } from '../logs/logs.component';
@@ -120,58 +122,60 @@ const routes: Routes = [
 export class NlpRoutingModule {}
 
 @NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        NlpRoutingModule,
-        ApplicationsModule,
-        InfiniteScrollModule,
-        MomentModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        FileUploadModule,
-        MatNativeDateModule,
-        ThemeModule,
-        NbTabsetModule,
-        NbRouteTabsetModule,
-        NbAccordionModule,
-        NbCardModule,
-        NbCheckboxModule,
-        NbSpinnerModule,
-        NbActionsModule,
-        NbSelectModule,
-        NbButtonModule,
-        NbTooltipModule,
-        NbInputModule,
-        NgJsonEditorModule,
-        NbTreeGridModule,
-        NbAutocompleteModule,
-        ReactiveFormsModule,
-        NbFormFieldModule
-    ],
-    declarations: [
-        NlpTabsComponent,
-        TryComponent,
-        InboxComponent,
-        ArchiveComponent,
-        IntentsComponent,
-        SearchComponent,
-        SearchFilterComponent,
-        LogsComponent,
-        HighlightComponent,
-        EditEntitiesComponent,
-        SentenceAnalysisComponent,
-        CreateEntityDialogComponent,
-        IntentDialogComponent,
-        SentencesScrollComponent,
-        DisplayFullLogComponent,
-        AddStateDialogComponent,
-        AddSharedIntentDialogComponent,
-        EntitiesComponent,
-        EntityDetailsComponent,
-        ReviewRequestDialogComponent
-    ],
-    exports: [SentenceAnalysisComponent, HighlightComponent],
-    providers: [NlpService]
+  imports: [
+    CommonModule,
+    SharedModule,
+    NlpRoutingModule,
+    ApplicationsModule,
+    InfiniteScrollModule,
+    MomentModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    FileUploadModule,
+    MatNativeDateModule,
+    ThemeModule,
+    NbTabsetModule,
+    NbRouteTabsetModule,
+    NbAccordionModule,
+    NbCardModule,
+    NbCheckboxModule,
+    NbSpinnerModule,
+    NbActionsModule,
+    NbSelectModule,
+    NbButtonModule,
+    NbTooltipModule,
+    NbInputModule,
+    NgJsonEditorModule,
+    NbTreeGridModule,
+    NbAutocompleteModule,
+    ReactiveFormsModule,
+    NbFormFieldModule
+  ],
+  declarations: [
+    NlpTabsComponent,
+    TryComponent,
+    InboxComponent,
+    ArchiveComponent,
+    IntentsComponent,
+    SearchComponent,
+    SearchFilterComponent,
+    LogsComponent,
+    HighlightComponent,
+    EditEntitiesComponent,
+    SentenceAnalysisComponent,
+    CreateEntityDialogComponent,
+    IntentDialogComponent,
+    SentencesScrollComponent,
+    DisplayFullLogComponent,
+    AddStateDialogComponent,
+    AddSharedIntentDialogComponent,
+    EntitiesComponent,
+    EntityDetailsComponent,
+    ReviewRequestDialogComponent,
+    IntentsFiltersComponent,
+    IntentsListComponent
+  ],
+  exports: [SentenceAnalysisComponent, HighlightComponent],
+  providers: [NlpService]
 })
 export class NlpModule {}

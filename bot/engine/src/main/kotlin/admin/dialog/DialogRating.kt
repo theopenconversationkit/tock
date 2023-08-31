@@ -28,7 +28,7 @@ data class DialogRating(
      *  [rating] is the rating given by the user
      *  the rating can be a number between 1 and 5
      */
-    var rating: Int? = null,
+    var rating: Double? = null,
 
 
     /**

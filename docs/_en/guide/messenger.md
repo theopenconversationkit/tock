@@ -154,5 +154,5 @@ To learn more about the Messenger connector bundled with Tock, you can take a lo
 where you will find sources and the connector's _README_.
 
 To learn more about _Tock Studio_ and about Tock's features and deployment modes, you can also 
-browse the more complete [user guide](../toc).
+browse the more complete [user guide](../../toc).
 

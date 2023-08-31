@@ -24,7 +24,7 @@ import { NbToastrService } from '@nebular/theme';
 @Component({
   selector: 'tock-i18n-label',
   templateUrl: './i18n-label.component.html',
-  styleUrls: ['./i18n-label.component.css']
+  styleUrls: ['./i18n-label.component.scss']
 })
 export class I18nLabelComponent implements OnInit {
   @Input()

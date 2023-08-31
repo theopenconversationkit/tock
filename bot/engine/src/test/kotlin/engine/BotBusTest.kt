@@ -35,6 +35,7 @@ import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.translator.I18nLabelValue
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -263,5 +264,44 @@ class BotBusTest : BotEngineTest() {
         assertEquals(test, bus.dialog.stories[0].definition)
         assertEquals(test2, bus.dialog.stories[1].definition)
         assertEquals(StepTest.s2, bus.step)
+    }
+
+    @Test
+    fun `GIVEN all stories aren't metricStory WHEN getTrackedStoryId THEN the tracked story is the last one in dialog`() {
+        bus.switchStory(test2)
+        mockkObject(test)
+        mockkObject(test2)
+        every { test.metricStory } returns false
+        every { test2.metricStory } returns false
+
+        val trackedStoryId = bus.getTrackedStoryId()
+
+        assertEquals(test2.id, trackedStoryId)
+    }
+
+    @Test
+    fun `GIVEN only the first story isn't a metricStory WHEN getTrackedStoryId THEN the tracked story is the first one in dialog`() {
+        bus.switchStory(test2)
+        mockkObject(test)
+        mockkObject(test2)
+        every { test.metricStory } returns false
+        every { test2.metricStory } returns true
+
+        val trackedStoryId = bus.getTrackedStoryId()
+
+        assertEquals(test.id, trackedStoryId)
+    }
+
+    @Test
+    fun `GIVEN all stories are metricStory WHEN getTrackedStoryId THEN the tracked story is the last one in dialog`() {
+        bus.switchStory(test2)
+        mockkObject(test)
+        mockkObject(test2)
+        every { test.metricStory } returns true
+        every { test2.metricStory } returns true
+
+        val trackedStoryId = bus.getTrackedStoryId()
+
+        assertEquals(bus.story.definition.id, trackedStoryId)
     }
 }

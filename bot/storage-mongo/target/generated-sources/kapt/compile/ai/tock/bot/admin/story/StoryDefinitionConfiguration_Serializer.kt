@@ -149,6 +149,9 @@ internal class StoryDefinitionConfiguration_Serializer :
                 null
                 )
                 .serialize(_nextIntentsQualifiers_, gen, serializers)
+        gen.writeFieldName("metricStory")
+        val _metricStory_ = value.metricStory
+        gen.writeBoolean(_metricStory_)
         gen.writeEndObject()
     }
 }

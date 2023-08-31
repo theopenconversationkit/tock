@@ -16,8 +16,6 @@
 
 package ai.tock.bot.engine.config
 
-import ai.tock.bot.definition.BotDefinition
-import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.config.ReviewParameter.REVIEW_COMMENT_PARAMETER
@@ -26,7 +24,7 @@ import ai.tock.bot.engine.config.SatisfactionIntent.REVIEW_COMMENT
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.nlp.api.client.model.NlpIntentQualifier
 
-const val SATISFACTION_MODULE_ID: String = "statisfaction_review"
+const val SATISFACTION_MODULE_ID: String = "satisfaction_review"
 
 enum class SatisfactionIntent(val id: String) {
     REVIEW_COMMENT("satisfaction_review_comment"),

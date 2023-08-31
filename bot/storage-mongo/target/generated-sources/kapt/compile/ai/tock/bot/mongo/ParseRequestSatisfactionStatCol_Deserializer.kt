@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
+import kotlin.Double
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
@@ -22,7 +23,7 @@ internal class ParseRequestSatisfactionStatCol_Deserializer :
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext):
             ParseRequestSatisfactionStatCol {
         with(p) {
-            var _rating_: Int? = null
+            var _rating_: Double? = null
             var _rating_set : Boolean = false
             var _count_: Int? = null
             var _count_set : Boolean = false
@@ -38,7 +39,7 @@ internal class ParseRequestSatisfactionStatCol_Deserializer :
                 when (_fieldName_) { 
                     "rating" -> {
                             _rating_ = if(_token_ == JsonToken.VALUE_NULL) null
-                             else p.intValue;
+                             else p.doubleValue;
                             _rating_set = true
                             }
                     "count" -> {

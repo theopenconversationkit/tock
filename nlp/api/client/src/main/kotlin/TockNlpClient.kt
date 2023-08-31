@@ -28,6 +28,8 @@ import ai.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import ai.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import ai.tock.nlp.api.client.model.merge.ValuesMergeResult
 import ai.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
+import ai.tock.shared.retrofitDefaultLogLevel
+import ai.tock.shared.retrofitLogLevel
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -77,7 +79,16 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
                     .readTimeout(timeout, TimeUnit.MILLISECONDS)
                     .connectTimeout(timeout, TimeUnit.MILLISECONDS)
                     .writeTimeout(timeout, TimeUnit.MILLISECONDS)
-                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                    .addInterceptor(
+                        // adapt log level to use specific log interceptors
+                        HttpLoggingInterceptor().setLevel(
+                            HttpLoggingInterceptor.Level.valueOf(
+                                retrofitLogLevel(
+                                    retrofitDefaultLogLevel
+                                ).toString()
+                            )
+                        )
+                    )
                     .build()
             )
             .build()
@@ -110,7 +121,8 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
     }
 
     override fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition? {
-        return nlpService.createApplication(CreateApplicationQuery(name, namespace = namespace, locale = locale)).execute().body()
+        return nlpService.createApplication(CreateApplicationQuery(name, namespace = namespace, locale = locale))
+            .execute().body()
     }
 
     private fun createMultipart(stream: InputStream): MultipartBody.Part {

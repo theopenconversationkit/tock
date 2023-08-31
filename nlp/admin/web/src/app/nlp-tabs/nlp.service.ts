@@ -41,7 +41,9 @@ import { Observable } from 'rxjs';
 import { Application } from '../model/application';
 import { FileUploader } from 'ng2-file-upload';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class NlpService implements OnDestroy {
   private resetConfigurationUnsuscriber: any;
 

@@ -15,28 +15,27 @@
  */
 
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { NbDialogRef, NbToastrService } from '@nebular/theme';
+import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+
 import { MediaAction, MediaCard, MediaFile } from '../../model/story';
 import { CreateI18nLabelRequest } from '../../model/i18n';
 import { BotService } from '../../bot-service';
 import { StateService } from '../../../core-nlp/state.service';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
-import { NbDialogRef, NbToastrService } from '@nebular/theme';
-import { RestService } from 'src/app/core-nlp/rest/rest.service';
+import { RestService } from '../../../core-nlp/rest/rest.service';
 
 @Component({
   selector: 'tock-media-dialog',
   templateUrl: './media-dialog.component.html',
-  styleUrls: ['./media-dialog.component.css']
+  styleUrls: ['./media-dialog.component.scss']
 })
 export class MediaDialogComponent implements OnInit {
-  @Input()
-  media: MediaCard;
-  @Input()
-  category: string;
+  @Input() media: MediaCard;
+  @Input() category: string;
+
   create: boolean;
   fileUpload: string = 'upload';
   fileExternalUrl: string;
-
   uploader: FileUploader;
 
   @ViewChild('titleElement') titleElement: ElementRef;
@@ -48,34 +47,32 @@ export class MediaDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: NbDialogRef<MediaDialogComponent>,
-    public rest: RestService,
-    private state: StateService,
+    public restService: RestService,
+    private stateService: StateService,
     private toastrService: NbToastrService,
-    private bot: BotService
+    private botService: BotService
   ) {}
   ngOnInit(): void {
     this.category = this.category ? this.category : 'build';
     this.create = this.media === null;
     this.media = this.media ? this.media : new MediaCard([], null, null, null, true);
     if (this.media.title) {
-      this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
+      this.media.titleLabel = this.media.title.defaultLocalizedLabelForLocale(this.stateService.currentLocale).label;
     }
     if (this.media.subTitle) {
-      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
+      this.media.subTitleLabel = this.media.subTitle.defaultLocalizedLabelForLocale(this.stateService.currentLocale).label;
     }
     if (this.media.file && this.media.file.description) {
-      this.media.file.descriptionLabel = this.media.file.description.defaultLocalizedLabelForLocale(this.state.currentLocale).label;
+      this.media.file.descriptionLabel = this.media.file.description.defaultLocalizedLabelForLocale(this.stateService.currentLocale).label;
     }
 
-    this.media.actions.forEach((a) => (a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.state.currentLocale).label));
+    this.media.actions.forEach((a) => (a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.stateService.currentLocale).label));
 
     this.uploader = new FileUploader({ removeAfterUpload: true, autoUpload: true });
     this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.media.file = MediaFile.fromJSON(JSON.parse(response));
     };
-    this.bot.prepareFileDumpUploader(this.uploader);
-
-    setTimeout(() => this.titleElement.nativeElement.focus(), 500);
+    this.botService.prepareFileDumpUploader(this.uploader);
   }
 
   private isTitle() {
@@ -123,20 +120,13 @@ export class MediaDialogComponent implements OnInit {
       if (this.isTitle()) {
         this.loading = true;
         if (this.media.title) {
-          this.bot
-            .saveI18nLabel(this.media.title.changeDefaultLabelForLocale(this.state.currentLocale, this.media.titleLabel.trim()))
-            .subscribe((_) => {
-              this.loading = false;
-              this.closeModal();
-            });
+          this.botService
+            .saveI18nLabel(this.media.title.changeDefaultLabelForLocale(this.stateService.currentLocale, this.media.titleLabel.trim()))
+            .subscribe((_) => {});
         } else {
-          this.bot
-            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.titleLabel.trim(), this.state.currentLocale))
-            .subscribe((i18n) => {
-              this.media.title = i18n;
-              this.loading = false;
-              this.closeModal();
-            });
+          this.botService
+            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.titleLabel.trim(), this.stateService.currentLocale))
+            .subscribe((i18n) => (this.media.title = i18n));
         }
       } else {
         this.media.title = null;
@@ -145,15 +135,14 @@ export class MediaDialogComponent implements OnInit {
       if (this.isSubtitle()) {
         this.loadingSubtitle = true;
         if (this.media.subTitle) {
-          this.bot
-            .saveI18nLabel(this.media.subTitle.changeDefaultLabelForLocale(this.state.currentLocale, this.media.subTitleLabel.trim()))
-            .subscribe((_) => {
-              this.loadingSubtitle = false;
-              this.closeModal();
-            });
+          this.botService
+            .saveI18nLabel(
+              this.media.subTitle.changeDefaultLabelForLocale(this.stateService.currentLocale, this.media.subTitleLabel.trim())
+            )
+            .subscribe((_) => {});
         } else {
-          this.bot
-            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.subTitleLabel.trim(), this.state.currentLocale))
+          this.botService
+            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.subTitleLabel.trim(), this.stateService.currentLocale))
             .subscribe((i18n) => {
               this.media.subTitle = i18n;
               this.loadingSubtitle = false;
@@ -167,17 +156,19 @@ export class MediaDialogComponent implements OnInit {
       if (this.isDescription()) {
         this.loadingDescription = true;
         if (this.media.file && this.media.file.description) {
-          this.bot
+          this.botService
             .saveI18nLabel(
-              this.media.file.description.changeDefaultLabelForLocale(this.state.currentLocale, this.media.file.descriptionLabel.trim())
+              this.media.file.description.changeDefaultLabelForLocale(this.stateService.currentLocale, this.media.file.descriptionLabel.trim())
             )
             .subscribe((_) => {
               this.loadingDescription = false;
               this.closeModal();
             });
         } else {
-          this.bot
-            .createI18nLabel(new CreateI18nLabelRequest(this.category, this.media.file.descriptionLabel.trim(), this.state.currentLocale))
+          this.botService
+            .createI18nLabel(
+              new CreateI18nLabelRequest(this.category, this.media.file.descriptionLabel.trim(), this.stateService.currentLocale)
+            )
             .subscribe((i18n) => {
               this.media.file.description = i18n;
               this.loadingDescription = false;
@@ -192,10 +183,12 @@ export class MediaDialogComponent implements OnInit {
         .filter((a) => a.titleLabel && a.titleLabel.trim().length !== 0)
         .map((a) => {
           if (a.title) {
-            this.bot.saveI18nLabel(a.title.changeDefaultLabelForLocale(this.state.currentLocale, a.titleLabel.trim())).subscribe((_) => {});
+            this.botService
+              .saveI18nLabel(a.title.changeDefaultLabelForLocale(this.stateService.currentLocale, a.titleLabel.trim()))
+              .subscribe((_) => {});
           } else {
-            this.bot
-              .createI18nLabel(new CreateI18nLabelRequest(this.category, a.titleLabel.trim(), this.state.currentLocale))
+            this.botService
+              .createI18nLabel(new CreateI18nLabelRequest(this.category, a.titleLabel.trim(), this.stateService.currentLocale))
               .subscribe((i18n) => (a.title = i18n));
           }
           return a;

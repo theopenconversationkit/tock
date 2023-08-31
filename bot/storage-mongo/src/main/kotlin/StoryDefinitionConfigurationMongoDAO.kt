@@ -20,7 +20,10 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummary
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationExtendedSummaryRequest
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationMinimalSummaryRequest
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryExtended
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryMinimumMetrics
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryRequest
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.BotId
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Category
@@ -47,6 +50,7 @@ import ai.tock.shared.warn
 import ai.tock.shared.watch
 import com.mongodb.client.model.Collation
 import mu.KotlinLogging
+import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
@@ -85,7 +89,7 @@ import com.mongodb.client.model.Filters.exists
 internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
 
     private val logger = KotlinLogging.logger {}
-
+    private const val LIMIT_MAX_WORDS = 10
     @Data(internal = true)
     @JacksonData(internal = true)
     data class StoryDefinitionConfigurationHistoryCol(
@@ -195,7 +199,19 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.find(and(Namespace eq namespace, BotId eq botId)).toList()
     }
 
-    override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): List<StoryDefinitionConfigurationSummary> {
+    fun customRegexToFindWord(textSearch: String) = if (textSearch.trim().isEmpty()) {
+        ""
+    } else {
+        textSearch
+            .trim()
+            .split("\\s+".toRegex())
+            .filter { it.isNotEmpty() }
+            .joinToString("", "^", "\$", LIMIT_MAX_WORDS) { wordTextSearch ->
+                "(.*?(${allowDiacriticsInRegexp(wordTextSearch)})[^\$]*)"
+            }
+    }
+
+    override fun searchStoryDefinitionSummariesExtended(request: StoryDefinitionConfigurationExtendedSummaryRequest): List<StoryDefinitionConfigurationSummaryExtended> {
         //get last date from history
         val dateById = historyCol
             .aggregate<DateProjection>(
@@ -208,31 +224,62 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             .toList()
             .associateBy({ it._id.storyId }) { it.date.withZoneSameInstant(defaultZoneId) }
 
-        return col.withDocumentClass<StoryDefinitionConfigurationSummary>()
+
+        return col.withDocumentClass<StoryDefinitionConfigurationSummaryExtended>()
             .find(
-                Namespace eq request.namespace,
-                BotId eq request.botId,
-                if (request.category.isNullOrBlank()) null else Category eq request.category,
-                request.textSearch?.takeUnless { it.isBlank() }
-                    ?.let { Name.regex(allowDiacriticsInRegexp(it.trim()), "i") },
-                if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
+                //default list of var args Bson
+                *filterStoryDefinitionSummaries(request)
+                // specific filters for extended
+                    .plusElement(
+                        request.textSearch?.takeUnless { it.isBlank() }
+                            ?.let { Name.regex(customRegexToFindWord(request.textSearch ?: ""), "i") }
+                    )
+                    .plusElement(
+                        if (request.onlyConfiguredStory) CurrentType ne AnswerConfigurationType.builtin else null
+                    )
             )
             .projection(
-                StoryDefinitionConfigurationSummary::_id,
-                StoryDefinitionConfigurationSummary::storyId,
-                StoryDefinitionConfigurationSummary::botId,
-                StoryDefinitionConfigurationSummary::intent,
-                StoryDefinitionConfigurationSummary::currentType,
-                StoryDefinitionConfigurationSummary::name,
-                StoryDefinitionConfigurationSummary::category,
-                StoryDefinitionConfigurationSummary::description
+                StoryDefinitionConfigurationSummaryExtended::_id,
+                StoryDefinitionConfigurationSummaryExtended::storyId,
+                StoryDefinitionConfigurationSummaryExtended::botId,
+                StoryDefinitionConfigurationSummaryExtended::intent,
+                StoryDefinitionConfigurationSummaryExtended::currentType,
+                StoryDefinitionConfigurationSummaryExtended::name,
+                StoryDefinitionConfigurationSummaryExtended::category,
+                StoryDefinitionConfigurationSummaryExtended::description
             )
             .safeCollation(Collation.builder().locale(defaultLocale.language).build())
-            .sort(ascending(StoryDefinitionConfigurationSummary::name))
+            .sort(ascending(StoryDefinitionConfigurationSummaryExtended::name))
             .map { it.copy(lastEdited = dateById[it.storyId]) }
             .toList()
     }
 
+    override fun searchStoryDefinitionSummaries(request: StoryDefinitionConfigurationMinimalSummaryRequest): List<StoryDefinitionConfigurationSummaryMinimumMetrics> {
+        val data = filterStoryDefinitionSummaries(request)
+        return col.withDocumentClass<StoryDefinitionConfigurationSummaryMinimumMetrics>()
+            .find(*data)
+            .projection(
+                StoryDefinitionConfigurationSummaryMinimumMetrics::_id,
+                StoryDefinitionConfigurationSummaryMinimumMetrics::storyId,
+                StoryDefinitionConfigurationSummaryMinimumMetrics::intent,
+                StoryDefinitionConfigurationSummaryMinimumMetrics::currentType,
+                StoryDefinitionConfigurationSummaryMinimumMetrics::name,
+                StoryDefinitionConfigurationSummaryMinimumMetrics::category,
+                StoryDefinitionConfigurationSummaryMinimumMetrics::metricStory
+            )
+            .safeCollation(Collation.builder().locale(defaultLocale.language).build())
+            .sort(ascending(StoryDefinitionConfigurationSummaryMinimumMetrics::name))
+            .toList()
+    }
+
+    /**
+     * filter story definition summaries
+     */
+    private fun filterStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): Array<Bson?> =
+        arrayOf(Namespace eq request.namespace,
+            BotId eq request.botId,
+            if (request.category.isNullOrBlank()) null else Category eq request.category,
+        )
 
     override fun save(story: StoryDefinitionConfiguration) {
         val previous = col.findOneById(story._id)

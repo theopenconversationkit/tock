@@ -1,0 +1,100 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card class="sentence">
+  <nb-card-body>
+    <tock-select-bot
+      [(configurationId)]="botConfigurationId"
+      [displayConnectorChoice]="false"
+    >
+      <nb-card
+        [nbSpinner]="loading"
+        nbSpinnerStatus="primary"
+      >
+        <nb-card-body>
+          <span
+            class="sentence-input"
+            *ngIf="story"
+          >
+            <input
+              nbInput
+              status="primary"
+              class="phrase"
+              [(ngModel)]="story.userSentence"
+              [disabled]="loading"
+              placeholder="Enter a User Phrase"
+              #newSentence
+              (keyup.enter)="onSentence(newSentence.value)"
+            />
+          </span>
+          <button
+            nbButton
+            outline
+            status="primary"
+            [disabled]="!(story && story.userSentence.length !== 0) || loading"
+            (click)="onSentence()"
+          >
+            Add
+          </button>
+        </nb-card-body>
+      </nb-card>
+      <div *ngIf="displayStory">
+        <tock-story
+          class="story"
+          [story]="story"
+          [fullDisplay]="true"
+          [displaySteps]="true"
+          [submit]="submit"
+        ></tock-story>
+      </div>
+    </tock-select-bot>
+  </nb-card-body>
+  <nb-card-footer
+    *ngIf="displayStory"
+    class="card-footer-actions"
+  >
+    <button
+      (click)="resetState()"
+      nbButton
+      ghost
+      size="small"
+    >
+      Cancel
+    </button>
+    <button
+      (click)="onReply()"
+      nbButton
+      size="small"
+      status="primary"
+    >
+      Create Story
+    </button>
+  </nb-card-footer>
+</nb-card>
+<div
+  *ngIf="displayStory"
+  class="current-analysis text-center mb-5"
+>
+  <hr class="divider" />
+  (or qualify)
+</div>
+<tock-sentence-analysis
+  *ngIf="sentence"
+  [sentence]="sentence"
+  (closed)="resetState()"
+  [displayProbabilities]="true"
+>
+</tock-sentence-analysis>

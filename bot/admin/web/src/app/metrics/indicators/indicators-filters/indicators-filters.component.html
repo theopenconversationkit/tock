@@ -1,0 +1,46 @@
+<form
+  [formGroup]="form"
+  class="grid"
+>
+  <nb-form-field>
+    <nb-icon
+      nbPrefix
+      icon="search-outline"
+    ></nb-icon>
+    <input
+      nbInput
+      fullWidth
+      fieldSize="medium"
+      placeholder="Search"
+      type="text"
+      formControlName="search"
+    />
+  </nb-form-field>
+
+  <nb-select
+    multiple
+    placeholder="Filter by dimensions"
+    fullWidth
+    optionsListClass="option-list--break-word"
+    formControlName="dimensions"
+  >
+    <nb-option
+      *ngFor="let dimension of dimensionsCache"
+      value="{{ dimension }}"
+    >
+      <span class="initial-capitalize">{{ dimension }}</span>
+    </nb-option>
+  </nb-select>
+
+  <button
+    *ngIf="isFiltered"
+    nbButton
+    nbTooltip="Clear all filters"
+    ghost
+    shape="round"
+    (click)="clearFilters()"
+    data-testid="clear-button"
+  >
+    <nb-icon icon="close-outline"></nb-icon>
+  </button>
+</form>

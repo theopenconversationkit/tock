@@ -12,6 +12,7 @@ import {
   NbFormFieldModule,
   NbIconModule,
   NbInputModule,
+  NbRouteTabsetModule,
   NbSelectModule,
   NbSpinnerModule,
   NbTabsetModule,
@@ -36,6 +37,7 @@ import { FaqManagementSettingsComponent } from './faq-management/faq-management-
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FaqService } from './services/faq.service';
 import { BotAnalyticsModule } from '../analytics/analytics.module';
+import { FaqTabsComponent } from './faq-tabs/faq-tabs.component';
 
 @NgModule({
   imports: [
@@ -46,7 +48,6 @@ import { BotAnalyticsModule } from '../analytics/analytics.module';
     MomentModule,
     SharedModule,
     ReactiveFormsModule,
-    NbAlertModule,
     NbAutocompleteModule,
     NbBadgeModule,
     NbButtonModule,
@@ -60,11 +61,11 @@ import { BotAnalyticsModule } from '../analytics/analytics.module';
     NbTagModule,
     NbTabsetModule,
     NbTooltipModule,
-    NbAutocompleteModule,
     NbAlertModule,
     NbChatModule,
     InfiniteScrollModule,
-    BotAnalyticsModule
+    BotAnalyticsModule,
+    NbRouteTabsetModule
   ],
   declarations: [
     FaqManagementComponent,
@@ -75,7 +76,8 @@ import { BotAnalyticsModule } from '../analytics/analytics.module';
     FaqManagementFiltersComponent,
     FaqManagementListComponent,
     FaqManagementEditComponent,
-    FaqManagementSettingsComponent
+    FaqManagementSettingsComponent,
+    FaqTabsComponent
   ],
   exports: [],
   providers: [FaqService]

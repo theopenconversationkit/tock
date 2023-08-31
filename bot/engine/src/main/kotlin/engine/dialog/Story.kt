@@ -61,6 +61,11 @@ data class Story(
      */
     val currentStep: StoryStep<*>? get() = definition.steps.asSequence().mapNotNull { findStep(it) }.firstOrNull()
 
+    /**
+     * True if the story handle metrics and is not a main tracked story
+     */
+    val metricStory get() = definition.metricStory
+
     private fun findStep(step: StoryStep<*>): StoryStep<*>? {
         if (step.name == this.step) {
             return step

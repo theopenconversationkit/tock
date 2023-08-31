@@ -1,3 +1,5 @@
+@import '@nebular/theme/styles/theming';
+
 @for $i from 1 through 4 {
   .gap-#{$i} {
     gap: #{$i}rem;
@@ -84,4 +86,14 @@ nb-card.selected {
 .nb-theme-default nb-tabset .tab-link,
 .nb-theme-dark nb-tabset .tab-link {
   padding: 1rem 1.5rem;
+}
+
+nb-icon[pack='material-icons'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.divider {
+  background-color: var(--color-basic-transparent-200);
 }

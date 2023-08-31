@@ -356,7 +356,7 @@ export class FaqManagementEditComponent implements OnChanges {
           });
           dialogRef.onClose.subscribe((result) => {
             if (result) {
-              if (result == createNewAction.toLowerCase()) {
+              if (result === createNewAction.toLocaleLowerCase()) {
                 faqData.intentName = this.generateIntentName(faqData);
               }
               this.save(faqData);

@@ -1,0 +1,63 @@
+export function heuristicValueColorDetection(value: string): string {
+  const positive = [
+    'true',
+    'yes',
+    'vrai',
+    'real',
+    'oui',
+    'si',
+    'да',
+    'ja',
+    '是的',
+    'satisfied',
+    'satisfait',
+    'positif',
+    'positive',
+    'good',
+    'bon',
+    'satisfecho',
+    'positivo',
+    'bien',
+    'correct',
+    'correcto',
+    'comprendido',
+    'compris',
+    'understood',
+    'richtig',
+    'verstanden',
+    'exacte',
+    'exact',
+    'exacto'
+  ];
+  const negative = [
+    'false',
+    'no',
+    'faux',
+    'falso',
+    'non',
+    'нет',
+    'nein',
+    '不',
+    'not satisfied',
+    'non satisfait',
+    'négatif',
+    'negative',
+    'bad',
+    'mauvais',
+    'no satisfecho',
+    'malo',
+    'incorrect',
+    'incorrecto',
+    'misunderstood',
+    'non compris',
+    'mal compris',
+    'incomprendido',
+    'falsch',
+    'falsch verstanden',
+    'inexacte',
+    'inaccurate'
+  ];
+  if (positive.includes(value.toLowerCase())) return '#91cc75';
+  if (negative.includes(value.toLowerCase())) return '#5470c6';
+  return undefined;
+}

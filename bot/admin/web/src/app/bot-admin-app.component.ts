@@ -80,28 +80,39 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
         hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqBotUser)
       },
       {
+        title: 'Custom Metrics',
+        icon: 'pie-chart-outline',
+        link: '/business-metrics',
+        hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqBotUser)
+      },
+      {
         title: 'Model Quality',
         icon: 'clipboard-outline',
         link: '/quality',
         hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {
-        title: 'FAQ Training',
-        icon: {
-          icon: 'school',
-          pack: 'material-icons'
-        },
-        link: '/faq/training',
-        hidden: !this.state.hasRole(UserRole.faqNlpUser)
+        title: 'FAQ',
+        icon: 'message-square-outline',
+        hidden: !this.state.hasRole(UserRole.faqBotUser),
+        children: [
+          {
+            link: '/faq/management',
+            title: 'Management',
+            icon: 'book-open-outline'
+          },
+          {
+            link: '/faq/training',
+            title: 'Training',
+            icon: 'checkmark-square-outline'
+          }
+        ]
       },
       {
-        title: 'FAQ Management',
-        icon: {
-          icon: 'question_answer',
-          pack: 'material-icons'
-        },
-        link: '/faq/management',
-        hidden: !this.state.hasRole(UserRole.faqBotUser)
+        title: 'FAQ training',
+        icon: 'checkmark-square-outline',
+        link: '/faq/training',
+        hidden: !this.state.hasRole(UserRole.faqNlpUser) || this.state.hasRole(UserRole.faqBotUser)
       },
       {
         title: 'Answers',

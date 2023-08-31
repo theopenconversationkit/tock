@@ -20,6 +20,8 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.indicators.metric.Metric
+import ai.tock.bot.admin.indicators.metric.MetricDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.Connector
@@ -77,7 +79,7 @@ object BotRepository {
 
     // load only specified configuration ids (dev mode)
     private val restrictedConfigurationIds: List<String> = listProperty("tock_restricted_configuration_id", emptyList())
-
+    private val statsMetricDAO: MetricDAO get() = injector.provide()
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableMap<BotProviderId, BotProvider> = ConcurrentHashMap()
@@ -577,4 +579,16 @@ object BotRepository {
             }
         }
     }
+
+    /**
+     * Delegation method to save one [Metric]
+     * @param metric a [Metric] to save
+     */
+    fun saveMetric(metric: Metric) = statsMetricDAO.save(metric)
+
+    /**
+     * Delegation method to save many [Metric]
+     * @param metrics a set of [Metric] to save
+     */
+    fun saveMetrics(metrics: List<Metric>) = statsMetricDAO.saveAll(metrics)
 }

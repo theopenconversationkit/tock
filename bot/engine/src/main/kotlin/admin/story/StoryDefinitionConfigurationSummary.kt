@@ -22,16 +22,43 @@ import org.litote.kmongo.Id
 import java.time.ZonedDateTime
 
 /**
- * Summary of [StoryDefinitionConfiguration].
+ * Summary of [StoryDefinitionConfiguration] with :
+ * - botId
+ * - description
+ * - intent
+ * - lastEdited
  */
-data class StoryDefinitionConfigurationSummary(
-    val _id: Id<StoryDefinitionConfiguration>,
-    val storyId: String,
+data class StoryDefinitionConfigurationSummaryExtended(
+    override val _id: Id<StoryDefinitionConfiguration>,
+    override val storyId: String,
     val botId: String,
-    val intent: IntentWithoutNamespace,
-    val currentType: AnswerConfigurationType,
-    val name: String = storyId,
-    val category: String = "default",
+    override val intent: IntentWithoutNamespace,
+    override val currentType: AnswerConfigurationType,
+    override val name: String = storyId,
+    override val category: String = "default",
     val description: String = "",
     val lastEdited: ZonedDateTime? = null
-)
+) : StoryDefinitionConfigurationSummaryBase
+
+/**
+ * Summary of [StoryDefinitionConfiguration] with :
+ * - isMetricStory
+ */
+data class StoryDefinitionConfigurationSummaryMinimumMetrics(
+    override val _id: Id<StoryDefinitionConfiguration>,
+    override val storyId: String,
+    override val intent: IntentWithoutNamespace,
+    override val currentType: AnswerConfigurationType,
+    override val name: String = storyId,
+    override val category: String = "default",
+    val metricStory: Boolean
+) : StoryDefinitionConfigurationSummaryBase
+
+interface StoryDefinitionConfigurationSummaryBase {
+    val _id: Id<StoryDefinitionConfiguration>
+    val storyId: String
+    val intent: IntentWithoutNamespace
+    val currentType: AnswerConfigurationType
+    val name: String
+    val category: String
+}
