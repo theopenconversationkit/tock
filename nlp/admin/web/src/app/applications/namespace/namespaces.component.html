@@ -102,7 +102,7 @@
         style="cursor: pointer"
       >
         <nb-action
-          *ngIf="n.owner"
+          *ngIf="n.owner && isAdmin()"
           class="control-item"
           (click)="manageUsers(n.namespace)"
           nbTooltip="Manage Users"
@@ -115,7 +115,7 @@
           </i>
         </nb-action>
         <nb-action
-          *ngIf="n.owner"
+          *ngIf="n.owner && isAdmin()"
           class="control-item"
           (click)="manageSharingSettings(n.namespace)"
           nbTooltip="Configure sharing settings"

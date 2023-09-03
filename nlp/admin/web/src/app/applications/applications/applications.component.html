@@ -24,6 +24,7 @@
         *ngIf="!uploadDump"
       >
         <nb-action
+          *ngIf="isAdmin()"
           class="control-item create"
           routerLink="create"
           nbTooltip="Create new application"
@@ -31,6 +32,7 @@
           <i class="material-icons tock-toolbar-menu">add_box</i>
         </nb-action>
         <nb-action
+          *ngIf="isAdmin()"
           class="control-item"
           (click)="showUploadDumpPanel()"
           nbTooltip="Upload dump"
@@ -78,6 +80,7 @@
         style="cursor: pointer"
       >
         <nb-action
+          *ngIf="isAdmin()"
           class="control-item"
           (click)="downloadDump(app)"
           nbTooltip="Download an application dump"
@@ -89,6 +92,7 @@
           >
         </nb-action>
         <nb-action
+          *ngIf="isAdmin()"
           class="control-item"
           (click)="downloadSentencesDump(app)"
           nbTooltip="Download a sentences dump"
@@ -101,6 +105,7 @@
         </nb-action>
 
         <nb-action
+          *ngIf="isAdmin()"
           class="control-item"
           routerLink="edit/{{ app._id }}"
           nbTooltip="Edit"

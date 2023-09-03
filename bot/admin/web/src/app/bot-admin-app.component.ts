@@ -123,8 +123,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
       {
         title: 'Settings',
         icon: 'settings-outline',
-        link: '/configuration',
-        hidden: !this.state.hasRole(UserRole.admin)
+        link: '/configuration'
       }
     ];
   }

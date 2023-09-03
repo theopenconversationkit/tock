@@ -63,8 +63,12 @@ export class NamespacesComponent implements OnInit {
       .subscribe((_) => this.authService.loadUser().subscribe((_) => this.applicationService.resetConfiguration));
   }
 
+  isAdmin(): boolean {
+    return this.state.hasRole(UserRole.admin);
+  }
+
   canCreateNamespace(): boolean {
-    return this.state.hasRole(UserRole.admin) && this.applicationConfig.canCreateNamespace();
+    return this.isAdmin() && this.applicationConfig.canCreateNamespace();
   }
 
   displayCreate() {

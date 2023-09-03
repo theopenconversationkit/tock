@@ -33,6 +33,10 @@ export class ApplicationsComponent {
 
   constructor(private toastrService: NbToastrService, public state: StateService, private applicationService: ApplicationService) {}
 
+  isAdmin(): boolean {
+    return this.state.hasRole(UserRole.admin);
+  }
+
   selectApplication(app: Application) {
     this.state.changeApplication(app);
     this.toastrService.show(`Application ${app.name} selected`, 'Selection', { duration: 2000 });

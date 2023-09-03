@@ -47,12 +47,13 @@ export class ConfigurationTabsComponent implements OnInit {
     }
   ];
 
-  configurationTabLinks = this.tabs;
+  configurationTabLinks;
 
   constructor(private router: Router, private state: StateService) {
     if (!state.hasRole(UserRole.technicalAdmin)) {
       this.tabs = this.tabs.filter((t) => t.route !== 'users/logs');
     }
+    this.configurationTabLinks = this.tabs;
   }
 
   ngOnInit() {
