@@ -31,16 +31,16 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.9.0</kotlin>
-        <coroutine>1.7.2</coroutine>
+        <kotlin>1.9.10</kotlin>
+        <coroutine>1.7.3</coroutine>
 
         <slf4j>2.0.7</slf4j>
-        <logback>1.4.8</logback>
+        <logback>1.4.11</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.9.0</kmongo>
+        <kmongo>4.10.0</kmongo>
         <jackson>2.15.2</jackson>
         <jackson-databind>2.15.2</jackson-databind>
         <jackson-module>2.15.2</jackson-module>
@@ -48,13 +48,13 @@
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>4.4.4</vertx>
+        <vertx>4.4.5</vertx>
         <retrofit>2.9.0</retrofit>
         <okhttp>4.10.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
-        <guava>32.1.1-jre</guava>
+        <guava>32.1.2-jre</guava>
         <google-auth>1.34.1</google-auth>
         <google-http-client>1.43.3</google-http-client>
         <jasypt>1.9.3</jasypt>
@@ -62,22 +62,22 @@
         <commons-text>1.10.0</commons-text>
         <emoji>5.1.1</emoji>
         <commons-codec>1.16.0</commons-codec>
-        <commons-lang>3.12.0</commons-lang>
+        <commons-lang>3.13.0</commons-lang>
         <commonmark>0.21.0</commonmark>
         <json>20230618</json>
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.19.0</google>
-        <aws-sdk>1.12.510</aws-sdk>
+        <google>26.22.0</google>
+        <aws-sdk>1.12.543</aws-sdk>
         <pac4j>5.7.0</pac4j>
         <vertx-pac4j>6.0.1</vertx-pac4j>
 
-        <junit-jupiter>5.9.2</junit-jupiter>
+        <junit-jupiter>5.10.0</junit-jupiter>
 
-        <mockk>1.13.5</mockk>
+        <mockk>1.13.7</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.14.5</byte-buddy>
+        <byte-buddy>1.14.7</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M7</plugin.surefire>
