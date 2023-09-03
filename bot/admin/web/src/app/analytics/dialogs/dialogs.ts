@@ -32,7 +32,8 @@ export class DialogReportQuery extends PaginatedQuery {
     public intentName?: string,
     public connectorType?: ConnectorType,
     public displayTests?: boolean,
-    public ratings?: number[]
+    public ratings?: number[],
+    public applicationId?: string
   ) {
     super(namespace, applicationName, language, start, size);
   }

@@ -144,6 +144,14 @@ export class AnalyticsService {
     return this.rest.post(
       '/analytics/satisfaction', this.state.createApplicationScopedQuery());
   }
+
+  downloadDialogsCsv(dialogReportQuery: DialogReportQuery): Observable<Blob> {
+    return this.rest.post('/dialogs/ratings/export',dialogReportQuery, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
+  }
+
+  downloadDialogsWithIntentsCsv(dialogReportQuery: DialogReportQuery): Observable<Blob> {
+    return this.rest.post('/dialogs/ratings/intents/export',dialogReportQuery, (r) => new Blob([r], { type: 'text/csv;charset=utf-8' }));
+  }
 }
 
 export class BooleanResponse {

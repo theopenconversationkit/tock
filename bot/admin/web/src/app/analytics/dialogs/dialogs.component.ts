@@ -29,6 +29,7 @@ import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { ConnectorType } from '../../core/model/configuration';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { NbToastrService } from '@nebular/theme';
+import { saveAs } from 'file-saver-es';
 
 @Component({
   selector: 'tock-dialogs',
@@ -39,6 +40,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   filter: DialogFilter = new DialogFilter(true, false);
   state: StateService;
   connectorTypes: ConnectorType[] = [];
+  configurationNameList: string[];
   private loaded = false;
   @Input() ratingFilter: number[];
 
@@ -52,8 +54,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   ) {
     super(state);
     this.state = state;
-    this.botConfiguration.configurations.subscribe((_) => {
+    this.botConfiguration.configurations.subscribe(configs => {
       this.isSatisfactionRoute().subscribe( res => {
+          this.configurationNameList = configs.filter(item=> item.targetConfigurationId == null).map(item=> item.applicationId);
           if (res) {
             this.ratingFilter = [1, 2, 3, 4, 5];
           }
@@ -113,8 +116,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
       this.filter.intentName,
       this.filter.connectorType,
       this.filter.displayTests,
-      this.ratingFilter
-    );
+      this.ratingFilter,
+      this.filter.configuration);
   }
 
   addDialogToTestPlan(planId: string, dialog: DialogReport) {
@@ -134,6 +137,34 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
       }),
     )
   }
+
+  private buildDialogSatisfactionQuery(): DialogReportQuery {
+    return new DialogReportQuery(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      this.state.currentLocale,
+      null,
+      null,
+      true,
+      null,
+      null,
+      null,
+      null,
+      null,
+      false,
+      [1,2,3,4,5],
+      null
+    );
+  }
+
+  exportDialogs(){
+    this.analytics.downloadDialogsCsv(this.buildDialogSatisfactionQuery()).subscribe((blob) => {
+      saveAs(blob, 'dialogs_with_rating.csv');
+    });
+    this.analytics.downloadDialogsWithIntentsCsv(this.buildDialogSatisfactionQuery()).subscribe((blob) => {
+      saveAs(blob, 'dialogs_with_rating_and_intents.csv');
+    });
+  }
 }
 
 export class DialogFilter {
@@ -144,6 +175,7 @@ export class DialogFilter {
     public text?: string,
     public intentName?: string,
     public connectorType?: ConnectorType,
-    public ratings?: number[]
+    public ratings?: number[],
+    public configuration? : string
   ) {}
 }

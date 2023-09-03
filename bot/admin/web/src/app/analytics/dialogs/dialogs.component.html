@@ -15,8 +15,9 @@
   -->
 
 <div class="dialogs">
-  <nb-card  *ngIf="!(isSatisfactionRoute()| async)">
+  <nb-card >
     <nb-card-body>
+      <ng-container *ngIf="!(isSatisfactionRoute()| async); else satisfaction">
       <span class="search-input">
         <input
           nbInput
@@ -26,12 +27,13 @@
           (keyup.enter)="refresh()"
         />
       </span>
-      <nb-checkbox
-        class="exact"
-        [(ngModel)]="filter.exactMatch"
-        >Exact text match</nb-checkbox
-      >
-      <span>
+        <nb-checkbox
+          class="exact"
+          [(ngModel)]="filter.exactMatch"
+        >Exact text match
+        </nb-checkbox
+        >
+        <span>
         <nb-select
           class="select-plan"
           status="primary"
@@ -42,12 +44,12 @@
           <nb-option
             *ngFor="let c of connectorTypes"
             [value]="c"
-            >{{ c.id }}</nb-option
+          >{{ c.id }}</nb-option
           >
         </nb-select>
       </span>
-      &nbsp;
-      <span>
+        &nbsp;
+        <span>
         <nb-select
           class="select-plan"
           status="primary"
@@ -65,21 +67,55 @@
           <nb-option value="unknown">Unknown</nb-option>
         </nb-select>
       </span>
-      &nbsp;
-      <mat-slide-toggle
-        class="test"
-        [(ngModel)]="filter.displayTests"
-        (change)="waitAndRefresh()"
-        >Display tests</mat-slide-toggle
-      >
-      <button
-        nbButton
-        (click)="refresh()"
-        size="small"
-        style="margin-left: 10px"
-      >
-        GO
-      </button>
+        &nbsp;
+        <mat-slide-toggle
+          class="test"
+          [(ngModel)]="filter.displayTests"
+          (change)="waitAndRefresh()"
+        >Display tests
+        </mat-slide-toggle
+        >
+        <button
+          nbButton
+          (click)="refresh()"
+          size="small"
+          style="margin-left: 10px"
+        >
+          GO
+        </button>
+      </ng-container>
+      <ng-template #satisfaction>
+            <nb-select
+              class="select-plan"
+              status="primary"
+              placeholder="Configuration"
+              [(ngModel)]="filter.configuration"
+              (selectedChange)="refresh()"
+            >
+              <nb-option value="">All</nb-option>
+              <nb-option
+                *ngFor="let config of configurationNameList"
+                [value]="config"
+              >
+                {{ config }}
+              </nb-option>
+            </nb-select>
+            <mat-slide-toggle
+              class="test"
+              [(ngModel)]="filter.displayTests"
+              (change)="waitAndRefresh()"
+            >Display tests
+            </mat-slide-toggle
+            >
+            <button
+              nbButton
+              ghost
+              (click)="exportDialogs()"
+              matTooltip="Export All Dialogs With Ratings"
+            >
+              <mat-icon>file_download</mat-icon>
+            </button>
+      </ng-template>
     </nb-card-body>
   </nb-card>
   <div *ngIf="total !== -1">

@@ -54,7 +54,9 @@ import ai.tock.bot.engine.config.SATISFACTION_MODULE_ID
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.config.UploadedFilesService.downloadFile
 import ai.tock.bot.engine.dialog.DialogFlowDAO
+import ai.tock.bot.engine.message.Sentence
 import ai.tock.nlp.admin.AdminVerticle
+import ai.tock.nlp.admin.CsvCodec
 import ai.tock.nlp.admin.model.ApplicationScopedQuery
 import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
@@ -321,6 +323,64 @@ open class BotAdminVerticle : AdminVerticle() {
                 unauthorized()
             }
         }
+
+        blockingJsonPost(
+            "/dialogs/ratings/export",
+            setOf(botUser, faqNlpUser, faqBotUser)
+        ) { context, query: DialogsSearchQuery ->
+            if (context.organization == query.namespace) {
+                val sb = StringBuilder()
+                val printer = CsvCodec.newPrinter(sb)
+                printer.printRecord(listOf("Timestamp","Dialog ID", "Note", "Commentaire"))
+                BotAdminService.search(query)
+                    .dialogs
+                    .forEach { label ->
+                            printer.printRecord(
+                                        listOf(
+                                            label.actions.first().date,
+                                            label.id,
+                                            label.rating,
+                                            label.review,
+                                        )
+                            )
+                    }
+                 sb.toString()
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost(
+            "/dialogs/ratings/intents/export",
+            setOf(botUser, faqNlpUser, faqBotUser)
+        ) { context, query: DialogsSearchQuery ->
+            if (context.organization == query.namespace) {
+                val sb = StringBuilder()
+                val printer = CsvCodec.newPrinter(sb)
+                printer.printRecord(listOf("Timestamp", "Intent", "Dialog ID", "Player Type", "Application ID", "Message"))
+                BotAdminService.search(query)
+                    .dialogs
+                    .forEach { dialog ->
+                        dialog.actions.forEach {
+                            printer.printRecord(
+                                listOf(
+                                    it.date,
+                                    it.intent,
+                                    dialog.id,
+                                    it.playerId.type,
+                                    it.applicationId,
+                                    if (it.message.isSimpleMessage()) it.message.toPrettyString().replace("\n"," ") else (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }.replace("\n"," ")
+                                )
+                            )
+                        }
+                    }
+                sb.toString()
+
+            } else {
+                unauthorized()
+            }
+        }
+
 
         blockingJsonGet("/dialog/:applicationId/:dialogId", setOf(botUser, faqBotUser)) { context ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
