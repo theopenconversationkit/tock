@@ -25,7 +25,7 @@ import java.time.Instant
  */
 data class FaqDefinitionDetailed(
     /**
-     * The unique [Id] of the intent.
+     * The unique [Id] of the faq.
      */
     val _id: Id<FaqDefinition>?,
 
@@ -33,6 +33,11 @@ data class FaqDefinitionDetailed(
      * The bot id (that corresponds to the application name).
      */
     val botId: String,
+
+    /**
+     * The bot namespace
+     */
+    val namespace: String,
 
     /**
      * The intent id.

@@ -84,11 +84,11 @@ object FaqAdminService {
 
     /**
      * Make migration:
-     * replace applicationId attribute (referred to Application's _id) by botId attribute (referred to Application's name)
+     * add namespace attribute (referred to Intent's _id) by namespace attribute (referred to Intent's namespace)
      */
     fun makeMigration() {
         faqDefinitionDAO.makeMigration {
-            applicationDAO.getApplicationById(it)?.name
+            intentDAO.getIntentById(it)?.namespace
         }
     }
 
@@ -181,6 +181,7 @@ object FaqAdminService {
             FaqDefinition(
                 _id = existingFaq._id,
                 botId = existingFaq.botId,
+                namespace = existingFaq.namespace,
                 intentId = existingFaq.intentId,
                 i18nId = existingFaq.i18nId,
                 tags = query.tags,
@@ -193,6 +194,7 @@ object FaqAdminService {
             FaqDefinition(
                 botId = application.name,
                 intentId = intent._id,
+                namespace = application.namespace,
                 i18nId = i18nLabel._id,
                 tags = query.tags,
                 enabled = query.enabled,

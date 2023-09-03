@@ -74,9 +74,9 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
     private val mockedApplicationDefinition = ApplicationDefinition(_id= applicationId, name = botId,label=botId, namespace = namespace)
 
-    private val faqDefinition = FaqDefinition(faqId, botId, intentId, i18nId, tagList, true, now, now)
-    private val faq2Definition = FaqDefinition(faqId2,  botId, intentId2, i18nId2, tagList, true, now, now)
-    private val faq3Definition = FaqDefinition(faqId3,botId2, intentId3, i18nId3, tagList, true, now, now)
+    private val faqDefinition = FaqDefinition(faqId, botId, namespace, intentId, i18nId, tagList, true, now, now)
+    private val faq2Definition = FaqDefinition(faqId2,  botId,namespace, intentId2, i18nId2, tagList, true, now, now)
+    private val faq3Definition = FaqDefinition(faqId3,botId2,namespace, intentId3, i18nId3, tagList, true, now, now)
 
     private val col: MongoCollection<FaqDefinition> by lazy { FaqDefinitionMongoDAO.col }
 
@@ -195,6 +195,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             FaqDefinition(
                 faqId2,
                 botId,
+                namespace,
                 intentId2,
                 i18nId2,
                 tagList2,
@@ -212,6 +213,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             FaqDefinition(
                 faqId3,
                 botId,
+                namespace,
                 intentId3,
                 i18nId3,
                 tagList3,
@@ -241,7 +243,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
 
         assertEquals(2, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
 
-        faqDefinitionDao.deleteFaqDefinitionByBotId(botId1)
+        faqDefinitionDao.deleteFaqDefinitionByBotIdAndNamespace(botId1,namespace)
 
         assertEquals(0, faqDefinitionDao.getFaqDefinitionByBotId(botId1).size)
         assertEquals(1, faqDefinitionDao.getFaqDefinitionByBotId(botId2).size)
@@ -271,6 +273,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             FaqDefinition(
                 faqId3,
                 botId,
+                namespace,
                 intentId3,
                 i18nId,
                 otherTagList,
@@ -539,17 +542,57 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
             message = "There should be three faq"
         )
 
+        //The last faq in the search list should be the first created because of the creation date order
         assertEquals(
             //compare list of faq
             searchFound.first.last()._id,
             firstFaq._id,
             "The last faq in the list should be the first created because of the creation date order"
         )
+
+        assertEquals(
+            searchFound.first.last().botId,
+            firstFaq.botId,
+            "botId is different than expected"
+        )
+
+        assertEquals(
+            searchFound.first.last().intentId,
+            firstFaq.intentId,
+            "intentId is different than expected"
+        )
+
+        assertEquals(
+            searchFound.first.last().namespace,
+            firstFaq.namespace,
+            "namespace is different than expected"
+        )
+
+        //The first faq in the list should be the last created because of the creation date order
         assertEquals(
             searchFound.first.first()._id,
             lastFaq._id,
             "The first faq in the list should be the last created because of the creation date order"
         )
+
+        assertEquals(
+            searchFound.first.first().intentId,
+            lastFaq.intentId,
+            "intentId is different than expected"
+        )
+
+        assertEquals(
+            searchFound.first.first().botId,
+            lastFaq.botId,
+            "The first faq in the list should be the last created because of the creation date order"
+        )
+
+        assertEquals(
+            searchFound.first.first().namespace,
+            lastFaq.namespace,
+            "namespace is different than expected"
+        )
+
     }
 
     private fun `A faqDefinition search with empty utterance`() {
@@ -613,7 +656,7 @@ class FaqDefinitionMongoDAOTest : AbstractTest() {
     ): FaqDefinition {
 
         val faqDefinition =
-            FaqDefinition(faqId,  botId, intentId, i18nId, tagList, enabled, instant, instant)
+            FaqDefinition(faqId,  botId, namespace, intentId, i18nId, tagList, enabled, instant, instant)
 
         val createdIntent = IntentDefinition(
             faqName,

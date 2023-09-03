@@ -99,7 +99,8 @@ object ApplicationConfigurationService :
         intentDAO.getIntentsByApplicationId(id).forEach { intent ->
             removeIntentFromApplication(app, intent._id)
         }
-        faqDefinitionDAO.deleteFaqDefinitionByBotId(app.name)
+
+        faqDefinitionDAO.deleteFaqDefinitionByBotIdAndNamespace(app.name, app.namespace)
         applicationDAO.deleteApplicationById(id)
     }
 

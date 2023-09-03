@@ -42,7 +42,7 @@ import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.Instant.now
 import java.time.temporal.ChronoUnit
-import java.util.Locale
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -114,10 +114,11 @@ class ApplicationCodecServiceTest : AbstractTest() {
     }
 
     @Test
-    fun `importing existing app with a new faq`() {
+    fun `GIVEN existing app WHEN importing with a new faq SHOULD import the new faq`() {
 
         val faq = FaqDefinition(
             botId = app.name,
+            namespace = namespace,
             intentId= defaultIntentDefinition._id,
             i18nId= newId<I18nLabel>(),
             tags = listOf("TAG1", "TAG2"),
@@ -138,6 +139,41 @@ class ApplicationCodecServiceTest : AbstractTest() {
             context.config.save(
                 match<FaqDefinition> {
                     it.tags.containsAll(listOf("TAG1", "TAG2"))
+                    it.namespace === "namespace"
+                    it.i18nId.toString().startsWith(namespace)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `GIVEN existing app WHEN importing with a new faq with other namespace for i18nId SHOULD update the i18n according to the current application`(){
+
+        val faq = FaqDefinition(
+            botId = app.name,
+            namespace = namespace,
+            intentId= defaultIntentDefinition._id,
+            i18nId= "otherNamespace_faq_theI18nd".toId(),
+            tags = listOf("TAG1", "TAG2"),
+            enabled = false,
+            creationDate= now,
+            updateDate = now,
+        )
+        val dump = ApplicationDump(
+            application = app,
+            intents = listOf(defaultIntentDefinition),
+            faqs = listOf(faq)
+        )
+
+        every { context.config.getFaqDefinitionByIntentId(any())} returns null
+        val report = ApplicationCodecService.import(namespace, dump)
+        assertTrue(report.modified)
+        verify {
+            context.config.save(
+                match<FaqDefinition> {
+                    it.tags.containsAll(listOf("TAG1", "TAG2"))
+                    it.namespace === namespace
+                    it.i18nId.toString().startsWith(namespace)
                 }
             )
         }

@@ -22,10 +22,11 @@ import java.time.Instant
 
 /**
  * Faq result after queried
+ * Please note when updating the model, consider to update the group pipeline result in [FaqDefintionMongoDAO] in DocumentDb Mode
  */
 data class FaqQueryResult(
     /**
-     * The unique [Id] of the intent.
+     * The unique [Id] of the faq.
      */
     val _id: Id<FaqDefinition>?,
 
@@ -33,6 +34,11 @@ data class FaqQueryResult(
      * The bot id (that corresponds to the application name).
      */
     val botId: String,
+
+    /**
+     * The bot namespace
+     */
+    val namespace: String,
 
     /**
      * The intent id.
@@ -87,6 +93,7 @@ data class FaqQueryResult(
         return FaqDefinitionDetailed(
             faqQueryResult._id,
             faqQueryResult.botId,
+            faqQueryResult.namespace,
             faqQueryResult.intentId,
             faqQueryResult.i18nId,
             faqQueryResult.tags,

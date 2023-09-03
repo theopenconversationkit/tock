@@ -17,6 +17,7 @@
 package ai.tock.nlp.front.storage.mongo
 
 import ai.tock.nlp.front.service.storage.FaqDefinitionDAO
+import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.Classification
 import ai.tock.nlp.front.shared.config.ClassifiedSentence
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -25,7 +26,6 @@ import ai.tock.nlp.front.shared.config.FaqDefinitionTag
 import ai.tock.nlp.front.shared.config.FaqQuery
 import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.IntentDefinition
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.ensureIndex
 import ai.tock.shared.isDocumentDB
 import ai.tock.shared.watch
@@ -47,11 +47,9 @@ import org.litote.kmongo.descending
 import org.litote.kmongo.div
 import org.litote.kmongo.document
 import org.litote.kmongo.ensureUniqueIndex
-import org.litote.kmongo.newId
-import org.litote.kmongo.exists
-import org.litote.kmongo.save
 import org.litote.kmongo.eq
 import org.litote.kmongo.excludeId
+import org.litote.kmongo.exists
 import org.litote.kmongo.expr
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -65,11 +63,13 @@ import org.litote.kmongo.limit
 import org.litote.kmongo.lookup
 import org.litote.kmongo.match
 import org.litote.kmongo.ne
+import org.litote.kmongo.newId
 import org.litote.kmongo.or
 import org.litote.kmongo.project
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.save
 import org.litote.kmongo.skip
 import org.litote.kmongo.sort
 import org.litote.kmongo.unwind
@@ -108,8 +108,8 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
         col.deleteOneById(id)
     }
 
-    override fun deleteFaqDefinitionByBotId(id: String) {
-        col.deleteMany(FaqDefinition::botId eq id)
+    override fun deleteFaqDefinitionByBotIdAndNamespace(id: String, namespace: String) {
+        col.deleteMany(and(FaqDefinition::botId eq id, FaqDefinition::namespace eq namespace))
     }
 
     override fun getFaqDefinitionById(id: Id<FaqDefinition>): FaqDefinition? {
@@ -215,44 +215,50 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
     /**
      * @see FaqDefinitionDAO.makeMigration
      */
-    override fun makeMigration(botIdSupplier: (Id<ApplicationDefinition>) -> String?) {
+    override fun makeMigration(intentIdSupplier: (Id<IntentDefinition>) -> String?) {
 
         // Faq projection represents the old structure of FaqDefinition
+        // May 2023
         data class FaqProjection(
             val _id: Id<FaqDefinition> = newId(),
-            val applicationId: Id<ApplicationDefinition>?,
+            val botId: String,
             val intentId: Id<IntentDefinition>,
             val i18nId: Id<I18nLabel>,
             val tags: List<String>,
             val enabled: Boolean,
             val creationDate: Instant,
-            val updateDate: Instant
+            val updateDate: Instant,
         )
 
-        col.aggregate<FaqProjection>(match(FaqDefinition::botId exists false)).forEach { projection ->
+        col.aggregate<FaqProjection>(
+            match(
+                FaqDefinition::namespace exists false,
+                // to ensure old faq migration if not done (see Tock version 23.3.0)
+                FaqDefinition::botId exists true
+            )
+        ).forEach { projection ->
             thread(true) {
 
-                if (projection.applicationId != null) {
-                    with(projection) {
-                        logger.info { "Migrate FaqDefinition with applicationId $applicationId and intendId $intentId" }
+                with(projection) {
 
-                        val botId = botIdSupplier.invoke(applicationId!!)
-                            ?: throw Exception("Fail to migrate Faq with intent $intentId  due to Application not found with id $applicationId")
 
-                        FaqDefinition(
-                            _id,
-                            botId,
-                            intentId,
-                            i18nId,
-                            tags,
-                            enabled,
-                            creationDate,
-                            updateDate
-                        )
-                    }.let { faq -> col.save(faq) }
-                } else {
-                    logger.warn { "Migrate FaqDefinition - applicationId=Null, faq=$projection" }
-                }
+                    val namespace = intentIdSupplier.invoke(intentId)
+                        ?: throw Exception("Fail to migrate Faq with intent $intentId  due to namespace not found with id $intentId")
+
+                    logger.info { "Migrate FaqDefinition ${projection._id} with namespace $namespace" }
+
+                    FaqDefinition(
+                        _id,
+                        botId,
+                        namespace,
+                        intentId,
+                        i18nId,
+                        tags,
+                        enabled,
+                        creationDate,
+                        updateDate
+                    )
+                }.let { faq -> col.save(faq) }
             }
         }
     }
@@ -410,6 +416,7 @@ object FaqDefinitionMongoDAO : FaqDefinitionDAO {
             listOf(
                 FaqQueryResult::botId first FaqQueryResult::botId,
                 FaqQueryResult::intentId first FaqQueryResult::intentId,
+                FaqQueryResult::namespace first FaqQueryResult::namespace,
                 FaqQueryResult::i18nId first FaqQueryResult::i18nId,
                 FaqQueryResult::tags first FaqQueryResult::tags,
                 FaqQueryResult::enabled first FaqQueryResult::enabled,

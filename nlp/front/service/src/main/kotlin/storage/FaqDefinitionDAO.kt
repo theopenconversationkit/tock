@@ -28,7 +28,11 @@ interface FaqDefinitionDAO {
 
     fun deleteFaqDefinitionById(id: Id<FaqDefinition>)
 
-    fun deleteFaqDefinitionByBotId(id: String)
+    /**
+     * Delete the FaqDefinition by filtering on the application [id][ApplicationDefinition]
+     * @param id the application name [ApplicationDefinition]
+     */
+    fun deleteFaqDefinitionByBotIdAndNamespace(id: String, namespace: String)
 
     fun save(faqDefinition: FaqDefinition)
 
@@ -75,7 +79,7 @@ interface FaqDefinitionDAO {
 
     /**
      * Make migration
-     * @param botIdSupplier : function that return a string (the botId) with a given Id<>
+     * @param intentIdSupplier : function that return a namespace with a given Id<>
      */
-    fun makeMigration(botIdSupplier: (Id<ApplicationDefinition>) -> String?)
+    fun makeMigration(intentIdSupplier: (Id<IntentDefinition>) -> String?)
 }

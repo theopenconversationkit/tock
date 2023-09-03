@@ -51,6 +51,7 @@ import ai.tock.shared.provide
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
 import ai.tock.shared.supportedLanguages
 import ai.tock.shared.withoutNamespace
+import ai.tock.translator.I18nLabel
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -297,10 +298,15 @@ internal object ApplicationCodecService : ApplicationCodec {
                 val intentDB = config.getIntentByNamespaceAndName(namespace, intentDump.name)!!
                 val faq = config.getFaqDefinitionByIntentId(intentDB._id)
                 if(faq == null) {
+                    // update i18nId namespace for import current namespace
+                    val i18nOldNamespace = it.i18nId.namespace()
+                    val newI18nId = it.i18nId.toString().replaceFirst(i18nOldNamespace,namespace)
                     val newFaq = it.copy(
                         _id = newId(),
                         botId =  botId,
-                        intentId = intentDB._id
+                        namespace = namespace,
+                        intentId = intentDB._id,
+                        i18nId = newI18nId.toId()
                     )
                     report.add(newFaq)
                     config.save(newFaq)
@@ -324,6 +330,11 @@ internal object ApplicationCodecService : ApplicationCodec {
 
         return report
     }
+
+    /**
+     * Retrieve namespace from i18nLabel
+     */
+    fun Id<I18nLabel>.namespace() : String = this.toString().substringBefore('_')
 
     override fun importSentences(namespace: String, dump: SentencesDump): ImportReport {
         logger.info { "Import Sentences dump..." }
