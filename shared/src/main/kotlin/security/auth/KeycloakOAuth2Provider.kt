@@ -18,6 +18,7 @@ package ai.tock.shared.security.auth
 
 import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultNamespace
 import ai.tock.shared.injector
 import ai.tock.shared.intProperty
 import ai.tock.shared.mapProperty

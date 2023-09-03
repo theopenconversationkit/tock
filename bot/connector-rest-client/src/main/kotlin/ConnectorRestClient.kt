@@ -18,6 +18,9 @@ package ai.tock.bot.connector.rest.client
 
 import ai.tock.bot.connector.rest.client.model.ClientMessageRequest
 import ai.tock.bot.connector.rest.client.model.ClientMessageResponse
+import ai.tock.shared.Level
+import ai.tock.shared.longProperty
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -26,14 +29,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.time.Duration
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -41,8 +40,6 @@ import java.util.concurrent.TimeUnit
 class ConnectorRestClient(
     private val baseUrl: String = System.getenv("tock_bot_rest_url") ?: "http://localhost:8888"
 ) {
-
-    private fun longProperty(name: String, defaultValue: Long): Long = System.getenv(name)?.toLong() ?: defaultValue
 
     private val restCache: Cache<String, ConnectorRestService> =
         CacheBuilder.newBuilder().expireAfterAccess(Duration.ofHours(1)).build()
@@ -60,17 +57,12 @@ class ConnectorRestClient(
             mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
 
             val timeout = longProperty("tock_bot_rest_client_request_timeout_ms", 20000)
-            val retrofit = Retrofit.Builder()
+            val retrofit = retrofitBuilderWithTimeoutAndLogger(
+                ms = timeout,
+                level = Level.BODY,
+            )
                 .baseUrl("$baseUrl/$p/")
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
-                .client(
-                    OkHttpClient.Builder()
-                        .readTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .connectTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .writeTimeout(timeout, TimeUnit.MILLISECONDS)
-                        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                        .build()
-                )
                 .build()
             retrofit.create(ConnectorRestService::class.java)
         }
