@@ -15,24 +15,21 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import { Component, Injectable, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotService } from '../../bot-service';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
-import { StoryDefinitionConfiguration, StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../model/story';
-import { Subscription } from 'rxjs';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../model/story';
+import { Subject, takeUntil } from 'rxjs';
 import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import { CanDeactivate } from '@angular/router';
-import { LocationStrategy } from '@angular/common';
-import { NbToastrService } from '@nebular/theme';
+import { Router } from '@angular/router';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
+import { StoriesFilters } from './stories-filter/stories-filter.component';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { BotApplicationConfiguration } from '../../../core/model/configuration';
+import { StoriesUploadComponent } from './stories-upload/stories-upload.component';
 
-interface TreeNode<T> {
-  data: T;
-  children?: TreeNode<T>[];
-  expanded?: boolean;
-}
+export type StoriesByCategory = { category: string; stories: StoryDefinitionConfigurationSummary[] };
 
 @Component({
   selector: 'tock-search-story',
@@ -40,61 +37,154 @@ interface TreeNode<T> {
   styleUrls: ['./search-story.component.scss']
 })
 export class SearchStoryComponent implements OnInit, OnDestroy {
-  stories: StoryDefinitionConfigurationSummary[];
-  categories: string[] = [];
-  selectedStory: StoryDefinitionConfiguration;
+  destroy = new Subject();
 
-  categoryColumn = 'Story';
-  intentColumn = 'Main Intent';
-  descriptionColumn = 'Description';
-  lastEditedColumn = 'Last Edited';
-  actionsColumn = 'Actions';
-  allColumns = [this.categoryColumn, this.intentColumn, this.descriptionColumn, this.lastEditedColumn, this.actionsColumn];
-  nodes: TreeNode<any>[];
-  private lastExpandableState: Map<string, boolean> = new Map<string, boolean>();
-  dateFormat = 'dd/MM/yyyy HH:mm';
+  configurations: BotApplicationConfiguration[];
 
-  filter: string = '';
-  category: string = '';
-  onlyConfigured: boolean = true;
   loading: boolean = false;
-  sortedByDate: boolean = false;
-  lastFilter: string = this.filter;
 
-  displayUpload: boolean = false;
-  uploader: FileUploader;
+  stories: StoryDefinitionConfigurationSummary[];
 
-  private subscription: Subscription;
+  storiesFilters: StoriesFilters = { configuredStoriesOnly: true };
+  filteredStories: StoryDefinitionConfigurationSummary[];
+
+  displayStoriesByCategory: boolean = true;
+  categories: string[] = [];
+  storyCategories: StoriesByCategory[];
 
   constructor(
-    private nlp: NlpService,
     public state: StateService,
     private bot: BotService,
     private dialogService: DialogService,
     private toastrService: NbToastrService,
-    private location: LocationStrategy,
-    private backButtonHolder: BackButtonHolder
-  ) {}
-
-  ngOnInit(): void {
-    // check if back or forward button is pressed.
-    this.location.onPopState(() => {
-      this.backButtonHolder.backButton = true;
-      return false;
-    });
-    this.search();
-    this.subscription = this.state.configurationChange.subscribe((_) => this.search());
+    private router: Router,
+    private botConfiguration: BotConfigurationService,
+    private nbDialogService: NbDialogService
+  ) {
+    const cat = this.router.getCurrentNavigation().extras?.state?.category;
+    if (cat) this.expandedCategory = cat;
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+  ngOnInit(): void {
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
+      this.configurations = confs;
+
+      if (confs.length) {
+        this.search();
+      } else {
+        this.stories = undefined;
+        this.filteredStories = undefined;
+        this.storyCategories = undefined;
+      }
+    });
+  }
+
+  search() {
+    this.loading = true;
+    this.bot
+      .searchStories(
+        new StorySearchQuery(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          this.state.currentLocale,
+          0,
+          10000,
+          '',
+          '',
+          false
+        )
+      )
+      .subscribe((stories) => {
+        this.stories = stories;
+        this.filterStories();
+        this.computeStoriesCategories();
+        this.loading = false;
+      });
+  }
+
+  onFilterChange(filters) {
+    this.storiesFilters = filters;
+    this.filterStories();
+
+    if (this.storiesFilters.search?.length || this.storiesFilters.categories?.length) {
+      this.displayStoriesByCategory = false;
+    } else {
+      this.computeStoriesCategories();
+      this.displayStoriesByCategory = true;
+    }
+  }
+
+  filterStories() {
+    this.filteredStories = this.stories.filter((story) => {
+      if (this.storiesFilters?.configuredStoriesOnly) {
+        if (story.isBuiltIn()) {
+          return false;
+        }
+      }
+
+      if (this.storiesFilters?.search) {
+        if (
+          !story.name.toLocaleLowerCase().includes(this.storiesFilters.search.toLocaleLowerCase()) &&
+          !story.description.toLocaleLowerCase().includes(this.storiesFilters.search.toLocaleLowerCase())
+        ) {
+          return false;
+        }
+      }
+
+      if (this.storiesFilters?.categories?.length) {
+        if (!this.storiesFilters.categories.includes(story.category)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    if (this.storiesFilters?.sortStoriesByModificationDate) {
+      this.filteredStories.sort((a, b) => {
+        return new Date(b.lastEdited).valueOf() - new Date(a.lastEdited).valueOf();
+      });
+    } else {
+      this.filteredStories.sort((a, b) => (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase() ? 1 : -1));
+    }
+  }
+
+  computeStoriesCategories() {
+    const storyCategoriesMap = new Map<string, StoryDefinitionConfigurationSummary[]>();
+    this.filteredStories.forEach((story) => {
+      let a = storyCategoriesMap.get(story.category);
+      if (!a) {
+        a = [];
+        storyCategoriesMap.set(story.category, a);
+      }
+      a.push(story);
+    });
+
+    this.categories = Array.from(storyCategoriesMap.keys()).sort((a, b) => (a.toLocaleLowerCase() > b.toLocaleLowerCase() ? 1 : -1));
+
+    const storyCategories = [];
+    storyCategoriesMap.forEach((strs, cat) => {
+      storyCategories.push({
+        category: cat,
+        stories: strs
+      });
+    });
+
+    this.storyCategories = storyCategories.sort((a, b) => (a.category.toLocaleLowerCase() > b.category.toLocaleLowerCase() ? 1 : -1));
+  }
+
+  expandedCategory: string = 'default';
+
+  isCategoryExpanded(category): boolean {
+    return category.category.toLocaleLowerCase() === this.expandedCategory.toLocaleLowerCase();
+  }
+
+  collapsedChange(category): void {
+    this.expandedCategory = category.category;
   }
 
   editStory(story: StoryDefinitionConfigurationSummary) {
-    this.bot.findStory(story._id).subscribe((s) => {
-      s.selected = true;
-      this.selectedStory = s;
-    });
+    this.router.navigateByUrl('/build/story-edit/' + story._id);
   }
 
   downloadStory(story: StoryDefinitionConfigurationSummary) {
@@ -117,105 +207,13 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     dialogRef.onClose.subscribe((result) => {
       if (result === 'remove') {
         this.bot.deleteStory(story._id).subscribe((_) => {
-          this.delete(story.storyId);
+          this.stories = this.stories.filter((str) => story != str);
+          this.filterStories();
+          this.computeStoriesCategories();
           this.toastrService.show(`Story deleted`, 'Delete', { duration: 3000, status: 'success' });
         });
       }
     });
-  }
-
-  private keepExpandableState() {
-    if (this.selectedStory) {
-      this.lastExpandableState = new Map<string, boolean>();
-      this.lastExpandableState.set(this.selectedStory.category, true);
-    }
-  }
-
-  delete(storyDefinitionId: string) {
-    this.selectedStory = null;
-    this.keepExpandableStateAndSearch();
-  }
-
-  keepExpandableStateAndSearch() {
-    this.keepExpandableState();
-    this.search();
-  }
-
-  search() {
-    if (this.category === '_all_') this.category = '';
-    this.loading = true;
-    const filter = this.filter;
-    this.lastFilter = filter;
-    this.bot
-      .searchStories(
-        new StorySearchQuery(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          0,
-          10000,
-          this.category,
-          this.filter,
-          this.onlyConfigured
-        )
-      )
-      .subscribe((s) => {
-        if (this.lastFilter === filter) {
-          this.selectedStory = null;
-          const storyByCategories = new Map<string, StoryDefinitionConfigurationSummary[]>();
-          s.forEach((story) => {
-            let a = storyByCategories.get(story.category);
-            if (!a) {
-              a = [];
-              storyByCategories.set(story.category, a);
-            }
-            a.push(story);
-          });
-
-          if (this.category === '') {
-            const sortStringKeys = (a, b) => (a.toLowerCase() > b.toLowerCase() ? 1 : -1);
-            this.categories = Array.from(storyByCategories.keys()).sort(sortStringKeys);
-          }
-          const sortedMap = new Map<string, StoryDefinitionConfigurationSummary[]>();
-          this.categories.forEach((c) => {
-            const stories = storyByCategories.get(c);
-            if (stories) {
-              sortedMap.set(c, stories);
-            }
-          });
-
-          this.stories = s.sort((a, b) => {
-            let fa = a.lastEdited,
-              fb = b.lastEdited;
-            if (fa < fb) {
-              return 1;
-            }
-            if (fa > fb) {
-              return -1;
-            }
-            return 0;
-          });
-
-          this.nodes = Array.from(sortedMap, ([key, value]) => {
-            return {
-              expanded:
-                s.length < 100 &&
-                (this.categories.length < 2 || this.category != '' || this.filter !== '' || this.lastExpandableState.get(key) === true),
-              data: {
-                category: key,
-                expandable: true
-              },
-              children: value.map((s) => {
-                return {
-                  data: s
-                };
-              })
-            };
-          });
-          this.lastExpandableState = new Map();
-          this.loading = false;
-        }
-      });
   }
 
   download() {
@@ -228,46 +226,11 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   prepareUpload() {
-    this.uploader = new FileUploader({ removeAfterUpload: true });
-    this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-      this.toastrService.show(`Dump uploaded`, 'Dump', { duration: 3000, status: 'success' });
-      this.state.resetConfiguration();
-    };
-    this.displayUpload = true;
+    this.nbDialogService.open(StoriesUploadComponent);
   }
 
-  upload() {
-    this.loading = true;
-    this.uploader.onCompleteAll = () => (this.loading = false);
-    this.bot.prepareStoryDumpUploader(this.uploader, this.state.currentApplication.name, this.state.currentLocale);
-    this.uploader.uploadAll();
-    this.displayUpload = false;
-  }
-}
-
-@Injectable()
-export class BackButtonHolder {
-  backButton: boolean = false;
-}
-
-@Injectable()
-export class SearchStoryNavigationGuard implements CanDeactivate<any> {
-  constructor(private backButtonHolder: BackButtonHolder) {}
-
-  canDeactivate(component: any) {
-    // will prevent user from going back
-    try {
-      if (
-        this.backButtonHolder.backButton &&
-        component instanceof SearchStoryComponent &&
-        (component as SearchStoryComponent).selectedStory != null
-      ) {
-        (component as SearchStoryComponent).keepExpandableStateAndSearch();
-        return false;
-      }
-      return true;
-    } finally {
-      this.backButtonHolder.backButton = false;
-    }
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 }

@@ -26,7 +26,7 @@ import { MomentModule } from 'ngx-moment';
 import { CreateStoryComponent } from './story/create-story/create-story.component';
 import { BotService } from './bot-service';
 import { BotTabsComponent } from './bot-tabs.component';
-import { BackButtonHolder, SearchStoryComponent, SearchStoryNavigationGuard } from './story/search-story/search-story.component';
+import { SearchStoryComponent } from './story/search-story/search-story.component';
 import { NlpModule } from '../nlp-tabs/nlp.module';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { I18nComponent } from './i18n/i18n.component';
@@ -72,6 +72,11 @@ import { I18nImportComponent } from './i18n/i18n-import.component';
 import { ApplicationFeaturesTableComponent } from './feature/application-features-table.component';
 import { DocumentsStoryComponent } from "./story/documents-story.component";
 import { NlpService } from '../nlp-tabs/nlp.service';
+import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
+import { StoriesFilterComponent } from './story/search-story/stories-filter/stories-filter.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { EditStoryComponent } from './story/edit-story/edit-story.component';
+import { StoriesUploadComponent } from './story/search-story/stories-upload/stories-upload.component';
 
 const routes: Routes = [
   {
@@ -93,8 +98,11 @@ const routes: Routes = [
       },
       {
         path: 'story-search',
-        component: SearchStoryComponent,
-        canDeactivate: [SearchStoryNavigationGuard]
+        component: SearchStoryComponent
+      },
+      {
+        path: 'story-edit/:storyId',
+        component: EditStoryComponent
       },
       {
         path: 'i18n',
@@ -119,69 +127,73 @@ const routes: Routes = [
 export class BotRoutingModule {}
 
 @NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        BotSharedModule,
-        BotRoutingModule,
-        InfiniteScrollModule,
-        MomentModule,
-        NlpModule,
-        FileUploadModule,
-        BotConfigurationModule,
-        ThemeModule,
-        NbRouteTabsetModule,
-        NbBadgeModule,
-        NbCardModule,
-        NbSpinnerModule,
-        NbCheckboxModule,
-        NbAccordionModule,
-        NbSelectModule,
-        NbTooltipModule,
-        NbInputModule,
-        NbRadioModule,
-        MatIconModule,
-        MatGridListModule,
-        NbFormFieldModule,
-        NbIconModule,
-        NbButtonModule,
-        NbDialogModule,
-        NbAutocompleteModule,
-        NbBadgeModule,
-        NbListModule,
-        NbTagModule,
-        NbAlertModule
-    ],
-    declarations: [
-        BotTabsComponent,
-        CreateStoryComponent,
-        SearchStoryComponent,
-        DocumentsStoryComponent,
-        I18nComponent,
-        I18nLabelComponent,
-        I18nExportComponent,
-        I18nImportComponent,
-        FeatureComponent,
-        StoryComponent,
-        AnswerComponent,
-        SimpleAnswerComponent,
-        ScriptAnswerComponent,
-        StoryDialogComponent,
-        AnswerDialogComponent,
-        MandatoryEntitiesDialogComponent,
-        SelectEntityDialogComponent,
-        StepDialogComponent,
-        StepComponent,
-        StepsComponent,
-        MediaDialogComponent,
-        ApplicationFeatureComponent,
-        ApplicationFeaturesTableComponent,
-        StoryRuleComponent,
-        StoryRuntimeSettingsComponent,
-        StoryTagComponent
-    ],
-    exports: [],
-    providers: [BotService, BackButtonHolder, SearchStoryNavigationGuard, NlpService],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    SharedModule,
+    BotSharedModule,
+    BotRoutingModule,
+    InfiniteScrollModule,
+    MomentModule,
+    NlpModule,
+    FileUploadModule,
+    BotConfigurationModule,
+    ThemeModule,
+    NbRouteTabsetModule,
+    NbBadgeModule,
+    NbCardModule,
+    NbSpinnerModule,
+    NbCheckboxModule,
+    NbAccordionModule,
+    NbSelectModule,
+    NbTooltipModule,
+    NbInputModule,
+    NbRadioModule,
+    MatIconModule,
+    MatGridListModule,
+    NbFormFieldModule,
+    NbIconModule,
+    NbButtonModule,
+    NbDialogModule,
+    NbAutocompleteModule,
+    NbBadgeModule,
+    NbListModule,
+    NbTagModule,
+    NbAlertModule
+  ],
+  declarations: [
+    BotTabsComponent,
+    CreateStoryComponent,
+    SearchStoryComponent,
+    DocumentsStoryComponent,
+    I18nComponent,
+    I18nLabelComponent,
+    I18nExportComponent,
+    I18nImportComponent,
+    FeatureComponent,
+    StoryComponent,
+    AnswerComponent,
+    SimpleAnswerComponent,
+    ScriptAnswerComponent,
+    StoryDialogComponent,
+    AnswerDialogComponent,
+    MandatoryEntitiesDialogComponent,
+    SelectEntityDialogComponent,
+    StepDialogComponent,
+    StepComponent,
+    StepsComponent,
+    MediaDialogComponent,
+    ApplicationFeatureComponent,
+    ApplicationFeaturesTableComponent,
+    StoryRuleComponent,
+    StoryRuntimeSettingsComponent,
+    StoryTagComponent,
+    StoriesListComponent,
+    StoriesFilterComponent,
+    EditStoryComponent,
+    StoriesUploadComponent
+  ],
+  exports: []
 })
 export class BotModule {
   constructor() {}

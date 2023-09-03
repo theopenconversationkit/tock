@@ -14,330 +14,76 @@
   ~ limitations under the License.
   -->
 
-<nb-card
+<div
+  class="loading-spinner-wrapper mt-3"
+  *ngIf="loading"
   [nbSpinner]="loading"
-  nbSpinnerStatus="primary"
-  class="stories"
+></div>
+
+<nb-alert
+  *ngIf="configurations?.length === 0"
+  class="alert-config flex-row align-items-center mt-3"
+  accent="warning"
+>
+  <nb-icon
+    class="mr-1"
+    icon="alert-triangle-outline"
+    status="warning"
+  ></nb-icon>
+  No bot configuration detected
+</nb-alert>
+
+<tock-stories-filter
+  *ngIf="!loading && configurations?.length"
+  [categories]="categories"
+  (onFilter)="onFilterChange($event)"
+  (onDownload)="download()"
+  (onPrepareUpload)="prepareUpload()"
+></tock-stories-filter>
+
+<div
+  *ngIf="!loading && !displayStoriesByCategory && !filteredStories.length"
+  class="text-center font-italic mt-3"
+>
+  No story found
+</div>
+
+<nb-card
+  class="mt-2 mb-2"
+  *ngIf="!loading && !displayStoriesByCategory && filteredStories.length"
 >
   <nb-card-body>
-    <span class="field">
-      <nb-select
-        placeholder="Category"
-        [(ngModel)]="category"
-        (selectedChange)="search()"
-        status="primary"
-      >
-        <nb-option value="_all_">All</nb-option>
-        <nb-option
-          *ngFor="let c of categories"
-          [value]="c"
-        >
-          {{ c }}
-        </nb-option>
-      </nb-select>
-    </span>
-    <span class="search-input">
-      <input
-        nbInput
-        status="primary"
-        placeholder="Search Stories"
-        [(ngModel)]="filter"
-        (keyup)="search()"
-      />
-    </span>
-
-    <span class="toggle"
-      ><nb-toggle
-        status="primary"
-        [(ngModel)]="onlyConfigured"
-        (change)="search()"
-        >Only Configured Stories</nb-toggle
-      ></span
-    >
-    <span class="toggle"
-      ><nb-toggle
-        status="primary"
-        [(ngModel)]="sortedByDate"
-        >Sort by last modified</nb-toggle
-      ></span
-    >
-
-    <div class="download">
-      <button
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Export Stories"
-        (click)="download()"
-      >
-        <nb-icon icon="download-outline"></nb-icon>
-      </button>
-      <button
-        nbButton
-        ghost
-        shape="round"
-        nbTooltip="Import Stories"
-        (click)="prepareUpload()"
-      >
-        <nb-icon icon="upload-outline"></nb-icon>
-      </button>
-    </div>
-  </nb-card-body>
-</nb-card>
-<nb-card *ngIf="displayUpload">
-  <nb-card-header>Upload Stories</nb-card-header>
-  <nb-card-body>
-    <p>
-      <label for="file">Please select a story dump file:&nbsp;</label>
-      <input
-        id="file"
-        type="file"
-        ng2FileSelect
-        [uploader]="uploader"
-      />
-    </p>
-  </nb-card-body>
-  <nb-card-footer>
-    <button
-      nbButton
-      ghost
-      (click)="displayUpload = false"
-    >
-      Cancel
-    </button>
-    <button
-      nbButton
-      outline
-      (click)="upload()"
-      [disabled]="!uploader.getNotUploadedItems().length"
-      status="primary"
-    >
-      Upload
-    </button>
-  </nb-card-footer>
-</nb-card>
-<nb-card *ngIf="!sortedByDate && nodes && !selectedStory">
-  <nb-card-body>
-    <table [nbTreeGrid]="nodes">
-      <tr
-        nbTreeGridHeaderRow
-        *nbTreeGridHeaderRowDef="allColumns"
-      ></tr>
-      <tr
-        nbTreeGridRow
-        *nbTreeGridRowDef="let row; columns: allColumns"
-      ></tr>
-
-      <ng-container [nbTreeGridColumnDef]="categoryColumn">
-        <th
-          nbTreeGridHeaderCell
-          *nbTreeGridHeaderCellDef
-        >
-          {{ categoryColumn }}
-        </th>
-        <td
-          nbTreeGridCell
-          *nbTreeGridCellDef="let row"
-        >
-          <nb-tree-grid-row-toggle
-            *ngIf="row.data.expandable"
-            [expanded]="row.expanded"
-          ></nb-tree-grid-row-toggle>
-          <span *ngIf="row.data.expandable">{{ row.data.category }}</span>
-          <span *ngIf="!row.data.expandable">
-            <nb-icon
-              *ngIf="row.data.isBuiltIn()"
-              class="story-type"
-              nbTooltip="Built-in Story"
-              icon="cube"
-            ></nb-icon>
-            <nb-icon
-              *ngIf="row.data.isSimpleAnswer()"
-              class="story-type"
-              nbTooltip="Message Story"
-              icon="message-square-outline"
-            ></nb-icon>
-            <nb-icon
-              *ngIf="row.data.isScriptAnswer()"
-              class="story-type"
-              nbTooltip="Script Story"
-              icon="code"
-            ></nb-icon>
-
-            {{ row.data.name }}
-          </span>
-        </td>
-      </ng-container>
-      <ng-container
-        [nbTreeGridColumnDef]="intentColumn"
-        [hideOn]="500"
-      >
-        <th
-          nbTreeGridHeaderCell
-          *nbTreeGridHeaderCellDef
-        >
-          {{ intentColumn }}
-        </th>
-        <td
-          nbTreeGridCell
-          *nbTreeGridCellDef="let row"
-        >
-          <span *ngIf="!row.data.expandable">{{ row.data.intent.getIntentLabel(state) }}</span>
-        </td>
-      </ng-container>
-      <ng-container
-        [nbTreeGridColumnDef]="descriptionColumn"
-        [hideOn]="800"
-      >
-        <th
-          nbTreeGridHeaderCell
-          *nbTreeGridHeaderCellDef
-        >
-          {{ descriptionColumn }}
-        </th>
-        <td
-          nbTreeGridCell
-          *nbTreeGridCellDef="let row"
-        >
-          <span *ngIf="!row.data.expandable">{{ row.data.description }}</span>
-        </td>
-      </ng-container>
-      <ng-container
-        [nbTreeGridColumnDef]="lastEditedColumn"
-        [hideOn]="800"
-      >
-        <th
-          nbTreeGridHeaderCell
-          *nbTreeGridHeaderCellDef
-        >
-          {{ lastEditedColumn }}
-        </th>
-        <td
-          nbTreeGridCell
-          *nbTreeGridCellDef="let row"
-        >
-          <span *ngIf="!row.data.expandable">{{ row.data.lastEdited | date: dateFormat }}</span>
-        </td>
-      </ng-container>
-      <ng-container [nbTreeGridColumnDef]="actionsColumn">
-        <th
-          nbTreeGridHeaderCell
-          *nbTreeGridHeaderCellDef
-        >
-          {{ actionsColumn }}
-        </th>
-        <td
-          nbTreeGridCell
-          *nbTreeGridCellDef="let row"
-        >
-          <div *ngIf="!row.data.expandable">
-            <button
-              nbButton
-              outline
-              status="primary"
-              nbTooltip="View/Edit Story"
-              (click)="editStory(row.data)"
-              class="action"
-            >
-              <nb-icon icon="edit-outline"></nb-icon>
-            </button>
-            <button
-              nbButton
-              outline
-              status="basic"
-              nbTooltip="Export Story"
-              (click)="downloadStory(row.data)"
-              class="action"
-            >
-              <nb-icon icon="download-outline"></nb-icon>
-            </button>
-            <button
-              nbButton
-              outline
-              status="danger"
-              nbTooltip="Delete Story"
-              (click)="deleteStory(row.data)"
-              class="action"
-            >
-              <nb-icon icon="trash-2-outline"></nb-icon>
-            </button>
-          </div>
-        </td>
-      </ng-container>
-    </table>
+    <tock-stories-list
+      [stories]="filteredStories"
+      (onEditStory)="editStory($event)"
+      (onDownloadStory)="downloadStory($event)"
+      (onDeleteStory)="deleteStory($event)"
+    ></tock-stories-list>
   </nb-card-body>
 </nb-card>
 
-<nb-card *ngIf="sortedByDate && stories && !selectedStory">
-  <nb-card-body>
-    <mat-table [dataSource]="stories">
-      <mat-header-row *matHeaderRowDef="allColumns"></mat-header-row>
-      <mat-row *matRowDef="let story; columns: allColumns"></mat-row>
+<nb-accordion
+  class="no-shadow mb-4"
+  *ngIf="!loading && displayStoriesByCategory && storyCategories"
+>
+  <nb-accordion-item
+    *ngFor="let category of storyCategories"
+    [expanded]="isCategoryExpanded(category)"
+    (collapsedChange)="collapsedChange(category)"
+  >
+    <nb-accordion-item-header class="h4 text-capitalize">
+      {{ category.category }}
+    </nb-accordion-item-header>
 
-      <ng-container matColumnDef="{{ categoryColumn }}">
-        <mat-header-cell *matHeaderCellDef> {{ categoryColumn }} </mat-header-cell>
-        <mat-cell *matCellDef="let story"> {{ story.name }} </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="{{ intentColumn }}">
-        <mat-header-cell *matHeaderCellDef> {{ intentColumn }} </mat-header-cell>
-        <mat-cell *matCellDef="let story"> {{ story.intent.getIntentLabel(state) }} </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="{{ descriptionColumn }}">
-        <mat-header-cell *matHeaderCellDef> {{ descriptionColumn }} </mat-header-cell>
-        <mat-cell *matCellDef="let story"> {{ story.description }} </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="{{ lastEditedColumn }}">
-        <mat-header-cell *matHeaderCellDef> {{ lastEditedColumn }} </mat-header-cell>
-        <mat-cell *matCellDef="let story"> {{ story.lastEdited | date: dateFormat }} </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="{{ actionsColumn }}">
-        <mat-header-cell *matHeaderCellDef> {{ actionsColumn }} </mat-header-cell>
-        <mat-cell
-          *matCellDef="let story"
-          [ngClass]="nb - column - Actions"
-        >
-          <button
-            nbButton
-            outline
-            status="primary"
-            nbTooltip="View/Edit Story"
-            (click)="editStory(story)"
-            class="action"
-          >
-            <nb-icon icon="edit-outline"></nb-icon>
-          </button>
-          <button
-            nbButton
-            outline
-            status="basic"
-            nbTooltip="Export Story"
-            (click)="downloadStory(story)"
-            class="action"
-          >
-            <nb-icon icon="download-outline"></nb-icon>
-          </button>
-          <button
-            nbButton
-            outline
-            status="danger"
-            nbTooltip="Delete Story"
-            (click)="deleteStory(story)"
-            class="action"
-          >
-            <nb-icon icon="trash-2-outline"></nb-icon>
-          </button>
-        </mat-cell>
-      </ng-container>
-    </mat-table>
-  </nb-card-body>
-</nb-card>
-
-<tock-story
-  *ngIf="selectedStory"
-  [storyTag]="selectedStory.getFirstTag()"
-  [story]="selectedStory"
-  (delete)="delete($event)"
-  [fullDisplay]="true"
-  [displaySteps]="true"
-  (closeStory)="keepExpandableStateAndSearch()"
-></tock-story>
+    <nb-accordion-item-body class="accordion-item-body">
+      <div class="compensate-accordion-item-padding">
+        <tock-stories-list
+          [stories]="category.stories"
+          (onEditStory)="editStory($event)"
+          (onDownloadStory)="downloadStory($event)"
+          (onDeleteStory)="deleteStory($event)"
+        ></tock-stories-list>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+</nb-accordion>

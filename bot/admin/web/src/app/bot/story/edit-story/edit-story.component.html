@@ -1,0 +1,9 @@
+<tock-story
+  *ngIf="story"
+  [storyTag]="story.getFirstTag()"
+  [story]="story"
+  (delete)="closeStory()"
+  [fullDisplay]="true"
+  [displaySteps]="true"
+  (closeStory)="closeStory()"
+></tock-story>

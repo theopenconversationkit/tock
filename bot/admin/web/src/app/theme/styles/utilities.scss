@@ -97,3 +97,18 @@ nb-icon[pack='material-icons'] {
 .divider {
   background-color: var(--color-basic-transparent-200);
 }
+
+.card-footer-actions {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0.5rem;
+}
+
+@media screen and (min-width: 400px) {
+  .card-footer-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}
