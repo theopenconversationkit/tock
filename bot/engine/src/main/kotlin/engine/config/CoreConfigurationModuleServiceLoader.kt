@@ -16,6 +16,7 @@
 
 package ai.tock.bot.engine.config
 
+import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.bot.definition.ParameterKey
 import ai.tock.bot.engine.config.ReviewParameter.REVIEW_COMMENT_PARAMETER
@@ -44,9 +45,13 @@ private val satisfactionModule = BotConfigurationModule(
         SATISFACTION_MODULE_ID,
         listOf(
                 BotConfigurationStoryHandlerBase(REVIEW_ASK.id) {
-                    val rating = userText?.trim()?.toIntOrNull()
-                    if(rating != null) {
-                        dialog.rating = rating
+                    val storyReview = botDefinition.findStoryDefinitionById(SATISFACTION_MODULE_ID, applicationId)
+                    val ratingIndex = storyReview.steps.indexOfFirst {
+                        (it as? StoryDefinitionConfigurationStep.Step)
+                            ?.configuration?.userSentenceLabel?.defaultLabel == userText?.trim()
+                    }
+                    if (ratingIndex >= 0) {
+                        dialog.rating = ratingIndex + 1
                         changeContextValue(REVIEW_COMMENT_PARAMETER, false)
                     }
                 },
