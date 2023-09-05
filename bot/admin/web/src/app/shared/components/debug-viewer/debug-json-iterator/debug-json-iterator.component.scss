@@ -1,0 +1,20 @@
+.parent-title {
+  padding: 0.3rem;
+
+  &.isPrimitive {
+    padding-left: 1.8rem;
+  }
+}
+
+.entry-block {
+  padding-left: 1.1rem;
+  &.isRoot {
+    padding-left: 0;
+    margin-left: -0.5rem;
+  }
+}
+
+.pre-format {
+  white-space: pre-wrap;
+  display: inline;
+}

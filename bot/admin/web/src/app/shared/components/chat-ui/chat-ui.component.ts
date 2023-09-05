@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'tock-chat-ui',
@@ -7,4 +7,10 @@ import { Component, Input } from '@angular/core';
 })
 export class ChatUiComponent {
   @Input() height: string;
+
+  @ViewChild('scrollable') private scrollable: ElementRef;
+
+  scrollToBottom() {
+    this.scrollable.nativeElement.scrollTop = this.scrollable.nativeElement.scrollHeight;
+  }
 }

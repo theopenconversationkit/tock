@@ -1,5 +1,6 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { BotMessage } from '../../../model/dialog-data';
 
 @Component({
   selector: 'tock-chat-ui-message',
@@ -7,9 +8,11 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
   styleUrls: ['./chat-ui-message.component.scss']
 })
 export class ChatUiMessageComponent {
-  @Input() message: string;
+  @Input() message: BotMessage;
+  @Input() replay: boolean = false;
   @Input() sender: string;
   @Input() date: Date;
+
   @Input()
   set avatar(value: string) {
     this.avatarStyle = value ? this.domSanitizer.bypassSecurityTrustStyle(`url(${value})`) : null;
@@ -32,5 +35,11 @@ export class ChatUiMessageComponent {
   }
   protected _reply: boolean = false;
 
+  @Output() sendMessage: EventEmitter<BotMessage> = new EventEmitter();
+
   constructor(protected domSanitizer: DomSanitizer) {}
+
+  replyMessage(message: BotMessage) {
+    this.sendMessage.emit(message);
+  }
 }

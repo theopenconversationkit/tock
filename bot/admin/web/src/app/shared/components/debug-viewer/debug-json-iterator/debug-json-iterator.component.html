@@ -1,0 +1,49 @@
+<div *ngIf="isRoot && isPrimitive(data)">
+  {{ data }}
+</div>
+
+<div
+  *ngIf="parentKey"
+  (click)="switchDeployed()"
+  class="parent-title"
+  [ngClass]="{ isPrimitive: isPrimitive(data), ellipsis: !isPrimitive(data), pointer: !isPrimitive(data) }"
+>
+  <nb-icon
+    icon="arrow-right"
+    class="valign-middle"
+    *ngIf="!isDeployed && !isPrimitive(data)"
+  ></nb-icon>
+  <nb-icon
+    icon="arrow-down"
+    class="valign-middle"
+    *ngIf="isDeployed && !isPrimitive(data)"
+  ></nb-icon>
+
+  <strong> {{ parentKey }} : </strong>
+
+  <pre
+    class="pre-format text-primary pl-2"
+    *ngIf="isPrimitive(data)"
+  >
+"{{ data }}"</pre
+  >
+  <span
+    class="text-muted pl-2"
+    *ngIf="!isPrimitive(data)"
+    >{{ data | json }}</span
+  >
+</div>
+
+<div
+  *ngIf="!isPrimitive(data) && (isRoot || isDeployed)"
+  class="entry-block"
+  [class.isRoot]="isRoot"
+>
+  <ng-container *ngFor="let list of data | keyvalue">
+    <tock-debug-json-iterator
+      [data]="list.value"
+      [parentKey]="list.key"
+      [isRoot]="false"
+    ></tock-debug-json-iterator>
+  </ng-container>
+</div>

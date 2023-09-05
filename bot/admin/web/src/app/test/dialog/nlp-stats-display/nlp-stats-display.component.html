@@ -1,0 +1,22 @@
+<nb-card>
+  <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+    Nlp Stats
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Close"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <strong>Request:</strong>
+    <pre>{{ data.request }}</pre>
+
+    <strong>Response:</strong>
+    <pre>{{ data.response }}</pre>
+  </nb-card-body>
+</nb-card>

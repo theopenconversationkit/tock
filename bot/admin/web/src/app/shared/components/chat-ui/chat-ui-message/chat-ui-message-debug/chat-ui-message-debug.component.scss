@@ -1,0 +1,29 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+:host {
+  display: flex;
+  justify-content: end;
+
+  .debug {
+    display: flex;
+
+    min-width: 95%;
+    cursor: pointer;
+
+    border-radius: 0.3rem;
+    border: 1px solid nb-theme(chat-message-reply-text-color);
+
+    background-color: nb-theme(chat-message-reply-text-color);
+    color: nb-theme(chat-message-reply-background-color);
+
+    .head {
+      padding: 0.1rem 0.5rem;
+    }
+    .body {
+      padding: 0.1rem 0.5rem;
+      flex-grow: 1;
+      border-radius: 0.3rem;
+    }
+  }
+}

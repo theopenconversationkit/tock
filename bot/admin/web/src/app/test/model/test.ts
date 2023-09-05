@@ -32,7 +32,13 @@ export class BotDialogRequest extends ApplicationScopedQuery {
 }
 
 export class BotDialogResponse {
-  constructor(public messages: BotMessage[], public hasNlpStats: boolean, public userActionId?: string, public userLocale?: string) {}
+  constructor(
+    public messages: BotMessage[],
+    public hasNlpStats: boolean,
+    public userActionId?: string,
+    public userLocale?: string,
+    public debug?: any
+  ) {}
 
   static fromJSON(json?: any): BotDialogResponse {
     const value = Object.create(BotDialogResponse.prototype);

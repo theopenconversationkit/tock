@@ -170,7 +170,8 @@ export enum EventType {
   sentence,
   choice,
   attachment,
-  location
+  location,
+  debug
 }
 
 export enum AttachmentType {

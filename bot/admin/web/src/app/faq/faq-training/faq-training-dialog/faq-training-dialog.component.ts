@@ -105,20 +105,6 @@ export class FaqTrainingDialogComponent implements OnChanges, OnDestroy {
     bot: { name: 'Bot', avatar: 'assets/images/scenario-bot.svg' }
   };
 
-  getActionMessageText(action: ActionReport): string {
-    let msg = action.message as unknown as Sentence;
-
-    if (msg.text) {
-      return msg.text;
-    }
-
-    return msg.messages
-      .map((msg) => {
-        return msg.texts.get('text');
-      })
-      .join(' ');
-  }
-
   searchSentence(action: ActionReport): void {
     if (action.isBot()) return;
     if (action.message.isSentence()) {

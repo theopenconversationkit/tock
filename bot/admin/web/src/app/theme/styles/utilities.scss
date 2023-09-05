@@ -112,3 +112,9 @@ nb-icon[pack='material-icons'] {
     flex-wrap: wrap;
   }
 }
+
+.cdk-global-overlay-wrapper nb-dialog-container nb-card {
+  max-width: 95vw;
+  max-height: 95vh;
+  margin: 0;
+}

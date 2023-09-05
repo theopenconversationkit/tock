@@ -1,0 +1,62 @@
+<ng-container *ngIf="element">
+  <table *ngIf="element.subElements.length !== 0">
+    <tr>
+      <td *ngFor="let e of element.subElements">
+        <table>
+          <tr *ngFor="let a of e.attachments">
+            <td>
+              <tock-bot-message-attachment [attachment]="a"></tock-bot-message-attachment>
+            </td>
+          </tr>
+          <tr *ngFor="let l of e.locations">
+            <td>
+              <tock-bot-message-location [location]="l"></tock-bot-message-location>
+            </td>
+          </tr>
+          <tr *ngFor="let entry of e.texts | mapToIterable">
+            <td>
+              <span class="text">{{ entry.value }}</span>
+              <span class="text-category">({{ entry.key }})</span>
+            </td>
+          </tr>
+          <tr *ngIf="e.choices.length !== 0">
+            <td>
+              <tock-bot-message-choice
+                *ngFor="let c of e.choices"
+                [choice]="c"
+                [user]="user"
+                (sendMessage)="reply($event)"
+              ></tock-bot-message-choice>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <ng-container *ngIf="!element.isEmptyElement()">
+    <div *ngFor="let a of element.attachments">
+      <tock-chat-ui-message-attachment [attachment]="a"></tock-chat-ui-message-attachment>
+    </div>
+    <div *ngFor="let l of element.locations">
+      <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
+    </div>
+    <div *ngFor="let entry of element.texts | mapToIterable">
+      <span
+        *ngIf="reply"
+        [innerHTML]="linkifyHtml(entry.value)"
+      ></span>
+      <span *ngIf="!reply">{{ entry.value }}</span>
+      <span class="text-category">({{ entry.key }})</span>
+    </div>
+    <div *ngIf="element.choices.length !== 0">
+      <tock-chat-ui-message-choice
+        *ngFor="let c of element.choices"
+        [choice]="c"
+        [replay]="replay"
+        [reply]="reply"
+        (replyMessage)="replyMessage($event)"
+      ></tock-chat-ui-message-choice>
+    </div>
+  </ng-container>
+</ng-container>

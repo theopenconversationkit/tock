@@ -1,13 +1,55 @@
 <div
-  class="avatar"
-  [style.background-image]="avatarStyle"
-></div>
+  class="wrapper"
+  *ngIf="!message.isDebug()"
+>
+  <div
+    class="avatar"
+    [style.background-image]="avatarStyle"
+  ></div>
 
-<div class="message">
-  <div class="message-text">
-    <p class="sender">
-      {{ sender }} <time>{{ date | date: 'HH:mm:ss y/MM/dd' }}</time>
-    </p>
-    <p class="text">{{ message }}</p>
+  <div class="message">
+    <div class="message-text">
+      <p
+        class="sender"
+        *ngIf="sender || date"
+      >
+        {{ sender }} <time>{{ date | date: 'HH:mm:ss y/MM/dd' }}</time>
+      </p>
+
+      <div class="text">
+        <tock-chat-ui-message-sentence
+          *ngIf="message.isSentence()"
+          [sentence]="message"
+          [replay]="replay"
+          [reply]="reply"
+          (sendMessage)="replyMessage($event)"
+        ></tock-chat-ui-message-sentence>
+
+        <tock-chat-ui-message-choice
+          *ngIf="message.isChoice()"
+          [choice]="message"
+          [replay]="true"
+          [reply]="reply"
+          (sendMessage)="sendReply($event)"
+        ></tock-chat-ui-message-choice>
+
+        <tock-chat-ui-message-attachment
+          *ngIf="message.isAttachment()"
+          [attachment]="message"
+        ></tock-chat-ui-message-attachment>
+
+        <tock-chat-ui-message-location
+          *ngIf="message.isLocation()"
+          [location]="l"
+        ></tock-chat-ui-message-location>
+      </div>
+    </div>
   </div>
 </div>
+
+<tock-chat-ui-message-debug
+  *ngIf="message.isDebug()"
+  [message]="message"
+></tock-chat-ui-message-debug>
+
+<ng-content></ng-content>

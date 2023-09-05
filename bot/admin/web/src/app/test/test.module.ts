@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared-nlp/shared.module';
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { TestTabsComponent } from './test-tabs.component';
-import { ApplicationResolver } from '../core-nlp/application.resolver';
-import { BotDialogComponent, DisplayNlpStatsComponent } from './dialog/bot-dialog.component';
+import { BotDialogComponent } from './dialog/bot-dialog.component';
 import { CommonModule } from '@angular/common';
 import { TestService } from './test.service';
 import { BotSharedModule } from '../shared/bot-shared.module';
@@ -34,60 +31,40 @@ import {
   NbRouteTabsetModule,
   NbSelectModule,
   NbTooltipModule,
-  NbInputModule
+  NbInputModule,
+  NbSpinnerModule,
+  NbAutocompleteModule,
+  NbIconModule
 } from '@nebular/theme';
 import { ReactiveFormsModule } from '@angular/forms';
-
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    component: TestTabsComponent,
-    resolve: {
-      application: ApplicationResolver
-    },
-    children: [
-      {
-        path: '',
-        redirectTo: 'test',
-        pathMatch: 'full'
-      },
-      {
-        path: 'test',
-        component: BotDialogComponent
-      },
-      {
-        path: 'plan',
-        component: TestPlanComponent
-      }
-    ]
-  }
-];
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class BotTestRoutingModule {}
+import { NlpService } from '../nlp-tabs/nlp.service';
+import { NlpStatsDisplayComponent } from './dialog/nlp-stats-display/nlp-stats-display.component';
+import { BotTestRoutingModule } from './test-routing.module';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        BotTestRoutingModule,
-        BotSharedModule,
-        MomentModule,
-        NbRouteTabsetModule,
-        NbCardModule,
-        NbButtonModule,
-        NbActionsModule,
-        NbSelectModule,
-        NbTooltipModule,
-        NbAccordionModule,
-        NbInputModule,
-        ReactiveFormsModule
-    ],
-    declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, DisplayNlpStatsComponent],
-    exports: [],
-    providers: [TestService]
+  imports: [
+    BotTestRoutingModule,
+    CommonModule,
+    SharedModule,
+    BotTestRoutingModule,
+    BotSharedModule,
+    MomentModule,
+    NbRouteTabsetModule,
+    NbCardModule,
+    NbButtonModule,
+    NbActionsModule,
+    NbSelectModule,
+    NbTooltipModule,
+    NbAccordionModule,
+    NbInputModule,
+    ReactiveFormsModule,
+    NbSpinnerModule,
+    NbAutocompleteModule,
+    NbCardModule,
+    NbIconModule
+  ],
+  declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, NlpStatsDisplayComponent],
+  exports: [],
+  providers: [TestService, NlpService]
 })
 export class BotTestModule {}
