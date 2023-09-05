@@ -1,0 +1,13 @@
+<img
+  *ngIf="attachment.isImage()"
+  [src]="attachment.url"
+  width="191"
+  height="100"
+/>
+<div *ngIf="!attachment.isImage()">
+  <a
+    [href]="attachment.url"
+    target="_blank"
+    >(file)</a
+  >
+</div>

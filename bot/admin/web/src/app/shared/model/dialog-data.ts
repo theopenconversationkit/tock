@@ -22,7 +22,13 @@ import { IntentName } from '../../bot/model/story';
 export class DialogReport {
   displayActions: boolean;
 
-  constructor(public actions: ActionReport[], public id: string, public obfuscated: boolean = false, public rating?: number, public review?: string) {}
+  constructor(
+    public actions: ActionReport[],
+    public id: string,
+    public obfuscated: boolean = false,
+    public rating?: number,
+    public review?: string
+  ) {}
 
   static fromJSON(json?: any): DialogReport {
     const value = Object.create(DialogReport.prototype);
@@ -93,6 +99,10 @@ export abstract class BotMessage {
     return this.eventTypeEnum === EventType.location;
   }
 
+  isDebug(): boolean {
+    return this.eventTypeEnum === EventType.debug;
+  }
+
   static fromJSON(json?: any): BotMessage {
     if (!json) {
       return null;
@@ -108,6 +118,8 @@ export abstract class BotMessage {
         return Attachment.fromJSON(json);
       case EventType.location:
         return Location.fromJSON(json);
+      case EventType.debug:
+        return Debug.fromJSON(json);
       default:
         throw 'unknown type : ' + json.type;
     }
@@ -215,6 +227,27 @@ export class Sentence extends BotMessage {
 
   static fromJSONArray(json?: Array<any>): Sentence[] {
     return json ? json.map(Sentence.fromJSON) : [];
+  }
+}
+
+export class Debug extends BotMessage {
+  constructor(public delay: number, public data: any, public text?: string, public userInterface?: UserInterfaceType) {
+    super(EventType.debug, delay);
+  }
+
+  static fromJSON(json?: any): BotMessage {
+    const value = Object.create(Debug.prototype);
+
+    const result = Object.assign(value, json, {
+      data: json.data,
+      eventTypeEnum: EventType.debug
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): BotMessage[] {
+    return json ? json.map(Debug.fromJSON) : [];
   }
 }
 

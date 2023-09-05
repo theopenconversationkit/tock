@@ -18,7 +18,7 @@ import { NEVER, Observable, throwError as observableThrowError } from 'rxjs';
 
 import { catchError, map } from 'rxjs/operators';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -89,15 +89,23 @@ export class RestService {
     );
   }
 
-  post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O, baseUrl?: string): Observable<O> {
+  post<I, O>(
+    path: string,
+    value?: I,
+    parseFunction?: (value: any) => O,
+    baseUrl?: string,
+    returnErrorOn400 = false,
+    params = {}
+  ): Observable<O> {
     return this.http
       .post(`${baseUrl ? baseUrl : this.url}${path}`, JsonUtils.stringify(value), {
         headers: this.headers(),
-        withCredentials: true
+        withCredentials: true,
+        params: params
       })
       .pipe(
         map((res: string) => (parseFunction ? parseFunction(res || {}) : ((res || {}) as O))),
-        catchError((e) => this.handleError(this, e))
+        catchError((e) => this.handleError(this, e, returnErrorOn400))
       );
   }
 
@@ -148,38 +156,54 @@ export class RestService {
     return uploader;
   }
 
-  private handleError(rest: RestService, error: Response | any) {
+  private handleError(rest: RestService, error: Response | any, returnErrorOn400 = false) {
     console.log(error);
     let errMsg: string;
     const e = Array.isArray(error) ? error[0] : error;
-    if (e instanceof Response) {
+    if (e instanceof Response || e instanceof HttpErrorResponse) {
       console.log('error instance of Response');
       if (e.status === 403 || e.status === 401) {
         rest.router.navigateByUrl('/login');
         return NEVER;
       }
+      // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side
+      if (returnErrorOn400 && e.status === 400) {
+        return observableThrowError(error);
+      }
+
       errMsg = e.status === 400 ? e.statusText || '' : `Server error : ${e.status} - ${e.statusText || ''}`;
     } else {
+      // returnErrorOn400 : Used to receive error from calling subscription in cases where validation infos are required from server side
+      if (returnErrorOn400 && e.status === 400) {
+        return observableThrowError(error);
+      }
+
       //strange things happen
       if (e && e.status === 0 && this.isSSO()) {
         console.error('invalid token - refresh');
         location.reload();
         return NEVER;
       }
-      errMsg = e.error
-        ? e.error.message
+
+      if (e.error?.errors && Array.isArray(e.error.errors)) {
+        errMsg = e.error.errors.map((err) => err.message).join(' | ');
+      } else {
+        errMsg = e.error
           ? e.error.message
-          : e.error.error && e.error.error.message
-          ? e.error.error.message
-          : 'Unknown error'
-        : e.message
-        ? e.message
-        : e.statusText
-        ? e.statusText
-        : typeof e === 'string'
-        ? e
-        : 'Unknown error';
+            ? e.error.message
+            : e.error.error && e.error.error.message
+            ? e.error.error.message
+            : 'Unknown error'
+          : e.message
+          ? e.message
+          : e.statusText
+          ? e.statusText
+          : typeof e === 'string'
+          ? e
+          : 'Unknown error';
+      }
     }
+
     rest.errorEmitter.emit(errMsg);
     return observableThrowError(errMsg);
   }

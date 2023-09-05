@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@import '@nebular/theme/styles/global/breakpoints';
+
+.stats {
+  font-size: xx-small;
+  float: left;
+  margin-right: 20px;
+  margin-top: -12px;
+}
+
+#messagesWrapper {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.dialog-handler {
+  float: right;
+}
+
+.dialog-handler button {
+  margin: 0 5px 0 5px;
+}
+
+.dialog-handler input {
+  margin: 0 10px 0 10px;
+}
+
+.test-plans-select {
+  margin: 0 5px 0 5px;
+  width: 10rem;
+  max-width: 10rem;
+}
+
+.test-plans-select {
+  margin: 0 5px 0 5px;
+  width: 10rem;
+  max-width: 10rem;
+}
+
+.dialog-manager-button {
+  margin: 0 5px 0 5px;
+}
+
+#test-saving-accordions nb-accordion {
+  float: left;
+  width: 100%;
+}
+
+#test-saving-accordions button {
+  margin: 0 5px 0 5px;
+}
+
+#test-saving-accordions input {
+  margin: 0 10px 0 10px;
+}

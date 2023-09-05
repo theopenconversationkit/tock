@@ -35,15 +35,25 @@ import {
   NbSelectModule,
   NbTooltipModule,
   NbPopoverModule,
-  NbButtonModule
+  NbButtonModule,
+  NbAlertModule,
+  NbAutocompleteModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 import {
+  AutocompleteInputComponent,
   ChatUiComponent,
+  ChatUiMessageAttachmentComponent,
+  ChatUiMessageChoiceComponent,
   ChatUiMessageComponent,
+  ChatUiMessageDebugComponent,
+  ChatUiMessageLocationComponent,
+  ChatUiMessageSentenceComponent,
+  ChatUiMessageSentenceElementComponent,
   ChoiceDialogComponent,
+  DebugViewerComponent,
   ErrorHelperComponent,
   FormControlComponent,
   NoDataFoundComponent,
@@ -51,56 +61,70 @@ import {
 } from './components';
 
 import { AutofocusDirective } from './directives';
+import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json-iterator/debug-json-iterator.component';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        MomentModule,
-        NbCalendarRangeModule,
-        NbCardModule,
-        NbSelectModule,
-        NbTooltipModule,
-        NbIconModule,
-        NbPopoverModule,
-        NbButtonModule
-    ],
-    declarations: [
-        BotMessageComponent,
-        SentenceElementComponent,
-        BotMessageSentenceComponent,
-        BotMessageChoiceComponent,
-        BotMessageLocationComponent,
-        BotMessageAttachmentComponent,
-        DisplayDialogComponent,
-        SelectBotComponent,
-        DateRangeCalendarComponent,
-        InfoButtonComponent,
-        ConfirmationDialogComponent,
-        ErrorHelperComponent,
-        PaginationComponent,
-        NoDataFoundComponent,
-        FormControlComponent,
-        ChatUiComponent,
-        ChatUiMessageComponent,
-        ChoiceDialogComponent,
-        AutofocusDirective
-    ],
-    exports: [
-        BotMessageComponent,
-        DisplayDialogComponent,
-        SelectBotComponent,
-        DateRangeCalendarComponent,
-        InfoButtonComponent,
-        ErrorHelperComponent,
-        PaginationComponent,
-        NoDataFoundComponent,
-        FormControlComponent,
-        ChatUiComponent,
-        ChatUiMessageComponent,
-        ChoiceDialogComponent,
-        AutofocusDirective
-    ],
-    providers: [BotSharedService]
+  imports: [
+    CommonModule,
+    SharedModule,
+    MomentModule,
+    NbCalendarRangeModule,
+    NbCardModule,
+    NbSelectModule,
+    NbTooltipModule,
+    NbIconModule,
+    NbPopoverModule,
+    NbButtonModule,
+    NbAutocompleteModule,
+    NbAlertModule
+  ],
+  declarations: [
+    BotMessageComponent,
+    SentenceElementComponent,
+    BotMessageSentenceComponent,
+    BotMessageChoiceComponent,
+    BotMessageLocationComponent,
+    BotMessageAttachmentComponent,
+    DisplayDialogComponent,
+    SelectBotComponent,
+    DateRangeCalendarComponent,
+    InfoButtonComponent,
+    ConfirmationDialogComponent,
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
+    ChatUiMessageSentenceComponent,
+    ChatUiMessageSentenceElementComponent,
+    ChatUiMessageChoiceComponent,
+    ChatUiMessageAttachmentComponent,
+    ChatUiMessageLocationComponent,
+    ChatUiMessageDebugComponent,
+    ChoiceDialogComponent,
+    AutofocusDirective,
+    AutocompleteInputComponent,
+    DebugJsonIteratorComponent,
+    DebugViewerComponent
+  ],
+  exports: [
+    BotMessageComponent,
+    DisplayDialogComponent,
+    SelectBotComponent,
+    DateRangeCalendarComponent,
+    InfoButtonComponent,
+    ErrorHelperComponent,
+    PaginationComponent,
+    NoDataFoundComponent,
+    FormControlComponent,
+    ChatUiComponent,
+    ChatUiMessageComponent,
+    ChoiceDialogComponent,
+    AutofocusDirective,
+    AutocompleteInputComponent,
+    DebugViewerComponent
+  ],
+  providers: [BotSharedService]
 })
 export class BotSharedModule {}

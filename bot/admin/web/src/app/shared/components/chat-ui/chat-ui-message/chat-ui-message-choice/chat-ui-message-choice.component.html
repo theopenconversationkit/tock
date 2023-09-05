@@ -1,0 +1,20 @@
+<ng-container *ngIf="replay">
+  <span [nbTooltip]="parameters()">
+    <span *ngIf="title()">{{ title() }}</span>
+    <span *ngIf="!title()">{{ choice.intentName }}</span>
+  </span>
+</ng-container>
+
+<ng-container *ngIf="!replay">
+  <button
+    (click)="click()"
+    nbButton
+    status="{{ url() ? 'warning' : 'primary' }}"
+    size="small"
+    class="mx-1"
+    [nbTooltip]="title() ? title() + ' - ' + parameters() : parameters()"
+  >
+    <span *ngIf="title()">{{ title() }}</span>
+    <span *ngIf="!title()">{{ choice.intentName }}</span>
+  </button>
+</ng-container>

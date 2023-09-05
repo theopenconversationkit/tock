@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TestService } from '../test.service';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
@@ -22,20 +22,24 @@ import { BotDialogRequest, TestMessage, XRayTestPlan } from '../model/test';
 import { BotMessage, Sentence } from '../../shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
 import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
-import { randomString } from '../../model/commons';
-import { Subscription } from 'rxjs';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { PaginatedQuery, randomString } from '../../model/commons';
+import { Observable, of, Subject, take, takeUntil } from 'rxjs';
 import { SentenceFilter } from '../../sentences-scroll/sentences-scroll.component';
-import { NbToastrService } from '@nebular/theme';
-import { AnalyticsService } from '../../analytics/analytics.service';
-import { APP_BASE_HREF } from '@angular/common';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
+
+import { SearchQuery } from '../../model/nlp';
+import { ChatUiComponent } from '../../shared/components';
+import { NlpService } from '../../nlp-tabs/nlp.service';
+import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
 
 @Component({
   selector: 'tock-bot-dialog',
   templateUrl: './bot-dialog.component.html',
-  styleUrls: ['./bot-dialog.component.css']
+  styleUrls: ['./bot-dialog.component.scss']
 })
 export class BotDialogComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
+
   currentConfigurationId: string;
 
   userMessage: string = '';
@@ -55,9 +59,19 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   loading: boolean;
   private userModifierId: string = randomString();
 
-  private errorUnsuscriber: any;
-  private subscription: Subscription;
   testContext = false;
+
+  _debug: boolean = false;
+
+  set debug(value: boolean) {
+    this._debug = value;
+    this.shared.session_storage = { ...this.shared.session_storage, ...{ test: { debug: value } } };
+  }
+  get debug() {
+    return this._debug;
+  }
+
+  @ViewChild('chatUi') private chatUi: ChatUiComponent;
 
   constructor(
     public state: StateService,
@@ -65,17 +79,22 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     private rest: RestService,
     private shared: BotSharedService,
     private toastrService: NbToastrService,
-    private dialog: MatDialog,
-    @Inject(APP_BASE_HREF) public baseHref: string
+    private nbDialogService: NbDialogService,
+    private nlp: NlpService
   ) {}
 
   ngOnInit() {
-    this.errorUnsuscriber = this.rest.errorEmitter.subscribe((e) => (this.loading = false));
-    this.subscription = this.state.configurationChange.subscribe((_) => this.clear());
+    this.rest.errorEmitter.pipe(takeUntil(this.destroy)).subscribe((e) => (this.loading = false));
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => this.clear());
     this.fillTestPlanFilter();
+    this.getRecentSentences();
+
+    if (this.shared.session_storage?.test?.debug) {
+      this._debug = this.shared.session_storage.test.debug;
+    }
   }
 
-  private fillTestPlanFilter() {
+  private fillTestPlanFilter(): void {
     this.shared.getConfiguration().subscribe((r) => {
       this.xrayAvailable = r.xrayAvailable;
       if (r.xrayAvailable) {
@@ -86,18 +105,18 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeConfiguration(selectBotEvent: SelectBotEvent) {
+  changeConfiguration(selectBotEvent: SelectBotEvent): void {
     this.userMessage = '';
     this.messages = [];
     this.loading = false;
     this.currentConfigurationId = selectBotEvent ? selectBotEvent.configurationId : null;
   }
 
-  onNewMessage(message: BotMessage) {
+  onNewMessage(message: BotMessage): void {
     this.talk(message);
   }
 
-  submit() {
+  submit(): void {
     if (!this.currentConfigurationId) {
       this.toastrService.show(`Please select a Bot first`, 'Error', { duration: 3000 });
       return;
@@ -110,7 +129,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     this.talk(new Sentence(0, [], m));
   }
 
-  private talk(message: BotMessage) {
+  private talk(message: BotMessage): void {
+    this.userMessageAutocompleteValues = of([]);
     const userAction = new TestMessage(false, message);
     this.messages.push(userAction);
     this.userMessage = '';
@@ -124,7 +144,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
           this.state.currentApplication.name,
           this.state.currentLocale,
           this.userModifierId
-        )
+        ),
+        this.debug
       )
       .subscribe((r) => {
         this.loading = false;
@@ -132,39 +153,41 @@ export class BotDialogComponent implements OnInit, OnDestroy {
         userAction.hasNlpStats = r.hasNlpStats;
         userAction.actionId = r.userActionId;
         r.messages.forEach((m) => {
-          this.messages.push(new TestMessage(true, m));
+          this.messages.push(new TestMessage(true, m, undefined, undefined, undefined));
+
+          setTimeout(() => this.chatUi.scrollToBottom());
         });
       });
   }
 
-  displayNlpStats(m: TestMessage) {
-    this.shared.getNlpDialogStats(m.actionId).subscribe((r) => {
-      this.dialog.open(DisplayNlpStatsComponent, {
-        data: {
-          request: r.nlpQueryAsJson(),
-          response: r.nlpResultAsJson()
+  displayNlpStats(m: TestMessage): void {
+    this.shared.getNlpDialogStats(m.actionId).subscribe((response) => {
+      this.nbDialogService.open(NlpStatsDisplayComponent, {
+        context: {
+          data: {
+            request: response.nlpQueryAsJson(),
+            response: response.nlpResultAsJson()
+          }
         }
       });
     });
   }
 
-  clear() {
+  displayDebug(message: TestMessage): void {}
+
+  clear(): void {
     this.messages = [];
     this.userModifierId = randomString();
     this.clearTestControl();
   }
 
-  clearTestControl() {
+  clearTestControl(): void {
     this.testContext = false;
     this.xrayTestName = '';
     this.jiraIdentifier = '';
   }
 
-  ngOnDestroy() {
-    this.errorUnsuscriber.unsubscribe();
-  }
-
-  enableTestContext() {
+  enableTestContext(): void {
     if (this.testContext == false) {
       this.talk(new Sentence(0, [], '_test_'));
       this.testContext = true;
@@ -174,55 +197,84 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateSaveButtonStatus($event: any) {
+  updateSaveButtonStatus($event: any): void {
     this.isXrayTestNameFilled = $event != '';
   }
 
-  updateUpdateButtonStatus($event: any) {
+  updateUpdateButtonStatus($event: any): void {
     this.isXrayTestIdentifierFilled = $event != '';
   }
 
-  saveDialogToXray() {
+  saveDialogToXray(): void {
     let jiraPart: string = this.jiraIdentifier != '' ? ', ' + this.jiraIdentifier : '';
     this.talk(new Sentence(0, [], '_xray_ ' + this.xrayTestName + jiraPart));
   }
 
-  updateDialogXray() {
+  updateDialogXray(): void {
     this.talk(new Sentence(0, [], '_xray_update_ ' + this.xrayTestIdentifier));
   }
 
-  printSelectedTestPlans($event: string[] | string) {}
+  printSelectedTestPlans($event: string[] | string): void {}
 
-  removeXrayTestIdentifier() {
+  removeXrayTestIdentifier(): void {
     this.xrayTestIdentifier = '';
     this.isXrayTestIdentifierFilled = false;
   }
 
-  removeXrayTestName() {
+  removeXrayTestName(): void {
     this.xrayTestName = '';
     this.isXrayTestNameFilled = false;
   }
-}
 
-@Component({
-  selector: 'tock-display-nlp-stats',
-  template: `<h1 mat-dialog-title>Nlp Stats</h1>
-    <div mat-dialog-content>
-      Request:
-      <pre>{{ data.request }}</pre>
-      Response:
-      <pre>{{ data.response }}</pre>
-    </div>
-    <div mat-dialog-actions>
-      <button
-        mat-raised-button
-        mat-dialog-close
-        color="primary"
-      >
-        Close
-      </button>
-    </div>`
-})
-export class DisplayNlpStatsComponent {
-  constructor(public dialogRef: MatDialogRef<DisplayNlpStatsComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {}
+  getUserAvatar(isBot: boolean): string {
+    if (isBot) return this.userIdentities.bot.avatar;
+    return this.userIdentities.client.avatar;
+  }
+
+  userIdentities = {
+    client: { name: 'Human', avatar: 'assets/images/scenario-client.svg' },
+    bot: { name: 'Bot', avatar: 'assets/images/scenario-bot.svg' }
+  };
+
+  recentSentences: string[];
+  userMessageAutocompleteValues: Observable<string[]>;
+
+  getRecentSentences(): void {
+    const cursor: number = 0;
+    const pageSize: number = 50;
+    const mark = null;
+    const paginatedQuery: PaginatedQuery = this.state.createPaginatedQuery(cursor, pageSize, mark);
+    const searchQuery = new SearchQuery(
+      paginatedQuery.namespace,
+      paginatedQuery.applicationName,
+      paginatedQuery.language,
+      paginatedQuery.start,
+      paginatedQuery.size,
+      paginatedQuery.searchMark
+    );
+    this.nlp
+      .searchSentences(searchQuery)
+      .pipe(take(1))
+      .subscribe((res) => {
+        this.recentSentences = res.rows.map((r) => r.text);
+      });
+  }
+
+  updateUserMessageAutocompleteValues(event?: KeyboardEvent): void {
+    if (this.loading) return;
+
+    let results = this.recentSentences;
+
+    if (event) {
+      const targetEvent = event.target as HTMLInputElement;
+      results = results.filter((sentence: string) => sentence.toLowerCase().includes(targetEvent.value.trim().toLowerCase()));
+    }
+
+    this.userMessageAutocompleteValues = of(results);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
+  }
 }
