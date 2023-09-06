@@ -31,7 +31,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = ClientAttachment::class, name = "attachment"),
     JsonSubTypes.Type(value = ClientChoice::class, name = "choice"),
     JsonSubTypes.Type(value = ClientLocation::class, name = "location"),
-    JsonSubTypes.Type(value = ClientSentence::class, name = "sentence")
+    JsonSubTypes.Type(value = ClientSentence::class, name = "sentence"),
+    JsonSubTypes.Type(value = ClientDebug::class, name = "debug")
 )
 abstract class ClientMessage(
     val eventType: ClientEventType,

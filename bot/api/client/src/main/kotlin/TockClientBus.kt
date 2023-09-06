@@ -24,6 +24,7 @@ import ai.tock.bot.api.model.message.bot.BotMessage
 import ai.tock.bot.api.model.message.bot.Card
 import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.CustomMessage
+import ai.tock.bot.api.model.message.bot.Debug
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
 import ai.tock.bot.api.model.message.bot.Suggestion
@@ -60,7 +61,12 @@ class TockClientBus(
     override val test: Boolean = request.context.user.test
     override val userLocale: Locale = request.context.language
     override val userInterfaceType: UserInterfaceType = request.context.userInterface
-    override val targetConnectorType: ConnectorType = request.context.connectorType
+
+    // Source connector : is the connector which initialize a conversation
+    override val sourceConnectorType: ConnectorType = request.context.sourceConnectorType
+    // Target connector : is the connector for which the message is produced
+    override val targetConnectorType: ConnectorType = request.context.targetConnectorType
+
     override val contextId: String? = request.context.userId.id
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
@@ -114,6 +120,21 @@ class TockClientBus(
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): ClientBus {
         addMessage(plainText?.raw, delay)
+        return this
+    }
+
+    /**
+     * Add a debug data message for the test connector only
+     * @param title title of debug message
+     * @param data object corresponding to the debugging data
+     */
+    override fun sendDebugData(title: String, data: Any?): ClientBus {
+        // The test connector is a rest connector (source),
+        // but it invokes the engine with a target connector,
+        // to receive the corresponding messages
+        if(ConnectorType.rest == sourceConnectorType) {
+            messages.add(Debug(title, data))
+        }
         return this
     }
 

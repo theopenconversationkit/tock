@@ -30,6 +30,7 @@ import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionVisibility
 import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
@@ -244,6 +245,12 @@ open class BotBusMock(
     override val userId get() = action.playerId
     override val userPreferences: UserPreferences get() = userTimeline.userPreferences
     override val userLocale: Locale get() = userPreferences.locale
+    override var sourceConnectorType: ConnectorType
+        get() = action.state.sourceConnectorType ?: connectorType
+        set(value) {
+            action.state.sourceConnectorType = value
+            connectorType = value
+        }
     override var targetConnectorType: ConnectorType
         get() = action.state.targetConnectorType ?: connectorType
         set(value) {
@@ -382,6 +389,10 @@ open class BotBusMock(
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
         return answer(createBotSentence(plainText), delay)
+    }
+
+    override fun sendDebugData(title: String, data: Any?): BotBus {
+        return answer(SendDebug(botId, applicationId, userId, title, data), 0)
     }
 
     override fun send(action: Action, delay: Long): BotBus {

@@ -32,6 +32,10 @@ data class EventState(
      */
     var testEvent: Boolean = false,
     /**
+     * The source connector type.
+     */
+    var sourceConnectorType: ConnectorType? = null,
+    /**
      * The target connector type - usually the source connector but not always.
      */
     var targetConnectorType: ConnectorType? = null,

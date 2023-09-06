@@ -38,6 +38,10 @@ enum class EventType(val action: Boolean = true) {
      */
     location,
     /**
+     * [Debug] event type.
+     */
+    debug,
+    /**
      * [SubscribingEvent] event type.
      */
     subscribing(false),

@@ -22,8 +22,10 @@ import ai.tock.bot.connector.rest.RestConnector.Companion.checkNlpStats
 import ai.tock.bot.connector.rest.model.MessageResponse
 import ai.tock.bot.definition.TestBehaviour
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
+import ai.tock.bot.engine.message.DebugMessage
 import ai.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
 import java.lang.IllegalStateException
@@ -40,8 +42,9 @@ internal class RestConnectorCallback(
     val context: RoutingContext,
     val testContext: TestBehaviour?,
     val locale: Locale,
-    val userAction: Action,
-    val actions: MutableList<Action> = CopyOnWriteArrayList()
+    private val userAction: Action,
+    val actions: MutableList<Action> = CopyOnWriteArrayList(),
+    private val debugEnabled: Boolean = false
 ) : ConnectorCallbackBase(applicationId, connectorType) {
 
     companion object {
@@ -70,7 +73,9 @@ internal class RestConnectorCallback(
             val nlpStats = if(checkNlpStats) (userAction as? SendSentence)?.nlpStats else null
             val r = mapper.writeValueAsString(
                     MessageResponse(
-                            actions.map { it.toMessage() },
+                            actions.filter {
+                                if(!debugEnabled) it !is SendDebug else true
+                            }.map { it.toMessage() },
                             applicationId,
                             userAction.id.toString(),
                             nlpStats?.locale ?: locale,

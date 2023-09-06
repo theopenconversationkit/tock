@@ -25,6 +25,7 @@ import ai.tock.bot.api.model.message.bot.BotMessage
 import ai.tock.bot.api.model.message.bot.Card
 import ai.tock.bot.api.model.message.bot.Carousel
 import ai.tock.bot.api.model.message.bot.CustomMessage
+import ai.tock.bot.api.model.message.bot.Debug
 import ai.tock.bot.api.model.message.bot.I18nText
 import ai.tock.bot.api.model.message.bot.Sentence
 import ai.tock.bot.connector.media.MediaAction
@@ -35,6 +36,7 @@ import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendAttachment.AttachmentType
+import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.config.UploadedFilesService
 import ai.tock.bot.engine.message.ActionWrappedMessage
@@ -156,6 +158,7 @@ internal class BotApiHandler(
                 is Card -> toActions(message)
                 is CustomMessage -> listOf(toAction(message))
                 is Carousel -> toActions(message)
+                is Debug -> listOf(toAction(message))
                 else -> error("unsupported message $message")
             }
 
@@ -202,6 +205,16 @@ internal class BotApiHandler(
             applicationId,
             userId,
             text
+        )
+    }
+
+    private fun BotBus.toAction(data: Debug): Action {
+        return SendDebug(
+            botId,
+            applicationId,
+            userId,
+            data.text,
+            data.data
         )
     }
 

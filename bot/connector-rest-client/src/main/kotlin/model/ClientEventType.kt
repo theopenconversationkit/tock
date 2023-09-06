@@ -22,5 +22,5 @@ package ai.tock.bot.connector.rest.client.model
 enum class ClientEventType {
 
     sentence, choice, attachment, location,
-    subscribing
+    subscribing, debug
 }

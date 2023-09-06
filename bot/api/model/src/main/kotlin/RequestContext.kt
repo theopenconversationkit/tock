@@ -26,7 +26,8 @@ import java.util.Locale
 data class RequestContext(
     val namespace: String,
     val language: Locale,
-    val connectorType: ConnectorType,
+    val sourceConnectorType: ConnectorType,
+    val targetConnectorType: ConnectorType,
     val userInterface: UserInterfaceType,
     val applicationId: String,
     val userId: PlayerId,

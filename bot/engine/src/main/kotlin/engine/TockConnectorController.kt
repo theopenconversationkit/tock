@@ -99,9 +99,13 @@ internal class TockConnectorController constructor(
     fun getBaseUrl(): String = configuration.getBaseUrl()
 
     override fun handle(event: Event, data: ConnectorData) {
+        if (event.state.sourceConnectorType == null) {
+            event.state.sourceConnectorType = connector.connectorType
+        }
         if (event.state.targetConnectorType == null) {
             event.state.targetConnectorType = connector.connectorType
         }
+
         val callback = data.callback
         try {
             if (!botDefinition.eventListener.listenEvent(this, data, event)) {
