@@ -24,6 +24,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
+import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
@@ -74,6 +75,7 @@ internal data class DialogCol(
         private fun getActionWrapper(action: Action): ActionMongoWrapper {
             return when (action) {
                 is SendSentence -> SendSentenceMongoWrapper(action)
+                is SendDebug -> SendDebugMongoWrapper(action)
                 is SendChoice -> SendChoiceMongoWrapper(action)
                 is SendAttachment -> SendAttachmentMongoWrapper(action)
                 is SendLocation -> SendLocationMongoWrapper(action)
@@ -238,7 +240,8 @@ internal data class DialogCol(
             JsonSubTypes.Type(value = SendSentenceMongoWrapper::class, name = "sentence"),
             JsonSubTypes.Type(value = SendChoiceMongoWrapper::class, name = "choice"),
             JsonSubTypes.Type(value = SendAttachmentMongoWrapper::class, name = "attachment"),
-            JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location")
+            JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location"),
+            JsonSubTypes.Type(value = SendDebugMongoWrapper::class, name = "debug")
     )
     @Data(internal = true)
     abstract class ActionMongoWrapper {
@@ -311,6 +314,35 @@ internal data class DialogCol(
                 )
             }
         }
+    }
+
+    @JsonTypeName(value = "debug")
+    data class SendDebugMongoWrapper(
+        val text: String,
+        val data: Any?,
+    ) : ActionMongoWrapper() {
+
+        constructor(debug: SendDebug) :
+                this(
+                    debug.text,
+                    debug.data
+                ) {
+            assignFrom(debug)
+        }
+
+        override fun toAction(dialogId: Id<Dialog>): Action {
+            return SendDebug(
+                    playerId,
+                    applicationId,
+                    recipientId,
+                    text,
+                    data,
+                    id,
+                    date,
+                    state,
+                    botMetadata
+                )
+            }
     }
 
     @JsonTypeName(value = "choice")

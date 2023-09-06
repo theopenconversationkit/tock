@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.rest.model
-
-import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.engine.message.Message
+package ai.tock.bot.connector.rest.client.model
 
 /**
- *
+ * Client debug message
  */
-internal data class MessageRequest(
-    val userId: String,
-    val recipientId: String,
-    val message: Message,
-    val targetConnectorType: ConnectorType,
-    val test: Boolean = false,
-    val debugEnabled: Boolean = false
-) : ConnectorMessage {
-    override val connectorType: ConnectorType = ConnectorType.rest
-}
+data class ClientDebug(
+    val text: String,
+    val data: Any
+) :
+    ClientMessage(ClientEventType.debug)

@@ -24,5 +24,6 @@ data class ClientMessageRequest(
     val recipientId: String,
     val message: ClientMessage,
     val targetConnectorType: ClientConnectorType,
-    val test: Boolean = false
+    val test: Boolean = false,
+    val debugEnabled: Boolean = false
 )

@@ -26,6 +26,7 @@ import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.action.ActionPriority
 import ai.tock.bot.engine.action.ActionVisibility
+import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.EntityStateValue
@@ -78,6 +79,7 @@ internal class TockBotBus(
     override val userInterfaceType: UserInterfaceType =
         action.state.userInterface ?: connector.connectorType.userInterfaceType
 
+    override val sourceConnectorType: ConnectorType = action.state.sourceConnectorType ?: connector.connectorType
     override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connector.connectorType
 
     override val underlyingConnector: Connector = connector.connector
@@ -150,6 +152,10 @@ internal class TockBotBus(
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
         return answer(SendSentence(botId, applicationId, userId, plainText), delay)
+    }
+
+    override fun sendDebugData(title: String, data: Any?): BotBus {
+        return answer(SendDebug(botId, applicationId, userId, title, data), 0)
     }
 
     override fun send(action: Action, delay: Long): BotBus {

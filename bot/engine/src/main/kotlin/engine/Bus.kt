@@ -119,6 +119,10 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         return sendRawText(translate(i18nText, *i18nArgs))
     }
 
+    fun sendDebug(title: String, data: Any?): T {
+        return sendDebugData(title, data)
+    }
+
     /**
      * Sends messages provided by [messageProvider].
      * if [messageProvider] returns a [CharSequence] send it as text. Else call simply send().
@@ -145,6 +149,11 @@ interface Bus<T : Bus<T>> : I18nTranslator {
      * Send text that should not be translated.
      */
     fun sendRawText(plainText: CharSequence?, delay: Long = defaultDelay(currentAnswerIndex)): T
+
+    /**
+     * Send debug data.
+     */
+    fun sendDebugData(title: String, data: Any?): T
 
     /**
      * Sends i18nText as last bot answer.

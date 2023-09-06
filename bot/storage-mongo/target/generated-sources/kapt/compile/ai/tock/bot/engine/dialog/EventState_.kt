@@ -19,6 +19,8 @@ private val __EntityValues: KProperty1<EventState, List<EntityValue>?>
     get() = EventState::entityValues
 private val __TestEvent: KProperty1<EventState, Boolean?>
     get() = EventState::testEvent
+private val __SourceConnectorType: KProperty1<EventState, ConnectorType?>
+    get() = EventState::sourceConnectorType
 private val __TargetConnectorType: KProperty1<EventState, ConnectorType?>
     get() = EventState::targetConnectorType
 private val __UserInterface: KProperty1<EventState, UserInterfaceType?>
@@ -40,6 +42,9 @@ class EventState_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Eve
 
     val testEvent: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__TestEvent)
+
+    val sourceConnectorType: ConnectorType_<T>
+        get() = ConnectorType_(this,EventState::sourceConnectorType)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,EventState::targetConnectorType)
@@ -67,6 +72,8 @@ class EventState_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Eve
             get() = KCollectionSimplePropertyPath(null, __EntityValues)
         val TestEvent: KProperty1<EventState, Boolean?>
             get() = __TestEvent
+        val SourceConnectorType: ConnectorType_<EventState>
+            get() = ConnectorType_(null,__SourceConnectorType)
         val TargetConnectorType: ConnectorType_<EventState>
             get() = ConnectorType_(null,__TargetConnectorType)
         val UserInterface: KProperty1<EventState, UserInterfaceType?>
@@ -91,6 +98,9 @@ class EventState_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 
     val testEvent: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__TestEvent)
+
+    val sourceConnectorType: ConnectorType_<T>
+        get() = ConnectorType_(this,EventState::sourceConnectorType)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,EventState::targetConnectorType)
@@ -124,6 +134,9 @@ class EventState_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<
 
     val testEvent: KPropertyPath<T, Boolean?>
         get() = KPropertyPath(this,__TestEvent)
+
+    val sourceConnectorType: ConnectorType_<T>
+        get() = ConnectorType_(this,EventState::sourceConnectorType)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,EventState::targetConnectorType)

@@ -314,6 +314,7 @@ interface BotDefinition : I18nKeyProvider {
         object : I18nTranslator {
             override val userLocale: Locale get() = userLocale
             override val userInterfaceType: UserInterfaceType get() = userInterfaceType
+            override val sourceConnectorType: ConnectorType get() = connectorType
             override val targetConnectorType: ConnectorType get() = connectorType
             override val contextId: String? get() = contextId
 

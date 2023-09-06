@@ -34,6 +34,7 @@ class I18nTranslatorTest {
     private class Impl : I18nTranslator {
         override val userLocale: Locale get() = defaultLocale
         override val userInterfaceType: UserInterfaceType get() = defaultUserInterface
+        override val sourceConnectorType: ConnectorType get() = none
         override val targetConnectorType: ConnectorType get() = none
         override val contextId: String? get() = null
 

@@ -74,6 +74,7 @@ private fun BotBus.toRequestContext(): RequestContext =
     RequestContext(
         botDefinition.namespace,
         userLocale,
+        sourceConnectorType,
         targetConnectorType,
         userInterfaceType,
         applicationId,
