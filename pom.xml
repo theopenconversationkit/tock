@@ -114,7 +114,7 @@
         <module>nlp</module>
         <module>bot</module>
         <module>iadvize-client</module>
-
+        <module>aws-tools</module>
     </modules>
 
     <dependencies>
@@ -883,7 +883,7 @@
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 
