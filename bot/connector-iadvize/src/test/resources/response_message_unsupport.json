@@ -1,1 +1,16 @@
-{"idConversation":"conversationId","idOperator":"operateurId","createdAt":"2022-04-08T16:52:37Z","updatedAt":"2022-04-08T16:52:37Z","replies":[{"payload":{"value":"Désolé, je ne sais pas répondre à cette demande","contentType":"text"},"quickReplies":[],"type":"message"}]}
+{
+  "idConversation": "conversationId",
+  "idOperator": "operateurId",
+  "createdAt": "2022-04-08T16:52:37Z",
+  "updatedAt": "2022-04-08T16:52:37Z",
+  "replies": [
+    {
+      "payload": {
+        "value": "Sorry, I don't know how to respond to this request.",
+        "contentType": "text"
+      },
+      "quickReplies": [],
+      "type": "message"
+    }
+  ]
+}

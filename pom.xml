@@ -72,6 +72,7 @@
         <aws-sdk>1.12.543</aws-sdk>
         <pac4j>5.7.0</pac4j>
         <vertx-pac4j>6.0.1</vertx-pac4j>
+        <graphql-kotlin>6.3.0</graphql-kotlin>
 
         <junit-jupiter>5.10.0</junit-jupiter>
 
@@ -112,6 +113,8 @@
         <module>translator</module>
         <module>nlp</module>
         <module>bot</module>
+        <module>iadvize-client</module>
+
     </modules>
 
     <dependencies>
@@ -310,6 +313,12 @@
             <dependency>
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-codegen</artifactId>
+                <version>${vertx}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-web-client</artifactId>
                 <version>${vertx}</version>
                 <scope>test</scope>
             </dependency>
@@ -602,6 +611,18 @@
                 <groupId>org.pac4j</groupId>
                 <artifactId>pac4j-cas</artifactId>
                 <version>${pac4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-unit</artifactId>
+                <version>${vertx}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-junit5</artifactId>
+                <version>${vertx}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.pac4j</groupId>
