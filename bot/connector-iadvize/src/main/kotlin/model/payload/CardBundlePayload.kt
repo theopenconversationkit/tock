@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.iadvize.model.response.conversation.payload
+package ai.tock.bot.connector.iadvize.model.payload
 
 data class CardBundlePayload(val cards: MutableList<GenericCardPayload> = mutableListOf())
     : Payload("bundle/card")

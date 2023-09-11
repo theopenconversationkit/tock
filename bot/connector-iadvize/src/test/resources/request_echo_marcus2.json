@@ -6,8 +6,8 @@
       "role": "operator"
     },
     "payload": {
-      "contentType":"text",
-      "value":"marcus2"
+      "contentType": "text",
+      "value": "marcus2"
     },
     "createdAt": "2017-11-22T12:04:00.762Z[Etc/UTC]"
   }

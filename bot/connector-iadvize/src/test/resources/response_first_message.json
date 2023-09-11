@@ -1,1 +1,12 @@
-{"replies":[{"payload":{"value":"firstMessage","contentType":"text"},"quickReplies":[],"type":"message"}]}
+{
+  "replies": [
+    {
+      "payload": {
+        "value": "firstMessage",
+        "contentType": "text"
+      },
+      "quickReplies": [],
+      "type": "message"
+    }
+  ]
+}

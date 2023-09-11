@@ -8,8 +8,8 @@
         "role": "visitor"
       },
       "payload": {
-        "contentType":"text",
-        "value":"historic 1"
+        "contentType": "text",
+        "value": "historic 1"
       },
       "createdAt": "2017-11-22T12:04:00.762Z"
     },
@@ -19,8 +19,8 @@
         "role": "visitor"
       },
       "payload": {
-        "contentType":"text",
-        "value":"historic 2"
+        "contentType": "text",
+        "value": "historic 2"
       },
       "createdAt": "2017-11-22T12:04:00.762Z"
     }

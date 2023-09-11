@@ -1,1 +1,24 @@
-{"idConversation":"conversationId","idOperator":"operateurId","createdAt":"2022-04-08T16:52:37Z","updatedAt":"2022-04-08T16:52:37Z","replies":[{"payload":{"value":"MARCUS1","contentType":"text"},"quickReplies":[],"type":"message"},{"payload":{"value":"MARCUS2","contentType":"text"},"quickReplies":[],"type":"message"}]}
+{
+  "idConversation": "conversationId",
+  "idOperator": "operateurId",
+  "createdAt": "2022-04-08T16:52:37Z",
+  "updatedAt": "2022-04-08T16:52:37Z",
+  "replies": [
+    {
+      "payload": {
+        "value": "MARCUS1",
+        "contentType": "text"
+      },
+      "quickReplies": [],
+      "type": "message"
+    },
+    {
+      "payload": {
+        "value": "MARCUS2",
+        "contentType": "text"
+      },
+      "quickReplies": [],
+      "type": "message"
+    }
+  ]
+}
