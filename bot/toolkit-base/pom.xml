@@ -57,6 +57,13 @@
             <groupId>ai.tock</groupId>
             <artifactId>tock-stt-noop</artifactId>
         </dependency>
+        <!-- aws secrets modules tools-->
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-aws-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
         <!-- force okhttp dependencies -->
         <dependency>

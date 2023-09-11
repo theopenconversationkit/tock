@@ -16,6 +16,7 @@
 
 package ai.tock.bot
 
+import ai.tock.aws.awsToolsModule
 import ai.tock.bot.engine.botModule
 import ai.tock.bot.mongo.botMongoModule
 import ai.tock.shared.injector
@@ -37,7 +38,7 @@ object BotIoc {
      * The core modules of the bot.
      */
     val coreModules: List<Module> =
-        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule)
+        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule, awsToolsModule)
 
     /**
      * Start the bot with the specified additional [modules].
