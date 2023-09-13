@@ -31,7 +31,7 @@
           nbTooltip="Refresh"
           (click)="refresh()"
         >
-          <i class="material-icons tock-toolbar-menu">refresh</i>
+          <nb-icon icon="refresh-outline"></nb-icon>
         </nb-action>
 
         <nb-action
@@ -40,11 +40,10 @@
           (click)="prepareCreate()"
           *ngIf="!newApplicationConfiguration && state.currentApplication"
         >
-          <i
-            class="material-icons tock-toolbar-menu"
+          <nb-icon
+            icon="plus-square-outline"
             style="color: #3366ff"
-            >add_box</i
-          >
+          ></nb-icon>
         </nb-action>
 
         <nb-action
@@ -53,16 +52,14 @@
           (click)="displayTestConfigurations = !displayTestConfigurations"
           *ngIf="!newApplicationConfiguration && state.currentApplication"
         >
-          <i
+          <nb-icon
             *ngIf="!displayTestConfigurations"
-            class="material-icons tock-toolbar-menu"
-            >visibility</i
-          >
-          <i
+            icon="eye-outline"
+          ></nb-icon>
+          <nb-icon
             *ngIf="displayTestConfigurations"
-            class="material-icons tock-toolbar-menu"
-            >visibility_off</i
-          >
+            icon="eye-off-outline"
+          ></nb-icon>
         </nb-action>
       </nb-actions>
     </div>

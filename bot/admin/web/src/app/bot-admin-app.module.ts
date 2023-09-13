@@ -118,14 +118,5 @@ export class BotAdminAppRoutingModule {}
   bootstrap: [BotAdminAppComponent]
 })
 export class BotAdminAppModule {
-  constructor(private iconLibraries: NbIconLibraries) {
-    this.registerMaterialIcons();
-  }
-
-  private registerMaterialIcons() {
-    this.iconLibraries.registerFontPack('material-icons', {
-      packClass: 'material-icons',
-      ligature: true
-    });
-  }
+  constructor() {}
 }

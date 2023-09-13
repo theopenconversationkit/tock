@@ -31,7 +31,6 @@
     "echarts": "^5.3.3",
     "file-saver-es": "^2.0.5",
     "jsoneditor": "^9.5.6",
-    "material-design-icons-iconfont": "^5.0.1",
     "moment": "2.29.3",
     "ng2-file-upload": "^1.4.0",
     "ngx-echarts": "^7.0.0",

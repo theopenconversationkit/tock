@@ -29,7 +29,7 @@
           routerLink="create"
           nbTooltip="Create new application"
         >
-          <i class="material-icons tock-toolbar-menu">add_box</i>
+          <nb-icon icon="plus-square-outline"></nb-icon>
         </nb-action>
         <nb-action
           *ngIf="isAdmin()"
@@ -37,7 +37,7 @@
           (click)="showUploadDumpPanel()"
           nbTooltip="Upload dump"
         >
-          <i class="material-icons tock-toolbar-menu">cloud_upload</i>
+          <nb-icon icon="cloud-upload-outline"></nb-icon>
         </nb-action>
       </nb-actions>
     </div>
@@ -50,21 +50,21 @@
     >
       <button
         *ngIf="app._id === state.currentApplication._id"
-        matTooltip="Current"
-        mat-button
+        nbTooltip="Current"
+        nbButton
         class="applications-applications__select-action"
       >
-        <mat-icon>done</mat-icon>
+        <nb-icon icon="checkmark-outline"></nb-icon>
       </button>
 
       <button
         *ngIf="app._id !== state.currentApplication._id"
         class="applications-applications__select-action"
-        mat-button
-        matTooltip="Select"
+        nbButton
+        nbTooltip="Select"
         (click)="selectApplication(app)"
       >
-        <mat-icon></mat-icon>
+        <nb-icon></nb-icon>
       </button>
 
       <span class="applications-applications__app-name">{{ app.label }}</span>
@@ -85,11 +85,7 @@
           (click)="downloadDump(app)"
           nbTooltip="Download an application dump"
         >
-          <i
-            class="material-icons tock-toolbar-menu"
-            style="font-size: 30px"
-            >get_app</i
-          >
+          <nb-icon icon="download-outline"></nb-icon>
         </nb-action>
         <nb-action
           *ngIf="isAdmin()"
@@ -97,11 +93,7 @@
           (click)="downloadSentencesDump(app)"
           nbTooltip="Download a sentences dump"
         >
-          <i
-            class="material-icons tock-toolbar-menu"
-            style="font-size: 30px"
-            >cloud_download</i
-          >
+          <nb-icon icon="cloud-download-outline"></nb-icon>
         </nb-action>
 
         <nb-action
@@ -110,11 +102,7 @@
           routerLink="edit/{{ app._id }}"
           nbTooltip="Edit"
         >
-          <i
-            class="material-icons tock-toolbar-menu"
-            style="font-size: 30px"
-            >edit</i
-          >
+          <nb-icon icon="edit-outline"></nb-icon>
         </nb-action>
       </nb-actions>
     </div>

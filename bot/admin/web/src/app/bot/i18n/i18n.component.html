@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<nb-card class="responses">
+<nb-card class="responses mb-2">
   <nb-card-body>
     <div class="background">
       <nb-form-field class="i18n-select">
@@ -173,36 +173,40 @@
   </nb-card-footer>
 </nb-card>
 
-<nb-card
+<div
+  class="d-flex justify-content-between mb-1"
+  [nbSpinner]="loading"
+>
+  &nbsp;
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="paginationChange()"
+  ></tock-pagination>
+</div>
+
+<div
+  *ngFor="let i of pagedItems()"
   [nbSpinner]="loading"
   nbSpinnerStatus="primary"
 >
-  <nb-card-body>
-    <mat-list
-      dense
-      *ngIf="!loading"
-    >
-      <div *ngFor="let i of pagedItems()">
-        <tock-i18n-label
-          [i]="i"
-          [i18nController]="controller()"
-          [intent]="i.category"
-          [localeBase]="localeBase"
-          [locales]="locales"
-          [deleteLabelAllowed]="isDeleteLabelAllowed()"
-        >
-        </tock-i18n-label>
-      </div>
-    </mat-list>
+  <tock-i18n-label
+    [i]="i"
+    [i18nController]="controller()"
+    [intent]="i.category"
+    [localeBase]="localeBase"
+    [locales]="locales"
+    [deleteLabelAllowed]="isDeleteLabelAllowed()"
+  >
+  </tock-i18n-label>
+</div>
 
-    <mat-paginator
-      *ngIf="!loading"
-      class="background"
-      [length]="filteredI18n.length"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="pageSizeOptions"
-      (page)="pageEvent = $event"
-    >
-    </mat-paginator>
-  </nb-card-body>
-</nb-card>
+<div
+  class="d-flex justify-content-between"
+  [nbSpinner]="loading"
+>
+  &nbsp;
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="paginationChange()"
+  ></tock-pagination>
+</div>

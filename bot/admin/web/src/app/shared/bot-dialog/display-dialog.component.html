@@ -19,8 +19,11 @@
 >
   <nb-card-body>
     <ng-container *ngIf="dialog.rating">
-      <nb-icon  *ngFor="let _ of [].constructor(dialog.rating)" icon="star-outline"></nb-icon>
-      <p>{{dialog.review}}</p>
+      <nb-icon
+        *ngFor="let _ of [].constructor(dialog.rating)"
+        icon="star-outline"
+      ></nb-icon>
+      <p>{{ dialog.review }}</p>
     </ng-container>
     <div *ngIf="dialog.actions.length === 0">No dialog</div>
     <div *ngIf="dialog.actions.length !== 0">
@@ -38,7 +41,7 @@
               (click)="reveal()"
               style="cursor: pointer"
             >
-              <i class="material-icons">visibility</i>
+              <nb-icon icon="eye-outline"></nb-icon>
             </nb-action>
           </nb-actions>
         </nb-card-body>

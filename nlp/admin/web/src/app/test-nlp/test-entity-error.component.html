@@ -45,7 +45,7 @@
       (click)="download()"
       nbTooltip="Download the whole error list"
     >
-      <mat-icon>cloud_download</mat-icon>
+      <nb-icon icon="cloud-download-outline"></nb-icon>
     </button>
   </nb-card-body>
 </nb-card>
@@ -125,7 +125,10 @@
                   status="success"
                   (click)="validate(row)"
                 >
-                  <mat-icon nbTooltip="Validate entities">check_circle</mat-icon>
+                  <nb-icon
+                    icon="checkmark-circle-outline"
+                    nbTooltip="Validate entities"
+                  ></nb-icon>
                 </button>
                 <button
                   nbButton
@@ -134,7 +137,10 @@
                   status="danger"
                   (click)="change(row)"
                 >
-                  <mat-icon nbTooltip="Change entities">update</mat-icon>
+                  <nb-icon
+                    icon="refresh-outline"
+                    nbTooltip="Change entities"
+                  ></nb-icon>
                 </button>
                 <button
                   nbButton
@@ -143,7 +149,10 @@
                   *ngIf="canReveal(row)"
                   (click)="reveal(row)"
                 >
-                  <mat-icon nbTooltip="Reveal the sentence">visibility</mat-icon>
+                  <nb-icon
+                    icon="eye-outline"
+                    nbTooltip="Reveal the sentence"
+                  ></nb-icon>
                 </button>
               </p>
             </td>

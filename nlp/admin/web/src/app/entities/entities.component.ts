@@ -31,7 +31,7 @@ import { DialogService } from '../core-nlp/dialog.service';
 @Component({
   selector: 'tock-entities',
   templateUrl: './entities.component.html',
-  styleUrls: ['./entities.component.css']
+  styleUrls: ['./entities.component.scss']
 })
 export class EntitiesComponent implements OnInit {
   selectedEntityType: EntityType;

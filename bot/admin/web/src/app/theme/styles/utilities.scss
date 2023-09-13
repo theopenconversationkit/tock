@@ -88,12 +88,6 @@ nb-card.selected {
   padding: 1rem 1.5rem;
 }
 
-nb-icon[pack='material-icons'] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .divider {
   background-color: var(--color-basic-transparent-200);
 }
@@ -117,4 +111,10 @@ nb-icon[pack='material-icons'] {
   max-width: 95vw;
   max-height: 95vh;
   margin: 0;
+}
+
+.nb-toggle-reset-label-margin {
+  LABEL {
+    margin-bottom: 0;
+  }
 }

@@ -20,7 +20,7 @@ import { StateService } from '../../core-nlp/state.service';
 @Component({
   selector: 'tock-edit-entities',
   templateUrl: 'edit-entities.component.html',
-  styleUrls: ['edit-entities.component.css']
+  styleUrls: ['edit-entities.component.scss']
 })
 export class EditEntitiesComponent {
   @Input() container: EntityContainer;

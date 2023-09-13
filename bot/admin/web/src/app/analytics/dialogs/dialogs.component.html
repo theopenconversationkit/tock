@@ -15,66 +15,64 @@
   -->
 
 <div class="dialogs">
-  <nb-card >
+  <nb-card>
     <nb-card-body>
-      <ng-container *ngIf="!(isSatisfactionRoute()| async); else satisfaction">
-      <span class="search-input">
-        <input
-          nbInput
-          placeholder="Search user text"
-          status="primary"
-          [(ngModel)]="filter.text"
-          (keyup.enter)="refresh()"
-        />
-      </span>
+      <ng-container *ngIf="(isSatisfactionRoute() | async) === false; else satisfaction">
+        <span class="search-input">
+          <input
+            nbInput
+            placeholder="Search user text"
+            status="primary"
+            [(ngModel)]="filter.text"
+            (keyup.enter)="refresh()"
+          />
+        </span>
         <nb-checkbox
           class="exact"
           [(ngModel)]="filter.exactMatch"
-        >Exact text match
-        </nb-checkbox
-        >
+          >Exact text match
+        </nb-checkbox>
         <span>
-        <nb-select
-          class="select-plan"
-          status="primary"
-          placeholder="Connector type"
-          [(ngModel)]="filter.connectorType"
-          (selectedChange)="refresh()"
-        >
-          <nb-option
-            *ngFor="let c of connectorTypes"
-            [value]="c"
-          >{{ c.id }}</nb-option
+          <nb-select
+            class="select-plan"
+            status="primary"
+            placeholder="Connector type"
+            [(ngModel)]="filter.connectorType"
+            (selectedChange)="refresh()"
           >
-        </nb-select>
-      </span>
+            <nb-option
+              *ngFor="let c of connectorTypes"
+              [value]="c"
+              >{{ c.id }}</nb-option
+            >
+          </nb-select>
+        </span>
         &nbsp;
         <span>
-        <nb-select
-          class="select-plan"
-          status="primary"
-          placeholder="Intent"
-          [(ngModel)]="filter.intentName"
-          (selectedChange)="refresh()"
-        >
-          <nb-option value="">All</nb-option>
-          <nb-option
-            *ngFor="let intent of state.currentApplication.intents"
-            [value]="intent.name"
+          <nb-select
+            class="select-plan"
+            status="primary"
+            placeholder="Intent"
+            [(ngModel)]="filter.intentName"
+            (selectedChange)="refresh()"
           >
-            {{ intent.name }}
-          </nb-option>
-          <nb-option value="unknown">Unknown</nb-option>
-        </nb-select>
-      </span>
+            <nb-option value="">All</nb-option>
+            <nb-option
+              *ngFor="let intent of state.currentApplication.intents"
+              [value]="intent.name"
+            >
+              {{ intent.name }}
+            </nb-option>
+            <nb-option value="unknown">Unknown</nb-option>
+          </nb-select>
+        </span>
         &nbsp;
         <mat-slide-toggle
           class="test"
           [(ngModel)]="filter.displayTests"
           (change)="waitAndRefresh()"
-        >Display tests
-        </mat-slide-toggle
-        >
+          >Display tests
+        </mat-slide-toggle>
         <button
           nbButton
           (click)="refresh()"
@@ -85,21 +83,21 @@
         </button>
       </ng-container>
       <ng-template #satisfaction>
-            <nb-select
-              class="select-plan"
-              status="primary"
-              placeholder="Configuration"
-              [(ngModel)]="filter.configuration"
-              (selectedChange)="refresh()"
-            >
-              <nb-option value="">All</nb-option>
-              <nb-option
-                *ngFor="let config of configurationNameList"
-                [value]="config"
-              >
-                {{ config }}
-              </nb-option>
-            </nb-select>
+        <nb-select
+          class="select-plan"
+          status="primary"
+          placeholder="Configuration"
+          [(ngModel)]="filter.configuration"
+          (selectedChange)="refresh()"
+        >
+          <nb-option value="">All</nb-option>
+          <nb-option
+            *ngFor="let config of configurationNameList"
+            [value]="config"
+          >
+            {{ config }}
+          </nb-option>
+        </nb-select>
         <nb-select
           class="select-plan"
           multiple
@@ -116,21 +114,20 @@
             {{ intent }}
           </nb-option>
         </nb-select>
-            <mat-slide-toggle
-              class="test"
-              [(ngModel)]="filter.displayTests"
-              (change)="waitAndRefresh()"
-            >Display tests
-            </mat-slide-toggle
-            >
-            <button
-              nbButton
-              ghost
-              (click)="exportDialogs()"
-              matTooltip="Export All Dialogs With Ratings"
-            >
-              <mat-icon>file_download</mat-icon>
-            </button>
+        <mat-slide-toggle
+          class="test"
+          [(ngModel)]="filter.displayTests"
+          (change)="waitAndRefresh()"
+          >Display tests
+        </mat-slide-toggle>
+        <button
+          nbButton
+          ghost
+          (click)="exportDialogs()"
+          matTooltip="Export All Dialogs With Ratings"
+        >
+          <mat-icon>file_download</mat-icon>
+        </button>
       </ng-template>
     </nb-card-body>
   </nb-card>
@@ -173,7 +170,10 @@
       (scrolled)="onScroll()"
     >
       <div *ngFor="let dialog of data">
-        <tock-display-dialog [dialog]="dialog" [intentsToHide]="filter.intentsToHide">
+        <tock-display-dialog
+          [dialog]="dialog"
+          [intentsToHide]="filter.intentsToHide"
+        >
           <div *ngIf="dialog.actions.length === 0">No dialog</div>
         </tock-display-dialog>
         <p></p>
