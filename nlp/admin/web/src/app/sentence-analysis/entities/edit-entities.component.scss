@@ -13,18 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.error {
-  color: red;
+
+.tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.3rem 0.9rem;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border-radius: 10rem;
+  background-color: var(--border-basic-color-3);
+  font-size: 0.9rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
 }
 
-.content {
-  width: 50vw;
+.entity {
+  padding-top: 10px;
+  text-align: left;
 }
 
-.footer {
-  text-align: right;
+.role-container {
+  float: left;
+  padding-right: 15px;
 }
 
-.submit-button {
-  margin-left: 20px;
+.probability {
+  font-style: italic;
+  font-size: smaller;
+  padding-left: 10px;
+}
+
+.value {
+  position: relative;
+  top: -4px;
+}
+
+.read-only {
+  line-height: 36px;
 }

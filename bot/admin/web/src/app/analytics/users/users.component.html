@@ -16,7 +16,7 @@
 <div class="users">
   <div class="inbox_msg">
     <div class="inbox_people">
-      <nb-card style="margin-bottom">
+      <nb-card>
         <nb-card-header
           class="card-height"
           [nbSpinner]="loading"
@@ -26,13 +26,12 @@
           <span *ngIf="total === 0"> No users </span>
           <button
             nbButton
-            size="tiny"
             ghost="true"
             (click)="reload()"
-            style="float: right"
+            class="float-right"
             nbTooltip="Refresh"
           >
-            <mat-icon>refresh</mat-icon>
+            <nb-icon icon="refresh-outline"></nb-icon>
           </button>
         </nb-card-header>
         <nb-card-body style="padding: 0">
@@ -87,17 +86,17 @@
                           >
                         </p>
                       </nb-accordion-item-header>
-                      <nb-accordion-item-body>
-                        <mat-chip-list *ngIf="user.userState.flags.length !== 0">
-                          <mat-chip
-                            *ngFor="let f of user.userState.flags"
-                            [selected]="containsFlag(f)"
-                            color="accent"
-                            (click)="toggleFlag(f)"
-                            nbTooltip="Filter by flag {{ f }}"
-                            >{{ f }}
-                          </mat-chip>
-                        </mat-chip-list>
+                      <nb-accordion-item-body *ngIf="user.userState.flags.length !== 0">
+                        <div
+                          class="tag"
+                          *ngFor="let f of user.userState.flags"
+                          [selected]="containsFlag(f)"
+                          color="accent"
+                          (click)="toggleFlag(f)"
+                          nbTooltip="Filter by flag {{ f }}"
+                        >
+                          {{ f }}
+                        </div>
                       </nb-accordion-item-body>
                     </nb-accordion-item>
                   </nb-accordion>
@@ -182,12 +181,11 @@
                     <button
                       nbButton
                       (click)="addDialogToTestPlan(selectedPlan, selectedUser.userDialog)"
-                      size="small"
                       ghost="true"
                       status="primary"
                       nbTooltip="Add dialog to Test Plan"
                     >
-                      <mat-icon>add_circle_outline</mat-icon>
+                      <nb-icon icon="plus-circle-outline"></nb-icon>
                     </button>
                   </div>
                 </div>

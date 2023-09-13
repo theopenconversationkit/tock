@@ -1,47 +1,78 @@
-<nb-card *ngIf="fileList">
+<nb-card
+  *ngIf="fileList"
+  class="mt-3"
+>
   <nb-card-body>
+    <div class="table-list table-list-header">
+      <div class="table-list-entry">Story</div>
+      <div class="table-list-entry bordered text-center">Category</div>
+      <div class="table-list-entry bordered text-center">File name/Url</div>
+      <div class="table-list-entry bordered text-center">File title</div>
+      <div class="table-list-entry text-center">Actions</div>
+    </div>
+    <div
+      class="table-list"
+      *ngFor="let file of fileList"
+    >
+      <div class="table-list-entry">
+        <div class="font-weight-bold">
+          <nb-icon
+            *ngIf="getStoryWithThisMediaFile(file).isBuiltIn()"
+            class="valign-middle"
+            nbTooltip="Built-in Story"
+            icon="cube"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="getStoryWithThisMediaFile(file).isSimpleAnswer()"
+            class="valign-middle"
+            nbTooltip="Message Story"
+            icon="message-square-outline"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="getStoryWithThisMediaFile(file).isScriptAnswer()"
+            class="valign-middle"
+            nbTooltip="Script Story"
+            icon="code"
+          ></nb-icon>
+          {{ getStoryWithThisMediaFile(file)?.name }}
+        </div>
+        <span class="text-muted">{{ getStoryWithThisMediaFile(file)?.description }}</span>
+      </div>
 
-    <mat-table [dataSource]="fileList">
-      <mat-header-row *matHeaderRowDef="allColumns"></mat-header-row>
-      <mat-row *matRowDef="let file; columns: allColumns"></mat-row>
+      <div class="table-list-entry bordered text-center">
+        {{ getStoryWithThisMediaFile(file)?.category }}
+      </div>
 
-      <ng-container matColumnDef="{{storyNameColumn}}">
-        <mat-header-cell *matHeaderCellDef> {{storyNameColumn}} </mat-header-cell>
-        <mat-cell *matCellDef="let file"> {{getStoryWithThisMediaFile(file)?.storyId}} </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="{{categoryColumn}}">
-        <mat-header-cell *matHeaderCellDef> {{categoryColumn}} </mat-header-cell>
-        <mat-cell *matCellDef="let file"> {{getStoryWithThisMediaFile(file)?.category}} </mat-cell>
-      </ng-container>
+      <div class="table-list-entry bordered text-center">
+        <a
+          href="{{ file.url(rest.url) }}"
+          target="_blank"
+        >
+          <div *ngIf="file.isImage()">
+            <img
+              class="image mt-1"
+              src="{{ file.url(rest.url) }}"
+            />
+          </div>
+          <small>{{ file.name }}</small>
+        </a>
+      </div>
 
+      <div class="table-list-entry bordered text-center">
+        {{ getAnswerWithThisMediaFile(file)?.mediaMessage?.title?.defaultLabel }}
+      </div>
 
-      <ng-container matColumnDef="{{fileNameColumn}}">
-        <mat-header-cell *matHeaderCellDef> {{fileNameColumn}} </mat-header-cell>
-        <mat-cell *matCellDef="let file"><a href="{{ file.url(rest.url) }}" target="_blank">{{file.name}}</a>
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="{{fileTitleColumn}}">
-        <mat-header-cell *matHeaderCellDef> {{fileTitleColumn}} </mat-header-cell>
-        <mat-cell *matCellDef="let file">{{getAnswerWithThisMediaFile(file)?.mediaMessage?.title?.defaultLabel}}</mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="{{actionsColumn}}">
-        <mat-header-cell *matHeaderCellDef> {{actionsColumn}} </mat-header-cell>
-        <mat-cell *matCellDef="let file" [ngClass]="nb-column-Actions">
-          <button
-            nbButton
-            outline
-            status="primary"
-            nbTooltip="Update File"
-            (click)="displayMediaMessage(file)"
-            class="action"
-          >
-            <nb-icon icon="edit-outline"></nb-icon>
-          </button>
-        </mat-cell>
-      </ng-container>
-    </mat-table>
-
+      <div class="table-list-entry text-center">
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Update File"
+          (click)="displayMediaMessage(file)"
+        >
+          <nb-icon icon="edit-outline"></nb-icon>
+        </button>
+      </div>
+    </div>
   </nb-card-body>
 </nb-card>

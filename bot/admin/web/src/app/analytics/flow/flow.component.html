@@ -47,18 +47,13 @@
     <nb-accordion-item-body>
       <div class="flow-option-group">
         <span class="flow-option-group-name">Mode:</span>
-        <span
-          class="flow-option-label"
+        <nb-checkbox
           nbTooltip="Show available stories (static mode)"
-          >Available stories</span
-        >
-        <mat-slide-toggle
-          [(ngModel)]="statsMode"
           class="mode-selection"
-          color="primary"
+          [(ngModel)]="statsMode"
           (change)="changeMode()"
+          >Available stories</nb-checkbox
         >
-        </mat-slide-toggle>
         <span
           class="flow-option-label"
           nbTooltip="Show effective user trafic (dynamic mode)"
@@ -298,13 +293,13 @@
             nbTooltip="Filter by Minimum Traffic through Node"
             >Min. Node Traffic:
           </span>
-          <mat-slider
-            thumbLabel
-            tickInterval="1"
-            [(ngModel)]="minimalNodeCount"
+          <input
+            type="range"
+            min="0"
             [max]="maxNodeCount"
+            [(ngModel)]="minimalNodeCount"
             (change)="updateCount()"
-          ></mat-slider>
+          />
         </span>
         <span>
           <span
@@ -312,12 +307,13 @@
             nbTooltip="Filter by Minimum Percentage of Transitions"
             >Min. Transition %:
           </span>
-          <mat-slider
-            thumbLabel
-            tickInterval="1"
+          <input
+            type="range"
+            min="0"
+            max="100"
             [(ngModel)]="minimalTransitionPercentage"
             (change)="updateCount()"
-          ></mat-slider>
+          />
         </span>
         <span>
           <nb-checkbox

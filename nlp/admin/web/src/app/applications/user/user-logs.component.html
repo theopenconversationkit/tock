@@ -49,17 +49,21 @@
               <button
                 nbButton
                 ghost
-                size="tiny"
                 *ngIf="row.newData"
                 (click)="displayData(row)"
               >
-                <mat-icon>visibility</mat-icon>
+                <nb-icon icon="eye-outline"></nb-icon>
               </button>
             </p>
           </td>
           <td>
             <p class="error">
-              <span *ngIf="row.error"><mat-icon style="color: red">error</mat-icon></span>
+              <span *ngIf="row.error">
+                <nb-icon
+                  icon="alert-circle-outline"
+                  status="danger"
+                ></nb-icon>
+              </span>
             </p>
           </td>
         </tr>

@@ -55,6 +55,7 @@
           required
         />
       </div>
+
       <div class="form-group">
         <input
           nbInput
@@ -65,19 +66,19 @@
           nbTooltip="Category"
           (keyup)="categoryChange()"
           (focus)="categoryChange()"
-          [matAutocomplete]="catAuto"
+          [nbAutocomplete]="auto"
+          autocomplete="off"
         />
+        <nb-autocomplete #auto>
+          <nb-option
+            *ngFor="let c of categories"
+            [value]="c"
+          >
+            {{ c }}
+          </nb-option>
+        </nb-autocomplete>
       </div>
-      <mat-autocomplete
-        #catAuto="matAutocomplete"
-        autoActiveFirstOption
-      >
-        <mat-option
-          *ngFor="let c of categories"
-          [value]="c"
-          >{{ c }}</mat-option
-        >
-      </mat-autocomplete>
+
       <div class="form-group">
         <textarea
           nbInput

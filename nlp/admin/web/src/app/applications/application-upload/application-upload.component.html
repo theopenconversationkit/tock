@@ -47,14 +47,16 @@
         </li>
         <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
       </ul>
+
       <p *ngIf="!applicationName">
-        <mat-form-field id="applicationName">
-          <input
-            matInput
-            [(ngModel)]="configuration.newApplicationName"
-            placeholder="Target Application Name"
-          />
-        </mat-form-field>
+        <label>Target Application Name</label>
+        <input
+          nbInput
+          fullWidth
+          [(ngModel)]="configuration.newApplicationName"
+          placeholder="Target Application Name"
+        />
+
         <span class="mention">(If empty, application name in dump will be used)</span>
       </p>
       <p>
@@ -64,6 +66,7 @@
           >Please select a dump file:</label
         >
         <input
+          nbInput
           id="file"
           type="file"
           ng2FileSelect
@@ -84,62 +87,45 @@
         <h4 *ngIf="!report.modified">No new data found, so no data imported.</h4>
         <div *ngIf="report.modified">
           <h4>Successful Import Report:</h4>
-          <mat-list>
-            <h3
-              *ngIf="report.applicationsImported.length !== 0"
-              mat-subheader
-            >
-              Applications imported
-            </h3>
-            <mat-list-item *ngFor="let app of report.applicationsImported">
-              <mat-icon mat-list-icon>apps</mat-icon>
-              <h4 mat-line>{{ app }}</h4>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-            <h3
-              *ngIf="report.entitiesImported.length !== 0"
-              mat-subheader
-            >
-              Entities imported
-            </h3>
-            <mat-list-item *ngFor="let entity of report.entitiesImported">
-              <mat-icon mat-list-icon>invert_colors</mat-icon>
-              <h4 mat-line>{{ entity }}</h4>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-            <h3
-              *ngIf="report.intentsImported.length !== 0"
-              mat-subheader
-            >
-              Intents imported
-            </h3>
-            <mat-list-item *ngFor="let intent of report.intentsImported">
-              <mat-icon mat-list-icon>merge_type</mat-icon>
-              <h4 mat-line>{{ intent }}</h4>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-            <h3
-              *ngIf="report.sentencesImported !== 0"
-              mat-subheader
-            >
-              Number of sentences imported
-            </h3>
-            <mat-list-item *ngIf="report.sentencesImported !== 0">
-              <mat-icon mat-list-icon>speaker_notes</mat-icon>
-              <h4 mat-line>{{ report.sentencesImported }}</h4>
-            </mat-list-item>
-            <mat-divider></mat-divider>
-            <h3
-              *ngIf="report.faqsImported !== 0"
-              mat-subheader
-            >
-              Number of FAQs imported
-            </h3>
-            <mat-list-item *ngIf="report.faqsImported !== 0">
-              <mat-icon mat-list-icon>speaker_notes</mat-icon>
-              <h4 mat-line>{{ report.faqsImported }}</h4>
-            </mat-list-item>
-          </mat-list>
+
+          <h3 *ngIf="report.applicationsImported.length !== 0">Applications imported</h3>
+          <div *ngFor="let app of report.applicationsImported">
+            <nb-icon icon="keypad-outline"></nb-icon>
+            <h4>{{ app }}</h4>
+          </div>
+
+          <hr />
+
+          <h3 *ngIf="report.entitiesImported.length !== 0">Entities imported</h3>
+          <div *ngFor="let entity of report.entitiesImported">
+            <nb-icon icon="code-download-outline"></nb-icon>
+            <h4>{{ entity }}</h4>
+          </div>
+
+          <hr />
+
+          <h3 *ngIf="report.intentsImported.length !== 0">Intents imported</h3>
+          <div *ngFor="let intent of report.intentsImported">
+            <nb-icon icon="shuffle-2-outline"></nb-icon>
+            <h4>{{ intent }}</h4>
+          </div>
+
+          <hr />
+
+          <h3 *ngIf="report.sentencesImported !== 0">Number of sentences imported</h3>
+          <div *ngIf="report.sentencesImported !== 0">
+            <nb-icon icon="menu-outline"></nb-icon>
+            <h4>{{ report.sentencesImported }}</h4>
+          </div>
+
+          <hr />
+
+          <h3 *ngIf="report.faqsImported !== 0">Number of FAQs imported</h3>
+          <div *ngIf="report.faqsImported !== 0">
+            <nb-icon icon="message-square-outline"></nb-icon>
+            <h4>{{ report.faqsImported }}</h4>
+          </div>
+
           <div *ngIf="report.errorMessages.length !== 0">
             <h5>Errors:</h5>
             <ul>

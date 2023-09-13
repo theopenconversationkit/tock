@@ -45,8 +45,6 @@ import { AddSharedIntentDialogComponent } from '../intents/add-shared-intent/add
 import { EntitiesComponent } from '../entities/entities.component';
 import { EditEntitiesComponent } from '../sentence-analysis/entities/edit-entities.component';
 import { EntityDetailsComponent } from '../entities/entity-details.component';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { FileUploadModule } from 'ng2-file-upload';
 import { ReviewRequestDialogComponent } from '../sentence-analysis/review-request-dialog/review-request-dialog.component';
 import {
@@ -129,10 +127,7 @@ export class NlpRoutingModule {}
     ApplicationsModule,
     InfiniteScrollModule,
     MomentModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
     FileUploadModule,
-    MatNativeDateModule,
     ThemeModule,
     NbTabsetModule,
     NbRouteTabsetModule,

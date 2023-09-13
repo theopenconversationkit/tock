@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
 import { NbMenuItem, NbToastrService } from '@nebular/theme';
 import { AuthListener } from './core-nlp/auth/auth.listener';
 
@@ -35,15 +33,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
   private errorUnsuscriber: any;
   public menu: NbMenuItem[] = [];
 
-  constructor(
-    public auth: AuthService,
-    public state: StateService,
-    private rest: RestService,
-    private toastrService: NbToastrService,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer
-  ) {
-    iconRegistry.addSvgIcon('logo', sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
+  constructor(public auth: AuthService, public state: StateService, private rest: RestService, private toastrService: NbToastrService) {
     this.auth.addListener(this);
   }
 

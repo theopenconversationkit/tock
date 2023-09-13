@@ -46,7 +46,7 @@
       (click)="download()"
       nbTooltip="Download the whole error list"
     >
-      <mat-icon>cloud_download</mat-icon>
+      <nb-icon icon="cloud-download-outline"></nb-icon>
     </button>
   </nb-card-body>
 </nb-card>
@@ -113,29 +113,35 @@
                 <button
                   nbButton
                   ghost
-                  size="tiny"
                   status="success"
                   (click)="validate(row)"
                 >
-                  <mat-icon nbTooltip="Validate Intent">check_circle</mat-icon>
+                  <nb-icon
+                    icon="checkmark-circle-2-outline"
+                    nbTooltip="Validate Intent"
+                  ></nb-icon>
                 </button>
                 <button
                   nbButton
                   ghost
-                  size="tiny"
                   status="danger"
                   (click)="change(row)"
                 >
-                  <mat-icon nbTooltip="Change the Intent">update</mat-icon>
+                  <nb-icon
+                    icon="edit-outline"
+                    nbTooltip="Change the Intent"
+                  ></nb-icon>
                 </button>
                 <button
                   nbButton
                   ghost
-                  size="tiny"
                   *ngIf="canReveal(row)"
                   (click)="reveal(row)"
                 >
-                  <mat-icon nbTooltip="Reveal the sentence">visibility</mat-icon>
+                  <nb-icon
+                    icon="eye-outline"
+                    nbTooltip="Reveal the sentence"
+                  ></nb-icon>
                 </button>
               </p>
             </td>

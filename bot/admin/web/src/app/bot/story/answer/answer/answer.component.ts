@@ -15,7 +15,6 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { MatRadioChange } from '@angular/material/radio';
 import { NbDialogService } from '@nebular/theme';
 
 import {
@@ -44,9 +43,12 @@ export class AnswerComponent implements OnInit {
   @Input() submit: AnswerController = new AnswerController();
   @Input() wide = false;
 
+  answerType: string;
+
   constructor(public shared: BotSharedService, private nbDialogService: NbDialogService) {}
 
   ngOnInit(): void {
+    this.answerType = this.answer.currentType.toString();
     if (!this.answer.currentAnswer()) {
       this.changeAnswerType(this.answer.currentType);
     }
@@ -62,8 +64,8 @@ export class AnswerComponent implements OnInit {
     });
   }
 
-  changeType(event: MatRadioChange) {
-    this.changeAnswerType(event.value);
+  changeType(event) {
+    this.changeAnswerType(parseInt(event));
   }
 
   private changeAnswerType(value: AnswerConfigurationType) {

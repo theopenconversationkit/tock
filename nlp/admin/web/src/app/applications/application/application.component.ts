@@ -28,7 +28,7 @@ import { DialogService } from '../../core-nlp/dialog.service';
 @Component({
   selector: 'tock-application',
   templateUrl: './application.component.html',
-  styleUrls: ['./application.component.css']
+  styleUrls: ['./application.component.scss']
 })
 export class ApplicationComponent implements OnInit {
   applications: Application[];
@@ -72,7 +72,7 @@ export class ApplicationComponent implements OnInit {
           false,
           0.0,
           false,
-          [],
+          []
         );
       }
       this.nlpEngineType = this.application.nlpEngineType.name;

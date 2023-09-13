@@ -13,32 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.entities {
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px;
-  text-align: center;
+
+.tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.3rem 0.9rem;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border-radius: 10rem;
+  background-color: var(--border-basic-color-3);
+  font-size: 0.9rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  &.primary {
+    color: white;
+    background-color: var(--button-filled-primary-background-color);
+  }
+  &.success {
+    color: white;
+    background-color: var(--button-filled-success-background-color);
+  }
 }
 
 .add-value {
   float: right;
   margin-left: 20px;
   margin-right: 20px;
-}
-
-.no-model {
-  padding-top: 14px;
-}
-
-.model {
-  float: left;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-.add-predefined-list {
-  color: blue;
 }
 
 .predefined-list {
@@ -53,12 +53,4 @@
 .values {
   width: 100%;
   padding-bottom: 50px;
-}
-
-.export {
-  padding-top: 6px;
-}
-
-.io {
-  float: right;
 }

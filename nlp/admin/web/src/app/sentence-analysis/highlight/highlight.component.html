@@ -26,7 +26,7 @@
         (click)="$event.stopPropagation(); reveal()"
         *ngIf="displayActions && canReveal()"
       >
-        <i class="material-icons">visibility</i>
+        <nb-icon icon="eye-outline"></nb-icon>
       </nb-action>
       <nb-action
         class="control-item"
@@ -38,7 +38,7 @@
           [queryParams]="{ text: this.sentence.text }"
           target="_blank"
         >
-          <i class="material-icons">format_quote</i>
+          <nb-icon icon="menu-outline"></nb-icon>
         </a>
       </nb-action>
       <nb-action
@@ -47,7 +47,7 @@
         nbTooltip="Set a custom answer"
         *ngIf="displayActions && coreConfig.answerToSentenceUrl && isRootSentence()"
       >
-        <i class="material-icons">question_answers</i>
+        <nb-icon icon="message-square-outline"></nb-icon>
       </nb-action>
       <nb-action
         class="control-item"
@@ -55,7 +55,7 @@
         nbTooltip="Copy sentence to clipboard"
         *ngIf="displayActions && isRootSentence()"
       >
-        <i class="material-icons">content_copy</i>
+        <nb-icon icon="copy-outline"></nb-icon>
       </nb-action>
     </nb-actions>
 
@@ -104,16 +104,14 @@
       *ngFor="let e of sentence.getEditedSubEntities(); let idx = index"
       [style.padding-left]="leftPadding + 'px'"
     >
-      <mat-chip-list class="role-container">
-        <mat-chip
-          [style.background-color]="e.entityColor"
-          [nbTooltip]="e.qualifiedName(state.user)"
-          selected="false"
-          color="primary"
-        >
-          {{ e.role }}
-        </mat-chip>
-      </mat-chip-list>
+      <span
+        class="tag"
+        [style.background-color]="e.entityColor"
+        [nbTooltip]="e.qualifiedName(state.user)"
+      >
+        {{ e.role }}
+      </span>
+
       <tock-highlight
         [sentence]="e"
         [readOnly]="readOnly"
@@ -129,28 +127,27 @@
     *ngIf="!readOnly && edited"
     class="highlight"
   >
-    <mat-chip-list
+    <div
       *ngIf="entityProvider"
       class="inner-highlight"
     >
-      <mat-chip
+      <span
         *ngFor="let entity of entityProvider.getEntities()"
         nbTooltip="Select {{ entity.qualifiedName(state.user) }}"
-        selected="false"
         (click)="onSelect(entity)"
         [style.background-color]="entity.entityColor"
-        color="primary"
       >
         {{ entity.qualifiedName(state.user) }}
-      </mat-chip>
-    </mat-chip-list>
+      </span>
+    </div>
+
     <div>
       <button
         nbButton
         ghost
         (click)="addEntity()"
       >
-        <mat-icon>add</mat-icon>
+        <nb-icon icon="plus-outline"></nb-icon>
         Add Entity
       </button>
       <button
@@ -158,7 +155,7 @@
         ghost
         (click)="onClose()"
       >
-        <mat-icon>close</mat-icon>
+        <nb-icon icon="close-outline"></nb-icon>
         Close Entity Selection
       </button>
     </div>

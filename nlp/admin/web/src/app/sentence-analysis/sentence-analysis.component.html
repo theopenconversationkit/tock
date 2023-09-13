@@ -23,8 +23,7 @@
       *ngIf="displayEntities"
       [sentence]="sentence"
     ></tock-highlight>
-    <span style="float: right;">{{sentence.configuration}}</span>
-
+    <span style="float: right">{{ sentence.configuration }}</span>
   </nb-card-header>
   <nb-card-body (click)="displayAllView()">
     <div
@@ -87,7 +86,7 @@
         nbTooltip="Create New Intent"
         size="small"
       >
-        <mat-icon>library_add</mat-icon>
+        <nb-icon icon="plus-circle-outline"></nb-icon>
       </button>
       <nb-select
         status="primary"
@@ -146,19 +145,21 @@
         >
           <button
             *ngIf="!sentence.classification.displayOtherIntents"
+            nbButton
+            ghost
             (click)="sentence.classification.displayOtherIntents = true"
-            mat-icon-button
             nbTooltip="Display probability for other intents & entities"
           >
-            <mat-icon>expand_more</mat-icon>
+            <nb-icon icon="chevron-down-outline"></nb-icon>
           </button>
           <button
             *ngIf="sentence.classification.displayOtherIntents"
-            mat-icon-button
+            nbButton
+            ghost
             (click)="sentence.classification.displayOtherIntents = false"
             nbTooltip="Hide probabilities"
           >
-            <mat-icon>expand_less</mat-icon>
+            <nb-icon icon="chevron-up-outline"></nb-icon>
           </button>
         </span>
         <span *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0">

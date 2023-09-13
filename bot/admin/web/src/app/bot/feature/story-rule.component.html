@@ -32,7 +32,7 @@
         (click)="refresh()"
         *ngIf="!create"
       >
-        <i class="material-icons tock-toolbar-menu">refresh</i>
+        <nb-icon icon="refresh-outline"></nb-icon>
       </nb-action>
       <nb-action
         class="control-item"
@@ -40,7 +40,7 @@
         (click)="prepareCreate()"
         *ngIf="!create"
       >
-        <i class="material-icons tock-toolbar-menu">add_box</i>
+        <nb-icon icon="plus-square-outline"></nb-icon>
       </nb-action>
     </nb-actions>
   </nb-card-header>
@@ -67,18 +67,20 @@
           </nb-radio-group>
         </span>
 
-        <input *ngIf="feature"
-               [(ngModel)]="valueActivation"
-               (ngModelChange)="onChange($event)"
-               nbInput
-               type="text"
-               placeholder="Story"
-               [nbAutocomplete]="auto"
+        <input
+          *ngIf="feature"
+          [(ngModel)]="valueActivation"
+          (ngModelChange)="onChange($event)"
+          nbInput
+          type="text"
+          placeholder="Story"
+          [nbAutocomplete]="auto"
         />
 
-        <nb-autocomplete #auto
-                         class="story new"
-                         (selectedChange)="onSelectionChange($event)"
+        <nb-autocomplete
+          #auto
+          class="story new"
+          (selectedChange)="onSelectionChange($event)"
         >
           <nb-select-label
             *ngIf="feature"
@@ -125,19 +127,20 @@
           </nb-option>
         </nb-autocomplete>
 
-
-        <input *ngIf="feature && isRedirectionRule()"
-               [(ngModel)]="valueRedirection"
-               (ngModelChange)="onChangeRedirection($event)"
-               nbInput
-               type="text"
-               placeholder="Story Redirection"
-               [nbAutocomplete]="autoRedirection"
+        <input
+          *ngIf="feature && isRedirectionRule()"
+          [(ngModel)]="valueRedirection"
+          (ngModelChange)="onChangeRedirection($event)"
+          nbInput
+          type="text"
+          placeholder="Story Redirection"
+          [nbAutocomplete]="autoRedirection"
         />
 
-        <nb-autocomplete #autoRedirection
-                         class="story new"
-                         (selectedChange)="onSelectionRedirectionChange($event)"
+        <nb-autocomplete
+          #autoRedirection
+          class="story new"
+          (selectedChange)="onSelectionRedirectionChange($event)"
         >
           <nb-select-label
             *ngIf="feature && feature.switchToStory"
@@ -184,18 +187,20 @@
             <span class="story-label">{{ s.name }}</span>
           </nb-option>
         </nb-autocomplete>
-        <input *ngIf="feature && isEndingRule()"
-               [(ngModel)]="valueEnding"
-               (ngModelChange)="onChangeEnding($event)"
-               nbInput
-               type="text"
-               placeholder="Story Ending"
-               [nbAutocomplete]="autoEnding"
+        <input
+          *ngIf="feature && isEndingRule()"
+          [(ngModel)]="valueEnding"
+          (ngModelChange)="onChangeEnding($event)"
+          nbInput
+          type="text"
+          placeholder="Story Ending"
+          [nbAutocomplete]="autoEnding"
         />
 
-        <nb-autocomplete #autoEnding
-                         class="story new"
-                         (selectedChange)="onSelectionEndingChange($event)"
+        <nb-autocomplete
+          #autoEnding
+          class="story new"
+          (selectedChange)="onSelectionEndingChange($event)"
         >
           <nb-select-label
             *ngIf="feature && feature.endWithStory"
@@ -589,7 +594,8 @@
     >
       Cancel
     </button>
-    <button [disabled]="!isValidRule()"
+    <button
+      [disabled]="!isValidRule()"
       nbButton
       size="small"
       status="primary"
