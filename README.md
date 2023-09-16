@@ -7,7 +7,7 @@
 [![Commit Activity](https://img.shields.io/github/commit-activity/m/theopenconversationkit/tock)](https://github.com/theopenconversationkit/tock/pulse/monthly)
 
 [![Home](https://img.shields.io/website?label=home&down_message=offline&up_message=doc.tock.ai&url=https%3A%2F%2Fdoc.tock.ai)](https://doc.tock.ai)
-[![Demo](https://img.shields.io/website?label=demo&down_message=offline&up_message=live&url=https%3A%2F%2Fdemo.tock.ai)](https://demo.tock.ai)
+[![Demo](https://img.shields.io/badge/demo-live-blue)](https://demo.tock.ai)
 [![License](https://img.shields.io/github/license/theopenconversationkit/tock)](https://github.com/theopenconversationkit/tock/blob/master/LICENSE)
 
 # Tock - The Open Conversation Kit
