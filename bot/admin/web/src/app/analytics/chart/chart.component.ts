@@ -256,7 +256,7 @@ export class ChartComponent implements OnChanges {
         }
       },
       grid: {
-        left: '3%',
+        left: '5%',
         right: '5%'
       },
       legend: {
