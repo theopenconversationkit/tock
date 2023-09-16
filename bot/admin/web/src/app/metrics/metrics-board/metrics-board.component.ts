@@ -15,6 +15,7 @@ import { heuristicValueColorDetection } from '../commons/utils';
 import { IndicatorDefinition, IndicatorValueDefinition, MetricResult, StorySummary } from '../models';
 import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './stories-hits/stories-hits.component';
+import {toISOStringWithoutOffset} from "../../shared/utils";
 
 export enum TimeRanges {
   day = 1,
@@ -138,8 +139,8 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
         this.stateService.currentApplication.name,
         undefined,
         undefined,
-        this.range.start,
-        this.range.end,
+        toISOStringWithoutOffset(this.range.start),
+        toISOStringWithoutOffset(this.range.end),
         !environment.production // In dev, we ask for test messages to dispose of some usable content
       )
     );

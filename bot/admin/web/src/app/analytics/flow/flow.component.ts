@@ -35,6 +35,7 @@ import { AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery
 import { Subscription } from 'rxjs';
 import { NbToastrService } from '@nebular/theme';
 import { ChartData } from '../chart/ChartData';
+import {toISOStringWithoutOffset} from "../../shared/utils";
 
 @Component({
   selector: 'tock-flow',
@@ -211,8 +212,8 @@ export class FlowComponent implements OnInit, OnDestroy {
           this.state.currentApplication.name,
           this.selectedConfigurationName,
           this.selectedConnectorId,
-          this.startDate,
-          this.endDate,
+          toISOStringWithoutOffset(this.startDate),
+          toISOStringWithoutOffset(this.endDate),
           this.displayTests
         );
         if (forceReload == true || !request.equals(this.lastFlowRequest)) {

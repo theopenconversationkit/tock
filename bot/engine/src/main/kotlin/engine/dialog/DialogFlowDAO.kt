@@ -23,7 +23,7 @@ import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.DialogFlowDefinition
 import org.litote.kmongo.Id
 import java.time.DayOfWeek
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 interface DialogFlowDAO {
 
@@ -38,8 +38,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
+        from: LocalDateTime?,
+        to: LocalDateTime?,
         intent: String? = null
     ): ApplicationDialogFlowData
 
@@ -47,8 +47,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
+        from: LocalDateTime?,
+        to: LocalDateTime?,
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -63,8 +63,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -79,8 +79,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -95,8 +95,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -108,8 +108,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<DayOfWeek, Int>
 
     /**
@@ -121,8 +121,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<Int, Int>
 
     /**
@@ -137,8 +137,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -150,8 +150,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int>
 
     /**
@@ -163,8 +163,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int>
 
     /**
@@ -179,8 +179,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>>
 
     /**
@@ -192,8 +192,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int>
 
     /**
@@ -205,8 +205,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int>
 
     /**
@@ -218,8 +218,8 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int>
 
     /**
@@ -231,7 +231,7 @@ interface DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int>
 }

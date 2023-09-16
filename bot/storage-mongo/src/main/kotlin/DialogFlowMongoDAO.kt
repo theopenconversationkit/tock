@@ -82,7 +82,6 @@ import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
-import org.litote.kmongo.EMPTY_BSON
 import org.litote.kmongo.Id
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
@@ -117,7 +116,6 @@ import org.litote.kmongo.toId
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.TemporalAccessor
 import java.util.concurrent.Executors
@@ -246,7 +244,10 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         logger.info("cleanup stats users")
                         flowTransitionStatsUserAggregationCol.deleteMany()
                         logger.info("reset processed level")
-                        flowTransitionStatsCol.updateMany(ProcessedLevel eq currentProcessedLevel, set(ProcessedLevel setTo 0))
+                        flowTransitionStatsCol.updateMany(
+                            ProcessedLevel eq currentProcessedLevel,
+                            set(ProcessedLevel setTo 0)
+                        )
                         logger.info("persist flow configuration")
                         currentProcessedLevelCol.save(DialogFlowConfiguration(defaultConfKey, currentProcessedLevel))
                         logger.info { "end update flow stats to level $currentProcessedLevel" }
@@ -446,8 +447,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?,
+        from: LocalDateTime?,
+        to: LocalDateTime?,
         intent: String?
     ): ApplicationDialogFlowData {
         logger.debug { "Fetching application flow for ns $namespace, bot $botId, apps $applicationIds from $from to $to..." }
@@ -506,8 +507,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         // group messages that were sent the same day together
@@ -529,8 +530,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val distinct = group(
@@ -552,8 +553,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -575,8 +576,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -598,8 +599,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<DayOfWeek, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(Date.kDateToString(format = "%u"), Count sum Count.projection)
@@ -616,8 +617,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<Int, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(HourOfDay, Count sum Count.projection)
@@ -635,8 +636,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -658,8 +659,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -673,8 +674,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -689,8 +690,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, List<DialogFlowAggregateData>> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -712,8 +713,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -728,8 +729,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -744,8 +745,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -760,8 +761,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         namespace: String,
         botId: String,
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): Map<String, Int> {
         val match = buildAnalyticsFilter(applicationIds, from, to)
         val group = group(
@@ -785,14 +786,14 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
 
     private fun buildAnalyticsFilter(
         applicationIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ) = match(
         and(
             listOfNotNull(
                 if (applicationIds.isEmpty()) null else ApplicationId `in` applicationIds,
-                if (from == null) null else Date gte from.toInstant(),
-                if (to == null) null else Date lte to.toInstant()
+                if (from == null) null else Date gte from.atZone(defaultZoneId).toInstant(),
+                if (to == null) null else Date lte to.atZone(defaultZoneId)?.toInstant()
             )
         )
     )
@@ -807,8 +808,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
 
     private fun findStats(
         botAppConfIds: Set<Id<BotApplicationConfiguration>>,
-        from: ZonedDateTime?,
-        to: ZonedDateTime?
+        from: LocalDateTime?,
+        to: LocalDateTime?
     ): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
         flowTransitionStatsCol
             .aggregate<Pair<String, Long>>(
@@ -816,8 +817,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     and(
                         listOfNotNull(
                             if (botAppConfIds.isEmpty()) null else ApplicationId `in` botAppConfIds,
-                            if (from == null) null else Date gt from.toInstant(),
-                            if (to == null) null else Date lt to.toInstant()
+                            if (from == null) null else Date gt from.atZone(defaultZoneId)?.toInstant(),
+                            if (to == null) null else Date lt to.atZone(defaultZoneId)?.toInstant()
                         )
                     )
                 ),

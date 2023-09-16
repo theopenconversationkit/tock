@@ -103,6 +103,7 @@ export class DateRangeCalendarComponent implements OnInit {
   private normalizeDateTimes(): void {
     let start = null;
     let end = null;
+    console.log(this.range);
     if (this.range.start != null) {
       start = new Date(JSON.parse(JSON.stringify(this.range.start))); // clone
       start.setHours(0);

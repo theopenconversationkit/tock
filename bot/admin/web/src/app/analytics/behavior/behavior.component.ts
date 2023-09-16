@@ -26,6 +26,7 @@ import { DialogFlowRequest } from '../flow/flow';
 import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
 import { UserAnalyticsQueryResult } from '../users/users';
 import { UserFilter } from '../users/users.component';
+import {toISOStringWithoutOffset} from "../../shared/utils";
 
 @Component({
   selector: 'tock-behavior',
@@ -249,8 +250,8 @@ export class BehaviorComponent implements AfterViewInit {
       this.state.currentApplication.name,
       this.selectedConfigurationName,
       this.selectedConnectorId,
-      this.filter.from,
-      this.filter.to,
+      toISOStringWithoutOffset(this.filter.from),
+      toISOStringWithoutOffset(this.filter.to),
       this.displayTests,
       this.filter.intent
     );

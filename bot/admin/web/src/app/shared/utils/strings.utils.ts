@@ -24,3 +24,14 @@ export function normalizedCamelCase(str: string): string {
     })
     .replace(/[^A-Za-z0-9]*/g, '');
 }
+
+export const toISOStringWithoutOffset = (date: Date) => {
+  if (!date) return null;
+  const pad = n => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+  return date.getFullYear() +
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds())
+};

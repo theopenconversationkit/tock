@@ -27,6 +27,7 @@ import { DialogFlowRequest } from '../flow/flow';
 import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
 import { UserAnalyticsQueryResult } from '../users/users';
 import { UserFilter } from '../users/users.component';
+import {toISOStringWithoutOffset} from "../../shared/utils";
 
 @Component({
   selector: 'tock-activity',
@@ -323,8 +324,8 @@ export class ActivityComponent implements OnInit {
       this.state.currentApplication.name,
       this.selectedConfigurationName,
       this.selectedConnectorId,
-      this.filter.from,
-      this.filter.to,
+      toISOStringWithoutOffset(this.filter.from),
+      toISOStringWithoutOffset(this.filter.to),
       this.displayTests
     );
   }
@@ -344,8 +345,8 @@ export class ActivityComponent implements OnInit {
       this.state.currentApplication.name,
       this.selectedConfigurationName,
       this.selectedConnectorId,
-      oldFromDate,
-      oldToDate,
+      toISOStringWithoutOffset(oldFromDate),
+      toISOStringWithoutOffset(oldToDate),
       this.displayTests
     );
   }
