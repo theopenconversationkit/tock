@@ -48,11 +48,6 @@ open class ConnectorData(
      * optional metadata metadata from connector
      */
     val metadata: Map<String, String> = emptyMap(),
-
-    /**
-     * A conversation key/value data.
-     */
-    val conversationData: Map<String, String> = emptyMap()
 ) {
 
     companion object {
