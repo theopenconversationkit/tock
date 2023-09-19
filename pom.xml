@@ -114,7 +114,6 @@
         <module>nlp</module>
         <module>bot</module>
         <module>iadvize-client</module>
-        <module>aws-tools</module>
     </modules>
 
     <dependencies>

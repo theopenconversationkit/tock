@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ai.tock</groupId>
-        <artifactId>tock-root</artifactId>
+        <artifactId>tock-bot</artifactId>
          <version>23.3.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-aws-tools</artifactId>
+    <name>Tock Bot AWS Tools</name>
     <packaging>jar</packaging>
 
-    <name>aws-tools</name>
     <url>http://maven.apache.org</url>
 
     <properties>
