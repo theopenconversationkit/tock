@@ -16,10 +16,11 @@
 
 package ai.tock.bot
 
-import ai.tock.aws.awsToolsModule
+import ai.tock.shared.Loader
 import ai.tock.bot.engine.botModule
 import ai.tock.bot.mongo.botMongoModule
 import ai.tock.shared.injector
+import ai.tock.shared.service.BotAdditionalModulesService
 import ai.tock.shared.sharedModule
 import ai.tock.stt.noop.noOpSTTModule
 import ai.tock.translator.noop.noOpTranslatorModule
@@ -38,7 +39,8 @@ object BotIoc {
      * The core modules of the bot.
      */
     val coreModules: List<Module> =
-        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule, awsToolsModule)
+        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule)
+            .plus(Loader.loadServices<BotAdditionalModulesService>().flatMap { it.modules() }.toList())
 
     /**
      * Start the bot with the specified additional [modules].
