@@ -21,17 +21,19 @@ import ai.tock.iadvize.client.authentication.models.AuthResponse
 import ai.tock.iadvize.client.graphql.models.GraphQLResponse
 import ai.tock.iadvize.client.graphql.models.customData.CustomDataResult
 import ai.tock.iadvize.client.graphql.models.routingrule.RoutingRuleResult
+import ai.tock.shared.intProperty
+import ai.tock.shared.property
+import ai.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import ai.tock.shared.tokenAuthenticationInterceptor
 import mu.KLogger
 import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.converter.jackson.JacksonConverterFactory
 import retrofit2.create
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
-import java.net.InetSocketAddress
-import java.net.Proxy
+import retrofit2.Call
 
 
 /**
@@ -49,10 +51,10 @@ interface IadvizeApi {
     ): Call<AuthResponse>
 
     @POST(GRAPHQL_ENDPOINT)
-    fun checkAvailability(@Body body: RequestBody) : Call<GraphQLResponse<RoutingRuleResult>>
+    fun checkAvailability(@Body body: RequestBody): Call<GraphQLResponse<RoutingRuleResult>>
 
     @POST(GRAPHQL_ENDPOINT)
-    fun getCustomData(@Body body: RequestBody) : Call<GraphQLResponse<CustomDataResult>>
+    fun getCustomData(@Body body: RequestBody): Call<GraphQLResponse<CustomDataResult>>
 
 }
 
@@ -60,8 +62,8 @@ interface IadvizeApi {
 private const val TIMEOUT = 30000L
 
 var proxy = ProxyConfiguration.configure(
-    property(IADVIZE_PROXY_HOST),
-    intProperty(IADVIZE_PROXY_PORT),
+        property(IADVIZE_PROXY_HOST,""),
+        intProperty(IADVIZE_PROXY_PORT,3128),
 )
 
 /**
@@ -70,8 +72,7 @@ var proxy = ProxyConfiguration.configure(
  * @param logger the logger
  * @return the new client
  */
-fun createApi(logger: KLogger): IadvizeApi = retrofitBuilderWithTimeoutAndLogger(TIMEOUT, logger
-        ,proxy = proxy)
+fun createApi(logger: KLogger): IadvizeApi = retrofitBuilderWithTimeoutAndLogger(TIMEOUT, logger, proxy = proxy)
         .baseUrl(BASE_URL)
         .addConverterFactory(JacksonConverterFactory.create())
         .build()
@@ -84,9 +85,9 @@ fun createApi(logger: KLogger): IadvizeApi = retrofitBuilderWithTimeoutAndLogger
  * @return the new client
  */
 fun createSecuredApi(logger: KLogger, tokenProvider: () -> String): IadvizeApi = retrofitBuilderWithTimeoutAndLogger(
-    TIMEOUT, logger, interceptors = listOf(tokenAuthenticationInterceptor(tokenProvider)),
-    proxy = proxy)
-    .baseUrl(BASE_URL)
-    .addConverterFactory(JacksonConverterFactory.create())
-    .build()
-    .create()
+        TIMEOUT, logger, interceptors = listOf(tokenAuthenticationInterceptor(tokenProvider.invoke())),
+        proxy = proxy)
+        .baseUrl(BASE_URL)
+        .addConverterFactory(JacksonConverterFactory.create())
+        .build()
+        .create()

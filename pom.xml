@@ -113,7 +113,6 @@
         <module>translator</module>
         <module>nlp</module>
         <module>bot</module>
-        <module>iadvize-client</module>
     </modules>
 
     <dependencies>

@@ -16,14 +16,22 @@
 
 package ai.tock.iadvize.client
 
-/**
- * Get system or environment variable value.
- *
- * @param name the variable name
- * @param defaultValue the default value
- */
-fun property(name: String, defaultValue: String = ""): String = System.getProperty(name) ?: System.getenv(name) ?: defaultValue
+const val BASE_URL = "https://api.iadvize.com"
+const val TOKEN_ENDPOINT = "/oauth2/token"
+const val GRAPHQL_ENDPOINT = "/graphql"
 
-fun intProperty(name: String, defaultValue: Int = 3128): Int = property(name, defaultValue.toString()).toInt()
+const val USERNAME = "username"
+const val PASSWORD = "password"
+const val GRANT_TYPE = "grant_type"
 
-fun booleanProperty(name: String, defaultValue: Boolean = false): Boolean = property(name, defaultValue.toString()).toBoolean()
+const val IADVIZE_USERNAME_AUTHENTICATION = "iadvize_username_authentication"
+const val IADVIZE_PASSWORD_AUTHENTICATION = "iadvize_password_authentication"
+
+const val IADVIZE_PROXY_HOST = "iadvize_proxy_host"
+const val IADVIZE_PROXY_PORT = "iadvize_proxy_port"
+
+const val IADVIZE_CREDENTIALS_PROVIDER_TYPE = "iadvize_credentials_provider_type"
+
+const val APPLICATION_JSON = "application/json"
+
+

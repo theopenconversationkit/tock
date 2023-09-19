@@ -16,18 +16,22 @@
 
 package ai.tock.iadvize.client.graphql
 
-import ai.tock.iadvize.client.*
+import ai.tock.iadvize.client.APPLICATION_JSON
+import ai.tock.iadvize.client.IadvizeApi
 import ai.tock.iadvize.client.authentication.IadvizeAuthenticationClient
+import ai.tock.iadvize.client.createSecuredApi
+import ai.tock.iadvize.client.graphQlDataNotFoundError
+import ai.tock.iadvize.client.graphQlNotSuccessResponseError
 import ai.tock.iadvize.client.graphql.models.GraphQLResponse
 import ai.tock.iadvize.client.graphql.models.customData.CustomDataRequest
 import ai.tock.iadvize.client.graphql.models.routingrule.RoutingRuleRequest
 import com.expediagroup.graphql.client.serializer.defaultGraphQLSerializer
 import com.expediagroup.graphql.client.types.GraphQLClientRequest
+import retrofit2.Call
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Call
 
 /**
  * GraphQL client for iAdvize.
@@ -77,10 +81,10 @@ class IadvizeGraphQLClient {
      * @param defaultResult the default result to return if the mapping result is null
      */
     private fun <T : Any, R> execute(
-        request: GraphQLClientRequest<T>,
-        apiCall: IadvizeApi.(RequestBody) -> Call<GraphQLResponse<T>>,
-        responseMapper: (T) -> R?,
-        defaultResult: R? = null
+            request: GraphQLClientRequest<T>,
+            apiCall: IadvizeApi.(RequestBody) -> Call<GraphQLResponse<T>>,
+            responseMapper: (T) -> R?,
+            defaultResult: R? = null
     ): R = serializeRequest(request)
         .let { iadvizeApi.apiCall(it) }
         .execute()

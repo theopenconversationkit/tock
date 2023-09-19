@@ -19,16 +19,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>ai.tock</groupId>
-        <artifactId>tock-bot</artifactId>
+        <artifactId>tock-bot-connector-iadvize-root</artifactId>
         <version>23.3.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-bot-connector-iadvize</artifactId>
-    <name>Tock Bot iAdvize Connector</name>
-    <description>Bot Connector iAdvize</description>
+    <name>Tock Bot IAdvize Connector</name>
+    <description>Tock Bot Connector iAdvize</description>
 
     <dependencies>
         <dependency>
@@ -51,11 +50,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-iadvize-client</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
@@ -94,5 +88,11 @@
             <version>${vertx}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-iadvize-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
+
 </project>

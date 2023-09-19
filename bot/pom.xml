@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -47,7 +48,8 @@
         <module>connector-web</module>
         <module>connector-web-model</module>
         <module>connector-google-chat</module>
-        <module>connector-iadvize</module>
+        <module>iadvize</module>
+
         <module>orchestration</module>
         <module>xray</module>
 
@@ -65,6 +67,7 @@
         <module>admin</module>
 
         <module>chatbase</module>
+        <module>aws-tools</module>
 
     </modules>
 
@@ -200,7 +203,11 @@
                 <artifactId>tock-bot-api-websocket-base</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-aws-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
-
 </project>
