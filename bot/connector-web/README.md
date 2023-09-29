@@ -205,6 +205,10 @@ Setting the `tock_web_cookie_auth` property to `true`
 makes it so the server stores users' identifiers in a secure, HTTP-only cookie, generating random unique identifiers
 (using the UUID V4 format) if no such cookie is found.
 
+Additionally, setting the `tock_web_cookie_auth_max_age` property to any positive number will configure
+the cookie's `Max-Age` property to the specified number of seconds. If left to the default or set to a negative value,
+the cookie will not have a `Max-Age` and will expire at the end of the user's browsing session.
+
 ### Markdown processing
 
 This connector can process [Markdown formatting](https://daringfireball.net/projects/markdown/) in messages.
