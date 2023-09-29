@@ -86,6 +86,7 @@ val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 private val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
+private val cookieAuthMaxAge = longProperty("tock_web_cookie_auth_max_age", -1)
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
 
@@ -193,15 +194,34 @@ class WebConnector internal constructor(
         }
     }
 
-    private fun getOrCreateUserIdCookie(context: RoutingContext) = (context.request().getCookie(TOCK_USER_ID)?.value
-        ?: UUID.randomUUID().toString().also { uuid ->
-            context.response().addCookie(
-                Cookie.cookie(TOCK_USER_ID, uuid).setHttpOnly(true).setSecure(true)
-                    .setSameSite(
-                        CookieSameSite.NONE
-                    )
-            )
-        })
+    /**
+     * Retrieves the value of the tock_user_id cookie or generates it if the user agent did not send such a cookie
+     *
+     * If the user agent does not have the cookie, or if a cookie Max-Age is specified, this method also instructs
+     * the user agent to create/refresh it.
+     */
+    private fun getOrCreateUserIdCookie(context: RoutingContext): String {
+        val existing = context.request().getCookie(TOCK_USER_ID)?.value
+
+        return if (existing != null && cookieAuthMaxAge < 0) {
+            existing // no need to refresh an existing session cookie, it would be a waste of bandwidth
+        } else {
+            val cookieValue = existing ?: UUID.randomUUID().toString()
+
+            val cookie = Cookie.cookie(TOCK_USER_ID, cookieValue)
+                .setHttpOnly(true)
+                .setSecure(true)
+                .setSameSite(CookieSameSite.NONE)   // bot backend may not be on the same domain as the website frontend
+
+            if (cookieAuthMaxAge >= 0) {
+                cookie.setMaxAge(cookieAuthMaxAge)
+            }
+
+            context.response().addCookie(cookie)
+
+            cookieValue
+        }
+    }
 
     private fun HttpServerResponse.sendSsePing() {
         write("event: ping\n")
