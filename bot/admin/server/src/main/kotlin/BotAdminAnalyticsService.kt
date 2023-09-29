@@ -68,8 +68,8 @@ object BotAdminAnalyticsService {
             namespace: String,
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>,
-            from: ZonedDateTime?,
-            to: ZonedDateTime?
+            from: LocalDateTime?,
+            to: LocalDateTime?
         ) -> Map<String, List<DialogFlowAggregateData>>)? = null,
         val loader: (RequestCacheKey) -> UserAnalyticsQueryResult = {
             reportAnalytics(
@@ -272,14 +272,14 @@ object BotAdminAnalyticsService {
             namespace: String,
             botId: String,
             applicationIds: Set<Id<BotApplicationConfiguration>>,
-            from: ZonedDateTime?,
-            to: ZonedDateTime?
+            from: LocalDateTime?,
+            to: LocalDateTime?
         ) -> Map<String, List<DialogFlowAggregateData>>
     ): UserAnalyticsQueryResult {
         val namespace = request.namespace
         val botId = request.botId
         val applicationIds = loadApplications(request).map { it._id }
-        val from = request.from ?: ZonedDateTime.now()
+        val from = request.from ?: LocalDateTime.now()
         val to = request.to ?: from
         val fromDate = atTimeOfDay(from, LocalTime.MIN)
         val toDate = atTimeOfDay(to, LocalTime.MAX)
@@ -338,8 +338,8 @@ object BotAdminAnalyticsService {
         }
     }
 
-    private fun atTimeOfDay(date: ZonedDateTime?, time: LocalTime): LocalDateTime =
-        LocalDateTime.of(date?.withZoneSameInstant(defaultZoneId)?.toLocalDate(), time)
+    private fun atTimeOfDay(date: LocalDateTime, time: LocalTime): LocalDateTime =
+        LocalDateTime.of(date.toLocalDate(), time)
 
     private fun LocalDate.datesUntil(endExclusive: LocalDate): Stream<LocalDate> {
         val end = endExclusive.toEpochDay()
