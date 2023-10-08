@@ -82,7 +82,7 @@ private val accentsRegexp = "[\\p{InCombiningDiacriticalMarks}]".toRegex()
 
 private fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
 
-private fun String.stripAccents(): String =
+fun String.stripAccents(): String =
     Normalizer.normalize(this, Normalizer.Form.NFD).replace(accentsRegexp, "")
 
 fun String.normalize(locale: Locale): String =

@@ -54,10 +54,10 @@ export class EntitiesComponent implements OnInit {
       this.selectedEntityType.dictionary = d.values.length !== 0;
       this.nlp.updateEntityType(this.selectedEntityType).subscribe((s) => {
         if (s) this.refreshEntityType(this.selectedEntityType);
-      });
-      this.toastrService.show(`Dictionary imported`, 'Dictionary', {
-        duration: 2000,
-        status: 'success'
+        this.toastrService.show(`Dictionary imported`, 'Dictionary', {
+          duration: 2000,
+          status: 'success'
+        });
       });
     };
   }

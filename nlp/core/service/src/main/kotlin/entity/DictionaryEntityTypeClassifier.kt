@@ -21,7 +21,7 @@ import ai.tock.nlp.model.EntityCallContext
 import ai.tock.nlp.model.EntityCallContextForEntity
 import ai.tock.nlp.model.EntityCallContextForIntent
 import ai.tock.nlp.model.EntityCallContextForSubEntities
-import java.text.Normalizer
+import ai.tock.shared.stripAccents
 import java.util.Locale
 import kotlin.text.RegexOption.IGNORE_CASE
 
@@ -32,7 +32,7 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
         text: String
     ): List<EntityTypeRecognition> {
         return when (context) {
-            is EntityCallContextForIntent -> classifyForIntent(context, stripAccents(text))
+            is EntityCallContextForIntent -> classifyForIntent(context, text.stripAccents().trim())
             is EntityCallContextForEntity -> emptyList() // TODO
             is EntityCallContextForSubEntities -> emptyList() // TODO
         }
@@ -45,7 +45,7 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
             .asSequence()
             .map { it.entityType }
             .distinct()
-            .mapNotNull { e ->
+            .map { e ->
                 val data = DictionaryRepositoryService.getDictionary(e)
                 if (data != null) {
                     val labelsMap = data.getLabelsMap(context.language)
@@ -69,15 +69,19 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
                                                 labelsMap,
                                                 synonym
                                             )
-                                            EntityTypeRecognition(
-                                                EntityTypeValue(
-                                                    g.range.first,
-                                                    g.range.last + 1,
-                                                    e,
-                                                    predefinedValueOfSynonym!!.value, true
-                                                ),
-                                                1.0
-                                            )
+                                            if (predefinedValueOfSynonym != null) {
+                                                EntityTypeRecognition(
+                                                    EntityTypeValue(
+                                                        g.range.first,
+                                                        g.range.last + 1,
+                                                        e,
+                                                        predefinedValueOfSynonym.value, true
+                                                    ),
+                                                    1.0
+                                                )
+                                            } else {
+                                                null
+                                            }
                                         }
                                 }
                         }
@@ -96,9 +100,10 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
         text: String
     ): PredefinedValue? {
         for (predefinedValue in predefinedValues.keys) {
-            if (predefinedValues[predefinedValue] != null) {
-                val synonyms = predefinedValues[predefinedValue]!!.toMutableList() + predefinedValue.value
-                if (synonyms.find { s -> s.lowercase(locale) == stripAccents(text.lowercase(locale)) } != null) {
+            val allValues = predefinedValues[predefinedValue]
+            if (allValues != null) {
+                val synonyms = allValues.toMutableList() + predefinedValue.value
+                if (synonyms.find { s -> s.lowercase(locale) == text.lowercase(locale).stripAccents() } != null) {
                     return predefinedValue
                 }
             }
@@ -106,10 +111,4 @@ internal object DictionaryEntityTypeClassifier : EntityTypeClassifier {
         return null
     }
 
-    private fun stripAccents(text: String): String {
-        var string = text
-        string = Normalizer.normalize(string, Normalizer.Form.NFD)
-        string = string.replace("[\\p{InCombiningDiacriticalMarks}]".toRegex(), "")
-        return string
-    }
 }

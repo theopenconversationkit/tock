@@ -103,7 +103,7 @@ internal class Nlp : NlpController {
                                         it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
                                     } catch (e: Exception) {
                                         logger.error(e)
-                                        emptyList<EntityValue>()
+                                        emptyList()
                                     }
                             )
                         }

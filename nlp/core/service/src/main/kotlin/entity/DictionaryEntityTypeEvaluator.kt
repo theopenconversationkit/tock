@@ -31,7 +31,14 @@ internal object DictionaryEntityTypeEvaluator : EntityTypeEvaluator {
         val dictionary = DictionaryRepositoryService.getDictionary(context.entityType)
 
         val value = dictionary?.let {
-            findValue(context.language, it.getLabelsMap(context.language), it.onlyValues, it.minDistance, text, it.textSearch)
+            findValue(
+                context.language,
+                it.getLabelsMap(context.language),
+                it.onlyValues,
+                it.minDistance,
+                text.trim(),
+                it.textSearch
+            )
         }
         return EvaluationResult(true, value, value?.candidates?.firstOrNull()?.probability ?: 1.0)
     }

@@ -20,7 +20,7 @@ internal class DictionaryEntityTypeProvider : EntityTypeProvider {
 
     override fun getEntityTypeClassifier(): EntityTypeClassifier = DictionaryEntityTypeClassifier
 
-    override fun getEntityTypeEvaluator(): EntityTypeEvaluator? = DictionaryEntityTypeEvaluator
+    override fun getEntityTypeEvaluator(): EntityTypeEvaluator = DictionaryEntityTypeEvaluator
 
     override fun supportClassification(namespace: String, entityTypeName: String): Boolean = supportEvaluation(namespace, entityTypeName)
 

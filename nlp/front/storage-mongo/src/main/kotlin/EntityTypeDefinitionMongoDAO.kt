@@ -50,8 +50,6 @@ import java.util.Locale
  */
 internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
-    private val logger = KotlinLogging.logger {}
-
     private val col: MongoCollection<EntityTypeDefinition> by lazy {
         val c = database.getCollection<EntityTypeDefinition>()
         c.ensureUniqueIndex(Name)
