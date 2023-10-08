@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ai.tock</groupId>
-        <artifactId>tock-root</artifactId>
+        <artifactId>tock-util</artifactId>
          <version>23.3.5-SNAPSHOT</version>
     </parent>
 
