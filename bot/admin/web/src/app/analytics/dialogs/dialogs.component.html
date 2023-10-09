@@ -67,12 +67,12 @@
           </nb-select>
         </span>
         &nbsp;
-        <mat-slide-toggle
+        <nb-toggle
           class="test"
           [(ngModel)]="filter.displayTests"
           (change)="waitAndRefresh()"
-          >Display tests
-        </mat-slide-toggle>
+          >Display tests</nb-toggle
+        >
         <button
           nbButton
           (click)="refresh()"
@@ -114,19 +114,21 @@
             {{ intent }}
           </nb-option>
         </nb-select>
-        <mat-slide-toggle
+
+        <nb-toggle
           class="test"
           [(ngModel)]="filter.displayTests"
           (change)="waitAndRefresh()"
-          >Display tests
-        </mat-slide-toggle>
+          >Display tests</nb-toggle
+        >
+
         <button
           nbButton
           ghost
           (click)="exportDialogs()"
           matTooltip="Export All Dialogs With Ratings"
         >
-          <mat-icon>file_download</mat-icon>
+          <nb-icon icon="download-outline"></nb-icon>
         </button>
       </ng-template>
     </nb-card-body>
@@ -135,10 +137,11 @@
     <h1 *ngIf="total === 0">
       No dialogs found!
       <button
-        mat-button
+        nbButton
+        ghost
         (click)="refresh()"
       >
-        <mat-icon>refresh</mat-icon>
+        <nb-icon icon="refresh-outline"></nb-icon>
       </button>
     </h1>
     <h1
@@ -147,19 +150,21 @@
     >
       Dialogs : {{ formattedTotal() }}
       <button
-        mat-button
+        nbButton
+        ghost
         (click)="refresh()"
         style="vertical-align: top"
       >
-        <mat-icon>refresh</mat-icon>
+        <nb-icon icon="refresh-outline"></nb-icon>
       </button>
       <button
         *ngIf="filter.dialogId"
-        mat-button
+        nbButton
+        ghost
         (click)="viewAllWithThisText()"
         matTooltip="View all dialogs using this text"
       >
-        <mat-icon>speaker_notes</mat-icon>
+        <nb-icon icon="message-square-outline"></nb-icon>
       </button>
     </h1>
     <p></p>
