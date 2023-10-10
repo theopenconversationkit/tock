@@ -167,13 +167,7 @@ interface BotDefinition : I18nKeyProvider {
             stories,
             intent,
             unknownStory,
-            keywordStory,
-            // TODO MASS : j'ai mis en commentaire,
-            // car je n'ai pas réussi à provoquer le cas fonctionnel qui déclanche cette méthode
-            // comment faire ? on laisse ce code ou on le supprime ?
-//            ragExcludedStory,
-//            ragStory,
-//            ragConfiguration
+            keywordStory
         )
     }
 

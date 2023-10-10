@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,8 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
-enum class ClientEventType {
-
-    sentence, sentenceWithFootnotes, choice, attachment, location,
-    subscribing, debug
-}
+data class ClientFootNote(
+    val identifier: String,
+    val title: String,
+    val url: String?
+)

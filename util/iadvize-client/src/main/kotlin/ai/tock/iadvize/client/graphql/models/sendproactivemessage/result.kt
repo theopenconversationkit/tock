@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.rest.client.model
+package ai.tock.iadvize.client.graphql.models.sendproactivemessage
 
-/**
- *
- */
-enum class ClientEventType {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
 
-    sentence, sentenceWithFootnotes, choice, attachment, location,
-    subscribing, debug
-}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class SendProactiveMessageResult(@JsonProperty("userErrors") val userErrors: UserErrors? = null)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class UserErrors(@JsonProperty("__typename") val typename: String?= null)

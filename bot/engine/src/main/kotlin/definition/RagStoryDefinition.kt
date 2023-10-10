@@ -30,7 +30,7 @@ class RagStoryDefinition(handler: StoryHandler) : SimpleStoryDefinition(
 ) {
 
     companion object {
-        const val RAG_STORY_NAME = "UnknownRagStory"
+        const val RAG_STORY_NAME = "tock_rag_story"
     }
 
 }

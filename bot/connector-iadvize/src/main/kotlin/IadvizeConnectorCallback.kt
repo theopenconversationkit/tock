@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorCallbackBase
+import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
@@ -63,7 +64,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
     }
 
     @Volatile
-    private var answered: Boolean = false
+    internal var answered: Boolean = false
 
     private val translator: I18nTranslator = controller.botDefinition.i18nTranslator(locale, iadvizeConnectorType)
 
@@ -84,20 +85,35 @@ class IadvizeConnectorCallback(override val  applicationId: String,
 
     override fun eventSkipped(event: Event) {
         super.eventSkipped(event)
-        sendResponse()
+        sendResponse(buildResponse())
     }
 
     override fun eventAnswered(event: Event) {
         super.eventAnswered(event)
-        sendResponse()
+        sendResponse(buildResponse())
     }
 
-    fun sendResponse() {
+    /**
+     * Respond to a user request with an empty reply
+     */
+    fun answerWithoutResponse() = sendResponse()
+
+    /**
+     * Respond to a user request with a non-empty reply,
+     * based on actions already stored in the callback
+     */
+    fun answerWithResponse() = sendResponse(buildResponse())
+
+    private fun sendResponse(response: MessageResponse? = null) {
         try {
             if (!answered) {
                 answered = true
 
-                context.response().endWithJson(buildResponse())
+                response?.let {
+                    context.response().endWithJson(it)
+                }
+                    ?: context.response().end()
+
             }
         } catch (t: Throwable) {
             sendTechnicalError(t)
