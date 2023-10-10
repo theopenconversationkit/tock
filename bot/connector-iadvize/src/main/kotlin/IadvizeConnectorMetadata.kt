@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.rest.client.model
+package ai.tock.bot.connector.iadvize
 
 /**
- *
+ * The iAdvize connector metadata
  */
-enum class ClientEventType {
+enum class IadvizeConnectorMetadata {
+    // The conversation id
+    CONVERSATION_ID,
 
-    sentence, sentenceWithFootnotes, choice, attachment, location,
-    subscribing, debug
+    // the operator id (=chatbotId) prefixed with the iAdvize environment
+    OPERATOR_ID,
+    CHAT_BOT_ID,
+
+    // iAdvize environment sd- or ha-
+    IADVIZE_ENV,
 }

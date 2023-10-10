@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.rest.client.model
+package ai.tock.bot.engine.action
 
 /**
- *
+ * Footnote to refer to a source document
+ * Basic format: {identifier}. {title} {link:url},
  */
-enum class ClientEventType {
-
-    sentence, sentenceWithFootnotes, choice, attachment, location,
-    subscribing, debug
-}
+data class FootNote(
+    /**
+     * A footnote identifier
+     */
+    val identifier: CharSequence,
+    /**
+     * A footnote title
+     */
+    val title: CharSequence,
+    /**
+     * A footnote link
+     */
+    val url: String?,
+)

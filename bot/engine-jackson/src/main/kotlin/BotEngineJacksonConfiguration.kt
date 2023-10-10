@@ -106,6 +106,7 @@ private object BotEngineJacksonConfiguration {
                 setMixInAnnotation(Message::class.java, MixinMessage::class.java)
                 registerSubtypes(NamedType(Attachment::class.java, EventType.attachment.name))
                 registerSubtypes(NamedType(Sentence::class.java, EventType.sentence.name))
+                  registerSubtypes(NamedType(Sentence::class.java, EventType.sentenceWithFootnotes.name))
                 registerSubtypes(NamedType(Choice::class.java, EventType.choice.name))
                 registerSubtypes(NamedType(Location::class.java, EventType.location.name))
 

@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.rest.client.model
+package ai.tock.bot.engine.config
 
-/**
- *
- */
-enum class ClientEventType {
-
-    sentence, sentenceWithFootnotes, choice, attachment, location,
-    subscribing, debug
+enum class ProactiveConversationStatus {
+    LUNCHED,
+    STARTED,
+    CLOSED
 }

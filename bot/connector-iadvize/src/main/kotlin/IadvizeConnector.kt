@@ -20,6 +20,7 @@ import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorQueue
 import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
@@ -32,22 +33,26 @@ import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies.Strat
 import ai.tock.bot.connector.iadvize.model.response.Bot
 import ai.tock.bot.connector.iadvize.model.response.BotUpdated
 import ai.tock.bot.connector.iadvize.model.response.Healthcheck
-import ai.tock.bot.engine.ConnectorController
-import ai.tock.bot.engine.event.Event
-import ai.tock.shared.error
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.RepliesResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
-
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.SendSentenceWithFootnotes
+import ai.tock.bot.engine.event.Event
+import ai.tock.bot.llm.rag.core.client.models.RagResult
+import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
+import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale
-
-import ai.tock.shared.jackson.mapper
+import ai.tock.shared.error
 import ai.tock.shared.exception.rest.BadRequestException
+import ai.tock.shared.injector
+import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.github.salomonbrys.kodein.instance
 import io.vertx.core.Future
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
@@ -56,7 +61,7 @@ import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import org.apache.commons.lang3.LocaleUtils
 import java.time.LocalDateTime
-import java.util.Locale
+import java.util.*
 
 private const val QUERY_ID_OPERATOR: String = "idOperator"
 private const val QUERY_ID_CONVERSATION: String = "idConversation"
@@ -82,6 +87,9 @@ class IadvizeConnector internal constructor(
     }
 
     val locale: Locale = localeCode?.let{ getLocale(localeCode) } ?: defaultLocale
+
+    private val executor: Executor by injector.instance()
+    private val queue: ConnectorQueue = ConnectorQueue(executor)
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -220,7 +228,7 @@ class IadvizeConnector internal constructor(
             distributionRule,
             distributionRuleUnvailableMessage
         )
-        callback.sendResponse()
+        callback.answerWithResponse()
     }
 
     internal var handlerConversation: IadvizeHandler = { context, controller ->
@@ -271,8 +279,65 @@ class IadvizeConnector internal constructor(
         val iadvizeCallback = callback as? IadvizeConnectorCallback
         iadvizeCallback?.addAction(event, delayInMs)
         if (event is Action && event.metadata.lastAnswer) {
-            iadvizeCallback?.sendResponse()
+            iadvizeCallback?.answerWithResponse()
         }
+    }
+
+    override fun startProactiveConversation(callback: ConnectorCallback): Boolean {
+        (callback as? IadvizeConnectorCallback)?.answerWithoutResponse()
+        return true
+    }
+
+    override fun flushProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) {
+        val iadvizeCallback = callback as? IadvizeConnectorCallback
+        iadvizeCallback?.actions?.forEach {
+            queue.add(it.action , it.delayInMs) {action ->
+                sendProactiveMessage(action, parameters)
+            }
+        }
+        iadvizeCallback?.actions?.clear()
+    }
+
+    private fun sendProactiveMessage(action: Action, parameters: Map<String, String>){
+        IadvizeGraphQLClient().sendProactiveMessage(
+            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
+            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
+            buildGraphQLResponse(action)
+        )
+    }
+
+    override fun endProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) {
+        flushProactiveConversation(callback, parameters)
+    }
+
+    private fun buildGraphQLResponse(action: Action): String =
+        when(action) {
+            is SendSentenceWithFootnotes -> action.toGraphQLMessage()
+            else -> action.toString()
+        }
+
+    /**
+     * Format the notification Rag message when active
+     * default connector without format
+     *
+     */
+    private fun SendSentenceWithFootnotes.toGraphQLMessage(): String {
+
+        val headerFootnotes = footNotes
+            .map { it.identifier }
+            .joinToString("'") {
+                "[^$it]"
+            } + "\n\n"
+
+        val linkSourcesWithFootNotes =
+            footNotes.joinToString("\n") { footNote ->
+                val source = "[^${footNote.identifier}]: "
+                footNote.url?.let {
+                    source + "*[${footNote.title}]($it)*"
+                } ?: footNote.title
+            }
+
+        return "${text} \n $headerFootnotes$linkSourcesWithFootNotes"
     }
 
     internal fun handleRequest(
@@ -294,14 +359,23 @@ class IadvizeConnector internal constructor(
         when (iadvizeRequest) {
             is MessageRequest -> {
                 val event = WebhookActionConverter.toEvent(iadvizeRequest, applicationId)
-                controller.handle(event, ConnectorData(callback, metadata = mapOf(
-                    ConnectorData.CONVERSATION_ID to iadvizeRequest.idConversation,
-                )))
+                controller.handle(
+                    event, ConnectorData(
+                        callback, metadata = mapOf(
+                            IadvizeConnectorMetadata.CONVERSATION_ID.name to iadvizeRequest.idConversation,
+                            IadvizeConnectorMetadata.OPERATOR_ID.name to iadvizeRequest.idOperator,
+                            // iAdvize environment sd- or ha-
+                            IadvizeConnectorMetadata.IADVIZE_ENV.name to iadvizeRequest.idOperator.split("-")[0],
+                            // the operator id (=chatbotId) prefixed with the iAdvize environment
+                            IadvizeConnectorMetadata.CHAT_BOT_ID.name to iadvizeRequest.idOperator.split("-")[1],
+                        )
+                    )
+                )
             }
 
             // Only MessageRequest are supported, other messages are UnsupportedMessage
             // and UnsupportedResponse can be sent immediately
-            else -> callback.sendResponse()
+            else -> callback.answerWithResponse()
         }
     }
 

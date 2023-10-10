@@ -119,10 +119,6 @@ interface Bus<T : Bus<T>> : I18nTranslator {
         return sendRawText(translate(i18nText, *i18nArgs))
     }
 
-    fun sendDebug(title: String, data: Any?): T {
-        return sendDebugData(title, data)
-    }
-
     /**
      * Sends messages provided by [messageProvider].
      * if [messageProvider] returns a [CharSequence] send it as text. Else call simply send().

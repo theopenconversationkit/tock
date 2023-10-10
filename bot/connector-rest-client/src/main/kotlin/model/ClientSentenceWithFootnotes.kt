@@ -19,8 +19,8 @@ package ai.tock.bot.connector.rest.client.model
 /**
  *
  */
-enum class ClientEventType {
-
-    sentence, sentenceWithFootnotes, choice, attachment, location,
-    subscribing, debug
-}
+data class ClientSentenceWithFootnotes(
+    val text: String,
+    val footNotes: List<ClientFootNote>
+) :
+    ClientMessage(ClientEventType.sentenceWithFootnotes)
