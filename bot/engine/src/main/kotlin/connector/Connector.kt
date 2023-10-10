@@ -26,8 +26,6 @@ import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserPreferences
-import ai.tock.bot.engine.user.UserState
-import java.time.Duration
 
 /**
  * A connector connects bots to users via a dedicated interface (like Messenger, Google Assistant, Slack... ).
@@ -66,12 +64,35 @@ interface Connector {
 
     /**
      * Send an event with this connector for the specified delay.
+     * End the conversation when event.metadata.lastAnswer is activated
+     * If the connector implements the proactive conversation functions,
+     * the end must take account the start of the proactive conversation
      *
      * @param event the event to send
      * @param callback the initial connector callback
      * @param delayInMs the optional delay
      */
     fun send(event: Event, callback: ConnectorCallback, delayInMs: Long = 0)
+
+    /**
+     * Start a proactive conversation
+     * @param callback the initial connector callback
+     */
+    fun startProactiveConversation(callback: ConnectorCallback): Boolean = false
+
+    /**
+     * Proactively send messages to connector
+     * @param callback the initial connector callback
+     * @param parameters the parameters to be used for a proactive response
+     */
+    fun flushProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) = run { }
+
+    /**
+     * End the proactive conversation
+     * @param callback the initial connector callback
+     * @param parameters the parameters to be used for a proactive response
+     */
+    fun endProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) = run { }
 
     /**
      * Sends a notification to the connector.

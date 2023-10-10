@@ -49,11 +49,6 @@ open class ConnectorData(
      */
     val metadata: Map<String, String> = emptyMap()
 ) {
-
-    companion object {
-        const val CONVERSATION_ID = "CONVERSATION_ID"
-    }
-
     /**
      * Set to true if the bot does not make any answer to a user sentence.
      * Synchronous [Connector]s usually do not support skipping answer.

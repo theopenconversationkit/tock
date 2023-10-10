@@ -16,7 +16,7 @@
 
 package ai.tock.bot.llm.rag.core.client.models
 
-data class RagQuery( // TODO MASS : il faudra envoyé le RAG setting
+data class RagQuery(
     val query: String,
     val applicationId: String = "",
     val userId: String = ""

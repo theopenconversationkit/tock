@@ -392,7 +392,13 @@ open class BotBusMock(
     }
 
     override fun sendDebugData(title: String, data: Any?): BotBus {
-        return answer(SendDebug(botId, applicationId, userId, title, data), 0)
+        // The test connector is a rest connector (source),
+        // but it invokes the engine with a target connector,
+        // to receive the corresponding messages
+        if(ConnectorType.rest == sourceConnectorType) {
+            return answer(SendDebug(botId, applicationId, userId, title, data), 0)
+        }
+        return this
     }
 
     override fun send(action: Action, delay: Long): BotBus {

@@ -21,6 +21,7 @@ import ai.tock.iadvize.client.authentication.IadvizeAuthenticationClient
 import ai.tock.iadvize.client.graphql.models.GraphQLResponse
 import ai.tock.iadvize.client.graphql.models.customData.CustomDataRequest
 import ai.tock.iadvize.client.graphql.models.routingrule.RoutingRuleRequest
+import ai.tock.iadvize.client.graphql.models.sendproactivemessage.SendProactiveMessageRequest
 import com.expediagroup.graphql.client.serializer.defaultGraphQLSerializer
 import com.expediagroup.graphql.client.types.GraphQLClientRequest
 import mu.KotlinLogging
@@ -64,6 +65,22 @@ class IadvizeGraphQLClient {
             it.visitorConversationCustomData?.customData
                 ?.find { data -> data.key == customData.first }
                 ?.value == customData.second
+        },
+        false
+    )
+
+    /**
+     * Proactively send messages to the visitor
+     * https://developers.iadvize.com/documentation/building-your-bot-on-iadvize#proactively-send-messages-to-the-visitor
+     * @param conversationId the conversation identifier
+     * @param chatbotId the id of your external bot at iAdvize in integer format
+     * @param message the message to send
+     */
+    fun sendProactiveMessage(conversationId: String, chatbotId: Int, message: String): Boolean = this.execute(
+        SendProactiveMessageRequest(SendProactiveMessageRequest.Variables(conversationId, chatbotId, message)),
+        { sendProactiveMessage(it) },
+        {
+            it.userErrors == null
         },
         false
     )

@@ -22,11 +22,13 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
+import ai.tock.bot.engine.action.FootNote
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendDebug
 import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.dialog.DialogState
 import ai.tock.bot.engine.dialog.EntityStateValue
@@ -75,6 +77,7 @@ internal data class DialogCol(
         private fun getActionWrapper(action: Action): ActionMongoWrapper {
             return when (action) {
                 is SendSentence -> SendSentenceMongoWrapper(action)
+                is SendSentenceWithFootnotes -> SendSentenceWithFootnotesMongoWrapper(action)
                 is SendDebug -> SendDebugMongoWrapper(action)
                 is SendChoice -> SendChoiceMongoWrapper(action)
                 is SendAttachment -> SendAttachmentMongoWrapper(action)
@@ -238,6 +241,7 @@ internal data class DialogCol(
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     @JsonSubTypes(
             JsonSubTypes.Type(value = SendSentenceMongoWrapper::class, name = "sentence"),
+            JsonSubTypes.Type(value = SendSentenceWithFootnotesMongoWrapper::class, name = "sentenceWithFootnotes"),
             JsonSubTypes.Type(value = SendChoiceMongoWrapper::class, name = "choice"),
             JsonSubTypes.Type(value = SendAttachmentMongoWrapper::class, name = "attachment"),
             JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location"),
@@ -313,6 +317,36 @@ internal data class DialogCol(
                         botMetadata
                 )
             }
+        }
+    }
+
+
+    @JsonTypeName(value = "sentenceWithFootnotes")
+    data class SendSentenceWithFootnotesMongoWrapper(
+        val text: String,
+        val footNotes: MutableList<FootNote>,
+    ) : ActionMongoWrapper() {
+
+        constructor(sentence: SendSentenceWithFootnotes) :
+                this(
+                    sentence.text.toString(),
+                    sentence.footNotes
+                ) {
+            assignFrom(sentence)
+        }
+
+        override fun toAction(dialogId: Id<Dialog>): Action {
+            return SendSentenceWithFootnotes(
+                    playerId,
+                    applicationId,
+                    recipientId,
+                    text,
+                    footNotes,
+                    id,
+                    date,
+                    state,
+                    botMetadata
+                )
         }
     }
 

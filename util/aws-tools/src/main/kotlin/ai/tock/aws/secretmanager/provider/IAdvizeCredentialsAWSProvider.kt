@@ -22,7 +22,6 @@ import ai.tock.aws.model.Credentials
 import ai.tock.aws.secretmanager.dao.SecretDAO
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 /**
