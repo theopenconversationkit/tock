@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from './core-nlp/auth/auth.service';
 import { StateService } from './core-nlp/state.service';
 import { RestService } from './core-nlp/rest/rest.service';
-import { MatIconRegistry } from '@angular/material/icon';
 import { User, UserRole } from './model/auth';
-import { DomSanitizer } from '@angular/platform-browser';
 import { NbMenuItem, NbToastrService } from '@nebular/theme';
-import { DialogService } from './core-nlp/dialog.service';
 import { AuthListener } from './core-nlp/auth/auth.listener';
 
 @Component({
@@ -36,17 +33,7 @@ export class NlpAdminAppComponent implements AuthListener, OnInit, OnDestroy {
   private errorUnsuscriber: any;
   public menu: NbMenuItem[] = [];
 
-  constructor(
-    public auth: AuthService,
-    public state: StateService,
-    private rest: RestService,
-    private toastrService: NbToastrService,
-    private changeDetectorRef: ChangeDetectorRef,
-    private dialog: DialogService,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer
-  ) {
-    iconRegistry.addSvgIcon('logo', sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
+  constructor(public auth: AuthService, public state: StateService, private rest: RestService, private toastrService: NbToastrService) {
     this.auth.addListener(this);
   }
 

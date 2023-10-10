@@ -113,7 +113,6 @@
                 <button
                   nbButton
                   ghost
-                  size="tiny"
                   status="success"
                   (click)="validate(row)"
                 >
@@ -125,19 +124,17 @@
                 <button
                   nbButton
                   ghost
-                  size="tiny"
                   status="danger"
                   (click)="change(row)"
                 >
                   <nb-icon
-                    icon="refresh-outline"
+                    icon="edit-outline"
                     nbTooltip="Change the Intent"
                   ></nb-icon>
                 </button>
                 <button
                   nbButton
                   ghost
-                  size="tiny"
                   *ngIf="canReveal(row)"
                   (click)="reveal(row)"
                 >

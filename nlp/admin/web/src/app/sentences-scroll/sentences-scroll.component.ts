@@ -22,12 +22,12 @@ import { StateService } from '../core-nlp/state.service';
 import { ScrollComponent } from '../scroll/scroll.component';
 import { Entry, PaginatedQuery, SearchMark } from '../model/commons';
 import { Observable } from 'rxjs';
-import { MatPaginator } from '@angular/material/paginator';
 import { UserRole } from '../model/auth';
 import { SelectionModel } from '@angular/cdk/collections';
 import { DialogService } from '../core-nlp/dialog.service';
 import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbSortDirection, NbSortRequest } from '@nebular/theme';
+import { Pagination } from '../shared-nlp/temp-pagination/temp-pagination.component';
 
 interface TreeNode<T> {
   data: T;
@@ -56,7 +56,6 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   tableView: boolean = false;
   advancedView: boolean = false;
   displayedColumns = [];
-  @ViewChild(MatPaginator) paginator: MatPaginator;
   selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
   sentenceToUpdate: Sentence;
   nodes: TreeNode<Sentence>[] = [];
@@ -88,6 +87,20 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     super.ngOnInit();
   }
 
+  pagination: Pagination = {
+    start: 0,
+    end: 0,
+    size: 10,
+    total: 0
+  };
+
+  paginationChange(): void {
+    this.add = false;
+    this.cursor = this.pagination.start;
+    this.pageSize = this.pagination.size;
+    this.load();
+  }
+
   toNodes(data: Sentence[]): TreeNode<Sentence>[] {
     return Array.from(data, (element) => {
       return {
@@ -98,18 +111,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     });
   }
 
-  ngAfterViewInit(): void {
-    this.paginator.page.subscribe((e) => {
-      this.add = false;
-      if (this.pageSize === e.pageSize) {
-        this.cursor = Math.floor(e.pageIndex * e.pageSize);
-      } else {
-        this.cursor = 0;
-        this.pageSize = e.pageSize;
-      }
-      this.load();
-    });
-  }
+  ngAfterViewInit(): void {}
 
   resetCursor() {
     super.resetCursor();
@@ -204,6 +206,9 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.nodes = this.toNodes(result.rows);
       this.pageIndex = Math.floor(result.start / this.pageSize);
       this.add = true;
+      this.pagination.total = result.total;
+      this.pagination.start = result.start;
+      this.pagination.end = result.end;
       return true;
     } else {
       return false;

@@ -127,14 +127,16 @@
               text: d.textRequest()
             }"
             *ngIf="d.error && config.displayDialogUrl"
-            mat-icon-button
+            nbButton
+            ghost
             nbTooltip="Display Conversation"
             color="primary"
           >
             <nb-icon icon="message-circle-outline"></nb-icon>
           </a>
           <button
-            mat-icon-button
+            nbButton
+            ghost
             (click)="displayFullLog(d)"
             nbTooltip="View Full Log"
           >

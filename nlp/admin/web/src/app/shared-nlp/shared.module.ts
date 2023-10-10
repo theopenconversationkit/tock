@@ -18,7 +18,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { MapToIterablePipe } from './map-to-iterable.pipe';
 import { ScrollComponent } from '../scroll/scroll.component';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
@@ -30,13 +29,14 @@ import {
   NbIconModule,
   NbActionsModule,
   NbTreeGridModule,
-  NbCardModule
+  NbCardModule,
+  NbSelectModule
 } from '@nebular/theme';
+import { TempPaginationComponent } from './temp-pagination/temp-pagination.component';
 
 @NgModule({
   imports: [
     CommonModule,
-    MatPaginatorModule,
     NbActionsModule,
     NbButtonModule,
     NbEvaIconsModule,
@@ -45,12 +45,12 @@ import {
     NbInputModule,
     NbToggleModule,
     NbTreeGridModule,
-    NbCardModule
+    NbCardModule,
+    NbSelectModule
   ],
-  declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
+  declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent, TempPaginationComponent],
   providers: [],
   exports: [
-    MatPaginatorModule,
     FormsModule,
     MapToIterablePipe,
     NbActionsModule,
@@ -60,7 +60,8 @@ import {
     NbIconModule,
     NbInputModule,
     NbToggleModule,
-    NbTreeGridModule
+    NbTreeGridModule,
+    TempPaginationComponent
   ]
 })
 export class SharedModule {}

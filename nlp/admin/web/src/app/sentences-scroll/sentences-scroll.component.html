@@ -36,7 +36,7 @@
 </nb-card>
 
 <div
-  class="paginator"
+  class="d-flex justify-content-between"
   [nbSpinner]="loading"
   nbSpinnerStatus="primary"
   *ngIf="total !== 0"
@@ -97,15 +97,10 @@
     </nb-actions>
   </div>
 
-  <mat-paginator
-    #paginator
-    class="background"
-    [length]="total"
-    [pageIndex]="pageIndex"
-    [pageSize]="pageSize"
-    [pageSizeOptions]="[10, 25, 50, 100]"
-  >
-  </mat-paginator>
+  <tock-temp-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="paginationChange()"
+  ></tock-temp-pagination>
 </div>
 <p></p>
 
