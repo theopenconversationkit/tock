@@ -99,45 +99,62 @@
         <div *ngIf="report.modified">
           <h4>Successful Import Report:</h4>
 
-          <h3 *ngIf="report.applicationsImported.length !== 0">Applications imported</h3>
-          <div *ngFor="let app of report.applicationsImported">
-            <nb-icon icon="keypad-outline"></nb-icon>
-            <h4>{{ app }}</h4>
+          <div
+            class="font-weight-bold"
+            *ngIf="report.applicationsImported.length"
+          >
+            Applications imported :
+            <div *ngFor="let app of report.applicationsImported">
+              {{ app }}
+            </div>
+            <hr />
           </div>
 
-          <hr />
-
-          <h3 *ngIf="report.entitiesImported.length !== 0">Entities imported</h3>
-          <div *ngFor="let entity of report.entitiesImported">
-            <nb-icon icon="code-download-outline"></nb-icon>
-            <h4>{{ entity }}</h4>
+          <div
+            class="font-weight-bold"
+            *ngIf="report.entitiesImported.length"
+          >
+            Entities imported :
+            <div *ngFor="let entity of report.entitiesImported">
+              {{ entity }}
+            </div>
+            <hr />
           </div>
 
-          <hr />
-
-          <h3 *ngIf="report.intentsImported.length !== 0">Intents imported</h3>
-          <div *ngFor="let intent of report.intentsImported">
-            <nb-icon icon="shuffle-2-outline"></nb-icon>
-            <h4>{{ intent }}</h4>
+          <div
+            class="font-weight-bold"
+            *ngIf="report.intentsImported.length"
+          >
+            Intents imported :
+            <div *ngFor="let intent of report.intentsImported">
+              {{ intent }}
+            </div>
+            <hr />
           </div>
 
-          <hr />
-
-          <h3 *ngIf="report.sentencesImported !== 0">Number of sentences imported</h3>
-          <div *ngIf="report.sentencesImported !== 0">
-            <nb-icon icon="menu-outline"></nb-icon>
-            <h4>{{ report.sentencesImported }}</h4>
+          <div
+            class="font-weight-bold"
+            *ngIf="report.sentencesImported"
+          >
+            Number of sentences imported :
+            <div *ngIf="report.sentencesImported">
+              {{ report.sentencesImported }}
+            </div>
+            <hr />
           </div>
 
-          <hr />
-
-          <h3 *ngIf="report.faqsImported !== 0">Number of FAQs imported</h3>
-          <div *ngIf="report.faqsImported !== 0">
-            <nb-icon icon="message-square-outline"></nb-icon>
-            <h4>{{ report.faqsImported }}</h4>
+          <div
+            class="font-weight-bold"
+            *ngIf="report.faqsImported"
+          >
+            Number of FAQs imported :
+            <div *ngIf="report.faqsImported">
+              {{ report.faqsImported }}
+            </div>
+            <hr />
           </div>
 
-          <div *ngIf="report.errorMessages.length !== 0">
+          <div *ngIf="report.errorMessages.length">
             <h5>Errors:</h5>
             <ul>
               <li *ngFor="let e of report.errorMessages">
@@ -173,10 +190,10 @@
       nbButton
       outline
       status="primary"
-      (click)="close()"
+      (click)="cancel()"
       *ngIf="report"
     >
-      Hide dump report
+      Close
     </button>
   </nb-card-footer>
 </nb-card>

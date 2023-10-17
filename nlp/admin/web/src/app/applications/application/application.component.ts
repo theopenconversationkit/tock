@@ -111,8 +111,8 @@ export class ApplicationComponent implements OnInit {
       });
     } else {
       this.application.nlpEngineType = this.state.supportedNlpEngines.find((e) => e.name === this.nlpEngineType);
-      this.applicationService.saveApplication(this.application).subscribe(
-        (app) => {
+      this.applicationService.saveApplication(this.application).subscribe({
+        next: (app) => {
           this.applicationService.refreshCurrentApplication(app);
           this.toastrService.show(`Application ${app.name} saved`, 'Save Application', {
             duration: 2000,
@@ -124,10 +124,10 @@ export class ApplicationComponent implements OnInit {
             this.redirect();
           }
         },
-        (error) => {
+        error: (error) => {
           this.toastrService.show(error, 'Error', { status: 'danger' });
         }
-      );
+      });
     }
   }
 
@@ -143,41 +143,8 @@ export class ApplicationComponent implements OnInit {
     this.redirect();
   }
 
-  deleteApplication() {
-    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
-      context: {
-        title: 'Delete the Application',
-        subtitle: 'Are you sure?',
-        action: 'Delete'
-      }
-    });
-    dialogRef.onClose.subscribe((result) => {
-      if (result === 'delete') {
-        this.applicationService.deleteApplication(this.application).subscribe((result) => {
-          if (result) {
-            this.toastrService.show(`Application ${this.application.name} deleted`, 'Delete Application', {
-              duration: 2000,
-              status: 'success'
-            });
-            this.state.resetConfiguration();
-          } else {
-            this.toastrService.show(`Delete Application ${this.application.name} failed`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            });
-          }
-          this.redirect();
-        });
-      }
-    });
-  }
-
   removeLocale(locale: string) {
     this.application.supportedLocales.splice(this.application.supportedLocales.indexOf(locale), 1);
-    this.toastrService.show(`${this.state.localeName(locale)} removed`, 'Locale', {
-      duration: 2000,
-      status: 'success'
-    });
   }
 
   addLocale() {

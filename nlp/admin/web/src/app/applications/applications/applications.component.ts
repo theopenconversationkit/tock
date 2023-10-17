@@ -15,21 +15,23 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Application } from '../../model/application';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { UserRole } from '../../model/auth';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'tock-applications',
   templateUrl: 'applications.component.html',
   styleUrls: ['applications.component.scss']
 })
-export class ApplicationsComponent {
+export class ApplicationsComponent implements OnInit {
   UserRole = UserRole;
+  loading: boolean = false;
 
   constructor(
     private toastrService: NbToastrService,
@@ -38,6 +40,10 @@ export class ApplicationsComponent {
     private applicationService: ApplicationService
   ) {}
 
+  ngOnInit(): void {
+    this.state.sortApplications();
+  }
+
   isAdmin(): boolean {
     return this.state.hasRole(UserRole.admin);
   }
@@ -45,6 +51,36 @@ export class ApplicationsComponent {
   selectApplication(app: Application): void {
     this.state.changeApplication(app);
     this.toastrService.show(`Application ${app.name} selected`, 'Selection', { duration: 2000 });
+  }
+
+  deleteApplication(application): void {
+    let dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete the Application',
+        subtitle: 'Are you sure?',
+        action: 'Delete'
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === 'delete') {
+        this.loading = true;
+        this.applicationService.deleteApplication(application).subscribe((result) => {
+          if (result) {
+            this.toastrService.show(`Application ${application.name} deleted`, 'Delete Application', {
+              duration: 2000,
+              status: 'success'
+            });
+            this.state.resetConfiguration();
+          } else {
+            this.toastrService.show(`Delete Application ${application.name} failed`, 'Error', {
+              duration: 5000,
+              status: 'danger'
+            });
+          }
+          this.loading = false;
+        });
+      }
+    });
   }
 
   downloadDump(app: Application): void {

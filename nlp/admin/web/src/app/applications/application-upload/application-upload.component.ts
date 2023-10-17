@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { ApplicationImportConfiguration, ImportReport } from '../../model/application';
 import { StateService } from '../../core-nlp/state.service';
@@ -25,7 +25,7 @@ import { NbDialogRef } from '@nebular/theme';
 @Component({
   selector: 'tock-application-upload',
   templateUrl: 'application-upload.component.html',
-  styleUrls: ['application-upload.component.css']
+  styleUrls: ['application-upload.component.scss']
 })
 export class ApplicationUploadComponent implements OnInit {
   UserRole = UserRole;
@@ -37,7 +37,6 @@ export class ApplicationUploadComponent implements OnInit {
   public type: string = 'application';
 
   @Input() applicationName: string = null;
-  @Output() closed = new EventEmitter();
 
   constructor(
     public dialogRef: NbDialogRef<ApplicationUploadComponent>,
@@ -55,20 +54,12 @@ export class ApplicationUploadComponent implements OnInit {
         this.state.resetConfiguration();
       }
     };
+
     this.configuration = new ApplicationImportConfiguration();
     this.configuration.newApplicationName = this.applicationName;
   }
 
-  cancel(): void {
-    this.dialogRef.close();
-  }
-
-  close() {
-    this.ngOnInit();
-    this.closed.emit(true);
-  }
-
-  upload() {
+  upload(): void {
     if (this.type === 'application') {
       this.applicationService.prepareApplicationDumpUploader(this.uploader, this.configuration);
     } else {
@@ -80,5 +71,9 @@ export class ApplicationUploadComponent implements OnInit {
     }
     this.uploading = true;
     this.uploader.uploadAll();
+  }
+
+  cancel(): void {
+    this.dialogRef.close();
   }
 }
