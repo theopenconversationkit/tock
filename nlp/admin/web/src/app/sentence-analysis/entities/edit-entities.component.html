@@ -22,16 +22,13 @@
     *ngFor="let entity of container.getEntities()"
     class="entity"
   >
-    <mat-chip-list class="role-container">
-      <mat-chip
-        [style.background-color]="entity.entityColor"
-        [matTooltip]="entity.qualifiedName(state.user)"
-        selected="false"
-        color="primary"
-      >
-        {{ entity.role }}
-      </mat-chip>
-    </mat-chip-list>
+    <span
+      class="tag"
+      [style.background-color]="entity.entityColor"
+      [nbTooltip]="entity.qualifiedName(state.user)"
+    >
+      {{ entity.role }}
+    </span>
     <span
       *ngIf="!readOnly"
       class="value"
@@ -40,17 +37,18 @@
       <span
         *ngIf="displayProbabilities && entity.hasProbability()"
         class="probability"
-        matTooltip="Probability of entity recognition"
+        nbTooltip="Probability of entity recognition"
       >
         {{ entity.probability | percent: '1.0-2' }}
       </span>
       <button
-        mat-icon-button
-        color="warn"
+        nbButton
+        ghost
+        status="warning"
         (click)="onDeleteEntity(entity)"
-        matTooltip="Delete"
+        nbTooltip="Delete"
       >
-        <mat-icon>delete</mat-icon>
+        <nb-icon icon="trash-2-outline"></nb-icon>
       </button>
     </span>
 
@@ -64,7 +62,7 @@
       <span
         *ngIf="displayProbabilities && entity.hasProbability()"
         class="probability"
-        matTooltip="Probability of entity recognition"
+        nbTooltip="Probability of entity recognition"
       >
         {{ entity.probability | percent: '1.0-2' }}
       </span>

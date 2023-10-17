@@ -15,8 +15,6 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
 import { StateService } from '../../core-nlp/state.service';
 import { Application, NlpApplicationConfiguration, NlpModelConfiguration } from '../../model/application';
 import { ApplicationService } from '../../core-nlp/applications.service';
@@ -43,13 +41,7 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   intentClassifierProperties: string;
   entityClassifierProperties: string;
 
-  constructor(
-    private route: ActivatedRoute,
-    private toastrService: NbToastrService,
-    private dialog: MatDialog,
-    public state: StateService,
-    private applicationService: ApplicationService
-  ) {}
+  constructor(private toastrService: NbToastrService, public state: StateService, private applicationService: ApplicationService) {}
 
   ngOnInit() {
     if (this.application && this.application.supportedLocales.length > 0) {

@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+.tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.3rem 0.9rem;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border-radius: 10rem;
+  background-color: var(--border-basic-color-3);
+  font-size: 0.9rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}
+
 .highlight {
   padding-top: 5px;
   text-align: center;
@@ -24,11 +37,7 @@
   margin-bottom: 10px;
 }
 
-.highlight-text {
-}
-
 .highlight-block .control-item {
-  max-width: 3rem;
   padding-right: 1rem;
 }
 
@@ -44,9 +53,6 @@
 .tokens-readonly {
   width: 100%;
   font-size: initial;
-}
-
-.highlight-block {
 }
 
 .sub-entities {

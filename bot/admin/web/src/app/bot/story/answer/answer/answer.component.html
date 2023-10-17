@@ -27,10 +27,7 @@
       [color]="answer.currentAnswer().isEmpty() ? 'basic' : 'primary'"
       (click)="$event.stopPropagation(); editAnswer()"
     >
-      <nb-icon
-        pack="material-icons"
-        icon="question_answer"
-      ></nb-icon>
+      <nb-icon icon="message-square-outline"></nb-icon>
     </button>
   </div>
   <div
@@ -41,35 +38,19 @@
       label="Type"
       name="answer-type-label"
     >
-      <!-- <nb-radio-group
-        [(ngModel)]="answer.currentType"
-        (change)="changeType($event)"
+      <nb-radio-group
+        [(ngModel)]="answerType"
+        (ngModelChange)="changeType($event)"
+        class="d-flex"
       >
-        <nb-radio [value]="0"> Simple </nb-radio>
+        <nb-radio value="0"> Simple </nb-radio>
         <nb-radio
           *ngIf="shared.configuration && shared.configuration.compilerAvailable"
-          [value]="2"
+          value="2"
         >
           Script
         </nb-radio>
-      </nb-radio-group> -->
-      <mat-radio-group
-        aria-labelledby="answer-type-label"
-        [(ngModel)]="answer.currentType"
-        (change)="changeType($event)"
-      >
-        <mat-radio-button
-          [value]="0"
-          class="answer-type"
-          >Simple</mat-radio-button
-        >
-        <mat-radio-button
-          *ngIf="shared.configuration && shared.configuration.compilerAvailable"
-          [value]="2"
-          class="answer-type"
-          >Script</mat-radio-button
-        >
-      </mat-radio-group>
+      </nb-radio-group>
     </tock-form-control>
 
     <div *ngIf="answer.isSimpleAnswer()">

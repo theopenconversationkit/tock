@@ -70,31 +70,31 @@
     >
       <button
         *ngIf="state.currentApplication && n.namespace === state.currentApplication.namespace"
-        matTooltip="Current"
-        mat-button
+        nbTooltip="Current"
+        nbButton
         class="applications-applications__select-action"
       >
-        <mat-icon>done</mat-icon>
+        <nb-icon icon="checkmark-outline"></nb-icon>
       </button>
 
       <button
         *ngIf="!state.currentApplication || n.namespace !== state.currentApplication.namespace"
         class="applications-applications__select-action"
-        mat-button
-        matTooltip="Select"
+        nbButton
+        nbTooltip="Select"
         (click)="selectNamespace(n.namespace)"
       >
-        <mat-icon></mat-icon>
+        <nb-icon></nb-icon>
       </button>
 
       <span class="applications-applications__app-name">{{ n.namespace }}</span>
 
       <div class="applications-applications__datas">
-        <mat-icon
+        <nb-icon
           *ngIf="n.owner"
-          matTooltip="Owner"
-          >verified_user</mat-icon
-        >
+          nbTooltip="Owner"
+          icon="shield-outline"
+        ></nb-icon>
       </div>
 
       <nb-actions
@@ -107,12 +107,7 @@
           (click)="manageUsers(n.namespace)"
           nbTooltip="Manage Users"
         >
-          <i
-            class="material-icons tock-toolbar-menu"
-            style="font-size: 30px"
-          >
-            person
-          </i>
+          <nb-icon icon="person-outline"></nb-icon>
         </nb-action>
         <nb-action
           *ngIf="n.owner && isAdmin()"
@@ -120,12 +115,7 @@
           (click)="manageSharingSettings(n.namespace)"
           nbTooltip="Configure sharing settings"
         >
-          <i
-            class="material-icons tock-toolbar-menu"
-            style="font-size: 30px"
-          >
-            settings
-          </i>
+          <nb-icon icon="settings-2-outline"></nb-icon>
         </nb-action>
       </nb-actions>
     </div>
@@ -151,11 +141,11 @@
         <span class="applications-applications__app-name">{{ u.login }}</span>
 
         <div class="applications-applications__datas">
-          <mat-icon
+          <nb-icon
             *ngIf="u.owner"
-            matTooltip="Owner"
-            >verified_user</mat-icon
-          >
+            nbTooltip="Owner"
+            icon="shield-outline"
+          ></nb-icon>
         </div>
 
         <nb-actions
@@ -167,11 +157,7 @@
             (click)="deleteUserNamespace(u)"
             nbTooltip="Delete User"
           >
-            <i
-              class="material-icons tock-toolbar-menu"
-              style="font-size: 30px"
-              >delete</i
-            >
+            <nb-icon icon="trash-2-outline"></nb-icon>
           </nb-action>
         </nb-actions>
       </div>

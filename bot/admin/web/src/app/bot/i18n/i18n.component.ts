@@ -18,7 +18,6 @@ import { Component, OnInit } from '@angular/core';
 import { I18LabelQuery, I18nLabel, I18nLabelStateQuery } from '../model/i18n';
 import { BotService } from '../bot-service';
 import { StateService } from '../../core-nlp/state.service';
-import { PageEvent } from '@angular/material/paginator';
 import { saveAs } from 'file-saver-es';
 import { FileUploader } from 'ng2-file-upload';
 import { I18nController } from './i18n-label.component';
@@ -27,6 +26,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NbToastrService, NbWindowRef, NbWindowService } from '@nebular/theme';
 import { I18nExportComponent } from './i18n-export.component';
 import { I18nImportComponent } from './i18n-import.component';
+import { Pagination } from '../../shared/components';
 
 @Component({
   selector: 'tock-i18n',
@@ -47,10 +47,6 @@ export class I18nComponent extends I18nController implements OnInit {
   allCategories: string[] = [];
   notUsedFrom = -1;
   notUsedFromPossibleValues: number[] = [-1, 1, 7, 30];
-
-  pageEvent: PageEvent;
-  pageSize = 5;
-  pageSizeOptions = [5, 10, 25, 100];
 
   exportWindow: NbWindowRef;
   importWindow: NbWindowRef;
@@ -80,16 +76,23 @@ export class I18nComponent extends I18nController implements OnInit {
     return this;
   }
 
+  pagination: Pagination = {
+    start: 0,
+    end: undefined,
+    size: 5,
+    total: undefined
+  };
+
+  paginationChange(): void {
+    this.pagination.total = this.filteredI18n.length;
+    this.pagination.end = Math.min(this.pagination.start + this.pagination.size, this.filteredI18n.length);
+  }
+
   pagedItems(): I18nLabel[] {
-    const i = this.i18n;
-    const e = this.pageEvent;
-    if (i.length <= this.pageSize) {
-      return i;
-    } else if (e) {
-      const start = e.pageIndex * e.pageSize;
-      return this.filteredI18n.slice(start, Math.min(start + e.pageSize, i.length));
+    if (this.i18n.length <= this.pagination.size) {
+      return this.i18n;
     } else {
-      return this.filteredI18n.slice(0, this.pageSize);
+      return this.filteredI18n.slice(this.pagination.start, Math.min(this.pagination.start + this.pagination.size, this.i18n.length));
     }
   }
 
@@ -202,10 +205,12 @@ export class I18nComponent extends I18nController implements OnInit {
         (this.notUsedFrom === -1 || !label.lastUpdate || label.lastUpdate.getTime() < notUsedFromDate)
       );
     });
-    this.setCategoryOnFirstItem(this.filteredI18n);
 
+    this.setCategoryOnFirstItem(this.filteredI18n);
     this.locales = filteredLocales;
     this.filterByLocales();
+
+    this.paginationChange();
   }
 
   refresh() {

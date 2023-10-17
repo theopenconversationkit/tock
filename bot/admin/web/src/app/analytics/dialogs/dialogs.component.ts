@@ -15,7 +15,7 @@
  */
 
 import { mergeMap, filter } from 'rxjs/operators';
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ScrollComponent } from '../../scroll/scroll.component';
 import { Observable } from 'rxjs';
 import { PaginatedResult } from '../../model/nlp';
@@ -36,7 +36,7 @@ import { saveAs } from 'file-saver-es';
   templateUrl: './dialogs.component.html',
   styleUrls: ['./dialogs.component.css']
 })
-export class DialogsComponent extends ScrollComponent<DialogReport>  implements OnChanges{
+export class DialogsComponent extends ScrollComponent<DialogReport> implements OnChanges {
   filter: DialogFilter = new DialogFilter(true, false);
   state: StateService;
   connectorTypes: ConnectorType[] = [];
@@ -44,9 +44,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   private loaded = false;
   @Input() ratingFilter: number[];
 
-  intents : string[];
+  intents: string[];
 
-  dialogReportQuery : DialogReportQuery;
+  dialogReportQuery: DialogReportQuery;
 
   constructor(
     state: StateService,
@@ -58,27 +58,26 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   ) {
     super(state);
     this.state = state;
-    this.botConfiguration.configurations.subscribe(configs => {
-      this.isSatisfactionRoute().subscribe( res => {
-        this.botSharedService.getIntentsByApplication(this.state.currentApplication._id).subscribe(intents => this.intents = intents)
 
-          this.configurationNameList = configs.filter(item=> item.targetConfigurationId == null).map(item=> item.applicationId);
-          if (res) {
-            this.ratingFilter = [1, 2, 3, 4, 5];
-          }
-          this.refresh();
+    this.botConfiguration.configurations.subscribe((configs) => {
+      this.isSatisfactionRoute().subscribe((res) => {
+        this.botSharedService.getIntentsByApplication(this.state.currentApplication._id).subscribe((intents) => (this.intents = intents));
+
+        this.configurationNameList = configs.filter((item) => item.targetConfigurationId == null).map((item) => item.applicationId);
+        if (res) {
+          this.ratingFilter = [1, 2, 3, 4, 5];
         }
-      )
+        this.refresh();
+      });
     });
     this.botSharedService.getConnectorTypes().subscribe((confConf) => {
       this.connectorTypes = confConf.map((it) => it.connectorType);
     });
   }
 
-
   ngOnChanges(changes: SimpleChanges) {
-    if(changes["ratingFilter"].currentValue != changes["ratingFilter"].previousValue ){
-      this.refresh()
+    if (changes['ratingFilter'].currentValue != changes['ratingFilter'].previousValue) {
+      this.refresh();
     }
   }
   waitAndRefresh() {
@@ -86,7 +85,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
-    this.buildDialogQuery(query)
+    this.buildDialogQuery(query);
     return this.route.queryParams.pipe(
       mergeMap((params) => {
         if (!this.loaded) {
@@ -109,7 +108,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
     this.refresh();
   }
 
-  private buildDialogQuery(query: PaginatedQuery){
+  private buildDialogQuery(query: PaginatedQuery) {
     this.dialogReportQuery = new DialogReportQuery(
       query.namespace,
       query.applicationName,
@@ -125,18 +124,19 @@ export class DialogsComponent extends ScrollComponent<DialogReport>  implements 
       this.filter.displayTests,
       this.ratingFilter,
       this.filter.configuration,
-      this.filter.intentsToHide);
+      this.filter.intentsToHide
+    );
   }
 
   isSatisfactionRoute() {
     return this.route.url.pipe(
-      filter((val : UrlSegment[]) => {
-        return val[0].path == "satisfaction";
-      }),
-    )
+      filter((val: UrlSegment[]) => {
+        return val[0].path == 'satisfaction';
+      })
+    );
   }
 
-  exportDialogs(){
+  exportDialogs() {
     this.analytics.downloadDialogsCsv(this.dialogReportQuery).subscribe((blob) => {
       saveAs(blob, 'dialogs_with_rating.csv');
     });
@@ -155,8 +155,8 @@ export class DialogFilter {
     public intentName?: string,
     public connectorType?: ConnectorType,
     public ratings?: number[],
-    public configuration? : string,
+    public configuration?: string,
 
-    public intentsToHide? : string[]
+    public intentsToHide?: string[]
   ) {}
 }

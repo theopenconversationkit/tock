@@ -65,12 +65,10 @@ import { StoryRuleComponent } from './feature/story-rule.component';
 import { SelectEntityDialogComponent } from './story/select-entity-dialog/select-entity-dialog.component';
 import { StoryRuntimeSettingsComponent } from './feature/story-runtime-settings.component';
 import { StoryTagComponent } from './story/story-tag/story-tag.component';
-import { MatIconModule } from '@angular/material/icon';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { I18nExportComponent } from './i18n/i18n-export.component';
 import { I18nImportComponent } from './i18n/i18n-import.component';
 import { ApplicationFeaturesTableComponent } from './feature/application-features-table.component';
-import { DocumentsStoryComponent } from "./story/documents-story.component";
+import { DocumentsStoryComponent } from './story/documents-story.component';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
 import { StoriesFilterComponent } from './story/search-story/stories-filter/stories-filter.component';
@@ -149,8 +147,6 @@ export class BotRoutingModule {}
     NbTooltipModule,
     NbInputModule,
     NbRadioModule,
-    MatIconModule,
-    MatGridListModule,
     NbFormFieldModule,
     NbIconModule,
     NbButtonModule,

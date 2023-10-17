@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ComponentType } from '@angular/cdk/overlay';
 import { Injectable, TemplateRef, Type } from '@angular/core';
-import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { NbDialogConfig, NbDialogRef, NbDialogService, NbToastrConfig, NbToastrService } from '@nebular/theme';
 
 @Injectable()
@@ -30,23 +28,6 @@ export class DialogService {
    */
   notify(message: string, action?: string, config?: Partial<NbToastrConfig>) {
     this.toastrService.show(message, action ? action : 'Error', config ? config : { duration: 3000 });
-  }
-
-  /**
-   * Opens a modal dialog containing the given component.
-   *
-   * @param scopedDialog the original dialog
-   * @param componentOrTemplateRef Type of the component to load into the dialog,
-   *     or a TemplateRef to instantiate as the dialog content.
-   * @param config Extra configuration options.
-   * @returns Reference to the newly-opened dialog.
-   */
-  open<T, D = any, R = any>(
-    scopedDialog: MatDialog,
-    componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
-    config?: MatDialogConfig<D>
-  ): MatDialogRef<T, R> {
-    return scopedDialog.open(componentOrTemplateRef, config);
   }
 
   /**

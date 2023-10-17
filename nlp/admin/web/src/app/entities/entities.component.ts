@@ -19,7 +19,6 @@ import { map } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../core-nlp/state.service';
 import { NlpService } from '../nlp-tabs/nlp.service';
-import { MatInput } from '@angular/material/input';
 import { ApplicationService } from '../core-nlp/applications.service';
 import { Dictionary, EntityDefinition, EntityType, PredefinedValue } from '../model/nlp';
 import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
@@ -31,7 +30,7 @@ import { DialogService } from '../core-nlp/dialog.service';
 @Component({
   selector: 'tock-entities',
   templateUrl: './entities.component.html',
-  styleUrls: ['./entities.component.css']
+  styleUrls: ['./entities.component.scss']
 })
 export class EntitiesComponent implements OnInit {
   selectedEntityType: EntityType;
@@ -147,7 +146,7 @@ export class EntitiesComponent implements OnInit {
     );
   }
 
-  updatePredefinedValueName(predefinedValue: PredefinedValue, input: MatInput) {
+  updatePredefinedValueName(predefinedValue: PredefinedValue, input) {
     const newValue = input.value;
     const oldValue = predefinedValue.value;
     if (oldValue !== newValue) {

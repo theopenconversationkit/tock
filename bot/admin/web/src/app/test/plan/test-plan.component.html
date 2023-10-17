@@ -44,7 +44,7 @@
     />
 
     <button
-      mat-button
+      nbbutton
       (click)="executeXRay()"
       color="primary"
     >
@@ -77,7 +77,7 @@
         *ngIf="!testPlanCreation"
         nbTooltip="Create a new Test Plan"
       >
-        <i class="material-icons tock-toolbar-menu">add_box</i>
+        <nb-icon icon="plus-square-outline"></nb-icon>
       </nb-action>
     </nb-actions>
   </nb-card-header>
@@ -109,14 +109,20 @@
           nbTooltip="Create"
           class="create"
         >
-          <i class="material-icons tock-toolbar-menu">check_circle</i>
+          <nb-icon
+            icon="checkmark-circle-2-outline"
+            status="success"
+          ></nb-icon>
         </nb-action>
         <nb-action
           class="control-item"
           (click)="resetCreateTestPlan()"
           nbTooltip="Cancel"
         >
-          <i class="material-icons tock-toolbar-menu">cancel</i>
+          <nb-icon
+            icon="close-circle-outline"
+            status="danger"
+          ></nb-icon>
         </nb-action>
       </nb-actions>
     </div>
@@ -131,12 +137,13 @@
             Plan "{{ p.name }}" - {{ p.botName }}
             <button
               *ngIf="p.dialogs.length !== 0"
-              mat-button
+              nbButton
+              ghost
               (click)="exec(p)"
               style="color: #73a1ff"
-              matTooltip="Launch"
+              nbTooltip="Launch"
             >
-              <mat-icon>launch</mat-icon>
+              <nb-icon icon="external-link-outline"></nb-icon>
             </button>
             <div *ngIf="executePlan && p === this.runningTestPlan">
               <br />
@@ -154,9 +161,11 @@
                 class="control-item"
                 (click)="deleteTestPlan(p)"
                 nbTooltip="Delete"
-                style="color: #ff708d"
               >
-                <i class="material-icons">delete_forever</i>
+                <nb-icon
+                  icon="trash-2-outline"
+                  status="danger"
+                ></nb-icon>
               </nb-action>
             </nb-actions>
           </div>
@@ -166,18 +175,18 @@
               -
               <button
                 *ngIf="!p.displayDialog"
-                mat-button
+                nbButton
                 (click)="showDialogs(p)"
               >
-                <mat-icon>visibility</mat-icon>
+                <nb-icon icon="eye-outline"></nb-icon>
                 Display Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
               </button>
               <button
                 *ngIf="p.displayDialog"
-                mat-button
+                nbButton
                 (click)="hideDialogs(p)"
               >
-                <mat-icon>visibility_off</mat-icon>
+                <nb-icon icon="eye-off-outline"></nb-icon>
                 Hide Conversation{{ p.dialogs.length < 2 ? '' : 's' }}
               </button>
             </span>
@@ -197,26 +206,26 @@
               ...
               <button
                 *ngIf="!d.displayActions"
-                mat-button
+                nbButton
                 (click)="d.displayActions = true"
               >
-                <mat-icon>visibility</mat-icon>
+                <nb-icon icon="eye-outline"></nb-icon>
                 Display all sentences
               </button>
               <button
                 *ngIf="d.displayActions"
-                mat-button
+                nbButton
                 (click)="d.displayActions = false"
               >
-                <mat-icon>visibility_off</mat-icon>
+                <nb-icon icon="eye-off-outline"></nb-icon>
                 Hide all sentences
               </button>
               <button
-                mat-button
+                nbButton
                 (click)="removeDialog(p, d)"
                 color="warn"
               >
-                <mat-icon>delete</mat-icon>
+                <nb-icon icon="trash-2-outline"></nb-icon>
                 Remove dialog
               </button>
               <tock-display-dialog
@@ -232,14 +241,16 @@
                 {{ p.testPlanExecutions.length }} Executions
                 <span class="last-execution-status">&nbsp;- last execution status :</span>
                 <span *ngIf="p.testPlanExecutions[0].nbErrors === 0">
-                  <mat-icon
-                    style="height: auto"
-                    class="success"
-                    >check_circle</mat-icon
-                  >
+                  <nb-icon
+                    icon="checkmark-circle-2-outline"
+                    status="success"
+                  ></nb-icon>
                 </span>
                 <span *ngIf="p.testPlanExecutions[0].nbErrors !== 0">
-                  <mat-icon class="error">error</mat-icon>
+                  <nb-icon
+                    icon="close-circle-outline"
+                    status="danger"
+                  ></nb-icon>
                 </span>
               </nb-accordion-item-header>
               <nb-accordion-item-body>
@@ -248,39 +259,51 @@
                     {{ e.date | amDateFormat: 'HH:mm:ss YYYY-MM-DD' }}
                     <button
                       *ngIf="!e.displayExecution"
-                      mat-button
+                      nbButton
                       (click)="e.displayExecution = true"
                     >
-                      <mat-icon>visibility</mat-icon>
+                      <nb-icon icon="eye-outline"></nb-icon>
                       Display details
                     </button>
                     <button
                       *ngIf="e.displayExecution"
-                      mat-button
+                      nbButton
                       (click)="e.displayExecution = false"
                     >
-                      <mat-icon>visibility_off</mat-icon>
+                      <nb-icon icon="eye-off-outline"></nb-icon>
                       Hide details
                     </button>
                     <span *ngIf="e.nbErrors === 0">
-                      <mat-icon
-                        style="height: auto"
-                        class="success"
-                        >check_circle</mat-icon
-                      >
+                      <nb-icon
+                        icon="checkmark-circle-2-outline"
+                        status="success"
+                      ></nb-icon>
                       {{ e.dialogs.length }} conversation{{ e.dialogs.length < 2 ? '' : 's' }}
                     </span>
                     <span *ngIf="e.nbErrors !== 0">
-                      <mat-icon class="error">error</mat-icon>
+                      <nb-icon
+                        icon="close-circle-outline"
+                        status="danger"
+                      ></nb-icon>
                       {{ e.nbErrors }} error{{ e.nbErrors ? '' : 's' }} / {{ e.dialogs.length }} conversation{{
                         e.dialogs.length < 2 ? '' : 's'
                       }}
                     </span>
                     <ol *ngIf="e.displayExecution">
                       <li *ngFor="let details of e.dialogs">
-                        <span *ngIf="!details.error"><mat-icon class="success">check_circle</mat-icon> Success</span>
+                        <span *ngIf="!details.error">
+                          <nb-icon
+                            icon="checkmark-circle-2-outline"
+                            status="success"
+                          ></nb-icon>
+                          Success</span
+                        >
+
                         <span *ngIf="details.error">
-                          <mat-icon class="error">error</mat-icon>
+                          <nb-icon
+                            icon="close-circle-outline"
+                            status="danger"
+                          ></nb-icon>
                           Error
                           <span *ngIf="details.dialogReport">
                             <h4>Expected dialog:</h4>

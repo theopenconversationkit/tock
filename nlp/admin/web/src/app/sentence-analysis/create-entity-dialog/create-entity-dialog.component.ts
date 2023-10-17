@@ -24,7 +24,7 @@ import { EntityProvider } from '../highlight/highlight.component';
 @Component({
   selector: 'tock-create-entity-dialog',
   templateUrl: 'create-entity-dialog.component.html',
-  styleUrls: ['create-entity-dialog.component.css']
+  styleUrls: ['create-entity-dialog.component.scss']
 })
 export class CreateEntityDialogComponent {
   @Input() entityProvider: EntityProvider;

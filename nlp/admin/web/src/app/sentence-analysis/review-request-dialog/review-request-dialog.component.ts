@@ -20,7 +20,7 @@ import { StateService } from '../../core-nlp/state.service';
 import { flatMap } from '../../model/commons';
 
 @Component({
-  selector: 'tock-create-entity-dialog',
+  selector: 'tock-review-request-dialog',
   templateUrl: 'review-request-dialog.component.html',
   styleUrls: ['./review-request-dialog.component.css']
 })

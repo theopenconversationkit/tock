@@ -26,24 +26,23 @@
     <p>
       <label>Select existing Entity:</label><br />
 
-      <mat-chip-list *ngIf="entityTypes">
-        <mat-chip
+      <ng-container *ngIf="entityTypes">
+        <span
           *ngFor="let e of entityTypes"
-          matTooltip="Select {{ e.qualifiedName(state.user) }}"
+          nbTooltip="Select {{ e.qualifiedName(state.user) }}"
           selected="{{ e === entityType }}"
           (click)="onSelect(e)"
+          class="tag"
           [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)"
-          color="primary"
         >
           {{ e.qualifiedName(state.user) }}
-        </mat-chip>
-      </mat-chip-list>
+        </span>
+      </ng-container>
     </p>
 
     <div class="form-group">
       <span>Or create: </span>
       <input
-        cdkFocusInitial
         nbInput
         placeholder="Entity Type"
         [(ngModel)]="type"

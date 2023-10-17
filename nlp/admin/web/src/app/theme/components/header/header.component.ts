@@ -20,7 +20,6 @@ import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme'
 import { StateService } from '../../../core-nlp/state.service';
 import { AuthService } from '../../../core-nlp/auth/auth.service';
 import { SettingsService } from '../../../core-nlp/settings.service';
-import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -45,12 +44,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
     this.currentTheme = this.settings.currentTheme ? this.settings.currentTheme : 'default';
-    // this.themeService.onThemeChange()
-    //   .pipe(
-    //     map(({name}) => name),
-    //     takeUntil(this.destroy$),
-    //   )
-    //   .subscribe(themeName => this.currentTheme = themeName);
+
     if (this.currentTheme !== this.themeService.currentTheme) {
       this.themeService.changeTheme(this.currentTheme);
     }

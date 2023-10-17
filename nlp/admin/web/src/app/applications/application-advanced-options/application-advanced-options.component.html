@@ -62,20 +62,20 @@
 
       <nb-card *ngIf="exportAlexa">
         <nb-card-body>
-          <mat-form-field class="configuration-input">
-            <mat-select
+          <div class="d-flex">
+            <nb-select
               placeholder="select Locale to export"
               [(ngModel)]="alexaLocale"
+              class="mr-3"
             >
-              <mat-option
+              <nb-option
                 *ngFor="let locale of application.supportedLocales"
                 [value]="locale"
               >
                 {{ state.localeName(locale) }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div>
+              </nb-option>
+            </nb-select>
+
             <button
               nbButton
               outline
@@ -106,30 +106,38 @@
 
       <nb-card *ngIf="tokenizerProperties">
         <nb-card-body>
-          <mat-form-field class="conf-container">
+          <div class="mb-2">
+            <label>Tokenizer properties</label>
             <textarea
-              matInput
-              class="conf"
+              nbInput
+              fullWidth
               [(ngModel)]="tokenizerProperties"
               placeholder="Tokenizer properties"
+              rows="3"
             ></textarea>
-          </mat-form-field>
-          <mat-form-field class="conf-container">
+          </div>
+
+          <div class="mb-2">
+            <label>Intent Classifier properties</label>
             <textarea
-              matInput
-              class="conf"
+              nbInput
+              fullWidth
               [(ngModel)]="intentClassifierProperties"
               placeholder="Intent Classifier properties"
+              rows="3"
             ></textarea>
-          </mat-form-field>
-          <mat-form-field class="conf-container">
+          </div>
+
+          <div class="mb-2">
+            <label>Entity Classifier properties</label>
             <textarea
-              matInput
-              class="conf"
+              nbInput
+              fullWidth
               [(ngModel)]="entityClassifierProperties"
               placeholder="Entity Classifier properties"
+              rows="3"
             ></textarea>
-          </mat-form-field>
+          </div>
         </nb-card-body>
         <nb-card-footer>
           <button

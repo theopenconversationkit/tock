@@ -13,34 +13,40 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <nb-card>
   <nb-card-header>
     <div>
-      <div style="display: flex">
-        <span *ngIf="applications.length !== 0"
-          >Application
-          <span *ngIf="application && application?.name?.length !== 0">"{{ application?.name }}"</span>
-        </span>
-        <nb-actions>
-          <nb-action
-            class="save"
-            (click)="saveApplication()"
-            [nbTooltip]="newApplication ? 'Create New Application' : 'Update Application'"
-          >
-            <i class="material-icons">save</i>
-          </nb-action>
-          <nb-action
-            class="cancel"
-            *ngIf="applications.length !== 0"
-            (click)="cancel()"
-            nbTooltip="Cancel"
-          >
-            <i class="material-icons">cancel</i>
-          </nb-action>
-        </nb-actions>
-      </div>
-      <div>
+      <div class="d-flex justify-content-between">
+        <div class="d-flex">
+          <span *ngIf="applications.length !== 0"
+            >Application
+            <span *ngIf="application && application?.name?.length !== 0">"{{ application?.name }}"</span>
+          </span>
+          <nb-actions>
+            <nb-action
+              class="save"
+              (click)="saveApplication()"
+              [nbTooltip]="newApplication ? 'Create New Application' : 'Update Application'"
+            >
+              <nb-icon
+                icon="save-outline"
+                status="info"
+              ></nb-icon>
+            </nb-action>
+            <nb-action
+              class="cancel"
+              *ngIf="applications.length !== 0"
+              (click)="cancel()"
+              nbTooltip="Cancel"
+            >
+              <nb-icon
+                icon="close-circle-outline"
+                status="warning"
+              ></nb-icon>
+            </nb-action>
+          </nb-actions>
+        </div>
+
         <nb-actions
           size="small"
           style="cursor: pointer; float: right"
@@ -50,11 +56,10 @@
             (click)="deleteApplication()"
             nbTooltip="Delete application"
           >
-            <i
-              class="material-icons warn"
-              style="color: #ff708d"
-              >delete</i
-            >
+            <nb-icon
+              icon="trash-2-outline"
+              status="danger"
+            ></nb-icon>
           </nb-action>
         </nb-actions>
       </div>
@@ -63,119 +68,141 @@
   <nb-card-body *ngIf="application">
     <nb-card>
       <nb-card-body>
-        <p>
-          <mat-form-field>
+        <div class="mb-2">
+          <label
+            for="appLabel"
+            class="label required"
+          >
+            <abbr title="Required">*</abbr>
+            New Application Label
+          </label>
+
+          <input
+            nbInput
+            fullWidth
+            id="appLabel"
+            type="text"
+            placeholder="New Application Label"
+            [(ngModel)]="application.label"
+            (keyup)="format()"
+            (keyup.enter)="saveApplication()"
+            nbTooltip="Displayed label"
+            #appLabel
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="mb-2">
+          <label
+            for="appName"
+            class="label required"
+          >
+            <abbr title="Required">*</abbr>
+            New Application Name
+          </label>
+
+          <input
+            nbInput
+            fullWidth
+            id="appName"
+            type="text"
+            placeholder="New Application Name"
+            [(ngModel)]="application.name"
+            (keyup)="format()"
+            (keyup.enter)="saveApplication()"
+            nbTooltip="Technical name (without special chars)"
+            #appName
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label
+            for="treshold"
+            class="label"
+          >
+            Unknown intent threshold
+          </label>
+
+          <div>
             <input
-              matInput
-              name="appLabel"
-              placeholder="New Application Label"
-              [(ngModel)]="application.label"
-              (keyup)="format()"
-              (keyup.enter)="saveApplication()"
-              matTooltip="Displayed label"
-              #appLabel
-              required
-              autocomplete="off"
-            />
-          </mat-form-field>
-        </p>
-        <p>
-          <mat-form-field>
-            <input
-              matInput
-              name="appName"
-              placeholder="New Application Name"
-              [(ngModel)]="application.name"
-              (keyup.enter)="saveApplication()"
-              [disabled]="!newApplication"
-              matTooltip="Technical name (without special chars)"
-              #appName
-              required
-              autocomplete="off"
-            />
-          </mat-form-field>
-        </p>
-        <p>
-          <mat-form-field>
-            <input
-              matInput
+              nbInput
               type="number"
+              id="treshold"
               placeholder="Unknown intent threshold"
               [(ngModel)]="application.unknownIntentThreshold"
               min="0"
               max="1"
-              matTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, unknown intent is returned"
+              nbTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, unknown intent is returned"
+              style="min-width: 10rem"
             />
-          </mat-form-field>
-        </p>
-        <p>
-          <nb-checkbox
-            class="separator"
-            [(ngModel)]="application.normalizeText"
-            nbTooltip="If selected, this option uses normalized text models - for intent only models"
-          >
-            Normalized text models
-          </nb-checkbox>
-          <nb-checkbox
-            *ngIf="!application.normalizeText"
-            class="separator"
-            [(ngModel)]="application.mergeEngineTypes"
-            nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER"
-          >
-            Use entity models
-          </nb-checkbox>
-          <nb-checkbox
-            class="separator"
-            *ngIf="!application.normalizeText && !application.mergeEngineTypes"
-            [(ngModel)]="application.useEntityModels"
-            nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation"
-          >
-            Entity disambiguation only
-          </nb-checkbox>
-          <nb-checkbox
-            *ngIf="!application.normalizeText"
-            class="separator"
-            [(ngModel)]="application.supportSubEntities"
-            nbTooltip="If selected, you can use subentities in your nlp models"
-            >Allow subentities
-          </nb-checkbox>
-        </p>
+          </div>
+        </div>
+
+        <nb-checkbox
+          class="separator"
+          [(ngModel)]="application.normalizeText"
+          nbTooltip="If selected, this option uses normalized text models - for intent only models"
+        >
+          Normalized text models
+        </nb-checkbox>
+        <nb-checkbox
+          *ngIf="!application.normalizeText"
+          class="separator"
+          [(ngModel)]="application.mergeEngineTypes"
+          nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER"
+        >
+          Use entity models
+        </nb-checkbox>
+        <nb-checkbox
+          class="separator"
+          *ngIf="!application.normalizeText && !application.mergeEngineTypes"
+          [(ngModel)]="application.useEntityModels"
+          nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation"
+        >
+          Entity disambiguation only
+        </nb-checkbox>
+        <nb-checkbox
+          *ngIf="!application.normalizeText"
+          class="separator"
+          [(ngModel)]="application.supportSubEntities"
+          nbTooltip="If selected, you can use subentities in your nlp models"
+          >Allow subentities
+        </nb-checkbox>
       </nb-card-body>
     </nb-card>
     <nb-card *ngIf="state.locales">
       <nb-card-header>Locales</nb-card-header>
       <nb-card-body>
-        <mat-card-actions>
-          <nb-select
-            status="primary"
-            (selectedChange)="addLocale()"
-            [(ngModel)]="newLocale"
-            placeholder="Add new locale"
-            style="margin-bottom: 10px"
-          >
-            <nb-option
-              *ngFor="let locale of state.locales"
-              [value]="locale.first"
-              >{{ locale.second }}
-            </nb-option>
-          </nb-select>
-        </mat-card-actions>
-        <mat-chip-list
-          placeholder="Supported Locales"
-          *ngIf="application.supportedLocales.length !== 0"
+        <nb-select
+          status="primary"
+          (selectedChange)="addLocale()"
+          [(ngModel)]="newLocale"
+          placeholder="Add new locale"
+          style="margin-bottom: 10px"
         >
-          <mat-chip
+          <nb-option
+            *ngFor="let locale of state.locales"
+            [value]="locale.first"
+            >{{ locale.second }}
+          </nb-option>
+        </nb-select>
+
+        <div *ngIf="application.supportedLocales.length !== 0">
+          <span
+            class="tag"
             *ngFor="let locale of application.supportedLocales"
             nbTooltip="Delete locale"
-            [selected]="true"
             (click)="removeLocale(locale)"
-            style="background: #73a1ff"
           >
             {{ state.localeName(locale) }}
-          </mat-chip>
-        </mat-chip-list>
+          </span>
+        </div>
       </nb-card-body>
     </nb-card>
+
     <nb-card>
       <nb-card-header>NLU engine</nb-card-header>
       <nb-card-body>

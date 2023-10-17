@@ -90,10 +90,7 @@
             nbTooltip="Edit Mandatory Entities"
             (click)="$event.stopPropagation(); editEntities()"
           >
-            <nb-icon
-              pack="material-icons"
-              icon="extension"
-            ></nb-icon>
+            <nb-icon icon="attach-outline"></nb-icon>
           </button>
           <button
             *ngIf="!story.isBuiltIn()"
@@ -103,10 +100,7 @@
             nbTooltip="Edit Actions"
             (click)="$event.stopPropagation(); editSteps()"
           >
-            <nb-icon
-              pack="material-icons"
-              icon="dns"
-            ></nb-icon>
+            <nb-icon icon="browser-outline"></nb-icon>
           </button>
           <button
             *ngIf="story._id"

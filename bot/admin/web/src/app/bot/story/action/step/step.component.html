@@ -119,9 +119,7 @@
         *ngIf="!step.entity || step.entity.value"
       >
         <nb-icon
-          icon="playlist_add_check"
-          pack="material-icons"
-          class="material-icons-button-sizing"
+          icon="attach-outline"
           [status]="step.entity ? 'primary' : 'basic'"
         ></nb-icon>
       </button>
@@ -133,11 +131,7 @@
         (click)="setEntity()"
         *ngIf="step.entity && !step.entity.value"
       >
-        <nb-icon
-          icon="extension"
-          pack="material-icons"
-          class="material-icons-button-sizing"
-        ></nb-icon>
+        <nb-icon icon="attach-outline"></nb-icon>
         {{ step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : '' }}
       </button>
     </tock-form-control>

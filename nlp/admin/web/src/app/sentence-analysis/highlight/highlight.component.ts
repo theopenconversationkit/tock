@@ -29,7 +29,7 @@ import { NbDialogService } from '@nebular/theme';
 @Component({
   selector: 'tock-highlight',
   templateUrl: 'highlight.component.html',
-  styleUrls: ['highlight.component.css']
+  styleUrls: ['highlight.component.scss']
 })
 export class HighlightComponent implements OnInit, OnChanges {
   @Input() sentence: EntityContainer;
