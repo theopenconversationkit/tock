@@ -15,48 +15,89 @@
  */
 
 import { saveAs } from 'file-saver-es';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Application } from '../../model/application';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { UserRole } from '../../model/auth';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
+import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'tock-applications',
   templateUrl: 'applications.component.html',
-  styleUrls: ['applications.component.css']
+  styleUrls: ['applications.component.scss']
 })
-export class ApplicationsComponent {
+export class ApplicationsComponent implements OnInit {
   UserRole = UserRole;
-  uploadDump: boolean = false;
+  loading: boolean = false;
 
-  constructor(private toastrService: NbToastrService, public state: StateService, private applicationService: ApplicationService) {}
+  constructor(
+    private toastrService: NbToastrService,
+    private nbDialogService: NbDialogService,
+    public state: StateService,
+    private applicationService: ApplicationService
+  ) {}
+
+  ngOnInit(): void {
+    this.state.sortApplications();
+  }
 
   isAdmin(): boolean {
     return this.state.hasRole(UserRole.admin);
   }
 
-  selectApplication(app: Application) {
+  selectApplication(app: Application): void {
     this.state.changeApplication(app);
     this.toastrService.show(`Application ${app.name} selected`, 'Selection', { duration: 2000 });
   }
 
-  downloadDump(app: Application) {
+  deleteApplication(application): void {
+    let dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete the Application',
+        subtitle: 'Are you sure?',
+        action: 'Delete'
+      }
+    });
+    dialogRef.onClose.subscribe((result) => {
+      if (result === 'delete') {
+        this.loading = true;
+        this.applicationService.deleteApplication(application).subscribe((result) => {
+          if (result) {
+            this.toastrService.show(`Application ${application.name} deleted`, 'Delete Application', {
+              duration: 2000,
+              status: 'success'
+            });
+            this.state.resetConfiguration();
+          } else {
+            this.toastrService.show(`Delete Application ${application.name} failed`, 'Error', {
+              duration: 5000,
+              status: 'danger'
+            });
+          }
+          this.loading = false;
+        });
+      }
+    });
+  }
+
+  downloadDump(app: Application): void {
     this.applicationService.getApplicationDump(app).subscribe((blob) => {
       saveAs(blob, app.name + '_app.json');
-      this.toastrService.show(`Dump provided`, 'Dump', { duration: 2000 });
+      this.toastrService.show(`Application dump provided`, 'Dump', { duration: 2000 });
     });
   }
 
-  downloadSentencesDump(app: Application) {
+  downloadSentencesDump(app: Application): void {
     this.applicationService.getSentencesDump(app, this.state.hasRole(UserRole.technicalAdmin)).subscribe((blob) => {
       saveAs(blob, app.name + '_sentences.json');
-      this.toastrService.show(`Dump provided`, 'Dump', { duration: 2000 });
+      this.toastrService.show(`Sentences dump provided`, 'Dump', { duration: 2000 });
     });
   }
 
-  showUploadDumpPanel() {
-    this.uploadDump = true;
+  showUploadDumpPanel(): void {
+    this.nbDialogService.open(ApplicationUploadComponent);
   }
 }

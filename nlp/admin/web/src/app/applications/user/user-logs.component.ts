@@ -13,26 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { NbDialogRef, NbDialogService } from '@nebular/theme';
-import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
+import { Component, OnInit } from '@angular/core';
+import { NbDialogService } from '@nebular/theme';
 
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { StateService } from '../../core-nlp/state.service';
 import { UserLog } from '../../model/application';
 import { PaginatedQuery } from '../../model/commons';
+import { DisplayUserDataComponent } from './display-user-data/display-user-data.component';
+import { Pagination } from '../../shared-nlp/temp-pagination/temp-pagination.component';
 
 @Component({
   selector: 'tock-user-logs',
   templateUrl: './user-logs.component.html',
-  styleUrls: ['./user-logs.component.css']
+  styleUrls: ['./user-logs.component.scss']
 })
 export class UserLogsComponent implements OnInit {
   dataSource: UserLog[];
-  totalSize: number;
-  pageSize: number = 10;
-  pageIndex: number = 0;
   loading: boolean = false;
+  pagination: Pagination = {
+    start: 0,
+    end: 0,
+    size: 10,
+    total: 0
+  };
 
   constructor(private state: StateService, private applicationService: ApplicationService, private dialogService: NbDialogService) {}
 
@@ -48,7 +52,7 @@ export class UserLogsComponent implements OnInit {
     return r ? r.name : appId;
   }
 
-  displayData(log: UserLog) {
+  displayData(log: UserLog): void {
     this.dialogService.open(DisplayUserDataComponent, {
       context: {
         data: JSON.parse(log.data())
@@ -56,14 +60,9 @@ export class UserLogsComponent implements OnInit {
     });
   }
 
-  getIndex() {
-    if (this.pageIndex > 0) return this.pageIndex - 1;
-    else return this.pageIndex;
-  }
-
-  search() {
+  search(): void {
     this.loading = true;
-    const startIndex = this.getIndex() * this.pageSize;
+    const startIndex = this.pagination.start;
     this.applicationService
       .searchUserLogs(
         new PaginatedQuery(
@@ -71,72 +70,15 @@ export class UserLogsComponent implements OnInit {
           this.state.currentApplication.name,
           this.state.currentLocale,
           startIndex,
-          this.pageSize
+          this.pagination.size
         )
       )
       .subscribe((r) => {
         this.loading = false;
-        this.totalSize = r.total;
         this.dataSource = r.logs;
+
+        this.pagination.total = r.total;
+        this.pagination.end = Math.min(this.pagination.start + this.pagination.size, this.pagination.total);
       });
-  }
-}
-
-@Component({
-  selector: 'tock-display-full-log',
-  template: ` <nb-card status="primary">
-    <nb-card-header>User Action Data</nb-card-header>
-    <nb-card-body class="no-padding">
-      <json-editor
-        [options]="editorOptions"
-        [data]="data"
-      ></json-editor>
-    </nb-card-body>
-    <nb-card-footer class="btn-align">
-      <button
-        nbButton
-        status="primary"
-        (click)="close()"
-      >
-        Close
-      </button>
-    </nb-card-footer>
-  </nb-card>`,
-  styles: [
-    `
-      :host ::ng-deep json-editor,
-      :host ::ng-deep json-editor .jsoneditor,
-      :host ::ng-deep json-editor > div,
-      :host ::ng-deep json-editor jsoneditor-outer {
-        height: 30rem;
-        width: 30rem;
-      }
-      .no-padding {
-        padding: 0;
-      }
-      .btn-align {
-        text-align: right;
-      }
-    `
-  ]
-})
-export class DisplayUserDataComponent {
-  public editorOptions: JsonEditorOptions;
-
-  @ViewChild(JsonEditorComponent, { static: true }) editor: JsonEditorComponent;
-
-  @Input() data: string;
-
-  constructor(public dialogRef: NbDialogRef<DisplayUserDataComponent>) {
-    this.editorOptions = new JsonEditorOptions();
-    this.editorOptions.modes = ['code', 'view'];
-    this.editorOptions.mode = 'view';
-    this.editorOptions.expandAll = true;
-    this.editorOptions.mainMenuBar = true;
-    this.editorOptions.navigationBar = true;
-  }
-
-  close() {
-    this.dialogRef.close();
   }
 }

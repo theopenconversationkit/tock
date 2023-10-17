@@ -14,52 +14,18 @@
  * limitations under the License.
  */
 
-.configuration-input {
-  min-width: 280px;
+.connector-icon {
+  max-width: 20px;
 }
 
-.copy-button {
-  padding-right: 20px;
-}
-
-.copy {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 2em;
-  height: 2em;
-  padding: 0;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  background: transparent;
-  display: none;
-}
-
-.connector {
-  float: left;
-  padding-right: 5px;
-  margin-left: 5px;
-  width: 24px;
-  height: 24px;
-}
-
-.configurations {
-  margin-top: 20px;
-}
-
-.inline {
-  display: inline-block;
-}
-
-.nb-form-field {
-  position: relative;
-  padding-right: 10px;
-}
-
-.nb-form-field > label {
-  display: block;
-  font-size: x-small;
-  pointer-events: none;
+.connector-title-box {
+  position: absolute;
+  display: flex;
+  margin-top: -3rem;
+  margin-left: -1.5rem;
+  margin-bottom: 10px;
+  background-color: var(--card-border-color);
+  padding: 0.5rem 3rem 0.5rem 1rem;
+  border-bottom-right-radius: 10px;
   font-weight: bold;
 }

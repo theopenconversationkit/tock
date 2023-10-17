@@ -10,6 +10,14 @@
   line-height: 0;
 }
 
+.nb-theme-default .text-mitigated {
+  color: #6c757d;
+}
+
+.nb-theme-dark .text-mitigated {
+  color: nb-theme(color-basic-600);
+}
+
 .text-muted {
   color: #8f959b;
 }
@@ -117,4 +125,8 @@ nb-card.selected {
   LABEL {
     margin-bottom: 0;
   }
+}
+
+.unClickable {
+  pointer-events: none;
 }

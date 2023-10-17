@@ -17,8 +17,6 @@
 import { SharedModule } from '../shared-nlp/shared.module';
 import { CommonModule } from '@angular/common';
 import { Injectable, NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationsComponent } from './applications/applications.component';
 import { ApplicationsResolver } from './applications.resolver';
 import { ApplicationComponent } from './application/application.component';
@@ -39,71 +37,17 @@ import {
   NbTabsetModule,
   NbTooltipModule
 } from '@nebular/theme';
-import { DisplayUserDataComponent, UserLogsComponent } from './user/user-logs.component';
+import { UserLogsComponent } from './user/user-logs.component';
+import { DisplayUserDataComponent } from './user/display-user-data/display-user-data.component';
 import { MomentModule } from 'ngx-moment';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { NamespacesComponent } from './namespace/namespaces.component';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ApplicationConfig } from './application.config';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
-
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    component: ConfigurationTabsComponent,
-    resolve: {
-      applications: ApplicationsResolver
-    },
-    children: [
-      {
-        path: '',
-        component: ApplicationsComponent,
-        resolve: {
-          application: ApplicationsResolver
-        }
-      },
-      {
-        path: 'create',
-        component: ApplicationComponent
-      },
-      {
-        path: 'nlu',
-        children: [
-          {
-            path: '',
-            component: ApplicationsComponent
-          },
-          {
-            path: 'edit/:id',
-            component: ApplicationComponent
-          },
-          {
-            path: 'create',
-            component: ApplicationComponent
-          }
-        ],
-        resolve: {
-          application: ApplicationsResolver
-        }
-      },
-      {
-        path: 'users/logs',
-        component: UserLogsComponent
-      },
-      {
-        path: 'namespaces',
-        component: NamespacesComponent
-      }
-    ]
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class ApplicationsRoutingModule {}
+import { CreateNamespaceComponent } from './namespace/create-namespace/create-namespace.component';
+import { ApplicationsRoutingModule } from './applications-routing.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Injectable()
 export class NlpApplicationConfig implements ApplicationConfig {
@@ -114,44 +58,47 @@ export class NlpApplicationConfig implements ApplicationConfig {
 }
 
 @NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        MomentModule,
-        ApplicationsRoutingModule,
-        NbTabsetModule,
-        NbCardModule,
-        NbRouteTabsetModule,
-        FileUploadModule,
-        NbCardModule,
-        NbActionsModule,
-        NbButtonModule,
-        NbTooltipModule,
-        NbCheckboxModule,
-        NbSelectModule,
-        NbAccordionModule,
-        NbSpinnerModule,
-        NbRadioModule,
-        NgJsonEditorModule,
-        NbDialogModule.forRoot(),
-        NgbPaginationModule
-    ],
-    declarations: [
-        ApplicationsComponent,
-        ApplicationComponent,
-        ApplicationAdvancedOptionsComponent,
-        ApplicationUploadComponent,
-        UserLogsComponent,
-        DisplayUserDataComponent,
-        ConfigurationTabsComponent,
-        NamespacesComponent
-    ],
-    providers: [
-        {
-            provide: ApplicationConfig,
-            useClass: NlpApplicationConfig
-        },
-        ApplicationsResolver
-    ]
+  imports: [
+    CommonModule,
+    SharedModule,
+    MomentModule,
+    ApplicationsRoutingModule,
+    NbTabsetModule,
+    NbCardModule,
+    NbRouteTabsetModule,
+    FileUploadModule,
+    NbCardModule,
+    NbActionsModule,
+    NbButtonModule,
+    NbTooltipModule,
+    NbCheckboxModule,
+    NbSelectModule,
+    NbAccordionModule,
+    NbSpinnerModule,
+    NbRadioModule,
+    NgJsonEditorModule,
+    NbDialogModule.forRoot(),
+    NgbPaginationModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
+  declarations: [
+    ApplicationsComponent,
+    ApplicationComponent,
+    ApplicationAdvancedOptionsComponent,
+    ApplicationUploadComponent,
+    UserLogsComponent,
+    DisplayUserDataComponent,
+    ConfigurationTabsComponent,
+    NamespacesComponent,
+    CreateNamespaceComponent
+  ],
+  providers: [
+    {
+      provide: ApplicationConfig,
+      useClass: NlpApplicationConfig
+    },
+    ApplicationsResolver
+  ]
 })
 export class ApplicationsModule {}
