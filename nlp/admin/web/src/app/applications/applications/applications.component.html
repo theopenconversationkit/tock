@@ -14,102 +14,97 @@
   ~ limitations under the License.
   -->
 
-<nb-card class="applications-applications">
-  <nb-card-header>
-    <div style="display: flex">
-      <span *ngIf="state.applications.length === 0"> Welcome! Please create your first Application </span>
-      <span *ngIf="state.applications.length !== 0">Applications</span>
-      <nb-actions
-        size="small"
-        *ngIf="!uploadDump"
-      >
-        <nb-action
-          *ngIf="isAdmin()"
-          class="control-item create"
-          routerLink="create"
-          nbTooltip="Create new application"
-        >
-          <nb-icon icon="plus-square-outline"></nb-icon>
-        </nb-action>
-        <nb-action
-          *ngIf="isAdmin()"
-          class="control-item"
-          (click)="showUploadDumpPanel()"
-          nbTooltip="Upload dump"
-        >
-          <nb-icon icon="cloud-upload-outline"></nb-icon>
-        </nb-action>
-      </nb-actions>
-    </div>
-  </nb-card-header>
+<div class="d-flex flex-wrap mt-3 mb-2">
+  <h1 class="flex-grow-1">
+    <ng-container *ngIf="state.applications.length === 0"> Welcome! Please create your first Application </ng-container>
+    <ng-container *ngIf="state.applications.length !== 0">Applications</ng-container>
+  </h1>
 
-  <nb-card-body>
-    <div
-      class="applications-applications__item"
-      *ngFor="let app of state.applications"
+  <section
+    class="grid-actions"
+    *ngIf="isAdmin()"
+  >
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Upload dump"
+      (click)="showUploadDumpPanel()"
     >
-      <button
+      <nb-icon icon="cloud-upload-outline"></nb-icon>
+    </button>
+
+    <button
+      nbButton
+      status="primary"
+      routerLink="create"
+      nbTooltip="Create new application"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      NEW APPLICATION
+    </button>
+  </section>
+</div>
+
+<nb-card
+  *ngFor="let app of state.applications"
+  class="mb-2"
+>
+  <nb-card-body>
+    <div class="d-flex gap-1 align-items-center">
+      <nb-toggle
         *ngIf="app._id === state.currentApplication._id"
-        nbTooltip="Current"
-        nbButton
-        class="applications-applications__select-action"
-      >
-        <nb-icon icon="checkmark-outline"></nb-icon>
-      </button>
-
-      <button
+        checked="true"
+        class="mb-0 nb-toggle-clear-bottom-margin unClickable"
+      ></nb-toggle>
+      <nb-toggle
         *ngIf="app._id !== state.currentApplication._id"
-        class="applications-applications__select-action"
-        nbButton
-        nbTooltip="Select"
-        (click)="selectApplication(app)"
-      >
-        <nb-icon></nb-icon>
-      </button>
+        checked="false"
+        (checkedChange)="selectApplication(app)"
+        class="mb-0 nb-toggle-clear-bottom-margin"
+        nbTooltip="Set as current application"
+      ></nb-toggle>
 
-      <span class="applications-applications__app-name">{{ app.label }}</span>
+      <span [ngClass]="{ 'font-weight-bold': app._id === state.currentApplication._id }">{{ app.label }}</span>
 
-      <div class="applications-applications__datas">
-        <span *ngFor="let locale of app.supportedLocales">
+      <div class="flex-grow-1 text-muted">
+        <span *ngFor="let locale of app.supportedLocales; let last = last">
           {{ state.localeName(locale) }}
+          <ng-container *ngIf="!last">|</ng-container>
         </span>
       </div>
 
-      <nb-actions
-        size="medium"
-        style="cursor: pointer"
+      <button
+        *ngIf="isAdmin()"
+        nbButton
+        ghost
+        shape="round"
+        (click)="downloadDump(app)"
+        nbTooltip="Download an application dump"
       >
-        <nb-action
-          *ngIf="isAdmin()"
-          class="control-item"
-          (click)="downloadDump(app)"
-          nbTooltip="Download an application dump"
-        >
-          <nb-icon icon="download-outline"></nb-icon>
-        </nb-action>
-        <nb-action
-          *ngIf="isAdmin()"
-          class="control-item"
-          (click)="downloadSentencesDump(app)"
-          nbTooltip="Download a sentences dump"
-        >
-          <nb-icon icon="cloud-download-outline"></nb-icon>
-        </nb-action>
+        <nb-icon icon="cloud-download-outline"></nb-icon>
+      </button>
+      <button
+        *ngIf="isAdmin()"
+        nbButton
+        ghost
+        shape="round"
+        (click)="downloadSentencesDump(app)"
+        nbTooltip="Download a sentences dump"
+      >
+        <nb-icon icon="download-outline"></nb-icon>
+      </button>
 
-        <nb-action
-          *ngIf="isAdmin()"
-          class="control-item"
-          routerLink="edit/{{ app._id }}"
-          nbTooltip="Edit"
-        >
-          <nb-icon icon="edit-outline"></nb-icon>
-        </nb-action>
-      </nb-actions>
+      <button
+        *ngIf="isAdmin()"
+        nbButton
+        ghost
+        shape="round"
+        routerLink="edit/{{ app._id }}"
+        nbTooltip="Edit application"
+      >
+        <nb-icon icon="edit"></nb-icon>
+      </button>
     </div>
   </nb-card-body>
 </nb-card>
-
-<tock-application-upload
-  *ngIf="uploadDump"
-  (closed)="uploadDump = false"
-></tock-application-upload>

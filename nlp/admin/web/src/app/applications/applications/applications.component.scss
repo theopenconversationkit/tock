@@ -14,46 +14,10 @@
  * limitations under the License.
  */
 
-.applications-applications {
-  margin-top: 20px;
-}
-
-.applications-applications__item {
-  display: flex;
+.grid-actions {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-auto-flow: column;
   align-items: center;
-  margin: 10px 0;
-}
-
-.applications-applications__app-name {
-  padding-right: 20px;
-  padding-left: 20px;
-}
-
-.applications-applications__select-action {
-  min-width: 0;
-  padding: 0 10px;
-  cursor: pointer;
-}
-
-.applications-applications__datas {
-  padding-right: 20px;
-  margin-right: auto;
-  font-size: 0.9em;
-  color: #737373;
-}
-
-.applications-applications__complex-actions {
-}
-
-.btn {
-  margin: 0 8px;
-}
-
-.create {
-  color: #3366ff;
-  cursor: pointer;
-}
-
-.tock-toolbar-menu {
-  cursor: pointer;
+  justify-content: end;
 }

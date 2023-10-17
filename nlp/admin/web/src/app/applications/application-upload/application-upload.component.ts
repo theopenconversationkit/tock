@@ -20,6 +20,7 @@ import { ApplicationImportConfiguration, ImportReport } from '../../model/applic
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { UserRole } from '../../model/auth';
+import { NbDialogRef } from '@nebular/theme';
 
 @Component({
   selector: 'tock-application-upload',
@@ -38,7 +39,11 @@ export class ApplicationUploadComponent implements OnInit {
   @Input() applicationName: string = null;
   @Output() closed = new EventEmitter();
 
-  constructor(private applicationService: ApplicationService, public state: StateService) {}
+  constructor(
+    public dialogRef: NbDialogRef<ApplicationUploadComponent>,
+    private applicationService: ApplicationService,
+    public state: StateService
+  ) {}
 
   ngOnInit(): void {
     this.report = null;
@@ -55,7 +60,7 @@ export class ApplicationUploadComponent implements OnInit {
   }
 
   cancel(): void {
-    this.close();
+    this.dialogRef.close();
   }
 
   close() {

@@ -118,3 +118,12 @@ nb-card.selected {
     margin-bottom: 0;
   }
 }
+.nb-toggle-clear-bottom-margin {
+  .toggle-label {
+    margin-bottom: 0 !important;
+  }
+}
+
+.unClickable {
+  pointer-events: none;
+}
