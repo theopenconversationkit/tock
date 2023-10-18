@@ -18,12 +18,10 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StateService } from '../../core-nlp/state.service';
 import { Application } from '../../model/application';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Subject } from 'rxjs';
 import { NlpEngineType } from '../../model/nlp';
 import { NbToastrService } from '@nebular/theme';
-import { DialogService } from '../../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-application',
@@ -43,13 +41,12 @@ export class ApplicationComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private toastrService: NbToastrService,
-    private dialog: DialogService,
     public state: StateService,
     private applicationService: ApplicationService,
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.applications = this.state.applications;
     this.route.params.subscribe((params) => {
       const id = params['id'];
@@ -84,11 +81,11 @@ export class ApplicationComponent implements OnInit {
     });
   }
 
-  format() {
+  format(): void {
     this.formatName(this.application.label);
   }
 
-  private formatName(label: string) {
+  private formatName(label: string): void {
     if (label && this.newApplication) {
       this.application.name = label
         .replace(/[^A-Za-z0-9_-]*/g, '')
@@ -97,7 +94,7 @@ export class ApplicationComponent implements OnInit {
     }
   }
 
-  saveApplication() {
+  saveApplication(): void {
     this.format();
     if (this.application.name.trim().length === 0) {
       this.toastrService.show(`Please choose an application name`, 'ERROR', {
@@ -131,7 +128,7 @@ export class ApplicationComponent implements OnInit {
     }
   }
 
-  private redirect() {
+  private redirect(): void {
     let redirect = '../../';
     if (this.newApplication) {
       redirect = '../';
@@ -139,15 +136,15 @@ export class ApplicationComponent implements OnInit {
     this.router.navigate([redirect], { relativeTo: this.route });
   }
 
-  cancel() {
+  cancel(): void {
     this.redirect();
   }
 
-  removeLocale(locale: string) {
+  removeLocale(locale: string): void {
     this.application.supportedLocales.splice(this.application.supportedLocales.indexOf(locale), 1);
   }
 
-  addLocale() {
+  addLocale(): void {
     this.application.supportedLocales.push(this.newLocale);
     this.toastrService.show(`${this.state.localeName(this.newLocale)} added`, 'Locale', {
       duration: 2000,
@@ -155,7 +152,7 @@ export class ApplicationComponent implements OnInit {
     });
   }
 
-  changeNlpEngine(type: string) {
+  changeNlpEngine(type: string): void {
     this.nlpEngineTypeChange.next(this.state.supportedNlpEngines.find((e) => e.name === type));
   }
 }
