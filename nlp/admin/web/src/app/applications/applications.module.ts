@@ -37,7 +37,8 @@ import {
   NbTabsetModule,
   NbTooltipModule
 } from '@nebular/theme';
-import { DisplayUserDataComponent, UserLogsComponent } from './user/user-logs.component';
+import { UserLogsComponent } from './user/user-logs.component';
+import { DisplayUserDataComponent } from './user/display-user-data/display-user-data.component';
 import { MomentModule } from 'ngx-moment';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { NamespacesComponent } from './namespace/namespaces.component';

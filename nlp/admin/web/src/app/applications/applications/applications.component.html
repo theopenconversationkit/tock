@@ -15,9 +15,19 @@
   -->
 
 <div class="d-flex flex-wrap mt-3 mb-2">
-  <h1 class="flex-grow-1">
-    <ng-container *ngIf="state.applications.length === 0"> Welcome! Please create your first Application </ng-container>
-    <ng-container *ngIf="state.applications.length !== 0">Applications</ng-container>
+  <div
+    class="flex-grow-1"
+    *ngIf="state.applications.length === 0"
+  >
+    <h1 class="mb-0">Welcome!</h1>
+    <strong>Please create your first Application</strong>
+  </div>
+
+  <h1
+    class="flex-grow-1"
+    *ngIf="state.applications.length !== 0"
+  >
+    Applications
   </h1>
 
   <section
@@ -45,6 +55,12 @@
     </button>
   </section>
 </div>
+
+<tock-no-data-found
+  *ngIf="!state.applications.length"
+  title="No application detected"
+  message="Use the NEW APPLICATION button to create one"
+></tock-no-data-found>
 
 <nb-card
   *ngFor="let app of state.applications"
