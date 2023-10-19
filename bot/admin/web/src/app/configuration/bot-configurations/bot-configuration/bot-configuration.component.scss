@@ -14,57 +14,18 @@
  * limitations under the License.
  */
 
-.conf {
-  margin-bottom: 10px;
-}
-
-.newConf {
-  margin-bottom: 100px;
-}
-
-.long-text {
-  min-width: 100%;
-}
-
-.bot-input {
-  padding-right: 10px;
-}
-
 .connector-icon {
-  vertical-align: text-top;
-  width: 20px;
-  height: auto;
-  margin-right: 10px;
+  max-width: 20px;
 }
 
-.connector {
-  text-transform: capitalize;
-}
-
-.targetUrl {
-  font-size: x-small;
-}
-
-.inline {
-  display: inline-block;
-}
-
-.block {
-  display: block;
-}
-
-.nb-form-field {
-  position: relative;
-  padding-right: 10px;
-}
-
-.nb-form-field > label {
-  display: block;
-  font-size: x-small;
-  pointer-events: none;
+.connector-title-box {
+  position: absolute;
+  display: flex;
+  margin-top: -3rem;
+  margin-left: -1.5rem;
+  margin-bottom: 10px;
+  background-color: var(--card-border-color);
+  padding: 0.5rem 3rem 0.5rem 1rem;
+  border-bottom-right-radius: 10px;
   font-weight: bold;
-}
-
-.nb-form-field > nb-select {
-  min-width: 180px;
 }

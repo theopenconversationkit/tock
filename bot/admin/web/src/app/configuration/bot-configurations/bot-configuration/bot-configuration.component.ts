@@ -23,7 +23,7 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 @Component({
   selector: 'tock-bot-configuration',
   templateUrl: './bot-configuration.component.html',
-  styleUrls: ['./bot-configuration.component.css']
+  styleUrls: ['./bot-configuration.component.scss']
 })
 export class BotConfigurationComponent implements OnInit {
   @Input()
@@ -54,20 +54,20 @@ export class BotConfigurationComponent implements OnInit {
     });
   }
 
-  remove() {
+  remove(): void {
     this.onRemove.emit(true);
   }
 
-  update() {
+  update(): void {
     this.onValidate.emit(true);
   }
 
-  changeConnectorType() {
+  changeConnectorType(): void {
     this.configuration.path = this.botConfiguration.findValidPath(this.configuration.connectorType);
     this.configuration.applicationId = this.botConfiguration.findValidId(this.configuration.name);
   }
 
-  changePath() {
+  changePath(): void {
     this.configuration.path = this.configuration.path.toLowerCase();
   }
 }
