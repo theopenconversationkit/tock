@@ -15,10 +15,10 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
-import { BotSharedService } from '../../shared/bot-shared.service';
-import { StateService } from '../../core-nlp/state.service';
-import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { BotApplicationConfiguration, ConnectorType } from '../../../core/model/configuration';
+import { BotSharedService } from '../../../shared/bot-shared.service';
+import { StateService } from '../../../core-nlp/state.service';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
 
 @Component({
   selector: 'tock-bot-configuration',

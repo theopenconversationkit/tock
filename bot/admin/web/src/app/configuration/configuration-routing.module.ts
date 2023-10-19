@@ -19,10 +19,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { ApplicationsComponent } from '../applications/applications/applications.component';
 import { ApplicationComponent } from '../applications/application/application.component';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
-import { BotConfigurationsComponent } from './bot/bot-configurations.component';
+import { BotConfigurationsComponent } from './bot-configurations/bot-configurations.component';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { ApplicationsResolver } from '../applications/applications.resolver';
-import { NewBotComponent } from './bot/new-bot.component';
+import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { UserLogsComponent } from '../applications/user/user-logs.component';
 import { NamespacesComponent } from '../applications/namespace/namespaces.component';
 

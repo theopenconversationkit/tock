@@ -17,11 +17,11 @@
 import { ApplicationsModule } from '../applications/applications.module';
 import { Injectable, NgModule } from '@angular/core';
 import { SharedModule } from '../shared-nlp/shared.module';
-import { BotConfigurationsComponent } from './bot/bot-configurations.component';
+import { BotConfigurationsComponent } from './bot-configurations/bot-configurations.component';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { CommonModule } from '@angular/common';
 import { BotSharedModule } from '../shared/bot-shared.module';
-import { BotConfigurationComponent } from './bot/bot-configuration.component';
+import { BotConfigurationComponent } from './bot-configurations/bot-configuration/bot-configuration.component';
 import {
   NbAccordionModule,
   NbActionsModule,
@@ -35,13 +35,14 @@ import {
   NbTabsetModule,
   NbToastrModule,
   NbTooltipModule,
-  NbStepperModule
+  NbStepperModule,
+  NbFormFieldModule
 } from '@nebular/theme';
-import { NewBotComponent } from './bot/new-bot.component';
+import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BotSharedService } from '../shared/bot-shared.service';
 import { ApplicationConfig } from '../applications/application.config';
-import { SelectBotConfigurationDialogComponent } from './bot/selection-dialog/select-bot-configuration-dialog.component';
+import { SelectBotConfigurationDialogComponent } from './bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
 import { BotConfigurationRoutingModule } from './configuration-routing.module';
 
 @Injectable()
@@ -81,7 +82,8 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbToastrModule.forRoot(),
     NbIconModule,
     NbSelectModule,
-    NbStepperModule
+    NbStepperModule,
+    NbFormFieldModule
   ],
   providers: [
     {

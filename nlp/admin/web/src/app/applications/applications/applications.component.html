@@ -66,13 +66,20 @@
         nbTooltip="Set as current application"
       ></nb-toggle>
 
-      <span [ngClass]="{ 'font-weight-bold': app._id === state.currentApplication._id }">{{ app.label }}</span>
-
-      <div class="flex-grow-1 text-muted">
-        <span *ngFor="let locale of app.supportedLocales; let last = last">
-          {{ state.localeName(locale) }}
-          <ng-container *ngIf="!last">|</ng-container>
+      <div class="flex-grow-1">
+        <span
+          class="lead text-nowrap"
+          [ngClass]="{ 'font-weight-bold': app._id === state.currentApplication._id }"
+        >
+          {{ app.label }}
         </span>
+
+        <div class="text-muted">
+          <span *ngFor="let locale of app.supportedLocales; let last = last">
+            {{ state.localeName(locale) }}
+            <ng-container *ngIf="!last">|</ng-container>
+          </span>
+        </div>
       </div>
 
       <button

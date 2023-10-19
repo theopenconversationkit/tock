@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType, UserInterfaceType } from '../../core/model/configuration';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from '../../core-nlp/state.service';
-import { NbToastrService, NbDialogService } from '@nebular/theme';
+import { NbToastrService } from '@nebular/theme';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-bot-configurations',
   templateUrl: './bot-configurations.component.html',
-  styleUrls: ['./bot-configurations.component.css']
+  styleUrls: ['./bot-configurations.component.scss']
 })
 export class BotConfigurationsComponent implements OnInit {
   newApplicationConfiguration: BotApplicationConfiguration;
   configurations: BotConfiguration[];
   displayTestConfigurations = false;
-
-  // used to copy to clipboard
-  @ViewChild('copy') tmpTextArea: ElementRef;
 
   constructor(
     private state: StateService,
@@ -42,11 +39,11 @@ export class BotConfigurationsComponent implements OnInit {
     private toastrService: NbToastrService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.load();
   }
 
-  private load() {
+  private load(): void {
     this.botConfiguration.configurations.subscribe((confs) => {
       const botConfigurationsByName = new Map<string, BotApplicationConfiguration[]>();
       confs.forEach((c) => {
@@ -80,7 +77,7 @@ export class BotConfigurationsComponent implements OnInit {
     return conf.targetConfigurationId === null;
   }
 
-  prepareCreate() {
+  prepareCreate(): void {
     this.newApplicationConfiguration = new BotApplicationConfiguration(
       this.state.currentApplication.name,
       this.state.currentApplication.name,
@@ -92,22 +89,23 @@ export class BotConfigurationsComponent implements OnInit {
     );
   }
 
-  cancelCreate() {
+  cancelCreate(): void {
     this.newApplicationConfiguration = null;
   }
 
-  refresh() {
+  refresh(): void {
     this.botConfiguration.updateConfigurations();
     this.toastrService.show(`Configurations reloaded`, 'Refresh', { duration: 2000 });
   }
 
-  create() {
+  create(): void {
     // black magic? welcome to the js world! :)
     const param = this.newApplicationConfiguration.parameters;
+    console.log(JSON.parse(JSON.stringify(param)));
     Object.keys(param).forEach((k) => {
       param.set(k, param[k]);
     });
-
+    console.log(param);
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration).subscribe((_) => {
       this.botConfiguration.updateConfigurations();
       this.toastrService.show(`Configuration created`, 'Creation', {
@@ -118,22 +116,22 @@ export class BotConfigurationsComponent implements OnInit {
     });
   }
 
-  update(conf: BotApplicationConfiguration) {
-    this.botConfiguration.saveConfiguration(conf).subscribe(
-      (_) => {
+  update(conf: BotApplicationConfiguration): void {
+    this.botConfiguration.saveConfiguration(conf).subscribe({
+      next: (_) => {
         this.botConfiguration.updateConfigurations();
         this.toastrService.show(`Configuration updated`, 'Update', {
           duration: 5000,
           status: 'success'
         });
       },
-      (error) => {
+      error: (error) => {
         this.botConfiguration.updateConfigurations();
       }
-    );
+    });
   }
 
-  remove(conf: BotApplicationConfiguration) {
+  remove(conf: BotApplicationConfiguration): void {
     const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
       context: {
         title: `Delete the configuration`,
@@ -154,26 +152,17 @@ export class BotConfigurationsComponent implements OnInit {
     });
   }
 
-  saveBot(bot: BotConfiguration) {
+  saveBot(bot: BotConfiguration): void {
     this.botConfiguration.saveBot(bot).subscribe((_) => {
-      this.toastrService.show(`Webhook saved`, 'Save', { duration: 5000, status: 'success' });
       this.botConfiguration.updateConfigurations();
+      this.toastrService.show(`Webhook saved`, 'Save', { duration: 5000, status: 'success' });
     });
   }
 
-  copyToClipboard(bot: BotConfiguration) {
-    const t = this.tmpTextArea.nativeElement;
-    t.style.display = 'block';
-    const text = bot.apiKey;
-    t.value = text;
-    t.select();
-    let successful = false;
-    try {
-      successful = document.execCommand('copy');
-    } catch (err) {
-      // do nothing
-    }
-    t.style.display = 'none';
-    this.toastrService.show(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, 'Clipboard', { duration: 2000 });
+  copyToClipboard(bot: BotConfiguration): void {
+    navigator.clipboard.writeText(bot.apiKey);
+    this.toastrService.show(`${bot.apiKey} copied to clipboard`, 'Clipboard', {
+      duration: 2000
+    });
   }
 }

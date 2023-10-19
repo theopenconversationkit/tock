@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 .grid-actions {
   display: grid;
   grid-gap: 0.5rem;
   grid-auto-flow: column;
   align-items: center;
   justify-content: end;
+}
+
+.connector-icon {
+  max-width: 24px;
+  max-height: 24px;
 }

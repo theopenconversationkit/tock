@@ -52,9 +52,11 @@
         nbTooltip="Set as current application"
       ></nb-toggle>
 
-      <span [ngClass]="{ 'font-weight-bold': state.currentApplication && n.namespace === state.currentApplication.namespace }">{{
-        n.namespace
-      }}</span>
+      <span
+        class="lead text-nowrap"
+        [ngClass]="{ 'font-weight-bold': state.currentApplication && n.namespace === state.currentApplication.namespace }"
+        >{{ n.namespace }}</span
+      >
 
       <div class="flex-grow-1 text-muted">
         <nb-icon
