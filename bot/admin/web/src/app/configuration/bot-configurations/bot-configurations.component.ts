@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType, UserInterfaceType } from '../../core/model/configuration';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from '../../core-nlp/state.service';
 import { NbToastrService } from '@nebular/theme';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'tock-bot-configurations',
   templateUrl: './bot-configurations.component.html',
   styleUrls: ['./bot-configurations.component.scss']
 })
-export class BotConfigurationsComponent implements OnInit {
+export class BotConfigurationsComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
   newApplicationConfiguration: BotApplicationConfiguration;
   configurations: BotConfiguration[];
   displayTestConfigurations = false;
@@ -44,7 +46,7 @@ export class BotConfigurationsComponent implements OnInit {
   }
 
   private load(): void {
-    this.botConfiguration.configurations.subscribe((confs) => {
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
       const botConfigurationsByName = new Map<string, BotApplicationConfiguration[]>();
       confs.forEach((c) => {
         const configs = botConfigurationsByName.get(c.name);
@@ -101,11 +103,10 @@ export class BotConfigurationsComponent implements OnInit {
   create(): void {
     // black magic? welcome to the js world! :)
     const param = this.newApplicationConfiguration.parameters;
-    console.log(JSON.parse(JSON.stringify(param)));
     Object.keys(param).forEach((k) => {
       param.set(k, param[k]);
     });
-    console.log(param);
+
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration).subscribe((_) => {
       this.botConfiguration.updateConfigurations();
       this.toastrService.show(`Configuration created`, 'Creation', {
@@ -164,5 +165,10 @@ export class BotConfigurationsComponent implements OnInit {
     this.toastrService.show(`${bot.apiKey} copied to clipboard`, 'Clipboard', {
       duration: 2000
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 }
