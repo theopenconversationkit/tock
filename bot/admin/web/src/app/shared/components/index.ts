@@ -7,6 +7,7 @@ export * from './chat-ui/chat-ui-message/chat-ui-message-debug/chat-ui-message-d
 export * from './chat-ui/chat-ui-message/chat-ui-message-location/chat-ui-message-location';
 export * from './chat-ui/chat-ui-message/chat-ui-message-sentence/chat-ui-message-sentence.component';
 export * from './chat-ui/chat-ui-message/chat-ui-message-sentence-element/chat-ui-message-sentence-element.component';
+export * from './chat-ui/chat-ui-message/chat-ui-message-sentence-footnotes/chat-ui-message-sentence-footnotes.component';
 export * from './choice-dialog/choice-dialog.component';
 export * from './error-helper/error-helper.component';
 export * from './form-control/form-control.component';
