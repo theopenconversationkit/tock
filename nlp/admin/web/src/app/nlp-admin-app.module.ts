@@ -17,7 +17,6 @@
 import { NgModule } from '@angular/core';
 import { NlpAdminAppComponent } from './nlp-admin-app.component';
 import { SharedModule } from './shared-nlp/shared.module';
-import { RouterModule, Routes } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
 import { CoreModule } from './core-nlp/core.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -33,29 +32,7 @@ import {
   NbThemeModule
 } from '@nebular/theme';
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
-
-const routes: Routes = [
-  { path: '', redirectTo: '/nlp/inbox', pathMatch: 'full' },
-  {
-    path: 'nlp',
-    loadChildren: () => import('./nlp-tabs/nlp.module').then((m) => m.NlpModule)
-  },
-  {
-    path: 'applications',
-    loadChildren: () => import('./applications/applications.module').then((m) => m.ApplicationsModule)
-  },
-  {
-    path: 'quality',
-    loadChildren: () => import('./quality-nlp/quality.module').then((m) => m.QualityModule)
-  },
-  { path: '**', redirectTo: '/nlp/inbox' }
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
-  exports: [RouterModule]
-})
-export class NlpAdminAppRoutingModule {}
+import { NlpAdminAppRoutingModule } from './nlp-admin-app-routing.module';
 
 @NgModule({
   declarations: [NlpAdminAppComponent],

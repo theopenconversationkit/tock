@@ -15,12 +15,9 @@
  */
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared-nlp/shared.module';
 import { CommonModule } from '@angular/common';
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationsModule } from '../applications/applications.module';
-import { ApplicationResolver } from '../core-nlp/application.resolver';
 
 import { MomentModule } from 'ngx-moment';
 import { TestIntentErrorComponent } from '../test-nlp/test-intent-error.component';
@@ -44,90 +41,43 @@ import {
 import { ThemeModule } from '../theme/theme.module';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { QualityRoutingModule } from './quality-routing.module';
 
 export function importEcharts() {
   return import('echarts');
 }
 
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    component: QualityTabsComponent,
-    resolve: {
-      application: ApplicationResolver
-    },
-    children: [
-      {
-        path: '',
-        redirectTo: 'test-builds',
-        pathMatch: 'full'
-      },
-      {
-        path: 'log-stats',
-        component: LogStatsComponent
-      },
-      {
-        path: 'test-builds',
-        component: TestBuildsComponent
-      },
-      {
-        path: 'test-intent-errors',
-        component: TestIntentErrorComponent
-      },
-      {
-        path: 'test-entity-errors',
-        component: TestEntityErrorComponent
-      },
-      {
-        path: 'model-builds',
-        component: ModelBuildsComponent
-      },
-      {
-        path: 'intent-quality',
-        component: IntentQAComponent
-      }
-    ]
-  }
-];
-
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class QualityRoutingModule {}
-
-@NgModule({
-    imports: [
-        CommonModule,
-        SharedModule,
-        QualityRoutingModule,
-        ApplicationsModule,
-        NlpModule,
-        MomentModule,
-        NbThemeModule,
-        ThemeModule,
-        NbRouteTabsetModule,
-        NbCardModule,
-        NbButtonModule,
-        NbSelectModule,
-        NgxEchartsModule.forRoot({
-            echarts: importEcharts
-        }),
-        NbTooltipModule,
-        NgbModule,
-        NbSpinnerModule
-    ],
-    declarations: [
-        QualityTabsComponent,
-        TestIntentErrorComponent,
-        TestEntityErrorComponent,
-        TestBuildsComponent,
-        LogStatsComponent,
-        ModelBuildsComponent,
-        IntentQAComponent
-    ],
-    exports: [],
-    providers: [QualityService]
+  imports: [
+    CommonModule,
+    SharedModule,
+    QualityRoutingModule,
+    ApplicationsModule,
+    NlpModule,
+    MomentModule,
+    NbThemeModule,
+    ThemeModule,
+    NbRouteTabsetModule,
+    NbCardModule,
+    NbButtonModule,
+    NbSelectModule,
+    NgxEchartsModule.forRoot({
+      echarts: importEcharts
+    }),
+    NbTooltipModule,
+    NgbModule,
+    NbSpinnerModule
+  ],
+  declarations: [
+    QualityTabsComponent,
+    TestIntentErrorComponent,
+    TestEntityErrorComponent,
+    TestBuildsComponent,
+    LogStatsComponent,
+    ModelBuildsComponent,
+    IntentQAComponent
+  ],
+  exports: [],
+  providers: [QualityService]
 })
 export class QualityModule {}

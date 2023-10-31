@@ -18,7 +18,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CoreModule } from './core-nlp/core.module';
 import { SharedModule } from './shared-nlp/shared.module';
-import { RouterModule, Routes } from '@angular/router';
 import { BotAdminAppComponent } from './bot-admin-app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BotCoreModule } from './core/bot-core.module';
@@ -38,50 +37,7 @@ import {
 import { CustomNbIconLibraries } from './shared/icons/custom-nb-icon-libraries';
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { BotService } from './bot/bot-service';
-
-const routes: Routes = [
-  { path: '', redirectTo: '/nlp/inbox', pathMatch: 'full' },
-  {
-    path: 'nlp',
-    loadChildren: () => import('./nlp/nlp.module').then((m) => m.BotNlpModule)
-  },
-  {
-    path: 'quality',
-    loadChildren: () => import('./quality/quality.module').then((m) => m.BotQualityModule)
-  },
-  {
-    path: 'configuration',
-    loadChildren: () => import('./configuration/configuration.module').then((m) => m.BotConfigurationModule)
-  },
-  {
-    path: 'build',
-    loadChildren: () => import('./bot/bot.module').then((m) => m.BotModule)
-  },
-  {
-    path: 'test',
-    loadChildren: () => import('./test/test.module').then((m) => m.BotTestModule)
-  },
-  {
-    path: 'analytics',
-    loadChildren: () => import('./analytics/analytics.module').then((m) => m.BotAnalyticsModule)
-  },
-  {
-    path: 'business-metrics',
-    loadChildren: () => import('./metrics/metrics.module').then((m) => m.MetricsModule)
-  },
-  {
-    path: 'faq',
-    loadChildren: () => import('./faq/faq.module').then((m) => m.FaqModule)
-  },
-  { path: '**', redirectTo: '/nlp/inbox' }
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
-  exports: [RouterModule],
-  declarations: []
-})
-export class BotAdminAppRoutingModule {}
+import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
 
 @NgModule({
   declarations: [BotAdminAppComponent],

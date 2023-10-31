@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SharedModule } from '../shared-nlp/shared.module';
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { BotConfigurationModule } from '../configuration/configuration.module';
 import { MomentModule } from 'ngx-moment';
 import { CreateStoryComponent } from './story/create-story/create-story.component';
-import { BotService } from './bot-service';
 import { BotTabsComponent } from './bot-tabs.component';
 import { SearchStoryComponent } from './story/search-story/search-story.component';
 import { NlpModule } from '../nlp-tabs/nlp.module';
-import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { I18nComponent } from './i18n/i18n.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import { I18nLabelComponent } from './i18n/i18n-label.component';
@@ -69,60 +65,12 @@ import { I18nExportComponent } from './i18n/i18n-export.component';
 import { I18nImportComponent } from './i18n/i18n-import.component';
 import { ApplicationFeaturesTableComponent } from './feature/application-features-table.component';
 import { DocumentsStoryComponent } from './story/documents-story.component';
-import { NlpService } from '../nlp-tabs/nlp.service';
 import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
 import { StoriesFilterComponent } from './story/search-story/stories-filter/stories-filter.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EditStoryComponent } from './story/edit-story/edit-story.component';
 import { StoriesUploadComponent } from './story/search-story/stories-upload/stories-upload.component';
-
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    component: BotTabsComponent,
-    resolve: {
-      application: ApplicationResolver
-    },
-    children: [
-      {
-        path: '',
-        redirectTo: 'story-create',
-        pathMatch: 'full'
-      },
-      {
-        path: 'story-create',
-        component: CreateStoryComponent
-      },
-      {
-        path: 'story-search',
-        component: SearchStoryComponent
-      },
-      {
-        path: 'story-edit/:storyId',
-        component: EditStoryComponent
-      },
-      {
-        path: 'i18n',
-        component: I18nComponent
-      },
-      {
-        path: 'story-rules',
-        component: FeatureComponent
-      },
-      {
-        path: 'story-documents',
-        component: DocumentsStoryComponent
-      }
-    ]
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class BotRoutingModule {}
+import { BotRoutingModule } from './bot-routing.module';
 
 @NgModule({
   imports: [
