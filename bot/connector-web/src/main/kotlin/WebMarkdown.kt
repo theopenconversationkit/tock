@@ -75,7 +75,7 @@ object WebMarkdown {
                 "<a target=\"_blank\" rel=\"noopener noreferrer\" href="
             )
         }
-        return render.replace("<p>", "").replace("</p>", "")
+        return render
     }
 
     internal fun extractAllDataWithRegex(regex: Regex, value: String): String {
@@ -90,7 +90,7 @@ object WebMarkdown {
         }
         data.forEach {
             val tmpIt = "~~$it~~"
-            tmp = tmp.replace(tmpIt, "<div style=\"text-decoration: line-through;\">$it</div>")
+            tmp = tmp.replace(tmpIt, "<s style=\"text-decoration: line-through;\">$it</s>")
         }
         return tmp
     }
