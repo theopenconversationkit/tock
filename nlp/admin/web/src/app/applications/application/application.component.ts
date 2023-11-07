@@ -18,12 +18,10 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StateService } from '../../core-nlp/state.service';
 import { Application } from '../../model/application';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Subject } from 'rxjs';
 import { NlpEngineType } from '../../model/nlp';
 import { NbToastrService } from '@nebular/theme';
-import { DialogService } from '../../core-nlp/dialog.service';
 
 @Component({
   selector: 'tock-application',
@@ -43,13 +41,12 @@ export class ApplicationComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private toastrService: NbToastrService,
-    private dialog: DialogService,
     public state: StateService,
     private applicationService: ApplicationService,
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.applications = this.state.applications;
     this.route.params.subscribe((params) => {
       const id = params['id'];
@@ -84,11 +81,11 @@ export class ApplicationComponent implements OnInit {
     });
   }
 
-  format() {
+  format(): void {
     this.formatName(this.application.label);
   }
 
-  private formatName(label: string) {
+  private formatName(label: string): void {
     if (label && this.newApplication) {
       this.application.name = label
         .replace(/[^A-Za-z0-9_-]*/g, '')
@@ -97,7 +94,7 @@ export class ApplicationComponent implements OnInit {
     }
   }
 
-  saveApplication() {
+  saveApplication(): void {
     this.format();
     if (this.application.name.trim().length === 0) {
       this.toastrService.show(`Please choose an application name`, 'ERROR', {
@@ -111,8 +108,8 @@ export class ApplicationComponent implements OnInit {
       });
     } else {
       this.application.nlpEngineType = this.state.supportedNlpEngines.find((e) => e.name === this.nlpEngineType);
-      this.applicationService.saveApplication(this.application).subscribe(
-        (app) => {
+      this.applicationService.saveApplication(this.application).subscribe({
+        next: (app) => {
           this.applicationService.refreshCurrentApplication(app);
           this.toastrService.show(`Application ${app.name} saved`, 'Save Application', {
             duration: 2000,
@@ -124,14 +121,14 @@ export class ApplicationComponent implements OnInit {
             this.redirect();
           }
         },
-        (error) => {
+        error: (error) => {
           this.toastrService.show(error, 'Error', { status: 'danger' });
         }
-      );
+      });
     }
   }
 
-  private redirect() {
+  private redirect(): void {
     let redirect = '../../';
     if (this.newApplication) {
       redirect = '../';
@@ -139,48 +136,15 @@ export class ApplicationComponent implements OnInit {
     this.router.navigate([redirect], { relativeTo: this.route });
   }
 
-  cancel() {
+  cancel(): void {
     this.redirect();
   }
 
-  deleteApplication() {
-    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
-      context: {
-        title: 'Delete the Application',
-        subtitle: 'Are you sure?',
-        action: 'Delete'
-      }
-    });
-    dialogRef.onClose.subscribe((result) => {
-      if (result === 'delete') {
-        this.applicationService.deleteApplication(this.application).subscribe((result) => {
-          if (result) {
-            this.toastrService.show(`Application ${this.application.name} deleted`, 'Delete Application', {
-              duration: 2000,
-              status: 'success'
-            });
-            this.state.resetConfiguration();
-          } else {
-            this.toastrService.show(`Delete Application ${this.application.name} failed`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            });
-          }
-          this.redirect();
-        });
-      }
-    });
-  }
-
-  removeLocale(locale: string) {
+  removeLocale(locale: string): void {
     this.application.supportedLocales.splice(this.application.supportedLocales.indexOf(locale), 1);
-    this.toastrService.show(`${this.state.localeName(locale)} removed`, 'Locale', {
-      duration: 2000,
-      status: 'success'
-    });
   }
 
-  addLocale() {
+  addLocale(): void {
     this.application.supportedLocales.push(this.newLocale);
     this.toastrService.show(`${this.state.localeName(this.newLocale)} added`, 'Locale', {
       duration: 2000,
@@ -188,7 +152,7 @@ export class ApplicationComponent implements OnInit {
     });
   }
 
-  changeNlpEngine(type: string) {
+  changeNlpEngine(type: string): void {
     this.nlpEngineTypeChange.next(this.state.supportedNlpEngines.find((e) => e.name === type));
   }
 }

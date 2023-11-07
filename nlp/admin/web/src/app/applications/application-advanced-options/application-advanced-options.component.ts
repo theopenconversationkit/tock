@@ -22,28 +22,33 @@ import { saveAs } from 'file-saver-es';
 import { ApplicationScopedQuery } from '../../model/commons';
 import { NlpEngineType } from '../../model/nlp';
 import { Subject } from 'rxjs';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
+import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
 
 @Component({
   selector: 'tock-application-advanced-options',
   templateUrl: './application-advanced-options.component.html',
-  styleUrls: ['./application-advanced-options.component.css']
+  styleUrls: ['./application-advanced-options.component.scss']
 })
 export class ApplicationAdvancedOptionsComponent implements OnInit {
   @Input()
   application: Application;
   @Input()
   nlpEngineTypeChange: Subject<NlpEngineType>;
-  uploadDump: boolean = false;
   exportAlexa: boolean = false;
   alexaLocale: string;
   tokenizerProperties: string;
   intentClassifierProperties: string;
   entityClassifierProperties: string;
 
-  constructor(private toastrService: NbToastrService, public state: StateService, private applicationService: ApplicationService) {}
+  constructor(
+    private toastrService: NbToastrService,
+    private nbDialogService: NbDialogService,
+    public state: StateService,
+    private applicationService: ApplicationService
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (this.application && this.application.supportedLocales.length > 0) {
       this.alexaLocale = this.application.supportedLocales[0];
     }
@@ -55,13 +60,21 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
     });
   }
 
-  triggerBuild() {
+  showUploadDumpPanel(): void {
+    this.nbDialogService.open(ApplicationUploadComponent, {
+      context: {
+        applicationName: this.application.name
+      }
+    });
+  }
+
+  triggerBuild(): void {
     this.applicationService
       .triggerBuild(this.application)
       .subscribe((_) => this.toastrService.show(`Application build started`, 'Build', { duration: 2000 }));
   }
 
-  downloadAlexaExport() {
+  downloadAlexaExport(): void {
     setTimeout((_) => {
       const query = new ApplicationScopedQuery(this.application.namespace, this.application.name, this.alexaLocale);
       this.applicationService.getAlexaExport(query).subscribe((blob) => {
@@ -72,7 +85,7 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
     });
   }
 
-  displayConfiguration() {
+  displayConfiguration(): void {
     this.applicationService.getNlpConfiguration(this.application._id, this.application.nlpEngineType).subscribe((m) => {
       this.tokenizerProperties = m.tokenizerConfiguration.toProperties();
       this.intentClassifierProperties = m.intentConfiguration.toProperties();
@@ -80,7 +93,7 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
     });
   }
 
-  updateConfiguration() {
+  updateConfiguration(): void {
     const m = new NlpApplicationConfiguration(
       NlpModelConfiguration.parseProperties(this.tokenizerProperties),
       NlpModelConfiguration.parseProperties(this.intentClassifierProperties),
