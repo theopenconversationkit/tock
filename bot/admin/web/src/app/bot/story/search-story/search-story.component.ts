@@ -28,6 +28,7 @@ import { StoriesFilters } from './stories-filter/stories-filter.component';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { StoriesUploadComponent } from './stories-upload/stories-upload.component';
+import { normalize } from '../../../shared/utils';
 
 export type StoriesByCategory = { category: string; stories: StoryDefinitionConfigurationSummary[] };
 
@@ -123,9 +124,12 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       }
 
       if (this.storiesFilters?.search) {
+         const normalizedKeywords = normalize(this.storiesFilters.search).toLocaleLowerCase().split(' ');
+         const normalizedStoryName = normalize(story.name).toLocaleLowerCase();
+         const normalizedStoryDescription = normalize(story.description).toLocaleLowerCase();
         if (
-          !story.name.toLocaleLowerCase().includes(this.storiesFilters.search.toLocaleLowerCase()) &&
-          !story.description.toLocaleLowerCase().includes(this.storiesFilters.search.toLocaleLowerCase())
+          !normalizedKeywords.every(keyword => normalizedStoryName.includes(keyword))
+          && !normalizedKeywords.every(keyword => normalizedStoryDescription.includes(keyword))
         ) {
           return false;
         }

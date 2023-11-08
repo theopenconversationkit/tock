@@ -81,21 +81,28 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private filterChildren(children: FilterOption[], filterValue: string) {
-    return children.filter((optionValue) => optionValue.label.toLowerCase().includes(filterValue));
+  private filterChildren(children: FilterOption[], keywordList: string[]) {
+    return children.filter((optionValue) => {
+      const normalizedLabel = this.normalize(optionValue.label).toLocaleLowerCase();
+      return keywordList.every(keyword => normalizedLabel.includes(keyword));
+    });
   }
 
-  private findChildren(children: FilterOption[], value: string): FilterOption[] {
-    return children.filter((optionValue) => optionValue.label.toLowerCase() === value);
+  private findChildren(children: FilterOption[], keywordList: string[]): FilterOption[] {
+    return children.filter((optionValue) => {
+      const normalizedLabel = this.normalize(optionValue.label).toLocaleLowerCase();
+      return keywordList.every(keyword => normalizedLabel.includes(keyword));
+    });
   }
 
   filter(value: string): Group[] {
     const filterValue = value?.toLowerCase();
+    const normalizedKeywords = value ? this.normalize(value).toLocaleLowerCase().split(' ') : [];
     return this.groups
       .map((group) => {
         return {
           name: group.name,
-          children: this.filterChildren(group.children, filterValue)
+          children: this.filterChildren(group.children, normalizedKeywords)
         };
       })
       .filter((group) => group.children.length);
@@ -103,11 +110,12 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
 
   private find(value: string): Group[] {
     const normalizedValue = value.toLowerCase();
+    const normalizedKeywords = this.normalize(value).toLocaleLowerCase().split(' ');
     return this.groups
       .map((group) => {
         return {
           name: group.name,
-          children: this.findChildren(group.children, normalizedValue)
+          children: this.findChildren(group.children, normalizedKeywords)
         };
       })
       .filter((group) => group.children.length > 0);
@@ -190,5 +198,9 @@ export class SearchFilterComponent implements OnInit, AfterViewInit {
         }, 0);
       }
     }
+  }
+
+  private normalize(str: string): string {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 }
