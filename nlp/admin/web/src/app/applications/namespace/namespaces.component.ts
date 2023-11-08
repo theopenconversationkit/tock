@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { NamespaceConfiguration, NamespaceSharingConfiguration, UserNamespace } from '../../model/application';
 import { AuthService } from '../../core-nlp/auth/auth.service';
-import { NbToastrService } from '@nebular/theme';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { UserRole } from '../../model/auth';
 import { ApplicationConfig } from '../application.config';
+import { CreateNamespaceComponent } from './create-namespace/create-namespace.component';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'tock-namespaces',
   templateUrl: 'namespaces.component.html',
-  styleUrls: ['namespaces.component.css']
+  styleUrls: ['namespaces.component.scss']
 })
-export class NamespacesComponent implements OnInit {
+export class NamespacesComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
   namespaces: UserNamespace[];
 
   managedNamespace: string;
@@ -40,27 +43,31 @@ export class NamespacesComponent implements OnInit {
   newLogin: string;
   newOwner: boolean;
 
-  create: boolean;
-  newNamespace: string = '';
-  //in order to focus
-  @ViewChild('createNamespace') createNamespaceElement: ElementRef;
-
+  c;
   constructor(
     private toastrService: NbToastrService,
     public state: StateService,
     private applicationService: ApplicationService,
     private authService: AuthService,
-    private applicationConfig: ApplicationConfig
+    private applicationConfig: ApplicationConfig,
+    private nbDialogService: NbDialogService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.grabNamespaces();
+  }
+
+  grabNamespaces(): void {
     this.applicationService.getNamespaces().subscribe((n) => (this.namespaces = n));
   }
 
-  selectNamespace(namespace: string) {
-    this.applicationService
-      .selectNamespace(namespace)
-      .subscribe((_) => this.authService.loadUser().subscribe((_) => this.applicationService.resetConfiguration));
+  selectNamespace(namespace: string): void {
+    this.applicationService.selectNamespace(namespace).subscribe((_) =>
+      this.authService.loadUser().subscribe((_) => {
+        this.applicationService.resetConfiguration;
+        this.grabNamespaces();
+      })
+    );
   }
 
   isAdmin(): boolean {
@@ -71,42 +78,42 @@ export class NamespacesComponent implements OnInit {
     return this.isAdmin() && this.applicationConfig.canCreateNamespace();
   }
 
-  displayCreate() {
-    this.create = true;
-    setTimeout((_) => this.createNamespaceElement.nativeElement.focus());
-  }
-
-  createNew() {
-    const n = this.newNamespace.trim();
-    if (n.length === 0) {
-      this.toastrService.danger('Namespace may not be empty!');
-    } else {
-      this.applicationService.createNamespace(n).subscribe((b) => {
-        this.create = false;
-        this.newNamespace = '';
+  createNamespace(): void {
+    const modal = this.nbDialogService.open(CreateNamespaceComponent);
+    const validate = modal.componentRef.instance.validate.pipe(takeUntil(this.destroy)).subscribe((result) => {
+      this.applicationService.createNamespace(result.name.trim()).subscribe((b) => {
         this.ngOnInit();
       });
-    }
+      this.closeEdition();
+      modal.close();
+    });
   }
 
-  closeManageUsers() {
+  closeEdition(): void {
     this.managedNamespace = null;
     this.managedUsers = null;
+    this.namespaceConfiguration = null;
+    this.importedNamespaces = null;
   }
 
-  manageUsers(namespace: string) {
+  manageUsers(namespace: string): void {
+    if (this.managedNamespace && this.managedUsers) {
+      this.closeEdition();
+      return;
+    }
+
     this.applicationService.getUsersForNamespace(namespace).subscribe((users) => {
-      this.closeSharingSettings();
+      this.closeEdition();
       this.managedUsers = users;
       this.managedNamespace = namespace;
     });
   }
 
-  deleteUserNamespace(userNamespace: UserNamespace) {
+  deleteUserNamespace(userNamespace: UserNamespace): void {
     this.applicationService.deleteNamespace(userNamespace).subscribe((_) => this.manageUsers(userNamespace.namespace));
   }
 
-  addUserNamespace() {
+  addUserNamespace(): void {
     if (!this.newLogin || this.newLogin.trim().length === 0) {
       this.toastrService.show('Please enter a non empty login');
     } else {
@@ -116,15 +123,14 @@ export class NamespacesComponent implements OnInit {
     }
   }
 
-  closeSharingSettings() {
-    this.managedNamespace = null;
-    this.namespaceConfiguration = null;
-    this.importedNamespaces = null;
-  }
+  manageSharingSettings(namespace: string): void {
+    if (this.managedNamespace && this.namespaceConfiguration) {
+      this.closeEdition();
+      return;
+    }
 
-  manageSharingSettings(namespace: string) {
     this.applicationService.getNamespaceConfiguration(namespace).subscribe((config) => {
-      this.closeManageUsers();
+      this.closeEdition();
       this.namespaceConfiguration =
         config ?? new NamespaceConfiguration(namespace, new NamespaceSharingConfiguration(false, false), new Map());
       this.managedNamespace = namespace;
@@ -135,10 +141,15 @@ export class NamespacesComponent implements OnInit {
     });
   }
 
-  saveNamespaceConfiguration() {
+  saveNamespaceConfiguration(): void {
     this.namespaceConfiguration.namespaceImportConfiguration = new Map(
       this.sharableNamespaceConfigurations.map((c) => [c.namespace, c.defaultSharingConfiguration])
     );
-    this.applicationService.saveNamespaceConfiguration(this.namespaceConfiguration).subscribe((_) => this.closeSharingSettings());
+    this.applicationService.saveNamespaceConfiguration(this.namespaceConfiguration).subscribe((_) => this.closeEdition());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 }

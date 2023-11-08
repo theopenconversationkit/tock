@@ -36,7 +36,7 @@ import { StoryNode } from '../../analytics/flow/node';
 import { StepDialogComponent } from './action';
 import { AnswerController } from './controller';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { SelectBotConfigurationDialogComponent } from '../../configuration/bot/selection-dialog/select-bot-configuration-dialog.component';
+import { SelectBotConfigurationDialogComponent } from '../../configuration/bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
 import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
 import { ChoiceDialogComponent } from '../../shared/components';
 

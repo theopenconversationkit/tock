@@ -14,7 +14,16 @@
   ~ limitations under the License.
   -->
 
-<nb-card>
+<div class="d-flex align-items-end flex-wrap mt-3 mb-2">
+  <h1 class="flex-grow-1">Users logs</h1>
+  <tock-temp-pagination
+    *ngIf="dataSource && dataSource.length"
+    [pagination]="pagination"
+    (onPaginationChange)="search()"
+  ></tock-temp-pagination>
+</div>
+
+<nb-card class="mb-1">
   <nb-card-body>
     <table
       *ngIf="dataSource && dataSource.length !== 0"
@@ -22,74 +31,89 @@
     >
       <thead>
         <tr>
-          <th><p>Date</p></th>
-          <th><p>Type</p></th>
-          <th><p>User</p></th>
-          <th><p>Application</p></th>
-          <th><p>Data</p></th>
-          <th><p>Error</p></th>
+          <th
+            style="width: 18%"
+            class="border-top-0 pb-3"
+          >
+            Date
+          </th>
+          <th
+            style="width: 40%"
+            class="border-top-0 pb-3"
+          >
+            Type
+          </th>
+          <th
+            style="width: 12%"
+            class="border-top-0 pb-3"
+          >
+            User
+          </th>
+          <th
+            style="width: 20%"
+            class="border-top-0 pb-3"
+          >
+            Application
+          </th>
+          <th
+            style="width: 5%"
+            class="border-top-0 pb-3"
+          >
+            Data
+          </th>
+          <th
+            style="width: 5%"
+            class="border-top-0 pb-3"
+          >
+            Error
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let row of dataSource; index as i">
-          <td>
-            <p>{{ row.date | amDateFormat: 'YYYY-MM-DD HH:mm' }}</p>
+          <td class="text-nowrap">
+            {{ row.date | amDateFormat: 'YYYY-MM-DD HH:mm' }}
           </td>
           <td>
-            <p>{{ row.actionType }}</p>
+            {{ row.actionType }}
           </td>
           <td>
-            <p>{{ row.login }}</p>
+            {{ row.login }}
           </td>
           <td>
-            <p>{{ appName(row.applicationId) }}</p>
+            {{ appName(row.applicationId) }}
           </td>
           <td>
-            <p>
-              <button
-                nbButton
-                ghost
-                *ngIf="row.newData"
-                (click)="displayData(row)"
-              >
-                <nb-icon icon="eye-outline"></nb-icon>
-              </button>
-            </p>
+            <button
+              nbButton
+              ghost
+              *ngIf="row.newData"
+              (click)="displayData(row)"
+            >
+              <nb-icon icon="eye-outline"></nb-icon>
+            </button>
           </td>
           <td>
-            <p class="error">
-              <span *ngIf="row.error">
-                <nb-icon
-                  icon="alert-circle-outline"
-                  status="danger"
-                ></nb-icon>
-              </span>
-            </p>
+            <div
+              class="error-icon"
+              *ngIf="row.error"
+            >
+              <nb-icon
+                icon="alert-circle-outline"
+                status="danger"
+              ></nb-icon>
+            </div>
           </td>
         </tr>
       </tbody>
     </table>
-    <div
-      *ngIf="dataSource && dataSource.length !== 0"
-      class="d-flex justify-content-center"
-    >
-      <nb-select
-        [(ngModel)]="pageSize"
-        (ngModelChange)="search()"
-        nbTooltip="Items per page:"
-      >
-        <nb-option [value]="10">10</nb-option>
-        <nb-option [value]="20">20</nb-option>
-        <nb-option [value]="50">50</nb-option>
-      </nb-select>
-      <ngb-pagination
-        [collectionSize]="totalSize"
-        [(page)]="pageIndex"
-        [maxSize]="10"
-        [pageSize]="pageSize"
-        (pageChange)="search()"
-      >
-      </ngb-pagination>
-    </div>
   </nb-card-body>
 </nb-card>
+
+<div class="d-flex flex-row-reverse">
+  <tock-temp-pagination
+    *ngIf="dataSource && dataSource.length"
+    [pagination]="pagination"
+    (onPaginationChange)="search()"
+  ></tock-temp-pagination>
+</div>

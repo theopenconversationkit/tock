@@ -1,0 +1,168 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="d-flex flex-wrap mt-3 mb-2">
+  <h1 class="flex-grow-1">Bot configurations</h1>
+
+  <section
+    class="grid-actions"
+    *ngIf="configurations"
+  >
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="{{ displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations' }}"
+      (click)="displayTestConfigurations = !displayTestConfigurations"
+      *ngIf="!newApplicationConfiguration && state.currentApplication"
+    >
+      <nb-icon
+        *ngIf="!displayTestConfigurations"
+        icon="eye-outline"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="displayTestConfigurations"
+        icon="eye-off-outline"
+      ></nb-icon>
+    </button>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Refresh"
+      (click)="refresh()"
+    >
+      <nb-icon icon="refresh-outline"></nb-icon>
+    </button>
+
+    <button
+      nbButton
+      status="primary"
+      nbTooltip="Create a new Configuration"
+      (click)="prepareCreate()"
+      *ngIf="!newApplicationConfiguration && state.currentApplication"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      NEW CONFIGURATION
+    </button>
+  </section>
+</div>
+
+<tock-no-data-found
+  *ngIf="!configurations.length"
+  title="No bot configuration detected"
+  message="Use the NEW CONFIGURATION button to create one"
+></tock-no-data-found>
+
+<tock-bot-configuration
+  *ngIf="newApplicationConfiguration"
+  [configuration]="newApplicationConfiguration"
+  (onRemove)="cancelCreate()"
+  (onValidate)="create()"
+></tock-bot-configuration>
+
+<nb-accordion
+  class="mb-3"
+  *ngFor="let botconfig of configurations"
+>
+  <nb-accordion-item>
+    <nb-accordion-item-header>
+      <span class="lead text-nowrap">
+        {{ botconfig.name }}
+      </span>
+
+      <ng-container *ngFor="let conf of botconfig.configurations">
+        <img
+          *ngIf="isFirstLevelConfiguration(botconfig, conf)"
+          src="{{ conf.connectorType.iconUrl() }}"
+          class="connector-icon ml-1"
+          [nbTooltip]="conf.connectorType.label()"
+        />
+      </ng-container>
+    </nb-accordion-item-header>
+
+    <nb-accordion-item-body>
+      <div class="row">
+        <div class="col">
+          <tock-form-control
+            label="API Key"
+            name="apikey"
+          >
+            <nb-form-field>
+              <input
+                nbInput
+                fullWidth
+                type="text"
+                placeholder="API Key"
+                nbTooltip="API Key for Bot API"
+                [(ngModel)]="botconfig.apiKey"
+                [readonly]="true"
+              />
+              <button
+                nbButton
+                ghost
+                nbSuffix
+                (click)="copyToClipboard(botconfig)"
+                nbTooltip="Copy API Key"
+              >
+                <nb-icon icon="copy-outline"></nb-icon>
+              </button>
+            </nb-form-field>
+          </tock-form-control>
+        </div>
+        <div class="col">
+          <tock-form-control
+            label="Webhook url"
+            name="webhookurl"
+          >
+            <nb-form-field>
+              <input
+                nbInput
+                fullWidth
+                type="text"
+                placeholder="Webhook url"
+                nbTooltip="Optional webhook for Bot API"
+                [(ngModel)]="botconfig.webhookUrl"
+                (keyup.enter)="saveBot(botconfig)"
+              />
+              <button
+                nbButton
+                nbSuffix
+                status="primary"
+                (click)="saveBot(botconfig)"
+                nbTooltip="Save Webhook"
+              >
+                <nb-icon icon="save-outline"></nb-icon>
+              </button>
+            </nb-form-field>
+          </tock-form-control>
+        </div>
+      </div>
+
+      <h5 class="mt-3">Connectors</h5>
+      <div *ngFor="let conf of botconfig.configurations">
+        <tock-bot-configuration
+          *ngIf="displayTestConfigurations || isFirstLevelConfiguration(botconfig, conf)"
+          [configuration]="conf"
+          (onRemove)="remove(conf)"
+          (onValidate)="update(conf)"
+        >
+        </tock-bot-configuration>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+</nb-accordion>

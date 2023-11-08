@@ -37,14 +37,17 @@ import {
   NbTabsetModule,
   NbTooltipModule
 } from '@nebular/theme';
-import { DisplayUserDataComponent, UserLogsComponent } from './user/user-logs.component';
+import { UserLogsComponent } from './user/user-logs.component';
+import { DisplayUserDataComponent } from './user/display-user-data/display-user-data.component';
 import { MomentModule } from 'ngx-moment';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { NamespacesComponent } from './namespace/namespaces.component';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ApplicationConfig } from './application.config';
 import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { CreateNamespaceComponent } from './namespace/create-namespace/create-namespace.component';
 import { ApplicationsRoutingModule } from './applications-routing.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Injectable()
 export class NlpApplicationConfig implements ApplicationConfig {
@@ -75,7 +78,9 @@ export class NlpApplicationConfig implements ApplicationConfig {
     NbRadioModule,
     NgJsonEditorModule,
     NbDialogModule.forRoot(),
-    NgbPaginationModule
+    NgbPaginationModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   declarations: [
     ApplicationsComponent,
@@ -85,7 +90,8 @@ export class NlpApplicationConfig implements ApplicationConfig {
     UserLogsComponent,
     DisplayUserDataComponent,
     ConfigurationTabsComponent,
-    NamespacesComponent
+    NamespacesComponent,
+    CreateNamespaceComponent
   ],
   providers: [
     {

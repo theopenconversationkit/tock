@@ -1,0 +1,278 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card *ngIf="configuration">
+  <nb-card-body [ngClass]="{ 'pt-5': configuration._id }">
+    <div
+      *ngIf="configuration._id"
+      class="connector-title-box"
+    >
+      <img
+        src="{{ configuration.connectorType.iconUrl() }}"
+        class="connector-icon mr-1"
+      />
+      {{ configuration.connectorType.label() }}
+    </div>
+
+    <h5
+      *ngIf="!configuration._id"
+      class="mb-3"
+    >
+      New configuration
+    </h5>
+
+    <div class="row">
+      <div class="col-4">
+        <tock-form-control
+          label="Configuration name"
+          name="configurationName"
+        >
+          <input
+            nbInput
+            fullWidth
+            type="text"
+            placeholder="Configuration name"
+            [(ngModel)]="configuration.name"
+          />
+        </tock-form-control>
+      </div>
+
+      <div class="col-4">
+        <tock-form-control
+          label="Connector type"
+          name="connectorType"
+          *ngIf="configuration._id"
+        >
+          <nb-form-field>
+            <img
+              nbPrefix
+              *ngIf="configuration._id"
+              src="{{ configuration.connectorType.iconUrl() }}"
+              class="connector-icon"
+              [nbTooltip]="configuration.connectorType.label()"
+            />
+            <input
+              nbInput
+              fullWidth
+              type="text"
+              placeholder="Connector type"
+              [ngModel]="configuration.connectorType.label()"
+              [disabled]="true"
+              class="connector"
+            />
+          </nb-form-field>
+        </tock-form-control>
+
+        <tock-form-control
+          label="Connector type"
+          name="connectorType"
+          *ngIf="!configuration._id"
+        >
+          <nb-select
+            fullWidth
+            [(ngModel)]="configuration.connectorType"
+            (selectedChange)="changeConnectorType()"
+          >
+            <nb-option
+              *ngFor="let c of connectorTypesAndRestType"
+              [value]="c"
+            >
+              <img
+                src="{{ c.iconUrl() }}"
+                class="connector-icon mr-1"
+                [nbTooltip]="c.label()"
+              />
+              {{ c.label() }}
+            </nb-option>
+            <nb-select-label *ngIf="configuration.connectorType">
+              <img
+                src="{{ configuration.connectorType.iconUrl() }}"
+                class="connector-icon mr-1"
+                [nbTooltip]="configuration.connectorType.label()"
+              />
+              {{ configuration.connectorType.label() }}
+            </nb-select-label>
+          </nb-select>
+        </tock-form-control>
+      </div>
+
+      <div class="col-4">
+        <tock-form-control
+          label="Target connector type"
+          name="targetConnectorType"
+          *ngIf="!configuration._id && configuration.connectorType.isRest()"
+        >
+          <nb-select
+            fullWidth
+            placeholder="Target connector type"
+            [(ngModel)]="configuration.ownerConnectorType"
+            (selectedChange)="changeConnectorType()"
+          >
+            <nb-option
+              *ngFor="let c of connectorTypes"
+              [value]="c"
+            >
+              <img
+                src="{{ c.iconUrl() }}"
+                class="connector-icon mr-1"
+                [nbTooltip]="c.label()"
+              />
+              {{ c.label() }}
+            </nb-option>
+            <nb-select-label *ngIf="configuration.ownerConnectorType">
+              <img
+                src="{{ configuration.ownerConnectorType.iconUrl() }}"
+                class="connector-icon mr-1"
+                [nbTooltip]="configuration.ownerConnectorType.label()"
+              />
+              {{ configuration.ownerConnectorType.label() }}
+            </nb-select-label>
+          </nb-select>
+        </tock-form-control>
+
+        <tock-form-control
+          label="Target connector type"
+          name="targetConnectorType"
+          *ngIf="configuration._id && configuration.connectorType.isRest() && configuration.ownerConnectorType"
+        >
+          <nb-form-field>
+            <img
+              nbPrefix
+              class="connector-icon"
+              [nbTooltip]="configuration.ownerConnectorType.label()"
+              src="{{ configuration.ownerConnectorType.iconUrl() }}"
+            />
+            <input
+              nbInput
+              type="text"
+              placeholder="Target connector type"
+              [ngModel]="configuration.ownerConnectorType?.label()"
+              [disabled]="true"
+            />
+          </nb-form-field>
+        </tock-form-control>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-4">
+        <tock-form-control
+          label="Connector identifier"
+          name="connectorIdentifier"
+        >
+          <input
+            nbInput
+            type="text"
+            placeholder="Connector identifier"
+            [(ngModel)]="configuration.applicationId"
+          />
+        </tock-form-control>
+      </div>
+
+      <div class="col-4">
+        <tock-form-control
+          label="Relative REST path"
+          name="relativeRestPath"
+        >
+          <input
+            nbInput
+            type="text"
+            placeholder="Relative REST path"
+            nbTooltip="e.g. /messenger"
+            [(ngModel)]="configuration.path"
+            (change)="changePath()"
+          />
+        </tock-form-control>
+      </div>
+
+      <div class="col-4">
+        <tock-form-control
+          label="Connector url"
+          name="connectorUrl"
+          *ngIf="botSharedService.configuration && botSharedService.configuration.botApiSupport"
+        >
+          {{ botSharedService.configuration.botApiBaseUrl }}{{ configuration.path }}
+        </tock-form-control>
+      </div>
+    </div>
+
+    <nb-accordion
+      *ngIf="
+        botSharedService.findConnectorConfiguration(configuration.connectorType) &&
+        botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0
+      "
+    >
+      <nb-accordion-item [expanded]="!configuration._id">
+        <nb-accordion-item-header>Connector Custom Configuration</nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <tock-form-control
+            label="Application base url"
+            name="applicationBaseUrl"
+            *ngIf="!botSharedService.configuration || !botSharedService.configuration.botApiSupport"
+          >
+            <input
+              nbInput
+              fullWidth
+              type="text"
+              placeholder="Application base url"
+              nbTooltip="optional"
+              [(ngModel)]="configuration.baseUrl"
+            />
+          </tock-form-control>
+
+          <div class="row">
+            <div
+              class="col-6"
+              *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields"
+            >
+              <tock-form-control [label]="f.label">
+                <input
+                  nbInput
+                  fullWidth
+                  type="text"
+                  [placeholder]="f.label"
+                  [(ngModel)]="configuration.parameters[f.key]"
+                  [required]="f.mandatory"
+                />
+              </tock-form-control>
+            </div>
+          </div>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    </nb-accordion>
+  </nb-card-body>
+
+  <nb-card-footer style="text-align: right">
+    <button
+      nbButton
+      outline
+      status="primary"
+      size="small"
+      (click)="remove()"
+    >
+      {{ configuration._id ? 'Delete' : 'Cancel' }}
+    </button>
+    <button
+      nbButton
+      status="primary"
+      (click)="update()"
+      size="small"
+      style="margin-left: 20px"
+    >
+      {{ configuration._id ? 'Update' : 'Create' }}
+    </button>
+  </nb-card-footer>
+</nb-card>

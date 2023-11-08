@@ -1,0 +1,18 @@
+<nb-card status="primary">
+  <nb-card-header>User Action Data</nb-card-header>
+  <nb-card-body class="no-padding">
+    <json-editor
+      [options]="editorOptions"
+      [data]="data"
+    ></json-editor>
+  </nb-card-body>
+  <nb-card-footer class="btn-align">
+    <button
+      nbButton
+      status="primary"
+      (click)="close()"
+    >
+      Close
+    </button>
+  </nb-card-footer>
+</nb-card>
