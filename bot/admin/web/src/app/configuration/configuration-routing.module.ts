@@ -26,6 +26,7 @@ import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { UserLogsComponent } from '../applications/user/user-logs.component';
 import { NamespacesComponent } from '../applications/namespace/namespaces.component';
 
+
 const routes: Routes = [
   {
     path: '',

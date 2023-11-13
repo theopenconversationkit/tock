@@ -15,7 +15,6 @@
  */
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
 import { TryComponent } from '../try/try.component';
 import { SharedModule } from '../shared-nlp/shared.module';
 import { NlpTabsComponent } from './nlp-tabs.component';
@@ -28,7 +27,6 @@ import { SearchComponent } from '../search/search.component';
 import { SearchFilterComponent } from '../search/filter/search-filter.component';
 import { DisplayFullLogComponent, LogsComponent } from '../logs/logs.component';
 import { CommonModule } from '@angular/common';
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationsModule } from '../applications/applications.module';
 import { HighlightComponent } from '../sentence-analysis/highlight/highlight.component';
 import { SentenceAnalysisComponent } from '../sentence-analysis/sentence-analysis.component';
@@ -36,7 +34,6 @@ import { NlpService } from './nlp.service';
 import { CreateEntityDialogComponent } from '../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { IntentDialogComponent } from '../sentence-analysis/intent-dialog/intent-dialog.component';
-import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { SentencesScrollComponent } from '../sentences-scroll/sentences-scroll.component';
 
 import { MomentModule } from 'ngx-moment';
@@ -66,58 +63,7 @@ import {
 import { ThemeModule } from '../theme/theme.module';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ReactiveFormsModule } from '@angular/forms';
-
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    component: NlpTabsComponent,
-    resolve: {
-      application: ApplicationResolver
-    },
-    children: [
-      {
-        path: '',
-        redirectTo: 'inbox',
-        pathMatch: 'full'
-      },
-      {
-        path: 'try',
-        component: TryComponent
-      },
-      {
-        path: 'inbox',
-        component: InboxComponent
-      },
-      {
-        path: 'unknown',
-        component: ArchiveComponent
-      },
-      {
-        path: 'intents',
-        component: IntentsComponent
-      },
-      {
-        path: 'entities',
-        component: EntitiesComponent
-      },
-      {
-        path: 'search',
-        component: SearchComponent
-      },
-      {
-        path: 'logs',
-        component: LogsComponent
-      }
-    ]
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class NlpRoutingModule {}
+import { NlpRoutingModule } from './nlp-routing.module';
 
 @NgModule({
   imports: [

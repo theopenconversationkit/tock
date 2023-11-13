@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { RouterModule, Routes } from '@angular/router';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { SharedModule } from '../shared-nlp/shared.module';
-import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { AnalyticsTabsComponent } from './analytics-tabs.component';
-import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { UsersComponent } from './users/users.component';
 import { AnalyticsService } from './analytics.service';
 import { BotSharedModule } from '../shared/bot-shared.module';
@@ -62,61 +59,11 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { SatisfactionComponent } from './satisfaction/satisfaction.component';
 import { ActivateSatisfactionComponent } from './satisfaction/activate-satisfaction/activate-satisfaction.component';
 import { SatisfactionDetailsComponent } from './satisfaction/satisfaction-details/satisfaction-details.component';
+import { AnalyticsRoutingModule } from './analytics-routing.module';
 
 export function importEcharts() {
   return import('echarts');
 }
-
-const routes: Routes = [
-  {
-    path: '',
-    canActivate: [AuthGuard],
-    component: AnalyticsTabsComponent,
-    resolve: {
-      application: ApplicationResolver
-    },
-    children: [
-      {
-        path: '',
-        component: ActivityComponent
-      },
-      {
-        path: 'activity',
-        component: ActivityComponent
-      },
-      {
-        path: 'behavior',
-        component: BehaviorComponent
-      },
-      {
-        path: 'flow',
-        component: FlowComponent
-      },
-      {
-        path: 'dialogs',
-        component: DialogsComponent
-      },
-      {
-        path: 'users',
-        component: UsersComponent
-      },
-      {
-        path: 'preferences',
-        component: PreferencesComponent
-      },
-      {
-        path: 'satisfaction',
-        component: SatisfactionComponent
-      }
-    ]
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
-})
-export class AnalyticsRoutingModule {}
 
 @NgModule({
   schemas: [NO_ERRORS_SCHEMA],
