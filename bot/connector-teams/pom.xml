@@ -30,7 +30,7 @@
 
     <properties>
         <microsoft.bot>4.14.3</microsoft.bot>
-        <nimbus-jose-jwt>9.36</nimbus-jose-jwt>
+        <nimbus-jose-jwt>9.37.1</nimbus-jose-jwt>
         <gson>2.10.1</gson>
         <minidev>2.5.0</minidev>
     </properties>
