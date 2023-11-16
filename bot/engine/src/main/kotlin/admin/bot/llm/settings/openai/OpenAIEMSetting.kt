@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot
+package ai.tock.bot.admin.bot.llm.settings.openai
 
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import org.litote.kmongo.Id
+import ai.tock.bot.admin.bot.llm.settings.EMSetting
+import ai.tock.bot.admin.bot.llm.settings.LLMProvider
 
-interface BotRAGConfigurationDAO {
-
-    fun listenChanges(listener: () -> Unit)
-
-    fun save(conf: BotRAGConfiguration): BotRAGConfiguration
-
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotRAGConfiguration?
-
-    fun delete(id: Id<BotRAGConfiguration>)
-}
+data class OpenAIEMSetting(
+    override val apiKey: String,
+    override val model: String,
+) : EMSetting(LLMProvider.OpenAI, apiKey, model)

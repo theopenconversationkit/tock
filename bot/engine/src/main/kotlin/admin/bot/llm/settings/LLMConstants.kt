@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot
+package ai.tock.bot.admin.bot.llm.settings
 
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import org.litote.kmongo.Id
-
-interface BotRAGConfigurationDAO {
-
-    fun listenChanges(listener: () -> Unit)
-
-    fun save(conf: BotRAGConfiguration): BotRAGConfiguration
-
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotRAGConfiguration?
-
-    fun delete(id: Id<BotRAGConfiguration>)
+object LLMConstants {
+    const val OPEN_AI = "OpenAI"
+    const val AZURE_OPEN_AI_SERVICE = "AzureOpenAIService"
 }
