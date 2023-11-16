@@ -17,8 +17,9 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.BotAdminService
-import ai.tock.bot.admin.bot.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
 import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.llm.RagValidationService
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -70,6 +71,15 @@ object RagService {
     private fun saveRagConfiguration(
         ragConfiguration: BotRAGConfigurationDTO
     ): BotRAGConfiguration {
+        val ragConfig = ragConfiguration.toBotRAGConfiguration()
+
+        // Check validity of the rag configuration
+        RagValidationService.validate(ragConfig).let {errors ->
+            if(errors.isNotEmpty()) {
+                throw BadRequestException(errors)
+            }
+        }
+
         return try {
             // If RAG Enabled, so disable the unknown story if exists
             // Else enable the unknown story if exists
@@ -85,7 +95,7 @@ object RagService {
                 )
             }
 
-            ragConfigurationDAO.save(ragConfiguration.toBotRAGConfiguration())
+            ragConfigurationDAO.save(ragConfig)
         } catch (e: MongoWriteException) {
             throw BadRequestException(e.message ?: "Rag Configuration: registration failed on mongo ")
         } catch (e: Exception) {

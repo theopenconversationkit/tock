@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot
+package ai.tock.bot.admin.bot.llm.settings.openai
 
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import org.litote.kmongo.Id
+// https://platform.openai.com/docs/models/continuous-model-upgrades
+enum class OpenAIEmbeddingModel(val id: String){
+    // Embeddings
+    TEXT_EMBEDDING_ADA_002("text-embedding-ada-002");
 
-interface BotRAGConfigurationDAO {
-
-    fun listenChanges(listener: () -> Unit)
-
-    fun save(conf: BotRAGConfiguration): BotRAGConfiguration
-
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotRAGConfiguration?
-
-    fun delete(id: Id<BotRAGConfiguration>)
+    companion object {
+        fun findById(id: String): OpenAIEmbeddingModel? {
+            return OpenAIEmbeddingModel.entries.firstOrNull { it.id == id }
+        }
+    }
 }

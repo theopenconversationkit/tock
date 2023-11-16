@@ -106,7 +106,7 @@ private object BotEngineJacksonConfiguration {
                 setMixInAnnotation(Message::class.java, MixinMessage::class.java)
                 registerSubtypes(NamedType(Attachment::class.java, EventType.attachment.name))
                 registerSubtypes(NamedType(Sentence::class.java, EventType.sentence.name))
-                  registerSubtypes(NamedType(Sentence::class.java, EventType.sentenceWithFootnotes.name))
+                registerSubtypes(NamedType(Sentence::class.java, EventType.sentenceWithFootnotes.name))
                 registerSubtypes(NamedType(Choice::class.java, EventType.choice.name))
                 registerSubtypes(NamedType(Location::class.java, EventType.location.name))
 
@@ -161,6 +161,9 @@ private object BotEngineJacksonConfiguration {
                 registerSubtypes(NamedType(MediaCardDescriptorDump::class.java, MediaMessageType.card.name))
                 registerSubtypes(NamedType(MediaActionDescriptorDump::class.java, MediaMessageType.action.name))
                 registerSubtypes(NamedType(MediaCarouselDescriptorDump::class.java, MediaMessageType.carousel.name))
+
+//                registerSubtypes(NamedType(OpenAIParams::class.java, LLMProvider.OPEN_AI.provider))
+//                registerSubtypes(NamedType(AzureOpenAIParams::class.java, LLMProvider.ASURE_OPEN_AI_SERVICE.provider))
 
                 setSerializerModifier(object : BeanSerializerModifier() {
                     override fun changeProperties(

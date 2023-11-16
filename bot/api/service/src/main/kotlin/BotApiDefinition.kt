@@ -17,7 +17,7 @@
 package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
-import ai.tock.bot.admin.bot.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.configuration.StepConfiguration
 import ai.tock.bot.api.model.configuration.StoryConfiguration

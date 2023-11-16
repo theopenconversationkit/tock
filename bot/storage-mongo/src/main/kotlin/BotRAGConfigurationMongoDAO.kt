@@ -18,7 +18,7 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
-import ai.tock.bot.admin.bot.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
 import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
@@ -30,7 +30,6 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollection
-import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 
 internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
