@@ -105,8 +105,8 @@ internal object DucklingClient {
         referenceTimezone: ZoneId,
         textToParse: String
     ): JSONValue? {
-        // duckling does not support well ’ char
-        val text = textToParse.replace("’", "'")
+        // duckling does not support well ’ char & no break space char
+        val text = textToParse.replace("’", "'").replace("\u00A0"," ")
         return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, text)).execute().body()
     }
 
