@@ -38,6 +38,11 @@
   text-transform: uppercase;
 }
 
+.section-title {
+  border-bottom: 2px solid var(--color-basic-transparent-600);
+  padding-bottom: 5px;
+}
+
 .ellipsis {
   overflow: hidden;
   white-space: nowrap;
@@ -48,6 +53,9 @@ nb-select.appearance-outline .select-button {
   min-width: auto !important;
 }
 
+nb-route-tabset .tab-link {
+  padding-top: 0;
+}
 // Makes the disabled ghost button more discreet. By default, the background color makes it more visible than the non-deactivated buttons.
 .nb-theme-default [nbButton].appearance-ghost.status-basic[disabled],
 .nb-theme-default .appearance-ghost.status-basic[disabled][nbButtonToggle],

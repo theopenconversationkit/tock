@@ -1,26 +1,42 @@
+export enum LLMProvider {
+  OpenAI = 'OpenAI',
+  AzureOpenAIService = 'AzureOpenAIService'
+}
+
 export interface RagSettings {
   id: string;
   namespace: string;
   botId: string;
   enabled: boolean;
-  engine: string;
-  temperature: number;
-  embeddingEngine: string;
-  prompt: string;
+
   noAnswerSentence: string;
   noAnswerStoryId: string;
-  params: RagSettingsParams[];
+
+  llmSetting: llmSetting;
+  emSetting: emSetting;
 }
 
-export interface RagSettingsParams {
-  apiKey?: string;
-  modelName?: string;
-  deploymentName?: string;
-  privateEndpointBaseUrl?: string;
-  apiVersion?: string;
+export interface llmSetting {
+  provider: LLMProvider;
 
-  embeddingDeploymentName?: string;
-  embeddingModelName?: string;
-  embeddingApiKey?: string;
-  embeddingApiVersion?: string;
+  apiKey: String;
+  model: String;
+
+  deploymentName?: String;
+  apiBase?: String;
+  apiVersion?: String;
+
+  temperature?: Number;
+  prompt?: String;
+}
+
+export interface emSetting {
+  provider: LLMProvider;
+
+  apiKey: String;
+  model: String;
+
+  deploymentName?: String;
+  apiBase?: String;
+  apiVersion?: String;
 }

@@ -8,45 +8,7 @@
   }
 
   INPUT {
-    -webkit-appearance: none;
-    appearance: none;
     width: 100%;
-    cursor: pointer;
-    outline: none;
-    overflow: hidden;
-    border-radius: 16px;
-  }
-
-  INPUT::-webkit-slider-runnable-track {
-    height: 15px;
-    background: nb-theme(color-basic-500);
-    border-radius: 16px;
-  }
-
-  INPUT::-moz-range-track {
-    height: 15px;
-    background: nb-theme(color-basic-500);
-    border-radius: 16px;
-  }
-
-  INPUT::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 15px;
-    width: 25px;
-    background-color: #fff;
-    border-radius: 15px;
-    border: 2px solid nb-theme(color-primary-500);
-    box-shadow: -407px 0 0 400px nb-theme(color-primary-500);
-  }
-
-  INPUT::-moz-range-thumb {
-    height: 15px;
-    width: 15px;
-    background-color: #fff;
-    border-radius: 50%;
-    border: 1px solid nb-theme(color-primary-500);
-    box-shadow: -407px 0 0 400px nb-theme(color-primary-500);
   }
 
   .range-slider-value {

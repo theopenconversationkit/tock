@@ -13,37 +13,88 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<div
+  class="d-flex flex-wrap mt-3 sticky"
+  [ngClass]="{ scrolled: scrolled }"
+>
+  <h1 class="flex-grow-1">Rag settings</h1>
 
-<h1 class="mt-3">Rag settings</h1>
+  <section class="grid-actions">
+    <button
+      *ngIf="settingsBackup && form.dirty"
+      nbButton
+      ghost
+      status="primary"
+      nbTooltip="Cancel modifications"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-circle-outline"></nb-icon>
+      CANCEL
+    </button>
+    <button
+      *ngIf="form.dirty"
+      nbButton
+      status="primary"
+      nbTooltip="Save settings"
+      (click)="submit()"
+    >
+      <nb-icon icon="save-outline"></nb-icon>
+      SAVE
+    </button>
+  </section>
+</div>
 
-<form [formGroup]="form">
-  <nb-card class="mt-3">
+<nb-alert
+  *ngIf="configurations?.length < 1"
+  class="alert-config flex-row align-items-center"
+  accent="warning"
+>
+  <nb-icon
+    class="mr-1"
+    icon="alert-triangle-outline"
+    status="warning"
+  ></nb-icon>
+  No bot configuration detected
+</nb-alert>
+
+<form
+  [formGroup]="form"
+  *ngIf="configurations?.length > 0"
+>
+  <nb-card class="mt-1">
     <nb-card-body [nbSpinner]="loading">
+      <h5 class="section-title">RAG activation</h5>
+
       <tock-form-control
-        label="Activate RAG"
         name="enabled"
         [controls]="enabled"
         [showError]="isSubmitted"
+        [hasMargin]="false"
       >
-        <nb-toggle formControlName="enabled">
+        <nb-toggle
+          formControlName="enabled"
+          class="mt-1"
+        >
           <span *ngIf="enabled.value">Rag activated</span>
           <span *ngIf="!enabled.value">Rag deactivated</span>
         </nb-toggle>
       </tock-form-control>
 
+      <h5 class="section-title">LLM engine</h5>
+
       <tock-form-control
-        label="LLM Engine"
-        name="engine"
-        [controls]="engine"
+        name="llmEngine"
+        [controls]="llmEngine"
         [required]="true"
         [showError]="isSubmitted"
       >
         <nb-radio-group
-          formControlName="engine"
+          formControlName="llmEngine"
+          name="llmEngine"
           class="d-flex"
         >
           <nb-radio
-            *ngFor="let engine of LlmEngines"
+            *ngFor="let engine of enginesConfigurations['llmSetting']"
             [value]="engine.key"
           >
             {{ engine.label }}
@@ -52,116 +103,75 @@
       </tock-form-control>
 
       <div
-        *ngIf="engine.value"
-        class="mt-2"
-        formGroupName="params"
+        *ngIf="currentLlmEngine"
+        class="mt-2 mb-2"
       >
-        <div class="font-weight-bold mb-3">{{ currentEngineLabel }} parameters</div>
-
-        <div class="engine-params mb-3">
-          <div *ngFor="let param of currentEngineParams">
-            <tock-form-control
-              [label]="param.label"
-              [name]="param.key"
-              [controls]="getFormControlByName(param.key)"
-              [required]="true"
-              [boldLabel]="false"
-              [showError]="isSubmitted"
-              [hasMargin]="false"
+        <div class="row mb-1">
+          <ng-container *ngFor="let param of currentLlmEngine.params">
+            <div
+              class="col-6"
+              [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
             >
-              <ng-container *ngIf="param.type === 'string'">
-                <input
-                  nbInput
-                  fullWidth
-                  [formControlName]="param.key"
-                />
-              </ng-container>
+              <tock-rag-settings-input
+                parentGroup="llmSetting"
+                [configurationParam]="param"
+                [form]="form"
+                [isSubmitted]="isSubmitted"
+              ></tock-rag-settings-input>
+            </div>
+          </ng-container>
+        </div>
+      </div>
 
-              <ng-container *ngIf="param.type === 'list'">
-                <nb-select
-                  fullWidth
-                  [formControlName]="param.key"
-                >
-                  <nb-option
-                    *ngFor="let source of param.source"
-                    [value]="source"
-                  >
-                    {{ source }}
-                  </nb-option>
-                </nb-select>
-              </ng-container>
-            </tock-form-control>
+      <h5 class="section-title mt-2">Embedding engine</h5>
+
+      <tock-form-control
+        name="emEngine"
+        [controls]="emEngine"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <nb-radio-group
+          formControlName="emEngine"
+          name="emEngine"
+          class="d-flex"
+        >
+          <nb-radio
+            *ngFor="let engine of enginesConfigurations['emSetting']"
+            [value]="engine.key"
+          >
+            {{ engine.label }}
+          </nb-radio>
+        </nb-radio-group>
+      </tock-form-control>
+
+      <div
+        *ngIf="currentEmEngine"
+        class="mt-2 mb-2"
+      >
+        <div class="row mb-1">
+          <div
+            class="col-6"
+            *ngFor="let param of currentEmEngine.params"
+          >
+            <tock-rag-settings-input
+              parentGroup="emSetting"
+              [configurationParam]="param"
+              [form]="form"
+              [isSubmitted]="isSubmitted"
+            ></tock-rag-settings-input>
           </div>
         </div>
       </div>
 
-      <tock-form-control
-        label="Temperature"
-        name="temperature"
-        [controls]="temperature"
-        [required]="true"
-        [showError]="isSubmitted"
-      >
-        <tock-slider
-          min="0"
-          max="1"
-          step="0.05"
-          formControlName="temperature"
-        ></tock-slider>
-      </tock-form-control>
-
-      <tock-form-control
-        label="Embedding Engine"
-        name="embeddingEngine"
-        [controls]="embeddingEngine"
-        [required]="true"
-        [showError]="isSubmitted"
-      >
-        <nb-select
-          formControlName="embeddingEngine"
-          class="d-flex"
-        >
-          <nb-option
-            *ngFor="let embedding of EmbeddingEngines"
-            [value]="embedding"
-          >
-            {{ embedding }}
-          </nb-option>
-        </nb-select>
-      </tock-form-control>
-
-      <tock-form-control
-        label="Prompt"
-        name="prompt"
-        [controls]="prompt"
-        [required]="true"
-        [showError]="isSubmitted"
-      >
-        <textarea
-          formControlName="prompt"
-          nbInput
-          fullWidth
-          rows="8"
-          placeholder="Enter prompt string"
-        ></textarea>
-
-        <div class="mt-1">
-          <button
-            nbButton
-            size="tiny"
-            (click)="restoreDefaultPrompt()"
-          >
-            Restore default prompt
-          </button>
-        </div>
-      </tock-form-control>
-
+      <h5 class="section-title mt-2">Conversation flow</h5>
       <tock-form-control
         label="No answer sentence"
         name="noAnswerSentence"
         [controls]="noAnswerSentence"
         [required]="true"
         [showError]="isSubmitted"
+        [boldLabel]="false"
       >
         <input
           nbInput
@@ -175,8 +185,12 @@
         name="noAnswerStoryId"
         [controls]="noAnswerStoryId"
         [showError]="isSubmitted"
+        [boldLabel]="false"
       >
-        <nb-select formControlName="noAnswerStoryId">
+        <nb-select
+          fullWidth
+          formControlName="noAnswerStoryId"
+        >
           <nb-option
             class="text-muted"
             value="null"
@@ -192,29 +206,6 @@
           </nb-option>
         </nb-select>
       </tock-form-control>
-
-      <div class="grid-button mt-3">
-        <button
-          type="button"
-          nbButton
-          outline
-          status="primary"
-          size="small"
-          (click)="cancel()"
-          [disabled]="!form.dirty || !settingsBackup"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          nbButton
-          status="primary"
-          size="small"
-          (click)="submit()"
-        >
-          Save
-        </button>
-      </div>
     </nb-card-body>
   </nb-card>
 </form>
