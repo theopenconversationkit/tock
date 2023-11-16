@@ -2,25 +2,24 @@
 @import '@nebular/theme/styles/theming';
 @import '@nebular/theme/styles/themes';
 
-.engine-params {
-  display: grid;
-  grid-column-gap: 1rem;
-  grid-template-columns: 1fr 1fr;
-}
+.sticky {
+  position: sticky;
+  top: 5em;
+  z-index: 1;
+  background: var(--layout-background-color);
 
-.grid-button {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-gap: 0.5rem;
-}
-
-@include media-breakpoint-up(sm) {
-  .grid-button {
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-
-    button {
-      width: fit-content;
-    }
+  &.scrolled {
+    margin: -1em;
+    padding: 1em;
+    box-shadow: 0px 8px 11px -13px #000000a6;
+    transition: all 0.1s ease-in;
   }
+}
+
+.grid-actions {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: end;
 }

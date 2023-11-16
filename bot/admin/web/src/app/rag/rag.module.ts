@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RagTabsComponent } from './rag-tabs/rag-tabs.component';
 import {
   NbAccordionModule,
+  NbAlertModule,
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
@@ -30,6 +31,7 @@ import { SourceNormalizationJsonComponent } from './rag-sources/source-normaliza
 import { JsonIteratorComponent } from './rag-sources/source-normalization/json/json-iterator/json-iterator.component';
 import { SourceManagementService } from './rag-sources/source-management.service';
 import { SourceManagementApiService } from './rag-sources/source-management.api.service';
+import { RagSettingsInputComponent } from './rag-settings/rag-settings-input/rag-settings-input.component';
 
 @NgModule({
   imports: [
@@ -49,7 +51,8 @@ import { SourceManagementApiService } from './rag-sources/source-management.api.
     NbIconModule,
     NbAccordionModule,
     NbTooltipModule,
-    NbCheckboxModule
+    NbCheckboxModule,
+    NbAlertModule
   ],
   declarations: [
     RagTabsComponent,
@@ -61,7 +64,8 @@ import { SourceManagementApiService } from './rag-sources/source-management.api.
     SourceImportComponent,
     SourceNormalizationCsvComponent,
     SourceNormalizationJsonComponent,
-    JsonIteratorComponent
+    JsonIteratorComponent,
+    RagSettingsInputComponent
   ],
   providers: [SourceManagementService, SourceManagementApiService]
 })
