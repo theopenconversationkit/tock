@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot
+package ai.tock.bot.admin.bot.llm
 
+import ai.tock.bot.admin.bot.llm.settings.EMSetting
+import ai.tock.bot.admin.bot.llm.settings.LLMSetting
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import org.litote.kmongo.Id
 
@@ -24,11 +26,8 @@ data class BotRAGConfiguration(
     val namespace: String,
     val botId: String,
     val enabled: Boolean,
-    val engine: String,
-    val embeddingEngine: String,
-    val temperature: String,
-    val prompt: String,
-    val params: Map<String, String>,
+    val llmSetting: LLMSetting,
+    val emSetting: EMSetting,
     val noAnswerSentence: String,
     val noAnswerStoryId: Id<StoryDefinitionConfiguration>? = null,
 )

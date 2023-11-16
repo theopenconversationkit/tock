@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot
+package ai.tock.bot.admin.bot.llm.settings.azureopenai
 
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import org.litote.kmongo.Id
+import ai.tock.bot.admin.bot.llm.settings.LLMProvider
+import ai.tock.bot.admin.bot.llm.settings.LLMSetting
 
-interface BotRAGConfigurationDAO {
-
-    fun listenChanges(listener: () -> Unit)
-
-    fun save(conf: BotRAGConfiguration): BotRAGConfiguration
-
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotRAGConfiguration?
-
-    fun delete(id: Id<BotRAGConfiguration>)
-}
+data class AzureOpenAILLMSetting(
+    override val apiKey: String,
+    override val model: String,
+    override val temperature: String,
+    override val prompt: String,
+    val apiBase: String,
+    val deploymentName: String,
+    val apiVersion: String,
+) : LLMSetting(LLMProvider.AzureOpenAIService, apiKey, model, temperature, prompt)

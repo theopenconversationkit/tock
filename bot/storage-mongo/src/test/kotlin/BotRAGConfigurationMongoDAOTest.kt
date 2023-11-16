@@ -16,7 +16,9 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.bot.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.settings.openai.OpenAIEMSetting
+import ai.tock.bot.admin.bot.llm.settings.openai.OpenAILLMSetting
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
@@ -41,15 +43,17 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
             "namespace1",
             "botId1",
             false,
-            "engine",
-            "embeddingengine",
-            "1",
-            "prompt",
-            mapOf(
-                "param1" to "data",
-                "param2" to "data2"
+            llmSetting = OpenAILLMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1",
+                temperature = "1F",
+                prompt = "prompt1"
             ),
-            "storyId"
+            emSetting = OpenAIEMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1"
+            ),
+            "no answer sentence"
         )
 
         BotRAGConfigurationMongoDAO.save(config)
@@ -65,15 +69,17 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
             "namespace1",
             "botId1",
             false,
-            "engine",
-            "embeddingengine",
-            "1",
-            "prompt",
-            mapOf(
-                "param1" to "data",
-                "param2" to "data2"
+            llmSetting = OpenAILLMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1",
+                temperature = "1F",
+                prompt = "prompt1"
             ),
-            "storyId1"
+            emSetting = OpenAIEMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1"
+            ),
+            "no answer sentence1"
         )
 
         val config2 = BotRAGConfiguration(
@@ -81,14 +87,17 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
             "namespace1",
             "botId2",
             false,
-            "engine2",
-            "embeddingengine",
-            "0",
-            "prompt2",
-            mapOf(
-                "param1" to "data"
+            llmSetting = OpenAILLMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1",
+                temperature = "1F",
+                prompt = "prompt1"
             ),
-            "storyId2"
+            emSetting = OpenAIEMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1"
+            ),
+            "prompt2"
         )
 
         assertNotEquals(config1, config2)
@@ -96,11 +105,11 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
         BotRAGConfigurationMongoDAO.save(config1)
         BotRAGConfigurationMongoDAO.save(config2)
 
-        BotRAGConfigurationMongoDAO.save(config1.copy(prompt = "New prompt"))
+        BotRAGConfigurationMongoDAO.save(config1.copy(noAnswerSentence = "New no answer sentence"))
 
         val configBDD = BotRAGConfigurationMongoDAO.findByNamespaceAndBotId("namespace1", "botId1")
 
-        assertEquals(config1.copy(prompt = "New prompt"), configBDD)
+        assertEquals(config1.copy(noAnswerSentence = "New no answer sentence"), configBDD)
     }
 
     @Test
@@ -110,15 +119,17 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
             "namespace1",
             "botId1",
             false,
-            "engine",
-            "embeddingengine",
-            "1",
-            "prompt",
-            mapOf(
-                "param1" to "data",
-                "param2" to "data2"
+            llmSetting = OpenAILLMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1",
+                temperature = "1F",
+                prompt = "prompt1"
             ),
-            "storyId"
+            emSetting = OpenAIEMSetting(
+                apiKey = "apiKey1",
+                model = "modelName1"
+            ),
+            "no answer sentence"
         )
 
         BotRAGConfigurationMongoDAO.save(config)

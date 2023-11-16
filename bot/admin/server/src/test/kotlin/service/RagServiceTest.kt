@@ -19,36 +19,34 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.bot.BotRAGConfiguration
 import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.settings.azureopenai.AzureOpenAIEMSetting
+import ai.tock.bot.admin.bot.llm.settings.azureopenai.AzureOpenAILLMSetting
+import ai.tock.bot.admin.bot.llm.settings.openai.OpenAILLMSetting
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.definition.IntentWithoutNamespace
-import ai.tock.bot.test.TConsumer
 import ai.tock.bot.test.TFunction
 import ai.tock.bot.test.TRunnable
 import ai.tock.bot.test.TSupplier
 import ai.tock.bot.test.TestCase
 import ai.tock.nlp.core.Intent
-import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.withoutNamespace
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
-import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.litote.kmongo.toId
 
 class RagServiceTest : AbstractTest() {
@@ -59,8 +57,9 @@ class RagServiceTest : AbstractTest() {
 
         const val BOT_ID = "app"
         const val NAMESPACE = "namespace"
-        const val ENGINE = "openai"
-        const val EMBEDDING_ENGINE = "gpt4"
+        const val PROVIDER = "OpenAI"
+        const val MODEL = "gpt4"
+        const val EMBEDDING_MODEL = "gpt4"
         const val TEMPERATURE = "0"
         const val PROMPT = "mocked prompt"
         private val PARAMETERS = mapOf("openaikey" to "value")
@@ -70,11 +69,19 @@ class RagServiceTest : AbstractTest() {
             namespace = NAMESPACE,
             botId = BOT_ID,
             enabled = false,
-            ENGINE,
-            EMBEDDING_ENGINE,
-            TEMPERATURE,
-            PROMPT,
-            PARAMETERS,
+            llmSetting = OpenAILLMSetting (
+                apiKey = "apikey",
+                model = MODEL,
+                prompt = PROMPT,
+                temperature = TEMPERATURE
+            ),
+            emSetting = AzureOpenAIEMSetting (
+                apiKey = "apiKey",
+                model = EMBEDDING_MODEL,
+                apiVersion = "apiVersion",
+                deploymentName = "deployment",
+                apiBase = "url"
+            ),
             "",
             null
         )
@@ -151,9 +158,9 @@ class RagServiceTest : AbstractTest() {
             Assertions.assertEquals(BOT_ID, captured.botId)
             Assertions.assertEquals(true, captured.enabled)
             Assertions.assertEquals(NAMESPACE, captured.namespace)
-            Assertions.assertEquals(EMBEDDING_ENGINE, captured.embeddingEngine)
-            Assertions.assertEquals(TEMPERATURE, captured.temperature)
-            Assertions.assertEquals(PROMPT, captured.prompt)
+            Assertions.assertEquals(PROVIDER, captured.llmSetting.provider.name)
+            Assertions.assertEquals(TEMPERATURE, captured.llmSetting.temperature)
+            Assertions.assertEquals(PROMPT, captured.llmSetting.prompt)
             Assertions.assertEquals(null, captured.noAnswerStoryId)
         }
 
