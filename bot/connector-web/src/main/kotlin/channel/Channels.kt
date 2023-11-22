@@ -16,13 +16,12 @@
 package ai.tock.bot.connector.web.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponse
-import ai.tock.bot.connector.web.WebMessageProcessor
-import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.user.PlayerId
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-internal class Channels(private val channelDAO: ChannelDAO, private val messageProcessor: WebMessageProcessor) {
+internal class Channels(private val channelDAO: ChannelDAO) {
 
     private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<Channel>>()
 
@@ -51,8 +50,7 @@ internal class Channels(private val channelDAO: ChannelDAO, private val messageP
         }
     }
 
-    fun send(action: Action) {
-        val messages = listOfNotNull(messageProcessor.process(action))
-        channelDAO.save(ChannelEvent(action.applicationId, action.recipientId.id, WebConnectorResponse(messages)))
+    fun send(applicationId: String, recipientId: PlayerId, response: WebConnectorResponse) {
+        channelDAO.save(ChannelEvent(applicationId, recipientId.id, response))
     }
 }

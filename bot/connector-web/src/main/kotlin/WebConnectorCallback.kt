@@ -44,11 +44,15 @@ internal class WebConnectorCallback(
         this.metadata[metadata.type] = metadata.value
     }
 
+    fun createResponse(actions: List<Action>): WebConnectorResponse {
+        val messages = actions.mapNotNull(messageProcessor::process)
+        return WebConnectorResponse(messages, metadata)
+    }
+
     fun sendResponse() {
         WebRequestInfosByEvent.invalidate(eventId)
-        val messages = actions.mapNotNull(messageProcessor::process)
         context.response()
             .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            .end(webMapper.writeValueAsString(WebConnectorResponse(messages, metadata)))
+            .end(webMapper.writeValueAsString(createResponse(actions)))
     }
 }

@@ -112,7 +112,7 @@ class WebConnector internal constructor(
             // Fallback to previous property name for backward compatibility
             ?: propertyOrNull("allow_markdown").toBoolean()
         )
-        private val channels by lazy { Channels(ChannelMongoDAO, messageProcessor) }
+        private val channels by lazy { Channels(ChannelMongoDAO) }
     }
 
     private val executor: Executor get() = injector.provide()
@@ -124,8 +124,8 @@ class WebConnector internal constructor(
 
             router.route(path)
                 .handler(
-                    // "*"+credentials is rejected by browsers, so we use the equivalent regex instead
-                    CorsHandler.create(if (cookieAuth) ".*" else "*")
+                    CorsHandler.create()
+                        .addRelativeOrigin(".*") // "*"+credentials is rejected by browsers, so we use the equivalent regex instead
                         .allowedMethod(HttpMethod.POST)
                         .run {
                             if (sseEnabled) allowedMethod(HttpMethod.GET) else this
@@ -372,7 +372,7 @@ class WebConnector internal constructor(
     private fun handleWebConnectorCallback(callback: WebConnectorCallback, event: Action) {
         callback.addAction(event)
         if (sseEnabled) {
-            channels.send(event)
+            channels.send(event.applicationId, event.recipientId, callback.createResponse(listOf(event)))
         }
         if (event.metadata.lastAnswer) {
             callback.sendResponse()
