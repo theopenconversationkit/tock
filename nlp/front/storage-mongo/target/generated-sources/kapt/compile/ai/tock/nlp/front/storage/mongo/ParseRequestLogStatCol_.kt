@@ -3,6 +3,7 @@ package ai.tock.nlp.front.storage.mongo
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import java.time.Instant
 import java.util.Locale
+import kotlin.Boolean
 import kotlin.Double
 import kotlin.Long
 import kotlin.String
@@ -22,6 +23,8 @@ private val __ApplicationId: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogS
     get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::applicationId
 private val __Language: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Locale?>
     get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::language
+private val __Intent: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, String?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::intent
 private val __IntentProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Double?>
     get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::intentProbability
 private val __EntitiesProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol,
@@ -31,6 +34,8 @@ private val __LastUsage: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatC
     get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::lastUsage
 private val __Count: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Long?>
     get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::count
+private val __Validated: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Boolean?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::validated
 internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?>) : KPropertyPath<T,
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?>(previous,property) {
@@ -42,6 +47,9 @@ internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, proper
 
     val language: KPropertyPath<T, Locale?>
         get() = KPropertyPath(this,__Language)
+
+    val intent: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Intent)
 
     val intentProbability: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__IntentProbability)
@@ -55,6 +63,9 @@ internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, proper
     val count: KPropertyPath<T, Long?>
         get() = KPropertyPath(this,__Count)
 
+    val validated: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__Validated)
+
     companion object {
         val Text: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, String?>
             get() = __Text
@@ -63,6 +74,8 @@ internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, proper
             get() = __ApplicationId
         val Language: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Locale?>
             get() = __Language
+        val Intent: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, String?>
+            get() = __Intent
         val IntentProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Double?>
             get() = __IntentProbability
         val EntitiesProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Double?>
@@ -70,7 +83,9 @@ internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, proper
         val LastUsage: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Instant?>
             get() = __LastUsage
         val Count: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Long?>
-            get() = __Count}
+            get() = __Count
+        val Validated: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Boolean?>
+            get() = __Validated}
 }
 
 internal class ParseRequestLogStatCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -86,6 +101,9 @@ internal class ParseRequestLogStatCol_Col<T>(previous: KPropertyPath<T, *>?, pro
     val language: KPropertyPath<T, Locale?>
         get() = KPropertyPath(this,__Language)
 
+    val intent: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Intent)
+
     val intentProbability: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__IntentProbability)
 
@@ -97,6 +115,9 @@ internal class ParseRequestLogStatCol_Col<T>(previous: KPropertyPath<T, *>?, pro
 
     val count: KPropertyPath<T, Long?>
         get() = KPropertyPath(this,__Count)
+
+    val validated: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__Validated)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatCol_<T> =
@@ -115,6 +136,9 @@ internal class ParseRequestLogStatCol_Map<T, K>(previous: KPropertyPath<T, *>?, 
     val language: KPropertyPath<T, Locale?>
         get() = KPropertyPath(this,__Language)
 
+    val intent: KPropertyPath<T, String?>
+        get() = KPropertyPath(this,__Intent)
+
     val intentProbability: KPropertyPath<T, Double?>
         get() = KPropertyPath(this,__IntentProbability)
 
@@ -126,6 +150,9 @@ internal class ParseRequestLogStatCol_Map<T, K>(previous: KPropertyPath<T, *>?, 
 
     val count: KPropertyPath<T, Long?>
         get() = KPropertyPath(this,__Count)
+
+    val validated: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath(this,__Validated)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatCol_<T> =

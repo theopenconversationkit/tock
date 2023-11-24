@@ -28,6 +28,11 @@ internal class ParseRequestLogStatCol_Serializer :
         gen.writeFieldName("language")
         val _language_ = value.language
         serializers.defaultSerializeValue(_language_, gen)
+        gen.writeFieldName("intent")
+        val _intent_ = value.intent
+        if(_intent_ == null) { gen.writeNull() } else {
+                gen.writeString(_intent_)
+                }
         gen.writeFieldName("intentProbability")
         val _intentProbability_ = value.intentProbability
         if(_intentProbability_ == null) { gen.writeNull() } else {
@@ -44,6 +49,9 @@ internal class ParseRequestLogStatCol_Serializer :
         gen.writeFieldName("count")
         val _count_ = value.count
         gen.writeNumber(_count_)
+        gen.writeFieldName("validated")
+        val _validated_ = value.validated
+        gen.writeBoolean(_validated_)
         gen.writeEndObject()
     }
 }

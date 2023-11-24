@@ -16,6 +16,8 @@
 
 package ai.tock.nlp.api.client
 
+import ai.tock.nlp.api.client.model.NlpLogCount
+import ai.tock.nlp.api.client.model.NlpLogCountQuery
 import ai.tock.nlp.api.client.model.NlpQuery
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -110,6 +112,11 @@ interface NlpClient {
      * @return true if NLP model is modified, false either
      */
     fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean
+
+    /**
+     * Analyses a sentence and returns the result.
+     */
+    fun logsCount(query: NlpLogCountQuery): List<NlpLogCount>?
 
     /**
      * Checks the server is up.

@@ -24,6 +24,7 @@ class TabLink {
 const tabs = [
   new TabLink('log-stats', 'Model Stats', 'activity-outline'),
   new TabLink('intent-quality', 'Intent Distance', 'pantone-outline'),
+  new TabLink('count-stats', 'Count Stats', 'hash-outline'),
   new TabLink('model-builds', 'Model Builds', 'save-outline'),
   new TabLink('test-builds', 'Test Trends', 'trending-down-outline'),
   new TabLink('test-intent-errors', 'Test Intent Errors', 'alert-triangle-outline'),

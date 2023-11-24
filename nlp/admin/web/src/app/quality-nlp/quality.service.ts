@@ -21,7 +21,7 @@ import {
   EntityTestErrorQueryResult,
   IntentQA,
   IntentTestError,
-  IntentTestErrorQueryResult,
+  IntentTestErrorQueryResult, LogCount, LogCountResult,
   LogStat,
   LogStatsQuery,
   TestBuildStat,
@@ -35,6 +35,10 @@ export class QualityService {
 
   logStats(query: LogStatsQuery): Observable<LogStat[]> {
     return this.rest.post('/logs/stats', query, LogStat.fromJSONArray);
+  }
+
+  countStats(query: LogStatsQuery): Observable<LogCountResult> {
+    return this.rest.post('/logs/count/stats', query, LogCountResult.fromJSON);
   }
 
   intentQA(query: LogStatsQuery): Observable<IntentQA[]> {

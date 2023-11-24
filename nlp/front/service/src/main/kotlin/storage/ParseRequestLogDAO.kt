@@ -24,6 +24,8 @@ import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStat
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQueryResult
 import org.litote.kmongo.Id
 import java.util.Locale
 
@@ -35,6 +37,8 @@ interface ParseRequestLogDAO {
     fun save(log: ParseRequestLog)
 
     fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
+
+    fun search(query: ParseRequestLogCountQuery): ParseRequestLogCountQueryResult
 
     fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat>
 

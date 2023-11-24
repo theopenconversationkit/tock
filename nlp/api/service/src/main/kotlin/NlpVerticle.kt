@@ -26,6 +26,7 @@ import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import ai.tock.nlp.front.shared.merge.ValuesMergeQuery
 import ai.tock.nlp.front.shared.monitoring.MarkAsUnknownQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
 import ai.tock.nlp.front.shared.parser.ParseQuery
 import ai.tock.shared.Executor
 import ai.tock.shared.TOCK_FRONT_DATABASE
@@ -42,6 +43,8 @@ import com.github.salomonbrys.kodein.instance
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
+import org.litote.kmongo.Id
+import java.util.Locale
 
 /**
  *
@@ -193,6 +196,23 @@ class NlpVerticle : WebVerticle() {
                 front.importSentences(dump.applicationName.namespace(), dump).modified
             }
         }
+
+        blockingJsonPost("/logs/count") { context, query: ParseRequestLogCountQueryModel ->
+            if (protectPath && context.organization != query.namespace) {
+                unauthorized()
+            } else {
+                try {
+                    val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+                    if(app == null) {
+                        unauthorized()
+                    } else {
+                        front.search(query.toParseRequestLogCountQuery(app._id)).logs
+                    }
+                } catch (e: UnknownApplicationException) {
+                    badRequest(e.message ?: "")
+                }
+            }
+        }
     }
 
     override fun defaultHealthcheck(): (RoutingContext) -> Unit {
@@ -214,4 +234,25 @@ class NlpVerticle : WebVerticle() {
             Pair("tock_model_database", { pingMongoDatabase(TOCK_MODEL_DATABASE) })
         )
     )
+}
+
+internal data class ParseRequestLogCountQueryModel(
+    val namespace: String,
+    val applicationName: String,
+    val language: Locale,
+    val intent: String? = null,
+    val minCount: Int = 1,
+    val start: Long = 0,
+    val size: Int = 1,
+) {
+    fun toParseRequestLogCountQuery(id: Id<ApplicationDefinition>): ParseRequestLogCountQuery =
+        ParseRequestLogCountQuery(
+            applicationId = id,
+            language = language,
+            intent = intent,
+            minCount = minCount,
+            start = start,
+            size = size,
+        )
+
 }

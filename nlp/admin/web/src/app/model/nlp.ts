@@ -1011,6 +1011,66 @@ export class TestErrorQuery extends PaginatedQuery {
   }
 }
 
+export class LogCountQuery extends PaginatedQuery {
+
+  static create(stateService: StateService, start: number, size?: number, intentName?: string, minCount?: number, validated?: boolean): TestErrorQuery {
+    const p = stateService.createPaginatedQuery(start, size);
+    return new LogCountQuery(p.namespace, p.applicationName, p.language, p.start, p.size, intentName, minCount, validated);
+  }
+
+  constructor(
+    public namespace: string,
+    public applicationName: string,
+    public language: string,
+    public start: number,
+    public size: number,
+    public intentName?: string,
+    public minCount?: number,
+    public validated?: boolean,
+  ) {
+    super(namespace, applicationName, language, start, size);
+  }
+}
+
+export class LogCountResult implements PaginatedResult<LogCount> {
+  constructor(public rows: LogCount[], public total: number, public start: number, public end: number) {
+  }
+
+  static fromJSON(json?: any): LogCountResult {
+    const value = Object.create(LogCountResult.prototype);
+
+    const result = Object.assign(value, json, {
+      rows: LogCount.fromJSONArray(json.logs)
+    });
+
+    return result;
+  }
+}
+
+export class LogCount {
+  constructor(
+    public text: string,
+    public count: number,
+    public lastUsage: Date,
+    public intent: string,
+    public intentProbability?: number,
+    public entitiesProbability?: number,
+    public validated?:boolean,
+  ) {}
+
+  static fromJSON(json?: any): LogCount {
+    const value = Object.create(LogCount.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): LogCount[] {
+    return json ? json.map(LogCount.fromJSON) : [];
+  }
+}
+
 export class TestBuildStat {
   constructor(
     public errors: number,

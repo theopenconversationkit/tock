@@ -23,6 +23,8 @@ import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStat
 import ai.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQuery
+import ai.tock.nlp.front.shared.monitoring.ParseRequestLogCountQueryResult
 import ai.tock.nlp.front.shared.monitoring.UserActionLog
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQuery
 import ai.tock.nlp.front.shared.monitoring.UserActionLogQueryResult
@@ -35,6 +37,8 @@ import java.util.Locale
 interface ApplicationMonitor {
 
     fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
+
+    fun search(query: ParseRequestLogCountQuery): ParseRequestLogCountQueryResult
 
     fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat>
 

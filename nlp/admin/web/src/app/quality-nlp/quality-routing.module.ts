@@ -9,6 +9,7 @@ import { LogStatsComponent } from '../logs/log-stats.component';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { QualityTabsComponent } from './quality-tabs.component';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
+import {LogCountComponent} from "../logs/log-count.component";
 
 const routes: Routes = [
   {
@@ -47,6 +48,10 @@ const routes: Routes = [
       {
         path: 'intent-quality',
         component: IntentQAComponent
+      },
+      {
+        path: 'count-stats',
+        component: LogCountComponent
       }
     ]
   }

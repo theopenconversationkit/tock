@@ -16,6 +16,8 @@
 
 package ai.tock.nlp.api.client
 
+import ai.tock.nlp.api.client.model.NlpLogCount
+import ai.tock.nlp.api.client.model.NlpLogCountQuery
 import ai.tock.nlp.api.client.model.NlpQuery
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -79,6 +81,9 @@ internal interface NlpService {
 
     @POST("dump/import/sentences/plain")
     fun importNlpPlainSentencesDump(@Body dump: SentencesDump): Call<BooleanResponse>
+
+    @POST("logs/count")
+    fun logsCount(@Body query: NlpLogCountQuery): Call<List<NlpLogCount>>
 
     @GET("healthcheck")
     fun healthcheck(): Call<ResponseBody>

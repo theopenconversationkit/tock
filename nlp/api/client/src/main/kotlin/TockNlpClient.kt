@@ -16,6 +16,8 @@
 
 package ai.tock.nlp.api.client
 
+import ai.tock.nlp.api.client.model.NlpLogCount
+import ai.tock.nlp.api.client.model.NlpLogCountQuery
 import ai.tock.nlp.api.client.model.NlpQuery
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -99,10 +101,10 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
     private fun <T> Response<T>.parseAndReturns(): T? =
         body()
-            ?: {
+            ?: run {
                 logger.error { "nlp error : ${errorBody()?.string()}" }
-                null
-            }.invoke()
+                null as Nothing?
+            }
 
     override fun parse(query: NlpQuery): NlpResult? {
         return nlpService.parse(query).execute().parseAndReturns()
@@ -165,6 +167,10 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
     override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean {
         return nlpService.importNlpPlainSentencesDump(dump).execute().body()?.success ?: false
+    }
+
+    override fun logsCount(query: NlpLogCountQuery): List<NlpLogCount>? {
+        return nlpService.logsCount(query).execute().parseAndReturns()
     }
 
     override fun healthcheck(): Boolean {

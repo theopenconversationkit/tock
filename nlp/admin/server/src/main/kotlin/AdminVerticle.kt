@@ -23,6 +23,7 @@ import ai.tock.nlp.admin.model.ApplicationWithIntents
 import ai.tock.nlp.admin.model.CreateEntityQuery
 import ai.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
 import ai.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
+import ai.tock.nlp.admin.model.LogCountQuery
 import ai.tock.nlp.admin.model.LogStatsQuery
 import ai.tock.nlp.admin.model.LogsQuery
 import ai.tock.nlp.admin.model.PaginatedQuery
@@ -685,6 +686,21 @@ open class AdminVerticle : WebVerticle() {
                             s.namespace,
                             s.applicationName
                         )!!
+                    )
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/logs/count/stats", nlpUser) { context, s: LogCountQuery ->
+            if (context.organization == s.namespace) {
+                front.search(
+                    s.toRequestLogStatQuery(
+                        front.getApplicationByNamespaceAndName(
+                            s.namespace,
+                            s.applicationName
+                        )!!._id
                     )
                 )
             } else {

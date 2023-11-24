@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.api.client
 
+import ai.tock.nlp.api.client.model.NlpLogCountQuery
 import ai.tock.nlp.api.client.model.NlpQuery
 import ai.tock.nlp.api.client.model.NlpQueryContext
 import ai.tock.nlp.api.client.model.dump.ApplicationDump
@@ -35,7 +36,7 @@ import kotlin.test.assertTrue
 class NlpClientIntegrationTest {
 
     val dumpStream = NlpClient::class.java.getResourceAsStream("/dump.json")
-    val applicationNamespace = "vsc"
+    val applicationNamespace = "test"
     val applicationName = "test"
     val unknownApplicationName = "unknown"
 
@@ -97,5 +98,20 @@ class NlpClientIntegrationTest {
                 )
             )
         }
+    }
+
+    @Test
+    fun testLogsCount() {
+        assertEquals(
+            2,
+            TockNlpClient("http://localhost:8888").logsCount(
+                NlpLogCountQuery(
+                    applicationNamespace,
+                    applicationName,
+                    Locale.FRENCH,
+                    size = Integer.MAX_VALUE
+                )
+            )!!.size
+        )
     }
 }

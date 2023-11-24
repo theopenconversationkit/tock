@@ -17,6 +17,8 @@
 package ai.tock.nlp.dialogflow
 
 import ai.tock.nlp.api.client.NlpClient
+import ai.tock.nlp.api.client.model.NlpLogCount
+import ai.tock.nlp.api.client.model.NlpLogCountQuery
 import ai.tock.nlp.api.client.model.NlpQuery
 import ai.tock.nlp.api.client.model.NlpResult
 import ai.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -70,4 +72,6 @@ internal class TockDialogflowNlpClient : NlpClient {
     override fun importNlpSentencesDump(stream: InputStream): Boolean = false
 
     override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean = false
+
+    override fun logsCount(query: NlpLogCountQuery): List<NlpLogCount>? = null
 }

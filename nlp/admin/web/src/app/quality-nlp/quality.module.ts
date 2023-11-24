@@ -36,12 +36,13 @@ import {
   NbButtonModule,
   NbSelectModule,
   NbTooltipModule,
-  NbSpinnerModule
+  NbSpinnerModule, NbCheckboxModule
 } from '@nebular/theme';
 import { ThemeModule } from '../theme/theme.module';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { QualityRoutingModule } from './quality-routing.module';
+import {LogCountComponent} from "../logs/log-count.component";
 
 export function importEcharts() {
   return import('echarts');
@@ -59,6 +60,7 @@ export function importEcharts() {
     ThemeModule,
     NbRouteTabsetModule,
     NbCardModule,
+    NbCheckboxModule,
     NbButtonModule,
     NbSelectModule,
     NgxEchartsModule.forRoot({
@@ -74,6 +76,7 @@ export function importEcharts() {
     TestEntityErrorComponent,
     TestBuildsComponent,
     LogStatsComponent,
+    LogCountComponent,
     ModelBuildsComponent,
     IntentQAComponent
   ],
