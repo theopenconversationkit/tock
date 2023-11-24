@@ -50,7 +50,7 @@ internal class BotVerticle(
     inner class ServiceInstaller(
         val serviceId: String,
         private val installer: (Router) -> Any?,
-        var routes: MutableList<Route> = CopyOnWriteArrayList(),
+        private val routes: MutableList<Route> = CopyOnWriteArrayList(),
         @Volatile
         var installed: Boolean = false,
         val registrationDate: Instant = Instant.now()
