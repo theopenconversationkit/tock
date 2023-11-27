@@ -16,6 +16,7 @@
 package ai.tock.bot.connector.web.channel
 
 internal interface ChannelDAO {
-    fun listenChanges(listener: (channelEvent: ChannelEvent) -> Unit)
+    fun listenChanges(listener: ChannelEvent.Handler)
+    fun handleMissedEvents(appId: String, recipientId: String, handler: ChannelEvent.Handler)
     fun save(channelEvent: ChannelEvent)
 }
