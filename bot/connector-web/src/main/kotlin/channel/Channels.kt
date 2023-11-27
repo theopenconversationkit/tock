@@ -17,21 +17,22 @@ package ai.tock.bot.connector.web.channel
 
 import ai.tock.bot.connector.web.WebConnectorResponse
 import ai.tock.bot.engine.user.PlayerId
+import ai.tock.shared.injector
+import ai.tock.shared.provide
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-internal class Channels(private val channelDAO: ChannelDAO) {
+internal class Channels {
 
+    private val channelDAO: ChannelDAO = injector.provide()
     private val channelsByUser = ConcurrentHashMap<String, CopyOnWriteArrayList<Channel>>()
 
     init {
-        channelDAO.listenChanges { channelEvent ->
-            channelsByUser[channelEvent.recipientId]?.forEach { channel ->
-                if (channel.appId == channelEvent.appId) {
-                    channel.onAction.invoke(channelEvent.webConnectorResponse)
-                }
-            }
+        channelDAO.listenChanges { (appId, recipientId, response) ->
+            channelsByUser[recipientId]?.filter { it.appId == appId }?.onEach { channel ->
+                channel.onAction(response)
+            }?.isNotEmpty() ?: false
         }
     }
 
@@ -41,12 +42,16 @@ internal class Channels(private val channelDAO: ChannelDAO) {
         }
         val channel = Channel(appId, UUID.randomUUID(), userId, onAction)
         channels.add(channel)
+        channelDAO.handleMissedEvents(appId, userId) { (_, _, response) ->
+            channel.onAction(response)
+            true
+        }
         return channel
     }
 
     fun unregister(channel: Channel) {
-        channelsByUser[channel.userId]?.removeIf { _channel ->
-            _channel.uuid == channel.uuid
+        channelsByUser[channel.userId]?.removeIf {
+            it.uuid == channel.uuid
         }
     }
 

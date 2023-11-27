@@ -15,7 +15,9 @@
  */
 package ai.tock.bot.connector.web.channel
 
+import com.mongodb.reactivestreams.client.MongoDatabase as ReactiveMongoDatabase
 import ai.tock.shared.TOCK_BOT_DATABASE
+import ai.tock.shared.ensureIndex
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.watch
@@ -24,13 +26,17 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.CreateCollectionOptions
 import mu.KotlinLogging
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
+import org.litote.kmongo.setTo
+import org.litote.kmongo.updateOneById
 
 internal object ChannelMongoDAO : ChannelDAO {
-    private val collectionName = "web_channel_event"
-    private val asyncDatabase: com.mongodb.reactivestreams.client.MongoDatabase by injector.instance(
+    private const val COLLECTION_NAME = "web_channel_event"
+    private val asyncDatabase: ReactiveMongoDatabase by injector.instance(
         TOCK_BOT_DATABASE
     )
     private val database: MongoDatabase by injector.instance(
@@ -44,29 +50,62 @@ internal object ChannelMongoDAO : ChannelDAO {
         listCollectionNames().contains(collectionName)
 
     init {
-        if (!database.collectionExists(collectionName)) {
+        if (!database.collectionExists(COLLECTION_NAME)) {
             try {
                 database
                     .createCollection(
-                        collectionName,
+                        COLLECTION_NAME,
                         CreateCollectionOptions()
                             .capped(true)
                             .sizeInBytes(100000000)
                             .maxDocuments(50000)
                     )
-            } catch (ex: Exception) {
-                logger.error(ex)
+            } catch (e: Exception) {
+                logger.error(e)
             }
         }
-        asyncWebChannelResponseCol = asyncDatabase.getCollectionOfName(collectionName)
-        webChannelResponseCol = database.getCollection<ChannelEvent>(collectionName)
+        asyncWebChannelResponseCol = asyncDatabase.getCollectionOfName(COLLECTION_NAME)
+        webChannelResponseCol = database.getCollection<ChannelEvent>(COLLECTION_NAME)
+        try {
+            webChannelResponseCol.ensureIndex(ChannelEvent::appId, ChannelEvent::recipientId, ChannelEvent::status)
+            // TODO add an index with TTL on ChannelEvent::enqueuedAt once MongoDB supports it (cf. https://jira.mongodb.org/browse/SERVER-77586)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 
-    override fun listenChanges(listener: (channelEvent: ChannelEvent) -> Unit) {
+    override fun listenChanges(listener: ChannelEvent.Handler) {
         asyncWebChannelResponseCol.watch {
             val channelEvent = it.fullDocument
-            if (channelEvent != null)
-                listener(channelEvent)
+            if (channelEvent != null) {
+                process(channelEvent, listener)
+            }
+        }
+    }
+
+    override fun handleMissedEvents(
+        appId: String,
+        recipientId: String,
+        handler: ChannelEvent.Handler
+    ) {
+        webChannelResponseCol.find(
+            and(
+                ChannelEvent::appId eq appId,
+                ChannelEvent::recipientId eq recipientId,
+                ChannelEvent::status eq ChannelEvent.Status.ENQUEUED,
+            )
+        ).forEach { event ->
+            process(event, handler)
+        }
+    }
+
+    private fun process(event: ChannelEvent, handler: ChannelEvent.Handler) {
+        try {
+            if (handler(event)) {
+                webChannelResponseCol.updateOneById(event._id, ChannelEvent::status setTo ChannelEvent.Status.PROCESSED)
+            }
+        } catch (e: Exception) {
+            logger.error(e)
         }
     }
 

@@ -112,7 +112,7 @@ class WebConnector internal constructor(
             // Fallback to previous property name for backward compatibility
             ?: propertyOrNull("allow_markdown").toBoolean()
         )
-        private val channels by lazy { Channels(ChannelMongoDAO) }
+        private val channels by lazy { Channels() }
     }
 
     private val executor: Executor get() = injector.provide()

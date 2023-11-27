@@ -141,6 +141,12 @@ This feature can be enabled by setting the `tock_web_sse` optional property to `
 When SSE is enabled, bot answers will be sent both as POST responses and as new events in the event stream -
 the [tock-react-kit](https://github.com/theopenconversationkit/tock-react-kit#sse) is configured to ignore the former
 while it is listening to server-sent events.
+This is typically useful in scenarios where the bot has to perform
+web API calls or expensive computations between messages of a single response,
+as it allows users to see the first messages immediately.
+
+Additionally, the web connector persists messages that fail to send immediately through the SSE stream,
+and attempts to send them if and when the SSE connection is re-established.
 
 The `tock_web_sse_keepalive_delay` optional property can be used to configure the number of seconds between
 two SSE pings (default: 10).
