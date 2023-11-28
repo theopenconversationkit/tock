@@ -17,10 +17,13 @@
 package ai.tock.bot.engine.event
 
 import ai.tock.bot.definition.Intent
+import java.util.UUID
 
 class MetadataEvent(val type: String, val value: String, applicationId: String) : Event(applicationId) {
     companion object {
         fun intent(intent: Intent, applicationId: String) = MetadataEvent(INTENT_METADATA, intent.name, applicationId)
+        fun responseId(uuid: UUID, applicationId: String) = MetadataEvent(RESPONSE_ID_METADATA, uuid.toString(), applicationId)
         const val INTENT_METADATA = "INTENT"
+        const val RESPONSE_ID_METADATA = "RESPONSE_ID"
     }
 }

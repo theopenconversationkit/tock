@@ -70,9 +70,9 @@ import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
-import mu.KotlinLogging
 import java.time.Duration
 import java.util.UUID
+import mu.KotlinLogging
 
 internal const val WEB_CONNECTOR_ID = "web"
 
@@ -262,8 +262,12 @@ class WebConnector internal constructor(
                 context = context,
                 webMapper = webMapper,
                 eventId = event.id.toString(),
-                messageProcessor = messageProcessor
+                messageProcessor = messageProcessor,
             )
+            if (sseEnabled) {
+                // Uniquely identify each response, so they can be reconciliated between SSE and POST
+                callback.addMetadata(MetadataEvent.responseId(UUID.randomUUID(), applicationId))
+            }
             controller.handle(
                 event,
                 ConnectorData(
