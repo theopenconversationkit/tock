@@ -19,6 +19,8 @@ interface RagSettingsForm {
   noAnswerSentence: FormControl<string>;
   noAnswerStoryId: FormControl<string>;
 
+  indexSessionId: FormControl<string>;
+
   llmEngine: FormControl<LLMProvider>;
   llmSetting: FormGroup<any>;
   emEngine: FormControl<LLMProvider>;
@@ -104,6 +106,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     enabled: new FormControl({ value: undefined, disabled: !this.canRagBeActivated() }),
     noAnswerSentence: new FormControl(undefined, [Validators.required]),
     noAnswerStoryId: new FormControl(undefined),
+    indexSessionId: new FormControl(undefined),
     llmEngine: new FormControl(undefined, [Validators.required]),
     llmSetting: new FormGroup<any>({}),
     emEngine: new FormControl(undefined, [Validators.required]),
@@ -125,6 +128,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
   get noAnswerStoryId(): FormControl {
     return this.form.get('noAnswerStoryId') as FormControl;
+  }
+
+  get indexSessionId(): FormControl {
+    return this.form.get('indexSessionId') as FormControl;
   }
 
   get canSave(): boolean {
@@ -178,7 +185,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   canRagBeActivated(): boolean {
-    return this.form ? this.form.valid : false;
+    return this.form ? this.form.valid && this.indexSessionId.value.length : false;
   }
 
   setActivationDisabledState(): void {
@@ -227,15 +234,32 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       delete formValue['emEngine'];
 
       const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
-      this.rest.post(url, formValue).subscribe((ragSettings: RagSettings) => {
-        this.settingsBackup = ragSettings;
-        this.form.patchValue(ragSettings);
-        this.form.markAsPristine();
-        this.isSubmitted = false;
-        this.toastrService.success(`Rag settings succesfully saved`, 'Success', {
-          duration: 5000,
-          status: 'success'
-        });
+      this.rest.post(url, formValue, null, null, true).subscribe({
+        next: (ragSettings: RagSettings) => {
+          this.settingsBackup = ragSettings;
+          this.form.patchValue(ragSettings);
+          this.form.markAsPristine();
+          this.isSubmitted = false;
+          this.toastrService.success(`Rag settings succesfully saved`, 'Success', {
+            duration: 5000,
+            status: 'success'
+          });
+        },
+        error: (error) => {
+          let errorMessage = 'An error occured';
+
+          if (error.error.errors.length) {
+            errorMessage = '';
+            error.error.errors.forEach((em) => {
+              errorMessage += `${em.message} `;
+            });
+          }
+
+          this.toastrService.danger(errorMessage, 'Error', {
+            duration: 5000,
+            status: 'danger'
+          });
+        }
       });
     }
   }
