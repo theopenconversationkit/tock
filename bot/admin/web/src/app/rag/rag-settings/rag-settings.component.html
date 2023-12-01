@@ -164,7 +164,25 @@
         </div>
       </div>
 
+      <h5 class="section-title mt-2">Indexing session</h5>
+
+      <tock-form-control
+        label="Indexing session id"
+        name="indexingSessionId"
+        [controls]="indexSessionId"
+        [required]="false"
+        [showError]="isSubmitted"
+        [boldLabel]="false"
+      >
+        <input
+          nbInput
+          fullWidth
+          formControlName="indexSessionId"
+        />
+      </tock-form-control>
+
       <h5 class="section-title mt-2">Conversation flow</h5>
+
       <tock-form-control
         label="No answer sentence"
         name="noAnswerSentence"
