@@ -23,14 +23,15 @@ import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
 data class BotRAGConfigurationDTO(
-    val id: String?,
+    val id: String? = null,
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
     val llmSetting: LLMSetting,
     val emSetting: EMSetting,
+    val indexSessionId: String? = null,
     val noAnswerSentence: String,
-    val noAnswerStoryId: String?
+    val noAnswerStoryId: String? = null,
 ) {
     constructor(configuration: BotRAGConfiguration): this(
         configuration._id.toString(),
@@ -39,6 +40,7 @@ data class BotRAGConfigurationDTO(
         configuration.enabled,
         configuration.llmSetting,
         configuration.emSetting,
+        configuration.indexSessionId,
         configuration.noAnswerSentence,
         configuration.noAnswerStoryId?.toString()
     )
@@ -50,6 +52,7 @@ data class BotRAGConfigurationDTO(
             enabled,
             llmSetting,
             emSetting,
+            indexSessionId = indexSessionId,
             noAnswerSentence = noAnswerSentence,
             noAnswerStoryId = noAnswerStoryId?.toId()
         )
