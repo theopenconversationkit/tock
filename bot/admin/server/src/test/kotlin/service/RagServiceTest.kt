@@ -82,8 +82,7 @@ class RagServiceTest : AbstractTest() {
                 deploymentName = "deployment",
                 apiBase = "url"
             ),
-            "",
-            null
+            noAnswerSentence = "No answer sentence"
         )
 
         private val DEFAULT_BOT_CONFIG = aApplication.copy(namespace = NAMESPACE, botId = BOT_ID)

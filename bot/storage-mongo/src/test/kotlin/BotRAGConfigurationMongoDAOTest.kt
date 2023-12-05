@@ -53,7 +53,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 apiKey = "apiKey1",
                 model = "modelName1"
             ),
-            "no answer sentence"
+            noAnswerSentence = "no answer sentence"
         )
 
         BotRAGConfigurationMongoDAO.save(config)
@@ -79,7 +79,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 apiKey = "apiKey1",
                 model = "modelName1"
             ),
-            "no answer sentence1"
+            noAnswerSentence = "no answer sentence1"
         )
 
         val config2 = BotRAGConfiguration(
@@ -97,7 +97,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 apiKey = "apiKey1",
                 model = "modelName1"
             ),
-            "prompt2"
+            noAnswerSentence = "no answer sentence1"
         )
 
         assertNotEquals(config1, config2)
@@ -129,7 +129,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
                 apiKey = "apiKey1",
                 model = "modelName1"
             ),
-            "no answer sentence"
+            noAnswerSentence = "no answer sentence"
         )
 
         BotRAGConfigurationMongoDAO.save(config)
