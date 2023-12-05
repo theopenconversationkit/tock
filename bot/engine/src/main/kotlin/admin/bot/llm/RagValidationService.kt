@@ -31,7 +31,9 @@ object RagValidationService {
 
     // TODO MASS : improve the validation. Workshop ?
     fun validate(ragConfig: BotRAGConfiguration): Set<String> =
-        validateLLMSetting(ragConfig.llmSetting) + validateEMSetting(ragConfig.emSetting)
+        validateLLMSetting(ragConfig.llmSetting)
+            .union(validateEMSetting(ragConfig.emSetting))
+            .union(validateIndexSessionId(ragConfig))
 
     private fun validateLLMSetting(setting: LLMSetting): Set<String> {
         return when(setting){
@@ -111,6 +113,16 @@ object RagValidationService {
 
         OpenAIEmbeddingModel.findById(setting.model)
             ?: errors.add("Unknown model : ${setting.model}")
+
+        return errors
+    }
+
+    fun validateIndexSessionId(ragConfig: BotRAGConfiguration): Set<String> {
+        val errors = mutableSetOf<String>()
+
+        if(ragConfig.enabled && ragConfig.indexSessionId.isNullOrBlank()){
+            errors.add("The index session ID is required to enable the RAG feature")
+        }
 
         return errors
     }

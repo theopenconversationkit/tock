@@ -28,6 +28,7 @@ data class BotRAGConfiguration(
     val enabled: Boolean,
     val llmSetting: LLMSetting,
     val emSetting: EMSetting,
+    val indexSessionId: String? = null,
     val noAnswerSentence: String,
     val noAnswerStoryId: Id<StoryDefinitionConfiguration>? = null,
 )
