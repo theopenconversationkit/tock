@@ -114,6 +114,7 @@
         <module>translator</module>
         <module>nlp</module>
         <module>bot</module>
+        <module>llm</module>
     </modules>
 
     <dependencies>
