@@ -16,6 +16,7 @@
 
 import logging
 from abc import ABC, abstractmethod
+from typing import List
 
 from langchain.embeddings.base import Embeddings
 from pydantic import BaseModel
@@ -45,7 +46,11 @@ class LangChainEMFactory(ABC, BaseModel):
         """
         logger.info('Invoke EM provider to check setting')
         query = 'Hi, are you there?'
-        response = self.get_embedding_model().embed_query(query)
+        response = self.embed_query(query)
         logger.info('Embedding successful')
         logger.debug('[query: %s], [response: %s]', query, response)
         return True
+
+    def embed_query(self, text: str) -> List[float]:
+        """Embed query text."""
+        return self.get_language_model().embed_query(text)

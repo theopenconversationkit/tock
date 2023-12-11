@@ -12,19 +12,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""LLMProvider Enumeration."""
+from langchain.base_language import BaseLanguageModel
+from langchain.chat_models.fake import FakeListChatModel
 
-from enum import Enum, unique
+from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
+    FakeLLMSetting,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
+    LangChainLLMFactory,
+)
 
 
-@unique
-class LLMProvider(str, Enum):
-    """Enumeration to list Large Language Provider type"""
+class FakeLLMFactory(LangChainLLMFactory):
+    setting: FakeLLMSetting
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    FAKE_LLM = 'FakeLLM'
-
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_
+    def get_language_model(self) -> BaseLanguageModel:
+        return FakeListChatModel(responses=self.setting.responses)
