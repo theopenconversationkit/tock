@@ -25,6 +25,7 @@ import io.vertx.core.Future
 import io.vertx.core.Handler
 import io.vertx.core.Promise
 import io.vertx.core.TimeoutStream
+import io.vertx.core.Timer
 import io.vertx.core.Verticle
 import io.vertx.core.Vertx
 import io.vertx.core.WorkerExecutor
@@ -35,15 +36,20 @@ import io.vertx.core.dns.DnsClientOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.file.FileSystem
 import io.vertx.core.http.HttpClient
+import io.vertx.core.http.HttpClientBuilder
 import io.vertx.core.http.HttpClientOptions
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
+import io.vertx.core.http.PoolOptions
+import io.vertx.core.http.WebSocketClient
+import io.vertx.core.http.WebSocketClientOptions
 import io.vertx.core.net.NetClient
 import io.vertx.core.net.NetClientOptions
 import io.vertx.core.net.NetServer
 import io.vertx.core.net.NetServerOptions
 import io.vertx.core.shareddata.SharedData
 import io.vertx.core.spi.VerticleFactory
+import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
@@ -205,4 +211,44 @@ class VertxMock : Vertx {
     override fun undeploy(deploymentID: String?): Future<Void> = mockk()
 
     override fun unavailableNativeTransportCause(): Throwable = mockk()
+
+    override fun createWebSocketClient(options: WebSocketClientOptions): WebSocketClient = mockk()
+
+    override fun deployVerticle(verticle: Verticle?): Future<String> = mockk()
+
+    override fun deployVerticle(name: String?): Future<String> = mockk()
+
+    override fun createHttpClient(clientOptions: HttpClientOptions?, poolOptions: PoolOptions?): HttpClient = mockk()
+
+    override fun createHttpClient(poolOptions: PoolOptions): HttpClient = mockk()
+
+    override fun <T : Any?> executeBlocking(blockingCodeHandler: Handler<Promise<T>>, ordered: Boolean): Future<T> =
+        mockk()
+
+    override fun <T : Any?> executeBlocking(blockingCodeHandler: Callable<T>, ordered: Boolean): Future<T> = mockk()
+
+    override fun <T : Any?> executeBlocking(
+        blockingCodeHandler: Callable<T>,
+        resultHandler: Handler<AsyncResult<T>>
+    ) {
+    }
+
+    override fun <T : Any?> executeBlocking(
+        blockingCodeHandler: Callable<T>,
+        ordered: Boolean,
+        resultHandler: Handler<AsyncResult<T>>
+    ) {
+    }
+
+    override fun <T : Any?> executeBlocking(blockingCodeHandler: Handler<Promise<T>>?): Future<T> = mockk()
+
+    override fun <T : Any?> executeBlocking(blockingCodeHandler: Callable<T>?): Future<T> = mockk()
+
+    override fun createWebSocketClient(): WebSocketClient = mockk()
+
+    override fun httpClientBuilder(): HttpClientBuilder = mockk()
+
+    override fun timer(delay: Long): Timer = mockk()
+
+    override fun timer(delay: Long, unit: TimeUnit): Timer = mockk()
 }

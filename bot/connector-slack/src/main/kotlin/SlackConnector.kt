@@ -40,6 +40,7 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.vertx.vertx
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import io.vertx.core.Promise
 import mu.KotlinLogging
 import java.net.URLDecoder
 import java.time.Duration
@@ -128,8 +129,8 @@ class SlackConnector(
 
                     val message = mapper.readValue<SlackMessageIn>(body, SlackMessageIn::class.java)
                     if (message.user_id != "USLACKBOT") {
-                        vertx.executeBlocking<Void>(
-                            {
+                        vertx.executeBlocking(
+                            { it: Promise<Void> ->
                                 try {
                                     val event = SlackRequestConverter.toEvent(message, applicationId)
                                     if (event != null) {

@@ -29,7 +29,7 @@
     <description>Google Speech STT implementation</description>
 
     <properties>
-        <jave>3.3.1</jave>
+        <jave>3.4.0</jave>
     </properties>
 
     <dependencies>

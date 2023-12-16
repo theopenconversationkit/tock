@@ -244,7 +244,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             c.ensureIndex(
                 LastUsage,
                 indexOptions = IndexOptions()
-                    .expireAfter(longProperty("tock_nlp_log_stats_index_ttl_days", 256), DAYS)
+                    .expireAfter(longProperty("tock_nlp_log_stats_index_ttl_days", 365), DAYS)
             )
         } catch (e: Exception) {
             logger.error(e)

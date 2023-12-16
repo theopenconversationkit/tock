@@ -186,7 +186,7 @@ ou utilisables sur tous les types de plateformes (notées _*_).
 | _*_           | `tock_nlp_classified_sentences_index_ttl_days`         | `-1` (pas d'expiration)  | Phrases non validées (_Inbox_). | `nlp_api`, `nlp_admin`/`bot_admin`, `worker` |
 | _*_           | `tock_nlp_classified_sentences_index_ttl_intent_names` | Vide (toutes intentions) | Phrases non validées (_Inbox_) >> restriction à certaines intentions, séparées par des virgules.<br><em>(Exemple ci-dessous).</em> | `nlp_api` |
 | _*_           | `tock_nlp_log_index_ttl_days`                          | `7`                      | Logs NLP : phrase, intentions, scores, détail des entités, etc. | `nlp_api` |
-| _*_           | `tock_nlp_log_stats_index_ttl_days`                    | `30`                     | Statistiques NLP : nombre d'occurrences d'une phrase, scores, etc. | `nlp_api` |
+| _*_           | `tock_nlp_log_stats_index_ttl_days`                    | `365`                    | Statistiques NLP : nombre d'occurrences d'une phrase, scores, etc. | `nlp_api` |
 | _*_           | `tock_user_log_index_ttl_days`                         | `365`                    | Log des actions dans _Tock Studio_ : modifications de _Stories_, etc. | `nlp_admin`/`bot_admin` |
 | _Bot_         | `tock_bot_alternative_index_ttl_hours`                 | `1`                      | Index sur les alternatives d'un label (_Answers_). | `bot`/`bot_api` |
 | _Bot_         | `tock_bot_dialog_index_ttl_days`                       | `7`                      | Conversations (_Analytics > Users/Search_). | `bot`/`bot_api`, `nlp_admin`/`bot_admin` |

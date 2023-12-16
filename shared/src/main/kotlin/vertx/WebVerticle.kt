@@ -72,6 +72,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
+import retrofit2.Call
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -203,8 +204,8 @@ abstract class WebVerticle : AbstractVerticle() {
                 vertx.eventBus().request<Void>(ServerStatus.SERVER_STARTED, it.succeeded())
             }
 
-        vertx.executeBlocking<Unit>(
-            {
+        vertx.executeBlocking(
+            { it: Promise<Unit> ->
                 try {
                     router.route().handler(bodyHandler())
                     addDevCorsHandler()
@@ -438,7 +439,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> O
     ) {
-        blockingJsonGet(path= path, roles= setOf(role), basePath= basePath, handler= handler)
+        blockingJsonGet(path = path, roles = setOf(role), basePath = basePath, handler = handler)
     }
 
     fun <O> blockingJsonGet(
@@ -460,7 +461,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingPost(path, roles, logger, basePath, success= successEmpty, handler)
+        blockingPost(path, roles, logger, basePath, success = successEmpty, handler)
     }
 
     protected fun blockingPost(
@@ -470,7 +471,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingPost(path= path, roles= setOf(role), logger= logger, basePath= basePath, handler= handler)
+        blockingPost(path = path, roles = setOf(role), logger = logger, basePath = basePath, handler = handler)
     }
 
     protected fun blockingPost(
@@ -478,7 +479,7 @@ abstract class WebVerticle : AbstractVerticle() {
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
         basePath: String = rootPath,
-        success: (RoutingContext) -> Unit =  successTrue,
+        success: (RoutingContext) -> Unit = successTrue,
         handler: (RoutingContext) -> Unit
     ) {
         blocking(POST, path, roles, basePath) { context ->
@@ -640,7 +641,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path, roles, logger, basePath, successEmpty,  handler)
+        blockingDelete(path, roles, logger, basePath, successEmpty, handler)
     }
 
     fun blockingDelete(
@@ -650,7 +651,7 @@ abstract class WebVerticle : AbstractVerticle() {
         basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        blockingDelete(path= path, roles= setOf(role), logger= logger, basePath= basePath, handler= handler)
+        blockingDelete(path = path, roles = setOf(role), logger = logger, basePath = basePath, handler = handler)
     }
 
     fun blockingDelete(
@@ -658,7 +659,7 @@ abstract class WebVerticle : AbstractVerticle() {
         roles: Set<TockUserRole>? = defaultRoles(),
         logger: RequestLogger = defaultRequestLogger,
         basePath: String = rootPath,
-        success: (RoutingContext) -> Unit =  successTrue,
+        success: (RoutingContext) -> Unit = successTrue,
         handler: (RoutingContext) -> Unit
     ) {
         blocking(DELETE, path, roles, basePath) { context ->
@@ -816,8 +817,8 @@ abstract class WebVerticle : AbstractVerticle() {
      * Execute blocking code using [Vertx.executeBlocking].
      */
     protected fun RoutingContext.executeBlocking(handler: (RoutingContext) -> Unit) {
-        sharedVertx.executeBlocking<Unit>(
-            {
+        sharedVertx.executeBlocking(
+            { it: Promise<Unit> ->
                 try {
                     handler.invoke(this)
                     it.tryComplete()
@@ -835,10 +836,12 @@ abstract class WebVerticle : AbstractVerticle() {
                                 response().statusMessage = message
                                 response().endJson(httpResponseBody)
                             }
+
                             this != null -> {
                                 logger.error(this)
                                 fail(this)
                             }
+
                             else -> {
                                 logger.error { "unknown error" }
                                 fail(500)
@@ -897,7 +900,7 @@ abstract class WebVerticle : AbstractVerticle() {
     val RoutingContext.userLogin: String
         get() = user?.user ?: error("no user in session")
 
-        private fun HttpServerResponse.endJson(result: Any?) {
+    private fun HttpServerResponse.endJson(result: Any?) {
 
         if (ended()) return
 

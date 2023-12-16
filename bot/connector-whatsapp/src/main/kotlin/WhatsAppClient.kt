@@ -122,7 +122,9 @@ internal class WhatsAppClient(
                         )
                     },
                     { d, z -> d.withOffsetSameInstant(z.rules.getOffset(d.toLocalDateTime())) },
-                    false
+                    false,
+                    false,
+                    false,
                 ) {
                 }
             )
@@ -201,6 +203,7 @@ internal class WhatsAppClient(
                             response.logError()
                         }
                     }
+
                     is WhatsAppSendBotImageMessage -> {
                         val response = api.sendMedia(
                             message.image.contentType,

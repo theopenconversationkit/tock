@@ -31,6 +31,7 @@ import ai.tock.shared.vertx.vertx
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
 import ai.tock.translator.I18nLabelValue
 import com.github.salomonbrys.kodein.instance
+import io.vertx.core.Promise
 import mu.KotlinLogging
 
 /**
@@ -152,8 +153,8 @@ open class BotDefinitionBase(
             val userTimelineDao: UserTimelineDAO by injector.instance()
             // run later to avoid the lock effect :)
             vertx.setTimer(1000) {
-                vertx.executeBlocking<Unit>(
-                    {
+                vertx.executeBlocking(
+                    { it: Promise<Unit> ->
                         try {
                             userTimelineDao.remove(botDefinition.namespace, userId)
                         } catch (e: Exception) {
