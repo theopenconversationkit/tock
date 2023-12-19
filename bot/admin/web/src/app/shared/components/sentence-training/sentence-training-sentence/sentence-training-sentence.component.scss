@@ -1,0 +1,29 @@
+.tokens-container-wrapper {
+  overflow-x: auto;
+  .tokens-container {
+    line-height: 1.7em;
+    font-size: 1.125rem;
+  }
+}
+
+.existing-entity-selector {
+  SPAN {
+    margin-right: 0.5rem;
+  }
+}
+
+.token-menu {
+  background-color: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.token-selector {
+  display: inline-block;
+  margin: 0.3em 0.3em 0 0;
+
+  padding: 0.3rem 0.5rem;
+  line-height: 1;
+
+  border-radius: 0.45rem;
+  box-shadow: -1px 1px 5px #00000030;
+}

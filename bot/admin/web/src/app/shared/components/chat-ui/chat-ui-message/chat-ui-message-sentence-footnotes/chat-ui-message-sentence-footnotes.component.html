@@ -1,0 +1,35 @@
+<img
+  *ngIf="sentence.userInterface"
+  src="/assets/images/{{ sentence.userInterface }}.svg"
+  class="userInterface"
+  nbTooltip="{{ sentence.userInterface }}"
+/>
+<span
+  *ngIf="reply"
+  [innerHTML]="linkifyHtml(sentence.text)"
+></span>
+<span *ngIf="!reply">{{ sentence.text }}</span>
+
+<div
+  class="footnotes mt-1"
+  *ngIf="sentence.footNotes?.length"
+>
+  <strong class="title mr-1">SOURCES : </strong>
+  <span *ngFor="let footNote of sentence.footNotes; let last = last">
+    <a
+      [href]="footNote.url"
+      target="_blank"
+      *ngIf="footNote.url?.trim().length"
+    >
+      {{ footNote.title }}
+    </a>
+    <span *ngIf="!footNote.url?.trim().length">
+      {{ footNote.title }}
+    </span>
+    <span
+      *ngIf="!last"
+      class="mx-1"
+      >|</span
+    >
+  </span>
+</div>

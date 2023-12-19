@@ -1,0 +1,52 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+.intent-proba-slider {
+  width: 100%;
+}
+
+.autocompleteSeparator {
+  border-top: 1px solid nb-theme(color-basic-600);
+}
+
+::ng-deep {
+  .intent-proba-slider .ngx-slider {
+    margin: 20px 0 15px;
+  }
+
+  .intent-proba-slider .ngx-slider .ngx-slider-selection {
+    background: nb-theme(color-primary-500);
+  }
+
+  .intent-proba-slider .ngx-slider .ngx-slider-pointer {
+    width: 12px;
+    height: 12px;
+    top: -5px;
+    background-color: nb-theme(color-primary-500);
+    &:after {
+      display: none;
+    }
+  }
+  .intent-proba-slider .ngx-slider .ngx-slider-bubble {
+    bottom: 10px;
+    font-size: 12px;
+  }
+
+  .intent-proba-slider .ngx-slider .ngx-slider-bubble.ngx-slider-limit {
+    display: none;
+  }
+}
+
+.advanced-tools {
+  background-color: var(--background-basic-color-2);
+  margin: 1em -1.5rem -1rem -1.5rem;
+  padding: 0.5rem 2em 1em 2em;
+}
+
+.tools-columns {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 2fr 3fr 1fr;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -62,7 +62,7 @@ export class IntentsComponent implements OnInit {
   }
 
   updateFilteredIntents(): void {
-    if (this.filters.search?.trim().length) {
+    if (this.filters?.search?.trim().length) {
       let allIntents = [];
       this.intentsCategories.forEach((cat) => {
         allIntents = [...allIntents, ...cat.intents];
