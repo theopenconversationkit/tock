@@ -9,13 +9,16 @@ title: Table of Contents
 
 * [Table of contents](../toc)
 
-* Try Tock Studio :
+* Try Tock Studio:
     * [Create your first bot with _Tock Studio_](../guide/studio)
     * [Configure your bot for _Messenger_](../guide/messenger)
     * [Build NLP models](../build-nlp-model)
     * [Monitor NLP models](../evaluate-the-model)
     * [Reducing the scope of intentions](../guide/intents-restrictions)
 
+* Use Tock:
+  - Guides:
+    - [Create a multilingual bot (internationalisation)](../user/guides/i18n)
 
 * Develop Stories :
     * [Bot API mode](../dev/bot-api)

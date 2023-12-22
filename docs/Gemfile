@@ -22,3 +22,6 @@ gem "github-pages", group: :jekyll_plugins
 group :jekyll_plugins do
   gem 'jekyll-optional-front-matter'
 end
+
+# Required to run jekyll 3 on latest Ruby (see https://talk.jekyllrb.com/t/load-error-cannot-load-such-file-webrick/5417/13)
+gem "webrick", "~> 1.8"

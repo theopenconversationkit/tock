@@ -24,6 +24,7 @@ import ai.tock.shared.defaultNamespace
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nKeyProvider.Companion.generateKey
 import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.I18nLocalizedLabel
 import mu.KotlinLogging
 
 /**
@@ -201,13 +202,21 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * Gets an i18n label with the specified key. Current namespace is used for the categorization.
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
+        return i18nKey(key, defaultLabel, emptySet(), *args)
+    }
+
+    /**
+     * Gets an i18n label with the specified key and defaults. Current namespace is used for the categorization.
+     */
+    fun i18nKey(key: String, defaultLabel: CharSequence, defaultI18n: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue {
         val category = i18nKeyCategory()
         return I18nLabelValue(
             key,
             i18nNamespace,
             category,
             defaultLabel,
-            args.toList()
+            args.toList(),
+            defaultI18n,
         )
     }
 

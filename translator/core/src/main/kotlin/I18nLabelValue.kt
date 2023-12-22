@@ -36,13 +36,19 @@ class I18nLabelValue constructor(
      */
     category: String,
     /**
-     * The default label if no translation is found.
+     * The fallback value if none is found for the requested locale and interface type.
+     *
+     * If a [TranslatorEngine] is configured, this default label will also be used for automated translation.
      */
     val defaultLabel: CharSequence,
     /**
      * The optional format pattern arguments.
      */
-    val args: List<Any?> = emptyList()
+    val args: List<Any?> = emptyList(),
+    /**
+     * Default values for various languages and interface types.
+     */
+    val defaultI18n: Set<I18nLocalizedLabel> = emptySet(),
 ) : CharSequence by defaultLabel {
 
     constructor(label: I18nLabel) :
@@ -83,6 +89,7 @@ class I18nLabelValue constructor(
         if (key != other.key) return false
         if (namespace != other.namespace) return false
         if (category != other.category) return false
+        if (defaultI18n != other.defaultI18n) return false
 
         return true
     }
@@ -93,6 +100,7 @@ class I18nLabelValue constructor(
         result = 31 * result + key.hashCode()
         result = 31 * result + namespace.hashCode()
         result = 31 * result + category.hashCode()
+        result = 31 * result + defaultI18n.hashCode()
         return result
     }
 }

@@ -22,17 +22,22 @@ import ai.tock.translator.UserInterfaceType.textChat
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.jupiter.api.Test
-import org.litote.kmongo.toId
 import java.util.Locale
-import kotlin.collections.LinkedHashSet
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Test
+import org.litote.kmongo.toId
 
 /**
  *
  */
 class TranslatorTest : AbstractTest() {
+
+    @AfterEach
+    fun teardown() {
+        Translator.resetValueWhenDefaultChanges = false
+    }
 
     @Test
     fun formatMessage_shouldHandleWell_SpecialCharInChoiceFormat() {
@@ -149,6 +154,69 @@ class TranslatorTest : AbstractTest() {
             target,
             Translator.translate(
                 key,
+                I18nContext(defaultLocale, textChat)
+            ).toString()
+        )
+
+        verify { i18nDAO.getLabelById(id.toId()) }
+    }
+
+    @Test
+    fun translate_shouldResetLabel_whenEnabledAndTheSameKeyIsAskedTwiceWithDifferentDefaults() {
+        val category = "category"
+        val toTranslate = "aaa"
+        val target = "bbb"
+        val updatedTarget = "bbbc"
+        val id = "not_yet_cached_id"
+        val initialDefaults = linkedSetOf(
+            I18nLocalizedLabel(
+                defaultLocale,
+                textChat,
+                target
+            )
+        )
+        every { i18nDAO.getLabelById(id.toId()) } returns
+            I18nLabel(
+                id.toId(),
+                defaultNamespace,
+                category,
+                initialDefaults,
+                defaultI18n = initialDefaults
+            )
+        Translator.resetValueWhenDefaultChanges = true
+
+        val key = I18nLabelValue(
+            id,
+            defaultNamespace,
+            category,
+            toTranslate,
+            defaultI18n = initialDefaults
+        )
+
+        assertEquals(
+            target,
+            Translator.translate(
+                key,
+                I18nContext(defaultLocale, textChat)
+            ).toString()
+        )
+
+        assertEquals(
+            updatedTarget,
+            Translator.translate(
+                I18nLabelValue(
+                    id,
+                    defaultNamespace,
+                    category,
+                    toTranslate,
+                    defaultI18n = linkedSetOf(
+                        I18nLocalizedLabel(
+                            defaultLocale,
+                            textChat,
+                            updatedTarget
+                        )
+                    )
+                ),
                 I18nContext(defaultLocale, textChat)
             ).toString()
         )

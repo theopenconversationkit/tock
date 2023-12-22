@@ -56,6 +56,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.I18nLocalizedLabel
 
 /**
  * Bus implementation for Tock integrated mode.
@@ -510,6 +511,22 @@ interface BotBus : Bus<BotBus> {
                     botDefinition.botId,
                     defaultLabel,
                     args.toList()
+                )
+        }
+
+    /**
+     * Gets an i18n label with the specified key and defaults.
+     */
+    fun i18nKey(key: String, defaultLabel: CharSequence, localizedDefaults: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue =
+        story.definition.storyHandler.let {
+            (it as? StoryHandlerBase<*>)?.i18nKey(key, defaultLabel, localizedDefaults, *args)
+                ?: I18nLabelValue(
+                    key,
+                    botDefinition.namespace,
+                    botDefinition.botId,
+                    defaultLabel,
+                    args.toList(),
+                    localizedDefaults,
                 )
         }
 

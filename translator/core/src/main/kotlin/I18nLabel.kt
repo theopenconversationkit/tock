@@ -18,8 +18,8 @@ package ai.tock.translator
 
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.defaultNamespace
-import org.litote.kmongo.Id
 import java.util.Locale
+import org.litote.kmongo.Id
 
 /**
  * The label persisted in database.
@@ -31,6 +31,7 @@ data class I18nLabel(
     val i18n: LinkedHashSet<I18nLocalizedLabel>,
     val defaultLabel: String? = null,
     val defaultLocale: Locale = findDefaultLabelLocale(defaultLabel, i18n),
+    val defaultI18n: Set<I18nLocalizedLabel> = emptySet(),
     val version: Int = 0
 ) {
 
