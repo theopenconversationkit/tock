@@ -13,6 +13,12 @@ content:
         url: 'en/build-nlp-model'
       - title: 'Monitor NLP models'
         url: 'en/evaluate-the-model'
+  - title: 'Use Tock'
+    children:
+      - title: 'Guides'
+        children:
+          - title: 'Multilingual bot'
+            url: 'en/user/guides/i18n'
   - title: 'Develop Stories'
     children:
       - title: 'Bot API mode'
@@ -25,6 +31,8 @@ content:
         url: 'en/kdoc'
       - title: 'Code Samples'
         url: 'en/the-open-data-bot'
+      - title: 'i18n'
+        url: 'en/dev/i18n'
       - title: 'API documentation'
         url: 'en/api'
   - title: 'About'

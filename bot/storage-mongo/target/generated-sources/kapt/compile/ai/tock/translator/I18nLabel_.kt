@@ -7,6 +7,7 @@ import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
@@ -26,6 +27,8 @@ private val __DefaultLabel: KProperty1<I18nLabel, String?>
     get() = I18nLabel::defaultLabel
 private val __DefaultLocale: KProperty1<I18nLabel, Locale?>
     get() = I18nLabel::defaultLocale
+private val __DefaultI18n: KProperty1<I18nLabel, Set<I18nLocalizedLabel>?>
+    get() = I18nLabel::defaultI18n
 private val __Version: KProperty1<I18nLabel, Int?>
     get() = I18nLabel::version
 class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabel?>) :
@@ -48,6 +51,9 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
     val defaultLocale: KPropertyPath<T, Locale?>
         get() = KPropertyPath(this,__DefaultLocale)
 
+    val defaultI18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
+        get() = KCollectionSimplePropertyPath(this,I18nLabel::defaultI18n)
+
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath(this,__Version)
 
@@ -64,6 +70,8 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
             get() = __DefaultLabel
         val DefaultLocale: KProperty1<I18nLabel, Locale?>
             get() = __DefaultLocale
+        val DefaultI18n: KCollectionSimplePropertyPath<I18nLabel, I18nLocalizedLabel?>
+            get() = KCollectionSimplePropertyPath(null, __DefaultI18n)
         val Version: KProperty1<I18nLabel, Int?>
             get() = __Version}
 }
@@ -88,6 +96,9 @@ class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 
     val defaultLocale: KPropertyPath<T, Locale?>
         get() = KPropertyPath(this,__DefaultLocale)
+
+    val defaultI18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
+        get() = KCollectionSimplePropertyPath(this,I18nLabel::defaultI18n)
 
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath(this,__Version)
@@ -115,6 +126,9 @@ class I18nLabel_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*
 
     val defaultLocale: KPropertyPath<T, Locale?>
         get() = KPropertyPath(this,__DefaultLocale)
+
+    val defaultI18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
+        get() = KCollectionSimplePropertyPath(this,I18nLabel::defaultI18n)
 
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath(this,__Version)

@@ -27,10 +27,9 @@ import ai.tock.shared.provide
 import ai.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import ai.tock.translator.UserInterfaceType.textChat
 import ai.tock.translator.UserInterfaceType.voiceAssistant
+import com.google.common.annotations.VisibleForTesting
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import mu.KotlinLogging
-import org.litote.kmongo.toId
 import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.time.Duration
@@ -39,6 +38,8 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.LongAdder
+import mu.KotlinLogging
+import org.litote.kmongo.toId
 
 /**
  * The main entry class of translator module.
@@ -57,6 +58,9 @@ object Translator {
     var enabled: Boolean = booleanProperty("tock_i18n_enabled", false)
 
     private val statWriteEnabled = booleanProperty("tock_i18n_stat_write_enabled", true)
+
+    @VisibleForTesting
+    internal var resetValueWhenDefaultChanges = booleanProperty("tock_i18n_reset_value_on_default_change", false)
 
     private val defaultInterface: UserInterfaceType = textChat
 
@@ -117,12 +121,22 @@ object Translator {
 
     fun getLabel(id: String): I18nLabel? = loadLabel(id)
 
-    private fun getLabel(key: I18nLabelValue): I18nLabel? = getLabel(key.key)
-        ?.apply {
-            if (defaultLabel != null && key.defaultLabel != key.defaultLabel.toString()) {
-                logger.warn { "default label has changed - old value $defaultLabel - new value : ${key.defaultLabel}" }
-            }
+    private fun getExistingLabel(key: I18nLabelValue, checkDefaults: Boolean) =
+        getLabel(key.key)?.takeUnless {  stored ->
+            checkDefaults && !checkDefaultConsistency(key, stored) && resetValueWhenDefaultChanges
         }
+
+    private fun checkDefaultConsistency(key: I18nLabelValue, value: I18nLabel): Boolean {
+        if (value.defaultLabel != null && value.defaultLabel != key.defaultLabel.toString()) {
+            logger.warn { "default label has changed - old value ${value.defaultLabel} - new value : ${key.defaultLabel}" }
+            return false
+        } else if (value.defaultI18n != key.defaultI18n) {
+            logger.warn { "default localizations have changed - old values ${value.defaultI18n} - new values : ${key.defaultI18n}" }
+            return false
+        } else {
+            return true
+        }
+    }
 
     private fun incrementStat(value: I18nLabelValue, context: I18nContext) {
         statsCache.get(I18nLabelStatKey(value, context)) { LongAdder() }.increment()
@@ -132,7 +146,7 @@ object Translator {
         saveIfNotExist(value, defaultLocale, readOnly)
 
     fun saveIfNotExist(value: I18nLabelValue, locale: Locale?, readOnly: Boolean = false): I18nLabel {
-        val i18nLabel: I18nLabel? = if (readOnly) null else getLabel(value)
+        val i18nLabel: I18nLabel? = if (readOnly) null else getExistingLabel(value, true)
         return i18nLabel ?: run {
             val defaultLabelKey = value.defaultLabel.toString()
             val defaultLabel = I18nLocalizedLabel(locale ?: defaultLocale, defaultInterface, defaultLabelKey)
@@ -157,7 +171,7 @@ object Translator {
         synchronized(value.key.intern()) {
             var count = 1
             var v = value
-            while (getLabel(v) != null) {
+            while (getExistingLabel(v, false) != null) {
                 v = I18nLabelValue(
                     value.key + "_" + count++,
                     value.namespace,
@@ -204,54 +218,18 @@ object Translator {
             return TranslatedString(value.defaultLabel)
         }
 
-        val storedLabel = getLabel(value)
-        val (locale, userInterfaceType, connectorId) = context
+        val (userLocale, userInterfaceType, connectorId) = context
+        val targetInterface = if (userInterfaceType == textAndVoiceAssistant) textChat else userInterfaceType
 
-        val targetDefaultUserInterface = if (userInterfaceType == textAndVoiceAssistant) textChat else userInterfaceType
+        val storedLabel = getExistingLabel(value, true) ?: createLabel(value, userLocale, targetInterface)
 
         if (statWriteEnabled) {
-            incrementStat(value, context.copy(userInterfaceType = targetDefaultUserInterface))
+            incrementStat(value, context.copy(userInterfaceType = targetInterface))
         }
 
-        val label = if (storedLabel != null) {
-            getLabel(storedLabel, value.defaultLabel.toString(), context)
-        } else {
-            val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, value.defaultLabel.toString())
-            if (locale != defaultLocale) {
-                val localizedLabel = I18nLocalizedLabel(
-                    locale,
-                    targetDefaultUserInterface,
-                    translate(
-                        value.defaultLabel.toString(), defaultLocale, locale
-                    )
-                )
-                val label = I18nLabel(
-                    value.key.toId(),
-                    value.namespace,
-                    value.category,
-                    LinkedHashSet(listOf(defaultLabel, localizedLabel)),
-                    value.defaultLabel.toString()
-                )
-                i18nDAO.save(label)
-                localizedLabel.label
-            } else {
-                val interfaceLabel =
-                    if (defaultInterface != targetDefaultUserInterface)
-                        I18nLocalizedLabel(locale, targetDefaultUserInterface, defaultLabel.label)
-                    else null
-                val label = I18nLabel(
-                    value.key.toId(),
-                    value.namespace,
-                    value.category,
-                    LinkedHashSet(listOfNotNull(defaultLabel, interfaceLabel)),
-                    value.defaultLabel.toString()
-                )
-                i18nDAO.save(label)
-                value.defaultLabel
-            }
-        }
+        val label = pickSpecificLabel(storedLabel, value.defaultLabel.toString(), context)
 
-        logger.debug { "find label $label for $value, $locale, $userInterfaceType and $connectorId" }
+        logger.debug { "find label $label for $value, $userLocale, $userInterfaceType and $connectorId" }
 
         return if (label is TextAndVoiceTranslatedString) {
             label.copy(
@@ -266,14 +244,42 @@ object Translator {
             TranslatedString(
                 formatMessage(
                     label.toString(),
-                    context.copy(userInterfaceType = targetDefaultUserInterface),
+                    context.copy(userInterfaceType = targetInterface),
                     value.args
                 )
             )
         }
     }
 
-    private fun getLabel(
+    private fun createLabel(
+        value: I18nLabelValue,
+        userLocale: Locale,
+        targetInterface: UserInterfaceType
+    ): I18nLabel {
+        val labels = LinkedHashSet(value.defaultI18n)
+        if (labels.none { it.locale == defaultLocale && it.interfaceType == defaultInterface }) {
+            labels += I18nLocalizedLabel(defaultLocale, defaultInterface, value.defaultLabel.toString())
+        }
+        if (labels.none { it.locale == userLocale }) {
+            labels += I18nLocalizedLabel(
+                userLocale,
+                targetInterface,
+                translate(value.defaultLabel.toString(), defaultLocale, userLocale),
+            )
+        }
+        val label = I18nLabel(
+            value.key.toId(),
+            value.namespace,
+            value.category,
+            labels,
+            value.defaultLabel.toString(),
+            defaultI18n = value.defaultI18n
+        )
+        i18nDAO.save(label)
+        return label
+    }
+
+    private fun pickSpecificLabel(
         i18nLabel: I18nLabel,
         defaultLabel: String,
         context: I18nContext

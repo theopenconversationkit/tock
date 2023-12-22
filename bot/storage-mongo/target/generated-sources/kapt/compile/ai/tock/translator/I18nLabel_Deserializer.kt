@@ -11,6 +11,8 @@ import java.util.Locale
 import kotlin.Int
 import kotlin.String
 import kotlin.collections.Map
+import kotlin.collections.MutableSet
+import kotlin.collections.Set
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findParameterByName
@@ -35,6 +37,8 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
             var _defaultLabel_set : Boolean = false
             var _defaultLocale_: Locale? = null
             var _defaultLocale_set : Boolean = false
+            var _defaultI18n_: MutableSet<I18nLocalizedLabel>? = null
+            var _defaultI18n_set : Boolean = false
             var _version_: Int? = null
             var _version_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -77,6 +81,11 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                              else p.readValueAs(Locale::class.java);
                             _defaultLocale_set = true
                             }
+                    "defaultI18n" -> {
+                            _defaultI18n_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_defaultI18n__reference);
+                            _defaultI18n_set = true
+                            }
                     "version" -> {
                             _version_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.intValue;
@@ -91,10 +100,10 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                 _token_ = currentToken
                         } 
             return if(__id_set && _namespace_set && _category_set && _i18n_set && _defaultLabel_set
-                    && _defaultLocale_set && _version_set)
+                    && _defaultLocale_set && _defaultI18n_set && _version_set)
                     I18nLabel(_id = __id_!!, namespace = _namespace_!!, category = _category_!!,
                             i18n = _i18n_!!, defaultLabel = _defaultLabel_, defaultLocale =
-                            _defaultLocale_!!, version = _version_!!)
+                            _defaultLocale_!!, defaultI18n = _defaultI18n_!!, version = _version_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(__id_set)
@@ -109,6 +118,8 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                     map[parameters.getValue("defaultLabel")] = _defaultLabel_
                     if(_defaultLocale_set)
                     map[parameters.getValue("defaultLocale")] = _defaultLocale_
+                    if(_defaultI18n_set)
+                    map[parameters.getValue("defaultI18n")] = _defaultI18n_
                     if(_version_set)
                     map[parameters.getValue("version")] = _version_ 
                     primaryConstructor.callBy(map) 
@@ -126,7 +137,8 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
                 primaryConstructor.findParameterByName("category")!!, "i18n" to
                 primaryConstructor.findParameterByName("i18n")!!, "defaultLabel" to
                 primaryConstructor.findParameterByName("defaultLabel")!!, "defaultLocale" to
-                primaryConstructor.findParameterByName("defaultLocale")!!, "version" to
+                primaryConstructor.findParameterByName("defaultLocale")!!, "defaultI18n" to
+                primaryConstructor.findParameterByName("defaultI18n")!!, "version" to
                 primaryConstructor.findParameterByName("version")!!) }
 
         private val __id__reference: TypeReference<Id<I18nLabel>> = object :
@@ -134,5 +146,8 @@ internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonMo
 
         private val _i18n__reference: TypeReference<LinkedHashSet<I18nLocalizedLabel>> = object :
                 TypeReference<LinkedHashSet<I18nLocalizedLabel>>() {}
+
+        private val _defaultI18n__reference: TypeReference<Set<I18nLocalizedLabel>> = object :
+                TypeReference<Set<I18nLocalizedLabel>>() {}
     }
 }

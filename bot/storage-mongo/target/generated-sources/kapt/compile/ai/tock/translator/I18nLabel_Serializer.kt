@@ -44,6 +44,17 @@ internal class I18nLabel_Serializer : StdSerializer<I18nLabel>(I18nLabel::class.
         gen.writeFieldName("defaultLocale")
         val _defaultLocale_ = value.defaultLocale
         serializers.defaultSerializeValue(_defaultLocale_, gen)
+        gen.writeFieldName("defaultI18n")
+        val _defaultI18n_ = value.defaultI18n
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                serializers.config.typeFactory.constructType(ai.tock.translator.I18nLocalizedLabel::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_defaultI18n_, gen, serializers)
         gen.writeFieldName("version")
         val _version_ = value.version
         gen.writeNumber(_version_)

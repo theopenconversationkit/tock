@@ -19,8 +19,8 @@ package ai.tock.bot.jackson
 import ai.tock.shared.jackson.mapper
 import ai.tock.translator.I18nLabelValue
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 
 class I18nLabelValueSerializationTest {
 
@@ -31,7 +31,7 @@ class I18nLabelValueSerializationTest {
         val json = mapper.writeValueAsString(value)
 
         assertEquals(
-            """{"key":"key","namespace":"namespace","category":"category","defaultLabel":"defaultLabel","args":[]}""",
+            """{"key":"key","namespace":"namespace","category":"category","defaultLabel":"defaultLabel","args":[], "localizedDefaults":[]}""",
             json
         )
 
