@@ -20,6 +20,16 @@ from llm_orchestrator.models.llm.llm_types import LLMSetting
 from llm_orchestrator.models.rag.rag_models import ChatMessage, MetadataFilter
 
 
+class LLMProviderSettingStatusQuery(BaseModel):
+    setting: LLMSetting = Field(description='The LLM provider setting to be checked.')
+
+
+class EMProviderSettingStatusQuery(BaseModel):
+    setting: EMSetting = Field(
+        description='The Embedding Model provider setting to be checked.'
+    )
+
+
 class RagQuery(BaseModel):
     question: str = Field(
         description='The user question.',

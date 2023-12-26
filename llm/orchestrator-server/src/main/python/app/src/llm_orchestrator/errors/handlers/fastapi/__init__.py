@@ -12,12 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from enum import Enum, unique
-
-
-@unique
-class ErrorCode(str, Enum):
-    E10 = 'Unknown LLM Setting'
-    E11 = 'Unknown EM Setting'
-    E20 = 'Unknown LLM Provider'
-    E21 = 'Unknown EM Provider'

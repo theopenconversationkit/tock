@@ -13,19 +13,11 @@
 #   limitations under the License.
 #
 
-from llm_orchestrator.exceptions.error_code import ErrorCode
-from llm_orchestrator.exceptions.functional_exception import (
-    FunctionalException,
-)
-from llm_orchestrator.models.llm.llm_provider import LLMProvider
 from llm_orchestrator.models.llm.llm_types import LLMSetting
 from llm_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
 )
 
 
-def check_llm_setting(provider_id: str, setting: LLMSetting) -> bool:
-    if LLMProvider.has_value(provider_id):
-        return get_llm_factory(setting).check_llm_setting()
-    else:
-        raise FunctionalException(ErrorCode.E20)
+def check_llm_setting(setting: LLMSetting) -> bool:
+    return get_llm_factory(setting).check_llm_setting()

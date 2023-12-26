@@ -18,8 +18,11 @@ from pydantic import BaseModel
 application_check_router = APIRouter(tags=['Application Monitors'])
 
 
-class Check(BaseModel):
-    """Response model to validate and return when performing a specific check."""
+class AppCheckResponse(BaseModel):
+    """
+    Response model when performing a specific check.
+    Use cases: health check API and liveness     check API
+    """
 
     status: str = 'Ok'
 
@@ -30,7 +33,7 @@ class Check(BaseModel):
     response_description='Return HTTP status code 200 (OK)',
     status_code=status.HTTP_200_OK,
 )
-def get_health() -> Check:
+def get_health() -> AppCheckResponse:
     """
     ## Perform a Health Check
     Endpoint to perform a health check on. This endpoint can primarily be used Docker
@@ -40,7 +43,7 @@ def get_health() -> Check:
     Returns:
         HealthCheck: Returns a JSON response with the health status
     """
-    return Check(status='OK')
+    return AppCheckResponse(status='OK')
     # TODO : Add a check for OpenSearch
     # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-operations.html
 
@@ -51,7 +54,7 @@ def get_health() -> Check:
     response_description='Return HTTP status code 200 (OK)',
     status_code=status.HTTP_200_OK,
 )
-def get_health() -> Check:
+def get_health() -> AppCheckResponse:
     """
     ## Perform a Liveness Check
     Endpoint to perform a liveness check on. This endpoint can primarily be used Docker
@@ -61,4 +64,4 @@ def get_health() -> Check:
     Returns:
         LivenessCheck: Returns a JSON response with the liveness status
     """
-    return Check(status='OK')
+    return AppCheckResponse(status='OK')

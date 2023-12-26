@@ -12,9 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from enum import Enum, unique
-
-
-@unique
-class OpenAIEmbeddingModel(Enum):
-    TEXT_EMBEDDING_ADA_002 = 'text-embedding-ada-002'
