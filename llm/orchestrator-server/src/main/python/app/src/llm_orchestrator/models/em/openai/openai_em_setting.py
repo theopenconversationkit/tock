@@ -24,3 +24,4 @@ class OpenAIEMSetting(BaseEMSetting):
     provider: Literal[EMProvider.OPEN_AI] = Field(
         description='The Embedding Model provider.'
     )
+    model: str = Field(description='The model id', examples=['text-embedding-ada-002'])

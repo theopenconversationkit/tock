@@ -14,7 +14,11 @@
 #
 
 from langchain.base_language import BaseLanguageModel
+from langchain.chat_models import ChatOpenAI
 
+from llm_orchestrator.errors.handlers.openai.openai_exception_handler import (
+    factory_openai_exception_handler,
+)
 from llm_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
@@ -26,8 +30,13 @@ from llm_orchestrator.services.langchain.factories.llm.llm_factory import (
 class OpenAILLMFactory(LangChainLLMFactory):
     setting: OpenAILLMSetting
 
-    def check_llm_setting(self) -> bool:
-        return True
-
     def get_language_model(self) -> BaseLanguageModel:
-        return 'LanguageModel[OpenAILLMFactory]'
+        return ChatOpenAI(
+            openai_api_key=self.setting.api_key,
+            model_name=self.setting.model,
+            temperature=self.setting.temperature,
+        )
+
+    @factory_openai_exception_handler
+    def check_llm_setting(self) -> bool:
+        return super().check_llm_setting()

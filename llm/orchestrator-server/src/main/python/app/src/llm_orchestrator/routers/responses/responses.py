@@ -12,26 +12,62 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
 from llm_orchestrator.models.em.em_provider import EMProvider
+from llm_orchestrator.models.errors.errors_models import ErrorCode, ErrorInfo
 from llm_orchestrator.models.llm.llm_provider import LLMProvider
 from llm_orchestrator.models.rag.rag_models import TextWithFootnotes
 
 
+class ErrorResponse(BaseModel):
+    code: ErrorCode = Field(
+        description='The AI orchestrator error code.',
+        examples=[ErrorCode.PROVIDER_API_AUTHENTICATION_ERROR],
+    )
+    message: str = Field(
+        description='The AI orchestrator error message.',
+        examples=['Authentication error to the AI provider API.'],
+    )
+    detail: Optional[str] = Field(
+        description='The AI orchestrator error detail. It provides help or a solution.',
+        examples=[
+            'Check your API key or token and make sure it is correct and active.'
+        ],
+        default=None,
+    )
+    info: ErrorInfo = Field(
+        description='The AI orchestrator error info. It exposes the raised error cause.'
+    )
+
+
+class ProviderSettingStatusResponse(BaseModel):
+    valid: bool = Field(
+        description='It indicates the AI provider setting validity.',
+        examples=[True],
+        default=False,
+    )
+    errors: list[ErrorResponse] = Field(description='The list of errors.', default=[])
+
+
 class LLMProviderResponse(BaseModel):
-    provider: LLMProvider
+    provider: LLMProvider = Field(
+        description='The LLM provider ID', default=[LLMProvider.OPEN_AI]
+    )
 
 
 class EMProviderResponse(BaseModel):
-    provider: EMProvider
+    provider: EMProvider = Field(
+        description='The Embedding Model provider ID',
+        default=[EMProvider.AZURE_OPEN_AI_SERVICE],
+    )
 
 
 class RagResponse(BaseModel):
     answer: TextWithFootnotes = Field(
-        description='The RAF answer, with outside sources'
+        description='The RAG answer, with outside sources.'
     )
     debug: list[Any] = Field(
         description='Debug data',

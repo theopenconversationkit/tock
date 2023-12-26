@@ -12,16 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from typing import Union
-
-from llm_orchestrator.exceptions.error_code import ErrorCode
-
-
-class FunctionalException(Exception):
-    def __init__(self, code: ErrorCode, message: Union[str, None] = None):
-        if message:
-            super().__init__(message)
-        else:
-            super().__init__(code.value)
-
-        self.code = code

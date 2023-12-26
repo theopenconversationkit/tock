@@ -22,9 +22,9 @@ class BaseLLMSetting(BaseModel):
     provider: LLMProvider = Field(description='The Large Language Model provider.')
     api_key: str = Field(
         description='The API key used to authenticate requests to the provider API.',
-        examples=['123-abc-456-def'],
+        examples=['ab7***************************A1IV4B'],
+        min_length=1,
     )
-    model: str = Field(description='The model id', examples=['gpt-3.5-turbo'])
     temperature: float = Field(
         description='The temperature that controls the randomness of the text generated.',
         examples=['1.2'],
@@ -34,4 +34,5 @@ class BaseLLMSetting(BaseModel):
     prompt: str = Field(
         description='The prompt to generate completions for.',
         examples=['How to learn to ride a bike without wheels!'],
+        min_length=1,
     )

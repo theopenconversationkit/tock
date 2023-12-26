@@ -13,11 +13,19 @@
 #   limitations under the License.
 #
 
-from fastapi import APIRouter, HTTPException
+import logging
 
-from llm_orchestrator.exceptions.error_code import ErrorCode
-from llm_orchestrator.exceptions.functional_exception import (
-    FunctionalException,
+from fastapi import APIRouter, HTTPException, Request
+
+from llm_orchestrator.errors.exceptions.exceptions import (
+    BusinessException,
+    InvalidQueryException,
+    UnknownProviderException,
+)
+from llm_orchestrator.errors.handlers.fastapi.fastapi_handler import (
+    create_error_info_bad_request,
+    create_error_info_not_found,
+    create_error_response,
 )
 from llm_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
@@ -25,8 +33,17 @@ from llm_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
 from llm_orchestrator.models.em.em_provider import EMProvider
 from llm_orchestrator.models.em.em_types import EMSetting
 from llm_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
-from llm_orchestrator.routers.responses.responses import EMProviderResponse
+from llm_orchestrator.models.errors.errors_models import ErrorCode
+from llm_orchestrator.routers.requests.requests import (
+    EMProviderSettingStatusQuery,
+)
+from llm_orchestrator.routers.responses.responses import (
+    EMProviderResponse,
+    ProviderSettingStatusResponse,
+)
 from llm_orchestrator.services.em.em_service import check_em_setting
+
+logger = logging.getLogger(__name__)
 
 em_providers_router = APIRouter(
     prefix='/em-providers',
@@ -60,7 +77,6 @@ async def get_em_provider_setting_by_id(provider_id: EMProvider) -> EMSetting:
         return AzureOpenAIEMSetting(
             provider=EMProvider.AZURE_OPEN_AI_SERVICE,
             api_key='123-abc-456-def',
-            model='gpt-3.5-turbo',
             deployment_name='my-deployment-name',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
@@ -70,8 +86,28 @@ async def get_em_provider_setting_by_id(provider_id: EMProvider) -> EMSetting:
 
 
 @em_providers_router.post('/{provider_id}/setting/status')
-async def check_em_provider_setting_by_id(provider_id: str, setting: EMSetting) -> bool:
+async def check_em_provider_setting(
+    request: Request, provider_id: str, query: EMProviderSettingStatusQuery
+) -> ProviderSettingStatusResponse:
+    # Query validation
+    validate_query(request, provider_id, query.setting)
+
     try:
-        return check_em_setting(provider_id, setting)
-    except FunctionalException as e:
-        raise HTTPException(status_code=400, detail=e.args[0])
+        # EM setting check
+        check_em_setting(query.setting)
+
+        return ProviderSettingStatusResponse(valid=True)
+    except BusinessException as exc:
+        logger.error(exc)
+        return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
+
+
+def validate_query(request: Request, provider_id: str, setting: EMSetting):
+    if not EMProvider.has_value(provider_id):
+        raise UnknownProviderException(
+            create_error_info_not_found(
+                request, provider_id, [provider.value for provider in EMProvider]
+            )
+        )
+    elif provider_id != setting.provider:
+        raise InvalidQueryException(create_error_info_bad_request(request, provider_id))
