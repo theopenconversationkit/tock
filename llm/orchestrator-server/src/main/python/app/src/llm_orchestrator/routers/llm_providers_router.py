@@ -12,13 +12,21 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import logging
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
-from llm_orchestrator.exceptions.error_code import ErrorCode
-from llm_orchestrator.exceptions.functional_exception import (
-    FunctionalException,
+from llm_orchestrator.errors.exceptions.exceptions import (
+    BusinessException,
+    InvalidQueryException,
+    UnknownProviderException,
 )
+from llm_orchestrator.errors.handlers.fastapi.fastapi_handler import (
+    create_error_info_bad_request,
+    create_error_info_not_found,
+    create_error_response,
+)
+from llm_orchestrator.models.errors.errors_models import ErrorCode, ErrorInfo
 from llm_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
@@ -27,8 +35,17 @@ from llm_orchestrator.models.llm.llm_types import LLMSetting
 from llm_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from llm_orchestrator.routers.responses.responses import LLMProviderResponse
+from llm_orchestrator.routers.requests.requests import (
+    LLMProviderSettingStatusQuery,
+)
+from llm_orchestrator.routers.responses.responses import (
+    ErrorResponse,
+    LLMProviderResponse,
+    ProviderSettingStatusResponse,
+)
 from llm_orchestrator.services.llm.llm_service import check_llm_setting
+
+logger = logging.getLogger(__name__)
 
 llm_providers_router = APIRouter(
     prefix='/llm-providers',
@@ -64,7 +81,6 @@ async def get_llm_provider_setting_by_id(provider_id: LLMProvider) -> LLMSetting
         return AzureOpenAILLMSetting(
             provider=LLMProvider.AZURE_OPEN_AI_SERVICE,
             api_key='123-abc-456-def',
-            model='gpt-3.5-turbo',
             deployment_name='my-deployment-name',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
@@ -76,10 +92,28 @@ async def get_llm_provider_setting_by_id(provider_id: LLMProvider) -> LLMSetting
 
 
 @llm_providers_router.post('/{provider_id}/setting/status')
-async def check_llm_provider_setting_by_id(
-    provider_id: str, setting: LLMSetting
-) -> bool:
+async def check_llm_provider_setting(
+    request: Request, provider_id: str, query: LLMProviderSettingStatusQuery
+) -> ProviderSettingStatusResponse:
+    # Query validation
+    validate_query(request, provider_id, query.setting)
+
     try:
-        return check_llm_setting(provider_id, setting)
-    except FunctionalException as e:
-        raise HTTPException(status_code=400, detail=e.args[0])
+        # LLM setting check
+        check_llm_setting(query.setting)
+
+        return ProviderSettingStatusResponse(valid=True)
+    except BusinessException as exc:
+        logger.error(exc)
+        return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
+
+
+def validate_query(request: Request, provider_id: str, setting: LLMSetting):
+    if not LLMProvider.has_value(provider_id):
+        raise UnknownProviderException(
+            create_error_info_not_found(
+                request, provider_id, [provider.value for provider in LLMProvider]
+            )
+        )
+    elif provider_id != setting.provider:
+        raise InvalidQueryException(create_error_info_bad_request(request, provider_id))

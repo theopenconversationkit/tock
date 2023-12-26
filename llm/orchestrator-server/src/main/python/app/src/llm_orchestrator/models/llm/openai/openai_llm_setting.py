@@ -24,3 +24,6 @@ class OpenAILLMSetting(BaseLLMSetting):
     provider: Literal[LLMProvider.OPEN_AI] = Field(
         description='The Large Language Model provider.'
     )
+    model: str = Field(
+        description='The model id', examples=['gpt-3.5-turbo'], min_length=1
+    )

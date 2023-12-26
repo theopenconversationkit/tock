@@ -23,4 +23,3 @@ class BaseEMSetting(BaseModel):
         description='The API key used to authenticate requests to the provider API.',
         examples=['123-abc-456-def'],
     )
-    model: str = Field(description='The model id', examples=['text-embedding-ada-002'])

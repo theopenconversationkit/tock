@@ -12,15 +12,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from llm_orchestrator.exceptions.error_code import ErrorCode
-from llm_orchestrator.exceptions.functional_exception import (
-    FunctionalException,
-)
+from llm_orchestrator.errors.exceptions.exceptions import BusinessException
 from llm_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
 from llm_orchestrator.models.em.em_setting import BaseEMSetting
 from llm_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
+from llm_orchestrator.models.errors.errors_models import ErrorCode
 from llm_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
@@ -54,7 +52,7 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
     elif isinstance(setting, AzureOpenAILLMSetting):
         return AzureOpenAILLMFactory(setting=setting)
     else:
-        raise FunctionalException(ErrorCode.E10)
+        raise BusinessException(ErrorCode.E10)
 
 
 def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
@@ -63,4 +61,4 @@ def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
     elif isinstance(setting, AzureOpenAIEMSetting):
         return AzureOpenAIEMFactory(setting=setting)
     else:
-        raise FunctionalException(ErrorCode.E10)
+        raise BusinessException(ErrorCode.E10)

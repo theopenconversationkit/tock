@@ -13,8 +13,12 @@
 #   limitations under the License.
 #
 
+from langchain.embeddings import OpenAIEmbeddings
 from langchain.embeddings.base import Embeddings
 
+from llm_orchestrator.errors.handlers.openai.openai_exception_handler import (
+    factory_openai_exception_handler,
+)
 from llm_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
 from llm_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
@@ -24,8 +28,11 @@ from llm_orchestrator.services.langchain.factories.em.em_factory import (
 class OpenAIEMFactory(LangChainEMFactory):
     setting: OpenAIEMSetting
 
-    def check_embedding_model_setting(self) -> bool:
-        return True
-
     def get_embedding_model(self) -> Embeddings:
-        return 'EmbeddingModel[OpenAIEMFactory]'
+        return OpenAIEmbeddings(
+            openai_api_key=self.setting.api_key, model=self.setting.model
+        )
+
+    @factory_openai_exception_handler
+    def check_embedding_model_setting(self) -> bool:
+        return super().check_embedding_model_setting()
