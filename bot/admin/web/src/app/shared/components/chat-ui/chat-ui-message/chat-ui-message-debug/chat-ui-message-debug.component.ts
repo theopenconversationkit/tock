@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { Debug } from '../../../../model/dialog-data';
-import { DebugViewerComponent } from '../../../debug-viewer/debug-viewer.component';
+import { DebugViewerDialogComponent } from '../../../debug-viewer-dialog/debug-viewer-dialog.component';
 
 @Component({
   selector: 'tock-chat-ui-message-debug',
@@ -17,7 +17,7 @@ export class ChatUiMessageDebugComponent implements OnInit {
   }
 
   showDebug() {
-    this.nbDialogService.open(DebugViewerComponent, {
+    this.nbDialogService.open(DebugViewerDialogComponent, {
       context: {
         debug: this.message.data
       }

@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NbDialogRef } from '@nebular/theme';
 
-import { DebugViewerComponent } from './debug-viewer.component';
+import { DebugViewerDialogComponent } from './debug-viewer-dialog.component';
 
 describe('DebugViewerComponent', () => {
-  let component: DebugViewerComponent;
-  let fixture: ComponentFixture<DebugViewerComponent>;
+  let component: DebugViewerDialogComponent;
+  let fixture: ComponentFixture<DebugViewerDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DebugViewerComponent],
+      declarations: [DebugViewerDialogComponent],
       providers: [
         {
           provide: NbDialogRef,
@@ -20,7 +20,7 @@ describe('DebugViewerComponent', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DebugViewerComponent);
+    fixture = TestBed.createComponent(DebugViewerDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

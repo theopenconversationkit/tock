@@ -7,10 +7,11 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { EnginesConfiguration, EnginesConfigurations } from './models/engines-configurations';
 import { LLMProvider, RagSettings } from './models';
-import { NbToastrService } from '@nebular/theme';
+import { NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { deepCopy } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
+import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
 
 interface RagSettingsForm {
   id: FormControl<string>;
@@ -66,7 +67,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     private state: StateService,
     private rest: RestService,
     private toastrService: NbToastrService,
-    private botConfiguration: BotConfigurationService
+    private botConfiguration: BotConfigurationService,
+    private nbWindowService: NbWindowService
   ) {}
 
   ngOnInit(): void {
@@ -185,7 +187,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   canRagBeActivated(): boolean {
-    return this.form ? this.form.valid && this.indexSessionId.value.length : false;
+    return this.form ? this.form.valid && this.indexSessionId.value?.length : false;
   }
 
   setActivationDisabledState(): void {
@@ -246,19 +248,19 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
           });
         },
         error: (error) => {
-          let errorMessage = 'An error occured';
-
-          if (error.error.errors.length) {
-            errorMessage = '';
-            error.error.errors.forEach((em) => {
-              errorMessage += `${em.message} `;
-            });
-          }
-
-          this.toastrService.danger(errorMessage, 'Error', {
+          this.toastrService.danger('An error occured', 'Error', {
             duration: 5000,
             status: 'danger'
           });
+
+          if (error.error) {
+            this.nbWindowService.open(DebugViewerWindowComponent, {
+              title: 'An error occured',
+              context: {
+                debug: error.error
+              }
+            });
+          }
         }
       });
     }

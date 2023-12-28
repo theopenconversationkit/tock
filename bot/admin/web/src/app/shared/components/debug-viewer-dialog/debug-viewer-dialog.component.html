@@ -1,6 +1,6 @@
 <nb-card class="main-wrapper">
   <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
-    Debug infos
+    {{ title }}
     <button
       nbButton
       ghost
@@ -13,6 +13,6 @@
   </nb-card-header>
 
   <nb-card-body>
-    <tock-debug-json-iterator [data]="debug"></tock-debug-json-iterator>
+    <tock-json-iterator [data]="debug"></tock-json-iterator>
   </nb-card-body>
 </nb-card>
