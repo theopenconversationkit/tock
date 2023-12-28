@@ -52,6 +52,15 @@
         </nb-select>
       </ng-container>
 
+      <ng-container *ngIf="configurationParam.type === 'openlist'">
+        <tock-autocomplete-input
+          fieldSize="small"
+          placeholder=""
+          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          [options]="configurationParam.source"
+        ></tock-autocomplete-input>
+      </ng-container>
+
       <ng-container *ngIf="configurationParam.type === 'number'">
         <tock-slider
           min="0"

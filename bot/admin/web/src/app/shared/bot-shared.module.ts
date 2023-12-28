@@ -41,7 +41,8 @@ import {
   NbCheckboxModule,
   NbInputModule,
   NbFormFieldModule,
-  NbAutocompleteModule
+  NbAutocompleteModule,
+  NbWindowModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -58,10 +59,12 @@ import {
   ChatUiMessageSentenceElementComponent,
   ChatUiMessageSentenceFootnotesComponent,
   ChoiceDialogComponent,
-  DebugViewerComponent,
+  DebugViewerDialogComponent,
+  DebugViewerWindowComponent,
   ErrorHelperComponent,
   FileUploadComponent,
   FormControlComponent,
+  JsonIteratorComponent,
   NoDataFoundComponent,
   PaginationComponent,
   SentenceTrainingComponent,
@@ -75,7 +78,6 @@ import { AutofocusDirective } from './directives';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json-iterator/debug-json-iterator.component';
 
 @NgModule({
   imports: [
@@ -96,7 +98,8 @@ import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json
     NbFormFieldModule,
     InfiniteScrollModule,
     NbAutocompleteModule,
-    NbAlertModule
+    NbAlertModule,
+    NbWindowModule
   ],
   declarations: [
     BotMessageComponent,
@@ -132,8 +135,9 @@ import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json
     SentenceTrainingFiltersComponent,
     SentenceTrainingListComponent,
     AutocompleteInputComponent,
-    DebugJsonIteratorComponent,
-    DebugViewerComponent
+    JsonIteratorComponent,
+    DebugViewerDialogComponent,
+    DebugViewerWindowComponent
   ],
   exports: [
     BotMessageComponent,
@@ -153,7 +157,9 @@ import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json
     SliderComponent,
     SentenceTrainingComponent,
     AutocompleteInputComponent,
-    DebugViewerComponent
+    JsonIteratorComponent,
+    DebugViewerDialogComponent,
+    DebugViewerWindowComponent
   ],
   providers: [BotSharedService, AnalyticsService]
 })

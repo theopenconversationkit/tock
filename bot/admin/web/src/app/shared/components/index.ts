@@ -19,4 +19,6 @@ export * from './sentence-training/sentence-training.component';
 export * from './sentence-training/sentence-training-dialog/sentence-training-dialog.component';
 export * from './sentence-training/sentence-training-filters/sentence-training-filters.component';
 export * from './sentence-training/sentence-training-list/sentence-training-list.component';
-export * from './debug-viewer/debug-viewer.component';
+export * from './debug-viewer-dialog/debug-viewer-dialog.component';
+export * from './debug-viewer-window/debug-viewer-window.component';
+export * from './json-iterator/json-iterator.component';
