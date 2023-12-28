@@ -1,3 +1,14 @@
+<button
+  nbButton
+  size="tiny"
+  class="float-right ml-2"
+  nbTooltip="Expand recursively"
+  *ngIf="isRoot && !isPrimitive(data)"
+  (click)="expandAll()"
+>
+  <nb-icon icon="list-outline"></nb-icon>
+</button>
+
 <div *ngIf="isRoot && isPrimitive(data)">
   {{ data }}
 </div>
@@ -40,10 +51,10 @@
   [class.isRoot]="isRoot"
 >
   <ng-container *ngFor="let list of data | keyvalue">
-    <tock-debug-json-iterator
+    <tock-json-iterator
       [data]="list.value"
       [parentKey]="list.key"
       [isRoot]="false"
-    ></tock-debug-json-iterator>
+    ></tock-json-iterator>
   </ng-container>
 </div>
