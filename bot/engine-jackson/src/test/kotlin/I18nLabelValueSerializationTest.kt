@@ -31,7 +31,7 @@ class I18nLabelValueSerializationTest {
         val json = mapper.writeValueAsString(value)
 
         assertEquals(
-            """{"key":"key","namespace":"namespace","category":"category","defaultLabel":"defaultLabel","args":[], "localizedDefaults":[]}""",
+            """{"key":"key","namespace":"namespace","category":"category","defaultLabel":"defaultLabel","args":[],"defaultI18n":[]}""",
             json
         )
 

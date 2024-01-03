@@ -46,7 +46,7 @@ class BotMediaMessageSerializationTest {
         )
         val json = mapper.writeValueAsString(card)
         assertEquals(
-            "{\"actions\":[{\"title\":{\"_id\":\"id\",\"namespace\":\"namespace\",\"category\":\"category\",\"i18n\":[],\"defaultLabel\":null,\"defaultLocale\":\"en\",\"version\":0},\"url\":\"https://demo.tock.ai\",\"type\":\"action\"}],\"fillCarousel\":false,\"type\":\"card\"}",
+            "{\"actions\":[{\"title\":{\"_id\":\"id\",\"namespace\":\"namespace\",\"category\":\"category\",\"i18n\":[],\"defaultLabel\":null,\"defaultLocale\":\"en\",\"defaultI18n\":[],\"version\":0},\"url\":\"https://demo.tock.ai\",\"type\":\"action\"}],\"fillCarousel\":false,\"type\":\"card\"}",
             json
         )
     }

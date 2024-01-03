@@ -34,16 +34,16 @@
         <kotlin>1.9.21</kotlin>
         <coroutine>1.7.3</coroutine>
 
-        <slf4j>2.0.9</slf4j>
+        <slf4j>2.0.10</slf4j>
         <logback>1.4.14</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
         <kmongo>4.11.0</kmongo>
-        <jackson>2.16.0</jackson>
-        <jackson-databind>2.16.0</jackson-databind>
-        <jackson-module>2.16.0</jackson-module>
+        <jackson>2.16.1</jackson>
+        <jackson-databind>2.16.1</jackson-databind>
+        <jackson-module>2.16.1</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
@@ -54,7 +54,7 @@
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
-        <guava>32.1.3-jre</guava>
+        <guava>33.0.0-jre</guava>
         <google-auth>1.34.1</google-auth>
         <google-http-client>1.43.3</google-http-client>
         <jasypt>1.9.3</jasypt>
@@ -69,7 +69,7 @@
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
         <google>26.29.0</google>
-        <aws-sdk>1.12.619</aws-sdk>
+        <aws-sdk>1.12.629</aws-sdk>
         <pac4j>6.0.0</pac4j>
         <vertx-pac4j>6.0.2</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
@@ -78,7 +78,7 @@
 
         <mockk>1.13.8</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.14.10</byte-buddy>
+        <byte-buddy>1.14.11</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M7</plugin.surefire>
