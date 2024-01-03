@@ -17,7 +17,7 @@
 package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.BotRagConfiguration
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.BotProvider
@@ -33,7 +33,7 @@ import ai.tock.shared.provide
 import ai.tock.shared.withoutNamespace
 import mu.KotlinLogging
 
-internal class BotApiDefinitionProvider(private val configuration: BotConfiguration, private val ragConfiguration: BotRAGConfiguration? = null) : BotProvider {
+internal class BotApiDefinitionProvider(private val configuration: BotConfiguration, private val ragConfiguration: BotRagConfiguration? = null) : BotProvider {
 
     private val logger = KotlinLogging.logger {}
 

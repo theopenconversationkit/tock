@@ -17,7 +17,7 @@
 package ai.tock.bot.api.service
 
 import ai.tock.bot.admin.bot.BotConfiguration
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
+import ai.tock.bot.admin.bot.llm.BotRagConfiguration
 import ai.tock.bot.api.model.configuration.ClientConfiguration
 import ai.tock.bot.api.model.configuration.StepConfiguration
 import ai.tock.bot.api.model.configuration.StoryConfiguration
@@ -77,7 +77,7 @@ internal class BotApiDefinition(
     configuration: BotConfiguration,
     clientConfiguration: ClientConfiguration?,
     handler: BotApiHandler,
-    ragConfiguration: BotRAGConfiguration? = null
+    ragConfiguration: BotRagConfiguration? = null
 ) : BotDefinitionBase(
     configuration.botId,
     configuration.namespace,

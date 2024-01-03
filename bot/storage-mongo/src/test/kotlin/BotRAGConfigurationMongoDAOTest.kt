@@ -16,9 +16,9 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import ai.tock.bot.admin.bot.llm.settings.openai.OpenAIEMSetting
-import ai.tock.bot.admin.bot.llm.settings.openai.OpenAILLMSetting
+import ai.tock.bot.admin.bot.llm.BotRagConfiguration
+import ai.tock.llm.orchestrator.core.models.em.OpenAIEMSetting
+import ai.tock.llm.orchestrator.core.models.llm.OpenAILLMSetting
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
@@ -38,7 +38,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `save rag configuration`() {
-        val config = BotRAGConfiguration(
+        val config = BotRagConfiguration(
             newId(),
             "namespace1",
             "botId1",
@@ -64,7 +64,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `update rag configuration`() {
-        val config1 = BotRAGConfiguration(
+        val config1 = BotRagConfiguration(
             newId(),
             "namespace1",
             "botId1",
@@ -82,7 +82,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
             noAnswerSentence = "no answer sentence1"
         )
 
-        val config2 = BotRAGConfiguration(
+        val config2 = BotRagConfiguration(
             newId(),
             "namespace1",
             "botId2",
@@ -114,7 +114,7 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `delete rag configuration`() {
-        val config = BotRAGConfiguration(
+        val config = BotRagConfiguration(
             newId(),
             "namespace1",
             "botId1",

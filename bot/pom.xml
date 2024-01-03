@@ -66,12 +66,21 @@
         <module>admin</module>
 
         <module>chatbase</module>
-        <module>llm</module>
 
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-llm-orchestrator-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-llm-orchestrator-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-xray-plugin</artifactId>

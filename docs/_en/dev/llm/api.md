@@ -299,6 +299,17 @@
         }
       },
       {
+        "code": 2003,
+        "message": "An AI provider resource was not found.",
+        "detail": "The request URL base is correct, but the path or a query parameter is not.",
+        "info": {
+          "provider": "OpenAI",
+          "error": "NotFoundError",
+          "cause": "Error code: 404 - {'error': {'message': 'This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?', 'type': 'invalid_request_error', 'param': 'model', 'code': None}}",
+          "request": "[POST] https://api.openai.com/v1/chat/completions"
+        }
+      },
+      {
         "code": 2004,
         "message": "Unknown AI provider model.",
         "detail": "Consult the official documentation for accepted values.",

@@ -18,8 +18,8 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.llm.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
@@ -32,11 +32,11 @@ import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.save
 
-internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
+internal object BotRAGConfigurationMongoDAO : BotRagConfigurationDAO {
 
     private const val COLLECTION_NAME = "bot_rag_configuration"
-    internal val col = database.getCollection<BotRAGConfiguration>(COLLECTION_NAME)
-    private val asyncCol = asyncDatabase.getCollection<BotRAGConfiguration>()
+    internal val col = database.getCollection<BotRagConfiguration>(COLLECTION_NAME)
+    private val asyncCol = asyncDatabase.getCollection<BotRagConfiguration>()
 
     init {
         col.ensureUniqueIndex(Namespace, BotId)
@@ -49,16 +49,16 @@ internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String
-    ): BotRAGConfiguration? {
+    ): BotRagConfiguration? {
         return col.findOne(Namespace eq namespace, BotId eq botId)
     }
 
-    override fun save(conf: BotRAGConfiguration): BotRAGConfiguration {
+    override fun save(conf: BotRagConfiguration): BotRagConfiguration {
         col.save(conf)
         return conf
     }
 
-    override fun delete(id: Id<BotRAGConfiguration>) {
+    override fun delete(id: Id<BotRagConfiguration>) {
         col.deleteOneById(id)
     }
 
