@@ -16,19 +16,9 @@
 
 package ai.tock.bot.engine.config.rag
 
-import ai.tock.bot.connector.ConnectorFeature
-import ai.tock.bot.definition.Parameters
-import ai.tock.bot.definition.notify
-import ai.tock.bot.engine.BotBus
-import ai.tock.bot.llm.rag.core.client.RagClient
-import ai.tock.bot.llm.rag.core.client.models.RagQuery
 import ai.tock.shared.exception.error.ErrorMessageWrapper
 import ai.tock.shared.exception.rest.RestException
-import ai.tock.shared.injector
-import ai.tock.shared.provide
 import io.netty.handler.codec.http.HttpResponseStatus
-import mu.KotlinLogging
-import java.net.ConnectException
 
 /**
  * Handler of a rag story answer

@@ -35,6 +35,10 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-llm-orchestrator-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>nlp-api-client</artifactId>
         </dependency>
         <dependency>
@@ -44,11 +48,6 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-stt-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
-            <artifactId>tock-bot-rag-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

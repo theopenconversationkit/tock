@@ -28,8 +28,8 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.llm.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
 import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
 import ai.tock.bot.admin.dialog.DialogReportDAO
@@ -116,7 +116,7 @@ object BotAdminService {
     private val userReportDAO: UserReportDAO get() = injector.provide()
     internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
-    private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
+    private val ragConfigurationDAO: BotRagConfigurationDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
@@ -337,7 +337,7 @@ object BotAdminService {
         }
     }
 
-    fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
+    fun getRAGConfiguration(namespace: String, botId: String): BotRagConfiguration? {
         return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
     }
 
@@ -450,7 +450,7 @@ object BotAdminService {
         namespace: String,
         storyToImport: StoryDefinitionConfiguration,
         botConf: BotApplicationConfiguration,
-        ragConfiguration: BotRAGConfiguration?,
+        ragConfiguration: BotRagConfiguration?,
         controller: BotStoryDefinitionConfigurationDumpController,
         importMode: StoriesImportMode
     ) {

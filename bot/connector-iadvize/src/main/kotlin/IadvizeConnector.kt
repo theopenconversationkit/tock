@@ -43,7 +43,6 @@ import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.event.Event
-import ai.tock.bot.llm.rag.core.client.models.RagResult
 import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
 import ai.tock.shared.Executor
 import ai.tock.shared.defaultLocale

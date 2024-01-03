@@ -19,11 +19,8 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.bot.BotRAGConfigurationDAO
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import ai.tock.bot.admin.bot.llm.settings.azureopenai.AzureOpenAIEMSetting
-import ai.tock.bot.admin.bot.llm.settings.azureopenai.AzureOpenAILLMSetting
-import ai.tock.bot.admin.bot.llm.settings.openai.OpenAILLMSetting
+import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
+import ai.tock.bot.admin.bot.llm.BotRagConfiguration
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -32,6 +29,8 @@ import ai.tock.bot.test.TFunction
 import ai.tock.bot.test.TRunnable
 import ai.tock.bot.test.TSupplier
 import ai.tock.bot.test.TestCase
+import ai.tock.llm.orchestrator.core.models.em.AzureOpenAIEMSetting
+import ai.tock.llm.orchestrator.core.models.llm.OpenAILLMSetting
 import ai.tock.nlp.core.Intent
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.withoutNamespace
@@ -59,10 +58,8 @@ class RagServiceTest : AbstractTest() {
         const val NAMESPACE = "namespace"
         const val PROVIDER = "OpenAI"
         const val MODEL = "gpt4"
-        const val EMBEDDING_MODEL = "gpt4"
         const val TEMPERATURE = "0"
         const val PROMPT = "mocked prompt"
-        private val PARAMETERS = mapOf("openaikey" to "value")
 
         private val DEFAULT_RAG_CONFIG = BotRAGConfigurationDTO(
             id = "ragId",
@@ -77,7 +74,6 @@ class RagServiceTest : AbstractTest() {
             ),
             emSetting = AzureOpenAIEMSetting (
                 apiKey = "apiKey",
-                model = EMBEDDING_MODEL,
                 apiVersion = "apiVersion",
                 deploymentName = "deployment",
                 apiBase = "url"
@@ -92,7 +88,7 @@ class RagServiceTest : AbstractTest() {
         init {
             tockInternalInjector = KodeinInjector()
             Kodein.Module {
-                bind<BotRAGConfigurationDAO>() with singleton { ragDao }
+                bind<BotRagConfigurationDAO>() with singleton { ragDao }
                 bind<StoryDefinitionConfigurationDAO>() with singleton { storyDao }
 
             }.also {
@@ -103,10 +99,10 @@ class RagServiceTest : AbstractTest() {
             }
         }
 
-        private val ragDao: BotRAGConfigurationDAO = mockk(relaxed = false)
+        private val ragDao: BotRagConfigurationDAO = mockk(relaxed = false)
         private val storyDao: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
 
-        private val slot = slot<BotRAGConfiguration>()
+        private val slot = slot<BotRagConfiguration>()
         private val storySlot = slot<StoryDefinitionConfiguration>()
     }
 

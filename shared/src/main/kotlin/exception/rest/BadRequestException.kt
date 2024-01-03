@@ -27,5 +27,5 @@ class BadRequestException(httpResponseBody: ErrorMessageWrapper) :
     RestException(httpResponseBody, HttpResponseStatus.BAD_REQUEST) {
     constructor(errorCode: Int, message: String) : this(ErrorMessageWrapper(setOf(ErrorMessage(errorCode.toString(), message))))
     constructor(message: String) : this(ErrorMessageWrapper(message))
-    constructor(messages: Set<String>) : this(ErrorMessageWrapper(messages.map { ErrorMessage(message = it) }.toSet()))
+    constructor(errorMessages: Set<ErrorMessage>): this(ErrorMessageWrapper(errors = errorMessages))
 }
