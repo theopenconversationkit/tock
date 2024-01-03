@@ -12,13 +12,27 @@
     <name>Tock LLM</name>
     <modules>
         <module>orchestrator-server</module>
+        <module>orchestrator-client</module>
+        <module>orchestrator-core</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-llm-orchestrator-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-llm-orchestrator-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-    </dependencies>
 </project>

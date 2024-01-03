@@ -16,9 +16,9 @@
 
 package ai.tock.bot.admin.model
 
-import ai.tock.bot.admin.bot.llm.BotRAGConfiguration
-import ai.tock.bot.admin.bot.llm.settings.EMSetting
-import ai.tock.bot.admin.bot.llm.settings.LLMSetting
+import ai.tock.bot.admin.bot.llm.BotRagConfiguration
+import ai.tock.llm.orchestrator.core.models.em.EMSetting
+import ai.tock.llm.orchestrator.core.models.llm.LLMSetting
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
@@ -33,7 +33,7 @@ data class BotRAGConfigurationDTO(
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
 ) {
-    constructor(configuration: BotRAGConfiguration): this(
+    constructor(configuration: BotRagConfiguration): this(
         configuration._id.toString(),
         configuration.namespace,
         configuration.botId,
@@ -44,8 +44,8 @@ data class BotRAGConfigurationDTO(
         configuration.noAnswerSentence,
         configuration.noAnswerStoryId?.toString()
     )
-    fun toBotRAGConfiguration(): BotRAGConfiguration =
-        BotRAGConfiguration(
+    fun toBotRAGConfiguration(): BotRagConfiguration =
+        BotRagConfiguration(
             id?.toId() ?: newId(),
             namespace,
             botId,
