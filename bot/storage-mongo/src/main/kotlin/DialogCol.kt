@@ -146,7 +146,8 @@ internal data class DialogCol(
                                         a.state.testEvent,
                                         a.toActionId(),
                                         a.state.intent,
-                                        a.applicationId
+                                        a.applicationId,
+                                        a.metadata
                                 )
                             }
                         }
