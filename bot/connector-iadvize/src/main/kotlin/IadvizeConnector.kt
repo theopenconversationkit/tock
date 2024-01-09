@@ -17,6 +17,7 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.*
+import ai.tock.bot.connector.iadvize.model.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.request.*
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
 import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest.UnsupportedRequestJson
@@ -87,6 +88,8 @@ class IadvizeConnector internal constructor(
 
     private val executor: Executor by injector.instance()
     private val queue: ConnectorQueue = ConnectorQueue(executor)
+    private var proactiveAnswerEnabled: Boolean = false
+    private var proactiveParameters: Map<String, String> = emptyMap()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -275,12 +278,22 @@ class IadvizeConnector internal constructor(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         val iadvizeCallback = callback as? IadvizeConnectorCallback
         iadvizeCallback?.addAction(event, delayInMs)
-        if (event is Action && event.metadata.lastAnswer) {
-            iadvizeCallback?.answerWithResponse()
+
+        // Send message proactively if this mode is already started
+        if (proactiveAnswerEnabled) {
+            flushProactiveConversation(callback, proactiveParameters)
+        }else{
+            if (event is Action && event.metadata.lastAnswer) {
+                iadvizeCallback?.answerWithResponse()
+            }
         }
     }
 
     override fun startProactiveConversation(callback: ConnectorCallback, botBus: BotBus): Boolean {
+        // Set proactive answer mode, and save parameters
+        proactiveAnswerEnabled = true
+        proactiveParameters = botBus.connectorData.metadata
+
         if(!proactiveStartMessage.isNullOrBlank()){
             // Send a RAG start message
             botBus.send(proactiveStartMessage)
@@ -312,16 +325,27 @@ class IadvizeConnector internal constructor(
     ){
         when (action) {
             is SendSentenceWithFootnotes -> action.sendByGraphQL(parameters)
-            is SendSentence -> action.messages
-                .filterIsInstance<IadvizeConnectorMessage>()
-                .flatMap { it.replies }
-                .map { it.sendByGraphQL(parameters, callback) }
-
+            is SendSentence -> {
+                if (action.messages.isEmpty()) action.text?.let {
+                    // Simple message
+                    IadvizeMessage(TextPayload(it)).sendByGraphQL(
+                        parameters,
+                        callback
+                    )
+                }
+                // Complex message
+                else action.messages
+                    .filterIsInstance<IadvizeConnectorMessage>()
+                    .flatMap { it.replies }
+                    .map { it.sendByGraphQL(parameters, callback) }
+            }
         }
     }
 
     override fun endProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) {
         flushProactiveConversation(callback, parameters)
+        // Turn off the proactive answer mode
+        proactiveAnswerEnabled = false
     }
 
     /**

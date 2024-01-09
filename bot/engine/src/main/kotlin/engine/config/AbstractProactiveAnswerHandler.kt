@@ -49,12 +49,10 @@ interface AbstractProactiveAnswerHandler {
                     // Switch to the story
                     logger.info { "Run the story intent=${noAnswerStory.mainIntent()}, id=${noAnswerStory.id}" }
                     handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
-
-                    // The switching operation ends the conversation, so there's no need to proactively terminate it.
-                } else {
-                    // Ending proactive conversation
-                    endProactiveConversation()
                 }
+
+                // Ending proactive conversation
+                endProactiveConversation()
 
                 // Save the dialog
                 if (connectorData.saveTimeline) {
