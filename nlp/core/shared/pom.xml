@@ -29,4 +29,8 @@
     <description>Contains shared classes for Tock NLP Core</description>
 
 
+    <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
+    </build>
+
 </project>

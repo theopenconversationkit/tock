@@ -44,6 +44,7 @@
   </dependencies>
 
   <build>
+    <sourceDirectory>src/main/kotlin</sourceDirectory>
     <plugins>
       <plugin>
         <groupId>pl.project13.maven</groupId>

@@ -48,6 +48,7 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
