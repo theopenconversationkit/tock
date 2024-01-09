@@ -2,6 +2,7 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
+import ai.tock.bot.engine.action.ActionMetadata_
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.EventState_
 import ai.tock.bot.engine.user.PlayerId
@@ -43,8 +44,8 @@ internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, prope
     val state: EventState_<T>
         get() = EventState_(this,DialogCol.ActionMongoWrapper::state)
 
-    val botMetadata: KPropertyPath<T, ActionMetadata?>
-        get() = KPropertyPath(this,__BotMetadata)
+    val botMetadata: ActionMetadata_<T>
+        get() = ActionMetadata_(this,DialogCol.ActionMongoWrapper::botMetadata)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::playerId)
@@ -62,8 +63,8 @@ internal open class ActionMongoWrapper_<T>(previous: KPropertyPath<T, *>?, prope
             get() = __Date
         val State: EventState_<DialogCol.ActionMongoWrapper>
             get() = EventState_(null,__State)
-        val BotMetadata: KProperty1<DialogCol.ActionMongoWrapper, ActionMetadata?>
-            get() = __BotMetadata
+        val BotMetadata: ActionMetadata_<DialogCol.ActionMongoWrapper>
+            get() = ActionMetadata_(null,__BotMetadata)
         val PlayerId: PlayerId_<DialogCol.ActionMongoWrapper>
             get() = PlayerId_(null,__PlayerId)
         val RecipientId: PlayerId_<DialogCol.ActionMongoWrapper>
@@ -84,8 +85,8 @@ internal open class ActionMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, pr
     val state: EventState_<T>
         get() = EventState_(this,DialogCol.ActionMongoWrapper::state)
 
-    val botMetadata: KPropertyPath<T, ActionMetadata?>
-        get() = KPropertyPath(this,__BotMetadata)
+    val botMetadata: ActionMetadata_<T>
+        get() = ActionMetadata_(this,DialogCol.ActionMongoWrapper::botMetadata)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::playerId)
@@ -112,8 +113,8 @@ internal open class ActionMongoWrapper_Map<T, K>(previous: KPropertyPath<T, *>?,
     val state: EventState_<T>
         get() = EventState_(this,DialogCol.ActionMongoWrapper::state)
 
-    val botMetadata: KPropertyPath<T, ActionMetadata?>
-        get() = KPropertyPath(this,__BotMetadata)
+    val botMetadata: ActionMetadata_<T>
+        get() = ActionMetadata_(this,DialogCol.ActionMongoWrapper::botMetadata)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,DialogCol.ActionMongoWrapper::playerId)

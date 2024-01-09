@@ -570,7 +570,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 if (connectorType == null) null else Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                 if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                 if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
-                if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId))
+                if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId),
+                if (query.isGenAiRagDialog == true) Stories.actions.botMetadata.isGenAiRagAnswer eq true else null
+            )
             logger.debug { "dialog search query: $filter" }
             val c = dialogCol.withReadPreference(secondaryPreferred())
             val count = c.countDocuments(filter, defaultCountOptions)

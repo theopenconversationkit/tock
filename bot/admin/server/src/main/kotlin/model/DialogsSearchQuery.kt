@@ -35,7 +35,8 @@ data class DialogsSearchQuery(
     val skipObfuscation: Boolean = false,
     val ratings: Set<Int> = emptySet(),
     val applicationId: String?,
-    val intentsToHide: Set<String> = emptySet()
+    val intentsToHide: Set<String> = emptySet(),
+    val isGenAiRagDialog: Boolean?
 ) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
@@ -55,7 +56,8 @@ data class DialogsSearchQuery(
             obfuscated = true,
             ratings = ratings,
             applicationId = applicationId,
-            intentsToHide = intentsToHide
+            intentsToHide = intentsToHide,
+            isGenAiRagDialog = isGenAiRagDialog
         )
     }
 }

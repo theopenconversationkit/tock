@@ -24,6 +24,7 @@ import ai.tock.bot.admin.test.TestPlanExecution
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.IntentWithoutNamespace
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.translator.I18nLabel
@@ -47,7 +48,8 @@ import org.litote.kmongo.DataRegistry
         IntentWithoutNamespace::class,
         PlayerId::class,
         EventState::class,
-        ConnectorType::class
+        ConnectorType::class,
+        ActionMetadata::class
     ]
 )
 @JacksonDataRegistry(

@@ -39,5 +39,7 @@ data class ActionMetadata(
     var debugEnabled: Boolean = false,
     /** Does the action returns source content ? **/
     var sourceWithContent: Boolean = false,
+    /** is Gen AI RAG's answer? **/
+    var isGenAiRagAnswer: Boolean = false,
 )
 

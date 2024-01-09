@@ -18,6 +18,7 @@ package ai.tock.bot.admin.dialog
 
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.translator.UserInterfaceType
@@ -38,5 +39,6 @@ data class ActionReport(
     val test: Boolean = false,
     val id: Id<Action> = newId(),
     val intent : String?,
-    val applicationId : String?
+    val applicationId : String?,
+    val metadata: ActionMetadata
 )

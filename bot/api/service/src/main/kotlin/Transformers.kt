@@ -101,7 +101,8 @@ private fun BotBus.toActionsHistory(): ActionsHistory =
             test,
             it.toActionId(),
             it.state.intent,
-            it.applicationId
+            it.applicationId,
+            it.metadata
         )
     }
 
