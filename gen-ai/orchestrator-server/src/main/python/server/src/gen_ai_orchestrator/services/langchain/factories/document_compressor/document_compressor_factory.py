@@ -12,28 +12,23 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+from abc import ABC, abstractmethod
+
 from langchain.retrievers.document_compressors.base import (
     BaseDocumentCompressor,
 )
+from pydantic import BaseModel
 
-from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
-    BloomzCompressorSetting,
-)
-from gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank import (
-    BloomzRerank,
-)
-from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.compressor_factory import (
-    CompressorFactory,
-)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import BaseDocumentCompressorSetting
 
 
-class BloomzCompressorFactory(CompressorFactory):
-    setting: BloomzCompressorSetting
+class DocumentCompressorFactory(ABC, BaseModel):
+    setting: BaseDocumentCompressorSetting
 
+    @abstractmethod
     def get_compressor(self) -> BaseDocumentCompressor:
-        return BloomzRerank(
-            min_score=self.setting.min_score,
-            endpoint=self.setting.endpoint,
-            max_documents=self.setting.max_documents,
-            label=self.setting.label,
-        )
+        pass
+
+    @abstractmethod
+    def check_document_compressor_setting(self) -> bool:
+        pass

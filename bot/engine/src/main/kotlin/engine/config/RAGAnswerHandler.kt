@@ -84,7 +84,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         botId, applicationId, userId, text = answer.text, footnotes = answer.footnotes.map {
                             Footnote(
                                 it.identifier, it.title, it.url,
-                                if(action.metadata.sourceWithContent) it.content else null
+                                if(action.metadata.sourceWithContent) it.content else null,
+                                it.score
                             )
                         }.toMutableList(),
                         metadata = ActionMetadata(isGenAiRagAnswer = true)
@@ -189,6 +190,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         embeddingQuestionEmSetting = ragConfiguration.emSetting,
                         documentIndexName = indexName,
                         documentSearchParams = documentSearchParams,
+                        compressorSetting = botDefinition.documentCompressorConfiguration?.setting,
                         vectorStoreSetting = vectorStoreSetting,
                         observabilitySetting = botDefinition.observabilityConfiguration?.setting
                     ), debug = action.metadata.debugEnabled || ragDebugEnabled

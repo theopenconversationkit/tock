@@ -18,6 +18,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
+from gen_ai_orchestrator.models.document_compressor.document_compressor_provider import DocumentCompressorProvider
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.errors.errors_models import (
     ErrorCode,
@@ -85,6 +86,14 @@ class ObservabilityProviderResponse(BaseModel):
 
     provider: ObservabilityProvider = Field(
         description='The Observability Provider ID', default=[ObservabilityProvider.LANGFUSE]
+    )
+
+
+class DocumentCompressorProviderResponse(BaseModel):
+    """The response model of the Document Compressor provider"""
+
+    provider: DocumentCompressorProvider = Field(
+        description='The Document Compressor Provider ID', default=[DocumentCompressorProvider.BLOOMZ]
     )
 
 

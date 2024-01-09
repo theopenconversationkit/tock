@@ -12,15 +12,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from pydantic import BaseModel, Field
+from typing import Annotated, Union
 
-from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
-    ContextualCompressorProvider,
+from fastapi import Body
+
+from gen_ai_orchestrator.models.document_compressor.bloomz.bloomz_compressor_setting import (
+    BloomzCompressorSetting,
 )
 
-
-class BaseCompressorSetting(BaseModel):
-    provider: ContextualCompressorProvider = Field(
-        description='The contextual compressor provider.',
-        examples=[ContextualCompressorProvider.BLOOMZ],
-    )
+DocumentCompressorSetting = Annotated[
+    Union[BloomzCompressorSetting], Body(discriminator='provider')
+]

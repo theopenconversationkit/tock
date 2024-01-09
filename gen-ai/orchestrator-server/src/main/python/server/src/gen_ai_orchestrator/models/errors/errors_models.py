@@ -35,7 +35,6 @@ class ErrorCode(Enum):
     GEN_AI_UNKNOWN_PROVIDER_SETTING = 1003
     GEN_AI_GUARD_CHECK_ERROR = 1004
     GEN_AI_PROMPT_TEMPLATE_ERROR = 1005
-    GEN_AI_UNKNOWN_LABEL_ERROR = 1006
 
     # AI Provider Errors
     AI_PROVIDER_UNKNOWN = 2000
@@ -62,6 +61,12 @@ class ErrorCode(Enum):
     OBSERVABILITY_UNKNOWN_PROVIDER = 5000
     OBSERVABILITY_UNKNOWN_PROVIDER_SETTING = 5001
     OBSERVABILITY_API_ERROR = 5002
+
+    # Document Compressor Errors
+    DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER = 6000
+    DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER_SETTING = 6001
+    DOCUMENT_COMPRESSOR_UNKNOWN_LABEL_ERROR = 6002
+    DOCUMENT_COMPRESSOR_API_ERROR = 6003
 
     @classmethod
     def __get_pydantic_json_schema__(
@@ -143,9 +148,6 @@ class ErrorMessages:
             message='Prompt Template Error.',
             detail='Check the template syntax.',
         ),
-        ErrorCode.GEN_AI_UNKNOWN_LABEL_ERROR: ErrorMessage(
-            message='Unknown label.', detail='Check the label you sent.'
-        ),
         # AI Provider Errors
         ErrorCode.AI_PROVIDER_UNKNOWN: ErrorMessage(message='Unknown AI Provider.'),
         ErrorCode.AI_PROVIDER_BAD_QUERY: ErrorMessage(
@@ -204,7 +206,20 @@ class ErrorMessages:
             message='Unknown Observability Provider Settings.'
         ),
         ErrorCode.OBSERVABILITY_API_ERROR: ErrorMessage(
-            message='API error.',
+            message='Observability API error.',
+        ),
+        # Document Compressor Errors
+        ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER: ErrorMessage(
+            message='Unknown Document Compressor Provider.'
+        ),
+        ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
+            message='Unknown Document Compressor Provider Settings.'
+        ),
+        ErrorCode.DOCUMENT_COMPRESSOR_UNKNOWN_LABEL_ERROR: ErrorMessage(
+            message='Unknown Document Compressor label.', detail='Check the Document Compressor label you sent.'
+        ),
+        ErrorCode.DOCUMENT_COMPRESSOR_API_ERROR: ErrorMessage(
+            message='Document Compressor API error.',
         ),
     }
 

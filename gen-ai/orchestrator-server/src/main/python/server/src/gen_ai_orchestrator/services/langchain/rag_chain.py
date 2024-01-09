@@ -43,9 +43,7 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
 )
-from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
-    BaseCompressorSetting,
-)
+from gen_ai_orchestrator.models.document_compressor.document_compressor_setting import BaseDocumentCompressorSetting
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.observability.observability_trace import (
     ObservabilityTrace,
@@ -152,10 +150,11 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
             footnotes=set(
                 map(
                     lambda doc: Footnote(
-                        identifier=f'{doc.metadata["id"]}',
+                        identifier=doc.metadata['id'],
                         title=doc.metadata['title'],
                         url=doc.metadata['source'],
                         content=get_source_content(doc),
+                        score=doc.metadata.get('retriever_score', None)
                     ),
                     response['source_documents'],
                 )
@@ -206,7 +205,7 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
         search_kwargs=query.document_search_params.to_dict()
     )
     if query.compressor_setting:
-        retriever = add_compressor(retriever, query.compressor_setting)
+        retriever = add_document_compressor(retriever, query.compressor_setting)
 
     logger.debug('RAG chain - Document index name: %s', query.document_index_name)
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
@@ -293,23 +292,20 @@ def __rag_log(level, message, inputs, response):
     )
 
 
-def get_rag_documents(handler: RetrieverJsonCallbackHandler) -> List[RagDocument]:
+def get_rag_documents(response) -> List[RagDocument]:
     """
     Get documents used on RAG context
 
     Args:
-        handler: the callback handler
+        response: the rag answer
     """
-
-    on_chain_start_records = handler.show_records('on_chain_start_records')
     return [
         # Get first 100 char of content
         RagDocument(
-            content=doc['page_content'][0 : len(doc['metadata']['title']) + 100]
-            + '...',
-            metadata=RagDocumentMetadata(**doc['metadata']),
+            content=doc.page_content[0: len(doc.metadata['title']) + 100] + '...',
+            metadata=RagDocumentMetadata(**doc.metadata),
         )
-        for doc in on_chain_start_records[0]['inputs']['input_documents']
+        for doc in response['source_documents']
     ]
 
 
@@ -349,7 +345,7 @@ def get_rag_debug_data(
         condense_question_prompt=get_llm_prompts(records_callback_handler)[0],
         condense_question=get_condense_question(records_callback_handler),
         question_answering_prompt=get_llm_prompts(records_callback_handler)[1],
-        documents=get_rag_documents(records_callback_handler),
+        documents=get_rag_documents(response),
         document_index_name=query.document_index_name,
         document_search_params=query.document_search_params,
         answer=response['answer'],
@@ -370,8 +366,8 @@ def check_guardrail_output(guardrail_output: dict) -> bool:
     return True
 
 
-def add_compressor(
-    retriever: VectorStoreRetriever, compressor_settings: BaseCompressorSetting
+def add_document_compressor(
+    retriever: VectorStoreRetriever, compressor_settings: BaseDocumentCompressorSetting
 ) -> ContextualCompressionRetriever:
     """
     Adds a compressor to the retriever.
