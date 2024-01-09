@@ -51,6 +51,7 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
             openai_api_version=self.setting.api_version,
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,
+            model=self.setting.model,
             temperature=self.setting.temperature,
             request_timeout=application_settings.llm_provider_timeout,
             max_retries=application_settings.llm_provider_max_retries,

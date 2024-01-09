@@ -57,6 +57,7 @@ export const EngineConfigurations: EnginesConfiguration[] = [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
+      { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'apiBase', label: 'Base url', type: 'obfuscated' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }

@@ -194,6 +194,7 @@
     class AzureOpenAILLMSetting(BaseLLMSetting):
         provider: Literal[LLMProvider.AZURE_OPEN_AI_SERVICE]
         deployment_name: str
+        model: Optional[str]
         api_base: str
         api_version: str
 
@@ -209,7 +210,8 @@
     class AzureOpenAIEMSetting(BaseEMSetting):
         provider: Literal[LLMProvider.AZURE_OPEN_AI_SERVICE]
         deployment_name: str
-        api_vase: str
+        model: Optional[str]
+        api_base: str
         api_version: str
 
     EMSetting = Annotated[

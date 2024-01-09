@@ -124,6 +124,7 @@ async def get_llm_provider_setting_by_id(
             provider=LLMProvider.AZURE_OPEN_AI_SERVICE,
             api_key=RawSecretKey(value='ab7***************************A1IV4B'),
             deployment_name='my-deployment-name',
+            model='gpt-4o',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
             temperature=0.7,

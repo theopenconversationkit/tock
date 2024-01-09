@@ -14,7 +14,7 @@
 #
 """Model for creating AzureOpenAIEMSetting."""
 
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field, HttpUrl
 
@@ -41,6 +41,9 @@ class AzureOpenAIEMSetting(BaseEMSetting):
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',
         examples=['my-deployment-name'],
+    )
+    model: Optional[str] = Field(
+        description='The model id', examples=['text-embedding-ada-002'], default=None
     )
     api_base: HttpUrl = Field(
         description='The API base url / Azure endpoint',

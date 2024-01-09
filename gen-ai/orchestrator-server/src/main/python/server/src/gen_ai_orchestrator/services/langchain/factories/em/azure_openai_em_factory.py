@@ -16,7 +16,7 @@
 from typing import List
 
 from langchain.embeddings.base import Embeddings
-from langchain_openai import AzureOpenAIEmbeddings
+from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
@@ -46,6 +46,8 @@ class AzureOpenAIEMFactory(LangChainEMFactory):
             openai_api_version=self.setting.api_version,
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,
+            # the model is not Nullable, it has a default value
+            model=self.setting.model or OpenAIEmbeddings.__fields__["model"].default,
             timeout=application_settings.em_provider_timeout,
         )
 

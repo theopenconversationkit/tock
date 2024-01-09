@@ -21,6 +21,7 @@ data class AzureOpenAIEMSetting<T>(
     val apiBase: String,
     val deploymentName: String,
     val apiVersion: String,
+    val model: String? = null,
 ) : EMSettingBase<T>(EMProvider.AzureOpenAIService, apiKey)
 
 typealias AzureOpenAIEMSettingDTO = AzureOpenAIEMSetting<String>

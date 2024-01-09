@@ -125,6 +125,7 @@ async def get_em_provider_setting_by_id(
             provider=EMProvider.AZURE_OPEN_AI_SERVICE,
             api_key=RawSecretKey(value='ab7***************************A1IV4B'),
             deployment_name='my-deployment-name',
+            model='text-embedding-ada-002',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
         )

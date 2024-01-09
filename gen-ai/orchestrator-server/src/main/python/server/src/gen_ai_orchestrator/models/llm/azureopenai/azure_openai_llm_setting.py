@@ -14,7 +14,7 @@
 #
 """Model for creating AzureOpenAILLMSetting."""
 
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field, HttpUrl
 
@@ -41,6 +41,9 @@ class AzureOpenAILLMSetting(BaseLLMSetting):
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',
         examples=['my-deployment-name'],
+    )
+    model: Optional[str] = Field(
+        description='The model id', examples=['gpt-3.5-turbo'], default=None
     )
     api_base: HttpUrl = Field(
         description='The API base url / Azure endpoint',

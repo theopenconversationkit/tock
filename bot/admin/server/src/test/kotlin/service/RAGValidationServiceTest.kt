@@ -72,6 +72,7 @@ class RAGValidationServiceTest {
         apiBase = "http://my-api-base-endpoint-url.com",
         apiVersion = "2023-08-01-preview",
         deploymentName = "deploymentName",
+        model = "model",
     )
 
     private val ragConfiguration = BotRAGConfigurationDTO(
