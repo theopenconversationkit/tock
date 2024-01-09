@@ -39,6 +39,7 @@ import ai.tock.bot.definition.StoryTag
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.NextUserActionState
 import ai.tock.bot.engine.message.ActionWrappedMessage
 import ai.tock.bot.engine.message.MessagesList
@@ -401,12 +402,22 @@ internal class ConfiguredStoryHandler(
             }
             .takeUnless { it.isEmpty() }
             ?: listOf(
-                SendSentence(
-                    botId,
-                    applicationId,
-                    userId,
-                    label
-                )
+                answer.footnotes?.takeIf{ it.isNotEmpty() }
+                ?.let {
+                    SendSentenceWithFootnotes(
+                        playerId = botId,
+                        applicationId = applicationId,
+                        recipientId = userId,
+                        text = label,
+                        footnotes = it.toMutableList()
+                    )
+                } ?:
+                    SendSentence(
+                        botId,
+                        applicationId,
+                        userId,
+                        label
+                    )
             )
 
         val messagesList = MessagesList(actions.map { ActionWrappedMessage(it, 0) })

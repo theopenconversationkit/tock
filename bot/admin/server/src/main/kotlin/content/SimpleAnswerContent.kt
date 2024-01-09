@@ -21,15 +21,25 @@ import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.model.BotMediaMessageDescriptor
 import ai.tock.bot.admin.model.BotSimpleAnswer
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
+import ai.tock.bot.engine.action.Footnote
 import java.util.Locale
 
-data class SimpleAnswerContent(val label: String, val delay: Long = 0, val mediaMessage: BotMediaMessageDescriptor? = null) {
+data class SimpleAnswerContent(
+        val label: String,
+        val delay: Long = 0,
+        val mediaMessage: BotMediaMessageDescriptor? = null,
+        val footnotes: List<Footnote>? = null
+) {
 
     fun toBotSimpleAnswer(namespace: String, locale: Locale): BotSimpleAnswer =
             BotSimpleAnswer(
-                    label = BotAdminService.createI18nRequest(namespace, CreateI18nLabelRequest(label, locale, AnswerConfigurationType.builtin.name)),
+                    label = BotAdminService.createI18nRequest(
+                            namespace,
+                            CreateI18nLabelRequest(label, locale, AnswerConfigurationType.builtin.name)
+                    ),
                     delay = delay,
-                    mediaMessage = mediaMessage
+                    mediaMessage = mediaMessage,
+                    footnotes = footnotes
             )
 }
 

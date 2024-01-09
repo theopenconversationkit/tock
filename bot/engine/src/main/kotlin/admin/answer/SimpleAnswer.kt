@@ -17,9 +17,15 @@
 package ai.tock.bot.admin.answer
 
 import ai.tock.bot.connector.media.MediaMessageDescriptor
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.translator.I18nLabelValue
 
 /**
  * Answer that contains only i18n label with an optional [delay] and [MediaMessageDescriptor].
  */
-data class SimpleAnswer(val key: I18nLabelValue, val delay: Long = 0, val mediaMessage: MediaMessageDescriptor? = null)
+data class SimpleAnswer(
+    val key: I18nLabelValue,
+    val delay: Long = 0,
+    val mediaMessage: MediaMessageDescriptor? = null,
+    val footnotes: List<Footnote>? = null
+)

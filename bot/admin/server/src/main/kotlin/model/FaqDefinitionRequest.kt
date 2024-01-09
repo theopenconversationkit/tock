@@ -16,6 +16,8 @@
 
 package ai.tock.bot.admin.model
 
+import ai.tock.bot.engine.action.Footnote
+import ai.tock.translator.I18nLabel
 import java.time.Instant
 import java.util.Locale
 
@@ -31,7 +33,8 @@ data class FaqDefinitionRequest(
     val description: String = "",
     val utterances: List<String>,
     val tags: List<String>,
-    val answer: String,
+    val answer: I18nLabel,
     val enabled: Boolean,
-    val intentName: String
+    val intentName: String,
+    val footnotes: List<Footnote>? = null,
 )

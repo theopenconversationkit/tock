@@ -19,20 +19,32 @@ package ai.tock.bot.admin.story.dump
 import ai.tock.bot.admin.answer.SimpleAnswer
 import ai.tock.bot.admin.story.dump.MediaMessageDescriptorDump.Companion.toDump
 import ai.tock.bot.connector.media.MediaMessageDescriptor
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.translator.I18nLabelValue
 
 /**
  * Answer that contains only i18n label with an optional [delay] and [MediaMessageDescriptor].
  */
-data class SimpleAnswerDump(val key: I18nLabelValue, val delay: Long, val mediaMessage: MediaMessageDescriptorDump? = null) {
+data class SimpleAnswerDump(
+    val key: I18nLabelValue,
+    val delay: Long,
+    val mediaMessage: MediaMessageDescriptorDump? = null,
+    val footnotes: List<Footnote>? = null
+) {
 
     constructor(answer: SimpleAnswer) :
         this(
-            answer.key,
-            answer.delay,
-            toDump(answer.mediaMessage)
+            key = answer.key,
+            delay = answer.delay,
+            mediaMessage = toDump(answer.mediaMessage),
+            footnotes = answer.footnotes
         )
 
     fun toAnswer(controller: StoryDefinitionConfigurationDumpController): SimpleAnswer =
-        SimpleAnswer(key.withNamespace(controller.targetNamespace), delay, mediaMessage?.toMedia(controller))
+        SimpleAnswer(
+            key = key.withNamespace(controller.targetNamespace),
+            delay = delay,
+            mediaMessage = mediaMessage?.toMedia(controller),
+            footnotes = footnotes
+        )
 }

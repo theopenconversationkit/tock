@@ -42,6 +42,7 @@ import ai.tock.nlp.front.shared.config.FaqQueryResult
 import ai.tock.nlp.front.shared.config.IntentDefinition
 import ai.tock.nlp.front.shared.config.SentencesQuery
 import ai.tock.nlp.front.shared.config.SentencesQueryResult
+import ai.tock.shared.defaultNamespace
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.tockInternalInjector
@@ -137,6 +138,21 @@ class FaqAdminServiceTest : AbstractTest() {
         private const val firstUterrance = "FAQ utterance A"
         private const val secondUterrance = "FAQ utterance B"
 
+        private val answer = I18nLabel(
+            i18nId,
+            defaultNamespace,
+            " category",
+            LinkedHashSet(
+                listOf(
+                    I18nLocalizedLabel(
+                        Locale.FRENCH,
+                        UserInterfaceType.textChat,
+                        "label",
+                        true
+                    )
+                )
+            )
+        )
         private val faqDefinitionRequest = FaqDefinitionRequest(
             faqId.toString(),
             intentId.toString(),
@@ -148,7 +164,7 @@ class FaqAdminServiceTest : AbstractTest() {
             "FAQ desciption",
             listOf(firstUterrance, secondUterrance),
             listOf("NEW TAG"),
-            "The FAQ answer",
+            answer,
             true,
             "faqtitle"
         )
@@ -312,8 +328,6 @@ class FaqAdminServiceTest : AbstractTest() {
                     )
 
                     every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
-                    //mocked here to avoid multiple implementation for I18nDao
-                    every { i18nDAO.save(listOf(mockedI18n)) } just Runs
                     every { i18nDAO.getLabelById(i18nId) } answers { mockedI18n }
                 }
 
@@ -354,7 +368,6 @@ class FaqAdminServiceTest : AbstractTest() {
                         )
                     }
                     verify(exactly = 0) { faqDefinitionDAO.save(any()) }
-                    verify(exactly = 0) { i18nDAO.save(listOf(mockedI18n)) }
                     verify(exactly = 0) { storyDefinitionDAO.save(capture(slotStory)) }
                 }
 
@@ -375,7 +388,6 @@ class FaqAdminServiceTest : AbstractTest() {
                             allAny<FaqDefinitionRequest>(),
                             allAny<ApplicationDefinition>(),
                             allAny<IntentDefinition>(),
-                            allAny<I18nLabel>(),
                             allAny<FaqDefinition>()
                         ) as FaqDefinition
                     } returns savedFaqDefinition
@@ -389,7 +401,6 @@ class FaqAdminServiceTest : AbstractTest() {
                     assertFalse(sentenceQuerySlot.captured.wholeNamespace)
 
                     verify(exactly = 1) { faqDefinitionDAO.save(savedFaqDefinition) }
-                    verify(exactly = 1) { i18nDAO.save(listOf(mockedI18n)) }
 
                     val slotFaq = slot<FaqDefinition>()
                     verify { faqDefinitionDAO.save(capture(slotFaq)) }
@@ -420,8 +431,6 @@ class FaqAdminServiceTest : AbstractTest() {
                     )
 
                     every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
-                    //mocked here to avoid multiple implementation for I18nDao
-                    every { i18nDAO.save(listOf(mockedI18n)) } just Runs
                     every { i18nDAO.getLabelById(i18nId) } answers { mockedI18n }
                 }
 
@@ -440,7 +449,6 @@ class FaqAdminServiceTest : AbstractTest() {
                     val slotStory = slot<StoryDefinitionConfiguration>()
 
                     verify(exactly = 1) { faqDefinitionDAO.save(any()) }
-                    verify(exactly = 1) { i18nDAO.save(listOf(mockedI18n)) }
                     verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
 
                     val sentenceQuerySlot = slot<SentencesQuery>()
@@ -492,7 +500,6 @@ class FaqAdminServiceTest : AbstractTest() {
                         )
                     }
                     verify(exactly = 1) { faqDefinitionDAO.save(any()) }
-                    verify(exactly = 1) { i18nDAO.save(listOf(mockedI18n)) }
                     verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
 
                     assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
@@ -561,7 +568,21 @@ class FaqAdminServiceTest : AbstractTest() {
 
         // variable for this nested class
         val OTHER_APP_NAME = "otherApp"
-        val FAQ_SPECIFIC_ANSWER = "new specific answer"
+        val FAQ_SPECIFIC_ANSWER = I18nLabel(
+            "new specific answer".toId(),
+            defaultNamespace,
+            " category",
+            LinkedHashSet(
+                listOf(
+                    I18nLocalizedLabel(
+                        Locale.FRENCH,
+                        UserInterfaceType.textChat,
+                        "label",
+                        true
+                    )
+                )
+            )
+        )
 
         val newOtherUtterance = "new other utterance"
 
@@ -580,19 +601,8 @@ class FaqAdminServiceTest : AbstractTest() {
             )
 
             every { AdminService.front.getIntentById(eq(intentId)) } returns existingIntent
-            //mocked here to avoid multiple implementation for I18nDao
-            every { i18nDAO.save(any<I18nLabel>()) } just Runs
-
-            val mockedLabel = mockedI18n.copy(
-                i18n = linkedSetOf<I18nLocalizedLabel>(
-                    mockedDefaultLocalizedLabel.copy(label = FAQ_SPECIFIC_ANSWER)
-                ), defaultLabel = FAQ_SPECIFIC_ANSWER
-            )
-
-            every { i18nDAO.getLabelById(any()) } answers { mockedLabel }
-            every { i18nDAO.save(any<List<I18nLabel>>()) } just Runs
+            every { i18nDAO.getLabelById(any()) } answers { FAQ_SPECIFIC_ANSWER }
             mockkObject(BotAdminService)
-            every { BotAdminService.createI18nRequest(eq(namespace), any()) } answers { mockedLabel }
         }
 
         @AfterEach
@@ -656,15 +666,6 @@ class FaqAdminServiceTest : AbstractTest() {
             verify(exactly = 1) { sentenceDAO.switchSentencesStatus(capture(switchedClassifiedSentences), eq(deleted)) }
             assertEquals(switchedClassifiedSentences.captured.size, 0)
 
-            // save with a creation method with service not with i18nDao update
-            verify(exactly = 0) { i18nDAO.save(any<List<I18nLabel>>()) }
-            verify(exactly = 1) {
-                BotAdminService.createI18nRequest(
-                    eq(namespace), match {
-                        it.label == FAQ_SPECIFIC_ANSWER
-                    }
-                )
-            }
             verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
 
             assertEquals(slotStory.captured.storyId, existingMessageStory.storyId)
@@ -745,17 +746,6 @@ class FaqAdminServiceTest : AbstractTest() {
             val switchedClassifiedSentences = slot<List<ClassifiedSentence>>()
             verify(exactly = 1) { sentenceDAO.switchSentencesStatus(capture(switchedClassifiedSentences), eq(deleted)) }
             assertEquals(switchedClassifiedSentences.captured.size, 0)
-
-            // I18n
-            // save with an update with i18nDao update
-            verify(exactly = 1) { i18nDAO.save(any<List<I18nLabel>>()) }
-            verify(exactly = 0) {
-                BotAdminService.createI18nRequest(
-                    eq(namespace), match {
-                        it.label == FAQ_SPECIFIC_ANSWER
-                    }
-                )
-            }
 
             // Story
             val slotStory = slot<StoryDefinitionConfiguration>()
@@ -839,17 +829,6 @@ class FaqAdminServiceTest : AbstractTest() {
             verify(exactly = 1) { sentenceDAO.switchSentencesStatus(capture(switchedClassifiedSentences), eq(deleted)) }
             assertEquals(switchedClassifiedSentences.captured.size, 0)
 
-            // I18n
-            // save with an update with i18nDao update
-            verify(exactly = 1) { i18nDAO.save(any<List<I18nLabel>>()) }
-            verify(exactly = 0) {
-                BotAdminService.createI18nRequest(
-                    eq(namespace), match {
-                        it.label == FAQ_SPECIFIC_ANSWER
-                    }
-                )
-            }
-
             // Story
             val slotStory = slot<StoryDefinitionConfiguration>()
             verify(exactly = 1) { storyDefinitionDAO.save(capture(slotStory)) }
@@ -880,7 +859,6 @@ class FaqAdminServiceTest : AbstractTest() {
 
             justRun {
                 faqDefinitionDAO.deleteFaqDefinitionById(any())
-                i18nDAO.deleteByNamespaceAndId(any(), any())
             }
 
             initMocksForSingleStory(mockedStoryDefinition)
@@ -910,7 +888,6 @@ class FaqAdminServiceTest : AbstractTest() {
                 faqDefinitionDAO.getFaqDefinitionById(any())
                 faqDefinitionDAO.deleteFaqDefinitionById(eq(faqId))
                 intentDAO.getIntentById(any())
-                i18nDAO.deleteByNamespaceAndId(any(), any())
                 storyDefinitionDAO.delete(any())
             }
         }
@@ -927,7 +904,6 @@ class FaqAdminServiceTest : AbstractTest() {
             verify(exactly = 1) { faqDefinitionDAO.getFaqDefinitionById(any()) }
             verify(exactly = 0) {
                 faqDefinitionDAO.deleteFaqDefinitionById(eq(faqId))
-                i18nDAO.deleteByNamespaceAndId(any(), any())
                 storyDefinitionDAO.delete(any())
             }
         }
@@ -942,7 +918,6 @@ class FaqAdminServiceTest : AbstractTest() {
             verify(exactly = 0) {
                 faqDefinitionDAO.deleteFaqDefinitionById(eq(faqId))
                 intentDAO.getIntentById(any())
-                i18nDAO.deleteByNamespaceAndId(any(), any())
                 storyDefinitionDAO.delete(any())
             }
 

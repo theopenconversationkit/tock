@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.answer.SimpleAnswer
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.Translator
@@ -25,15 +26,21 @@ import java.util.Locale
 /**
  *
  */
-data class BotSimpleAnswer(val label: I18nLabel, val delay: Long, val mediaMessage: BotMediaMessageDescriptor? = null) {
+data class BotSimpleAnswer(
+    val label: I18nLabel,
+    val delay: Long,
+    val mediaMessage: BotMediaMessageDescriptor? = null,
+    val footnotes: List<Footnote>? = null
+) {
 
     constructor(answer: SimpleAnswer, locale: Locale?, readOnly: Boolean = false) :
         this(
             Translator.saveIfNotExist(answer.key, locale, readOnly),
             answer.delay,
-            answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it, readOnly) }
+            answer.mediaMessage?.let { BotMediaMessageDescriptor.fromDescriptor(it, readOnly) },
+            answer.footnotes
         )
 
     fun toConfiguration(): SimpleAnswer =
-        SimpleAnswer(I18nLabelValue(label), delay, mediaMessage?.toDescriptor())
+        SimpleAnswer(I18nLabelValue(label), delay, mediaMessage?.toDescriptor(), footnotes)
 }

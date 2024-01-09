@@ -996,7 +996,7 @@ open class BotAdminVerticle : AdminVerticle() {
             setOf(botUser),
             logger<FaqDefinitionRequest>("Save FAQ")
         ) { context, query: FaqDefinitionRequest ->
-            if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
+            if (query.utterances.isEmpty() && query.title.isBlank()) {
                 badRequest("Missing argument or trouble in query: $query")
             } else {
                 val applicationDefinition = front.getApplicationByNamespaceAndName(

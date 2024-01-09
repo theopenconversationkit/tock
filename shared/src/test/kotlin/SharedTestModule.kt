@@ -86,7 +86,7 @@ val sharedTestModule = Kodein.Module {
         bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton {
             try {
                 // init kmongo configuration for persistence tests
-                TockKMongoConfiguration.configure()
+                TockKMongoConfiguration.configure(true)
                 KFlapdoodleReactiveStreams.mongoClient
             } catch (t: Throwable) {
                 logger.trace("error during KMongo configuration", t)
