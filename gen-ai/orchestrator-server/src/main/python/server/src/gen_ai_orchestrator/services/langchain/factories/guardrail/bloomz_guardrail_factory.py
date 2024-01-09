@@ -19,12 +19,10 @@ from langchain_core.output_parsers import BaseOutputParser
 from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
     BloomzGuardrailSetting,
 )
-from gen_ai_orchestrator.services.guardrail.bloomz_guardrail import (
-    BloomzGuardrailOutputParser,
-)
 from gen_ai_orchestrator.services.langchain.factories.guardrail.guardrail_factory import (
     GuardrailFactory,
 )
+from gen_ai_orchestrator.services.langchain.impls.guardrail.bloomz_guardrail import BloomzGuardrailOutputParser
 
 
 class BloomzGuardrailFactory(GuardrailFactory):

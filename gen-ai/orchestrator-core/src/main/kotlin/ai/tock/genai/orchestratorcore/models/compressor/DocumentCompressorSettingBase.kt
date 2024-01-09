@@ -14,29 +14,23 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorclient.responses
+package ai.tock.genai.orchestratorcore.models.compressor
 
-data class RAGResponse(
-    val answer: TextWithFootnotes,
-    val debug: Any? = null,
-    val observabilityInfo: ObservabilityInfo? = null,
+
+import ai.tock.genai.orchestratorcore.models.Constants
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "provider"
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = BloomzDocumentCompressorSetting::class, name = Constants.BLOOMZ)
+)
+abstract class DocumentCompressorSettingBase(
+    val provider: DocumentCompressorProvider
 )
 
-data class TextWithFootnotes(
-    val text: String,
-    val footnotes: List<Footnote> = emptyList(),
-)
-
-data class Footnote(
-    val identifier: String,
-    val title: String,
-    val url: String? = null,
-    val content: String? = null,
-    val score: Float? = null,
-)
-
-data class ObservabilityInfo(
-    val traceId: String,
-    val traceName: String,
-    val traceUrl: String,
-)
+typealias DocumentCompressorSetting = DocumentCompressorSettingBase

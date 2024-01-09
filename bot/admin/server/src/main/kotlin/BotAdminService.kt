@@ -29,6 +29,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.bot.BotVersion
+import ai.tock.bot.admin.bot.compressor.BotDocumentCompressorConfigurationDAO
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
@@ -83,6 +84,7 @@ object BotAdminService {
     private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
     private val sentenceGenerationConfigurationDAO: BotSentenceGenerationConfigurationDAO get() = injector.provide()
     private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
+    private val documentProcessorConfigurationDAO: BotDocumentCompressorConfigurationDAO get() = injector.provide()
     private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val featureDAO: FeatureDAO get() = injector.provide()
@@ -1170,6 +1172,11 @@ object BotAdminService {
             (config.setting as? HasSecretKey<SecretKey>)?.secretKey?.let { secret ->
                 SecurityUtils.deleteSecret(secret)
             }
+        }
+
+        // delete the Document Compressor configuration
+        documentProcessorConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            documentProcessorConfigurationDAO.delete(it._id)
         }
 
         // delete the Vector Store configuration

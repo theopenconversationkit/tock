@@ -57,7 +57,6 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
 import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.TranslatorEngine
-import ch.tutteli.kbox.isNotNullAndNotBlank
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
@@ -489,6 +488,25 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingDelete("/configuration/bots/:botId/observability", admin) { context  ->
             ObservabilityService.deleteConfig(context.organization, context.path("botId"))
+        }
+
+        blockingJsonPost("/configuration/bots/:botId/document-compressor", admin) { context, configuration: BotDocumentCompressorConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                BotDocumentCompressorConfigurationDTO(DocumentCompressorService.saveDocumentCompressor(configuration))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/document-compressor", admin) { context  ->
+            DocumentCompressorService.getDocumentCompressorConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotDocumentCompressorConfigurationDTO(it)
+                }
+        }
+
+        blockingDelete("/configuration/bots/:botId/document-compressor", admin) { context  ->
+            DocumentCompressorService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost("/configuration/bots/:botId/vector-store", admin) { context, configuration: BotVectorStoreConfigurationDTO  ->

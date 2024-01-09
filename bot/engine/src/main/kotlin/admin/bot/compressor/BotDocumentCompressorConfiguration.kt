@@ -14,31 +14,15 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.web.send
+package ai.tock.bot.admin.bot.compressor
 
-/**
- * Footnote to refer to a source document
- * Basic format: {identifier}. {title} {link:url},
- */
-data class Footnote(
-    /**
-     * A footnote identifier
-     */
-    val identifier: CharSequence,
-    /**
-     * A footnote title
-     */
-    val title: CharSequence,
-    /**
-     * A footnote link
-     */
-    val url: String?,
-    /**
-     * A footnote content
-     */
-    val content: String?,
-    /**
-     * A footnote score
-     */
-    val score: Float?,
+import ai.tock.genai.orchestratorcore.models.compressor.DocumentCompressorSetting
+import org.litote.kmongo.Id
+
+data class BotDocumentCompressorConfiguration(
+    val _id: Id<BotDocumentCompressorConfiguration>,
+    val namespace: String,
+    val botId: String,
+    val enabled: Boolean,
+    val setting: DocumentCompressorSetting,
 )
