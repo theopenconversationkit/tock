@@ -12,18 +12,22 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from typing import Literal
+from abc import ABC, abstractmethod
 
-from pydantic import Field
+from langchain_core.embeddings import Embeddings
+from langchain_core.vectorstores import VectorStore
+from pydantic import BaseModel, ConfigDict
 
-from llm_orchestrator.models.llm.llm_provider import LLMProvider
-from llm_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
+class LangChainVectorStoreFactory(ABC, BaseModel):
+    embedding_function: Embeddings
+    index_name: str
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-class OpenAILLMSetting(BaseLLMSetting):
-    provider: Literal[LLMProvider.OPEN_AI] = Field(
-        description='The Large Language Model Provider.', examples=[LLMProvider.OPEN_AI]
-    )
-    model: str = Field(
-        description='The model id', examples=['gpt-3.5-turbo'], min_length=1
-    )
+    @abstractmethod
+    def get_vector_store(self) -> VectorStore:
+        """
+        Fabric the Vector Store.
+        :return: VectorStore the interface for Vector Database.
+        """
+        pass

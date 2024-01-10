@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,30 +16,31 @@ import logging
 
 from fastapi import APIRouter, HTTPException, Request
 
+from llm_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
+    AIProviderBadQueryException,
+)
 from llm_orchestrator.errors.exceptions.exceptions import (
-    BusinessException,
-    InvalidQueryException,
-    UnknownProviderException,
+    GenAIOrchestratorException,
+    GenAIUnknownProviderException,
 )
 from llm_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_bad_request,
     create_error_info_not_found,
     create_error_response,
 )
-from llm_orchestrator.models.errors.errors_models import ErrorCode, ErrorInfo
+from llm_orchestrator.models.errors.errors_models import ErrorCode
 from llm_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
 from llm_orchestrator.models.llm.llm_provider import LLMProvider
-from llm_orchestrator.models.llm.llm_types import LLMSetting
 from llm_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
 from llm_orchestrator.routers.requests.requests import (
     LLMProviderSettingStatusQuery,
 )
+from llm_orchestrator.routers.requests.types import LLMSetting
 from llm_orchestrator.routers.responses.responses import (
-    ErrorResponse,
     LLMProviderResponse,
     ProviderSettingStatusResponse,
 )
@@ -60,15 +61,22 @@ async def get_all_llm_providers() -> list[LLMProvider]:
 
 
 @llm_providers_router.get('/{provider_id}')
-async def get_llm_provider_by_id(provider_id: str) -> LLMProviderResponse:
-    if LLMProvider.has_value(provider_id):
-        return LLMProviderResponse(provider=LLMProvider(provider_id))
-    else:
-        raise HTTPException(status_code=400, detail=ErrorCode.E20)
+async def get_llm_provider_by_id(
+    request: Request, provider_id: str
+) -> LLMProviderResponse:
+    # Query validation
+    validate_llm_provider(request, provider_id)
+
+    return LLMProviderResponse(provider=LLMProvider(provider_id))
 
 
 @llm_providers_router.get('/{provider_id}/setting/example')
-async def get_llm_provider_setting_by_id(provider_id: LLMProvider) -> LLMSetting:
+async def get_llm_provider_setting_by_id(
+    request: Request, provider_id: LLMProvider
+) -> LLMSetting:
+    # Query validation
+    validate_llm_provider(request, provider_id)
+
     if provider_id == LLMProvider.OPEN_AI:
         return OpenAILLMSetting(
             provider=LLMProvider.OPEN_AI,
@@ -103,17 +111,23 @@ async def check_llm_provider_setting(
         check_llm_setting(query.setting)
 
         return ProviderSettingStatusResponse(valid=True)
-    except BusinessException as exc:
+    except GenAIOrchestratorException as exc:
         logger.error(exc)
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
 def validate_query(request: Request, provider_id: str, setting: LLMSetting):
+    validate_llm_provider(request, provider_id)
+    if provider_id != setting.provider:
+        raise AIProviderBadQueryException(
+            create_error_info_bad_request(request, provider_id)
+        )
+
+
+def validate_llm_provider(request: Request, provider_id: str):
     if not LLMProvider.has_value(provider_id):
-        raise UnknownProviderException(
+        raise GenAIUnknownProviderException(
             create_error_info_not_found(
                 request, provider_id, [provider.value for provider in LLMProvider]
             )
         )
-    elif provider_id != setting.provider:
-        raise InvalidQueryException(create_error_info_bad_request(request, provider_id))

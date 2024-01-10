@@ -33,7 +33,7 @@ class LangChainLLMFactory(ABC, BaseModel):
 
     def check_llm_setting(self) -> bool:
         """
-        check the LLM setting validity, by pinging the AI provider API
+        check the LLM setting validity, by pinging the AI Provider API
         :return: True if the setting is valid.
         :raises BusinessException: For incorrect setting
         """

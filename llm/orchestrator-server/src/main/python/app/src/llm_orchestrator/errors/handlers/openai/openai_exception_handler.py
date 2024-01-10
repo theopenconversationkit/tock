@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -21,74 +21,85 @@ from openai import (
     AuthenticationError,
     BadRequestError,
     NotFoundError,
+    OpenAIError,
 )
 
+from llm_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
+    AIProviderAPIBadRequestException,
+    AIProviderAPIContextLengthExceededException,
+    AIProviderAPIDeploymentNotFoundException,
+    AIProviderAPIErrorException,
+    AIProviderAPIModelException,
+    AIProviderAPIResourceNotFoundException,
+)
 from llm_orchestrator.errors.exceptions.exceptions import (
-    ProviderAPIAuthenticationException,
-    ProviderAPIBadRequestException,
-    ProviderAPIConnectionException,
-    ProviderAPIContextLengthExceededException,
-    ProviderAPIDeploymentException,
-    ProviderAPIErrorException,
-    ProviderAPIModelException,
-    ProviderAPIResourceNotFoundException,
+    GenAIAuthenticationException,
+    GenAIConnectionErrorException,
 )
 from llm_orchestrator.models.errors.errors_models import ErrorInfo
 
 logger = logging.getLogger(__name__)
 
 
-def factory_openai_exception_handler(func):
-    def wrapper(self, *args, **kwargs):
-        try:
-            return func(self, *args, **kwargs)
-        except APIConnectionError as exc:
-            logger.error(exc)
-            raise ProviderAPIConnectionException(
-                create_error_info_openai(exc, self.setting.provider)
-            )
-        except AuthenticationError as exc:
-            logger.error(exc)
-            raise ProviderAPIAuthenticationException(
-                create_error_info_openai(exc, self.setting.provider)
-            )
-        except NotFoundError as exc:
-            logger.error(exc)
-            if 'model_not_found' == exc.code:
-                raise ProviderAPIModelException(
-                    create_error_info_openai(exc, self.setting.provider)
+def openai_exception_handler(provider):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except APIConnectionError as exc:
+                logger.error(exc)
+                raise GenAIConnectionErrorException(
+                    create_error_info_openai(exc, provider)
                 )
-            elif 'DeploymentNotFound' == exc.code:
-                raise ProviderAPIDeploymentException(
-                    create_error_info_openai(exc, self.setting.provider)
+            except AuthenticationError as exc:
+                logger.error(exc)
+                raise GenAIAuthenticationException(
+                    create_error_info_openai(exc, provider)
                 )
-            else:
-                raise ProviderAPIResourceNotFoundException(
-                    create_error_info_openai(exc, self.setting.provider)
+            except NotFoundError as exc:
+                logger.error(exc)
+                if 'model_not_found' == exc.code:
+                    raise AIProviderAPIModelException(
+                        create_error_info_openai(exc, provider)
+                    )
+                elif 'DeploymentNotFound' == exc.code:
+                    raise AIProviderAPIDeploymentNotFoundException(
+                        create_error_info_openai(exc, provider)
+                    )
+                else:
+                    raise AIProviderAPIResourceNotFoundException(
+                        create_error_info_openai(exc, provider)
+                    )
+            except BadRequestError as exc:
+                logger.error(exc)
+                if 'context_length_exceeded' == exc.code:
+                    raise AIProviderAPIContextLengthExceededException(
+                        create_error_info_openai(exc, provider)
+                    )
+                else:
+                    raise AIProviderAPIBadRequestException(
+                        create_error_info_openai(exc, provider)
+                    )
+            except APIError as exc:
+                logger.error(exc)
+                raise AIProviderAPIErrorException(
+                    create_error_info_openai(exc, provider)
                 )
-        except BadRequestError as exc:
-            logger.error(exc)
-            if 'context_length_exceeded' == exc.code:
-                raise ProviderAPIContextLengthExceededException(
-                    create_error_info_openai(exc, self.setting.provider)
-                )
-            else:
-                raise ProviderAPIBadRequestException(
-                    create_error_info_openai(exc, self.setting.provider)
-                )
-        except APIError as exc:
-            logger.error(exc)
-            raise ProviderAPIErrorException(
-                create_error_info_openai(exc, self.setting.provider)
-            )
 
-    return wrapper
+        return wrapper
+
+    return decorator
 
 
-def create_error_info_openai(exc: APIError, provider: str) -> ErrorInfo:
-    return ErrorInfo(
-        provider=provider,
-        error=exc.__class__.__name__,
-        cause=exc.message,
-        request=f'[{exc.request.method}] {exc.request.url}',
-    )
+def create_error_info_openai(exc: OpenAIError, provider: str) -> ErrorInfo:
+    if isinstance(exc, APIError):
+        return ErrorInfo(
+            provider=provider,
+            error=exc.__class__.__name__,
+            cause=exc.message,
+            request=f'[{exc.request.method}] {exc.request.url}',
+        )
+    else:
+        return ErrorInfo(
+            provider=provider, error=exc.__class__.__name__, cause=str(exc)
+        )

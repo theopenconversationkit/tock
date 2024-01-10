@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,15 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from typing import Annotated, Union
-
-from fastapi import Body
-
-from llm_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
-    AzureOpenAIEMSetting,
-)
-from llm_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
-
-EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting], Body(discriminator='provider')
-]

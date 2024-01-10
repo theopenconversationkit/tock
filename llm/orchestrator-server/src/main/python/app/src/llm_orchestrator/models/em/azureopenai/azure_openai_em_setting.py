@@ -22,7 +22,8 @@ from llm_orchestrator.models.em.em_setting import BaseEMSetting
 
 class AzureOpenAIEMSetting(BaseEMSetting):
     provider: Literal[EMProvider.AZURE_OPEN_AI_SERVICE] = Field(
-        description='The Embedding Model provider.'
+        description='The Embedding Model Provider.',
+        examples=[EMProvider.AZURE_OPEN_AI_SERVICE],
     )
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',

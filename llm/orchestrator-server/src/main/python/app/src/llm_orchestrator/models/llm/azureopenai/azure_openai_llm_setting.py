@@ -22,7 +22,8 @@ from llm_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
 class AzureOpenAILLMSetting(BaseLLMSetting):
     provider: Literal[LLMProvider.AZURE_OPEN_AI_SERVICE] = Field(
-        description='The Large Language Model provider.'
+        description='The Large Language Model Provider.',
+        examples=[LLMProvider.AZURE_OPEN_AI_SERVICE],
     )
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',

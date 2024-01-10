@@ -22,6 +22,6 @@ from llm_orchestrator.models.em.em_setting import BaseEMSetting
 
 class OpenAIEMSetting(BaseEMSetting):
     provider: Literal[EMProvider.OPEN_AI] = Field(
-        description='The Embedding Model provider.'
+        description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
     )
     model: str = Field(description='The model id', examples=['text-embedding-ada-002'])

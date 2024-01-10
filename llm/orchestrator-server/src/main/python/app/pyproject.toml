@@ -9,10 +9,16 @@ packages = [{include = "llm_orchestrator", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 uvicorn = "^0.24.0"
-fastapi = "^0.104.1"
-langchain = "^0.0.345"
+pydantic-settings="^2.1.0"
+fastapi = "^0.105.0"
+langchain = "^0.0.354"
 openai = "^1.3.7"
 tiktoken = "^0.5.2"
+opensearch-py = "^2.4.2"
+requests-aws4auth = "^1.2.3"
+path = "^16.9.0"
+colorlog = "^6.8.0"
+
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.5.0"
