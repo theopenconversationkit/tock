@@ -18,8 +18,10 @@ from llm_orchestrator.models.em.em_provider import EMProvider
 
 
 class BaseEMSetting(BaseModel):
-    provider: EMProvider = Field(description='The Embedding Model provider.')
+    provider: EMProvider = Field(
+        description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
+    )
     api_key: str = Field(
-        description='The API key used to authenticate requests to the provider API.',
-        examples=['123-abc-456-def'],
+        description='The API key used to authenticate requests to the AI Provider API.',
+        examples=['ab7***************************A1IV4B'],
     )

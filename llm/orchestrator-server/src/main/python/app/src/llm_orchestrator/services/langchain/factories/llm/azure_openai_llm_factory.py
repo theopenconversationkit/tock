@@ -17,7 +17,7 @@ from langchain.base_language import BaseLanguageModel
 from langchain.chat_models import AzureChatOpenAI
 
 from llm_orchestrator.errors.handlers.openai.openai_exception_handler import (
-    factory_openai_exception_handler,
+    openai_exception_handler,
 )
 from llm_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
@@ -39,6 +39,6 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
             temperature=self.setting.temperature,
         )
 
-    @factory_openai_exception_handler
+    @openai_exception_handler(provider='AzureOpenAIService')
     def check_llm_setting(self) -> bool:
         return super().check_llm_setting()

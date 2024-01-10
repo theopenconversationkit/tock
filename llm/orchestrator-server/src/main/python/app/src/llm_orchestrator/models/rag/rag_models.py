@@ -13,7 +13,7 @@
 #   limitations under the License.
 #
 from enum import Enum, unique
-from typing import Union, Optional
+from typing import Optional
 
 from pydantic import AnyUrl, BaseModel, Field
 
@@ -25,18 +25,21 @@ class Footnote(BaseModel):
         description='Footnote url', examples=['https://doc.tock.ai/tock/'], default=None
     )
 
+    class Config:
+        frozen = True
+
 
 class TextWithFootnotes(BaseModel):
     text: str = Field(
         description='Text with footnotes used to list outside sources',
         examples=['This is page content [1], and this is more content [2]'],
     )
-    footnotes: list[Footnote] = Field(description='List of footnotes')
+    footnotes: set[Footnote] = Field(description='Set of footnotes')
 
 
 @unique
 class ChatMessageType(str, Enum):
-    USER = 'HUMAN'
+    HUMAN = 'HUMAN'
     AI = 'AI'
 
 
@@ -45,8 +48,3 @@ class ChatMessage(BaseModel):
         description='Conversation message text', examples=['Hello, how can I do this?']
     )
     type: ChatMessageType = Field(description='The message origin (Human or AI)')
-
-
-class MetadataFilter(BaseModel):
-    name: str = Field(description='Metadata filter name', examples=['bot_id'])
-    value: str = Field(description='Metadata filter value', examples=['my-bot'])

@@ -12,21 +12,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from typing import Union
 
 from fastapi import APIRouter
 
 from llm_orchestrator.routers.requests.requests import RagQuery
 from llm_orchestrator.routers.responses.responses import RagResponse
-from llm_orchestrator.services.rag.rag_service import qa_ask
+from llm_orchestrator.services.rag.rag_service import ask_rag
 
 rag_router = APIRouter(prefix='/rag', tags=['Retrieval Augmented Generation'])
 
 
 @rag_router.post('')
-async def ask(query: RagQuery, debug: Union[bool, None] = False) -> RagResponse:
+async def rag(query: RagQuery, debug: bool = False) -> RagResponse:
     """
     ## Ask a RAG System
     Ask question to a RAG System, and return answer by using a knowledge base (documents)
     """
-    return qa_ask(query, debug)
+    return ask_rag(query, debug)

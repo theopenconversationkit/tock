@@ -12,11 +12,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from llm_orchestrator.routers.requests.types import EMSetting
-from llm_orchestrator.services.langchain.factories.langchain_factory import (
-    get_em_factory,
-)
+from enum import Enum, unique
 
 
-def check_em_setting(setting: EMSetting) -> bool:
-    return get_em_factory(setting).check_embedding_model_setting()
+@unique
+class VectorStoreProvider(str, Enum):
+    OPEN_SEARCH = 'OpenSearch'

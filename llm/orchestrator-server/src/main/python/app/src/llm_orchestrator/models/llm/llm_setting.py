@@ -19,9 +19,9 @@ from llm_orchestrator.models.llm.llm_provider import LLMProvider
 
 
 class BaseLLMSetting(BaseModel):
-    provider: LLMProvider = Field(description='The Large Language Model provider.')
+    provider: LLMProvider = Field(description='The Large Language Model Provider.')
     api_key: str = Field(
-        description='The API key used to authenticate requests to the provider API.',
+        description='The API key used to authenticate requests to the AI Provider API.',
         examples=['ab7***************************A1IV4B'],
         min_length=1,
     )
