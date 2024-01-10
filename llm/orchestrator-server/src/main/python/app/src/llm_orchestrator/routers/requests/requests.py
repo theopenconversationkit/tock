@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,18 +15,21 @@
 
 from pydantic import BaseModel, Field
 
-from llm_orchestrator.models.em.em_types import EMSetting
-from llm_orchestrator.models.llm.llm_types import LLMSetting
-from llm_orchestrator.models.rag.rag_models import ChatMessage, MetadataFilter
+from llm_orchestrator.models.rag.rag_models import ChatMessage
+from llm_orchestrator.routers.requests.types import (
+    DocumentSearchParams,
+    EMSetting,
+    LLMSetting,
+)
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
-    setting: LLMSetting = Field(description='The LLM provider setting to be checked.')
+    setting: LLMSetting = Field(description='The LLM Provider setting to be checked.')
 
 
 class EMProviderSettingStatusQuery(BaseModel):
     setting: EMSetting = Field(
-        description='The Embedding Model provider setting to be checked.'
+        description='The Embedding Model Provider setting to be checked.'
     )
 
 
@@ -50,7 +53,16 @@ class RagQuery(BaseModel):
         description='Index name corresponding to a document collection in the vector database.',
         examples=['my-index-name'],
     )
-    metadata_filters: list[MetadataFilter] = Field(
-        description='Metadata filters, used to search for specific documents. The AND operator is applied, '
-        'so all filters should be satisfied.'
+    document_search_params: DocumentSearchParams = Field(
+        description='The document search parameters. Ex: number of documents, metadata filter',
+        examples=[
+            {
+                'k': 4,
+                'filter': {
+                    'term': {
+                        'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
+                    }
+                },
+            }
+        ],
     )

@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,11 +12,21 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from llm_orchestrator.routers.requests.types import EMSetting
-from llm_orchestrator.services.langchain.factories.langchain_factory import (
-    get_em_factory,
+import logging
+import logging.config
+
+import yaml
+
+from llm_orchestrator.configurations.environement.settings import (
+    application_settings,
 )
 
 
-def check_em_setting(setting: EMSetting) -> bool:
-    return get_em_factory(setting).check_embedding_model_setting()
+def _setup_logging():
+    with open(application_settings.application_logging_config_yaml, 'r') as config_file:
+        config_dict = yaml.safe_load(config_file)
+        logging.config.dictConfig(config_dict)
+
+
+# configure logging
+_setup_logging()

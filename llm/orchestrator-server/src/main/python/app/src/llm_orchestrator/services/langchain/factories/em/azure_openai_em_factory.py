@@ -17,7 +17,7 @@ from langchain.embeddings import AzureOpenAIEmbeddings
 from langchain.embeddings.base import Embeddings
 
 from llm_orchestrator.errors.handlers.openai.openai_exception_handler import (
-    factory_openai_exception_handler,
+    openai_exception_handler,
 )
 from llm_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
@@ -38,6 +38,6 @@ class AzureOpenAIEMFactory(LangChainEMFactory):
             azure_deployment=self.setting.deployment_name,
         )
 
-    @factory_openai_exception_handler
+    @openai_exception_handler(provider='AzureOpenAIService')
     def check_embedding_model_setting(self) -> bool:
         return super().check_embedding_model_setting()

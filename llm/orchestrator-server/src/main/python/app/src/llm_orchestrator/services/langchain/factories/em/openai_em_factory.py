@@ -17,7 +17,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.embeddings.base import Embeddings
 
 from llm_orchestrator.errors.handlers.openai.openai_exception_handler import (
-    factory_openai_exception_handler,
+    openai_exception_handler,
 )
 from llm_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
 from llm_orchestrator.services.langchain.factories.em.em_factory import (
@@ -33,6 +33,6 @@ class OpenAIEMFactory(LangChainEMFactory):
             openai_api_key=self.setting.api_key, model=self.setting.model
         )
 
-    @factory_openai_exception_handler
+    @openai_exception_handler(provider='OpenAI')
     def check_embedding_model_setting(self) -> bool:
         return super().check_embedding_model_setting()

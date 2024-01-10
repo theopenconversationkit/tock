@@ -25,11 +25,11 @@ from llm_orchestrator.models.rag.rag_models import TextWithFootnotes
 class ErrorResponse(BaseModel):
     code: ErrorCode = Field(
         description='The AI orchestrator error code.',
-        examples=[ErrorCode.PROVIDER_API_AUTHENTICATION_ERROR],
+        examples=[ErrorCode.GEN_AI_AUTHENTICATION_ERROR],
     )
     message: str = Field(
         description='The AI orchestrator error message.',
-        examples=['Authentication error to the AI provider API.'],
+        examples=['Authentication error to the AI Provider API.'],
     )
     detail: Optional[str] = Field(
         description='The AI orchestrator error detail. It provides help or a solution.',
@@ -45,7 +45,7 @@ class ErrorResponse(BaseModel):
 
 class ProviderSettingStatusResponse(BaseModel):
     valid: bool = Field(
-        description='It indicates the AI provider setting validity.',
+        description='It indicates the AI Provider setting validity.',
         examples=[True],
         default=False,
     )
@@ -54,13 +54,13 @@ class ProviderSettingStatusResponse(BaseModel):
 
 class LLMProviderResponse(BaseModel):
     provider: LLMProvider = Field(
-        description='The LLM provider ID', default=[LLMProvider.OPEN_AI]
+        description='The LLM Provider ID', default=[LLMProvider.OPEN_AI]
     )
 
 
 class EMProviderResponse(BaseModel):
     provider: EMProvider = Field(
-        description='The Embedding Model provider ID',
+        description='The Embedding Model Provider ID',
         default=[EMProvider.AZURE_OPEN_AI_SERVICE],
     )
 
@@ -69,7 +69,7 @@ class RagResponse(BaseModel):
     answer: TextWithFootnotes = Field(
         description='The RAG answer, with outside sources.'
     )
-    debug: list[Any] = Field(
+    debug: Optional[Any] = Field(
         description='Debug data',
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
     )

@@ -17,5 +17,5 @@ from llm_orchestrator.routers.responses.responses import RagResponse
 from llm_orchestrator.services.langchain.rag_chain import execute_qa_chain
 
 
-def qa_ask(query: RagQuery, debug: bool) -> RagResponse:
+def ask_rag(query: RagQuery, debug: bool) -> RagResponse:
     return execute_qa_chain(query, debug)

@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,11 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from llm_orchestrator.routers.requests.types import EMSetting
-from llm_orchestrator.services.langchain.factories.langchain_factory import (
-    get_em_factory,
-)
-
-
-def check_em_setting(setting: EMSetting) -> bool:
-    return get_em_factory(setting).check_embedding_model_setting()
