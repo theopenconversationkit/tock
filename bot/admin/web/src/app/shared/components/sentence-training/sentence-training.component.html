@@ -42,6 +42,7 @@
       <div
         class="grid-columns-header sticky"
         [ngClass]="{ scrolled: scrolled }"
+        *ngIf="!loading && sentences?.length"
       >
         <div class="d-flex gap-1 align-items-center">
           <nb-checkbox
