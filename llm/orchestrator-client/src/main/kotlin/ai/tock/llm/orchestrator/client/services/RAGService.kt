@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.rest.client.model
+package ai.tock.llm.orchestrator.client.services
 
-/**
- *
- */
-data class ClientFootNote(
-    val identifier: String,
-    val title: String,
-    val url: String?
-)
+import ai.tock.llm.orchestrator.client.requests.EMProviderSettingStatusQuery
+import ai.tock.llm.orchestrator.client.requests.RAGQuery
+import ai.tock.llm.orchestrator.client.responses.ProviderSettingStatusResponse
+import ai.tock.llm.orchestrator.client.responses.RAGResponse
+
+interface RAGService {
+    fun rag(query: RAGQuery, debug: Boolean = false): RAGResponse?
+}

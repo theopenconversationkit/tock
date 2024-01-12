@@ -15,7 +15,43 @@
  */
 
 package ai.tock.llm.orchestrator.client.requests
+import ai.tock.llm.orchestrator.core.models.llm.LLMSetting
+import ai.tock.llm.orchestrator.core.models.em.EMSetting
+import ai.tock.llm.orchestrator.core.models.llm.LLMProvider
 
-class RAGQuery {
-    // TODO MASS: DERCBOT-814
+data class RAGQuery(
+    // val condenseQuestionLlmSetting: LLMSetting,
+    // val condenseQuestionPromptInputs: Map<String, String>,
+    val history: List<ChatMessage> = emptyList(),
+    val questionAnsweringLlmSetting: LLMSetting,
+    val questionAnsweringPromptInputs: Map<String, String>,
+    val embeddingQuestionEmSetting: EMSetting,
+    val documentIndexName: String,
+    val documentSearchParams: DocumentSearchParams
+)
+
+data class ChatMessage(
+    val text: String,
+    val type: ChatMessageType,
+)
+
+enum class ChatMessageType{
+    HUMAN,
+    AI
 }
+
+enum class VectorStoreProvider{
+    OpenSearch
+}
+abstract class DocumentSearchParams(
+    val provider: VectorStoreProvider,
+)
+
+data class OpenSearchParams(
+    val k: Int,
+    val filter: List<Term>
+): DocumentSearchParams(VectorStoreProvider.OpenSearch)
+
+data class Term(
+    val term: Map<String, Any>
+)

@@ -16,6 +16,18 @@
 
 package ai.tock.llm.orchestrator.client.responses
 
-class RAGResponse {
-    // TODO MASS: DERCBOT-814
-}
+data class RAGResponse(
+    val answer: TextWithFootnotes,
+    val debug: Any? = null
+)
+
+data class TextWithFootnotes(
+    val text: String,
+    val footnotes: List<Footnote> = emptyList(),
+)
+
+data class Footnote(
+    val identifier: String,
+    val title: String,
+    val url: String? = null,
+)
