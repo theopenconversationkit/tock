@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.llm.orchestrator.client.api
+package ai.tock.llm.orchestrator.client.services.impl
 
+import ai.tock.llm.orchestrator.client.api.RAGApi
 import ai.tock.llm.orchestrator.client.requests.RAGQuery
 import ai.tock.llm.orchestrator.client.responses.RAGResponse
-import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.http.Query
+import ai.tock.llm.orchestrator.client.retrofit.GenAIOrchestratorClient
+import ai.tock.llm.orchestrator.client.services.RAGService
 
-internal interface RAGApi {
-    @POST("/rag")
-    fun rag(@Body query: RAGQuery, @Query("debug") debug: Boolean): Call<RAGResponse>
+class RAGServiceImpl: RAGService {
+    private val retrofit = GenAIOrchestratorClient.getClient()
+    private val ragApi = retrofit.create(RAGApi::class.java)
 
+    override fun rag(query: RAGQuery, debug: Boolean): RAGResponse?
+        = ragApi.rag(query, debug).execute().body()
 }

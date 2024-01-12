@@ -22,7 +22,7 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
-import ai.tock.bot.engine.action.FootNote
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendDebug
@@ -324,13 +324,13 @@ internal data class DialogCol(
     @JsonTypeName(value = "sentenceWithFootnotes")
     data class SendSentenceWithFootnotesMongoWrapper(
         val text: String,
-        val footNotes: MutableList<FootNote>,
+        val footnotes: MutableList<Footnote>,
     ) : ActionMongoWrapper() {
 
         constructor(sentence: SendSentenceWithFootnotes) :
                 this(
                     sentence.text.toString(),
-                    sentence.footNotes
+                    sentence.footnotes
                 ) {
             assignFrom(sentence)
         }
@@ -341,7 +341,7 @@ internal data class DialogCol(
                     applicationId,
                     recipientId,
                     text,
-                    footNotes,
+                    footnotes,
                     id,
                     date,
                     state,

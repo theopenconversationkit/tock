@@ -131,13 +131,14 @@
 
 ```python
     class RagQuery(BaseModel):
-        question: str
         history: list[ChatMessage]
         # condense_question_llm_setting: LLMSetting
+        # condense_question_prompt_inputs: Any
         question_answering_llm_setting: LLMSetting
+        question_answering_prompt_inputs: Any
         embedding_question_em_setting: EMSetting
-        index_name: str
-        metadata_filters: list[MetadataFilter]
+        document_index_name: str
+        document_search_params: DocumentSearchParams
 ```
 
 #### Response :
@@ -145,7 +146,7 @@
 ```python
     class RagResponse(BaseModel):
         answer: TextWithFootnotes
-        debug: list[Any]
+        debug: Optional[Any] = None
 ```
 
 ---
@@ -216,10 +217,29 @@
         Body(discriminator='provider')
     ]
 
+    class VectorStoreProvider(str, Enum):
+        OPEN_SEARCH = 'OpenSearch'
+
+    class BaseVectorStoreSearchParams(ABC, BaseModel):
+        provider: VectorStoreProvider
+
+        
+    class OpenSearchParams(BaseVectorStoreSearchParams):
+        provider: Literal[VectorStoreProvider.OPEN_SEARCH]
+        k: int
+        filter: List[OpenSearchTermParams]
+        
+    class OpenSearchTermParams(BaseModel):
+        term: dict
+    
+    DocumentSearchParams = Annotated[
+        Union[OpenSearchParams], Body(discriminator='provider')
+    ]
+
     class Footnote(BaseModel):
         identifier: str
         title: str
-        url: Union[str, None] = None
+        url: Optional[str] = None
 
     class TextWithFootnotes(BaseModel):
         text: str
@@ -232,10 +252,6 @@
     class ChatMessage(BaseModel):
         text: str
         type: ChatMessageType
-
-    class MetadataFilter(BaseModel):
-        name: str
-        value: str
 
     class Error(BaseModel):
         code: str

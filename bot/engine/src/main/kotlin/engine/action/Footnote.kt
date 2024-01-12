@@ -20,7 +20,7 @@ package ai.tock.bot.engine.action
  * Footnote to refer to a source document
  * Basic format: {identifier}. {title} {link:url},
  */
-data class FootNote(
+data class Footnote(
     /**
      * A footnote identifier
      */

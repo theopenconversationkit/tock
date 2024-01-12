@@ -322,21 +322,23 @@ class IadvizeConnector internal constructor(
      */
     private fun SendSentenceWithFootnotes.toGraphQLMessage(): String {
 
-        val headerFootnotes = footNotes
-            .map { it.identifier }
+        var counter = 1
+        val headerFootnotes = footnotes
+            .map { counter++ }
             .joinToString("'") {
                 "[^$it]"
             } + "\n\n"
 
-        val linkSourcesWithFootNotes =
-            footNotes.joinToString("\n") { footNote ->
-                val source = "[^${footNote.identifier}]: "
-                footNote.url?.let {
-                    source + "*[${footNote.title}]($it)*"
-                } ?: footNote.title
+        counter = 1
+        val linkSourcesWithFootnotes =
+            footnotes.joinToString("\n") { footnote ->
+                val source = "[^${counter++}]: "
+                footnote.url?.let {
+                    source + "*[${footnote.title}]($it)*"
+                } ?: footnote.title
             }
 
-        return "${text} \n $headerFootnotes$linkSourcesWithFootNotes"
+        return "$text \n $headerFootnotes$linkSourcesWithFootnotes"
     }
 
     internal fun handleRequest(

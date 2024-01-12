@@ -97,7 +97,7 @@ open class BotDefinitionBase(
                 object : SimpleStoryHandlerBase() {
                     override fun action(bus: BotBus) {
                         bus.markAsUnknown()
-                        RAGAnswerHandler().handle(bus)
+                        RAGAnswerHandler.handle(bus)
                     }
                 },
             )
