@@ -72,4 +72,5 @@ class RagResponse(BaseModel):
     debug: Optional[Any] = Field(
         description='Debug data',
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
+        default=None,
     )

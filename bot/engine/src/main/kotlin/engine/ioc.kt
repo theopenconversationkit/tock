@@ -21,8 +21,10 @@ import ai.tock.bot.engine.nlp.Nlp
 import ai.tock.bot.engine.nlp.NlpController
 import ai.tock.llm.orchestrator.client.services.EMProviderService
 import ai.tock.llm.orchestrator.client.services.LLMProviderService
+import ai.tock.llm.orchestrator.client.services.RAGService
 import ai.tock.llm.orchestrator.client.services.impl.EMProviderServiceImpl
 import ai.tock.llm.orchestrator.client.services.impl.LLMProviderServiceImpl
+import ai.tock.llm.orchestrator.client.services.impl.RAGServiceImpl
 import ai.tock.nlp.api.client.NlpClient
 import ai.tock.nlp.api.client.TockNlpClient
 import com.github.salomonbrys.kodein.Kodein
@@ -39,4 +41,5 @@ val botModule = Kodein.Module {
     bind<ConnectorHandlerProvider>() with provider { DefaultConnectorHandlerProvider }
     bind<LLMProviderService>() with singleton { LLMProviderServiceImpl() }
     bind<EMProviderService>() with singleton { EMProviderServiceImpl() }
+    bind<RAGService>() with singleton { RAGServiceImpl() }
 }

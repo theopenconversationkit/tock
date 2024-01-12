@@ -17,14 +17,14 @@
 package ai.tock.bot.engine.message
 
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.FootNote
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.event.EventType
 import ai.tock.bot.engine.user.PlayerId
 
 data class SentenceWithFootnotes(
     val text: String,
-    val footNotes: List<FootNote> = emptyList(),
+    val footnotes: List<Footnote> = emptyList(),
     override val delay: Long = 0
 ) : Message {
 
@@ -35,6 +35,6 @@ data class SentenceWithFootnotes(
             applicationId,
             recipientId,
             text,
-            footNotes.toMutableList()
+            footnotes.toMutableList()
         )
 }

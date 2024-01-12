@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,8 +13,9 @@
 #   limitations under the License.
 #
 
-from langchain.embeddings import OpenAIEmbeddings
+
 from langchain.embeddings.base import Embeddings
+from langchain_openai import OpenAIEmbeddings
 
 from llm_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,

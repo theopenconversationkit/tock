@@ -29,6 +29,7 @@ class ErrorCode(Enum):
     GEN_AI_CONNECTION_ERROR = 1001
     GEN_AI_AUTHENTICATION_ERROR = 1002
     GEN_AI_UNKNOWN_PROVIDER_SETTING = 1003
+    GEN_AI_GUARD_CHECK_ERROR = 1004
 
     # AI Provider Errors
     AI_PROVIDER_UNKNOWN = 2000
@@ -105,7 +106,7 @@ class ErrorMessages:
         # Gen AI Orchestrator Errors
         ErrorCode.GEN_AI_UNKNOWN_ERROR: ErrorMessage(message='Unknown error.'),
         ErrorCode.GEN_AI_CONNECTION_ERROR: ErrorMessage(
-            message='A Connection error occurred.',
+            message='Connection error.',
             detail='Check the requested URL, your network settings, proxy configuration, '
             'SSL certificates, or firewall rules.',
         ),
@@ -115,6 +116,9 @@ class ErrorMessages:
         ),
         ErrorCode.GEN_AI_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
             message='Unknown AI provider setting.'
+        ),
+        ErrorCode.GEN_AI_GUARD_CHECK_ERROR: ErrorMessage(
+            message='Guard check failed.',
         ),
         # AI Provider Errors
         ErrorCode.AI_PROVIDER_UNKNOWN: ErrorMessage(message='Unknown AI Provider.'),
@@ -162,3 +166,6 @@ class ErrorMessages:
 
     def get_message(self, code: ErrorCode) -> ErrorMessage:
         return self.ERROR_MESSAGES.get(code, ErrorMessage(message='Unknown error'))
+
+
+error_messages = ErrorMessages()

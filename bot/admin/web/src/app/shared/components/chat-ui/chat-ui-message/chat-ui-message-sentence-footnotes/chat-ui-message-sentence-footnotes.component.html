@@ -12,10 +12,10 @@
 
 <div
   class="footnotes mt-1"
-  *ngIf="sentence.footNotes?.length"
+  *ngIf="sentence.footnotes?.length"
 >
   <strong class="title mr-1">SOURCES : </strong>
-  <span *ngFor="let footNote of sentence.footNotes; let last = last">
+  <span *ngFor="let footNote of sentence.footnotes; let last = last">
     <a
       [href]="footNote.url"
       target="_blank"

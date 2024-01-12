@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.llm.orchestrator.client.api
+package ai.tock.bot.connector.rest.client.model
 
-import ai.tock.llm.orchestrator.client.requests.RAGQuery
-import ai.tock.llm.orchestrator.client.responses.RAGResponse
-import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.http.Query
-
-internal interface RAGApi {
-    @POST("/rag")
-    fun rag(@Body query: RAGQuery, @Query("debug") debug: Boolean): Call<RAGResponse>
-
-}
+/**
+ *
+ */
+data class ClientFootnote(
+    val identifier: String,
+    val title: String,
+    val url: String?
+)

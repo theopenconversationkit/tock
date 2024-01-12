@@ -41,7 +41,7 @@ from llm_orchestrator.models.errors.errors_models import ErrorInfo
 logger = logging.getLogger(__name__)
 
 
-def openai_exception_handler(provider):
+def openai_exception_handler(provider: str):
     def decorator(func):
         def wrapper(*args, **kwargs):
             try:

@@ -17,13 +17,13 @@ from typing import Optional
 from llm_orchestrator.models.errors.errors_models import (
     ErrorCode,
     ErrorInfo,
-    ErrorMessages,
+    error_messages,
 )
 
 
 class GenAIOrchestratorException(Exception):
     def __init__(self, error_code: ErrorCode, info: Optional[ErrorInfo] = None):
-        error_message = ErrorMessages().get_message(error_code)
+        error_message = error_messages.get_message(error_code)
         self.message = error_message.message
         self.detail = error_message.detail
         self.error_code = error_code
@@ -71,3 +71,10 @@ class GenAIUnknownProviderSettingException(GenAIOrchestratorException):
 class VectorStoreUnknownException(GenAIOrchestratorException):
     def __init__(self):
         super().__init__(ErrorCode.VECTOR_STORE_UNKNOWN)
+
+
+class GenAIGuardCheckException(GenAIOrchestratorException):
+    """A Guard check failed"""
+
+    def __init__(self, info: ErrorInfo):
+        super().__init__(ErrorCode.GEN_AI_GUARD_CHECK_ERROR, info)
