@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, Subject, take, takeUntil } from 'rxjs';
+import { debounceTime, forkJoin, Observable, Subject, take, takeUntil } from 'rxjs';
 import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
@@ -95,8 +95,19 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       this.configurations = confs;
       this.form.reset();
       if (confs.length) {
-        this.loadAvailableStories();
-        this.load();
+        forkJoin([this.getStoriesLoader(), this.getRagSettingsLoader()]).subscribe((res) => {
+          this.availableStories = res[0];
+
+          const settings = res[1];
+          if (settings?.id) {
+            this.settingsBackup = deepCopy(settings);
+            setTimeout(() => {
+              this.initForm(settings);
+            });
+          }
+
+          this.loading = false;
+        });
       } else {
         this.loading = false;
       }
@@ -158,17 +169,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private load() {
+  private getRagSettingsLoader(): Observable<RagSettings> {
     const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
-    this.rest
-      .get<RagSettings>(url, (settings: RagSettings) => settings)
-      .subscribe((settings: RagSettings) => {
-        if (settings?.id) {
-          this.settingsBackup = deepCopy(settings);
-          this.initForm(settings);
-        }
-        this.loading = false;
-      });
+    return this.rest.get<RagSettings>(url, (settings: RagSettings) => settings);
   }
 
   initForm(settings: RagSettings) {
@@ -206,8 +209,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return EnginesConfigurations['emSetting'].find((e) => e.key === this.emEngine.value);
   }
 
-  private loadAvailableStories(): void {
-    this.botService
+  private getStoriesLoader(): Observable<StoryDefinitionConfigurationSummary[]> {
+    return this.botService
       .searchStories(
         new StorySearchQuery(
           this.state.currentApplication.namespace,
@@ -220,15 +223,13 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
           false
         )
       )
-      .pipe(take(1))
-      .subscribe((stories: StoryDefinitionConfigurationSummary[]) => {
-        this.availableStories = stories;
-      });
+      .pipe(take(1));
   }
 
   submit(): void {
     this.isSubmitted = true;
     if (this.canSave && this.form.dirty) {
+      this.loading = true;
       const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
@@ -247,6 +248,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
             duration: 5000,
             status: 'success'
           });
+          this.loading = false;
         },
         error: (error) => {
           this.toastrService.danger('An error occured', 'Error', {
@@ -262,6 +264,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
               }
             });
           }
+          this.loading = false;
         }
       });
     }
