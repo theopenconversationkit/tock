@@ -26,6 +26,7 @@ import { NlpService } from '../../../../nlp-tabs/nlp.service';
 import { Router } from '@angular/router';
 import { truncate } from '../../../../model/commons';
 import { getSentenceId } from '../commons/utils';
+import { copyToClipboard } from '../../../utils';
 
 @Component({
   selector: 'tock-sentence-training-entry',
@@ -245,7 +246,7 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
   }
 
   async copySentence(sentence) {
-    await navigator.clipboard.writeText(sentence.getText());
+    copyToClipboard(sentence.getText());
     this.toastrService.success(`Sentence copied to clipboard`, 'Clipboard');
   }
 
