@@ -232,6 +232,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
+      formValue.noAnswerStoryId = this.noAnswerStoryId.value === 'null' ? null : this.noAnswerStoryId.value;
       delete formValue['llmEngine'];
       delete formValue['emEngine'];
 

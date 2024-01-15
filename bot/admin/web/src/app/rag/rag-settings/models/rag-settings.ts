@@ -10,7 +10,7 @@ export interface RagSettings {
   enabled: boolean;
 
   noAnswerSentence: string;
-  noAnswerStoryId: string;
+  noAnswerStoryId: string | null;
 
   llmSetting: llmSetting;
   emSetting: emSetting;
