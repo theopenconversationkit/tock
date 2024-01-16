@@ -34,12 +34,11 @@ import { Router } from '@angular/router';
   templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  destroy = new Subject();
+  private destroy: Subject<boolean> = new Subject<boolean>();
 
   @Input() position = 'normal';
 
   currentTheme = 'default';
-  private destroy$: Subject<void> = new Subject<void>();
 
   namespaces: UserNamespace[];
 
