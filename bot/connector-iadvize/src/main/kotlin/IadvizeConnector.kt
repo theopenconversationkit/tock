@@ -41,6 +41,7 @@ import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.event.Event
 import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
@@ -318,27 +319,17 @@ class IadvizeConnector internal constructor(
     /**
      * Format the notification Rag message when active
      * default connector without format
-     *
+     * https://docs.iadvize.dev/technologies/bots#customize-replies-with-markdown
      */
     private fun SendSentenceWithFootnotes.toGraphQLMessage(): String {
-
         var counter = 1
-        val headerFootnotes = footnotes
-            .map { counter++ }
-            .joinToString("'") {
-                "[^$it]"
-            } + "\n\n"
+        val sources = footnotes.joinToString(", ") { footnote ->
+            footnote.url?.let {
+                "[${counter++}]($it)"
+            } ?: footnote.title
+        }
 
-        counter = 1
-        val linkSourcesWithFootnotes =
-            footnotes.joinToString("\n") { footnote ->
-                val source = "[^${counter++}]: "
-                footnote.url?.let {
-                    source + "*[${footnote.title}]($it)*"
-                } ?: footnote.title
-            }
-
-        return "$text \n $headerFootnotes$linkSourcesWithFootnotes"
+        return "$text\n\n\n*Sources: $sources*"
     }
 
     internal fun handleRequest(
