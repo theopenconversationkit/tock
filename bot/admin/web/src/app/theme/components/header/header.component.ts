@@ -14,25 +14,34 @@
  * limitations under the License.
  */
 
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 
 import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 import { StateService } from '../../../core-nlp/state.service';
 import { AuthService } from '../../../core-nlp/auth/auth.service';
 import { SettingsService } from '../../../core-nlp/settings.service';
-import { Subject } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { APP_BASE_HREF } from '@angular/common';
+import { ApplicationService } from '../../../core-nlp/applications.service';
+import { UserNamespace } from '../../../model/application';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { CoreConfig } from '../../../core-nlp/core.config';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'tock-header',
   styleUrls: ['./header.component.scss'],
   templateUrl: './header.component.html'
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
+
   @Input() position = 'normal';
 
   currentTheme = 'default';
   private destroy$: Subject<void> = new Subject<void>();
+
+  namespaces: UserNamespace[];
 
   constructor(
     private sidebarService: NbSidebarService,
@@ -41,23 +50,55 @@ export class HeaderComponent implements OnInit {
     public auth: AuthService,
     public settings: SettingsService,
     private themeService: NbThemeService,
-    @Inject(APP_BASE_HREF) public baseHref: string
+    @Inject(APP_BASE_HREF) public baseHref: string,
+    private applicationService: ApplicationService,
+    private botConfiguration: BotConfigurationService,
+    private config: CoreConfig,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.currentTheme = this.settings.currentTheme ? this.settings.currentTheme : 'default';
-    // this.themeService.onThemeChange()
-    //   .pipe(
-    //     map(({name}) => name),
-    //     takeUntil(this.destroy$),
-    //   )
-    //   .subscribe(themeName => this.currentTheme = themeName);
+
     if (this.currentTheme !== this.themeService.currentTheme) {
       this.themeService.changeTheme(this.currentTheme);
     }
     if (this.settings.currentLocale != null) {
       this.state.currentLocale = this.settings.currentLocale;
     }
+
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
+      this.grabNamespaces();
+    });
+  }
+
+  grabNamespaces(): void {
+    this.applicationService.getNamespaces().subscribe((n) => (this.namespaces = n));
+  }
+
+  get currentNamespaceName() {
+    return this.namespaces?.find((n) => n.current).namespace;
+  }
+
+  changeNamespace(namespace: string) {
+    this.applicationService
+      .selectNamespace(namespace)
+      .pipe(take(1))
+      .subscribe((_) =>
+        this.auth.loadUser().subscribe((_) => {
+          this.applicationService.resetConfiguration();
+          this.grabNamespaces();
+
+          this.applicationService
+            .getApplications()
+            .pipe(take(1))
+            .subscribe((applications) => {
+              if (!applications.length) {
+                this.router.navigateByUrl(this.config.configurationUrl);
+              }
+            });
+        })
+      );
   }
 
   changeTheme(themeName: string) {
@@ -97,5 +138,10 @@ export class HeaderComponent implements OnInit {
 
   changeLocale(locale) {
     setTimeout((_) => this.state.changeLocale(locale));
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 }
