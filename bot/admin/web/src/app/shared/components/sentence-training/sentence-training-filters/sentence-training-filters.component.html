@@ -22,10 +22,10 @@
             *ngIf="!!getFormControl('search').value"
             nbButton
             nbSuffix
-            nbTooltip="Clear"
             ghost
+            nbTooltip="Clear"
+            type="button"
             (click)="resetControl(getFormControl('search'))"
-            data-testid="clear-button"
           >
             <nb-icon icon="close-outline"></nb-icon>
           </button>
