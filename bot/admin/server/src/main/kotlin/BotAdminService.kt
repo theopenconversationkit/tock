@@ -92,10 +92,8 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
-import ai.tock.translator.I18nKeyProvider
-import ai.tock.translator.I18nLabel
-import ai.tock.translator.I18nLabelValue
-import ai.tock.translator.Translator
+import ai.tock.translator.*
+import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
@@ -113,6 +111,8 @@ object BotAdminService {
     private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val front = FrontClient
+    private val i18n: I18nDAO by injector.instance()
+
 
     private class BotStoryDefinitionConfigurationDumpController(
         override val targetNamespace: String,
@@ -1130,5 +1130,19 @@ object BotAdminService {
         ).forEach {
             storyDefinitionDAO.save(it.copy(botId = newApp.name))
         }
+    }
+
+    fun importLabels(labels: List<I18nLabel>, organization: String) : Int {
+        return labels
+            .filter { it.i18n.any { i18n -> i18n.validated } }
+            .map {
+                it.copy(
+                    _id = it._id.toString().replaceFirst(it.namespace, organization).toId(),
+                    namespace = organization
+                )
+            }.apply {
+                i18n.save(this)
+            }
+            .size
     }
 }
