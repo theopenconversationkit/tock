@@ -25,6 +25,7 @@ import { ApplicationsResolver } from '../applications/applications.resolver';
 import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { UserLogsComponent } from '../applications/user/user-logs.component';
 import { NamespacesComponent } from '../applications/namespace/namespaces.component';
+import { SynchronizationComponent } from "./synchronization/synchronization.component";
 
 
 const routes: Routes = [
@@ -88,6 +89,10 @@ const routes: Routes = [
       {
         path: 'namespaces',
         component: NamespacesComponent
+      },
+      {
+       path: 'synchronization',
+       component: SynchronizationComponent
       }
     ]
   }

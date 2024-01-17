@@ -1,0 +1,94 @@
+version: '3.9'
+
+volumes:
+  tockmongo:
+  tockmongo2:
+  tockmongo3:
+  maven_home:
+
+networks:
+  default:
+    name: tock_backend
+    driver: bridge
+
+services:
+  mongo:
+    image: mongo:3.6.5
+    volumes:
+      - tockmongo:/data/db
+    ports:
+      - "27017:27017"
+    command: --smallfiles --bind_ip_all --port 27017 --replSet "tock"
+  mongo2:
+    image: mongo:3.6.5
+    depends_on:
+      - mongo
+    volumes:
+      - tockmongo2:/data/db
+    ports:
+      - "27018:27018"
+    command: --smallfiles --bind_ip_all --port 27018 --replSet "tock"
+  mongo3:
+    image: mongo:3.6.5
+    depends_on:
+      - mongo
+      - mongo2
+    volumes:
+      - tockmongo3:/data/db
+    ports:
+      - "27019:27019"
+    command: --smallfiles --bind_ip_all --port 27019 --replSet "tock"
+  mongo-setup:
+    container_name: "mongo-setup"
+    image: mongo:3.6.5
+    depends_on:
+      - "mongo"
+      - "mongo2"
+      - "mongo3"
+    links:
+      - mongo:mongo
+      - mongo2:mongo2
+      - mongo3:mongo3
+    volumes:
+      - ./scripts:/scripts
+    environment:
+      - MONGO1=mongo
+      - MONGO2=mongo2
+      - MONGO3=mongo3
+      - RS=tock
+    entrypoint: [ "/scripts/setup.sh" ]
+  node:
+    build:
+      context: ./bot/admin/web
+    container_name: tock_studio_official
+    tty: true
+    working_dir: /app
+    command:
+      - /bin/sh
+      - -c
+      - | 
+         npm install -f
+         NG_CLI_ANALYTICS=false npm start
+    user: "${UID}:${GID}"
+    volumes:
+      - ./bot/admin/web:/app
+      - ./nlp/admin/web/src/app/applications:/app/src/app/applications
+      - ./nlp/admin/web/src/app/archive:/app/src/app/archive
+      - ./nlp/admin/web/src/app/build:/app/src/app/build
+      - ./nlp/admin/web/src/app/core-nlp:/app/src/app/core-nlp
+      - ./nlp/admin/web/src/app/entities:/app/src/app/entities
+      - ./nlp/admin/web/src/app/inbox:/app/src/app/inbox
+      - ./nlp/admin/web/src/app/intents:/app/src/app/intents
+      - ./nlp/admin/web/src/app/logs:/app/src/app/logs
+      - ./nlp/admin/web/src/app/model:/app/src/app/model
+      - ./nlp/admin/web/src/app/nlp-tabs:/app/src/app/nlp-tabs
+      - ./nlp/admin/web/src/app/quality-nlp:/app/src/app/quality-nlp
+      - ./nlp/admin/web/src/app/scroll:/app/src/app/scroll
+      - ./nlp/admin/web/src/app/search:/app/src/app/search
+      - ./nlp/admin/web/src/app/sentence-analysis:/app/src/app/sentence-analysis
+      - ./nlp/admin/web/src/app/sentences-scroll:/app/src/app/sentences-scroll
+      - ./nlp/admin/web/src/app/shared-nlp:/app/src/app/shared-nlp
+      - ./nlp/admin/web/src/app/test-nlp:/app/src/app/test-nlp
+      - ./nlp/admin/web/src/app/try:/app/src/app/try
+    ports:
+      - "4200:4200"

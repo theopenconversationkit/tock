@@ -1,0 +1,31 @@
+
+.applications-applications__item {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.applications-applications__app-name {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.applications-applications__select-action {
+  min-width: 0;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.sync-select {
+  min-width: 240px;
+  margin: 10px 10px 10px 0;
+}
+
+.arrow-right {
+  margin-right: 10px;
+}
+
+.inbox-messages-checkbox {
+  vertical-align: middle;
+  margin: 0 16px;
+}
