@@ -62,6 +62,8 @@ interface StoryDefinitionConfigurationDAO {
 
     fun delete(story: StoryDefinitionConfiguration)
 
+    fun deleteByNamespaceAndBotId(namespace: String, botId: String)
+
     /**
      * Search [StoryDefinitionConfigurationSummaryMinimumMetrics] implementations
      * @param request [StoryDefinitionConfigurationMinimalSummaryRequest] search request

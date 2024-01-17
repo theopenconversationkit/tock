@@ -166,6 +166,16 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        // Retrieve all applications of the selected namespace
+        blockingJsonGet("/applications/:namespace", admin) { context ->
+            val namespace : String = context.path("namespace")
+            front.getApplications().filter {
+                it.namespace == namespace
+            }.map {
+                service.getApplicationWithIntents(it)
+            }
+        }
+
         // Retrieve application that matches given identifier
         blockingJsonGet("/application/:applicationId") { context ->
             service.getApplicationWithIntents(context.pathId("applicationId"))

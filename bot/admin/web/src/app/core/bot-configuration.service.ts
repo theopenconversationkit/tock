@@ -20,6 +20,7 @@ import { StateService } from '../core-nlp/state.service';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { ApplicationScopedQuery } from '../model/commons';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType } from './model/configuration';
+import { SynchronizationConfiguration } from "./model/synchronizationConfiguration";
 
 @Injectable()
 export class BotConfigurationService implements OnDestroy {
@@ -76,6 +77,10 @@ export class BotConfigurationService implements OnDestroy {
 
   deleteConfiguration(conf: BotApplicationConfiguration): Observable<boolean> {
     return this.rest.delete(`/configuration/bot/${conf._id}`);
+  }
+
+  synchronize(conf: SynchronizationConfiguration): Observable<any> {
+    return this.rest.post('/configuration/synchronization', conf);
   }
 
   private getBots(botId: string): Observable<BotConfiguration[]> {

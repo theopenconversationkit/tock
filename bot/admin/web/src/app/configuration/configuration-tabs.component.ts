@@ -45,6 +45,11 @@ export class ConfigurationTabsComponent implements OnInit {
       title: 'Log',
       route: 'users/logs',
       icon: 'eye-outline'
+    },
+    {
+     title: 'Synchronization',
+     route: 'synchronization',
+     icon: 'sync'
     }
   ];
 

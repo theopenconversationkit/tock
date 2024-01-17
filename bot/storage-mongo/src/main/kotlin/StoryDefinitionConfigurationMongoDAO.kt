@@ -49,6 +49,7 @@ import ai.tock.shared.trace
 import ai.tock.shared.warn
 import ai.tock.shared.watch
 import com.mongodb.client.model.Collation
+import com.mongodb.client.model.Filters
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.jackson.data.JacksonData
@@ -300,7 +301,22 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         }
         col.deleteOneById(story._id)
     }
-
+    override fun deleteByNamespaceAndBotId(namespace: String, botId: String) {
+        val deletingStories = col.find(
+            Filters.eq("namespace", namespace),
+            Filters.eq("botId", botId)).toList()
+        if (deletingStories.isNotEmpty()) {
+            deletingStories.forEach { deletingStory ->
+                historyCol.save(StoryDefinitionConfigurationHistoryCol(deletingStory, true))
+            }
+        }
+        col.deleteMany(
+            and(
+                BotId eq botId,
+                Namespace eq namespace
+            )
+        )
+    }
     override fun createBuiltInStoriesIfNotExist(stories: List<StoryDefinitionConfiguration>) {
         stories.forEach {
             // unique index throws exception if the story already exists
