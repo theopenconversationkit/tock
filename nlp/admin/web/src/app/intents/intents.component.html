@@ -14,17 +14,19 @@
   ~ limitations under the License.
   -->
 
+<h1 class="mt-3">Intents</h1>
+
 <tock-intents-filters (onFilter)="filterIntents($event)"></tock-intents-filters>
 
 <div
   *ngIf="filteredIntents && !filteredIntents.length"
-  class="text-center font-italic mt-3"
+  class="text-center font-italic"
 >
   No intent found
 </div>
 
 <nb-card
-  class="mt-2 mb-2"
+  class="mb-2"
   *ngIf="filteredIntents?.length"
 >
   <nb-card-body>

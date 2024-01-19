@@ -17,7 +17,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
-import { TryComponent } from '../try/try.component';
 import { IntentsComponent } from '../intents/intents.component';
 import { EntitiesComponent } from '../entities/entities.component';
 import { LogsComponent } from '../logs/logs.component';
@@ -26,6 +25,7 @@ import { SentencesInboxComponent } from './sentences/sentences-inbox/sentences-i
 import { SentencesUnknownComponent } from './sentences/sentences-unknown/sentences-unknown.component';
 import { SentencesSearchComponent } from './sentences/sentences-search/sentences-search.component';
 import { LanguageUnderstandingTabsComponent } from './language-understanding-tabs/language-understanding-tabs.component';
+import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.component';
 
 const routes: Routes = [
   {
@@ -43,7 +43,7 @@ const routes: Routes = [
       },
       {
         path: 'try',
-        component: TryComponent
+        component: SentenceNewComponent
       },
       {
         path: 'inbox',
