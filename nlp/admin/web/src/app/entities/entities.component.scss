@@ -21,36 +21,19 @@
   margin-right: 5px;
   margin-bottom: 5px;
   border-radius: 10rem;
-  background-color: var(--border-basic-color-3);
+  background-color: var(--button-filled-basic-background-color);
   font-size: 0.9rem;
   line-height: 1.25rem;
   white-space: nowrap;
-  &.primary {
+  &.info {
     color: white;
-    background-color: var(--button-filled-primary-background-color);
+    background-color: var(--button-filled-info-background-color);
   }
   &.success {
     color: white;
     background-color: var(--button-filled-success-background-color);
   }
-}
-
-.add-value {
-  float: right;
-  margin-left: 20px;
-  margin-right: 20px;
-}
-
-.predefined-list {
-  color: green;
-}
-
-.remove {
-  color: red !important;
-  opacity: 1 !important;
-}
-
-.values {
-  width: 100%;
-  padding-bottom: 50px;
+  &.duckling {
+    background-color: var(--color-basic-200);
+  }
 }

@@ -14,44 +14,48 @@
   ~ limitations under the License.
   -->
 
-<span
-  class="status"
-  [style.background-color]="entity.entityColor"
-  >{{ entity.qualifiedName(state.user) }}</span
->
-<div
-  *ngIf="entity.isDateType()"
-  class="dateType"
->
-  <nb-checkbox
-    [(ngModel)]="entity.atStartOfDay"
-    nbTooltip="Useful for non relative time"
-    >Evaluate at start of day
-  </nb-checkbox>
-  <button
-    nbButton
-    (click)="update()"
-    status="primary"
-    outline
+<div class="d-flex gap-1 align-items-center mb-1">
+  <div
+    class="tag"
+    [style.background-color]="entity.entityColor"
+    [style.color]="getContrastYIQ(entity.entityColor)"
   >
-    Update
-  </button>
-</div>
-<button
-  *ngIf="entityType"
-  nbButton
-  ghost
-  status="danger"
-  nbTooltip="Remove sub entity type"
-  (click)="remove()"
->
-  <nb-icon icon="trash-2-outline"></nb-icon>
-</button>
+    {{ entity.qualifiedName(state.user) }}
 
-<tock-entity-details
+    <nb-icon
+      *ngIf="entityType"
+      icon="trash-2-outline"
+      status="danger"
+      class="ml-1 pointer"
+      nbTooltip="Remove sub entity type"
+      (click)="remove()"
+    ></nb-icon>
+  </div>
+
+  <div
+    *ngIf="entity.isDateType()"
+    class="d-flex gap-1 align-items-center"
+  >
+    <nb-checkbox
+      [checked]="entity.atStartOfDay"
+      (checkedChange)="entity.atStartOfDay = !entity.atStartOfDay; update()"
+      nbTooltip="Useful for non relative time"
+      >Evaluate at start of day
+    </nb-checkbox>
+  </div>
+</div>
+
+<div
+  class="d-flex text-disabled"
   *ngFor="let e of subEntities()"
-  [entity]="e"
-  [paddingLeft]="paddingLeft + 50"
-  [entityType]="findEntityType()"
 >
-</tock-entity-details>
+  <nb-icon
+    icon="corner-down-right-outline"
+    class="mt-1 mx-2"
+  ></nb-icon>
+
+  <tock-entity-details
+    [entity]="e"
+    [entityType]="findEntityType()"
+  ></tock-entity-details>
+</div>
