@@ -16,7 +16,7 @@
 
 import { saveAs } from 'file-saver-es';
 import { map } from 'rxjs/operators';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { StateService } from '../core-nlp/state.service';
 import { NlpService } from '../nlp-tabs/nlp.service';
 import { ApplicationService } from '../core-nlp/applications.service';
@@ -26,6 +26,7 @@ import { JsonUtils } from '../model/commons';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { NbToastrService } from '@nebular/theme';
 import { DialogService } from '../core-nlp/dialog.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'tock-entities',
@@ -37,6 +38,8 @@ export class EntitiesComponent implements OnInit {
   selectedDictionary: Dictionary;
   public uploader: FileUploader;
 
+  @ViewChild('addLabelInput') addLabelInput: ElementRef;
+
   constructor(
     public state: StateService,
     private nlp: NlpService,
@@ -45,7 +48,7 @@ export class EntitiesComponent implements OnInit {
     private applicationService: ApplicationService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.uploader = new FileUploader({ autoUpload: true, removeAfterUpload: true });
     this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       const d = Dictionary.fromJSON(JSON.parse(response));
@@ -61,7 +64,11 @@ export class EntitiesComponent implements OnInit {
     };
   }
 
-  downloadDictionary() {
+  entityTypesSortedByName(): Observable<EntityType[]> {
+    return this.state.entityTypes.pipe(map((e) => e.sort((e1, e2) => e1.name.localeCompare(e2.name))));
+  }
+
+  downloadDictionary(): void {
     saveAs(new Blob([JsonUtils.stringify(this.selectedDictionary)]), 'dictionary_' + this.selectedEntityType.name + '.json');
     this.toastrService.show(`Dictionary exported`, 'Dictionary', {
       duration: 2000,
@@ -104,14 +111,14 @@ export class EntitiesComponent implements OnInit {
     });
   }
 
-  private refreshEntityType(entityType: EntityType) {
+  private refreshEntityType(entityType: EntityType): void {
     this.selectedEntityType = entityType;
     const types = this.state.entityTypes.getValue();
     types[types.findIndex((e) => e.name === entityType.name)] = entityType;
     this.state.entityTypes.next(types);
   }
 
-  selectEntityType(entityType: EntityType) {
+  selectEntityType(entityType: EntityType): void {
     if (entityType.namespace() === this.state.currentApplication.namespace) {
       this.selectedEntityType = entityType;
       this.nlp.getDictionary(entityType).subscribe((d) => {
@@ -123,12 +130,16 @@ export class EntitiesComponent implements OnInit {
         }
       });
     } else {
-      this.selectedEntityType = null;
-      this.selectedDictionary = null;
+      this.unSelectEntityType();
     }
   }
 
-  updateEntityType() {
+  unSelectEntityType(): void {
+    this.selectedEntityType = null;
+    this.selectedDictionary = null;
+  }
+
+  updateEntityType(): void {
     this.nlp.updateEntityType(this.selectedEntityType).subscribe((_) =>
       this.toastrService.show(`Configuration Updated`, 'Update', {
         duration: 5000,
@@ -137,7 +148,7 @@ export class EntitiesComponent implements OnInit {
     );
   }
 
-  updateDictionary() {
+  updateDictionary(): void {
     this.nlp.saveDictionary(this.selectedDictionary).subscribe((_) =>
       this.toastrService.show(`Configuration Updated`, 'Update', {
         duration: 5000,
@@ -146,7 +157,7 @@ export class EntitiesComponent implements OnInit {
     );
   }
 
-  updatePredefinedValueName(predefinedValue: PredefinedValue, input) {
+  updatePredefinedValueName(predefinedValue: PredefinedValue, input): void {
     const newValue = input.value;
     const oldValue = predefinedValue.value;
     if (oldValue !== newValue) {
@@ -186,7 +197,7 @@ export class EntitiesComponent implements OnInit {
     }
   }
 
-  createPredefinedValue(name: string) {
+  createPredefinedValue(name: string): void {
     if (name.trim() === '') {
       this.toastrService.show(`Empty Predefined Value is not allowed`, 'Error', {
         duration: 5000,
@@ -212,7 +223,7 @@ export class EntitiesComponent implements OnInit {
     }
   }
 
-  deletePredefinedValue(name: string) {
+  deletePredefinedValue(name: string): void {
     this.nlp.deletePredefinedValue(this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
       (next) => {
         let index = -1;
@@ -239,37 +250,35 @@ export class EntitiesComponent implements OnInit {
     );
   }
 
-  createLabel(predefinedValue: PredefinedValue, name: string) {
-    if (name.trim() === '') {
-      this.toastrService.show(`Empty Label is not allowed`, 'Error', {
-        duration: 5000,
-        status: 'danger'
+  createLabel(predefinedValue: PredefinedValue, name: string): void {
+    if (name.trim() === '') return;
+
+    this.nlp
+      .createLabel(
+        this.state.createPredefinedLabelQuery(this.selectedEntityType.name, predefinedValue.value, this.state.currentLocale, name)
+      )
+      .subscribe({
+        next: (next) => {
+          this.selectedDictionary = next;
+          setTimeout(() => {
+            this.addLabelInput.nativeElement.focus();
+          });
+        },
+        error: (_) =>
+          this.toastrService.show(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, 'Error', {
+            duration: 5000,
+            status: 'danger'
+          })
       });
-    } else {
-      this.nlp
-        .createLabel(
-          this.state.createPredefinedLabelQuery(this.selectedEntityType.name, predefinedValue.value, this.state.currentLocale, name)
-        )
-        .subscribe(
-          (next) => {
-            this.selectedDictionary = next;
-          },
-          (_) =>
-            this.toastrService.show(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, 'Error', {
-              duration: 5000,
-              status: 'danger'
-            })
-        );
-    }
   }
 
-  deleteLabel(predefinedValue: PredefinedValue, name: string) {
+  deleteLabel(predefinedValue: PredefinedValue, name: string): void {
     this.nlp
       .deleteLabel(
         this.state.createPredefinedLabelQuery(this.selectedEntityType.name, predefinedValue.value, this.state.currentLocale, name)
       )
-      .subscribe(
-        (next) => {
+      .subscribe({
+        next: () => {
           let locale = this.state.currentLocale;
           this.selectedDictionary.values.forEach(function (pv) {
             if (pv.value === predefinedValue.value) {
@@ -282,11 +291,11 @@ export class EntitiesComponent implements OnInit {
             }
           });
         },
-        (_) =>
+        error: (_) =>
           this.toastrService.show(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, 'Error', {
             duration: 5000,
             status: 'danger'
           })
-      );
+      });
   }
 }

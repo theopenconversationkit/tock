@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-.dateType {
+/* .dateType {
   padding-left: 20px;
-}
+} */
 
-.status {
-  border-radius: 25px;
-  padding: 8px;
+.tag {
+  display: inline-flex;
+  width: fit-content;
+  padding: 0.3rem 0.9rem;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  border-radius: 10rem;
+  background-color: var(--border-basic-color-3);
+  font-size: 0.9rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
 }
