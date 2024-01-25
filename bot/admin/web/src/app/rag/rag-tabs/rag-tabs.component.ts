@@ -19,7 +19,7 @@ export class RagTabsComponent implements OnInit {
 
   constructor(private state: StateService) {
     if (!state.hasRole(UserRole.admin)) {
-      this.tabLinks = this.tabLinks.filter((t) => t.route !== 'sources');
+      this.tabLinks = this.tabLinks.filter((t) => t.route !== 'sources' && t.route !== 'settings');
     }
   }
 
