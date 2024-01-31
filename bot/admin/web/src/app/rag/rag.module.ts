@@ -4,9 +4,11 @@ import { RagTabsComponent } from './rag-tabs/rag-tabs.component';
 import {
   NbAccordionModule,
   NbAlertModule,
+  NbAutocompleteModule,
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
+  NbFormFieldModule,
   NbIconModule,
   NbInputModule,
   NbRadioModule,
@@ -52,7 +54,9 @@ import { RagSettingsInputComponent } from './rag-settings/rag-settings-input/rag
     NbAccordionModule,
     NbTooltipModule,
     NbCheckboxModule,
-    NbAlertModule
+    NbAlertModule,
+    NbAutocompleteModule,
+    NbFormFieldModule
   ],
   declarations: [
     RagTabsComponent,
