@@ -190,6 +190,7 @@
         [required]="true"
         [showError]="isSubmitted"
         [boldLabel]="false"
+        information="Phrase to be displayed to the user if no response could be given to his request"
       >
         <input
           nbInput
@@ -199,31 +200,51 @@
       </tock-form-control>
 
       <tock-form-control
-        label="No answer story redirection"
+        label="Unanswered story redirection"
         name="noAnswerStoryId"
         [controls]="noAnswerStoryId"
         [showError]="isSubmitted"
         [boldLabel]="false"
+        information="Story to redirect the user to if no answer is given to the request"
       >
-        <nb-select
-          fullWidth
-          formControlName="noAnswerStoryId"
-        >
-          <nb-option
-            class="text-muted"
-            value="null"
+        <nb-form-field>
+          <input
+            nbInput
+            fullWidth
+            autocomplete="off"
+            type="text"
+            [value]="getCurrentStoryLabel"
+            [nbAutocomplete]="storiesautocomplete"
+            (input)="filterStoriesList($event.target.value)"
+            (change)="onStoryChange($event.target.value)"
+            (focus)="storyInputFocus()"
+            (blur)="storyInputBlur($event)"
+          />
+          <button
+            nbSuffix
+            nbButton
+            ghost
+            nbTooltip="Delete unanswered story redirection"
+            (click)="removeNoAnswerStoryId()"
+            *ngIf="getCurrentStoryLabel !== ''"
           >
-            none
-          </nb-option>
-
-          <nb-option
-            *ngFor="let story of availableStories"
-            [value]="story._id"
-          >
-            {{ story.name }}
-          </nb-option>
-        </nb-select>
+            <nb-icon icon="close-outline"> </nb-icon>
+          </button>
+        </nb-form-field>
       </tock-form-control>
+
+      <nb-autocomplete
+        #storiesautocomplete
+        optionsListClass="option-list--break-word"
+        (selectedChange)="storySelectedChange($event)"
+      >
+        <nb-option
+          *ngFor="let option of filteredStories$ | async"
+          [value]="option._id"
+        >
+          {{ option.name }}
+        </nb-option>
+      </nb-autocomplete>
     </nb-card-body>
   </nb-card>
 </form>

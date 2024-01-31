@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, forkJoin, Observable, Subject, take, takeUntil } from 'rxjs';
+import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil } from 'rxjs';
 import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
@@ -42,6 +42,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   availableStories: StoryDefinitionConfigurationSummary[];
 
+  filteredStories$: Observable<StoryDefinitionConfigurationSummary[]>;
+
   settingsBackup: RagSettings;
 
   isSubmitted: boolean = false;
@@ -52,7 +54,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   prevScrollVal: number;
 
   @HostListener('window:scroll')
-  onScroll() {
+  onScroll(): void {
     const offset = 78;
     const verticalOffset = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
@@ -100,6 +102,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
           const settings = res[1];
           if (settings?.id) {
+            if (!settings.noAnswerStoryId) {
+              settings.noAnswerStoryId = null;
+            }
             this.settingsBackup = deepCopy(settings);
             setTimeout(() => {
               this.initForm(settings);
@@ -151,7 +156,43 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return this.isSubmitted ? this.form.valid : this.form.dirty;
   }
 
-  initFormSettings(group: 'llmSetting' | 'emSetting', provider: LLMProvider) {
+  get getCurrentStoryLabel(): string {
+    const currentStory = this.availableStories?.find((story) => story._id === this.noAnswerStoryId.value);
+    return currentStory?.name || '';
+  }
+
+  storySelectedChange(storyId: string): void {
+    this.noAnswerStoryId.patchValue(storyId);
+    this.form.markAsDirty();
+  }
+
+  onStoryChange(value: string): void {
+    if (value?.trim() == '') {
+      this.removeNoAnswerStoryId();
+    }
+  }
+
+  removeNoAnswerStoryId(): void {
+    this.noAnswerStoryId.patchValue(null);
+    this.form.markAsDirty();
+  }
+
+  filterStoriesList(e: string): void {
+    this.filteredStories$ = of(this.availableStories.filter((optionValue) => optionValue.name.toLowerCase().includes(e)));
+  }
+
+  storyInputFocus(): void {
+    this.filteredStories$ = of(this.availableStories);
+  }
+
+  storyInputBlur(e: InputEvent): void {
+    const target: HTMLInputElement = e.target as HTMLInputElement;
+    target.value = this.getCurrentStoryLabel;
+
+    this.filteredStories$ = of(this.availableStories);
+  }
+
+  initFormSettings(group: 'llmSetting' | 'emSetting', provider: LLMProvider): void {
     let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
 
     if (requiredConfiguration) {
@@ -183,10 +224,6 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
     this.form.patchValue(settings);
     this.form.markAsPristine();
-  }
-
-  cancel(): void {
-    this.initForm(this.settingsBackup);
   }
 
   canRagBeActivated(): boolean {
@@ -224,6 +261,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
         )
       )
       .pipe(take(1));
+
+  }
+
+  cancel(): void {
+    this.initForm(this.settingsBackup);
   }
 
   submit(): void {
@@ -240,6 +282,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
       this.rest.post(url, formValue, null, null, true).subscribe({
         next: (ragSettings: RagSettings) => {
+          if (!ragSettings.noAnswerStoryId) {
+            ragSettings.noAnswerStoryId = null;
+          }
           this.settingsBackup = ragSettings;
           this.form.patchValue(ragSettings);
           this.form.markAsPristine();
