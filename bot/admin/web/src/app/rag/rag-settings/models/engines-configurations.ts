@@ -20,7 +20,7 @@ export interface EnginesConfiguration {
 export interface EnginesConfigurationParam {
   label: string;
   key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number';
+  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
   source?: string[];
   inputScale?: 'default' | 'fullwidth';
   defaultValue?: string;
@@ -60,8 +60,8 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
     label: 'OpenAi',
     key: LLMProvider.OpenAI,
     params: [
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
-      { key: 'apiKey', label: 'Api key', type: 'text' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
@@ -70,10 +70,10 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
     label: 'Azure OpenAi',
     key: LLMProvider.AzureOpenAIService,
     params: [
-      { key: 'apiKey', label: 'Api key', type: 'text' },
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
-      { key: 'apiBase', label: 'Private endpoint base url', type: 'text' },
+      { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
@@ -85,18 +85,18 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
     label: 'OpenAi',
     key: LLMProvider.OpenAI,
     params: [
-      { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIEmbeddingModel },
-      { key: 'apiKey', label: 'Api key', type: 'text' }
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
+      { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIEmbeddingModel }
     ]
   },
   {
     label: 'Azure OpenAi',
     key: LLMProvider.AzureOpenAIService,
     params: [
-      { key: 'apiKey', label: 'Api key', type: 'text' },
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
-      { key: 'apiBase', label: 'Private endpoint base url', type: 'text' }
+      { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' }
     ]
   }
 ];
