@@ -8,8 +8,8 @@ const routes: Routes = [
     loadChildren: () => import('./nlp/nlp.module').then((m) => m.BotNlpModule)
   },
   {
-    path: 'quality',
-    loadChildren: () => import('./quality/quality.module').then((m) => m.BotQualityModule)
+    path: 'model-quality',
+    loadChildren: () => import('./model-quality/model-quality.module').then((m) => m.ModelQualityModule)
   },
   {
     path: 'configuration',

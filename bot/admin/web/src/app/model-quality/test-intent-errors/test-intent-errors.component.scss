@@ -1,0 +1,9 @@
+@import '../../theme/styles/utilities.scss';
+
+.td-max-width {
+  max-width: 6rem;
+}
+
+.truncate {
+  @include truncate(4);
+}

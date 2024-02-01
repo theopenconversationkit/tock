@@ -1,0 +1,122 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="d-flex flex-wrap align-items-center mt-3">
+  <h1 class="flex-grow-1">Model builds</h1>
+
+  <tock-pagination
+    *ngIf="!loading && pagination.total > 0"
+    [pagination]="pagination"
+    (onPaginationChange)="refresh()"
+  ></tock-pagination>
+</div>
+
+<tock-no-data-found
+  *ngIf="!loading && !dataSource.length"
+  title="No records found"
+></tock-no-data-found>
+
+<nb-card
+  class="mb-1"
+  [nbSpinner]="loading"
+  *ngIf="dataSource.length"
+>
+  <nb-card-body>
+    <table class="table">
+      <thead>
+        <tr>
+          <th
+            style="width: 20%"
+            class="border-top-0 lineHeight-1"
+          >
+            Date
+          </th>
+          <th
+            style="width: 15%"
+            class="border-top-0 lineHeight-1"
+          >
+            Type
+          </th>
+          <th
+            style="width: 40%"
+            class="border-top-0 lineHeight-1"
+          >
+            Intent / Entity Type
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Classified sentences
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Build duration
+          </th>
+          <th
+            style="width: 5%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Error
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let row of dataSource; index as i">
+          <td>
+            {{ row.date | date: 'YYYY-MM-dd HH:mm' }}
+          </td>
+          <td>
+            {{ row.type }}
+          </td>
+          <td>
+            {{ intentOrEntityName(row) }}
+          </td>
+          <td class="text-center">
+            {{ row.nbSentences }}
+          </td>
+          <td class="text-center">
+            {{ duration(row.duration) }}
+          </td>
+          <td class="text-center">
+            <span *ngIf="!row.error">-</span>
+
+            <span *ngIf="row.error">
+              <nb-icon
+                icon="alert-circle-outline"
+                status="danger"
+              ></nb-icon>
+              {{ row.errorMessage }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>
+
+<div
+  class="d-flex justify-content-end mb-1"
+  *ngIf="!loading && pagination.total > 0"
+>
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="refresh()"
+  ></tock-pagination>
+</div>
