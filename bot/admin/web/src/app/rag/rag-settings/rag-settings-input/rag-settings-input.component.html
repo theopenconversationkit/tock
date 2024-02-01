@@ -17,6 +17,26 @@
         />
       </ng-container>
 
+      <ng-container *ngIf="configurationParam.type === 'obfuscated'">
+        <input
+          *ngIf="!inputVisible"
+          nbInput
+          fullWidth
+          fieldSize="small"
+          [value]="getControlObfuscatedValue()"
+          (focus)="showInput($event)"
+        />
+        <input
+          *ngIf="inputVisible"
+          #clearInput
+          nbInput
+          fullWidth
+          fieldSize="small"
+          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          (blur)="hideInput()"
+        />
+      </ng-container>
+
       <ng-container *ngIf="configurationParam.type === 'prompt'">
         <textarea
           nbInput
