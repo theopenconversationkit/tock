@@ -19,6 +19,8 @@ from langchain.vectorstores.opensearch_vector_search import (
 from llm_orchestrator.configurations.environement.settings import (
     application_settings,
     is_prod_environment,
+    open_search_password,
+    open_search_username,
 )
 from llm_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
@@ -30,8 +32,8 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
         return OpenSearchVectorSearch(
             opensearch_url=f'https://{application_settings.open_search_host}:{application_settings.open_search_port}',
             http_auth=(
-                application_settings.open_search_user,
-                application_settings.open_search_pwd,
+                open_search_username,
+                open_search_password,
             ),
             use_ssl=is_prod_environment,
             verify_certs=is_prod_environment,

@@ -12,11 +12,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import logging
 from enum import Enum, unique
 from typing import Optional
 
 from path import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from llm_orchestrator.utils.aws.aws_secret_manager import AWSSecretManager
+from llm_orchestrator.utils.strings import obfuscate
+
+logger = logging.getLogger(__name__)
 
 
 @unique
@@ -37,9 +43,25 @@ class _Settings(BaseSettings):
 
     open_search_host: str = 'localhost'
     open_search_port: str = '9200'
+    open_search_aws_secret_manager_name: Optional[str] = None
     open_search_user: Optional[str] = 'admin'
     open_search_pwd: Optional[str] = 'admin'
 
 
 application_settings = _Settings()
 is_prod_environment = _Environment.PROD == application_settings.application_environment
+
+open_search_username = application_settings.open_search_user
+open_search_password = application_settings.open_search_pwd
+
+if application_settings.open_search_aws_secret_manager_name is not None:
+    logger.info('Use of AWS Secret Manager to get OpenSearch credentials...')
+    open_search_username, open_search_password = AWSSecretManager().get_credentials(
+        application_settings.open_search_aws_secret_manager_name
+    )
+
+logger.info(
+    'OpenSearch user credentials: %s:%s',
+    open_search_username,
+    obfuscate(open_search_password),
+)
