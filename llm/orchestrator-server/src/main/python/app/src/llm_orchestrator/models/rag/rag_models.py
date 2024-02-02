@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -25,8 +25,20 @@ class Footnote(BaseModel):
         description='Footnote url', examples=['https://doc.tock.ai/tock/'], default=None
     )
 
-    class Config:
-        frozen = True
+    def __eq__(self, other):
+        """
+        Footnotes are identified by their title and URL.
+        When the identifier is not the same for identical footnotes,
+        this means that the sources are parts of the same document.
+        """
+        return (
+            isinstance(other, Footnote)
+            and self.title == other.title
+            and self.url == other.url
+        )
+
+    def __hash__(self):
+        return hash((self.title, self.url))
 
 
 class TextWithFootnotes(BaseModel):

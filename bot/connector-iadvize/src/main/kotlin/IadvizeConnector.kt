@@ -329,7 +329,11 @@ class IadvizeConnector internal constructor(
             } ?: footnote.title
         }
 
-        return "$text\n\n\n*Sources: $sources*"
+        // Add sources if footnotes are not empty
+        return if(footnotes.isEmpty())
+                text.toString()
+            else
+                "$text\n\n\n*Sources: $sources*"
     }
 
     internal fun handleRequest(
