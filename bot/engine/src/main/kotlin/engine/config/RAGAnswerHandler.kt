@@ -47,6 +47,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Call RAG Api - Gen AI Orchestrator
             val response = rag(this)
 
+            logger.info { "Send RAG API response" }
             send(
                 SendSentenceWithFootnotes(
                     botId,
@@ -77,15 +78,22 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     private fun ragResponseHandler(botBus: BotBus, response: RAGResponse?) {
 
         with(botBus) {
-            if (response?.answer?.text == botDefinition.ragConfiguration?.noAnswerSentence &&
-                botDefinition.ragConfiguration?.noAnswerStoryId != null
-            ) {
+            val ragConfig = botDefinition.ragConfiguration
+            if (response?.answer?.text.equals(ragConfig?.noAnswerSentence, ignoreCase = true)) {
+                logger.info { "The RAG API response is equal to the configured no-answer sentence." }
+                val noAnswerStoryId = ragConfig?.noAnswerStoryId?.toString()
+                if (!noAnswerStoryId.isNullOrBlank()) {
+                    logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
+                    var noAnswerStory = botDefinition.stories.firstOrNull { it.id == noAnswerStoryId }
 
-                val noAnswerStory =
-                    botDefinition.stories.firstOrNull { it.id == botDefinition.ragConfiguration?.noAnswerStoryId.toString() }
-                        ?: botDefinition.unknownStory
+                    if(noAnswerStory == null) {
+                        logger.warn { "The no-answer story $noAnswerStoryId was not found. So run the predefined unknown story."  }
+                        noAnswerStory = botDefinition.unknownStory
+                    }
 
-                noAnswerStory.storyHandler.handle(this)
+                    logger.info { "Run the story intent=${noAnswerStory.mainIntent()}" }
+                    noAnswerStory.storyHandler.handle(this)
+                }
             }
         }
     }
@@ -95,6 +103,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * @param botBus
      */
     private fun rag(botBus: BotBus): RAGResponse {
+        logger.info { "Call Generative AI Orchestrator - RAG API" }
         with(botBus) {
 
             val ragConfiguration = botDefinition.ragConfiguration!!
