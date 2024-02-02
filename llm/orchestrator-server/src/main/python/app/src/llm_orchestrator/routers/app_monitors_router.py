@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,8 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import logging
+
 from fastapi import APIRouter, status
 from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
 
 application_check_router = APIRouter(tags=['Application Monitors'])
 
@@ -43,6 +47,7 @@ def get_health() -> AppCheckResponse:
     Returns:
         HealthCheck: Returns a JSON response with the health status
     """
+    logger.debug('Health check -> OK')
     return AppCheckResponse(status='OK')
     # TODO : Add a check for OpenSearch
     # https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-operations.html
@@ -64,4 +69,5 @@ def get_health() -> AppCheckResponse:
     Returns:
         LivenessCheck: Returns a JSON response with the liveness status
     """
+    logger.debug('Liveness check -> OK')
     return AppCheckResponse(status='OK')

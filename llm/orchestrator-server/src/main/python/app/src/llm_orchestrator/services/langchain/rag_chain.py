@@ -14,6 +14,7 @@
 #
 import logging
 import re
+import time
 from logging import ERROR, WARNING
 
 from langchain.chains import ConversationalRetrievalChain, LLMChain
@@ -55,6 +56,9 @@ logger = logging.getLogger(__name__)
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
+    logger.info('RAG chain - Start of execution...')
+    start_time = time.time()
+
     llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
     em_factory = get_em_factory(setting=query.embedding_question_em_setting)
     vector_store_factory = get_vector_store_factory(
@@ -63,6 +67,7 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         index_name=query.document_index_name,
     )
 
+    logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
     conversational_retrieval_chain = ConversationalRetrievalChain.from_llm(
         llm=llm_factory.get_language_model(),
         retriever=vector_store_factory.get_vector_store().as_retriever(
@@ -78,6 +83,9 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         },
     )
 
+    logger.debug(
+        'RAG chain - Use chat history: %s', 'Yes' if len(query.history) > 0 else 'No'
+    )
     message_history = ChatMessageHistory()
     for msg in query.history:
         if ChatMessageType.HUMAN == msg.type:
@@ -85,13 +93,16 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         else:
             message_history.add_ai_message(msg.text)
 
-    records_callback_handler = RetrieverJsonCallbackHandler()
-
     inputs = {
         **query.question_answering_prompt_inputs,
         'chat_history': message_history.messages,
     }
 
+    logger.debug(
+        'RAG chain - Use RetrieverJsonCallbackHandler for debugging : %s',
+        debug,
+    )
+    records_callback_handler = RetrieverJsonCallbackHandler()
     response = conversational_retrieval_chain.invoke(
         input=inputs,
         config={'callbacks': [records_callback_handler] if debug else []},
@@ -100,6 +111,10 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
     # RAG Guard
     __rag_guard(inputs, response)
 
+    logger.info(
+        'RAG chain - End of execution. (Duration : %.2f seconds)',
+        time.time() - start_time,
+    )
     # Returning RAG response
     return RagResponse(
         answer=TextWithFootnotes(
@@ -133,7 +148,7 @@ def __rag_guard(inputs, response):
     then the source documents are removed from the response.
     """
 
-    if inputs['no_answer']:
+    if 'no_answer' in inputs:
         if (
             response['answer'] != inputs['no_answer']
             and response['source_documents'] == []
@@ -158,7 +173,7 @@ def __rag_log(level, message, inputs, response):
     logger.log(
         level,
         '%(message)s \n'
-        '[RAG Debug] : question="%(question)s", answer="%(answer)s", documents="%(documents)s"',
+        'RAG chain - question="%(question)s", answer="%(answer)s", documents="%(documents)s"',
         {
             'message': message,
             'question': inputs['question'],

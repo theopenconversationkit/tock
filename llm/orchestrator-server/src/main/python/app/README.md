@@ -100,7 +100,7 @@ docker compose -f docker-compose-opensearch-only.yml up -d
 #### Start the API
 
 ```bash
-uvicorn llm_orchestrator.main:app --host 0.0.0.0 --port 8000 --reload --log-level trace
+gunicorn llm_orchestrator.main:app --reload --bind :8000 --workers=2 --worker-class=uvicorn.workers.UvicornWorker --log-config=./src/llm_orchestrator/configurations/logging/config.ini
 ```
 
 ### Dev

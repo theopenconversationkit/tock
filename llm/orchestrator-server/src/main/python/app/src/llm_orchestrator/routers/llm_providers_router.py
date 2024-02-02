@@ -103,6 +103,7 @@ async def get_llm_provider_setting_by_id(
 async def check_llm_provider_setting(
     request: Request, provider_id: str, query: LLMProviderSettingStatusQuery
 ) -> ProviderSettingStatusResponse:
+    logger.info('Start LLM setting check for provider %s', provider_id)
     # Query validation
     validate_query(request, provider_id, query.setting)
 
@@ -110,13 +111,16 @@ async def check_llm_provider_setting(
         # LLM setting check
         check_llm_setting(query.setting)
 
+        logger.info('The LLM setting is valid')
         return ProviderSettingStatusResponse(valid=True)
     except GenAIOrchestratorException as exc:
+        logger.info('The LLM setting is invalid!')
         logger.error(exc)
         return ProviderSettingStatusResponse(errors=[create_error_response(exc)])
 
 
 def validate_query(request: Request, provider_id: str, setting: LLMSetting):
+    logger.debug('LLM setting - Query validation')
     validate_llm_provider(request, provider_id)
     if provider_id != setting.provider:
         raise AIProviderBadQueryException(
