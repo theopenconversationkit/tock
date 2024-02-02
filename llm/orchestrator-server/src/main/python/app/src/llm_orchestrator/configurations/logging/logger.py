@@ -15,18 +15,10 @@
 import logging
 import logging.config
 
-import yaml
-
 from llm_orchestrator.configurations.environement.settings import (
     application_settings,
 )
 
 
-def _setup_logging():
-    with open(application_settings.application_logging_config_yaml, 'r') as config_file:
-        config_dict = yaml.safe_load(config_file)
-        logging.config.dictConfig(config_dict)
-
-
-# configure logging
-_setup_logging()
+def setup_logging():
+    logging.config.fileConfig(application_settings.application_logging_config_ini)

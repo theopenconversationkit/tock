@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,12 +12,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import logging
 from abc import ABC, abstractmethod
 
 from langchain.base_language import BaseLanguageModel
 from pydantic import BaseModel
 
 from llm_orchestrator.models.llm.llm_setting import BaseLLMSetting
+
+logger = logging.getLogger(__name__)
 
 
 class LangChainLLMFactory(ABC, BaseModel):
@@ -37,5 +40,9 @@ class LangChainLLMFactory(ABC, BaseModel):
         :return: True if the setting is valid.
         :raises BusinessException: For incorrect setting
         """
-        self.get_language_model().invoke('Hi, are you there?')
+        logger.info('Invoke LLM provider to check setting')
+        query = 'Hi, are you there?'
+        response = self.get_language_model().invoke(query)
+        logger.info('Invocation successful')
+        logger.debug('[query: %s], [response: %s]', query, response)
         return True

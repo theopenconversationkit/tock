@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,12 +12,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import logging
 from abc import ABC, abstractmethod
 
 from langchain.embeddings.base import Embeddings
 from pydantic import BaseModel
 
 from llm_orchestrator.models.em.em_setting import BaseEMSetting
+
+logger = logging.getLogger(__name__)
 
 
 class LangChainEMFactory(ABC, BaseModel):
@@ -36,5 +39,9 @@ class LangChainEMFactory(ABC, BaseModel):
         check the Embedding model setting validity
         :return: True if the setting is valid.
         """
-        self.get_embedding_model().embed_query('Hi, are you there?')
+        logger.info('Invoke EM provider to check setting')
+        query = 'Hi, are you there?'
+        response = self.get_embedding_model().embed_query(query)
+        logger.info('Embedding successful')
+        logger.debug('[query: %s], [response: %s]', query, response)
         return True

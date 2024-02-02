@@ -12,11 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import logging
+
 from llm_orchestrator.routers.requests.types import EMSetting
 from llm_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
 )
 
+logger = logging.getLogger(__name__)
+
 
 def check_em_setting(setting: EMSetting) -> bool:
+    logger.info('Get the EM Factory, then check the EM setting.')
     return get_em_factory(setting).check_embedding_model_setting()

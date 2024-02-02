@@ -13,11 +13,16 @@
 #   limitations under the License.
 #
 
+import logging
+
 from llm_orchestrator.routers.requests.types import LLMSetting
 from llm_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
 )
 
+logger = logging.getLogger(__name__)
+
 
 def check_llm_setting(setting: LLMSetting) -> bool:
+    logger.info('Get the LLM Factory, then check the LLM setting.')
     return get_llm_factory(setting).check_llm_setting()
