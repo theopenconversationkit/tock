@@ -49,14 +49,15 @@ import ai.tock.shared.provide
 import ai.tock.translator.EMPTY_TRANSLATED_STRING
 import ai.tock.translator.I18nContext
 import ai.tock.translator.I18nKeyProvider
+import ai.tock.translator.I18nLabel
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.TranslatedSequence
 import ai.tock.translator.Translator
 import ai.tock.translator.TranslatorEngine
 import ai.tock.translator.UserInterfaceType
 import ai.tock.translator.raw
-import mu.KotlinLogging
 import java.util.Locale
+import mu.KotlinLogging
 
 /**
  * A Bus mock used in unit tests.
@@ -439,11 +440,12 @@ open class BotBusMock(
     override fun translate(key: I18nLabelValue?): TranslatedSequence =
         if (key == null) EMPTY_TRANSLATED_STRING
         else Translator.formatMessage(
-            translator.translate(
-                key.defaultLabel.toString(),
-                defaultLocale,
-                userLocale
-            ),
+            I18nLabel.findLabel(key.defaultI18n, userLocale, userInterfaceType, targetConnectorType.id)?.label
+                ?: translator.translate(
+                    key.defaultLabel.toString(),
+                    defaultLocale,
+                    userLocale
+                ),
             I18nContext(
                 userLocale,
                 userInterfaceType,
