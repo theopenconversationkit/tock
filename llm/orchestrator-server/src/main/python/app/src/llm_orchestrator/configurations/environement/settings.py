@@ -14,8 +14,8 @@
 #
 from enum import Enum, unique
 from typing import Optional
-from path import Path
 
+from path import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,7 +31,9 @@ class _Settings(BaseSettings):
     )
 
     application_environment: _Environment = _Environment.DEV
-    application_logging_config_yaml: str = Path(__file__).dirname() + '/../logging/config.yaml'
+    application_logging_config_ini: str = (
+        Path(__file__).dirname() + '/../logging/config.ini'
+    )
 
     open_search_host: str = 'localhost'
     open_search_port: str = '9200'
