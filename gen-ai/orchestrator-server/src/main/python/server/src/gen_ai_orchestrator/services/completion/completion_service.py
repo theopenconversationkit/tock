@@ -22,10 +22,13 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
 )
 from gen_ai_orchestrator.services.llm.llm_service import llm_inference_with_parser
+from langchain.output_parsers import CommaSeparatedListOutputParser, ResponseSchema, StructuredOutputParser
+
+from src.main.python.server.src.gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
 
 
 def generate_and_split_sentences(
-    query: GenerateSentencesQuery,
+        query: GenerateSentencesQuery,
 ) -> GenerateSentencesResponse:
     """
     Generate sentences using a language model based on the provided query,
@@ -34,10 +37,23 @@ def generate_and_split_sentences(
     :param query: A GenerateSentencesQuery object containing the llm setting.
     :return: A GenerateSentencesResponse object containing the list of sentences.
     """
+    response_schemas = [
+        ResponseSchema(name="sentences", description="the list of generated sentences"),
 
-    parser = CommaSeparatedListOutputParser()
-    llm_output = llm_inference_with_parser(
-        llm_factory=get_llm_factory(query.llm_setting), parser=parser
-    )
+    ]
+    parser = StructuredOutputParser.from_response_schemas(response_schemas)
 
-    return GenerateSentencesResponse(sentences=llm_output.content)
+    llm_factory = get_llm_factory(query.llm_setting)
+    # validate_jinja2(template, input_variables=["input_language", "content"])
+    # il faudrait faire la validation mais la remonté d'erreur se fait via log et c pas ouf
+    #  parser = CommaSeparatedListOutputParser()
+    format_instructions = parser.get_format_instructions()
+    prompt = PromptTemplate.from_template(query.prompt.template,
+                                          partial_variables={"format_instructions": format_instructions},
+                                          template_format=query.prompt.formatter)
+    model = llm_factory.get_language_model()
+
+    chain = prompt | model | parser
+    response = chain.invoke(query.prompt.inputs)
+
+    return GenerateSentencesResponse(sentences=response['sentences'])

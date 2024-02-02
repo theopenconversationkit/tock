@@ -25,6 +25,8 @@ from gen_ai_orchestrator.routers.requests.types import (
     LLMSetting,
 )
 
+from src.main.python.server.src.gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
+
 
 class LLMProviderSettingStatusQuery(BaseModel):
     """The query for the LLM Provider Setting Status"""
@@ -128,4 +130,7 @@ Answer in {locale}:""",
 class GenerateSentencesQuery(BaseModel):
     llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a sentences generation.'
+    )
+    prompt: PromptTemplate = Field(
+        description='Prompt, used to create prompt with inputs and jinja template '
     )
