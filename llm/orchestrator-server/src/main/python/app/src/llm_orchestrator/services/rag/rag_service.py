@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,10 +12,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for the RAG Service"""
+
 from llm_orchestrator.routers.requests.requests import RagQuery
 from llm_orchestrator.routers.responses.responses import RagResponse
 from llm_orchestrator.services.langchain.rag_chain import execute_qa_chain
 
 
-def ask_rag(query: RagQuery, debug: bool) -> RagResponse:
+def rag(query: RagQuery, debug: bool) -> RagResponse:
+    """Launch execution of the RAG chain"""
     return execute_qa_chain(query, debug)

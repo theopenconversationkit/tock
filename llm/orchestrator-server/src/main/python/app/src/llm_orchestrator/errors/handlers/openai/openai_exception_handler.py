@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module of the OpenAI handlers"""
 
 import logging
 
@@ -42,8 +43,19 @@ logger = logging.getLogger(__name__)
 
 
 def openai_exception_handler(provider: str):
+    """
+    Managing OpenAI exceptions
+
+    Args:
+        provider: The AI Provider type
+    """
+
     def decorator(func):
+        """A decorator of handler function"""
+
         def wrapper(*args, **kwargs):
+            """Exception handling logic"""
+
             try:
                 return func(*args, **kwargs)
             except APIConnectionError as exc:
@@ -58,28 +70,10 @@ def openai_exception_handler(provider: str):
                 )
             except NotFoundError as exc:
                 logger.error(exc)
-                if 'model_not_found' == exc.code:
-                    raise AIProviderAPIModelException(
-                        create_error_info_openai(exc, provider)
-                    )
-                elif 'DeploymentNotFound' == exc.code:
-                    raise AIProviderAPIDeploymentNotFoundException(
-                        create_error_info_openai(exc, provider)
-                    )
-                else:
-                    raise AIProviderAPIResourceNotFoundException(
-                        create_error_info_openai(exc, provider)
-                    )
+                _manage_not_found_error(exc, provider)
             except BadRequestError as exc:
                 logger.error(exc)
-                if 'context_length_exceeded' == exc.code:
-                    raise AIProviderAPIContextLengthExceededException(
-                        create_error_info_openai(exc, provider)
-                    )
-                else:
-                    raise AIProviderAPIBadRequestException(
-                        create_error_info_openai(exc, provider)
-                    )
+                _manage_bad_request_error(exc, provider)
             except APIError as exc:
                 logger.error(exc)
                 raise AIProviderAPIErrorException(
@@ -92,6 +86,16 @@ def openai_exception_handler(provider: str):
 
 
 def create_error_info_openai(exc: OpenAIError, provider: str) -> ErrorInfo:
+    """
+    Create ErrorInfo for a OpenAI error
+
+    Args:
+        exc: the OpenAI error
+        provider: the AI provider type
+    Returns:
+        The ErrorInfo with the OpenAI error parameters
+    """
+
     if isinstance(exc, APIError):
         return ErrorInfo(
             provider=provider,
@@ -103,3 +107,45 @@ def create_error_info_openai(exc: OpenAIError, provider: str) -> ErrorInfo:
         return ErrorInfo(
             provider=provider, error=exc.__class__.__name__, cause=str(exc)
         )
+
+
+def _manage_not_found_error(exc: NotFoundError, provider: str):
+    """
+    Manage a not found error
+
+    Args:
+        exc: the OpenAI not found error
+        provider: the AI provider type
+    Returns:
+        Raise a specific Gen AI Orchestrator exception according to the OpenAI error code
+    """
+
+    if 'model_not_found' == exc.code:
+        raise AIProviderAPIModelException(create_error_info_openai(exc, provider))
+    elif 'DeploymentNotFound' == exc.code:
+        raise AIProviderAPIDeploymentNotFoundException(
+            create_error_info_openai(exc, provider)
+        )
+    else:
+        raise AIProviderAPIResourceNotFoundException(
+            create_error_info_openai(exc, provider)
+        )
+
+
+def _manage_bad_request_error(exc: BadRequestError, provider: str):
+    """
+    Manage a bad request error
+
+    Args:
+        exc: the OpenAI bad request error
+        provider: the AI provider type
+    Returns:
+        Raise a specific Gen AI Orchestrator exception according to the OpenAI error code
+    """
+
+    if 'context_length_exceeded' == exc.code:
+        raise AIProviderAPIContextLengthExceededException(
+            create_error_info_openai(exc, provider)
+        )
+    else:
+        raise AIProviderAPIBadRequestException(create_error_info_openai(exc, provider))

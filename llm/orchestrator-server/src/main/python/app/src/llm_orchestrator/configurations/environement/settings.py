@@ -12,6 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+This module manages the initialization of application settings, based on environment variables
+The OpenSearch master user credentials are retrieved from AWS Secret Manager if
+open_search_aws_secret_manager_name is set
+"""
+
 import logging
 from enum import Enum, unique
 from typing import Optional
@@ -27,11 +33,15 @@ logger = logging.getLogger(__name__)
 
 @unique
 class _Environment(str, Enum):
+    """Enumeration to list environment type"""
+
     DEV = 'DEV'
     PROD = 'PROD'
 
 
 class _Settings(BaseSettings):
+    """Application class for settings, allowing values to be overridden by environment variables."""
+
     model_config = SettingsConfigDict(
         env_prefix='tock_gen_ai_orchestrator_', case_sensitive=True
     )

@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for the LangChain Large Language Model Factory"""
+
 import logging
 from abc import ABC, abstractmethod
 
@@ -24,6 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 class LangChainLLMFactory(ABC, BaseModel):
+    """A base class for LangChain Large Language Model Factory"""
+
     setting: BaseLLMSetting
 
     @abstractmethod

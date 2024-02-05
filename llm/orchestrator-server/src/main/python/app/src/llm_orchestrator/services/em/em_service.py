@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for the Embedding Model Service"""
+
 import logging
 
 from llm_orchestrator.routers.requests.types import EMSetting
@@ -23,5 +25,15 @@ logger = logging.getLogger(__name__)
 
 
 def check_em_setting(setting: EMSetting) -> bool:
+    """
+    Run a check for a given EM setting.
+
+    Args:
+        setting: The Large Embedding Model setting to check
+
+    Returns:
+         True for a valid EM setting. Raise exception otherwise.
+    """
+
     logger.info('Get the EM Factory, then check the EM setting.')
     return get_em_factory(setting).check_embedding_model_setting()

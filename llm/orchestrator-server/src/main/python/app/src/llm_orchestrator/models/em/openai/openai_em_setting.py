@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating OpenAIEMSetting."""
+
 from typing import Literal
 
 from pydantic import Field
@@ -21,6 +23,11 @@ from llm_orchestrator.models.em.em_setting import BaseEMSetting
 
 
 class OpenAIEMSetting(BaseEMSetting):
+    """
+    A class for OpenAI Embedding Model Setting.
+    Usage docs: https://platform.openai.com/docs/guides/embeddings
+    """
+
     provider: Literal[EMProvider.OPEN_AI] = Field(
         description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
     )

@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module of the OpenSearch handlers"""
+
 import logging
 from typing import Union
 
@@ -40,7 +42,11 @@ logger = logging.getLogger(__name__)
 
 
 def opensearch_exception_handler(func):
+    """A decorator function for managing OpenSearch exceptions"""
+
     def wrapper(*args, **kwargs):
+        """Exception handling logic"""
+
         try:
             return func(*args, **kwargs)
         except OpenSearchImproperlyConfigured as exc:
@@ -75,6 +81,16 @@ def create_error_info_opensearch(
     ],
     provider: str = 'OpenSearch',
 ) -> ErrorInfo:
+    """
+    Create ErrorInfo for a OpenSearch error
+
+    Args:
+        exc: the OpenSearch error
+        provider: the AI provider type
+    Returns:
+        The ErrorInfo with the OpenSearch error parameters
+    """
+
     return ErrorInfo(
         provider=provider,
         error=exc.__class__.__name__,

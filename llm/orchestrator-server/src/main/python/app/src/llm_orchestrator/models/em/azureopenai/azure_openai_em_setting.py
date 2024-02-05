@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating AzureOpenAIEMSetting."""
+
 from typing import Literal
 
 from pydantic import Field, HttpUrl
@@ -21,6 +23,11 @@ from llm_orchestrator.models.em.em_setting import BaseEMSetting
 
 
 class AzureOpenAIEMSetting(BaseEMSetting):
+    """
+    A class for Azure OpenAI Embedding Model Setting.
+    Usage docs: https://learn.microsoft.com/en-us/azure/ai-services/openai/reference
+    """
+
     provider: Literal[EMProvider.AZURE_OPEN_AI_SERVICE] = Field(
         description='The Embedding Model Provider.',
         examples=[EMProvider.AZURE_OPEN_AI_SERVICE],

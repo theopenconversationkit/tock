@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating OpenSearchParams."""
+
 from typing import List, Literal
 
 from pydantic import BaseModel, Field
@@ -28,6 +30,9 @@ from llm_orchestrator.models.vector_stores.vectore_store_provider import (
 
 
 class OpenSearchParams(BaseVectorStoreSearchParams):
+    """The OpenSearch params. Used to perform a Boolean query.
+    https://opensearch.org/docs/latest/query-dsl/compound/bool/"""
+
     provider: Literal[VectorStoreProvider.OPEN_SEARCH] = Field(
         description='The Vector Store Provider.',
         examples=[VectorStoreProvider.OPEN_SEARCH],
@@ -40,7 +45,7 @@ class OpenSearchParams(BaseVectorStoreSearchParams):
     )
     filter: List[OpenSearchTermParams] = Field(
         description='The OpenSearch boolean query filter. Logical "and" operator is applied. For more information, '
-                    'see : https://opensearch.org/docs/latest/query-dsl/compound/bool/',
+        'see : https://opensearch.org/docs/latest/query-dsl/compound/bool/',
         examples=[[{'term': {'key_1': 'value_1'}}, {'term': {'key_2': 'value_2'}}]],
     )
 

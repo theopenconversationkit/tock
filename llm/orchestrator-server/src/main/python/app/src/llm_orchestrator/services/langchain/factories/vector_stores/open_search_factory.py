@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating OpenSearchFactory"""
+
 from langchain.vectorstores.opensearch_vector_search import (
     OpenSearchVectorSearch,
 )
@@ -28,6 +30,8 @@ from llm_orchestrator.services.langchain.factories.vector_stores.vector_store_fa
 
 
 class OpenSearchFactory(LangChainVectorStoreFactory):
+    """A class for LangChain OpenSearch Factory"""
+
     def get_vector_store(self):
         return OpenSearchVectorSearch(
             opensearch_url=f'https://{application_settings.open_search_host}:{application_settings.open_search_port}',

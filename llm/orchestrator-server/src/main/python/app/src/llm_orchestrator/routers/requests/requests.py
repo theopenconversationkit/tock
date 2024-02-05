@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for Request Models"""
+
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -25,16 +27,22 @@ from llm_orchestrator.routers.requests.types import (
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
+    """The query for the LLM Provider Setting Status"""
+
     setting: LLMSetting = Field(description='The LLM Provider setting to be checked.')
 
 
 class EMProviderSettingStatusQuery(BaseModel):
+    """The query for the EM Provider Setting Status"""
+
     setting: EMSetting = Field(
         description='The Embedding Model Provider setting to be checked.'
     )
 
 
 class RagQuery(BaseModel):
+    """The RAG query model"""
+
     history: list[ChatMessage] = Field(
         description="Conversation history, used to reformulate the user's question."
     )
@@ -91,7 +99,7 @@ Answer in {locale}:""",
                     },
                     'question_answering_prompt_inputs': {
                         'question': 'How to get started playing guitar ?',
-                        'no_answer': 'Sorry, I don' 't know.',
+                        'no_answer': "Sorry, I don't know.",
                         'locale': 'French',
                     },
                     'embedding_question_em_setting': {

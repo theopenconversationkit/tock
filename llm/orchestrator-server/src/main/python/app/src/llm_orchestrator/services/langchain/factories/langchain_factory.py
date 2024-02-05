@@ -12,6 +12,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+Module for the LangChain Factory.
+It manages the creation of :
+    - LLM Factory
+    - EM Factory
+    - Vector Store Factory
+"""
 
 import logging
 
@@ -65,6 +72,15 @@ logger = logging.getLogger(__name__)
 
 
 def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
+    """
+    Creates an LangChain LLM Factory according to the given setting
+    Args:
+        setting: The LLM setting
+
+    Returns:
+        The LangChain LLM Factory, or raise an exception otherwise
+    """
+
     logger.info('Get LLM Factory for the given setting')
     if isinstance(setting, OpenAILLMSetting):
         logger.debug('LLM Factory - OpenAILLMFactory')
@@ -77,6 +93,15 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
 
 
 def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
+    """
+    Creates an LangChain EM Factory according to the given setting
+    Args:
+        setting: The EM setting
+
+    Returns:
+        The LangChain EM Factory, or raise an exception otherwise
+    """
+
     logger.info('Get Embedding Model Factory for the given setting')
     if isinstance(setting, OpenAIEMSetting):
         logger.debug('EM Factory - OpenAIEMFactory')
@@ -93,6 +118,17 @@ def get_vector_store_factory(
     embedding_function: Embeddings,
     index_name: str,
 ) -> LangChainVectorStoreFactory:
+    """
+    Creates an LangChain Vector Store Factory according to the vector store provider
+    Args:
+        vector_store_provider: The vector store provider
+        embedding_function: The embedding function
+        index_name: The index name
+
+    Returns:
+        The LangChain Vector Store Factory, or raise an exception otherwise
+    """
+
     logger.info('Get Vector Store Factory for the given provider')
     if VectorStoreProvider.OPEN_SEARCH == vector_store_provider:
         logger.debug('Vector Store Factory - OpenSearchFactory')

@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-
+"""Model for creating AzureOpenAIEMFactory"""
 
 from langchain.embeddings.base import Embeddings
 from langchain_openai import AzureOpenAIEmbeddings
@@ -29,6 +29,8 @@ from llm_orchestrator.services.langchain.factories.em.em_factory import (
 
 
 class AzureOpenAIEMFactory(LangChainEMFactory):
+    """A class for LangChain Azure OpenAI Embedding Factory"""
+
     setting: AzureOpenAIEMSetting
 
     def get_embedding_model(self) -> Embeddings:

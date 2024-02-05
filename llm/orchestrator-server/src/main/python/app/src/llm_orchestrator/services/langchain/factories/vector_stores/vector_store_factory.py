@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for the LangChain Vector Store Factory"""
+
 from abc import ABC, abstractmethod
 
 from langchain_core.embeddings import Embeddings
@@ -20,6 +22,8 @@ from pydantic import BaseModel, ConfigDict
 
 
 class LangChainVectorStoreFactory(ABC, BaseModel):
+    """A base class for LangChain Vector Store Factory"""
+
     embedding_function: Embeddings
     index_name: str
     model_config = ConfigDict(arbitrary_types_allowed=True)

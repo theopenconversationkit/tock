@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for the Large language Model Service"""
 
 import logging
 
@@ -24,5 +25,15 @@ logger = logging.getLogger(__name__)
 
 
 def check_llm_setting(setting: LLMSetting) -> bool:
+    """
+    Run a check for a given LLM setting.
+
+    Args:
+        setting: The Large Language Model setting to check
+
+    Returns:
+         True for a valid LLM setting. Raise exception otherwise.
+    """
+
     logger.info('Get the LLM Factory, then check the LLM setting.')
     return get_llm_factory(setting).check_llm_setting()
