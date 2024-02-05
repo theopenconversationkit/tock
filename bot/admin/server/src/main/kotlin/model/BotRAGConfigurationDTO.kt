@@ -42,7 +42,7 @@ data class BotRAGConfigurationDTO(
         configuration.emSetting,
         configuration.indexSessionId,
         configuration.noAnswerSentence,
-        configuration.noAnswerStoryId?.toString()
+        configuration.noAnswerStoryId
     )
     fun toBotRAGConfiguration(): BotRagConfiguration =
         BotRagConfiguration(
@@ -54,7 +54,7 @@ data class BotRAGConfigurationDTO(
             emSetting,
             indexSessionId = indexSessionId,
             noAnswerSentence = noAnswerSentence,
-            noAnswerStoryId = noAnswerStoryId?.toId()
+            noAnswerStoryId = noAnswerStoryId
         )
 }
 

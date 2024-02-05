@@ -81,18 +81,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             val ragConfig = botDefinition.ragConfiguration
             if (response?.answer?.text.equals(ragConfig?.noAnswerSentence, ignoreCase = true)) {
                 logger.info { "The RAG API response is equal to the configured no-answer sentence." }
-                val noAnswerStoryId = ragConfig?.noAnswerStoryId?.toString()
+                val noAnswerStoryId = ragConfig?.noAnswerStoryId
                 if (!noAnswerStoryId.isNullOrBlank()) {
                     logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
-                    var noAnswerStory = botDefinition.stories.firstOrNull { it.id == noAnswerStoryId }
-
-                    if(noAnswerStory == null) {
-                        logger.warn { "The no-answer story $noAnswerStoryId was not found. So run the predefined unknown story."  }
-                        noAnswerStory = botDefinition.unknownStory
-                    }
-
-                    logger.info { "Run the story intent=${noAnswerStory.mainIntent()}" }
-                    noAnswerStory.storyHandler.handle(this)
+                    val noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, applicationId)
+                    logger.info { "Run the story intent=${noAnswerStory.mainIntent()}, id=${noAnswerStory.id}" }
+                    handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
                 }
             }
         }
