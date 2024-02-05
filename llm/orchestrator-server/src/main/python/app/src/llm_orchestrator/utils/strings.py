@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,7 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Utility module"""
+
+
 def obfuscate(sentence: str):
+    """
+    Obfuscate methode that hide all character (with "*")
+    and only keeps the first 2 char and last 1 if the string is longer than 4 chars.
+    For example, it is used to hide passwords in logs
+    """
+
     if len(sentence) < 4:
         return '*****'
     else:

@@ -12,6 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+Gen AI orchestrator Exception Module
+"""
+
 from typing import Optional
 
 from llm_orchestrator.models.errors.errors_models import (
@@ -22,6 +26,8 @@ from llm_orchestrator.models.errors.errors_models import (
 
 
 class GenAIOrchestratorException(Exception):
+    """The generic Gen Ai Orchestrator Exception"""
+
     def __init__(self, error_code: ErrorCode, info: Optional[ErrorInfo] = None):
         error_message = error_messages.get_message(error_code)
         self.message = error_message.message
@@ -59,16 +65,22 @@ class GenAIAuthenticationException(GenAIOrchestratorException):
 
 
 class GenAIUnknownProviderException(GenAIOrchestratorException):
+    """Unknown AI Provider"""
+
     def __init__(self, info: ErrorInfo):
         super().__init__(ErrorCode.AI_PROVIDER_UNKNOWN, info)
 
 
 class GenAIUnknownProviderSettingException(GenAIOrchestratorException):
+    """Unknown AI Provider Setting"""
+
     def __init__(self, info: Optional[ErrorInfo] = None):
         super().__init__(ErrorCode.GEN_AI_UNKNOWN_PROVIDER_SETTING, info)
 
 
 class VectorStoreUnknownException(GenAIOrchestratorException):
+    """Unknown Vector Store Provider"""
+
     def __init__(self):
         super().__init__(ErrorCode.VECTOR_STORE_UNKNOWN)
 

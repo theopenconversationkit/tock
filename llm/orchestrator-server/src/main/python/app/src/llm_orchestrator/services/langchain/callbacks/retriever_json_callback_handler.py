@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Retriever callback handler for LangChain."""
+
 import logging
 from typing import Any, Dict, List, Optional, Union
 
@@ -22,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 class RetrieverJsonCallbackHandler(BaseCallbackHandler):
-    """Callback Handler that reorganize logs to json data for Tock."""
+    """Callback Handler that reorganize logs to json data."""
 
     def __init__(self, color: Optional[str] = None) -> None:
         """Initialize callback handler."""
@@ -67,7 +69,7 @@ class RetrieverJsonCallbackHandler(BaseCallbackHandler):
         self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any
     ) -> None:
         """Print out that we are entering a chain."""
-        class_name = serialized.get('name', '')
+
         # filter to gest only input documents
         if 'input_documents' in inputs:
             docs = inputs['input_documents']

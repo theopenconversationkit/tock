@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating BaseVectorStoreSearchParams."""
+
 from abc import ABC, abstractmethod
 
 from pydantic import BaseModel, Field
@@ -22,6 +24,8 @@ from llm_orchestrator.models.vector_stores.vectore_store_provider import (
 
 
 class BaseVectorStoreSearchParams(ABC, BaseModel):
+    """A base class for specifying a Vector Store Search Params."""
+
     provider: VectorStoreProvider = Field(
         description='The Vector Store Provider.',
         examples=[VectorStoreProvider.OPEN_SEARCH],

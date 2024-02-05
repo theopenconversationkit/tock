@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-
+"""Module of the FastAPI handlers"""
 
 from fastapi import Request, status
 from fastapi.encoders import jsonable_encoder
@@ -27,6 +27,8 @@ from llm_orchestrator.routers.responses.responses import ErrorResponse
 
 
 def business_exception_handler(_, exc: GenAIOrchestratorException) -> JSONResponse:
+    """Business exception handler. It manages a Gen AI Orchestrator exception"""
+
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content=jsonable_encoder(
@@ -41,6 +43,8 @@ def business_exception_handler(_, exc: GenAIOrchestratorException) -> JSONRespon
 
 
 def generic_exception_handler(_, exc: Exception):
+    """Generic exception handler. It manages all exceptions"""
+
     return business_exception_handler(
         _,
         GenAIUnknownErrorException(
@@ -55,6 +59,17 @@ def generic_exception_handler(_, exc: Exception):
 def create_error_info_not_found(
     request: Request, provider: str, accepted_values: list[str]
 ) -> ErrorInfo:
+    """
+    Create ErrorInfo for a not found error
+
+    Args:
+        request: the http request
+        provider: the AI provider type
+        accepted_values: the accepted values (expected)
+    Returns:
+        The ErrorInfo with all given parameters
+    """
+
     return ErrorInfo(
         provider=provider,
         error='NotFoundError',
@@ -68,6 +83,17 @@ def create_error_info_bad_request(
     provider: str,
     cause: str = 'The AI provider ID given for setting is not correct.',
 ) -> ErrorInfo:
+    """
+    Create ErrorInfo for a bad request error
+
+    Args:
+        request: the http request
+        provider: the AI provider type
+        cause: the error cause
+    Returns:
+        The ErrorInfo with all given parameters
+    """
+
     return ErrorInfo(
         provider=provider,
         error='BadRequestError',
@@ -77,6 +103,15 @@ def create_error_info_bad_request(
 
 
 def create_error_response(exc: GenAIOrchestratorException) -> ErrorResponse:
+    """
+    Create ErrorResponse for a Gen AI Orchestrator exception
+
+    Args:
+        exc: the Gen AI Orchestrator exception
+    Returns:
+        The ErrorResponse with the exception parameters
+    """
+
     return ErrorResponse(
         code=exc.error_code.value,
         message=exc.message,

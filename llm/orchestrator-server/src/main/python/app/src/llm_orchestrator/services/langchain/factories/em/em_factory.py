@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for the LangChain Embedding Model Factory"""
+
 import logging
 from abc import ABC, abstractmethod
 
@@ -24,6 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 class LangChainEMFactory(ABC, BaseModel):
+    """A base class for LangChain Embedding Model Factory"""
+
     setting: BaseEMSetting
 
     @abstractmethod

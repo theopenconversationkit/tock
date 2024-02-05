@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Router Module for Embedding Model Providers"""
 
 import logging
 
@@ -56,6 +57,10 @@ em_providers_router = APIRouter(
 
 @em_providers_router.get('')
 async def get_all_em_providers() -> list[EMProvider]:
+    """
+    Returns:
+        List of available Embedding Model Providers
+    """
     return [provider.value for provider in EMProvider]
 
 
@@ -63,6 +68,19 @@ async def get_all_em_providers() -> list[EMProvider]:
 async def get_em_provider_by_id(
     request: Request, provider_id: str
 ) -> EMProviderResponse:
+    """
+    Get Embedding Model Provider by ID
+    Args:
+        request: The http request
+        provider_id: The provider id
+
+    Returns:
+        The EM Provider Response.
+
+    Raises:
+        GenAIUnknownProviderException if the provider is unknown
+    """
+
     # Query validation
     validate_em_provider(request, provider_id)
 
@@ -70,7 +88,25 @@ async def get_em_provider_by_id(
 
 
 @em_providers_router.get('/{provider_id}/setting/example')
-async def get_em_provider_setting_by_id(provider_id: EMProvider) -> EMSetting:
+async def get_em_provider_setting_by_id(
+    request: Request, provider_id: EMProvider
+) -> EMSetting:
+    """
+    Get a setting example for a given EM Provider ID
+    Args:
+        request: The http request
+        provider_id: The provider id
+
+    Returns:
+        The EM Provider Setting
+
+    Raises:
+        GenAIUnknownProviderException if the provider is unknown
+    """
+
+    # Query validation
+    validate_em_provider(request, provider_id)
+
     if provider_id == EMProvider.OPEN_AI:
         return OpenAIEMSetting(
             provider=EMProvider.OPEN_AI,
@@ -85,14 +121,26 @@ async def get_em_provider_setting_by_id(provider_id: EMProvider) -> EMSetting:
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
         )
-    else:
-        raise HTTPException(status_code=400, detail=ErrorCode.E21)
 
 
 @em_providers_router.post('/{provider_id}/setting/status')
 async def check_em_provider_setting(
     request: Request, provider_id: str, query: EMProviderSettingStatusQuery
 ) -> ProviderSettingStatusResponse:
+    """
+    Check the validity of a given EM Provider Setting
+    Args:
+        request: The http request
+        provider_id: The provider id
+        query: The query of the EM Provider Setting to be checked
+
+    Returns:
+        ProviderSettingStatusResponse
+
+    Raises:
+        AIProviderBadQueryException if the provider ID is not consistent with the request body
+    """
+
     # Query validation
     validate_query(request, provider_id, query.setting)
 
@@ -107,6 +155,17 @@ async def check_em_provider_setting(
 
 
 def validate_query(request: Request, provider_id: str, setting: EMSetting):
+    """
+    Check the consistency of the Provider ID with the request body
+    Args:
+        request: The http request
+        provider_id: The provider ID
+        setting:  The EM Provider Setting
+
+    Raises:
+        AIProviderBadQueryException if the provider ID is not consistent with the request body
+    """
+
     validate_em_provider(request, provider_id)
     if provider_id != setting.provider:
         raise AIProviderBadQueryException(
@@ -115,6 +174,16 @@ def validate_query(request: Request, provider_id: str, setting: EMSetting):
 
 
 def validate_em_provider(request: Request, provider_id: str):
+    """
+    Check existence of EM Provider by ID
+    Args:
+        request: The http request
+        provider_id: The provider ID
+
+    Raises:
+        GenAIUnknownProviderException if the provider is unknown
+    """
+
     if not EMProvider.has_value(provider_id):
         raise GenAIUnknownProviderException(
             create_error_info_not_found(

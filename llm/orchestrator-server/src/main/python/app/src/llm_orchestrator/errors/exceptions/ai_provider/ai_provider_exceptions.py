@@ -12,6 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+AI Provider Exception Module
+List of all AI Provider exceptions managed by Gen AI Orchestrator
+"""
+
 from llm_orchestrator.errors.exceptions.exceptions import (
     GenAIOrchestratorException,
 )
@@ -28,6 +33,10 @@ class AIProviderBadQueryException(GenAIOrchestratorException):
 
 
 class AIProviderAPIErrorException(GenAIOrchestratorException):
+    """
+    Unknown AI Provider error.
+    """
+
     def __init__(self, info: ErrorInfo):
         super().__init__(ErrorCode.AI_PROVIDER_API_ERROR, info)
 

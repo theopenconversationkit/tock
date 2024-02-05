@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for RAG Models"""
+
 from enum import Enum, unique
 from typing import Optional
 
@@ -19,6 +21,8 @@ from pydantic import AnyUrl, BaseModel, Field
 
 
 class Footnote(BaseModel):
+    """A footnote model, used to associate document sources with the RAG answer"""
+
     identifier: str = Field(description='Footnote identifier', examples=['1'])
     title: str = Field(description='Footnote title', examples=['Tock Documentation'])
     url: Optional[AnyUrl] = Field(
@@ -42,6 +46,8 @@ class Footnote(BaseModel):
 
 
 class TextWithFootnotes(BaseModel):
+    """Text with its footnotes. Used for RAG response"""
+
     text: str = Field(
         description='Text with footnotes used to list outside sources',
         examples=['This is page content [1], and this is more content [2]'],
@@ -51,11 +57,15 @@ class TextWithFootnotes(BaseModel):
 
 @unique
 class ChatMessageType(str, Enum):
+    """Enumeration to list a chat message type"""
+
     HUMAN = 'HUMAN'
     AI = 'AI'
 
 
 class ChatMessage(BaseModel):
+    """A conversation chat message"""
+
     text: str = Field(
         description='Conversation message text', examples=['Hello, how can I do this?']
     )

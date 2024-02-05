@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for Response Models"""
+
 from typing import Any, Optional
 
 from pydantic import BaseModel, Field
@@ -23,6 +25,8 @@ from llm_orchestrator.models.rag.rag_models import TextWithFootnotes
 
 
 class ErrorResponse(BaseModel):
+    """The error response model"""
+
     code: ErrorCode = Field(
         description='The AI orchestrator error code.',
         examples=[ErrorCode.GEN_AI_AUTHENTICATION_ERROR],
@@ -44,6 +48,8 @@ class ErrorResponse(BaseModel):
 
 
 class ProviderSettingStatusResponse(BaseModel):
+    """The response model of the provider setting status"""
+
     valid: bool = Field(
         description='It indicates the AI Provider setting validity.',
         examples=[True],
@@ -53,12 +59,16 @@ class ProviderSettingStatusResponse(BaseModel):
 
 
 class LLMProviderResponse(BaseModel):
+    """The response model of the LLM provider"""
+
     provider: LLMProvider = Field(
         description='The LLM Provider ID', default=[LLMProvider.OPEN_AI]
     )
 
 
 class EMProviderResponse(BaseModel):
+    """The response model of the EM provider"""
+
     provider: EMProvider = Field(
         description='The Embedding Model Provider ID',
         default=[EMProvider.AZURE_OPEN_AI_SERVICE],
@@ -66,6 +76,8 @@ class EMProviderResponse(BaseModel):
 
 
 class RagResponse(BaseModel):
+    """The RAG response model"""
+
     answer: TextWithFootnotes = Field(
         description='The RAG answer, with outside sources.'
     )
