@@ -30,5 +30,5 @@ data class BotRagConfiguration(
     val emSetting: EMSetting,
     val indexSessionId: String? = null,
     val noAnswerSentence: String,
-    val noAnswerStoryId: Id<StoryDefinitionConfiguration>? = null,
+    val noAnswerStoryId: String? = null,
 )

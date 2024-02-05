@@ -240,7 +240,7 @@
       >
         <nb-option
           *ngFor="let option of filteredStories$ | async"
-          [value]="option._id"
+          [value]="option.storyId"
         >
           {{ option.name }}
         </nb-option>
