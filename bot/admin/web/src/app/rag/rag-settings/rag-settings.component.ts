@@ -157,7 +157,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   get getCurrentStoryLabel(): string {
-    const currentStory = this.availableStories?.find((story) => story._id === this.noAnswerStoryId.value);
+    const currentStory = this.availableStories?.find((story) => story.storyId === this.noAnswerStoryId.value);
     return currentStory?.name || '';
   }
 
