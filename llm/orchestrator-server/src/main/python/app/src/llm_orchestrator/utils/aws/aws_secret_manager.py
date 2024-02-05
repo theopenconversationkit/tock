@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""API Client to consume AWS Secrets Manager API"""
+
 import json
 import logging
 
@@ -21,21 +23,28 @@ logger = logging.getLogger(__name__)
 
 
 class AWSSecretManager:
+    """AWS Secrets Manager Client."""
+
     def __init__(self):
         self.client = boto3.client(service_name='secretsmanager')
 
-    def get_credentials(self, secret_name):
+    def get_credentials(self, secret_name: str):
+        """
+        Get a user credentials
+        Expected storage format of the secret : {"username":"opensearch-user","password":"op******3"}
+
+        Args:
+            secret_name: The AWS Secret Name
+        """
+
         return _parse_to_credentials(self.get_secret(secret_name))
 
-    def get_secret(self, secret_name):
+    def get_secret(self, secret_name: str):
         """
-        Retrieve individual secrets from AWS Secrets Manager using the get_secret_value API.
-        This function assumes the stack mentioned in the source code README has been successfully deployed.
-        This stack includes 7 secrets, all of which have names beginning with "mySecret".
+        Retrieve individual secret by name, using the get_secret_value API.
+        :param secret_name: The name of the secret to be fetched.
+        """
 
-        :param secret_name: The name of the secret fetched.
-        :type secret_name: str
-        """
         try:
             get_secret_value_response = self.client.get_secret_value(
                 SecretId=secret_name
@@ -51,7 +60,15 @@ class AWSSecretManager:
 
 
 def _parse_to_credentials(secret_data):
-    # Parse the JSON secret data
+    """
+    Parse the JSON secret data to retrieve a username and password
+    Args:
+        secret_data: A json data
+
+    Returns:
+        The username and password. Raise JSONDecodeError otherwise
+    """
+
     try:
         secret_dict = json.loads(secret_data)
         username = secret_dict.get('username')

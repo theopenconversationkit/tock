@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating AzureOpenAILLMFactory"""
 
 from langchain.base_language import BaseLanguageModel
 from langchain_openai import AzureChatOpenAI
@@ -28,6 +29,8 @@ from llm_orchestrator.services.langchain.factories.llm.llm_factory import (
 
 
 class AzureOpenAILLMFactory(LangChainLLMFactory):
+    """A class for LangChain Azure OpenAI LLM Factory"""
+
     setting: AzureOpenAILLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:

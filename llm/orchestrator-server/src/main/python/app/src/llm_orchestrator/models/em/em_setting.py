@@ -1,4 +1,4 @@
-#   Copyright (C) 2023 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,12 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating BaseEMSetting."""
+
 from pydantic import BaseModel, Field
 
 from llm_orchestrator.models.em.em_provider import EMProvider
 
 
 class BaseEMSetting(BaseModel):
+    """A base class for Embedding Model Setting."""
+
     provider: EMProvider = Field(
         description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
     )

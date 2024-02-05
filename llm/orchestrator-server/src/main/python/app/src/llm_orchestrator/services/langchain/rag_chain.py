@@ -12,6 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""
+Module for the RAG Chain
+It uses LangChain to perform a Conversational Retrieval Chain
+"""
+
 import logging
 import re
 import time
@@ -56,6 +61,16 @@ logger = logging.getLogger(__name__)
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
+    """
+    RAG chain execution, using the LLM and Embedding settings specified in the query
+
+    Args:
+        query: The RAG query
+        debug: True if RAG data debug should be returned with the response.
+    Returns:
+        The RAG response (Answer and document sources)
+    """
+
     logger.info('RAG chain - Start of execution...')
     start_time = time.time()
 
@@ -135,6 +150,13 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
 
 
 def __find_input_variables(template):
+    """
+    Search for input variables on a given template
+
+    Args:
+        template: the template to search on
+    """
+
     motif = r'\{([^}]+)\}'
     variables = re.findall(motif, template)
     return variables
@@ -146,6 +168,10 @@ def __rag_guard(inputs, response):
     then the RAG system should give no further response when no source document has been found.
     And, when the RAG system responds with the 'no_answer' phrase,
     then the source documents are removed from the response.
+
+    Args:
+        inputs: question answering prompt inputs
+        response: the RAG response
     """
 
     if 'no_answer' in inputs:
@@ -161,15 +187,23 @@ def __rag_guard(inputs, response):
             response['answer'] == inputs['no_answer']
             and response['source_documents'] != []
         ):
-            message = (
-                'The RAG gives no answer for user question, but some documents has been found!',
-            )
+            message = 'The RAG gives no answer for user question, but some documents has been found!'
             __rag_log(level=WARNING, message=message, inputs=inputs, response=response)
             # Remove source documents
             response['source_documents'] = []
 
 
 def __rag_log(level, message, inputs, response):
+    """
+    RAG logging
+
+    Args:
+        level: logging level
+        message: message to log
+        inputs: question answering prompt inputs
+        response: the RAG response
+    """
+
     logger.log(
         level,
         '%(message)s \n'

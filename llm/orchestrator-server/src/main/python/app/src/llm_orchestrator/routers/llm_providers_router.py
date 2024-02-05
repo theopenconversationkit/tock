@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Router Module for Large Language Model Providers"""
+
 import logging
 
 from fastapi import APIRouter, HTTPException, Request
@@ -57,6 +59,10 @@ llm_providers_router = APIRouter(
 
 @llm_providers_router.get('')
 async def get_all_llm_providers() -> list[LLMProvider]:
+    """
+    Returns:
+        List of available Large Language Model Providers
+    """
     return [provider.value for provider in LLMProvider]
 
 
@@ -64,6 +70,19 @@ async def get_all_llm_providers() -> list[LLMProvider]:
 async def get_llm_provider_by_id(
     request: Request, provider_id: str
 ) -> LLMProviderResponse:
+    """
+    Get Large Language Model Provider by ID
+    Args:
+        request: The http request
+        provider_id: The provider id
+
+    Returns:
+        The LLM Provider Response
+
+    Raises:
+        GenAIUnknownProviderException if the provider is unknown
+    """
+
     # Query validation
     validate_llm_provider(request, provider_id)
 
@@ -74,6 +93,19 @@ async def get_llm_provider_by_id(
 async def get_llm_provider_setting_by_id(
     request: Request, provider_id: LLMProvider
 ) -> LLMSetting:
+    """
+    Get a setting example for a given LLM Provider ID
+    Args:
+        request: The http request
+        provider_id: The provider id
+
+    Returns:
+        The LLM Provider Setting
+
+    Raises:
+        GenAIUnknownProviderException if the provider is unknown
+    """
+
     # Query validation
     validate_llm_provider(request, provider_id)
 
@@ -95,14 +127,26 @@ async def get_llm_provider_setting_by_id(
             temperature=0.7,
             prompt='How to learn to ride a bike without wheels!',
         )
-    else:
-        raise HTTPException(status_code=400, detail=ErrorCode.E20)
 
 
 @llm_providers_router.post('/{provider_id}/setting/status')
 async def check_llm_provider_setting(
     request: Request, provider_id: str, query: LLMProviderSettingStatusQuery
 ) -> ProviderSettingStatusResponse:
+    """
+    Check the validity of a given LLM Provider Setting
+    Args:
+        request: The http request
+        provider_id: The provider id
+        query: The query of the LLM Provider Setting to be checked
+
+    Returns:
+        ProviderSettingStatusResponse
+
+    Raises:
+        AIProviderBadQueryException if the provider ID is not consistent with the request body
+    """
+
     logger.info('Start LLM setting check for provider %s', provider_id)
     # Query validation
     validate_query(request, provider_id, query.setting)
@@ -120,6 +164,17 @@ async def check_llm_provider_setting(
 
 
 def validate_query(request: Request, provider_id: str, setting: LLMSetting):
+    """
+    Check the consistency of the Provider ID with the request body
+    Args:
+        request: The http request
+        provider_id: The provider ID
+        setting:  The LLM Provider Setting
+
+    Raises:
+        AIProviderBadQueryException if the provider ID is not consistent with the request body
+    """
+
     logger.debug('LLM setting - Query validation')
     validate_llm_provider(request, provider_id)
     if provider_id != setting.provider:
@@ -129,6 +184,16 @@ def validate_query(request: Request, provider_id: str, setting: LLMSetting):
 
 
 def validate_llm_provider(request: Request, provider_id: str):
+    """
+    Check existence of LLM Provider by ID
+    Args:
+        request: The http request
+        provider_id: The provider ID
+
+    Raises:
+        GenAIUnknownProviderException if the provider is unknown
+    """
+
     if not LLMProvider.has_value(provider_id):
         raise GenAIUnknownProviderException(
             create_error_info_not_found(

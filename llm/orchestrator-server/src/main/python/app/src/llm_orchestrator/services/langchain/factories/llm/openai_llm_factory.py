@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating OpenAILLMFactory"""
 
 from langchain.base_language import BaseLanguageModel
 from langchain_openai import ChatOpenAI
@@ -28,6 +29,8 @@ from llm_orchestrator.services.langchain.factories.llm.llm_factory import (
 
 
 class OpenAILLMFactory(LangChainLLMFactory):
+    """A class for LangChain OpenAI LLM Factory"""
+
     setting: OpenAILLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:

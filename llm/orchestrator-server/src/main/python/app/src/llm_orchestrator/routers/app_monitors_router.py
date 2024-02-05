@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Application Monitors Router Module"""
+
 import logging
 
 from fastapi import APIRouter, status

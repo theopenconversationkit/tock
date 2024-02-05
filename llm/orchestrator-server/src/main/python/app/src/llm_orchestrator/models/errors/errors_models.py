@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Module for Error Models"""
+
 from enum import Enum, unique
 from typing import Dict, Optional
 
@@ -24,6 +26,8 @@ from llm_orchestrator.models.llm.llm_provider import LLMProvider
 
 @unique
 class ErrorCode(Enum):
+    """Enumeration to list application error codes"""
+
     # Gen AI Orchestrator Errors
     GEN_AI_UNKNOWN_ERROR = 1000
     GEN_AI_CONNECTION_ERROR = 1001
@@ -67,6 +71,8 @@ class ErrorCode(Enum):
 
 
 class ErrorMessage(BaseModel):
+    """Model for Error message and its detail"""
+
     message: str = Field(
         description='The Gen AI orchestrator error message',
         examples=['Authentication error to the AI Provider API.'],
@@ -81,6 +87,8 @@ class ErrorMessage(BaseModel):
 
 
 class ErrorInfo(BaseModel):
+    """Error info model"""
+
     provider: str = Field(
         description='The AI Provider ID',
         examples=[LLMProvider.AZURE_OPEN_AI_SERVICE],
@@ -102,6 +110,8 @@ class ErrorInfo(BaseModel):
 
 
 class ErrorMessages:
+    """List of all error messages corresponding to the error code"""
+
     ERROR_MESSAGES = {
         # Gen AI Orchestrator Errors
         ErrorCode.GEN_AI_UNKNOWN_ERROR: ErrorMessage(message='Unknown error.'),
