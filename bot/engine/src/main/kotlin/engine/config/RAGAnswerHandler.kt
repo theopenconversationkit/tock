@@ -16,7 +16,6 @@
 
 package ai.tock.bot.engine.config
 
-import ai.tock.bot.admin.bot.llm.BotRagConfiguration
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentence
@@ -47,25 +46,29 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // Call RAG Api - Gen AI Orchestrator
             val response = rag(this)
 
-            logger.info { "Send RAG API response" }
-            send(
-                SendSentenceWithFootnotes(
-                    botId,
-                    applicationId,
-                    userId,
-                    text = response.answer.text,
-                    footnotes = response.answer.footnotes.map {
-                        Footnote(
-                            it.identifier,
-                            it.title,
-                            it.url
-                        )
+            if (response != null) {
+                logger.info { "Send RAG API response" }
+                send(
+                    SendSentenceWithFootnotes(
+                        botId,
+                        applicationId,
+                        userId,
+                        text = response.answer.text,
+                        footnotes = response.answer.footnotes.map {
+                            Footnote(
+                                it.identifier,
+                                it.title,
+                                it.url
+                            )
                         }.toMutableList()
+                    )
                 )
-            )
 
-            if(connectorData.metadata["debugEnabled"].toBoolean()) {
-                response.debug?.let { sendDebugData("RAG", it) }
+                if (connectorData.metadata["debugEnabled"].toBoolean()) {
+                    response.debug?.let { sendDebugData("RAG", it) }
+                }
+            } else {
+                logger.info { "No RAG response to send!" }
             }
         }
     }
@@ -75,8 +78,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * Use the handler of the configured story otherwise launch default unknown story
      * @param botBus
      */
-    private fun ragResponseHandler(botBus: BotBus, response: RAGResponse?) {
-
+    private fun ragStoryRedirection(botBus: BotBus, response: RAGResponse?): Boolean {
+        var storySwitched = false
         with(botBus) {
             val ragConfig = botDefinition.ragConfiguration
             if (response?.answer?.text.equals(ragConfig?.noAnswerSentence, ignoreCase = true)) {
@@ -87,16 +90,20 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     val noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, applicationId)
                     logger.info { "Run the story intent=${noAnswerStory.mainIntent()}, id=${noAnswerStory.id}" }
                     handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
+                    storySwitched = true
                 }
             }
         }
+        return storySwitched
     }
 
     /**
      * Call RAG API
      * @param botBus
+     * 
+     * @return Rag response if it needs to be handled, null otherwise (already handled by a switch for instance in case of no response)
      */
-    private fun rag(botBus: BotBus): RAGResponse {
+    private fun rag(botBus: BotBus): RAGResponse? {
         logger.info { "Call Generative AI Orchestrator - RAG API" }
         with(botBus) {
 
@@ -128,9 +135,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 )
 
                 // Handle RAG response
-                ragResponseHandler(this, response)
-
-                return response!!
+                return if (!ragStoryRedirection(this, response)) {
+                    response
+                } else {
+                    // Do not return a response when the RAG story has been switched to the no RAG answer story
+                    null
+                }
             }catch (exc: Exception){
                 logger.error { exc }
                 return RAGResponse(answer = TextWithFootnotes(text = technicalErrorMessage), debug = exc)
