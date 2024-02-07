@@ -16,7 +16,7 @@
 
 package ai.tock.bot.definition
 
-import ai.tock.bot.admin.bot.llm.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRagConfiguration
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent.Companion.keyword
 import ai.tock.bot.definition.Intent.Companion.ragexcluded

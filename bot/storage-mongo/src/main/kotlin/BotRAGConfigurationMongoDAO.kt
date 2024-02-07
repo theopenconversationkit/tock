@@ -18,7 +18,7 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
-import ai.tock.bot.admin.bot.llm.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRagConfiguration
 import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database

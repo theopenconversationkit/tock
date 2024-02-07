@@ -22,11 +22,11 @@ import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.dialog.Dialog
 import ai.tock.bot.engine.user.PlayerType
-import ai.tock.llm.orchestrator.client.requests.*
-import ai.tock.llm.orchestrator.client.responses.RAGResponse
-import ai.tock.llm.orchestrator.client.responses.TextWithFootnotes
-import ai.tock.llm.orchestrator.client.services.RAGService
-import ai.tock.llm.orchestrator.core.utils.OpenSearchUtils
+import ai.tock.genai.orchestratorclient.requests.*
+import ai.tock.genai.orchestratorclient.responses.RAGResponse
+import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
+import ai.tock.genai.orchestratorclient.services.RAGService
+import ai.tock.genai.orchestratorcore.utils.OpenSearchUtils
 import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
 import mu.KotlinLogging
@@ -100,7 +100,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     /**
      * Call RAG API
      * @param botBus
-     * 
+     *
      * @return Rag response if it needs to be handled, null otherwise (already handled by a switch for instance in case of no response)
      */
     private fun rag(botBus: BotBus): RAGResponse? {

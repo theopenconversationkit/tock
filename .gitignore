@@ -46,5 +46,3 @@ scripts/connector-messenger/ngrok.exe
 # Python
 **/requirements.txt
 
-#env
-llm/orchestrator-server/src/main/python/app/src/app/.env
