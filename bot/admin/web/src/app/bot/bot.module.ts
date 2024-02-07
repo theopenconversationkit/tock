@@ -56,14 +56,14 @@ import {
   NbTagModule,
   NbTooltipModule
 } from '@nebular/theme';
-import { ApplicationFeatureComponent } from './feature/application-feature.component';
-import { StoryRuleComponent } from './feature/story-rule.component';
+import { ApplicationFeatureComponent } from './feature/application-feature/application-feature.component';
+import { StoryRuleComponent } from './feature/story-rule/story-rule.component';
 import { SelectEntityDialogComponent } from './story/select-entity-dialog/select-entity-dialog.component';
-import { StoryRuntimeSettingsComponent } from './feature/story-runtime-settings.component';
+import { StoryRuntimeSettingsComponent } from './feature/story-runtime-settings/story-runtime-settings.component';
 import { StoryTagComponent } from './story/story-tag/story-tag.component';
 import { I18nExportComponent } from './i18n/i18n-export.component';
 import { I18nImportComponent } from './i18n/i18n-import.component';
-import { ApplicationFeaturesTableComponent } from './feature/application-features-table.component';
+import { ApplicationFeaturesTableComponent } from './feature/application-feature/application-features-table/application-features-table.component';
 import { DocumentsStoryComponent } from './story/documents-story.component';
 import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
 import { StoriesFilterComponent } from './story/search-story/stories-filter/stories-filter.component';
@@ -71,6 +71,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { EditStoryComponent } from './story/edit-story/edit-story.component';
 import { StoriesUploadComponent } from './story/search-story/stories-upload/stories-upload.component';
 import { BotRoutingModule } from './bot-routing.module';
+import { CreateFeatureComponent } from './feature/application-feature/create-feature/create-feature.component';
+import { CreateRuleComponent } from './feature/story-rule/create-rule/create-rule.component';
+import { StoryRulesTableComponent } from './feature/story-rule/story-rule-table/story-rules-table.component';
 
 @NgModule({
   imports: [
@@ -131,6 +134,9 @@ import { BotRoutingModule } from './bot-routing.module';
     ApplicationFeaturesTableComponent,
     StoryRuleComponent,
     StoryRuntimeSettingsComponent,
+    CreateFeatureComponent,
+    CreateRuleComponent,
+    StoryRulesTableComponent,
     StoryTagComponent,
     StoriesListComponent,
     StoriesFilterComponent,

@@ -1,0 +1,184 @@
+<nb-card class="mb-3">
+  <nb-card-header class="d-flex gap-1 flex-wrap justify-content-between">
+    <div>
+      <span class="d-inline-block initial-capitalize">{{ type }}</span> rules
+      <span class="font-weight-normal">({{ features.length }})</span>
+    </div>
+
+    <div class="d-flex gap-1 align-items-center">
+      <nb-form-field
+        *ngIf="features?.length > 4"
+        class="lineHeight-0"
+      >
+        <nb-icon
+          nbPrefix
+          icon="search-outline"
+        ></nb-icon>
+        <input
+          nbInput
+          fieldSize="small"
+          placeholder="Find a story"
+          [(ngModel)]="searchFilterString"
+          (input)="filterFeatures()"
+        />
+        <button
+          nbSuffix
+          nbButton
+          ghost
+          size="small"
+          (click)="resetSearch()"
+          *ngIf="searchFilterString?.length"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </nb-form-field>
+
+      <button
+        nbButton
+        status="primary"
+        size="small"
+        nbTooltip="Add a new Feature"
+        (click)="newRule()"
+        class="new-rule-button"
+      >
+        <nb-icon icon="plus-outline"></nb-icon>
+        New {{ type }} rule
+      </button>
+    </div>
+  </nb-card-header>
+
+  <nb-card-body class="list-wrapper">
+    <div
+      class="text-muted font-italic pb-2"
+      *ngIf="!features?.length"
+    >
+      No {{ type }} rules defined.
+    </div>
+
+    <div
+      class="text-muted font-italic pb-2"
+      *ngIf="searchFilterString?.length && !filteredFeatures?.length"
+    >
+      No items match your query.
+    </div>
+
+    <table
+      *ngIf="filteredFeatures?.length"
+      class="features-table"
+    >
+      <thead>
+        <tr>
+          <td [ngStyle]="{ width: hasTarget() ? '30%' : '60%' }">Story</td>
+          <td
+            style="width: 30%"
+            *ngIf="hasTarget()"
+          >
+            {{ type }} story
+          </td>
+          <td style="width: 25%">Configuration</td>
+          <td
+            class="text-center"
+            style="width: 10%"
+          >
+            Status
+          </td>
+          <td style="width: 5%"></td>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let feature of filteredFeatures">
+          <td class="font-weight-bold ellipsis">
+            <span [nbTooltip]="feature.story.name">
+              <nb-icon
+                [icon]="getStoryIcon(feature.story)"
+                class="valign-middle"
+              ></nb-icon>
+              {{ feature.story.name }}
+            </span>
+          </td>
+
+          <td
+            class="ellipsis"
+            *ngIf="hasTarget()"
+          >
+            <ng-container *ngIf="type === ruleType.Redirection">
+              <span
+                *ngIf="feature.switchToStory"
+                [nbTooltip]="feature.switchToStory.name"
+              >
+                <nb-icon
+                  [icon]="getStoryIcon(feature.switchToStory)"
+                  class="valign-middle"
+                ></nb-icon>
+                {{ feature.switchToStory.name }}
+              </span>
+              <span *ngIf="!feature.switchToStory"><em>Unknown story</em></span>
+            </ng-container>
+
+            <ng-container *ngIf="type === ruleType.Ending">
+              <span
+                *ngIf="feature.endWithStory"
+                [nbTooltip]="feature.endWithStory.name"
+              >
+                <nb-icon
+                  [icon]="getStoryIcon(feature.endWithStory)"
+                  class="valign-middle"
+                ></nb-icon>
+                {{ feature.endWithStory.name }}
+              </span>
+              <span *ngIf="!feature.endWithStory"><em>Unknown story</em></span>
+            </ng-container>
+          </td>
+
+          <td class="ellipsis">
+            <span
+              *ngIf="feature.conf"
+              [nbTooltip]="'Apply to Configuration: ' + feature.conf.applicationId"
+            >
+              <img
+                src="{{ feature.conf.connectorType.iconUrl() }}"
+                class="connector"
+                [nbTooltip]="feature.conf.connectorType.label()"
+              />
+              {{ feature.conf.connectorType.label() }} ( {{ feature.conf.applicationId }})
+            </span>
+            <span
+              *ngIf="!feature.conf"
+              nbTooltip="Apply to All Configurations"
+            >
+              All Configurations
+            </span>
+          </td>
+
+          <td class="text-center">
+            <nb-toggle
+              class="nb-toggle-reset-label-margin mt-1"
+              [checked]="feature.enabled"
+              (checkedChange)="toggle(feature, $event)"
+              [nbTooltip]="feature.enabled ? 'Disable Feature & Reset Dates' : 'Enable Feature'"
+            ></nb-toggle>
+          </td>
+
+          <td class="text-right">
+            <button
+              nbButton
+              status="danger"
+              size="small"
+              shape="round"
+              nbTooltip="Delete rule"
+              (click)="askDeleteFeature(feature)"
+            >
+              <nb-icon icon="trash-2-outline"></nb-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div
+      class="shader"
+      *ngIf="filteredFeatures?.length > 4"
+    ></div>
+  </nb-card-body>
+</nb-card>

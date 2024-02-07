@@ -15,57 +15,38 @@
  */
 
 .features-table {
-  display: table;
-}
-
-.feature {
+  font-size: smaller;
   width: 100%;
-  display: table-row;
-  margin-bottom: 20px;
+  border-collapse: separate;
+  border-spacing: 0.5em 0;
+
+  thead {
+    font-weight: bold;
+    opacity: 0.6;
+  }
+
+  td {
+    max-width: 7rem;
+    vertical-align: middle;
+  }
+
+  tbody {
+    td {
+      padding: 0.5rem 0;
+    }
+  }
+
+  :not(:last-child) {
+    td {
+      border-bottom: 1px solid var(--border-basic-color-3);
+    }
+  }
 }
 
-.feature-property {
-  max-width: 15vw;
-  font-size: small;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.feature-property > div {
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.feature-action {
-  max-width: 10vw;
-  vertical-align: top;
-}
-
-.feature-action > button {
-  padding: 0;
-}
-
-.cell {
-  display: table-cell;
-  padding: 10px;
-}
-
-nb-card-body > div > p {
-  font-size: small;
-  font-style: italic;
-}
-
-.new {
-  margin-right: 20px;
-}
-
-.first_new {
-  margin-top: 20px;
+.date-field {
+  max-width: 7rem !important;
 }
 
 .connector {
-  height: 24px;
+  height: 20px;
 }

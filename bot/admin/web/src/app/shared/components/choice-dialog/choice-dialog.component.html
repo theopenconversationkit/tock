@@ -4,7 +4,7 @@
 
     <button
       *ngIf="cancellable"
-      status="primary"
+      [status]="modalStatus"
       type="button"
       nbButton
       shape="round"
@@ -14,9 +14,11 @@
       <nb-icon icon="close-outline"></nb-icon>
     </button>
   </nb-card-header>
+
   <nb-card-body class="message">
     <label>{{ subtitle }}</label>
   </nb-card-body>
+
   <nb-card-footer class="d-flex gap-1 flex-wrap justify-content-end">
     <button
       *ngFor="let actionDef of actions"

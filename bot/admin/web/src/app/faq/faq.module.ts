@@ -41,8 +41,8 @@ import { FaqTabsComponent } from './faq-tabs/faq-tabs.component';
 
 @NgModule({
   imports: [
-    BotSharedModule,
     CommonModule,
+    BotSharedModule,
     FaqRoutingModule,
     NlpModule,
     MomentModule,

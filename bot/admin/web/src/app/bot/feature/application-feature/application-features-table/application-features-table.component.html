@@ -1,0 +1,164 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card class="mb-3">
+  <nb-card-header class="d-flex justify-content-between align-items-center">
+    <div>
+      <span class="d-inline-block initial-capitalize">{{ type }}</span> features
+      <span class="font-weight-normal">({{ features.length }})</span>
+    </div>
+
+    <button
+      nbButton
+      status="primary"
+      size="small"
+      nbTooltip="Add a new Feature"
+      (click)="newFeature()"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      New {{ type }} feature
+    </button>
+  </nb-card-header>
+
+  <nb-card-body>
+    <div
+      class="text-muted font-italic"
+      *ngIf="!features?.length"
+    >
+      No rules set to enable/disable Features.
+    </div>
+
+    <table
+      *ngIf="features?.length"
+      class="features-table"
+    >
+      <thead>
+        <tr>
+          <td style="width: 15%">Category</td>
+          <td style="width: 30%">Feature</td>
+          <td style="width: 20%">Configuration</td>
+          <td style="width: 10%">Start date</td>
+          <td style="width: 10%">End date</td>
+          <td
+            class="text-center"
+            style="width: 10%"
+          >
+            Status
+          </td>
+          <td style="width: 5%"></td>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let feature of features">
+          <td
+            class="ellipsis"
+            [nbTooltip]="feature.category"
+          >
+            {{ feature.category }}
+          </td>
+
+          <td
+            class="font-weight-bold ellipsis"
+            [nbTooltip]="feature.name"
+          >
+            {{ feature.name }}
+          </td>
+
+          <td class="ellipsis">
+            <span
+              *ngIf="feature.configuration"
+              [nbTooltip]="'Apply to Configuration: ' + feature.configuration.applicationId"
+            >
+              <img
+                src="{{ feature.configuration.connectorType.iconUrl() }}"
+                class="connector"
+                [nbTooltip]="feature.configuration.connectorType.label()"
+              />
+              {{ feature.configuration.connectorType.label() }} ( {{ feature.configuration.applicationId }})
+            </span>
+            <span
+              *ngIf="!feature.configuration"
+              nbTooltip="Apply to All Configurations"
+            >
+              All Configurations
+            </span>
+          </td>
+
+          <td>
+            <input
+              nbInput
+              fieldSize="small"
+              class="date-field"
+              placeholder="start date"
+              (keyup.enter)="changeStartDate(f, $event)"
+              [(ngModel)]="feature.startDate"
+              [nbDatepicker]="startDate"
+              (ngModelChange)="changeStartDate(feature, $event)"
+              [nbTooltip]="feature.startDate ? 'From: ' + feature.startDate : 'No start date set'"
+            />
+            <nb-datepicker
+              #startDate
+              (dateChange)="changeStartDate(feature, $event)"
+              [max]="feature.endDate"
+            ></nb-datepicker>
+          </td>
+
+          <td>
+            <input
+              nbInput
+              fieldSize="small"
+              class="date-field"
+              placeholder="end date"
+              (keyup.enter)="changeEndDate(feature, $event)"
+              [(ngModel)]="feature.endDate"
+              [nbDatepicker]="endDate"
+              (ngModelChange)="changeEndDate(feature, $event)"
+              [nbTooltip]="feature.endDate ? 'Until: ' + feature.endDate : 'No end date set'"
+            />
+            <nb-datepicker
+              #endDate
+              (dateChange)="changeEndDate(feature, $event)"
+              [min]="feature.startDate"
+            ></nb-datepicker>
+          </td>
+
+          <td class="text-center">
+            <nb-toggle
+              class="nb-toggle-reset-label-margin mt-1"
+              [checked]="feature.enabled"
+              (checkedChange)="toggle(feature, $event)"
+              [nbTooltip]="feature.enabled ? 'Disable Feature & Reset Dates' : 'Enable Feature'"
+            ></nb-toggle>
+          </td>
+
+          <td class="text-right">
+            <button
+              nbButton
+              status="danger"
+              size="small"
+              shape="round"
+              nbTooltip="Delete rule"
+              (click)="askDeleteFeature(feature)"
+            >
+              <nb-icon icon="trash-2-outline"></nb-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>

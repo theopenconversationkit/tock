@@ -53,6 +53,9 @@ export class SelectBotComponent implements OnInit {
   @Input()
   noConnectorLabel: string = 'No Connector';
 
+  @Input()
+  size: string = 'small';
+
   configurations: BotApplicationConfiguration[];
 
   botNames: string[];

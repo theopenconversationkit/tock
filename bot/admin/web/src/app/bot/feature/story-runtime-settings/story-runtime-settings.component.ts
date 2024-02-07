@@ -15,9 +15,11 @@
  */
 
 import { Component, OnInit } from '@angular/core';
-import { BotService } from '../bot-service';
-import { StoryDefinitionConfiguration } from '../model/story';
-import { StateService } from '../../core-nlp/state.service';
+import { BotService } from '../../bot-service';
+import { StoryDefinitionConfiguration } from '../../model/story';
+import { StateService } from '../../../core-nlp/state.service';
+import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'tock-story-runtime-settings',
@@ -25,37 +27,70 @@ import { StateService } from '../../core-nlp/state.service';
   styleUrls: ['./story-runtime-settings.component.css']
 })
 export class StoryRuntimeSettingsComponent implements OnInit {
-  storyPluralMapping = {
-    story: {
-      '=0': '0 stories',
-      '=1': '1 story',
-      other: '# stories'
-    }
-  };
-  displayedColumns: string[] = ['storyTag', 'storyName'];
+  destroy = new Subject();
+
   disableStories: StoryDefinitionConfiguration[];
   enableStories: StoryDefinitionConfiguration[];
   checkOnlySubEntitiesForStorySelection: StoryDefinitionConfiguration[];
   checkSubEntitiesOnlyWithStoryIntents: StoryDefinitionConfiguration[];
   taggedStoriesCount: number = 0;
 
-  constructor(private state: StateService, private botService: BotService) {}
+  loading: boolean;
+
+  constructor(private state: StateService, private botService: BotService, private router: Router) {}
 
   ngOnInit(): void {
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((res) => {
+      this.refresh();
+    });
+
+    this.refresh();
+  }
+
+  refresh() {
     if (this.state.currentApplication) {
+      this.loading = true;
+
       this.botService.findRuntimeStorySettings(this.state.currentApplication.name).subscribe((stories) => {
         this.disableStories = stories.filter((story) => story.tags.some((tag) => tag === 'DISABLE'));
+
         this.enableStories = stories.filter((story) => story.tags.some((tag) => tag === 'ENABLE'));
+
         this.checkOnlySubEntitiesForStorySelection = stories.filter((story) => story.tags.some((tag) => tag === 'CHECK_ONLY_SUB_STEPS'));
+
         this.checkSubEntitiesOnlyWithStoryIntents = stories.filter((story) =>
           story.tags.some((tag) => tag === 'CHECK_ONLY_SUB_STEPS_WITH_STORY_INTENT')
         );
+
         this.taggedStoriesCount =
           this.disableStories.length +
           this.enableStories.length +
           this.checkOnlySubEntitiesForStorySelection.length +
           this.checkSubEntitiesOnlyWithStoryIntents.length;
+
+        this.loading = false;
       });
     }
+  }
+
+  getStoryIcon(story: StoryDefinitionConfiguration) {
+    if (story.isBuiltIn()) {
+      return 'cube';
+    }
+    if (story.isSimpleAnswer()) {
+      return 'message-square-outline';
+    }
+    if (story.isScriptAnswer()) {
+      return 'code';
+    }
+  }
+
+  editStory(story: StoryDefinitionConfiguration) {
+    this.router.navigateByUrl('/build/story-edit/' + story._id);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 }

@@ -1,0 +1,55 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nb-card [nbSpinner]="loading">
+  <nb-card-header class="d-flex position-relative">
+    Story rules
+
+    <tock-info-button message="Rules applied to stories"></tock-info-button>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      type="button"
+      class="ml-3"
+      nbTooltip="Refresh"
+      (click)="refresh()"
+    >
+      <nb-icon icon="refresh-outline"></nb-icon>
+    </button>
+  </nb-card-header>
+
+  <nb-card-body class="pb-2">
+    <tock-story-rules-table
+      [type]="ruleType.Activation"
+      [features]="disabledFeatures"
+      (onRefresh)="refresh()"
+    ></tock-story-rules-table>
+
+    <tock-story-rules-table
+      [type]="ruleType.Redirection"
+      [features]="redirectedFeatures"
+      (onRefresh)="refresh()"
+    ></tock-story-rules-table>
+
+    <tock-story-rules-table
+      [type]="ruleType.Ending"
+      [features]="endingFeatures"
+      (onRefresh)="refresh()"
+    ></tock-story-rules-table>
+  </nb-card-body>
+</nb-card>

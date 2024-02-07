@@ -14,40 +14,36 @@
   ~ limitations under the License.
   -->
 
-<nb-card
-  [nbSpinner]="loadingApplicationsFeatures"
-  nbSpinnerStatus="primary"
->
-  <nb-card-header style="display: flex; position: relative">
-    <span nbTooltip="Enabling/Disabling features">Features</span>
+<nb-card [nbSpinner]="loading">
+  <nb-card-header class="d-flex position-relative">
+    Features
+
     <tock-info-button message="Rules used to enable/disable features."></tock-info-button>
-    <nb-actions
-      size="small"
-      style="cursor: pointer"
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      type="button"
+      class="ml-3"
+      nbTooltip="Refresh"
+      (click)="refresh()"
     >
-      <nb-action
-        class="control-item"
-        nbTooltip="Refresh"
-        (click)="refresh()"
-      >
-        <nb-icon icon="refresh-outline"></nb-icon>
-      </nb-action>
-    </nb-actions>
+      <nb-icon icon="refresh-outline"></nb-icon>
+    </button>
   </nb-card-header>
-  <nb-card-body>
+
+  <nb-card-body class="pb-2">
     <tock-application-features-table
       [features]="tockFeatures"
-      title="Tock Features"
-      tockCategory="true"
+      type="tock"
       (onRefresh)="refresh()"
-      [botApplicationConfigurationId]="botApplicationConfigurationId"
     ></tock-application-features-table>
 
     <tock-application-features-table
       [features]="botFeatures"
-      title="Application Features"
+      type="application"
       (onRefresh)="refresh()"
-      [botApplicationConfigurationId]="botApplicationConfigurationId"
     ></tock-application-features-table>
   </nb-card-body>
 </nb-card>
