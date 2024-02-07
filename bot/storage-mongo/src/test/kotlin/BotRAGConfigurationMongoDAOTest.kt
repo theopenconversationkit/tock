@@ -16,9 +16,9 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.bot.llm.BotRagConfiguration
-import ai.tock.llm.orchestrator.core.models.em.OpenAIEMSetting
-import ai.tock.llm.orchestrator.core.models.llm.OpenAILLMSetting
+import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.genai.orchestratorcore.models.em.OpenAIEMSetting
+import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId

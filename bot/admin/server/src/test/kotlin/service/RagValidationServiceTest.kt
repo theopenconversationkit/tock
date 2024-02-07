@@ -18,13 +18,13 @@ package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
-import ai.tock.llm.orchestrator.client.responses.ErrorInfo
-import ai.tock.llm.orchestrator.client.responses.ErrorResponse
-import ai.tock.llm.orchestrator.client.responses.ProviderSettingStatusResponse
-import ai.tock.llm.orchestrator.client.services.EMProviderService
-import ai.tock.llm.orchestrator.client.services.LLMProviderService
-import ai.tock.llm.orchestrator.core.models.em.AzureOpenAIEMSetting
-import ai.tock.llm.orchestrator.core.models.llm.OpenAILLMSetting
+import ai.tock.genai.orchestratorclient.responses.ErrorInfo
+import ai.tock.genai.orchestratorclient.responses.ErrorResponse
+import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+import ai.tock.genai.orchestratorclient.services.EMProviderService
+import ai.tock.genai.orchestratorclient.services.LLMProviderService
+import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
+import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector

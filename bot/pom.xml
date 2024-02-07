@@ -73,12 +73,12 @@
         <dependencies>
             <dependency>
                 <groupId>ai.tock</groupId>
-                <artifactId>tock-llm-orchestrator-core</artifactId>
+                <artifactId>tock-gen-ai-orchestrator-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>ai.tock</groupId>
-                <artifactId>tock-llm-orchestrator-client</artifactId>
+                <artifactId>tock-gen-ai-orchestrator-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

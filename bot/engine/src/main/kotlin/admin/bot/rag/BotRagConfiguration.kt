@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.llm
+package ai.tock.bot.admin.bot.rag
 
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.llm.orchestrator.core.models.em.EMSetting
-import ai.tock.llm.orchestrator.core.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.models.em.EMSetting
+import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import org.litote.kmongo.Id
 
 data class BotRagConfiguration(

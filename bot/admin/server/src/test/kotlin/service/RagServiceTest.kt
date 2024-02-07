@@ -20,7 +20,7 @@ import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.answer.AnswerConfigurationType
 import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
-import ai.tock.bot.admin.bot.llm.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRagConfiguration
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -29,8 +29,8 @@ import ai.tock.bot.test.TFunction
 import ai.tock.bot.test.TRunnable
 import ai.tock.bot.test.TSupplier
 import ai.tock.bot.test.TestCase
-import ai.tock.llm.orchestrator.core.models.em.AzureOpenAIEMSetting
-import ai.tock.llm.orchestrator.core.models.llm.OpenAILLMSetting
+import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
+import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
 import ai.tock.nlp.core.Intent
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.withoutNamespace
