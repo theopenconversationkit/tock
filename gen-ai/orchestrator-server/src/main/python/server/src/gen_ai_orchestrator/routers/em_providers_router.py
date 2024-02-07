@@ -16,7 +16,7 @@
 
 import logging
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
     AIProviderBadQueryException,
@@ -35,7 +35,6 @@ from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
 )
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
-from gen_ai_orchestrator.models.errors.errors_models import ErrorCode
 from gen_ai_orchestrator.routers.requests.requests import (
     EMProviderSettingStatusQuery,
 )

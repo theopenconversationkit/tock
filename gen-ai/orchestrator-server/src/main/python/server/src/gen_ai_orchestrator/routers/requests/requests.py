@@ -18,14 +18,13 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
 from gen_ai_orchestrator.routers.requests.types import (
     DocumentSearchParams,
     EMSetting,
     LLMSetting,
 )
-
-from src.main.python.server.src.gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
 
 
 class LLMProviderSettingStatusQuery(BaseModel):

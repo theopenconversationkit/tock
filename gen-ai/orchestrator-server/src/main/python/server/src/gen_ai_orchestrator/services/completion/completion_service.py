@@ -12,8 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from langchain.output_parsers import CommaSeparatedListOutputParser
 
+from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+from langchain_core.prompts import PromptTemplate
+
+from gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
 from gen_ai_orchestrator.routers.requests.requests import GenerateSentencesQuery
 from gen_ai_orchestrator.routers.responses.responses import (
     GenerateSentencesResponse,
@@ -21,10 +24,6 @@ from gen_ai_orchestrator.routers.responses.responses import (
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
 )
-from gen_ai_orchestrator.services.llm.llm_service import llm_inference_with_parser
-from langchain.output_parsers import CommaSeparatedListOutputParser, ResponseSchema, StructuredOutputParser
-
-from src.main.python.server.src.gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
 
 
 def generate_and_split_sentences(
