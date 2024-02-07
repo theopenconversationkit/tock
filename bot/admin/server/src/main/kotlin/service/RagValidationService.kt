@@ -16,12 +16,12 @@
 
 package ai.tock.bot.admin.service
 
-import ai.tock.bot.admin.bot.llm.BotRagConfiguration
-import ai.tock.llm.orchestrator.client.requests.EMProviderSettingStatusQuery
-import ai.tock.llm.orchestrator.client.requests.LLMProviderSettingStatusQuery
-import ai.tock.llm.orchestrator.client.responses.ProviderSettingStatusResponse
-import ai.tock.llm.orchestrator.client.services.EMProviderService
-import ai.tock.llm.orchestrator.client.services.LLMProviderService
+import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+import ai.tock.genai.orchestratorclient.services.EMProviderService
+import ai.tock.genai.orchestratorclient.services.LLMProviderService
 import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
