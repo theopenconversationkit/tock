@@ -11,7 +11,7 @@ python = "^3.9"
 uvicorn = "^0.25.0"
 gunicorn = "^21.2.0"
 pydantic-settings="^2.1.0"
-fastapi = "^0.108.0"
+fastapi = "^0.109.2"
 langchain = "^0.1.0"
 langchain-openai = "^0.0.2"
 tiktoken = "^0.5.2"
@@ -24,6 +24,7 @@ urllib3 = "^1.26"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.5.0"
+pip-audit = "^2.7.0"
 
 [tool.isort]
 line_length = 79

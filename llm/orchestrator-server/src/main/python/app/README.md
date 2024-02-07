@@ -112,6 +112,21 @@ pre-commit install
 uvicorn llm_orchestrator.main:app --host 0.0.0.0 --port 8000 --reload --log-level trace
 ```
 
+### Dependencies analysis
+
+Dev extra dependencies contain the pip-audit package dependencies vulnerability analysis tool (see [pip-audit](https://pypi.org/project/pip-audit)).
+
+Corresponding pre-commit hook will fail if poetry.lock contains any vulnerable dependencies.
+
+To run pip-audit manually, setup in your Poetry env with dev dependencies installed, then:
+```bash
+pip-audit
+```
+
+If you happen to use multiple .pre-commit.yaml files (like by developing in both the 'app' and 'tock-llm-indexing-tools' projects), you may encounter a "No <some path>/.pre-commit-config.yaml file was found".
+If so, edit the .git/hooks/pre-commit file (this is the default pre-commit installation path, yours may be elsewhere) and correct <some path> in the ARGS to point to the correct config files.
+
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
