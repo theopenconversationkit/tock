@@ -24,24 +24,9 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotRAGConfigurationDTO
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
+import ai.tock.bot.admin.service.GenerateSentencesService
 import ai.tock.bot.admin.service.RagService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
@@ -80,7 +65,6 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
 import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.TranslatorEngine
-import com.fasterxml.jackson.databind.exc.InvalidTypeIdException
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
@@ -337,16 +321,16 @@ open class BotAdminVerticle : AdminVerticle() {
                 BotAdminService.search(query)
                     .dialogs
                     .forEach { label ->
-                            printer.printRecord(
-                                        listOf(
-                                            label.actions.first().date,
-                                            label.id,
-                                            label.rating,
-                                            label.review,
-                                        )
+                        printer.printRecord(
+                            listOf(
+                                label.actions.first().date,
+                                label.id,
+                                label.rating,
+                                label.review,
                             )
+                        )
                     }
-                 sb.toString()
+                sb.toString()
             } else {
                 unauthorized()
             }
@@ -1027,6 +1011,23 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+
+
+        blockingJsonPost("/configuration/bots/:botId/llm-sentence-generation", setOf(botUser, faqBotUser)) { context, configuration: GenerateSentencesConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                GenerateSentencesService.saveGenerateSentences(configuration)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/llm-sentence-generation", setOf(botUser, faqBotUser)) { context  ->
+            GenerateSentencesService.getGenerateSentencesConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    GenerateSentencesConfigurationDTO(it)
+                }
         }
 
         blockingJsonGet("/configuration") {
