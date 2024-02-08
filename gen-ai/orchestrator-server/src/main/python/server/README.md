@@ -55,7 +55,7 @@ LLM Orchestrator is the server that handle all LLMs operations : Retrieval Augme
 
   Basic usage to create a venv with a specific version of Python for this project :
 ```sh
-# In llm/orchestrator-server/src/main/python/app
+# In gen-ai/orchestrator-server/src/main/python/server
 pyenv install 3.9.18
 pyenv local 3.9.18  # Activate Python 3.9 for the current
 which python # Check that you use the python version installed by pyenv

@@ -24,30 +24,9 @@ class PromptTemplate(BaseModel):
     )
     template: str = Field(
         description='The Jinja2 Template for create a prompt.',
-        examples = ["""
-            {% if OPTIONS.SPELLINGMISTAKES %}
-            include sentences with spelling mistakes
-            {% endif %}
-            {% if OPTIONS.SMSLANGUAGE %}
-            include sentences with sms language
-            {% endif %}
-            {% if OPTIONS.ABBREVIATEDLANGUAGE %}
-            include sentences with abbreviated language
-            {% endif %}
-            Takes into account the previous options and generates in {{ LOCAL }} language, {{ NB_SENTENCES }} sentences derived from the sentences in the following table:
-            {% for sentence in SENTENCES %}
-            {{ sentence }}
-            {% endfor %}"""],
+
      )
     inputs: dict = Field(
         description='inputs for generation of prompt with the template',
-        examples=[{
-         "LOCAL": "français",
-         "NB_SENTENCES": " nombre de phrases à générer",
-         "SENTENCES": ["comment ouvrir un livret A", "donnes moi des informations sur l ouverture d un livret A"],
-         "OPTIONS": {"SPELLINGMISTAKES": True,
-                     "SMSLANGUAGE": True,
-                     "ABBREVIATEDLANGUAGE": True,
-            }
-        }]
+
     )

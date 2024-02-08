@@ -16,7 +16,6 @@
 from langchain.output_parsers import ResponseSchema, StructuredOutputParser
 from langchain_core.prompts import PromptTemplate
 
-from gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
 from gen_ai_orchestrator.routers.requests.requests import GenerateSentencesQuery
 from gen_ai_orchestrator.routers.responses.responses import (
     GenerateSentencesResponse,
