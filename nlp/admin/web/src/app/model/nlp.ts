@@ -270,6 +270,7 @@ export abstract class EntityContainer {
 
 export class Intent {
   public static readonly unknown = 'tock:unknown';
+  public static readonly ragExcluded = 'tock:ragexcluded';
 
   constructor(
     public name: string,
@@ -350,7 +351,7 @@ export class Sentence extends EntityContainer {
     public reviewComment: string,
     public qualifier: string,
     public key?: string,
-    public configuration? : string
+    public configuration?: string
   ) {
     super();
   }
@@ -362,7 +363,15 @@ export class Sentence extends EntityContainer {
   getIntentLabel(state: StateService): string {
     if (!this.intentLabel) {
       const intent = state.findIntentById(this.classification.intentId);
-      this.intentLabel = intent ? (intent.label ? intent.label : intent.name) : nameFromQualifiedName(Intent.unknown);
+      if (intent) {
+        this.intentLabel = intent.label ? intent.label : intent.name;
+      }
+      if (this.classification.intentId === Intent.unknown) {
+        this.intentLabel = nameFromQualifiedName(Intent.unknown);
+      }
+      if (this.classification.intentId === Intent.ragExcluded) {
+        this.intentLabel = nameFromQualifiedName(Intent.ragExcluded);
+      }
     }
     return this.intentLabel;
   }
@@ -1012,8 +1021,14 @@ export class TestErrorQuery extends PaginatedQuery {
 }
 
 export class LogCountQuery extends PaginatedQuery {
-
-  static create(stateService: StateService, start: number, size?: number, intentName?: string, minCount?: number, validated?: boolean): TestErrorQuery {
+  static create(
+    stateService: StateService,
+    start: number,
+    size?: number,
+    intentName?: string,
+    minCount?: number,
+    validated?: boolean
+  ): TestErrorQuery {
     const p = stateService.createPaginatedQuery(start, size);
     return new LogCountQuery(p.namespace, p.applicationName, p.language, p.start, p.size, intentName, minCount, validated);
   }
@@ -1026,15 +1041,14 @@ export class LogCountQuery extends PaginatedQuery {
     public size: number,
     public intentName?: string,
     public minCount?: number,
-    public validated?: boolean,
+    public validated?: boolean
   ) {
     super(namespace, applicationName, language, start, size);
   }
 }
 
 export class LogCountResult implements PaginatedResult<LogCount> {
-  constructor(public rows: LogCount[], public total: number, public start: number, public end: number) {
-  }
+  constructor(public rows: LogCount[], public total: number, public start: number, public end: number) {}
 
   static fromJSON(json?: any): LogCountResult {
     const value = Object.create(LogCountResult.prototype);
@@ -1055,7 +1069,7 @@ export class LogCount {
     public intent: string,
     public intentProbability?: number,
     public entitiesProbability?: number,
-    public validated?:boolean,
+    public validated?: boolean
   ) {}
 
   static fromJSON(json?: any): LogCount {

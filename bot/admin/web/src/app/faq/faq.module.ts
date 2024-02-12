@@ -23,10 +23,7 @@ import { NlpModule } from '../nlp-tabs/nlp.module';
 
 import { FaqManagementComponent } from './faq-management/faq-management.component';
 import { FaqRoutingModule } from './faq-routing.module';
-import { FaqTrainingFiltersComponent } from './faq-training/faq-training-filters/faq-training-filters.component';
 import { FaqTrainingComponent } from './faq-training/faq-training.component';
-import { FaqTrainingListComponent } from './faq-training/faq-training-list/faq-training-list.component';
-import { FaqTrainingDialogComponent } from './faq-training/faq-training-dialog/faq-training-dialog.component';
 import { SharedModule } from '../shared-nlp/shared.module';
 import { MomentModule } from 'ngx-moment';
 import { FaqManagementFiltersComponent } from './faq-management/faq-management-filters/faq-management-filters.component';
@@ -70,9 +67,6 @@ import { FaqTabsComponent } from './faq-tabs/faq-tabs.component';
   declarations: [
     FaqManagementComponent,
     FaqTrainingComponent,
-    FaqTrainingFiltersComponent,
-    FaqTrainingListComponent,
-    FaqTrainingDialogComponent,
     FaqManagementFiltersComponent,
     FaqManagementListComponent,
     FaqManagementEditComponent,

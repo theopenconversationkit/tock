@@ -1,0 +1,32 @@
+<span
+  [nbTooltip]="'Entity : ' + token.entity?.role"
+  [nbTooltipDisabled]="!token.entity?.role"
+  [ngClass]="{ token: token.entity, pointer: token.entity }"
+  [style.background]="token.color()"
+  [style.color]="getContrastYIQ(token.color())"
+  [style.borderColor]="getContrastYIQ(token.color(), 'rgba(0,0,0,0.3)', 'rgba(255,255,255,0.6)')"
+  (click)="displayMenu($event)"
+  ><!-- NO carriage return here ! --><ng-container *ngIf="!token.subTokens">{{ token.text }}</ng-container
+  ><ng-container *ngIf="token.subTokens"
+    ><tock-token-view
+      *ngFor="let subtoken of token.subTokens"
+      [token]="subtoken"
+      (deleteTokenEntity)="delete($event)"
+    ></tock-token-view></ng-container
+></span>
+
+<ng-template #userMenu>
+  <section class="token-menu pt-1">
+    <button
+      type="button"
+      status="danger"
+      nbButton
+      ghost
+      size="small"
+      class="d-block w-100"
+      (click)="delete(token)"
+    >
+      <nb-icon icon="trash-2-outline"></nb-icon> Remove entity &quot;{{ getEntityName() }}&quot;
+    </button>
+  </section>
+</ng-template>

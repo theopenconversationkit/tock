@@ -1,0 +1,43 @@
+<div class="px-3">
+  <div class="tokens-container-wrapper">
+    <div
+      class="tokens-container"
+      #tokensContainer
+    >
+      <tock-token-view
+        *ngFor="let token of tokens"
+        [token]="token"
+        (deleteTokenEntity)="deleteTokenEntity($event)"
+      ></tock-token-view>
+    </div>
+  </div>
+
+  <div
+    *ngIf="selection"
+    class="my-3"
+  >
+    <div class="text-muted font-size-small">
+      Assign an entity to <strong>"{{ getSelectionText() }}"</strong> :
+    </div>
+    <div
+      *ngFor="let entity of getAssignableEntities()"
+      class="token-selector pointer"
+      [style.background-color]="entity.entityColor"
+      [style.color]="getContrastYIQ(entity.entityColor)"
+      nbTooltip="Assign &quot;{{ entity.qualifiedName(state.user) }}&quot;"
+      (click)="assignEntity(entity)"
+    >
+      {{ entity.qualifiedName(state.user) }}
+    </div>
+
+    <button
+      nbButton
+      ghost
+      size="small"
+      (click)="createEntity()"
+    >
+      <nb-icon icon="plus-outline"></nb-icon>
+      Add entity
+    </button>
+  </div>
+</div>

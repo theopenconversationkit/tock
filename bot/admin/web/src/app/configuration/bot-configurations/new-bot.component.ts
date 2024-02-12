@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
@@ -23,13 +23,16 @@ import { Router } from '@angular/router';
 import { Application } from '../../model/application';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'tock-new-bot',
   templateUrl: './new-bot.component.html',
   styleUrls: ['./new-bot.component.css']
 })
-export class NewBotComponent implements OnInit {
+export class NewBotComponent implements OnInit, OnDestroy {
+  destroy = new Subject();
+
   firstFormGroup: UntypedFormGroup;
   secondFormGroup: UntypedFormGroup;
   channel: UntypedFormControl = new UntypedFormControl('', Validators.required);
@@ -55,6 +58,13 @@ export class NewBotComponent implements OnInit {
     });
     this.secondFormGroup = this._formBuilder.group({});
     this.secondFormGroup.registerControl('channel', this.channel);
+
+    this.state.currentApplicationEmitter.pipe(takeUntil(this.destroy)).subscribe((arg) => {
+      // if an application exists, leave this page
+      if (arg) {
+        this.router.navigateByUrl('configuration/nlp');
+      }
+    });
   }
 
   validate() {
@@ -96,5 +106,10 @@ export class NewBotComponent implements OnInit {
         this.router.navigateByUrl('/nlp/try');
       });
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 }

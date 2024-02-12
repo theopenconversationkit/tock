@@ -1,0 +1,19 @@
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+.range-slider {
+  :disabled,
+  .disabled {
+    opacity: 0.5;
+  }
+
+  INPUT {
+    width: 100%;
+  }
+
+  .range-slider-value {
+    font-size: small;
+    margin-left: 1rem;
+    min-width: 2rem;
+  }
+}

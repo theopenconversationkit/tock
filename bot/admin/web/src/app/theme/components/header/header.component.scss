@@ -34,9 +34,10 @@
     align-content: center;
   }
 
-  .app {
+  .selects {
     margin-left: 10px;
-    min-width: 150px;
+    min-width: 100px;
+    max-width: 150px;
   }
 
   .locale {

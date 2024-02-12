@@ -1,0 +1,14 @@
+.scroll-top-button {
+  z-index: 9999;
+  position: fixed;
+  bottom: 15px;
+  right: -50px;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+
+  &.displayed {
+    right: 10px;
+    opacity: 1;
+    transition: all 0.2s ease-in-out;
+  }
+}

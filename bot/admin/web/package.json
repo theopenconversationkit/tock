@@ -12,6 +12,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-slider/ngx-slider": "^2.0.4",
     "@angular/animations": "^14.2.12",
     "@angular/cdk": "14.2.7",
     "@angular/common": "^14.2.12",
@@ -37,16 +38,17 @@
     "file-saver-es": "^2.0.5",
     "html2pdf.js": "^0.10.1",
     "jsoneditor": "^9.5.6",
+    "linkify-html": "^4.1.1",
+    "linkifyjs": "^4.1.1",
     "ng2-file-upload": "^1.4.0",
     "ngx-echarts": "^14.0.0",
     "ngx-infinite-scroll": "^8.0.2",
     "ngx-moment": "^6.0.2",
     "normalize.css": "6.0.0",
+    "papaparse": "^5.4.1",
     "rxjs": "^7.4.0",
     "tslib": "^2.4.1",
-    "zone.js": "~0.11.8",
-    "linkify-html": "^4.1.1",
-    "linkifyjs": "^4.1.1"
+    "zone.js": "~0.11.8"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.10",

@@ -1,4 +1,4 @@
-<nb-card class="mt-3 mb-2">
+<nb-card class="mt-2 mb-2">
   <nb-card-body>
     <form
       class="grid"
@@ -13,12 +13,13 @@
           nbInput
           fullWidth
           fieldSize="medium"
-          placeholder="Search intent"
+          placeholder="Search an intent"
           type="text"
           formControlName="search"
         />
         <button
           *ngIf="!!search.value"
+          type="button"
           nbButton
           nbSuffix
           nbTooltip="Clear"
