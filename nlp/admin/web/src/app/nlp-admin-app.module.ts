@@ -33,10 +33,10 @@ import {
 } from '@nebular/theme';
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { NlpAdminAppRoutingModule } from './nlp-admin-app-routing.module';
-import { TestBuildsComponent } from './model-quality/test-builds/test-builds.component';
+import { TestBuildsComponent } from './test-nlp/test-builds.component';
 
 @NgModule({
-  declarations: [NlpAdminAppComponent, TestBuildsComponent],
+  declarations: [NlpAdminAppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
