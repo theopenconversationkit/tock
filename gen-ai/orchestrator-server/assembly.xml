@@ -9,6 +9,7 @@
     <fileSets>
         <fileSet>
             <directory>src/main/python/server/src/</directory>
+            <outputDirectory></outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>
