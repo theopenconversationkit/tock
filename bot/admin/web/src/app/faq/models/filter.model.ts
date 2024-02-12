@@ -4,8 +4,3 @@ export interface FaqFilter {
   tags: Array<string>;
   sort;
 }
-
-export interface FaqTrainingFilter {
-  search: string;
-  showUnknown: boolean;
-}

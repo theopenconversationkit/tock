@@ -13,7 +13,7 @@
   *ngFor="let intent of intents"
 >
   <div class="table-list-entry">
-    <div class="font-weight-bold">
+    <div class="font-weight-bold pl-2">
       <span nbTooltip="{{ intent.qualifiedName() }}">
         {{ state.isOtherNamespaceIntent(intent) ? intent.qualifiedName() : intent.intentLabel() }}
       </span>

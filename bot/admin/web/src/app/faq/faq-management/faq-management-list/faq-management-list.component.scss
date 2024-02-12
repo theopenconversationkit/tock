@@ -13,3 +13,8 @@
   overflow: hidden !important;
   text-overflow: ellipsis;
 }
+
+.answer-col {
+  // Avoid long strings (eg. links) to break the layout
+  max-width: 20em;
+}

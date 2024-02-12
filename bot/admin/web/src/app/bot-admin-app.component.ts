@@ -48,7 +48,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
       {
         title: 'Language Understanding',
         icon: 'message-circle-outline',
-        link: '/nlp',
+        link: '/language-understanding',
         hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {

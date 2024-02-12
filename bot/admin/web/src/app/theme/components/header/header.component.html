@@ -48,18 +48,19 @@
     [ngModel]="isDarkTheme()"
     (change)="switchTheme()"
     class="darkmode-toggle"
-    nbTooltip="Switch Mode"
+    nbTooltip="Switch mode"
   ></nb-toggle>
   <nb-icon
     icon="moon-outline"
     nbTooltip="Dark Mode"
   ></nb-icon>
+
   <nb-select
-    status="primary"
     *ngIf="state.currentApplication"
     (selectedChange)="changeApplication($event)"
     [ngModel]="state.currentApplication.name"
-    class="app"
+    nbTooltip="Select current application"
+    class="selects"
   >
     <nb-option
       *ngFor="let app of state.applications"
@@ -69,10 +70,24 @@
   </nb-select>
 
   <nb-select
-    status="primary"
+    *ngIf="namespaces"
+    (selectedChange)="changeNamespace($event)"
+    [selected]="currentNamespaceName"
+    nbTooltip="Select current namespace"
+    class="selects"
+  >
+    <nb-option
+      *ngFor="let namespace of namespaces"
+      [value]="namespace.namespace"
+      >{{ namespace.namespace }}
+    </nb-option>
+  </nb-select>
+
+  <nb-select
     *ngIf="state.currentApplication"
     (selectedChange)="changeLocale($event)"
     [ngModel]="state.currentLocale"
+    nbTooltip="Select current locale"
     class="locale"
   >
     <nb-option

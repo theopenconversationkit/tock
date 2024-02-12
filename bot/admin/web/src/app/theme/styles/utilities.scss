@@ -54,6 +54,11 @@
   text-transform: uppercase;
 }
 
+.section-title {
+  border-bottom: 2px solid var(--color-basic-transparent-600);
+  padding-bottom: 5px;
+}
+
 .ellipsis {
   overflow: hidden;
   white-space: nowrap;
@@ -81,6 +86,10 @@ nb-route-tabset .tab-link {
   .option-list > * {
     word-break: break-word;
   }
+}
+
+.cdk-overlay-backdrop {
+  backdrop-filter: blur(3px);
 }
 
 .cdk-overlay-pane {
@@ -118,6 +127,10 @@ nb-card.selected {
 
 .divider {
   background-color: var(--color-basic-transparent-200);
+}
+
+.unselectable {
+  user-select: none;
 }
 
 .card-footer-actions {

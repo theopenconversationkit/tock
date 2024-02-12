@@ -103,6 +103,10 @@ export abstract class BotMessage {
     return this.eventTypeEnum === EventType.debug;
   }
 
+  isSentenceWithFootnotes(): boolean {
+    return this.eventTypeEnum === EventType.sentenceWithFootnotes;
+  }
+
   static fromJSON(json?: any): BotMessage {
     if (!json) {
       return null;
@@ -120,6 +124,8 @@ export abstract class BotMessage {
         return Location.fromJSON(json);
       case EventType.debug:
         return Debug.fromJSON(json);
+      case EventType.sentenceWithFootnotes:
+        return SentenceWithFootnotes.fromJSON(json);
       default:
         throw 'unknown type : ' + json.type;
     }
@@ -227,6 +233,33 @@ export class Sentence extends BotMessage {
 
   static fromJSONArray(json?: Array<any>): Sentence[] {
     return json ? json.map(Sentence.fromJSON) : [];
+  }
+}
+
+export interface FootNote {
+  title: string;
+  url: string;
+  identifier: string;
+}
+
+export class SentenceWithFootnotes extends BotMessage {
+  constructor(public delay: number, public footNotes: FootNote[], public text?: string, public userInterface?: UserInterfaceType) {
+    super(EventType.sentenceWithFootnotes, delay);
+  }
+
+  static fromJSON(json?: any): SentenceWithFootnotes {
+    const value = Object.create(SentenceWithFootnotes.prototype);
+
+    const result = Object.assign(value, json, {
+      footNotes: json.footNotes,
+      eventTypeEnum: EventType.sentenceWithFootnotes
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): SentenceWithFootnotes[] {
+    return json ? json.map(SentenceWithFootnotes.fromJSON) : [];
   }
 }
 

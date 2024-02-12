@@ -84,17 +84,17 @@
     </button>
   </nb-card-footer>
 </nb-card>
+
 <div
   *ngIf="displayStory"
-  class="current-analysis text-center mb-5"
+  class="current-analysis text-center mb-4"
 >
-  <hr class="divider" />
   (or qualify)
 </div>
-<tock-sentence-analysis
+
+<tock-sentence-training-entry
   *ngIf="sentence"
+  [standAlone]="true"
   [sentence]="sentence"
-  (closed)="resetState()"
-  [displayProbabilities]="true"
->
-</tock-sentence-analysis>
+  (onClearSentence)="resetState()"
+></tock-sentence-training-entry>

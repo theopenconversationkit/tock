@@ -25,6 +25,12 @@
           (sendMessage)="replyMessage($event)"
         ></tock-chat-ui-message-sentence>
 
+        <tock-chat-ui-message-sentence-footnotes
+          *ngIf="message.isSentenceWithFootnotes()"
+          [sentence]="message"
+          [reply]="reply"
+        ></tock-chat-ui-message-sentence-footnotes>
+
         <tock-chat-ui-message-choice
           *ngIf="message.isChoice()"
           [choice]="message"

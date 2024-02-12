@@ -37,7 +37,12 @@ import {
   NbPopoverModule,
   NbButtonModule,
   NbAlertModule,
-  NbAutocompleteModule
+  NbSpinnerModule,
+  NbCheckboxModule,
+  NbInputModule,
+  NbFormFieldModule,
+  NbAutocompleteModule,
+  NbRadioModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -52,21 +57,38 @@ import {
   ChatUiMessageLocationComponent,
   ChatUiMessageSentenceComponent,
   ChatUiMessageSentenceElementComponent,
+  ChatUiMessageSentenceFootnotesComponent,
   ChoiceDialogComponent,
   DebugViewerComponent,
   ErrorHelperComponent,
+  FileUploadComponent,
   FormControlComponent,
   NoDataFoundComponent,
-  PaginationComponent
+  PaginationComponent,
+  SentenceReviewRequestComponent,
+  SentenceTrainingComponent,
+  SentenceTrainingCreateEntityComponent,
+  SentenceTrainingDialogComponent,
+  SentenceTrainingFiltersComponent,
+  SentenceTrainingEntryComponent,
+  SentenceTrainingSentenceComponent,
+  SliderComponent,
+  TokenViewComponent,
+  ScrollTopButtonComponent
 } from './components';
 
 import { AutofocusDirective } from './directives';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AnalyticsService } from '../analytics/analytics.service';
 import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json-iterator/debug-json-iterator.component';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
+    ReactiveFormsModule,
     MomentModule,
     NbCalendarRangeModule,
     NbCardModule,
@@ -75,8 +97,15 @@ import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json
     NbIconModule,
     NbPopoverModule,
     NbButtonModule,
+    NbSpinnerModule,
+    NbCheckboxModule,
+    NbInputModule,
+    NbFormFieldModule,
+    InfiniteScrollModule,
     NbAutocompleteModule,
-    NbAlertModule
+    NbAlertModule,
+    NbRadioModule,
+    NgxSliderModule
   ],
   declarations: [
     BotMessageComponent,
@@ -102,11 +131,23 @@ import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json
     ChatUiMessageAttachmentComponent,
     ChatUiMessageLocationComponent,
     ChatUiMessageDebugComponent,
+    ChatUiMessageSentenceFootnotesComponent,
     ChoiceDialogComponent,
-    AutofocusDirective,
+    FileUploadComponent,
+    SliderComponent,
+    SentenceTrainingComponent,
+    SentenceTrainingDialogComponent,
+    SentenceTrainingFiltersComponent,
+    SentenceTrainingEntryComponent,
+    SentenceTrainingSentenceComponent,
+    SentenceTrainingCreateEntityComponent,
+    TokenViewComponent,
+    SentenceReviewRequestComponent,
     AutocompleteInputComponent,
     DebugJsonIteratorComponent,
-    DebugViewerComponent
+    DebugViewerComponent,
+    ScrollTopButtonComponent,
+    AutofocusDirective
   ],
   exports: [
     BotMessageComponent,
@@ -121,10 +162,15 @@ import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json
     ChatUiComponent,
     ChatUiMessageComponent,
     ChoiceDialogComponent,
-    AutofocusDirective,
+    FileUploadComponent,
+    SliderComponent,
+    SentenceTrainingComponent,
+    SentenceTrainingEntryComponent,
     AutocompleteInputComponent,
-    DebugViewerComponent
+    DebugViewerComponent,
+    ScrollTopButtonComponent,
+    AutofocusDirective
   ],
-  providers: [BotSharedService]
+  providers: [BotSharedService, AnalyticsService]
 })
 export class BotSharedModule {}
