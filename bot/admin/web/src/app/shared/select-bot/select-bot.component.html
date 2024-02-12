@@ -15,18 +15,22 @@
   -->
 
 <div *ngIf="configurations && configurations.length === 0">No bot configuration detected &nbsp;</div>
-<div *ngIf="configurations && configurations.length !== 0">
+<div
+  *ngIf="configurations && configurations.length !== 0"
+  class="gap-1"
+  [ngClass]="{ 'd-flex': displayConnectorChoice && currentBotName !== 'None' }"
+>
   <span
-    class="select-configuration"
+    class="select-configuration w-50"
     *ngIf="botNames && (allowNoSelection || botNames.length > 1)"
   >
     <nb-select
       (selectedChange)="changeBotName()"
-      status="primary"
-      size="small"
+      [size]="size"
       placeholder="Select a configuration"
       [(ngModel)]="currentBotName"
       class="select-width"
+      fullWidth
     >
       <nb-option
         *ngIf="allowNoSelection"
@@ -42,14 +46,15 @@
   </span>
   <span
     *ngIf="displayConnectorChoice && currentBotName !== 'None'"
-    class="select-configuration"
+    class="select-configuration w-50"
   >
     <nb-select
       (selectedChange)="changeConnectorType()"
-      status="primary"
+      [size]="size"
       placeholder="Select a connector"
       [(ngModel)]="currentConfiguration"
       class="select-width"
+      fullWidth
     >
       <nb-option
         *ngIf="allowNoConfigurationSelection"

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Feature } from '../model/feature';
-import { BotService } from '../bot-service';
-import { StateService } from '../../core-nlp/state.service';
-import { BotConfigurationService } from '../../core/bot-configuration.service';
+import { Component, OnInit } from '@angular/core';
+import { Feature } from '../../model/feature';
+import { BotService } from '../../bot-service';
+import { StateService } from '../../../core-nlp/state.service';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'tock-application-feature',
@@ -26,24 +27,28 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
   styleUrls: ['./application-feature.component.css']
 })
 export class ApplicationFeatureComponent implements OnInit {
-  private currentApplicationUnsuscriber: any;
+  destroy = new Subject();
+
   botFeatures: Feature[] = [];
+
   tockFeatures: Feature[] = [];
-  create: boolean = false;
-  feature: Feature = new Feature('', '', false);
-  botApplicationConfigurationId: string;
-  loadingApplicationsFeatures: boolean = false;
+
+  loading: boolean = false;
 
   constructor(private state: StateService, private botService: BotService, private configurationService: BotConfigurationService) {}
 
   ngOnInit(): void {
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe((a) => this.refresh());
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((res) => {
+      this.refresh();
+    });
+
     this.refresh();
   }
 
   refresh() {
     if (this.state.currentApplication) {
-      this.loadingApplicationsFeatures = true;
+      this.loading = true;
+
       this.botService.getFeatures(this.state.currentApplication.name).subscribe((f) => {
         f.forEach((feature) => {
           if (feature.applicationId) {
@@ -55,8 +60,14 @@ export class ApplicationFeatureComponent implements OnInit {
 
         this.botFeatures = f.filter((story) => story.category !== 'tock');
         this.tockFeatures = f.filter((story) => story.category === 'tock');
-        this.loadingApplicationsFeatures = false;
+
+        this.loading = false;
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy.next(true);
+    this.destroy.complete();
   }
 }

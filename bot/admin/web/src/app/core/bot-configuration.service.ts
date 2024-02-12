@@ -17,7 +17,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { StateService } from '../core-nlp/state.service';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, forkJoin } from 'rxjs';
 import { ApplicationScopedQuery } from '../model/commons';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType } from './model/configuration';
 
@@ -47,22 +47,25 @@ export class BotConfigurationService implements OnDestroy {
 
   updateConfigurations() {
     if (this.state.currentApplication) {
-      this.getBots(this.state.currentApplication.name).subscribe((bots) => {
-        this.bots.next(bots);
-        this.getConfigurations(this.state.createApplicationScopedQuery()).subscribe((c) => {
-          this.configurations.next(c);
-          let rest = c.filter((c) => c.connectorType.isRest());
+      const loaders = [this.getBots(this.state.currentApplication.name), this.getConfigurations(this.state.createApplicationScopedQuery())];
+
+      forkJoin(loaders).subscribe(
+        ([botConfigurations, botApplicationConfigurations]: [BotConfiguration[], BotApplicationConfiguration[]]) => {
+          this.bots.next(botConfigurations);
+
+          this.configurations.next(botApplicationConfigurations);
+          let rest = botApplicationConfigurations.filter((conf) => conf.connectorType.isRest());
           this.restConfigurations.next(rest);
           this.hasRestConfigurations.next(rest.length !== 0);
           const connectors = [];
-          c.forEach((conf) => {
+          botApplicationConfigurations.forEach((conf) => {
             if (!conf.connectorType.isRest() && !connectors.some((e) => conf.connectorType.id === e.id)) {
               connectors.push(conf.connectorType);
             }
           });
           this.supportedConnectors.next(connectors);
-        });
-      });
+        }
+      );
     }
   }
 

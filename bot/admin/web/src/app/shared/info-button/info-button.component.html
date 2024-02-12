@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<span [class]="this.position === 'inline' ? 'position-inline' : 'position-top-right'">
+<span [ngClass]="{ 'align-middle': true, inline: this.position === 'inline', 'position-top-right': this.position != 'inline' }">
   <a
     *ngIf="url && url.length > 0"
     [href]="url"
