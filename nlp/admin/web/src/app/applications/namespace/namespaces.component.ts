@@ -54,6 +54,9 @@ export class NamespacesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.state.currentApplicationEmitter.pipe(takeUntil(this.destroy)).subscribe((arg) => {
+      this.grabNamespaces();
+    });
     this.grabNamespaces();
   }
 
