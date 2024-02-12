@@ -1,0 +1,230 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="d-flex flex-wrap align-items-center mt-3">
+  <h1 class="flex-grow-1">Test entity errors</h1>
+
+  <button
+    nbButton
+    ghost
+    shape="round"
+    (click)="download()"
+    nbTooltip="Download the whole error list"
+  >
+    <nb-icon icon="cloud-download-outline"></nb-icon>
+  </button>
+</div>
+
+<nb-card
+  class="mb-2"
+  [nbSpinner]="loading"
+>
+  <nb-card-body class="d-flex gap-1 align-items-center">
+    <div class="flex-grow-1">
+      <label class="label mr-2">Filter by intent</label>
+      <nb-select
+        fullWidth
+        placeholder="Filter by intent"
+        [(ngModel)]="intent"
+        (selectedChange)="search()"
+      >
+        <nb-option value="">All intents</nb-option>
+        <nb-option-group
+          *ngFor="let category of state.currentIntentsCategories | async"
+          [title]="category.category"
+        >
+          <nb-option
+            *ngFor="let intent of category.intents"
+            [value]="intent.qualifiedName()"
+          >
+            {{ intent.intentLabel() }}
+          </nb-option>
+        </nb-option-group>
+        <nb-option value="unknown">Unknown</nb-option>
+      </nb-select>
+    </div>
+  </nb-card-body>
+</nb-card>
+
+<div
+  class="d-flex justify-content-end mb-1"
+  *ngIf="!loading && pagination.total > 0"
+>
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="refresh()"
+  ></tock-pagination>
+</div>
+
+<tock-no-data-found
+  *ngIf="!loading && !dataSource.length"
+  title="No records found"
+></tock-no-data-found>
+
+<nb-card
+  class="mb-1"
+  [nbSpinner]="loading"
+  *ngIf="dataSource.length"
+>
+  <nb-card-body>
+    <table class="table">
+      <thead>
+        <tr>
+          <th
+            style="width: 20%"
+            class="border-top-0 lineHeight-1"
+          >
+            Original
+          </th>
+          <th
+            style="width: 20%"
+            class="border-top-0 lineHeight-1"
+          >
+            Intent
+          </th>
+          <th
+            style="width: 20%"
+            class="border-top-0 lineHeight-1"
+          >
+            Last Error
+          </th>
+          <th
+            style="width: 5%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Errors
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+            nbTooltip="Test Errors / Tests, after first error"
+          >
+            Errors ratio
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+            nbTooltip="Average Entities Error Probability"
+          >
+            Error probability
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+            nbTooltip="Detection date"
+          >
+            Date
+          </th>
+          <th
+            style="width: 5%"
+            class="border-top-0 lineHeight-1"
+          >
+            Actions
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let row of dataSource; index as i">
+          <td>
+            <!-- Should be replaced with <tock-sentence-training-sentence> after merge of https://github.com/theopenconversationkit/tock/pull/1573 -->
+            <tock-highlight
+              fontSize="smaller"
+              [sentence]="row.originalSentence"
+              [readOnly]="true"
+              [displayActions]="false"
+            ></tock-highlight>
+          </td>
+
+          <td
+            class="ellipsis td-max-width"
+            [nbTooltip]="intentName(row)"
+          >
+            {{ intentName(row) }}
+          </td>
+
+          <td>
+            <!-- Should be replaced with <tock-sentence-training-sentence> after merge of https://github.com/theopenconversationkit/tock/pull/1573 -->
+            <tock-highlight
+              fontSize="smaller"
+              [sentence]="row.sentence"
+              [readOnly]="true"
+              [displayActions]="false"
+            ></tock-highlight>
+          </td>
+
+          <td class="text-center">
+            {{ row.count }}
+          </td>
+
+          <td class="text-center">
+            {{ row.count / row.total | percent: '1.0-2' }}
+          </td>
+
+          <td class="text-center">
+            {{ row.averageErrorProbability | percent: '1.0-2' }}
+          </td>
+
+          <td class="text-center">
+            {{ row.firstDetectionDate | date: 'dd/MM/yy' }}
+          </td>
+
+          <td class="d-flex">
+            <button
+              nbButton
+              ghost
+              status="success"
+              (click)="validate(row)"
+              nbTooltip="Validate entities"
+            >
+              <nb-icon icon="checkmark-circle-2-outline"></nb-icon>
+            </button>
+
+            <button
+              nbButton
+              ghost
+              status="danger"
+              (click)="change(row)"
+              nbTooltip="Change entities"
+            >
+              <nb-icon icon="edit-outline"></nb-icon>
+            </button>
+
+            <button
+              nbButton
+              ghost
+              [disabled]="!canReveal(row)"
+              (click)="reveal(row)"
+              nbTooltip="Reveal the obfuscated part(s) of the sentence"
+            >
+              <nb-icon icon="eye-outline"></nb-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>
+
+<div
+  class="d-flex justify-content-end"
+  *ngIf="!loading && pagination.total > 0"
+>
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="refresh()"
+  ></tock-pagination>
+</div>

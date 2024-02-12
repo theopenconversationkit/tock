@@ -1,0 +1,99 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<h1 class="mt-3">Model stats</h1>
+
+<nb-card class="mb-2">
+  <nb-card-body class="d-flex gap-1 align-items-end">
+    <div class="flex-grow-1">
+      <label class="label mr-2">Filter by intent</label>
+      <nb-select
+        placeholder="Intent"
+        [(ngModel)]="intent"
+        (selectedChange)="search()"
+        fullWidth=""
+      >
+        <nb-option value="">All intents</nb-option>
+        <nb-option-group
+          *ngFor="let category of state.currentNamespaceIntentsCategories | async"
+          [title]="category.category"
+        >
+          <nb-option
+            *ngFor="let intent of category.intents"
+            [value]="intent.name"
+          >
+            {{ intent.intentLabel() }}
+          </nb-option>
+        </nb-option-group>
+        <nb-option value="tock:unknown">Unknown</nb-option>
+      </nb-select>
+    </div>
+
+    <nb-toggle
+      class="nb-toggle-reset-label-margin mb-1 text-nowrap"
+      [(checked)]="onlyCurrentLocale"
+      (checkedChange)="search()"
+      >Current locale only</nb-toggle
+    >
+  </nb-card-body>
+</nb-card>
+
+<tock-no-data-found
+  *ngIf="nodata"
+  title="No data found"
+></tock-no-data-found>
+
+<nb-card
+  *ngIf="!nodata"
+  class="mb-2"
+>
+  <nb-card-body>
+    <h5>Probabilities</h5>
+    <div
+      echarts
+      [options]="probabilityChartOptions"
+      class="chart"
+    ></div>
+  </nb-card-body>
+</nb-card>
+
+<nb-card
+  *ngIf="!nodata"
+  class="mb-2"
+>
+  <nb-card-body>
+    <h5>Activity</h5>
+    <div
+      echarts
+      [options]="statsChartOptions"
+      class="chart"
+    ></div>
+  </nb-card-body>
+</nb-card>
+
+<nb-card
+  *ngIf="!nodata"
+  class="mb-2"
+>
+  <nb-card-body>
+    <h5>Duration</h5>
+    <div
+      echarts
+      [options]="durationChartOptions"
+      class="chart"
+    ></div>
+  </nb-card-body>
+</nb-card>

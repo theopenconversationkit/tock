@@ -1,5 +1,13 @@
 @import '@nebular/theme/styles/theming';
 
+@mixin truncate($line) {
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @for $i from 1 through 4 {
   .gap-#{$i} {
     gap: #{$i}rem;
@@ -8,6 +16,10 @@
 
 .lineHeight-0 {
   line-height: 0;
+}
+
+.lineHeight-1 {
+  line-height: 1rem;
 }
 
 .font-size-small {
@@ -60,6 +72,7 @@ nb-select.appearance-outline .select-button {
 nb-route-tabset .tab-link {
   padding-top: 0;
 }
+
 // Makes the disabled ghost button more discreet. By default, the background color makes it more visible than the non-deactivated buttons.
 .nb-theme-default [nbButton].appearance-ghost.status-basic[disabled],
 .nb-theme-default .appearance-ghost.status-basic[disabled][nbButtonToggle],

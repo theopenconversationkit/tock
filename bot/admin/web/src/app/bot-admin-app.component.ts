@@ -78,7 +78,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
       {
         title: 'Model Quality',
         icon: 'clipboard-outline',
-        link: '/quality',
+        link: '/model-quality',
         hidden: !this.state.hasRole(UserRole.nlpUser)
       },
       {

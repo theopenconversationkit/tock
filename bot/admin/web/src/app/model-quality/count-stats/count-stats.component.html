@@ -1,0 +1,195 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<h1 class="mt-3">Count stats</h1>
+
+<nb-card
+  class="mb-2"
+  [nbSpinner]="loading"
+>
+  <nb-card-body>
+    <form
+      [formGroup]="form"
+      class="d-flex gap-1 align-items-center"
+    >
+      <div class="w-50">
+        <label class="label mr-2">Filter by intent</label>
+        <nb-select
+          fullWidth
+          placeholder="Filter by intent"
+          formControlName="intent"
+        >
+          <nb-option value="">All intents</nb-option>
+          <nb-option-group
+            *ngFor="let category of state.currentIntentsCategories | async"
+            [title]="category.category"
+          >
+            <nb-option
+              *ngFor="let intent of category.intents"
+              [value]="intent.qualifiedName()"
+            >
+              {{ intent.intentLabel() }}
+            </nb-option>
+          </nb-option-group>
+          <nb-option value="unknown">Unknown</nb-option>
+        </nb-select>
+      </div>
+
+      <div class="w-50">
+        <label class="label mr-2">Minimum count</label>
+        <input
+          nbInput
+          fullWidth
+          type="number"
+          min="1"
+          placeholder="Minimum Count"
+          formControlName="minCount"
+        />
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>
+
+<div
+  class="d-flex justify-content-end mb-1"
+  *ngIf="!loading && pagination.total > 0"
+>
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="refresh()"
+  ></tock-pagination>
+</div>
+
+<tock-no-data-found
+  *ngIf="!loading && !dataSource.length"
+  title="No records found"
+></tock-no-data-found>
+
+<nb-card
+  class="mb-1"
+  [nbSpinner]="loading"
+  *ngIf="dataSource.length"
+>
+  <nb-card-body>
+    <table class="table">
+      <thead>
+        <tr>
+          <th
+            style="width: 30%"
+            class="border-top-0 lineHeight-1"
+          >
+            Text
+          </th>
+          <th
+            style="width: 5%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Count
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Last usage
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Validated
+          </th>
+          <th
+            style="width: 25%"
+            class="border-top-0 lineHeight-1"
+          >
+            Intent
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Intent Probability
+          </th>
+          <th
+            style="width: 10%"
+            class="border-top-0 lineHeight-1 text-center"
+          >
+            Entities Probability
+          </th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let row of dataSource; index as i">
+          <td style="width: 20%">
+            {{ row.text }}
+          </td>
+
+          <td class="text-center">
+            {{ row.count }}
+          </td>
+
+          <td class="text-center">
+            {{ row.lastUsage | date: 'dd/MM/yy' }}
+          </td>
+
+          <td class="text-center">
+            <nb-icon
+              *ngIf="!row.validated"
+              status="basic"
+              icon="close-outline"
+              nbTooltip="No"
+            ></nb-icon>
+
+            <nb-icon
+              *ngIf="row.validated"
+              status="success"
+              icon="checkmark-outline"
+              nbTooltip="Yes"
+            ></nb-icon>
+          </td>
+
+          <td>
+            <span
+              *ngIf="row.intent"
+              class="text-success"
+            >
+              {{ state.intentLabelByName(row.intent) }}
+            </span>
+          </td>
+
+          <td class="text-center">
+            {{ row.intentProbability | percent: '1.0-2' }}
+          </td>
+
+          <td class="text-center">
+            {{ row.entitiesProbability | percent: '1.0-2' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </nb-card-body>
+</nb-card>
+
+<div
+  class="d-flex justify-content-end"
+  *ngIf="!loading && pagination.total > 0"
+>
+  <tock-pagination
+    [pagination]="pagination"
+    (onPaginationChange)="refresh()"
+  ></tock-pagination>
+</div>
