@@ -1,0 +1,15 @@
+.token {
+  line-height: 1;
+  padding: 0.1rem 0.1rem;
+
+  border-radius: 0.45rem;
+  border-width: 1px;
+  border-style: dashed;
+
+  box-shadow: -1px 1px 5px #00000030;
+}
+
+.token-menu {
+  background-color: white;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}

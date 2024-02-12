@@ -34,10 +34,12 @@ import {
   NbThemeModule,
   NbIconLibraries
 } from '@nebular/theme';
-import { CustomNbIconLibraries } from './shared/icons/custom-nb-icon-libraries';
+
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { BotService } from './bot/bot-service';
 import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
+import { ragIcon } from './theme/icons/rag';
+import { ragexcludeIcon } from './theme/icons/ragexclude';
 
 @NgModule({
   declarations: [BotAdminAppComponent],
@@ -62,8 +64,6 @@ import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
     NgbModule
   ],
   providers: [
-    CustomNbIconLibraries,
-    { provide: NbIconLibraries, useExisting: CustomNbIconLibraries },
     {
       provide: APP_BASE_HREF,
       useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
@@ -74,5 +74,10 @@ import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
   bootstrap: [BotAdminAppComponent]
 })
 export class BotAdminAppModule {
-  constructor() {}
+  constructor(private iconLibraries: NbIconLibraries) {
+    this.iconLibraries.registerSvgPack('tock-custom', {
+      rag: ragIcon,
+      ragexclude: ragexcludeIcon
+    });
+  }
 }

@@ -1,0 +1,577 @@
+<nb-card class="mb-0">
+  <nb-card-body>
+    <form [formGroup]="form">
+      <div class="d-flex justify-content-between align-items-center">
+        <nb-form-field class="flex-grow-1">
+          <nb-icon
+            nbPrefix
+            icon="search-outline"
+          ></nb-icon>
+          <input
+            nbInput
+            fullWidth
+            fieldSize="medium"
+            placeholder="Search a sentence"
+            type="text"
+            formControlName="search"
+            nbTooltip="Full text search. Regexp supported (PCRE format)"
+            spellcheck="false"
+            autocomplete="off"
+          />
+          <button
+            *ngIf="!!getFormControl('search').value"
+            nbButton
+            nbSuffix
+            ghost
+            nbTooltip="Clear"
+            type="button"
+            (click)="resetControl(getFormControl('search'))"
+          >
+            <nb-icon icon="close-outline"></nb-icon>
+          </button>
+        </nb-form-field>
+
+        <div
+          class="ml-3"
+          *ngIf="sentenceTrainingMode === SentenceTrainingModes.SEARCH"
+        >
+          <nb-icon
+            *ngIf="!advanced"
+            icon="chevron-down-outline"
+            (click)="swapAdvanced()"
+            class="pointer"
+            nbTooltip="Display advanced search options"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="advanced"
+            icon="chevron-up-outline"
+            (click)="swapAdvanced()"
+            class="pointer"
+            nbTooltip="Hide advanced search options"
+          ></nb-icon>
+        </div>
+      </div>
+    </form>
+
+    <div
+      class="mt-2"
+      *ngIf="advanced"
+    >
+      <form [formGroup]="form">
+        <div class="row">
+          <div class="col d-flex align-items-center">
+            <small class="text-muted text-nowrap mb-0 mr-2">Status :</small>
+            <nb-radio-group
+              class="d-flex"
+              formControlName="status"
+              name="status"
+            >
+              <nb-radio
+                class="text-nowrap"
+                value=""
+                >All</nb-radio
+              >
+              <nb-radio
+                class="text-nowrap"
+                [value]="sentenceStatus.inbox"
+                >Inbox</nb-radio
+              >
+              <nb-radio
+                class="text-nowrap"
+                [value]="sentenceStatus.validated"
+                >Validated</nb-radio
+              >
+              <nb-radio
+                class="text-nowrap"
+                [value]="sentenceStatus.model"
+                >Included in model</nb-radio
+              >
+            </nb-radio-group>
+          </div>
+
+          <div class="col py-1">
+            <nb-checkbox
+              class="text-nowrap"
+              formControlName="onlyToReview"
+              >Sentences to review</nb-checkbox
+            >
+          </div>
+        </div>
+
+        <div class="row mt-1">
+          <div class="col-3 mb-2">
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="compass-outline"
+              ></nb-icon>
+              <input
+                #intentInput
+                nbInput
+                fieldSize="small"
+                placeholder="Intent"
+                fullWidth
+                nbTooltip="Filter by intent"
+                spellcheck="false"
+                autocomplete="off"
+                [nbAutocomplete]="intentsAutocomplete"
+                (keyup)="filterIntentsList('filter', $event)"
+                (keyup.escape)="onBlurIntentsInput('filter', $event)"
+                (blur)="onBlurIntentsInput('filter', $event)"
+                (focus)="onFocusIntentsInput('filter')"
+              />
+              <button
+                nbButton
+                ghost
+                size="small"
+                nbTooltip="Clear"
+                nbSuffix
+                *ngIf="getFormControl('intent').value"
+                (click)="resetControl(getFormControl('intent'), intentInput)"
+              >
+                <nb-icon icon="close-outline"></nb-icon>
+              </button>
+            </nb-form-field>
+
+            <nb-autocomplete
+              size="tiny"
+              #intentsAutocomplete
+              (selectedChange)="selectIntent($event)"
+              [handleDisplayFn]="intentsAutocompleteViewHandle"
+            >
+              <nb-option-group
+                *ngFor="let group of filteredFilterIntentsGroups$ | async"
+                [title]="group.category"
+              >
+                <nb-option
+                  *ngFor="let intent of group.intents"
+                  [value]="intent"
+                >
+                  {{ intent.label || intent.name }}
+                </nb-option>
+              </nb-option-group>
+
+              <nb-option
+                class="autocompleteSeparator mt-2 pt-2"
+                [value]="unknownIntent"
+              >
+                {{ unknownIntent.label }}
+              </nb-option>
+              <!-- <nb-option [value]="ragExcludedIntent">
+                {{ ragExcludedIntent.label }}
+              </nb-option> -->
+            </nb-autocomplete>
+          </div>
+
+          <div class="col-3 mb-2">
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="attach-outline"
+              ></nb-icon>
+              <nb-select
+                *ngIf="entityTypes"
+                size="small"
+                placeholder="Entity type"
+                fullWidth
+                nbTooltip="Filter by entity type"
+                formControlName="entityType"
+              >
+                <nb-option [value]="null">All</nb-option>
+                <nb-option
+                  *ngFor="let e of entityTypes"
+                  [value]="e.name"
+                >
+                  {{ e.qualifiedName(state.user) }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div class="col-3 mb-2">
+            <nb-select
+              *ngIf="entityRolesToIncludeList"
+              multiple
+              size="small"
+              placeholder="Entity roles to include"
+              fullWidth
+              nbTooltip="Filter by entity roles to include"
+              formControlName="entityRolesToInclude"
+            >
+              <nb-option
+                [disabled]="!getFormControl('entityRolesToInclude').value?.length"
+                [value]="null"
+                ><span class="d-flex align-items-center"
+                  ><nb-icon
+                    icon="close-outline"
+                    class="mr-1"
+                  ></nb-icon>
+                  Clear selection</span
+                ></nb-option
+              >
+              <nb-option
+                *ngFor="let r of entityRolesToIncludeList"
+                [value]="r"
+              >
+                {{ r }}
+              </nb-option>
+            </nb-select>
+          </div>
+
+          <div class="col-3 mb-2">
+            <nb-select
+              *ngIf="entityRolesToExcludeList"
+              multiple
+              size="small"
+              placeholder="Entity roles to exclude"
+              fullWidth
+              nbTooltip="Filter by entity roles to exclude"
+              formControlName="entityRolesToExclude"
+            >
+              <nb-option
+                [disabled]="!getFormControl('entityRolesToExclude').value?.length"
+                [value]="null"
+                ><span class="d-flex align-items-center"
+                  ><nb-icon
+                    icon="close-outline"
+                    class="mr-1"
+                  ></nb-icon>
+                  Clear selection</span
+                ></nb-option
+              >
+              <nb-option
+                *ngFor="let r of entityRolesToExcludeList"
+                [value]="r"
+              >
+                {{ r }}
+              </nb-option>
+            </nb-select>
+          </div>
+
+          <div class="col-3 mb-2">
+            <nb-form-field nbTooltip="Filter sentences modified before the given date">
+              <nb-icon
+                nbPrefix
+                icon="calendar-outline"
+              ></nb-icon>
+              <input
+                nbInput
+                fieldSize="small"
+                fullWidth
+                placeholder="Modified before"
+                [nbDatepicker]="modifiedBeforePicker"
+                formControlName="modifiedBefore"
+              />
+              <button
+                nbButton
+                ghost
+                size="small"
+                nbTooltip="Clear"
+                nbSuffix
+                *ngIf="getFormControl('modifiedBefore').value"
+                (click)="resetControl(getFormControl('modifiedBefore'))"
+              >
+                <nb-icon icon="close-outline"></nb-icon>
+              </button>
+            </nb-form-field>
+            <nb-datepicker #modifiedBeforePicker></nb-datepicker>
+          </div>
+
+          <div class="col-3 mb-2">
+            <nb-form-field nbTooltip="Filter sentences modified after the given date">
+              <nb-icon
+                nbPrefix
+                icon="calendar-outline"
+              ></nb-icon>
+              <input
+                nbInput
+                fieldSize="small"
+                fullWidth
+                placeholder="Modified after"
+                [nbDatepicker]="modifiedAfterPicker"
+                formControlName="modifiedAfter"
+              />
+              <button
+                nbButton
+                ghost
+                size="small"
+                nbTooltip="Clear"
+                nbSuffix
+                *ngIf="getFormControl('modifiedAfter').value"
+                (click)="resetControl(getFormControl('modifiedAfter'))"
+              >
+                <nb-icon icon="close-outline"></nb-icon>
+              </button>
+            </nb-form-field>
+            <nb-datepicker #modifiedAfterPicker></nb-datepicker>
+          </div>
+
+          <div
+            class="col-3 mb-2"
+            *ngIf="users && users.length !== 0"
+          >
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="person-outline"
+              ></nb-icon>
+              <nb-select
+                size="small"
+                placeholder="Validated by"
+                fullWidth
+                formControlName="user"
+                nbTooltip="Filter sentences validated by the given user"
+              >
+                <nb-option [value]="null">Anyone</nb-option>
+                <nb-option
+                  *ngFor="let u of users"
+                  [value]="u"
+                >
+                  {{ u }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div
+            class="col-3 mb-2"
+            *ngIf="users && users.length !== 0"
+          >
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="person-remove-outline"
+              ></nb-icon>
+              <nb-select
+                size="small"
+                placeholder="Not validated by"
+                fullWidth
+                formControlName="allButUser"
+                nbTooltip="Filter sentences not validated by the given user"
+              >
+                <nb-option [value]="null">Nobody</nb-option>
+                <nb-option
+                  *ngFor="let u of users"
+                  [value]="u"
+                >
+                  {{ u }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div
+            class="col-3 mb-2"
+            *ngIf="configurations && configurations.length !== 0"
+          >
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="link-outline"
+              ></nb-icon>
+              <nb-select
+                size="small"
+                placeholder="Configuration"
+                fullWidth
+                formControlName="configuration"
+                nbTooltip="Filter sentences by configuration"
+              >
+                <nb-option [value]="null">All configurations</nb-option>
+                <nb-option
+                  *ngFor="let u of configurations"
+                  [value]="u"
+                >
+                  {{ u }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div
+            class="col"
+            style="min-width: 25em"
+          >
+            <div class="flex-fill d-flex align-items-center">
+              <small class="text-muted text-nowrap mb-0 mr-3">Detection probability : </small>
+              <div class="intent-proba-slider">
+                <ngx-slider
+                  [options]="intentProbaSliderOptions"
+                  formControlName="intentProbability"
+                ></ngx-slider>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="advanced-tools font-size-small">
+        <div
+          *ngIf="state.hasRole(userRoles.admin)"
+          class="pointer font-weight-bold d-flex align-items-center"
+          (click)="swapAdvancedTools()"
+          nbTooltip="Display intent and entity management tools"
+        >
+          <nb-icon
+            *ngIf="!advancedTools"
+            icon="chevron-down-outline"
+          ></nb-icon>
+          <nb-icon
+            *ngIf="advancedTools"
+            icon="chevron-up-outline"
+          ></nb-icon>
+          Advanced tools
+        </div>
+
+        <div *ngIf="advancedTools">
+          <div class="my-2 tools-columns">
+            Change the intent of selected sentences
+            <div class="flex-grow-1 d-flex gap-1 align-items-center justify-content-between">
+              <nb-form-field class="flex-grow-1">
+                <nb-icon
+                  nbPrefix
+                  icon="compass-outline"
+                ></nb-icon>
+                <input
+                  nbInput
+                  fieldSize="small"
+                  placeholder="Select intent"
+                  fullWidth
+                  nbTooltip="Select the intent to assign to selected sentences"
+                  spellcheck="false"
+                  autocomplete="off"
+                  [(ngModel)]="changeIntent"
+                  [nbAutocomplete]="intentSwapAutocomplete"
+                  (keyup)="filterIntentsList('swap', $event)"
+                  (focus)="onFocusIntentsInput('swap')"
+                  (keyup.escape)="onBlurIntentsInput('swap', $event)"
+                  (blur)="onBlurIntentsInput('swap', $event)"
+                />
+              </nb-form-field>
+            </div>
+            <button
+              nbButton
+              size="small"
+              status="warning"
+              nbTooltip="Apply intent change"
+              [disabled]="!isIntentSelected()"
+              (click)="applyChangeIntent()"
+            >
+              Change intent
+            </button>
+          </div>
+          <nb-autocomplete
+            #intentSwapAutocomplete
+            size="tiny"
+            [handleDisplayFn]="intentsAutocompleteViewHandle"
+          >
+            <nb-option-group
+              *ngFor="let group of filteredSwapIntentsGroups$ | async"
+              [title]="group.category"
+            >
+              <nb-option
+                *ngFor="let intent of group.intents"
+                [value]="intent"
+              >
+                {{ intent.label || intent.name }}
+              </nb-option>
+            </nb-option-group>
+
+            <nb-option
+              class="autocompleteSeparator mt-2 pt-2"
+              [value]="unknownIntent"
+            >
+              {{ unknownIntent.label }}
+            </nb-option>
+            <!-- <nb-option [value]="ragExcludedIntent">
+              {{ ragExcludedIntent.label }}
+            </nb-option> -->
+          </nb-autocomplete>
+
+          <div class="my-2 tools-columns">
+            Change the entity of selected sentences
+            <div class="flex-grow-1 d-flex gap-1 align-items-center justify-content-between">
+              <nb-form-field class="w-50">
+                <nb-icon
+                  nbPrefix
+                  icon="attach-outline"
+                ></nb-icon>
+
+                <nb-select
+                  size="small"
+                  placeholder="Select old entity"
+                  nbTooltip="Select the entity to replace"
+                  [(ngModel)]="swapEntitiesOrigin"
+                >
+                  <nb-option
+                    *ngFor="let e of state.entities | async"
+                    [value]="e"
+                  >
+                    {{ e.qualifiedRole }}
+                  </nb-option>
+                </nb-select>
+              </nb-form-field>
+              <nb-form-field class="w-50">
+                <nb-icon
+                  nbPrefix
+                  icon="attach-outline"
+                ></nb-icon>
+                <nb-select
+                  size="small"
+                  placeholder="Select new entity"
+                  nbTooltip="Select the new entity to assign"
+                  [(ngModel)]="swapEntitiesTarget"
+                >
+                  <nb-option
+                    *ngFor="let e of state.entities | async"
+                    [value]="e"
+                  >
+                    {{ e.qualifiedRole }}
+                  </nb-option>
+                </nb-select>
+              </nb-form-field>
+            </div>
+            <button
+              nbButton
+              size="small"
+              status="warning"
+              nbTooltip="Apply entity swap"
+              [disabled]="!swapEntitiesOrigin || !swapEntitiesTarget"
+              (click)="applyChangeEntity()"
+            >
+              Change entity
+            </button>
+          </div>
+
+          <div class="my-2 tools-columns">
+            Translate selected sentences
+
+            <nb-select
+              placeholder="Target Language"
+              fullWidth
+              size="small"
+              nbTooltip="Select the language in which to translate the sentences"
+              [(ngModel)]="translateTargetLocale"
+            >
+              <nb-option
+                *ngFor="let l of state.otherThanCurrentLocales()"
+                [value]="l"
+                >{{ state.localeName(l) }}
+              </nb-option>
+            </nb-select>
+
+            <button
+              nbButton
+              size="small"
+              status="warning"
+              nbTooltip="Translate sentences"
+              [disabled]="!translateTargetLocale"
+              (click)="translateSentences()"
+            >
+              Translate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

@@ -1,0 +1,304 @@
+<nb-card
+  [ngClass]="{ selected: sentence._showDialog }"
+  class="my-2"
+  [id]="getSentenceId(sentence)"
+>
+  <nb-card-body
+    class="grid-columns flex-wrap p-3"
+    [ngClass]="{ 'grid-columns-without-selection': !selection }"
+  >
+    <nb-checkbox
+      *ngIf="selection"
+      [checked]="isSentenceSelected(sentence)"
+      (checkedChange)="toggle(sentence)"
+      class="mt-1"
+    ></nb-checkbox>
+
+    <div class="flex-grow-1">
+      <tock-sentence-training-sentence [sentence]="sentence"></tock-sentence-training-sentence>
+
+      <nb-card
+        class="mx-3 mt-2 mb-0"
+        accent="info"
+        *ngIf="sentence.forReview && sentence.reviewComment"
+      >
+        <nb-card-body class="text-muted review">
+          <strong class="d-block">Review comment :</strong>
+          {{ sentence.reviewComment }}
+        </nb-card-body>
+      </nb-card>
+    </div>
+
+    <div class="tools-panel">
+      <div class="font-size-small text-muted unselectable">
+        <button
+          nbButton
+          ghost
+          size="tiny"
+          class="mr-2 lineFirstSmallButtonRetract"
+          nbTooltip="Copy sentence"
+          (click)="copySentence(sentence)"
+        >
+          <nb-icon icon="copy-outline"></nb-icon>
+        </button>
+
+        <time>{{ sentence.creationDate | date: 'yy/MM/dd HH:mm:ss' }}</time>
+
+        <span
+          class="text-uppercase mx-1"
+          [style.color]="sentence.statusColor()"
+          nbTooltip="Sentence status"
+        >
+          {{ sentence.statusDisplayed() }}
+        </span>
+
+        <span nbTooltip="Sentence configuration">
+          {{ sentence.configuration }}
+        </span>
+      </div>
+
+      <div
+        class="font-size-small text-muted mb-2"
+        *ngIf="sentence.qualifier"
+        nbTooltip="Qualifier"
+      >
+        {{ sentence.qualifier }}
+      </div>
+
+      <div class="d-flex mb-1">
+        <nb-form-field
+          class="mb-0 flex-grow-1 mb-0"
+          nbTooltip="Intent association"
+        >
+          <nb-icon
+            nbPrefix
+            icon="compass-outline"
+          ></nb-icon>
+          <input
+            #sentenceIntentInput
+            nbInput
+            fullWidth
+            type="text"
+            placeholder="{{ getSentenceAttribut(sentence, 'intentLabel') }}"
+            (focus)="onFocus()"
+            (blur)="onBlur($event)"
+            (keyup.escape)="onBlur($event)"
+            (keyup)="filterIntentsList($event)"
+            autocomplete="off"
+            [nbAutocomplete]="intentsAutocomplete"
+            class="intent-input"
+          />
+        </nb-form-field>
+        <button
+          nbButton
+          ghost
+          nbTooltip="Intent detection probability. Click for details"
+          class="stats-button font-weight-normal pl-3 pr-1"
+          (click)="swapStatsDetails(sentence)"
+        >
+          {{ getSentenceAttribut(sentence, 'probability') | percent: '1.0-1' }}
+          <nb-icon [icon]="sentence._showStatsDetails ? 'chevron-up-outline' : 'chevron-down-outline'"></nb-icon>
+        </button>
+
+        <nb-autocomplete
+          size="tiny"
+          #intentsAutocomplete
+          (selectedChange)="addIntentToSentence($event)"
+        >
+          <nb-option-group
+            *ngFor="let group of filteredIntentGroups | async"
+            [title]="group.category"
+          >
+            <nb-option
+              *ngFor="let intent of group.intents"
+              [value]="intent._id"
+            >
+              {{ intent.label || intent.name }}
+            </nb-option>
+          </nb-option-group>
+        </nb-autocomplete>
+      </div>
+
+      <div
+        class="stats-details font-size-small mb-3"
+        *ngIf="sentence._showStatsDetails"
+      >
+        <div class="d-flex gap-1 justify-content-between">
+          <span> Intent probability: </span>
+          <span> {{ sentence.classification.intentProbability | percent: '1.0-2' }} </span>
+        </div>
+
+        <div
+          class="text-muted font-size-small"
+          *ngIf="sentence.classification.otherIntentsProbabilities?.size"
+        >
+          Probability for other intents:
+          <div
+            class="d-flex gap-1 justify-content-between"
+            *ngFor="let i of sentence.classification.otherIntentsProbabilities | keyvalue"
+          >
+            <span>{{ state.intentLabelByName(i.key) }}</span>
+            <span>{{ i.value | percent: '1.0-2' }}</span>
+          </div>
+        </div>
+
+        <hr class="my-1" />
+
+        <div class="d-flex gap-1 justify-content-between">
+          <span> Entities probability: </span>
+          <span> {{ sentence.classification.entitiesProbability | percent: '1.0-2' }} </span>
+        </div>
+
+        <div
+          class="text-muted font-size-small"
+          *ngIf="sentence.classification.notRetainedEntities?.length"
+        >
+          Probability for other entities:
+          <div
+            class="d-flex gap-1 justify-content-between"
+            *ngFor="let i of sentence.notRetainedEntitiesContainer().getEntities()"
+          >
+            <span>{{ entity.value ? container.entityText(entity) : '' }} {{ container.entityValue(entity) }}</span>
+            <span>{{ entity.probability | percent: '1.0-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-between">
+        <button
+          nbButton
+          nbTooltip="Validate"
+          status="success"
+          ghost
+          shape="round"
+          size="large"
+          class="lineFirstLargeButtonRetract"
+          (click)="handleAction(Action.VALIDATE, sentence)"
+        >
+          <nb-icon icon="checkmark-circle-2"></nb-icon>
+        </button>
+
+        <button
+          nbButton
+          nbTooltip="Ask for review"
+          status="info"
+          ghost
+          shape="round"
+          size="large"
+          (click)="askForReview(sentence)"
+        >
+          <nb-icon icon="search-outline"></nb-icon>
+        </button>
+
+        <button
+          *ngIf="sentenceTrainingMode !== SentenceTrainingMode.UNKNOWN"
+          nbButton
+          nbTooltip="Set as unknown"
+          status="warning"
+          ghost
+          shape="round"
+          size="large"
+          (click)="handleAction(Action.UNKNOWN, sentence)"
+        >
+          <nb-icon icon="question-mark-circle-outline"></nb-icon>
+        </button>
+
+        <!-- <button
+          *ngIf="sentenceTrainingMode !== SentenceTrainingMode.RAGEXCLUDED"
+          nbButton
+          nbTooltip="Exclude from Rag handling"
+          status="warning"
+          ghost
+          shape="round"
+          size="large"
+          (click)="handleAction(Action.RAGEXCLUDED, sentence)"
+        >
+          <nb-icon
+            icon="ragexclude"
+            pack="tock-custom"
+          ></nb-icon>
+        </button> -->
+
+        <button
+          nbButton
+          nbTooltip="Delete"
+          status="danger"
+          ghost
+          shape="round"
+          size="large"
+          (click)="handleAction(Action.DELETE, sentence)"
+        >
+          <nb-icon icon="trash-2-outline"></nb-icon>
+        </button>
+
+        <nb-select
+          [(ngModel)]="sentence.language"
+          placeholder="Sentence language"
+          nbTooltip="Set sentence language"
+          class="mt-1 flex-grow-1"
+        >
+          <nb-option
+            *ngFor="let l of state.currentApplication.supportedLocales"
+            [value]="l"
+          >
+            {{ state.localeName(l) }}
+          </nb-option>
+        </nb-select>
+
+        <!-- Here, we use a native select to increase performance when several hundred entries are displayed  -->
+        <!-- <select
+          [(ngModel)]="sentence.language"
+          placeholder="Sentence language"
+          nbTooltip="Set sentence language"
+          class="fast-select mt-1 flex-grow-1"
+        >
+          <option
+            *ngFor="let l of state.currentApplication.supportedLocales"
+            [value]="l"
+          >
+            {{ state.localeName(l) }}
+          </option>
+        </select> -->
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-between">
+        <div>
+          <button
+            nbButton
+            nbTooltip="Create new Intent"
+            ghost
+            shape="round"
+            class="lineFirstButtonRetract"
+            (click)="createNewIntent(sentence)"
+          >
+            <nb-icon icon="plus-circle-outline"></nb-icon>
+          </button>
+
+          <button
+            *ngIf="state.hasRole(UserRole.botUser)"
+            nbButton
+            nbTooltip="Create new FAQ based on this sentence"
+            ghost
+            shape="round"
+            (click)="redirectToFaqManagement(sentence)"
+            class="ml-2"
+          >
+            <nb-icon icon="message-square-outline"></nb-icon>
+          </button>
+        </div>
+
+        <button
+          *ngIf="!standAlone"
+          nbButton
+          nbTooltip="Show conversation"
+          ghost
+          shape="round"
+          status="info"
+          (click)="showDetails(sentence)"
+        >
+          <nb-icon icon="message-circle-outline"></nb-icon>
+        </button>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

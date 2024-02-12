@@ -1,0 +1,11 @@
+<button
+  class="scroll-top-button shadow"
+  [ngClass]="{ displayed: showScrollTopButton }"
+  nbButton
+  status="basic"
+  shape="round"
+  nbTooltip="Scroll to page top"
+  (click)="scrollToTop()"
+>
+  <nb-icon icon="arrow-ios-upward-outline"></nb-icon>
+</button>
