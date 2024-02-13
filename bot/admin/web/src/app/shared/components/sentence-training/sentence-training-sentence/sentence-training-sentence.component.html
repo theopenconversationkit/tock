@@ -1,4 +1,4 @@
-<div class="px-3">
+<div [ngClass]="{ 'px-3': !readOnly }">
   <div class="tokens-container-wrapper">
     <div
       class="tokens-container"
@@ -7,6 +7,7 @@
       <tock-token-view
         *ngFor="let token of tokens"
         [token]="token"
+        [readOnly]="readOnly"
         (deleteTokenEntity)="deleteTokenEntity($event)"
       ></tock-token-view>
     </div>

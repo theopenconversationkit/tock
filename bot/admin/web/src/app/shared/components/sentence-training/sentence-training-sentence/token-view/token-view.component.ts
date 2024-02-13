@@ -17,6 +17,8 @@ export class TokenViewComponent implements OnDestroy {
 
   @Input() token: Token;
 
+  @Input() readOnly: boolean;
+
   @Output() deleteTokenEntity = new EventEmitter();
 
   @ViewChild('userMenu') userMenu: TemplateRef<any>;
@@ -47,6 +49,8 @@ export class TokenViewComponent implements OnDestroy {
   }
 
   displayMenu(event: MouseEvent): void {
+    if (this.readOnly) return;
+
     if (this.token.entity) {
       this.sentenceTrainingService.documentClick(event);
       this.displayTokenMenu(event);

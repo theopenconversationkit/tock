@@ -22,10 +22,14 @@ import {
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
+  NbFormFieldModule,
   NbIconModule,
   NbInputModule,
   NbRouteTabsetModule,
-  NbTabsetModule
+  NbSpinnerModule,
+  NbTabsetModule,
+  NbToggleModule,
+  NbTooltipModule
 } from '@nebular/theme';
 import { LanguageUndestandingRoutingModule } from './language-understanding-routing.module';
 import { SentencesInboxComponent } from './sentences/sentences-inbox/sentences-inbox.component';
@@ -33,7 +37,12 @@ import { SentencesSearchComponent } from './sentences/sentences-search/sentences
 import { SentencesUnknownComponent } from './sentences/sentences-unknown/sentences-unknown.component';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { IntentsLogsComponent } from './intents-logs/intents-logs.component';
+import { DisplayIntentFullLogComponent } from './intents-logs/display-intents-full-log/display-intents-full-log.component';
+import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { MomentModule } from 'ngx-moment';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -41,11 +50,14 @@ import { FormsModule } from '@angular/forms';
     SentencesInboxComponent,
     SentencesSearchComponent,
     SentencesUnknownComponent,
-    SentenceNewComponent
+    SentenceNewComponent,
+    IntentsLogsComponent,
+    DisplayIntentFullLogComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     LanguageUndestandingRoutingModule,
     BotSharedModule,
     NbTabsetModule,
@@ -55,7 +67,14 @@ import { FormsModule } from '@angular/forms';
     NbCheckboxModule,
     NbCardModule,
     NbAccordionModule,
-    NbInputModule
+    NbInputModule,
+    NbFormFieldModule,
+    NbSpinnerModule,
+    NbToggleModule,
+    NbTooltipModule,
+    NgJsonEditorModule,
+    MomentModule,
+    InfiniteScrollModule
   ]
 })
 export class LanguageUnderstandingModule {}

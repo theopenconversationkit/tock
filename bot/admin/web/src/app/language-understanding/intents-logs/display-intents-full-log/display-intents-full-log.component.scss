@@ -1,0 +1,14 @@
+:host ::ng-deep json-editor,
+:host ::ng-deep json-editor .jsoneditor,
+:host ::ng-deep json-editor > div,
+:host ::ng-deep json-editor jsoneditor-outer {
+  height: 30rem;
+  width: 25rem;
+}
+.body-content {
+  padding: 0;
+  display: inline-flex;
+}
+.btn-align {
+  text-align: right;
+}

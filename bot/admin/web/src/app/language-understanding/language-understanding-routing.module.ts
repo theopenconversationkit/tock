@@ -19,13 +19,13 @@ import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { IntentsComponent } from '../intents/intents.component';
 import { EntitiesComponent } from '../entities/entities.component';
-import { LogsComponent } from '../logs/logs.component';
 import { NgModule } from '@angular/core';
 import { SentencesInboxComponent } from './sentences/sentences-inbox/sentences-inbox.component';
 import { SentencesUnknownComponent } from './sentences/sentences-unknown/sentences-unknown.component';
 import { SentencesSearchComponent } from './sentences/sentences-search/sentences-search.component';
 import { LanguageUnderstandingTabsComponent } from './language-understanding-tabs/language-understanding-tabs.component';
 import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.component';
+import { IntentsLogsComponent } from './intents-logs/intents-logs.component';
 
 const routes: Routes = [
   {
@@ -67,7 +67,7 @@ const routes: Routes = [
       },
       {
         path: 'logs',
-        component: LogsComponent
+        component: IntentsLogsComponent
       }
     ]
   }

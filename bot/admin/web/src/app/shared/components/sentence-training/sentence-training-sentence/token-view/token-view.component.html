@@ -1,7 +1,7 @@
 <span
   [nbTooltip]="'Entity : ' + token.entity?.role"
   [nbTooltipDisabled]="!token.entity?.role"
-  [ngClass]="{ token: token.entity, pointer: token.entity }"
+  [ngClass]="{ token: token.entity, pointer: !readOnly && token.entity }"
   [style.background]="token.color()"
   [style.color]="getContrastYIQ(token.color())"
   [style.borderColor]="getContrastYIQ(token.color(), 'rgba(0,0,0,0.3)', 'rgba(255,255,255,0.6)')"
@@ -11,6 +11,7 @@
     ><tock-token-view
       *ngFor="let subtoken of token.subTokens"
       [token]="subtoken"
+      [readOnly]="readOnly"
       (deleteTokenEntity)="delete($event)"
     ></tock-token-view></ng-container
 ></span>

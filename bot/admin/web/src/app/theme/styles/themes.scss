@@ -51,7 +51,9 @@ $nb-themes: nb-register-theme(
 
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),
-    tree-grid-cell-padding: 30px
+    tree-grid-cell-padding: 30px,
+
+    route-tabset-tab-padding: 0.5rem 1rem
   ),
   default,
   default
@@ -89,7 +91,9 @@ $nb-themes: nb-register-theme(
 
     color-basic-transparent-100: rgba(143, 155, 179, 0.2),
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),
-    tree-grid-cell-padding: 30px
+    tree-grid-cell-padding: 30px,
+
+    route-tabset-tab-padding: 0.5rem 1rem
   ),
   dark,
   dark
