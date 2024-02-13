@@ -134,6 +134,9 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
+    // readOnly  => Do nothing
+    if (this.readOnly) return;
+
     // The current sentence is associated with intent unknown or ragExcluded. It is not allowed to assign entities to the unkown or ragExcluded intents => Do nothing
     if ([Intent.unknown, Intent.ragExcluded].includes(this.sentence.classification.intentId)) return;
 

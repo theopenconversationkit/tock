@@ -77,9 +77,6 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
 
   isSorted: boolean = false;
 
-  scrolled: boolean = false;
-  prevScrollVal: number;
-
   constructor(
     private nlp: NlpService,
     private state: StateService,
@@ -98,17 +95,6 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
       this.loadData();
       this.closeDetails();
     });
-  }
-
-  @HostListener('window:scroll')
-  onPageScroll() {
-    const offset = 230;
-    const verticalOffset = this.document.documentElement.scrollTop || this.document.body.scrollTop || 0;
-
-    if (verticalOffset === 0 && this.prevScrollVal > offset) return; // deal with <nb-select> reseting page scroll when opening select
-
-    this.scrolled = verticalOffset > offset ? true : false;
-    this.prevScrollVal = verticalOffset;
   }
 
   @HostListener('document:click', ['$event'])

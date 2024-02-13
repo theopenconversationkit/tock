@@ -25,3 +25,4 @@ export * from './sentence-training/sentence-training-sentence/token-view/token-v
 export * from './sentence-training/sentence-training-sentence/sentence-training-create-entity/sentence-training-create-entity.component';
 export * from './debug-viewer/debug-viewer.component';
 export * from './scroll-top-button/scroll-top-button.component';
+export * from './sticky-menu/sticky-menu.component';

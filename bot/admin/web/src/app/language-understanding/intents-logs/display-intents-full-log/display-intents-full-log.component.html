@@ -1,0 +1,39 @@
+<nb-card>
+  <nb-card-header> Full Log </nb-card-header>
+  <nb-card-body class="body-content">
+    <nb-card
+      status="info"
+      style="margin: 0"
+    >
+      <nb-card-header style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center"> Request </nb-card-header>
+      <nb-card-body style="padding: 0">
+        <json-editor
+          [options]="editorOptions"
+          [data]="request"
+        ></json-editor>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-card
+      status="success"
+      style="margin: 0"
+    >
+      <nb-card-header style="border-top-left-radius: 0; border-top-right-radius: 0; text-align: center"> Response </nb-card-header>
+      <nb-card-body style="padding: 0">
+        <json-editor
+          [options]="editorOptions"
+          [data]="response"
+        ></json-editor>
+      </nb-card-body>
+    </nb-card>
+  </nb-card-body>
+  <nb-card-footer class="btn-align">
+    <button
+      nbButton
+      status="primary"
+      (click)="close()"
+    >
+      Close
+    </button>
+  </nb-card-footer>
+</nb-card>

@@ -1,0 +1,225 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="d-flex flex-wrap mt-3">
+  <h1 class="flex-grow-1">
+    Logs
+    <span
+      *ngIf="pagination.total"
+      class="font-weight-normal"
+      >({{ pagination.total }})</span
+    >
+  </h1>
+
+  <section class="d-flex flex-wrap align-items-center">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Refresh sentences"
+      (click)="loadData()"
+      class="ml-2"
+    >
+      <nb-icon icon="refresh-outline"></nb-icon>
+    </button>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Download a minimal csv dump of the logs"
+      (click)="downloadDump()"
+      *ngIf="pagination.total"
+    >
+      <nb-icon icon="download-outline"></nb-icon>
+    </button>
+  </section>
+</div>
+
+<section
+  [nbSpinner]="loading"
+  [class.grid]="dialogDetailsSentence"
+  infinite-scroll
+  [infiniteScrollDistance]="1"
+  (scrolled)="onScroll()"
+>
+  <div>
+    <nb-card class="mb-2">
+      <nb-card-body>
+        <form
+          [formGroup]="form"
+          class="d-flex gap-1 align-items-center"
+        >
+          <nb-form-field class="flex-grow-1">
+            <nb-icon
+              nbPrefix
+              icon="search-outline"
+            ></nb-icon>
+            <input
+              nbInput
+              fullWidth
+              fieldSize="medium"
+              placeholder="Search logs"
+              type="text"
+              formControlName="searchString"
+            />
+            <button
+              nbButton
+              nbSuffix
+              ghost
+              nbTooltip="Clear"
+              type="button"
+              (click)="resetSearch()"
+              *ngIf="searchString.value?.trim().length"
+            >
+              <nb-icon icon="close-outline"></nb-icon>
+            </button>
+          </nb-form-field>
+
+          <nb-toggle
+            formControlName="onlyCurrentLocale"
+            class="mb-n2"
+            >Only current locale</nb-toggle
+          >
+          <nb-toggle
+            formControlName="displayTests"
+            class="mb-n2"
+            >Display tests</nb-toggle
+          >
+        </form>
+      </nb-card-body>
+    </nb-card>
+
+    <tock-sticky-menu>
+      <div class="d-flex justify-content-between">
+        <div></div>
+        <tock-pagination
+          [pagination]="pagination"
+          (onPaginationChange)="paginationChange()"
+        ></tock-pagination>
+      </div>
+    </tock-sticky-menu>
+
+    <tock-no-data-found
+      *ngIf="!loading && !logs?.length"
+      title="No logs found"
+    ></tock-no-data-found>
+
+    <div
+      *ngIf="pagination.total"
+      class="mt-2"
+    >
+      <nb-card
+        *ngFor="let d of logs"
+        class="mb-1"
+      >
+        <nb-card-header>
+          <h4 *ngIf="d.error">
+            {{ d.textRequest() }}
+            <nb-icon
+              icon="alert-triangle-outline"
+              nbTooltip="error"
+              class="text-danger"
+            ></nb-icon>
+          </h4>
+          <tock-sentence-training-sentence
+            *ngIf="!d.error"
+            [sentence]="d.sentence"
+            [readOnly]="true"
+          ></tock-sentence-training-sentence>
+        </nb-card-header>
+
+        <nb-card-body class="d-flex gap-1 align-items-center justify-content-between">
+          <div>
+            {{ state.intentLabelByName(d.intent) }}
+            <span
+              *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()"
+              nbTooltip="intent probability"
+            >
+              <span class="intentProbability">({{ d.sentence.classification.intentProbability | percent: '1.0-2' }})</span>
+            </span>
+            {{ state.intentLabelByName(d.intent) ? '-' : '' }} {{ d.date | amTimeAgo }}
+            <span *ngIf="d.durationInMS !== 0">in {{ d.durationInMS }} ms</span>
+            <a
+              *ngIf="d.error && config.displayDialogUrl"
+              [routerLink]="[config.displayDialogUrl]"
+              [queryParams]="{
+                dialogId: d.dialogId,
+                text: d.textRequest()
+              }"
+              nbButton
+              ghost
+              nbTooltip="Display Conversation"
+              color="danger"
+            >
+              <nb-icon icon="message-circle-outline"></nb-icon>
+            </a>
+          </div>
+
+          <div class="d-flex">
+            <button
+              nbButton
+              ghost
+              (click)="displayFullLog(d)"
+              nbTooltip="View Full Log"
+            >
+              <nb-icon icon="eye-outline"></nb-icon>
+            </button>
+
+            <button
+              nbButton
+              ghost
+              nbTooltip="Create a story based on this sentence"
+              *ngIf="isRootSentence(d.sentence) && config.answerToSentenceUrl"
+              (click)="answerToSentence(d.sentence)"
+            >
+              <nb-icon icon="message-square-outline"></nb-icon>
+            </button>
+
+            <button
+              nbButton
+              ghost
+              nbTooltip="Copy sentence"
+              (click)="copySentence(d.sentence)"
+            >
+              <nb-icon icon="copy-outline"></nb-icon>
+            </button>
+
+            <button
+              nbButton
+              ghost
+              nbTooltip="Show conversation"
+              (click)="showDetails(d.sentence)"
+            >
+              <nb-icon icon="message-circle-outline"></nb-icon>
+            </button>
+          </div>
+        </nb-card-body>
+      </nb-card>
+    </div>
+  </div>
+
+  <tock-sentence-training-dialog
+    #sentenceTrainingDialog
+    *ngIf="dialogDetailsSentence"
+    class="aside"
+    [sentence]="dialogDetailsSentence"
+    (onClose)="closeDetails()"
+  ></tock-sentence-training-dialog>
+  <!--  (onSearchSentence)="retrieveSentence($event)" -->
+</section>
+
+<tock-scroll-top-button></tock-scroll-top-button>
