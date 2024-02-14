@@ -909,6 +909,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/connectorTypes", setOf(botUser, faqBotUser, faqNlpUser)) {
+            val connec = ConnectorTypeConfiguration.connectorConfigurations
             ConnectorTypeConfiguration.connectorConfigurations
         }
 
