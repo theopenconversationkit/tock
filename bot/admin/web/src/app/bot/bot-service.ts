@@ -62,12 +62,8 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON);
   }
 
-
   findStoryDefinitionsByNamespaceAndBotIdWithFileAttached(botId: string): Observable<StoryDefinitionConfiguration[]> {
-    return this.rest.get(
-      `/bot/story/${botId}/with_document`,
-      StoryDefinitionConfiguration.fromJSONArray
-    );
+    return this.rest.get(`/bot/story/${botId}/with_document`, StoryDefinitionConfiguration.fromJSONArray);
   }
   findRuntimeStorySettings(botId: string): Observable<StoryDefinitionConfiguration[]> {
     return this.rest.get(`/bot/story/${botId}/settings`, StoryDefinitionConfiguration.fromJSONArray);
@@ -86,7 +82,7 @@ export class BotService {
   }
 
   completeI18nLabels(labels: I18nLabel[]): Observable<TranslateReport> {
-    return this.rest.post('/i18n/complete', labels, TranslateReport.fromJSON);
+    return this.rest.post('/i18n/complete', labels, TranslateReport.fromJSON, null, true);
   }
 
   saveI18nLabels(labels: I18nLabel[]): Observable<boolean> {

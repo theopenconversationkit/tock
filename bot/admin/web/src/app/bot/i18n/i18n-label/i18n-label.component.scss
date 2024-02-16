@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-@import '../../styles/themes';
+@import '@nebular/theme/styles/theming';
 
-@include nb-install-component() {
-  .menu-sidebar {
-    z-index: 10;
+.label-title {
+  font-size: 1.5rem;
+}
 
-    & ::ng-deep .scrollable {
-      padding-top: nb-theme(layout-padding-top);
-    }
-  }
+.label-block-actions {
+  width: 100px;
+}
+
+.label-textarea {
+  width: 100%;
+  max-width: none !important;
+}
+
+.icons {
+  height: var(--button-medium-icon-size);
+  width: var(--button-medium-icon-size);
+}
+
+.icon-muted {
+  opacity: 0.5;
 }

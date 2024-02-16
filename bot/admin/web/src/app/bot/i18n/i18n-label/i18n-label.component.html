@@ -1,0 +1,254 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div *ngIf="i18nLabel.i18n.length">
+  <nb-card>
+    <nb-card-header>
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span
+            class="label-title"
+            nbTooltip="ns: {{ i18nLabel.namespace }}, key: {{ i18nLabel._id }}"
+            >{{ !i18nLabel.defaultLocalizedLabel().label.length ? i18nLabel._id : i18nLabel.defaultLocalizedLabel().label }}
+          </span>
+
+          <div class="font-size-small lineHeight-1 mt-1">
+            <div>{{ i18nLabel.category }}</div>
+
+            <span
+              *ngIf="i18nLabel.defaultLocalizedLabel().label !== i18nLabel.defaultLabel"
+              nbTooltip="Original Label"
+            >
+              {{ i18nLabel.defaultLabel }}
+            </span>
+
+            <span class="text-muted">
+              <span *ngIf="i18nLabel.statCount">used {{ i18nLabel.statCount }} times, </span>
+              <span *ngIf="i18nLabel.lastUpdate">last used {{ i18nLabel.lastUpdate | amTimeAgo }}</span>
+            </span>
+          </div>
+        </div>
+
+        <button
+          nbButton
+          ghost
+          shape="round"
+          status="danger"
+          nbTooltip="Delete Label (including alternative, type, connector and localized configs)"
+          [disabled]="!deleteLabelAllowed"
+          (click)="deleteLabel()"
+        >
+          <nb-icon icon="trash-2-outline"></nb-icon>
+        </button>
+      </div>
+    </nb-card-header>
+
+    <nb-card-body>
+      <div *ngFor="let l of i18nLabel.i18n; let isLast = last; let index = index">
+        <div
+          *ngIf="isLocalizedVisible(l) && isLocalizedNotHidden(l)"
+          class="mb-3"
+        >
+          <div class="d-flex">
+            <div class="d-flex gap-1 label-block-actions">
+              <!-- Locale -->
+              <div
+                class="text-uppercase"
+                title="{{ l.displayStats() }}"
+                [nbTooltip]="state.localeName(l.locale)"
+              >
+                {{ l.locale }}
+              </div>
+
+              <!-- Interface type -->
+              <div>
+                <nb-icon
+                  *ngIf="l.interfaceType === 0"
+                  icon="message-square"
+                  nbTooltip="Answer in Text Channels"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="l.interfaceType === 1"
+                  icon="phone-call"
+                  nbTooltip="Answer in Voice Channels"
+                ></nb-icon>
+              </div>
+
+              <!-- Connector -->
+              <div *ngIf="l.connectorId">
+                <img
+                  *ngIf="l.connectorId"
+                  src="{{ l.iconUrl() }}"
+                  class="icons"
+                  [nbTooltip]="l.connectorId"
+                />
+              </div>
+            </div>
+
+            <!-- Label -->
+            <div class="flex-grow-1">
+              <textarea
+                class="label-textarea"
+                nbInput
+                rows="1"
+                [(ngModel)]="l.label"
+                (change)="save()"
+                [disabled]="!isSupportedLocale(l)"
+                [nbTooltip]="
+                  isSupportedLocale(l)
+                    ? l.stats && l.stats.length !== 0
+                      ? 'used ' + l.mergedStats().count + ' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)
+                      : 'No stats'
+                    : 'Delete-only since locale is not supported by current application'
+                "
+              ></textarea>
+            </div>
+
+            <div class="d-flex align-items-center label-block-actions">
+              <!-- Add alternative -->
+              <button
+                nbButton
+                ghost
+                [nbTooltip]="
+                  isSupportedLocale(l) ? 'Add an alternative' : 'Delete-only since locale is not supported by current application'
+                "
+                status="info"
+                (click)="addNewAlternative(l)"
+                [disabled]="!isSupportedLocale(l)"
+              >
+                <nb-icon icon="plus-outline"></nb-icon>
+              </button>
+
+              <!-- Delete label -->
+              <button
+                (click)="removeLocalizedLabel(l)"
+                nbButton
+                nbTooltip="Delete Localized Label"
+                status="danger"
+                ghost
+              >
+                <nb-icon icon="trash-2-outline"></nb-icon>
+              </button>
+
+              <!-- Validate label -->
+
+              <nb-checkbox
+                class="ml-2"
+                [(ngModel)]="l.validated"
+                (change)="save()"
+                status="info"
+                [nbTooltip]="
+                  isSupportedLocale(l)
+                    ? 'Validate label (for exports/imports)'
+                    : 'Delete-only since locale is not supported by current application'
+                "
+                [disabled]="!isSupportedLocale(l)"
+              ></nb-checkbox>
+            </div>
+          </div>
+
+          <!-- Alternatives -->
+          <div
+            class="d-flex"
+            *ngFor="let a of l.alternatives; let index = index"
+          >
+            <div class="d-flex gap-1 label-block-actions text-muted">
+              <div class="text-uppercase">{{ l.locale }}</div>
+
+              <div>
+                <nb-icon
+                  *ngIf="l.interfaceType === 0"
+                  icon="message-square"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="l.interfaceType === 1"
+                  icon="phone-call"
+                ></nb-icon>
+              </div>
+
+              <div *ngIf="l.connectorId">
+                <img
+                  *ngIf="l.connectorId"
+                  src="{{ l.iconUrl() }}"
+                  class="icons icon-muted"
+                  [nbTooltip]="l.connectorId"
+                />
+              </div>
+            </div>
+
+            <div class="flex-grow-1">
+              <textarea
+                class="label-textarea"
+                nbInput
+                [value]="a"
+                [disabled]="!isSupportedLocale(l)"
+                (change)="addAlternative(l, index, $event.target.value)"
+                rows="1"
+              ></textarea>
+            </div>
+
+            <div class="label-block-actions">
+              <!-- Remove alternative -->
+              <button
+                nbButton
+                ghost
+                nbTooltip="Remove alternative"
+                status="danger"
+                (click)="removeAlternative(l, index)"
+              >
+                <nb-icon icon="minus-outline"></nb-icon>
+              </button>
+            </div>
+          </div>
+
+          <!-- Add specific label for connector -->
+          <div
+            *ngIf="isLast || i18nLabel.i18n[index + 1].interfaceType !== l.interfaceType || i18nLabel.i18n[index + 1].locale !== l.locale"
+          >
+            <div class="d-flex flex-wrap justify-content-between">
+              <ng-container *ngFor="let connector of connectorTypes">
+                <ng-container
+                  *ngIf="
+                    isSupportedLocale(l) &&
+                    !i18nLabel.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)
+                  "
+                >
+                  <button
+                    nbButton
+                    ghost
+                    shape="round"
+                    nbTooltip="Add specific label for connector {{ connector.connectorType.id }}"
+                    (click)="addLocalizedLabelForConnector(l, connector.connectorType.id)"
+                  >
+                    <img
+                      src="{{ connector.connectorType.iconUrl() }}"
+                      class="icons"
+                    />
+                  </button>
+                </ng-container>
+              </ng-container>
+            </div>
+
+            <hr
+              *ngIf="!isLast"
+              class="divider"
+            />
+          </div>
+        </div>
+      </div>
+    </nb-card-body>
+  </nb-card>
+</div>

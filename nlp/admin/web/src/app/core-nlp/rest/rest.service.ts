@@ -109,6 +109,19 @@ export class RestService {
       );
   }
 
+  postFormData<I, O>(path: string, data?: FormData, baseUrl?: string, returnErrorOn400 = false, params = {}): Observable<O> {
+    return this.http
+      .post(`${baseUrl ? baseUrl : this.url}${path}`, data, {
+        headers: this.headers(),
+        withCredentials: true,
+        params: params
+      })
+      .pipe(
+        map((res: string) => (res || {}) as O),
+        catchError((e) => this.handleError(this, e, returnErrorOn400))
+      );
+  }
+
   put<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http
       .put(`${this.url}${path}`, JsonUtils.stringify(value), {

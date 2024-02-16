@@ -13,35 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-.import-label {
-  display: inline-block;
-  min-width: 40px;
-}
-
-.import-radio {
-  display: inline-block;
-  min-width: 110px;
-}
-
-.import-content {
-  margin-bottom: 25px;
-}
-
-.file-input {
-  min-width: 350px;
-}
-
-.invalid-import {
-  border: red solid 1px;
-  border-radius: 3px;
-}
-
-.invalid-warning {
-  margin: 0 2px 0 40px;
-  font-size: 80%;
-}
-
-.valid-import {
-  border: none;
-}
