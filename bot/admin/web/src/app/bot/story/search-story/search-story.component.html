@@ -14,8 +14,10 @@
   ~ limitations under the License.
   -->
 
+<h1 class="mt-3">Stories</h1>
+
 <div
-  class="loading-spinner-wrapper mt-3"
+  class="loading-spinner-wrapper mt-2"
   *ngIf="loading"
   [nbSpinner]="loading"
 ></div>
@@ -41,11 +43,16 @@
   (onPrepareUpload)="prepareUpload()"
 ></tock-stories-filter>
 
+<tock-no-data-found
+  *ngIf="!loading && !stories?.length"
+  title="No Story found"
+></tock-no-data-found>
+
 <div
   *ngIf="!loading && !displayStoriesByCategory && !filteredStories.length"
   class="text-center font-italic mt-3"
 >
-  No story found
+  No story match your criteria
 </div>
 
 <nb-card

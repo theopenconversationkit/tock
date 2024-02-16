@@ -44,6 +44,8 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
 
   loading: boolean = false;
 
+  expandedCategory: string = 'default';
+
   stories: StoryDefinitionConfigurationSummary[];
 
   storiesFilters: StoriesFilters = { configuredStoriesOnly: true };
@@ -99,6 +101,8 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
         this.stories = stories;
         this.filterStories();
         this.computeStoriesCategories();
+        this.initExpandedCategory();
+
         this.loading = false;
       });
   }
@@ -124,12 +128,12 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
       }
 
       if (this.storiesFilters?.search) {
-         const normalizedKeywords = normalize(this.storiesFilters.search).toLocaleLowerCase().split(' ');
-         const normalizedStoryName = normalize(story.name).toLocaleLowerCase();
-         const normalizedStoryDescription = normalize(story.description).toLocaleLowerCase();
+        const normalizedKeywords = normalize(this.storiesFilters.search).toLocaleLowerCase().split(' ');
+        const normalizedStoryName = normalize(story.name).toLocaleLowerCase();
+        const normalizedStoryDescription = normalize(story.description).toLocaleLowerCase();
         if (
-          !normalizedKeywords.every(keyword => normalizedStoryName.includes(keyword))
-          && !normalizedKeywords.every(keyword => normalizedStoryDescription.includes(keyword))
+          !normalizedKeywords.every((keyword) => normalizedStoryName.includes(keyword)) &&
+          !normalizedKeywords.every((keyword) => normalizedStoryDescription.includes(keyword))
         ) {
           return false;
         }
@@ -177,7 +181,11 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     this.storyCategories = storyCategories.sort((a, b) => (a.category.toLocaleLowerCase() > b.category.toLocaleLowerCase() ? 1 : -1));
   }
 
-  expandedCategory: string = 'default';
+  initExpandedCategory() {
+    if (!this.storyCategories.find((cat) => cat.category === this.expandedCategory)) {
+      this.expandedCategory = this.storyCategories[0]?.category;
+    }
+  }
 
   isCategoryExpanded(category): boolean {
     return category.category.toLocaleLowerCase() === this.expandedCategory.toLocaleLowerCase();

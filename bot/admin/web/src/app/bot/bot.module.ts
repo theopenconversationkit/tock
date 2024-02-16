@@ -27,7 +27,6 @@ import { SearchStoryComponent } from './story/search-story/search-story.componen
 import { NlpModule } from '../nlp-tabs/nlp.module';
 import { I18nComponent } from './i18n/i18n.component';
 import { FileUploadModule } from 'ng2-file-upload';
-import { I18nLabelComponent } from './i18n/i18n-label.component';
 import { FeatureComponent } from './feature/feature.component';
 import { StoryComponent } from './story/story.component';
 import { AnswerComponent, AnswerDialogComponent, ScriptAnswerComponent, SimpleAnswerComponent } from './story/answer';
@@ -61,8 +60,6 @@ import { StoryRuleComponent } from './feature/story-rule/story-rule.component';
 import { SelectEntityDialogComponent } from './story/select-entity-dialog/select-entity-dialog.component';
 import { StoryRuntimeSettingsComponent } from './feature/story-runtime-settings/story-runtime-settings.component';
 import { StoryTagComponent } from './story/story-tag/story-tag.component';
-import { I18nExportComponent } from './i18n/i18n-export.component';
-import { I18nImportComponent } from './i18n/i18n-import.component';
 import { ApplicationFeaturesTableComponent } from './feature/application-feature/application-features-table/application-features-table.component';
 import { DocumentsStoryComponent } from './story/documents-story.component';
 import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
@@ -74,6 +71,10 @@ import { BotRoutingModule } from './bot-routing.module';
 import { CreateFeatureComponent } from './feature/application-feature/create-feature/create-feature.component';
 import { CreateRuleComponent } from './feature/story-rule/create-rule/create-rule.component';
 import { StoryRulesTableComponent } from './feature/story-rule/story-rule-table/story-rules-table.component';
+import { I18nFiltersComponent } from './i18n/i18n-filters/i18n-filters.component';
+import { I18nExportComponent } from './i18n/i18n-export/i18n-export.component';
+import { I18nImportComponent } from './i18n/i18n-import/i18n-import.component';
+import { I18nLabelComponent } from './i18n/i18n-label/i18n-label.component';
 
 @NgModule({
   imports: [
@@ -141,7 +142,8 @@ import { StoryRulesTableComponent } from './feature/story-rule/story-rule-table/
     StoriesListComponent,
     StoriesFilterComponent,
     EditStoryComponent,
-    StoriesUploadComponent
+    StoriesUploadComponent,
+    I18nFiltersComponent
   ],
   exports: []
 })

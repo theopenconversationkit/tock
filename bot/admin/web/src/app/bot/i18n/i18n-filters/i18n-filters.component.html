@@ -1,0 +1,196 @@
+<nb-card class="mb-0">
+  <nb-card-body class="pb-2">
+    <form [formGroup]="form">
+      <div class="mb-2">
+        <nb-form-field class="flex-grow-1">
+          <nb-icon
+            nbPrefix
+            icon="search-outline"
+          ></nb-icon>
+          <input
+            nbInput
+            fullWidth
+            fieldSize="medium"
+            placeholder="Search answers"
+            type="text"
+            formControlName="search"
+            nbTooltip="Search for answers"
+            spellcheck="false"
+            autocomplete="off"
+          />
+          <button
+            *ngIf="!!getFormControl('search').value"
+            nbButton
+            nbSuffix
+            ghost
+            nbTooltip="Clear"
+            type="button"
+            (click)="resetControl(getFormControl('search'))"
+          >
+            <nb-icon icon="close-outline"></nb-icon>
+          </button>
+        </nb-form-field>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3 col-6 mb-2">
+          <nb-form-field nbTooltip="Filter by locale">
+            <nb-icon
+              nbPrefix
+              icon="globe-outline"
+            ></nb-icon>
+            <nb-select
+              size="small"
+              placeholder="Filter by locale"
+              fullWidth
+              formControlName="locale"
+            >
+              <nb-option
+                [value]="I18nLocaleFilters.ALL"
+                title="All locales, including not supported by application"
+                >All</nb-option
+              >
+              <nb-option
+                [value]="I18nLocaleFilters.CURRENT"
+                title="Only current locale"
+                >Current locale</nb-option
+              >
+              <nb-option
+                [value]="I18nLocaleFilters.SUPPORTED"
+                title="Only locales, currently supported by application"
+                >Supported locales</nb-option
+              >
+              <nb-option
+                [value]="I18nLocaleFilters.NOT_SUPPORTED"
+                title="Only locales, not supported by application"
+                >Not supported locales</nb-option
+              >
+            </nb-select>
+          </nb-form-field>
+        </div>
+
+        <div class="col-md-3 col-6 mb-2">
+          <nb-form-field nbTooltip="Filter by category">
+            <nb-icon
+              nbPrefix
+              icon="grid-outline"
+            ></nb-icon>
+            <nb-select
+              size="small"
+              placeholder="Filter by category"
+              fullWidth
+              formControlName="category"
+            >
+              <nb-option [value]="I18nCategoryFilterAll">All</nb-option>
+
+              <nb-option
+                *ngFor="let c of categories"
+                [value]="c"
+                >{{ c }}</nb-option
+              >
+            </nb-select>
+          </nb-form-field>
+        </div>
+
+        <div class="col-md-3 col-6 mb-2">
+          <nb-form-field nbTooltip="Filter by state">
+            <nb-icon
+              nbPrefix
+              icon="checkmark-circle-outline"
+            ></nb-icon>
+            <nb-select
+              size="small"
+              placeholder="Filter by state"
+              fullWidth
+              formControlName="state"
+            >
+              <nb-option [value]="I18nLabelStateQuery.ALL">All</nb-option>
+              <nb-option [value]="I18nLabelStateQuery.NOT_VALIDATED">Only not validated</nb-option>
+              <nb-option [value]="I18nLabelStateQuery.VALIDATED">Only validated</nb-option>
+            </nb-select>
+          </nb-form-field>
+        </div>
+
+        <div class="col-md-3 col-6 mb-2">
+          <nb-form-field nbTooltip="Filter by usage">
+            <nb-icon
+              nbPrefix
+              icon="calendar-outline"
+            ></nb-icon>
+            <nb-select
+              size="small"
+              placeholder="Filter by usage"
+              fullWidth
+              formControlName="usage"
+            >
+              <nb-option
+                *ngFor="let notUsedFromValue of notUsedFromPossibleValues"
+                [value]="notUsedFromValue"
+                >{{ notUsedFromLabel(notUsedFromValue) }}</nb-option
+              >
+            </nb-select>
+          </nb-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3 col-6">
+          <button
+            nbButton
+            fullWidth
+            size="small"
+            ghost
+            nbTooltip="Validate all existing labels"
+            (click)="validateAll()"
+          >
+            <nb-icon icon="checkmark-circle-outline"></nb-icon>
+            Validate All
+          </button>
+        </div>
+
+        <div class="col-sm-3 col-6">
+          <button
+            nbButton
+            fullWidth
+            size="small"
+            ghost
+            nbTooltip="Translate all missing labels"
+            (click)="translate()"
+            *ngIf="state.currentApplication.supportedLocales.length !== 1"
+          >
+            <nb-icon icon="globe-outline"></nb-icon>
+            Translate All
+          </button>
+        </div>
+
+        <div class="col-sm-3 col-6">
+          <button
+            nbButton
+            fullWidth
+            size="small"
+            ghost
+            nbTooltip="Import"
+            (click)="import()"
+          >
+            <nb-icon icon="upload-outline"></nb-icon>
+            Import
+          </button>
+        </div>
+
+        <div class="col-sm-3 col-6">
+          <button
+            nbButton
+            fullWidth
+            size="small"
+            ghost
+            nbTooltip="Export"
+            (click)="export()"
+          >
+            <nb-icon icon="download-outline"></nb-icon>
+            Export
+          </button>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>

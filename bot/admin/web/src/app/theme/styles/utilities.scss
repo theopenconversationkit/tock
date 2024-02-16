@@ -1,3 +1,4 @@
+@import '@nebular/theme/styles/global/breakpoints';
 @import '@nebular/theme/styles/theming';
 
 @mixin truncate($line) {
@@ -23,7 +24,7 @@
 }
 
 .font-size-small {
-  font-size: 0.875em;
+  font-size: 12px;
 }
 
 .nb-theme-default .text-mitigated {
@@ -126,7 +127,7 @@ nb-card.selected {
 }
 
 .divider {
-  background-color: var(--color-basic-transparent-200);
+  background-color: var(--card-divider-color);
 }
 
 .unselectable {
