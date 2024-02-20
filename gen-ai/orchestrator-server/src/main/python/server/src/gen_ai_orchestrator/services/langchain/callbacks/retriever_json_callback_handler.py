@@ -69,7 +69,6 @@ class RetrieverJsonCallbackHandler(BaseCallbackHandler):
         self, serialized: Dict[str, Any], inputs: Dict[str, Any], **kwargs: Any
     ) -> None:
         """Print out that we are entering a chain."""
-
         # filter to gest only input documents
         if 'input_documents' in inputs:
             docs = inputs['input_documents']

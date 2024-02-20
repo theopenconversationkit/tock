@@ -26,6 +26,11 @@ urllib3 = "^1.26"
 pre-commit = "^3.5.0"
 pip-audit = "^2.7.0"
 
+[tool.poetry.group.test.dependencies]
+tox = "^4.11.4"
+coverage = "^7.4.0"
+pytest = "^7.4.4"
+
 [tool.isort]
 line_length = 79
 multi_line_output = 3
