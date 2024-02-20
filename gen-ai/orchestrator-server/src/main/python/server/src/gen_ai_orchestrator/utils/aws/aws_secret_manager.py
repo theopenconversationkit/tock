@@ -18,6 +18,7 @@ import json
 import logging
 
 import boto3
+from botocore.exceptions import ClientError
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +52,13 @@ class AWSSecretManager:
             )
             logging.info('Secret retrieved successfully.')
             return get_secret_value_response['SecretString']
-        except self.client.exceptions.ResourceNotFoundException:
-            logger.error(f'The requested secret {secret_name} was not found.')
-            raise
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'ResourceNotFoundException':
+                logger.error(f'The requested secret {secret_name} was not found.')
+                raise
+            else:
+                logger.error(f'Error retrieving {secret_name} secret.')
+                raise
         except Exception as e:
             logger.error(f'An unknown error occurred: {str(e)}.')
             raise

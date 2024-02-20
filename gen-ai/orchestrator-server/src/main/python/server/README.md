@@ -112,6 +112,14 @@ pre-commit install
 gunicorn gen_ai_orchestrator.main:app --reload --bind :8000 --workers=2 --worker-class=uvicorn.workers.UvicornWorker --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini
 ```
 
+### Unit tests
+
+When dev dependencies are installed, run unit tests for the orchestrator using Tox:
+```
+tox run
+```
+This will also produce a Coverage.py code coverage report in coverage.xml.
+
 ### Dependencies analysis
 
 Dev extra dependencies contain the pip-audit package dependencies vulnerability analysis tool (see [pip-audit](https://pypi.org/project/pip-audit)).
@@ -125,7 +133,6 @@ pip-audit
 
 If you happen to use multiple .pre-commit.yaml files (like by developing in both the 'app' and 'tock-llm-indexing-tools' projects), you may encounter a "No <some path>/.pre-commit-config.yaml file was found".
 If so, edit the .git/hooks/pre-commit file (this is the default pre-commit installation path, yours may be elsewhere) and correct <some path> in the ARGS to point to the correct config files.
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
