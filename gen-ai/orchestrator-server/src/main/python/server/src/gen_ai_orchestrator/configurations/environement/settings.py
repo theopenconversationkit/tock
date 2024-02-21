@@ -50,6 +50,8 @@ class _Settings(BaseSettings):
     application_logging_config_ini: str = (
         Path(__file__).dirname() + '/../logging/config.ini'
     )
+    """Request timeout: set the maximum time (in seconds) for the request to be completed."""
+    ai_provider_timeout: int = 20
 
     open_search_host: str = 'localhost'
     open_search_port: str = '9200'

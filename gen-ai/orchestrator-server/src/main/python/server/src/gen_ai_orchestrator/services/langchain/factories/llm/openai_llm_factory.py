@@ -17,6 +17,7 @@
 from langchain.base_language import BaseLanguageModel
 from langchain_openai import ChatOpenAI
 
+from gen_ai_orchestrator.configurations.environement.settings import application_settings
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -38,6 +39,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
             openai_api_key=self.setting.api_key,
             model_name=self.setting.model,
             temperature=self.setting.temperature,
+            request_timeout=application_settings.ai_provider_timeout
         )
 
     @openai_exception_handler(provider='OpenAI')
