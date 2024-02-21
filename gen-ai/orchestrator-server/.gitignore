@@ -1,0 +1,7 @@
+#Indexing tools test files 
+/main/python/tock-llm-indexing-tools/tests
+!src/main/python/tock-llm-indexing-tools/tests/embeddings.json.example
+#Indexing tools env file
+src/main/python/tock-llm-indexing-tools/.env
+#Indexing tools test files
+src/main/python/tock-llm-indexing-tools/tests
