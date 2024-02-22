@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Attachment } from 'src/app/shared/model/dialog-data';
+import { RestService } from '../../../../../core-nlp/rest/rest.service';
 
 @Component({
   selector: 'tock-chat-ui-message-attachment',
@@ -8,4 +9,11 @@ import { Attachment } from 'src/app/shared/model/dialog-data';
 })
 export class ChatUiMessageAttachmentComponent {
   @Input() attachment: Attachment;
+
+  constructor(public rest: RestService) {}
+
+  localUrl() {
+    const file = this.attachment.url.split('/').pop();
+    return this.rest.url + '/file/' + file;
+  }
 }

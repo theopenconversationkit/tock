@@ -1,6 +1,8 @@
+@import '../../../theme/styles/utilities.scss';
+
 .table-list {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 8rem;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 4rem;
   column-gap: 0.5rem;
   min-width: 50rem;
 
@@ -16,7 +18,7 @@
   }
 
   .table-list-entry {
-    min-width: 8rem;
+    min-width: 4rem;
     padding: 1rem 0;
     &.bordered {
       border-right: 1px solid var(--border-basic-color-3);
@@ -25,6 +27,9 @@
 }
 
 .image {
-  max-height: 50px;
-  max-width: 80px;
+  max-height: 5rem;
+}
+
+.truncate {
+  @include truncate(3);
 }

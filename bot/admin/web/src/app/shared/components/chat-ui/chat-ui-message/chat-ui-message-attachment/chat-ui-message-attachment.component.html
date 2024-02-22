@@ -1,13 +1,12 @@
-<img
-  *ngIf="attachment.isImage()"
-  [src]="attachment.url"
-  width="191"
-  height="100"
-/>
-<div *ngIf="!attachment.isImage()">
-  <a
-    [href]="attachment.url"
-    target="_blank"
-    >(file)</a
-  >
-</div>
+<a
+  [href]="localUrl()"
+  target="_blank"
+  [nbTooltip]="attachment.url"
+>
+  <img
+    *ngIf="attachment.isImage()"
+    [src]="localUrl()"
+    class="img-fluid image"
+  />
+  <div *ngIf="!attachment.isImage()">(file)</div>
+</a>

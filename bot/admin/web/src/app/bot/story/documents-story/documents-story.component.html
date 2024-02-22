@@ -1,0 +1,199 @@
+<div class="d-flex flex-wrap mt-3">
+  <h1 class="flex-grow-1">Documents</h1>
+
+  <section class="d-flex flex-wrap align-items-center">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Refresh answers"
+      (click)="refresh()"
+      class="ml-2"
+    >
+      <nb-icon icon="refresh-outline"></nb-icon>
+    </button>
+  </section>
+</div>
+
+<tock-no-data-found
+  *ngIf="!loading && !fileList?.length"
+  title="No document found"
+  message="You may create a new one using above button &#34;NEW Story&#34; and add a media message to the story answer."
+></tock-no-data-found>
+
+<nb-card
+  *ngIf="!loading && fileList?.length"
+  class="mb-0"
+>
+  <nb-card-body>
+    <form
+      [formGroup]="form"
+      class="d-flex gap-1 align-items-center"
+    >
+      <nb-form-field class="flex-grow-1">
+        <nb-icon
+          nbPrefix
+          icon="search-outline"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="medium"
+          placeholder="Search documents"
+          type="text"
+          formControlName="searchString"
+        />
+        <button
+          nbButton
+          nbSuffix
+          ghost
+          nbTooltip="Clear"
+          type="button"
+          (click)="resetSearch()"
+          *ngIf="searchString.value?.trim().length"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </nb-form-field>
+
+      <div>
+        <nb-select
+          placeholder="File types"
+          fullWidth
+          optionsListClass="option-list--break-word"
+          formControlName="fileType"
+        >
+          <nb-option [value]="null">All</nb-option>
+          <nb-option
+            *ngFor="let type of fileTypes"
+            [value]="type.type"
+          >
+            <span class="initial-capitalize">{{ type.label }}</span>
+          </nb-option>
+        </nb-select>
+      </div>
+
+      <div *ngIf="getFilesSuffixes().length > 1">
+        <nb-select
+          placeholder="File extensions"
+          fullWidth
+          optionsListClass="option-list--break-word"
+          formControlName="fileSuffix"
+        >
+          <nb-option [value]="null">All</nb-option>
+          <nb-option
+            *ngFor="let suffix of getFilesSuffixes()"
+            [value]="suffix"
+          >
+            <span class="initial-capitalize">{{ suffix }}</span>
+          </nb-option>
+        </nb-select>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>
+
+<div
+  *ngIf="!loading && fileList?.length && !filteredFileList?.length"
+  class="p-4 text-center font-style-italic text-muted"
+>
+  No documents match your search criteria
+</div>
+
+<nb-card
+  [nbSpinner]="loading"
+  *ngIf="filteredFileList?.length"
+  class="mt-2"
+>
+  <nb-card-body class="py-0">
+    <div class="table-list table-list-header">
+      <div class="table-list-entry">Story</div>
+      <div class="table-list-entry bordered text-center">Category</div>
+      <div class="table-list-entry bordered text-center">File</div>
+      <div class="table-list-entry bordered text-center">File title</div>
+      <div class="table-list-entry bordered text-center">File type</div>
+      <div class="table-list-entry text-center">Actions</div>
+    </div>
+
+    <div
+      class="table-list"
+      *ngFor="let file of filteredFileList"
+    >
+      <div class="table-list-entry">
+        <div class="font-weight-bold">
+          <nb-icon
+            class="valign-middle"
+            nbTooltip="{{ getStoryType(getStoryWithThisMediaFile(file)) }} Story"
+            [icon]="getStoryIcon(getStoryWithThisMediaFile(file))"
+          ></nb-icon>
+          {{ getStoryWithThisMediaFile(file)?.name }}
+        </div>
+        <span class="text-muted">{{ getStoryWithThisMediaFile(file)?.description }}</span>
+      </div>
+
+      <div class="table-list-entry bordered text-center">
+        {{ getStoryWithThisMediaFile(file)?.category }}
+      </div>
+
+      <div class="table-list-entry bordered text-center ellipsis">
+        <a
+          href="{{ file.url(rest.url) }}"
+          target="_blank"
+          [nbTooltip]="file.name"
+        >
+          <div *ngIf="file.isImage()">
+            <img
+              class="img-fluid image mt-1"
+              src="{{ file.url(rest.url) }}"
+            />
+          </div>
+          <small>{{ file.name }}</small>
+        </a>
+      </div>
+
+      <div class="table-list-entry bordered text-center">
+        <div
+          class="truncate"
+          [nbTooltip]="getAnswerWithThisMediaFile(file)?.mediaMessage?.title?.defaultLabel"
+        >
+          {{ getAnswerWithThisMediaFile(file)?.mediaMessage?.title?.defaultLabel }}
+        </div>
+
+        <div
+          class="truncate"
+          [nbTooltip]="getAnswerWithThisMediaFile(file)?.mediaMessage?.subTitle?.defaultLabel"
+        >
+          <small>
+            {{ getAnswerWithThisMediaFile(file)?.mediaMessage?.subTitle?.defaultLabel }}
+          </small>
+        </div>
+      </div>
+
+      <div class="table-list-entry bordered text-center">
+        <ng-container *ngIf="file.externalUrl"> Link </ng-container>
+
+        <ng-container *ngIf="!file.externalUrl">
+          <container-element [ngSwitch]="file.type">
+            <some-element *ngSwitchCase="attachmentType.image">Image</some-element>
+            <some-element *ngSwitchCase="attachmentType.audio">Audio file</some-element>
+            <some-element *ngSwitchCase="attachmentType.video">Video file</some-element>
+            <some-element *ngSwitchDefault>Other</some-element>
+          </container-element>
+          ({{ file.suffix }})
+        </ng-container>
+      </div>
+
+      <div class="table-list-entry text-center">
+        <button
+          nbButton
+          ghost
+          shape="round"
+          nbTooltip="Update File"
+          (click)="displayMediaMessage(file)"
+        >
+          <nb-icon icon="edit-outline"></nb-icon>
+        </button>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

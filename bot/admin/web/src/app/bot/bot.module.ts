@@ -61,7 +61,7 @@ import { SelectEntityDialogComponent } from './story/select-entity-dialog/select
 import { StoryRuntimeSettingsComponent } from './feature/story-runtime-settings/story-runtime-settings.component';
 import { StoryTagComponent } from './story/story-tag/story-tag.component';
 import { ApplicationFeaturesTableComponent } from './feature/application-feature/application-features-table/application-features-table.component';
-import { DocumentsStoryComponent } from './story/documents-story.component';
+
 import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
 import { StoriesFilterComponent } from './story/search-story/stories-filter/stories-filter.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -75,6 +75,8 @@ import { I18nFiltersComponent } from './i18n/i18n-filters/i18n-filters.component
 import { I18nExportComponent } from './i18n/i18n-export/i18n-export.component';
 import { I18nImportComponent } from './i18n/i18n-import/i18n-import.component';
 import { I18nLabelComponent } from './i18n/i18n-label/i18n-label.component';
+import { DocumentsStoryComponent } from './story/documents-story/documents-story.component';
+
 
 @NgModule({
   imports: [

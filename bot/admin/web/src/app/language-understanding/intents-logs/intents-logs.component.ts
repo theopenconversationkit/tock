@@ -35,6 +35,7 @@ interface IntentsLogsFilterForm {
   onlyCurrentLocale: FormControl<boolean>;
   displayTests: FormControl<boolean>;
 }
+
 @Component({
   selector: 'tock-intents-logs',
   templateUrl: './intents-logs.component.html',
