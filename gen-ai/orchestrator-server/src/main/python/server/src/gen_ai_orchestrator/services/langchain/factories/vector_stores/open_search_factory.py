@@ -41,7 +41,7 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
             ),
             use_ssl=is_prod_environment,
             verify_certs=is_prod_environment,
-            ssl_assert_hostname=is_prod_environment,
+            ssl_assert_hostname=application_settings.open_search_host if is_prod_environment else False,
             ssl_show_warn=is_prod_environment,
             index_name=self.index_name,
             embedding_function=self.embedding_function,
