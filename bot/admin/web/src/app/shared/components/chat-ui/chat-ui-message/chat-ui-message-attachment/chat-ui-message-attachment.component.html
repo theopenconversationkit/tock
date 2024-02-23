@@ -6,7 +6,7 @@
   <img
     *ngIf="attachment.isImage()"
     [src]="localUrl()"
-    class="img-fluid image"
+    class="img-fluid img-thumbnail rounded image"
   />
   <div *ngIf="!attachment.isImage()">(file)</div>
 </a>
