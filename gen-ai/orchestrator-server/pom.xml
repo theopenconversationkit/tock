@@ -4,7 +4,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-gen-ai</artifactId>
-        <version>23.9.2-SNAPSHOT</version>
+        <version>23.9.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-gen-ai-orchestrator-server</artifactId>
@@ -52,7 +52,7 @@
                 </executions>
                 <configuration>
                     <workingDirectory>src/main/python/server/</workingDirectory>
-                    <executable>poetry</executable>
+                    <executable>/home/Mohamed.Assoukti/.pyenv/shims/poetry</executable>
                     <arguments>
                         <argument>export</argument>
                         <argument>--without-hashes</argument>

@@ -85,7 +85,6 @@ import { AutofocusDirective } from './directives';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json-iterator/debug-json-iterator.component';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
