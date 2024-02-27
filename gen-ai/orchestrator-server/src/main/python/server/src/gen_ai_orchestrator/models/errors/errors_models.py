@@ -34,6 +34,7 @@ class ErrorCode(Enum):
     GEN_AI_AUTHENTICATION_ERROR = 1002
     GEN_AI_UNKNOWN_PROVIDER_SETTING = 1003
     GEN_AI_GUARD_CHECK_ERROR = 1004
+    GEN_AI_PROMPT_TEMPLATE_ERROR = 1005
 
     # AI Provider Errors
     AI_PROVIDER_UNKNOWN = 2000
@@ -129,6 +130,10 @@ class ErrorMessages:
         ),
         ErrorCode.GEN_AI_GUARD_CHECK_ERROR: ErrorMessage(
             message='Guard check failed.',
+        ),
+        ErrorCode.GEN_AI_PROMPT_TEMPLATE_ERROR: ErrorMessage(
+            message='Prompt Template Error.',
+            detail='Check the template syntax.',
         ),
         # AI Provider Errors
         ErrorCode.AI_PROVIDER_UNKNOWN: ErrorMessage(message='Unknown AI Provider.'),

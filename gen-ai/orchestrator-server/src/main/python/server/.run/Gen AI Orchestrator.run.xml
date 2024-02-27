@@ -14,7 +14,7 @@
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <option name="SCRIPT_NAME" value="gunicorn" />
-    <option name="PARAMETERS" value="gen_ai_orchestrator.main:app --reload --bind :8000 --workers=1 --worker-class=uvicorn.workers.UvicornWorker --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini" />
+    <option name="PARAMETERS" value="gen_ai_orchestrator.main:app --reload --bind :8000 --workers=1 --worker-class=uvicorn.workers.UvicornWorker --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini --timeout=0" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="true" />

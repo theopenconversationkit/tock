@@ -90,3 +90,10 @@ class GenAIGuardCheckException(GenAIOrchestratorException):
 
     def __init__(self, info: ErrorInfo):
         super().__init__(ErrorCode.GEN_AI_GUARD_CHECK_ERROR, info)
+
+
+class GenAIPromptTemplateException(GenAIOrchestratorException):
+    """Prompt template error"""
+
+    def __init__(self, info: ErrorInfo):
+        super().__init__(ErrorCode.GEN_AI_PROMPT_TEMPLATE_ERROR, info)

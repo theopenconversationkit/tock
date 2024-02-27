@@ -13,6 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating AzureOpenAIEMFactory"""
+from typing import List
 
 from langchain.embeddings.base import Embeddings
 from langchain_openai import AzureOpenAIEmbeddings
@@ -42,5 +43,5 @@ class AzureOpenAIEMFactory(LangChainEMFactory):
         )
 
     @openai_exception_handler(provider='AzureOpenAIService')
-    def check_embedding_model_setting(self) -> bool:
-        return super().check_embedding_model_setting()
+    def embed_query(self, text: str) -> List[float]:
+        return super().embed_query(text)

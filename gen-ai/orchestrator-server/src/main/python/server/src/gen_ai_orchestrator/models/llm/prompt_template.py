@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,19 +12,21 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""LLMProvider Enumeration."""
+from typing import Literal
 
-from enum import Enum, unique
+from pydantic import BaseModel, Field
 
 
-@unique
-class LLMProvider(str, Enum):
-    """Enumeration to list Large Language Provider type"""
+class PromptTemplate(BaseModel):
+    formatter: Literal['f-string', 'jinja2'] = Field(
+        description='The formatter of this prompt.',
+        examples=['jinja2'],
+    )
+    template: str = Field(
+        description='The Jinja2 Template for create a prompt.',
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    FAKE_LLM = 'FakeLLM'
+     )
+    inputs: dict = Field(
+        description='inputs for generation of prompt with the template',
 
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_
+    )

@@ -13,9 +13,12 @@
 #   limitations under the License.
 #
 """Model for creating OpenAILLMFactory"""
+from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
 from langchain_openai import ChatOpenAI
+from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables.utils import Input, Output
 
 from gen_ai_orchestrator.configurations.environement.settings import application_settings
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
@@ -43,5 +46,5 @@ class OpenAILLMFactory(LangChainLLMFactory):
         )
 
     @openai_exception_handler(provider='OpenAI')
-    def check_llm_setting(self) -> bool:
-        return super().check_llm_setting()
+    def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+        return super().invoke(_input, config)

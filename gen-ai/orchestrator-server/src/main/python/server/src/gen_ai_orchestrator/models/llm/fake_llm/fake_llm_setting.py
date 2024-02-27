@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2023 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,19 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""LLMProvider Enumeration."""
+from typing import List, Literal
 
-from enum import Enum, unique
+from pydantic import Field
+
+from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
+from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
 
-@unique
-class LLMProvider(str, Enum):
-    """Enumeration to list Large Language Provider type"""
-
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    FAKE_LLM = 'FakeLLM'
-
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_
+class FakeLLMSetting(BaseLLMSetting):
+    provider: Literal[LLMProvider.FAKE_LLM] = Field(
+        description='The Large Language Model provider.'
+    )
+    responses: List[str] = Field(
+        description='The responses given when the Fake LLM is called'
+    )

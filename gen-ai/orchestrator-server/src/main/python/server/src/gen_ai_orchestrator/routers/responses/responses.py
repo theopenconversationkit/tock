@@ -86,3 +86,10 @@ class RagResponse(BaseModel):
         examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
         default=None,
     )
+
+
+class SentenceGenerationResponse(BaseModel):
+    sentences: list[str] = Field(
+        description='The list of sentences generated',
+        default=[]
+    )
