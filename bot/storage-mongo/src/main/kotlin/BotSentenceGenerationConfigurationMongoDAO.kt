@@ -18,8 +18,8 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import ai.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
-import ai.tock.bot.admin.bot.generatesentences.BotGenerateSentencesConfigurationDAO
-import ai.tock.bot.admin.bot.generatesentences.BotGenerateSentencesConfiguration
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
@@ -27,11 +27,11 @@ import ai.tock.shared.watch
 import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollection
 
-internal object BotGenerateSentencesConfigurationMongoDAO : BotGenerateSentencesConfigurationDAO {
+internal object BotSentenceGenerationConfigurationMongoDAO : BotSentenceGenerationConfigurationDAO {
 
     private const val COLLECTION_NAME = "bot_sentence_generation_configuration"
-    internal val col = database.getCollection<BotGenerateSentencesConfiguration>(COLLECTION_NAME)
-    private val asyncCol = asyncDatabase.getCollection<BotGenerateSentencesConfiguration>()
+    internal val col = database.getCollection<BotSentenceGenerationConfiguration>(COLLECTION_NAME)
+    private val asyncCol = asyncDatabase.getCollection<BotSentenceGenerationConfiguration>()
 
     init {
         col.ensureUniqueIndex(Namespace, BotId)
@@ -44,16 +44,16 @@ internal object BotGenerateSentencesConfigurationMongoDAO : BotGenerateSentences
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String
-    ): BotGenerateSentencesConfiguration? {
+    ): BotSentenceGenerationConfiguration? {
         return col.findOne(Namespace eq namespace, BotId eq botId)
     }
 
-    override fun save(conf: BotGenerateSentencesConfiguration): BotGenerateSentencesConfiguration {
+    override fun save(conf: BotSentenceGenerationConfiguration): BotSentenceGenerationConfiguration {
         col.save(conf)
         return conf
     }
 
-    override fun delete(id: Id<BotGenerateSentencesConfiguration>) {
+    override fun delete(id: Id<BotSentenceGenerationConfiguration>) {
         col.deleteOneById(id)
     }
 

@@ -16,19 +16,19 @@
 
 package ai.tock.bot.admin.service
 
-import ai.tock.bot.admin.bot.generatesentences.BotGenerateSentencesConfiguration
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
 import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
 import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-object GenerateSentencesValidationService {
+object SentenceGenerationValidationService {
     private val llmProviderService: LLMProviderService get() = injector.provide()
 
-    fun validate(generateSentencesConfig: BotGenerateSentencesConfiguration): Set<ErrorMessage> {
+    fun validate(sentenceGenerationConfig: BotSentenceGenerationConfiguration): Set<ErrorMessage> {
         return llmProviderService
-            .checkSetting(LLMProviderSettingStatusQuery(generateSentencesConfig.llmSetting))
+            .checkSetting(LLMProviderSettingStatusQuery(sentenceGenerationConfig.llmSetting))
             .getErrors("LLM setting check failed")
             .toSet()
     }

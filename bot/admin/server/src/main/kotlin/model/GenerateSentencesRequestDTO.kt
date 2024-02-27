@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.generatesentences
+package ai.tock.bot.admin.model
 
-import org.litote.kmongo.Id
+import java.util.Locale
 
-interface BotGenerateSentencesConfigurationDAO {
+data class SentenceGenerationRequestDTO(
+    val sentences: List<String>,
+    val locale: Locale,
+    val nbSentences: Int = 10,
+    val options: OptionsSentenceGenerationRequest,
+)
 
-    fun listenChanges(listener: () -> Unit)
 
-    fun save(conf: BotGenerateSentencesConfiguration): BotGenerateSentencesConfiguration
 
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotGenerateSentencesConfiguration?
 
-    fun delete(id: Id<BotGenerateSentencesConfiguration>)
-}
+

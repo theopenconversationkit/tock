@@ -16,27 +16,27 @@
 
 package ai.tock.bot.admin.model
 
-import ai.tock.bot.admin.bot.generatesentences.BotGenerateSentencesConfiguration
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
-data class BotGenerateSentencesConfigurationDTO(
+data class BotSentenceGenerationConfigurationDTO(
     val id: String? = null,
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
     val llmSetting: LLMSetting,
 ) {
-    constructor(configuration: BotGenerateSentencesConfiguration): this(
+    constructor(configuration: BotSentenceGenerationConfiguration): this(
         configuration._id.toString(),
         configuration.namespace,
         configuration.botId,
         configuration.enabled,
         configuration.llmSetting,
     )
-    fun toGenerateSentencesConfiguration(): BotGenerateSentencesConfiguration =
-        BotGenerateSentencesConfiguration(
+    fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =
+        BotSentenceGenerationConfiguration(
             id?.toId() ?: newId(),
             namespace,
             botId,

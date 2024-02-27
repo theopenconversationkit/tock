@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.generatesentences
+package ai.tock.genai.orchestratorclient.responses
 
-
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import org.litote.kmongo.Id
-
-data class BotGenerateSentencesConfiguration(
-    val _id: Id<BotGenerateSentencesConfiguration>,
-    val namespace: String,
-    val botId: String,
-    val enabled: Boolean = true,
-    val llmSetting: LLMSetting,
+class SentenceGenerationResponse(
+    val generatedSentences: List<String>
 )
+
+

@@ -18,7 +18,7 @@ package ai.tock.bot.mongo
 
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
-import ai.tock.bot.admin.bot.generatesentences.BotGenerateSentencesConfigurationDAO
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
 import ai.tock.bot.admin.dialog.DialogReportDAO
 import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.metric.MetricDAO
@@ -52,7 +52,7 @@ val botMongoModule = Kodein.Module {
     }
     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
     bind<BotRagConfigurationDAO>() with provider { BotRAGConfigurationMongoDAO }
-    bind<BotGenerateSentencesConfigurationDAO>() with provider { BotGenerateSentencesConfigurationMongoDAO }
+    bind<BotSentenceGenerationConfigurationDAO>() with provider { BotSentenceGenerationConfigurationMongoDAO }
     bind<StoryDefinitionConfigurationDAO>() with provider { StoryDefinitionConfigurationMongoDAO }
     bind<I18nDAO>() with provider { I18nMongoDAO }
     bind<UserTimelineDAO>() with provider { UserTimelineMongoDAO }
