@@ -24,26 +24,10 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotRAGConfigurationDTO
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.BotSynchronization
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
 import ai.tock.bot.admin.service.RAGService
+import ai.tock.bot.admin.service.GenerateSentencesService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
@@ -84,7 +68,6 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
 import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.TranslatorEngine
-import com.fasterxml.jackson.databind.exc.InvalidTypeIdException
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
@@ -1067,6 +1050,27 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost(
+            "/configuration/bots/:botId/sentence-generation",
+            admin
+        ) { context, configuration: BotGenerateSentencesConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                GenerateSentencesService.saveGenerateSentences(configuration)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet(
+            "/configuration/bots/:botId/sentence-generation",
+            admin
+        ) { context  ->
+            GenerateSentencesService.getGenerateSentencesConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotGenerateSentencesConfigurationDTO(it)
+                }
         }
 
         blockingJsonGet("/configuration") {
