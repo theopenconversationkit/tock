@@ -1,17 +1,17 @@
 <a id="top"></a>
 # Tock LLM Orchestrator APIs
-| #  | Resource                                         | Description                                                   | HTTP Method   | Query params | Body - Response                                 |
-|----|--------------------------------------------------|---------------------------------------------------------------|---------------|--------------|-------------------------------------------------|
-| 01 | **/llm-providers**                               | Get all Large Language Model providers covered                | `GET`         |              | [Voir](#api-llm-providers)                      |
-| 02 | **/llm-providers/{provider-id}**                 | Get a specific Large Language Model provider covered          | `GET`         |              | [Voir](#api-llm-providers-get-one)         |
-| 03 | **/llm-providers/{provider-id}/setting**         | Get an example for a specific Large Language Model setting    | `GET`         |              | [Voir](#api-llm-providers-get-setting)     |
-| 04 | **/llm-providers/{provider-id}/setting/status**  | Check the setting for a specific Large Language Model setting | `POST`        |              | [Voir](#api-llm-providers-post-setting)    |
-| 05 | **/em-providers**                                | Get all Embedding Model providers covered                     | `GET`         |              | [Voir](#api-em-providers)                  |
-| 06 | **/em-providers/{provider-id}**                  | Get a specific Embedding Model provider covered               | `GET`         |              | [Voir](#api-em-providers-get-one)          |
-| 07 | **/em-providers/{provider-id}/setting**          | Get an example for a specific Embedding Model setting         | `GET`         |              | [Voir](#api-em-providers-get-setting)      |
-| 08 | **/em-providers/{provider-id}/setting/status**   | Check the setting for a specific Embedding Model setting      | `POST`        |              | [Voir](#api-em-providers-post-setting)     |
-| 09 | **/rag**                                         | Ask question by using a knowledge base (documents) as context | `POST`        | debug=true   | [Voir](#api-rag)                           |
-| 10 | **/completion/generate-sentences**               | Generate sentences                                            | `POST`        | debug=true   | [Voir](#api-completion-generate-sentences) |
+| #  | Resource                                        | Description                                                   | HTTP Method   | Query params | Body - Response                             |
+|----|-------------------------------------------------|---------------------------------------------------------------|---------------|--------------|---------------------------------------------|
+| 01 | **/llm-providers**                              | Get all Large Language Model providers covered                | `GET`         |              | [Voir](#api-llm-providers)                  |
+| 02 | **/llm-providers/{provider-id}**                | Get a specific Large Language Model provider covered          | `GET`         |              | [Voir](#api-llm-providers-get-one)          |
+| 03 | **/llm-providers/{provider-id}/setting**        | Get an example for a specific Large Language Model setting    | `GET`         |              | [Voir](#api-llm-providers-get-setting)      |
+| 04 | **/llm-providers/{provider-id}/setting/status** | Check the setting for a specific Large Language Model setting | `POST`        |              | [Voir](#api-llm-providers-post-setting)     |
+| 05 | **/em-providers**                               | Get all Embedding Model providers covered                     | `GET`         |              | [Voir](#api-em-providers)                   |
+| 06 | **/em-providers/{provider-id}**                 | Get a specific Embedding Model provider covered               | `GET`         |              | [Voir](#api-em-providers-get-one)           |
+| 07 | **/em-providers/{provider-id}/setting**         | Get an example for a specific Embedding Model setting         | `GET`         |              | [Voir](#api-em-providers-get-setting)       |
+| 08 | **/em-providers/{provider-id}/setting/status**  | Check the setting for a specific Embedding Model setting      | `POST`        |              | [Voir](#api-em-providers-post-setting)      |
+| 09 | **/rag**                                        | Ask question by using a knowledge base (documents) as context | `POST`        | debug=true   | [Voir](#api-rag)                            |
+| 10 | **/completion/sentence-generation**             | Generate sentences                                            | `POST`        | debug=true   | [Voir](#api-completion-sentence-generation) |
 ---
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -152,19 +152,19 @@
 ---
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-#### API-10 : `[POST]` /completion/generate-sentences
-<a id="api-completion-generate-sentences"></a>
+#### API-10 : `[POST]` /completion/sentence-generation
+<a id="api-completion-sentence-generation"></a>
 #### Body :
 
 ```python
-    class GenerateSentencesQuery(BaseModel):
+    class SentenceGenerationQuery(BaseModel):
         llm_setting: LLMSetting
 ```
 
 #### Response :
 
 ```python
-    class GenerateSentencesResponse(BaseModel):
+    class SentenceGenerationResponse(BaseModel):
         sentences: list[str]
 ```
 

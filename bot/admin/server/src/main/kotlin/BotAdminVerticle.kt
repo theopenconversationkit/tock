@@ -1055,9 +1055,9 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonPost(
             "/configuration/bots/:botId/sentence-generation",
             admin
-        ) { context, configuration: BotGenerateSentencesConfigurationDTO  ->
+        ) { context, configuration: BotSentenceGenerationConfigurationDTO  ->
             if (context.organization == configuration.namespace) {
-                GenerateSentencesService.saveGenerateSentences(configuration)
+                SentenceGenerationService.saveSentenceGeneration(configuration)
             } else {
                 unauthorized()
             }
@@ -1067,9 +1067,9 @@ open class BotAdminVerticle : AdminVerticle() {
             "/configuration/bots/:botId/sentence-generation",
             admin
         ) { context  ->
-            GenerateSentencesService.getGenerateSentencesConfiguration(context.organization, context.path("botId"))
+            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization, context.path("botId"))
                 ?.let {
-                    BotGenerateSentencesConfigurationDTO(it)
+                    BotSentenceGenerationConfigurationDTO(it)
                 }
         }
 
