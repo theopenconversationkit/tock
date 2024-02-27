@@ -36,6 +36,7 @@ from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetti
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import FakeLLMSetting
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
@@ -55,6 +56,7 @@ from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory impor
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import FakeLLMFactory
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
 )
@@ -88,6 +90,8 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
     elif isinstance(setting, AzureOpenAILLMSetting):
         logger.debug('LLM Factory - AzureOpenAILLMFactory')
         return AzureOpenAILLMFactory(setting=setting)
+    elif isinstance(setting, FakeLLMSetting):
+        return FakeLLMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
 

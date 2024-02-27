@@ -16,8 +16,11 @@
 
 import logging
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
+from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables.utils import Input, Output
 from pydantic import BaseModel
 
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
@@ -46,7 +49,20 @@ class LangChainLLMFactory(ABC, BaseModel):
         """
         logger.info('Invoke LLM provider to check setting')
         query = 'Hi, are you there?'
-        response = self.get_language_model().invoke(query)
+        response = self.invoke(query)
         logger.info('Invocation successful')
         logger.debug('[query: %s], [response: %s]', query, response)
         return True
+
+    def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+        """
+        This is a delegate method that performs the llm invoke.
+
+        Args:
+            _input: The input to the runnable.
+            config: A config to use when invoking the runnable.
+
+        Returns:
+            The output of the runnable.
+        """
+        return self.get_language_model().invoke(_input, config)
