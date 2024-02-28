@@ -53,4 +53,4 @@ class LangChainEMFactory(ABC, BaseModel):
 
     def embed_query(self, text: str) -> List[float]:
         """Embed query text."""
-        return self.get_language_model().embed_query(text)
+        return self.get_embedding_model().embed_query(text)
