@@ -30,6 +30,9 @@ from langchain_core.prompts import PromptTemplate
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
+from gen_ai_orchestrator.errors.handlers.huggingfacetgi.hugging_face_exception_handler import (
+    hugging_face_exception_handler,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -64,6 +67,7 @@ logger = logging.getLogger(__name__)
 
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
+@hugging_face_exception_handler(provider='HuggingFaceTGI')
 async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
     """
     RAG chain execution, using the LLM and Embedding settings specified in the query
