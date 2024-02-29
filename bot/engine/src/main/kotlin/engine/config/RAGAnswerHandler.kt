@@ -16,6 +16,8 @@
 
 package ai.tock.bot.engine.config
 
+import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentence
@@ -25,6 +27,7 @@ import ai.tock.bot.engine.user.PlayerType
 import ai.tock.genai.orchestratorclient.requests.*
 import ai.tock.genai.orchestratorclient.responses.RAGResponse
 import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
+import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.services.RAGService
 import ai.tock.genai.orchestratorcore.utils.OpenSearchUtils
 import ai.tock.shared.*
@@ -76,25 +79,41 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     /**
      * Manage story redirection when no answer redirection is filled
      * Use the handler of the configured story otherwise launch default unknown story
-     * @param botBus
+     * @param botBus the bot Bus
+     * @param response the RAG response
      */
     private fun ragStoryRedirection(botBus: BotBus, response: RAGResponse?): Boolean {
-        var storySwitched = false
         with(botBus) {
             val ragConfig = botDefinition.ragConfiguration
             if (response?.answer?.text.equals(ragConfig?.noAnswerSentence, ignoreCase = true)) {
                 logger.info { "The RAG API response is equal to the configured no-answer sentence." }
-                val noAnswerStoryId = ragConfig?.noAnswerStoryId
-                if (!noAnswerStoryId.isNullOrBlank()) {
-                    logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
-                    val noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, applicationId)
-                    logger.info { "Run the story intent=${noAnswerStory.mainIntent()}, id=${noAnswerStory.id}" }
-                    handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
-                    storySwitched = true
-                }
+                switch(ragConfig)
+                return true
             }
         }
-        return storySwitched
+        return false
+    }
+
+    /**
+     * Switch to the configured no-answer story if exists.
+     * Switch to the default unknown story otherwise.
+     * @param ragConfig: The RAG configuration
+     */
+    private fun BotBus.switch(
+        ragConfig: BotRagConfiguration?
+    ) {
+        val noAnswerStory: StoryDefinition
+        val noAnswerStoryId = ragConfig?.noAnswerStoryId
+        if (!noAnswerStoryId.isNullOrBlank()) {
+            logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
+            noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, applicationId)
+        }else {
+            logger.info { "No no-answer story is configured, so run the default unknown story." }
+            noAnswerStory = botDefinition.unknownStory
+        }
+
+        logger.info { "Run the story intent=${noAnswerStory.mainIntent()}, id=${noAnswerStory.id}" }
+        handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
     }
 
     /**
@@ -143,7 +162,11 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 }
             }catch (exc: Exception){
                 logger.error { exc }
-                return RAGResponse(answer = TextWithFootnotes(text = technicalErrorMessage), debug = exc)
+                return if(exc is GenAIOrchestratorBusinessError && exc.error.info.error == "APITimeoutError"){
+                    switch(ragConfiguration)
+                    // Do not return a response when the RAG story has been switched to the no RAG answer story
+                    null
+                }else RAGResponse(answer = TextWithFootnotes(text = technicalErrorMessage), debug = exc)
             }
         }
     }
