@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.send
+package ai.tock.bot.connector.whatsapp.cloud.model.webhook
 
-class MessageRequest {
-}
+import com.fasterxml.jackson.annotation.JsonProperty
+
+data class Entry(
+        @JsonProperty("id") val id: String,
+        @JsonProperty("changes") val changes: List<Change>
+)
+
+data class Change(
+        @JsonProperty("value") val value: Value,
+        @JsonProperty("field") val field: String
+)

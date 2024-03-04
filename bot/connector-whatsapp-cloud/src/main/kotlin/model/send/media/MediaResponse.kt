@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud
+package ai.tock.bot.connector.whatsapp.cloud.model.send.media
 
-internal class WhatsAppCloudClient(val secretKey: String) {
-
-    interface  GraphApi {
-
-//        fun sendMessage
-    }
-}
+data class MediaResponse(
+        val id: String
+)

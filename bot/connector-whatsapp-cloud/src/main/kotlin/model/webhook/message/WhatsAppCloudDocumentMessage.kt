@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.send
+package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message
 
-class SendResponse {
-}
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.*
+
+data class WhatsAppCloudDocumentMessage(
+        val text: DocumentContent,
+        override val id: String,
+        override val from: String,
+        override val timestamp: String,
+        override val context: ContextContent? = null,
+        override val referral: Referral? = null,
+        override val errors: List<ErrorItem>? = emptyList()
+) : WhatsAppCloudMessage(WhatsAppCloudMessageType.document)
+
