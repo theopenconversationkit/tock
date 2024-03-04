@@ -22,13 +22,14 @@ import ai.tock.shared.resourceAsString
 internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
 
     private const val APP_ID = "appId"
-    private const val PHONE_NUMBER_ID = "phoneNumberId"
+    private const val WHATSAPP_PHONE_NUMBER_ID = "whatsAppPhoneNumberId"
+    private const val WHATSAPP_BUSINESS_ACCOUNT_ID = "whatsAppBusinessAccountId"
     private const val TOKEN = "token"
     private const val VERIFY_TOKEN = "verifyToken"
     private const val SECRET = "secret"
     private const val MODE = "mode"
 
-    override val connectorType: ConnectorType get() = ConnectorType("whatsapp_cloud")
+    override val connectorType: ConnectorType get() = whatsAppCloudConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration){
@@ -36,13 +37,15 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
             return WhatsAppConnectorCloud(
                 connectorId,
                 appId,
-                parameters.getValue(PHONE_NUMBER_ID),
+                parameters.getValue(WHATSAPP_PHONE_NUMBER_ID),
+                parameters.getValue(WHATSAPP_BUSINESS_ACCOUNT_ID),
                 path,
                 "$appId|${parameters.getValue(SECRET)}",
                 parameters.getValue(TOKEN),
                 parameters[VERIFY_TOKEN],
                 parameters.getValue(MODE),
-                WhatsAppCloudClient(parameters.getValue(SECRET))
+                WhatsAppCloudApiClient(parameters.getValue(SECRET), parameters.getValue(TOKEN)),
+                createRequestFilter(connectorConfiguration)
 
             )
         }
@@ -50,7 +53,7 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
 
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
-            ConnectorType("whatsapp_cloud"),
+            whatsAppCloudConnectorType,
             listOf(
                 ConnectorTypeConfigurationField(
                     "Application Id",
@@ -58,8 +61,13 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                     true
                 ),
                 ConnectorTypeConfigurationField(
-                    "Phone Number Id",
-                    PHONE_NUMBER_ID,
+                    "WhatsApp Phone Number Id",
+                    WHATSAPP_PHONE_NUMBER_ID,
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "WhatsApp Business Account Id",
+                        WHATSAPP_BUSINESS_ACCOUNT_ID,
                     true
                 ),
                 ConnectorTypeConfigurationField(
