@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating FakeLLMSetting."""
+
 from typing import List, Literal
 
 from pydantic import Field
@@ -21,6 +23,10 @@ from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
 
 class FakeLLMSetting(BaseLLMSetting):
+    """
+    A class for Fake Large Language Model Setting.
+    Usage docs: https://js.langchain.com/docs/integrations/llms/fake
+    """
     provider: Literal[LLMProvider.FAKE_LLM] = Field(
         description='The Large Language Model provider.'
     )

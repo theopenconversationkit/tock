@@ -22,7 +22,7 @@ from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import GenAIPromptTemplateException
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
-from gen_ai_orchestrator.models.llm.prompt_template import PromptTemplate
+from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.routers.requests.requests import SentenceGenerationQuery
 from gen_ai_orchestrator.routers.responses.responses import (
     SentenceGenerationResponse,
@@ -61,6 +61,17 @@ def generate_and_split_sentences(
 
 
 def validate_prompt_template(prompt: PromptTemplate):
+    """
+    Prompt template validation
+
+    Args:
+        prompt: The prompt template
+
+    Returns:
+        Nothing.
+    Raises:
+        GenAIPromptTemplateException if template is incorrect
+    """
     if 'jinja2' == prompt.formatter:
         try:
             Template(prompt.template).render(prompt.inputs)

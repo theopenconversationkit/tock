@@ -89,7 +89,9 @@ class RagResponse(BaseModel):
 
 
 class SentenceGenerationResponse(BaseModel):
+    """The sentence generation response model"""
+
     sentences: list[str] = Field(
-        description='The list of sentences generated',
+        description='The list of generated sentences.',
         default=[]
     )

@@ -12,7 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest.mock import patch
 
 import pytest
 
@@ -20,24 +19,113 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
     VectorStoreUnknownException,
 )
+from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import AzureOpenAIEMSetting
+from gen_ai_orchestrator.models.em.em_provider import EMProvider
+from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
+from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import AzureOpenAILLMSetting
+from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import FakeLLMSetting
+from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
+from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import OpenAILLMSetting
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import AzureOpenAIEMFactory
+from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory import OpenAIEMFactory
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_llm_factory,
     get_vector_store_factory,
 )
+from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import AzureOpenAILLMFactory
+from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import FakeLLMFactory
+from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory import OpenAILLMFactory
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.open_search_factory import OpenSearchFactory
 
 
-def test_get_llm_factory():
+def test_get_unknown_llm_factory():
     with pytest.raises(GenAIUnknownProviderSettingException):
         get_llm_factory(setting='settings with incorrect type')
 
 
-def test_get_em_factory():
+def test_get_open_ai_llm_factory():
+    open_ai = get_llm_factory(setting=OpenAILLMSetting(**{
+        "provider": "OpenAI",
+        "api_key": "myKey",
+        "model": "model",
+        "temperature": "0",
+        "prompt": "List 3 ice cream flavors."
+    }))
+    assert open_ai.setting.provider == LLMProvider.OPEN_AI
+    assert isinstance(open_ai, OpenAILLMFactory)
+
+
+def test_get_azure_open_ai_llm_factory():
+    azure_open_ai = get_llm_factory(setting=AzureOpenAILLMSetting(**{
+        "provider": "AzureOpenAIService",
+        "api_key": "myKey",
+        "deployment_name": "model",
+        "api_base": "https://doc.tock.ai/tock",
+        "api_version": "version",
+        "temperature": "0",
+        "prompt": "List 3 ice cream flavors."
+    }))
+    assert azure_open_ai.setting.provider == LLMProvider.AZURE_OPEN_AI_SERVICE
+    assert isinstance(azure_open_ai, AzureOpenAILLMFactory)
+
+def test_get_fake_llm_factory():
+    fake_llm = get_llm_factory(setting=FakeLLMSetting(**{
+        "provider": "FakeLLM",
+        "api_key": "myKey",
+        "temperature": "0",
+        "prompt": "List 3 ice cream flavors.",
+        "responses": ["1. vanilla\n2. chocolate\n3. strawberry"]
+    }))
+    assert fake_llm.setting.provider == LLMProvider.FAKE_LLM
+    assert isinstance(fake_llm, FakeLLMFactory)
+
+
+def test_get_unknown_em_factory():
     with pytest.raises(GenAIUnknownProviderSettingException):
         get_em_factory(setting='settings with incorrect type')
 
 
-def test_get_vector_store_factory():
+def test_get_open_ai_em_factory():
+    open_ai = get_em_factory(setting=OpenAIEMSetting(**{
+        "provider": "OpenAI",
+        "api_key": "myKey",
+        "model": "model",
+        "prompt": "List 3 ice cream flavors."
+    }))
+    assert open_ai.setting.provider == EMProvider.OPEN_AI
+    assert isinstance(open_ai, OpenAIEMFactory)
+
+
+def test_get_azure_open_ai_em_factory():
+    azure_open_ai = get_em_factory(setting=AzureOpenAIEMSetting(**{
+        "provider": "AzureOpenAIService",
+        "api_key": "myKey",
+        "deployment_name": "model",
+        "api_base": "https://doc.tock.ai/tock",
+        "api_version": "version",
+        "prompt": "List 3 ice cream flavors."
+    }))
+    assert azure_open_ai.setting.provider == EMProvider.AZURE_OPEN_AI_SERVICE
+    assert isinstance(azure_open_ai, AzureOpenAIEMFactory)
+
+def test_get_open_search_vector_store_factory():
+    em_factory = get_em_factory(setting=OpenAIEMSetting(**{
+        "provider": "OpenAI",
+        "api_key": "myKey",
+        "model": "model",
+        "prompt": "List 3 ice cream flavors."
+    }))
+    open_search = get_vector_store_factory(
+        vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
+        embedding_function=em_factory.get_embedding_model(),
+        index_name='an index name',
+    )
+    assert isinstance(open_search, OpenSearchFactory)
+
+
+def test_get_unknown_vector_store_factory():
     with pytest.raises(VectorStoreUnknownException):
         get_vector_store_factory(
             vector_store_provider='an incorrect vector store provider',
