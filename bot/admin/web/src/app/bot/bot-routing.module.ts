@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DocumentsStoryComponent } from './story/documents-story.component';
 import { FeatureComponent } from './feature/feature.component';
 import { I18nComponent } from './i18n/i18n.component';
 import { EditStoryComponent } from './story/edit-story/edit-story.component';
@@ -9,6 +8,7 @@ import { CreateStoryComponent } from './story/create-story/create-story.componen
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { BotTabsComponent } from './bot-tabs.component';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
+import { DocumentsStoryComponent } from './story/documents-story/documents-story.component';
 
 const routes: Routes = [
   {

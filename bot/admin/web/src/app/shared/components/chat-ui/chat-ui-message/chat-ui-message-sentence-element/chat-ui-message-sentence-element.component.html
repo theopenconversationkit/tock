@@ -5,12 +5,12 @@
         <table>
           <tr *ngFor="let a of e.attachments">
             <td>
-              <tock-bot-message-attachment [attachment]="a"></tock-bot-message-attachment>
+              <tock-chat-ui-message-attachment [attachment]="a"></tock-chat-ui-message-attachment>
             </td>
           </tr>
           <tr *ngFor="let l of e.locations">
             <td>
-              <tock-bot-message-location [location]="l"></tock-bot-message-location>
+              <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
             </td>
           </tr>
           <tr *ngFor="let entry of e.texts | mapToIterable">
@@ -21,12 +21,13 @@
           </tr>
           <tr *ngIf="e.choices.length !== 0">
             <td>
-              <tock-bot-message-choice
+              <tock-chat-ui-message-choice
                 *ngFor="let c of e.choices"
                 [choice]="c"
-                [user]="user"
-                (sendMessage)="reply($event)"
-              ></tock-bot-message-choice>
+                [replay]="replay"
+                [reply]="reply"
+                (replyMessage)="replyMessage($event)"
+              ></tock-chat-ui-message-choice>
             </td>
           </tr>
         </table>
