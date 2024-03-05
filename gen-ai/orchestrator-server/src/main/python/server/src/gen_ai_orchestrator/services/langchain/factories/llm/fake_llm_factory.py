@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+"""Model for creating FakeLLMFactory"""
+
 from langchain.base_language import BaseLanguageModel
 from langchain.chat_models.fake import FakeListChatModel
 
@@ -24,6 +26,7 @@ from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
 
 
 class FakeLLMFactory(LangChainLLMFactory):
+    """A class for LangChain Fake LLM Factory"""
     setting: FakeLLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:

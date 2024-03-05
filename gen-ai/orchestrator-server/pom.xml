@@ -52,7 +52,7 @@
                 </executions>
                 <configuration>
                     <workingDirectory>src/main/python/server/</workingDirectory>
-                    <executable>/home/Mohamed.Assoukti/.pyenv/shims/poetry</executable>
+                    <executable>poetry</executable>
                     <arguments>
                         <argument>export</argument>
                         <argument>--without-hashes</argument>
