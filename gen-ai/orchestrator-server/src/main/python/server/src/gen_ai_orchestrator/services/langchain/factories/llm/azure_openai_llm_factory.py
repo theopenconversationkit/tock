@@ -44,7 +44,7 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,
             temperature=self.setting.temperature,
-            request_timeout=application_settings.ai_provider_timeout
+            request_timeout=application_settings.llm_provider_timeout
         )
 
     @openai_exception_handler(provider='AzureOpenAIService')

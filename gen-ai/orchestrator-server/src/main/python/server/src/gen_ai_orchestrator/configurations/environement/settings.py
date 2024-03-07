@@ -51,7 +51,7 @@ class _Settings(BaseSettings):
         Path(__file__).dirname() + '/../logging/config.ini'
     )
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
-    ai_provider_timeout: int = 30
+    llm_provider_timeout: int = 30
     em_provider_timeout: int = 4
 
     open_search_host: str = 'localhost'
