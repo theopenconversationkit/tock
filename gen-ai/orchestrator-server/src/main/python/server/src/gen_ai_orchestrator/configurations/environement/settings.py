@@ -51,13 +51,16 @@ class _Settings(BaseSettings):
         Path(__file__).dirname() + '/../logging/config.ini'
     )
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
-    ai_provider_timeout: int = 20
+    ai_provider_timeout: int = 30
+    em_provider_timeout: int = 4
 
     open_search_host: str = 'localhost'
     open_search_port: str = '9200'
     open_search_aws_secret_manager_name: Optional[str] = None
     open_search_user: Optional[str] = 'admin'
     open_search_pwd: Optional[str] = 'admin'
+    """Request timeout: set the maximum time (in seconds) for the request to be completed."""
+    open_search_timeout: int = 4
 
 
 application_settings = _Settings()

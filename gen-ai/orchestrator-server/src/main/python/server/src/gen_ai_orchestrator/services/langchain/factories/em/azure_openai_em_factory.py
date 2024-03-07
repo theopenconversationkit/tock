@@ -18,6 +18,7 @@ from typing import List
 from langchain.embeddings.base import Embeddings
 from langchain_openai import AzureOpenAIEmbeddings
 
+from gen_ai_orchestrator.configurations.environement.settings import application_settings
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -40,6 +41,7 @@ class AzureOpenAIEMFactory(LangChainEMFactory):
             openai_api_version=self.setting.api_version,
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,
+            timeout=application_settings.em_provider_timeout,
         )
 
     @openai_exception_handler(provider='AzureOpenAIService')

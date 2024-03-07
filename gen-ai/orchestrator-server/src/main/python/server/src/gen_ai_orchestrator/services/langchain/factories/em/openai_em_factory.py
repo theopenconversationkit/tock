@@ -18,6 +18,7 @@ from typing import List
 from langchain.embeddings.base import Embeddings
 from langchain_openai import OpenAIEmbeddings
 
+from gen_ai_orchestrator.configurations.environement.settings import application_settings
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -34,7 +35,9 @@ class OpenAIEMFactory(LangChainEMFactory):
 
     def get_embedding_model(self) -> Embeddings:
         return OpenAIEmbeddings(
-            openai_api_key=self.setting.api_key, model=self.setting.model
+            openai_api_key=self.setting.api_key,
+            model=self.setting.model,
+            timeout=application_settings.em_provider_timeout,
         )
 
     @openai_exception_handler(provider='OpenAI')

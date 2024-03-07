@@ -45,4 +45,5 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
             ssl_show_warn=is_prod_environment,
             index_name=self.index_name,
             embedding_function=self.embedding_function,
+            timeout=application_settings.open_search_timeout,
         )
