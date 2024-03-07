@@ -42,7 +42,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
             openai_api_key=self.setting.api_key,
             model_name=self.setting.model,
             temperature=self.setting.temperature,
-            request_timeout=application_settings.ai_provider_timeout
+            request_timeout=application_settings.llm_provider_timeout
         )
 
     @openai_exception_handler(provider='OpenAI')
