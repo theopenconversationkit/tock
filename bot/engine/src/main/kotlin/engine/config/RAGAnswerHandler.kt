@@ -34,10 +34,13 @@ import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
 import mu.KotlinLogging
 
-private val k_neighborsDocuments = intProperty(name="tock_gen_ai_orchestrator_document_number_neighbors", defaultValue = 4)
-private val n_lastMessages = intProperty(name="tock_gen_ai_orchestrator_dialog_number_messages", defaultValue = 10)
-private val technicalErrorMessage = property("tock_gen_ai_orchestrator_technical_error",
-    defaultValue = property("tock_technical_error", "Technical error :( sorry!"))
+private val k_neighborsDocuments =
+    intProperty(name = "tock_gen_ai_orchestrator_document_number_neighbors", defaultValue = 4)
+private val n_lastMessages = intProperty(name = "tock_gen_ai_orchestrator_dialog_number_messages", defaultValue = 10)
+private val technicalErrorMessage = property(
+    "tock_gen_ai_orchestrator_technical_error",
+    defaultValue = property("tock_technical_error", "Technical error :( sorry!")
+)
 
 object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
@@ -107,7 +110,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
         if (!noAnswerStoryId.isNullOrBlank()) {
             logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
             noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, applicationId)
-        }else {
+        } else {
             logger.info { "No no-answer story is configured, so run the default unknown story." }
             noAnswerStory = botDefinition.unknownStory
         }
@@ -160,13 +163,13 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     // Do not return a response when the RAG story has been switched to the no RAG answer story
                     null
                 }
-            }catch (exc: Exception){
+            } catch (exc: Exception) {
                 logger.error { exc }
-                return if(exc is GenAIOrchestratorBusinessError && exc.error.info.error == "APITimeoutError"){
+                return if (exc is GenAIOrchestratorBusinessError && exc.error.info.error == "APITimeoutError") {
                     switch(ragConfiguration)
                     // Do not return a response when the RAG story has been switched to the no RAG answer story
                     null
-                }else RAGResponse(answer = TextWithFootnotes(text = technicalErrorMessage), debug = exc)
+                } else RAGResponse(answer = TextWithFootnotes(text = technicalErrorMessage), debug = exc)
             }
         }
     }
@@ -198,8 +201,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 }
             }
             // drop the last message, because it corresponds to the user's current question
-            .dropLast(n=1)
+            .dropLast(n = 1)
             // take last 10 messages
-            .takeLast(n=n_lastMessages)
+            .takeLast(n = n_lastMessages)
 
 }

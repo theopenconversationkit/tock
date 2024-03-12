@@ -16,16 +16,14 @@
 
 package ai.tock.iadvize.client.graphql.models.sendproactivemessage
 
-import ai.tock.iadvize.client.graphql.SEND_PROACTIVE_MESSAGE_MUTATION
-import ai.tock.iadvize.client.graphql.SEND_PROACTIVE_MESSAGE_MUTATION_NAME
+import ai.tock.iadvize.client.graphql.*
 import com.expediagroup.graphql.client.types.GraphQLClientRequest
 import kotlin.reflect.KClass
 
-class SendProactiveMessageRequest(override val variables: Variables) : GraphQLClientRequest<SendProactiveMessageResult> {
-    override val query: String = SEND_PROACTIVE_MESSAGE_MUTATION
+class SendProactiveActionOrMessageRequest(override val variables: Variables) : GraphQLClientRequest<SendProactiveMessageResult> {
+    override val query: String = SEND_PROACTIVE_ACTION_OR_MESSAGE_MUTATION
     override val operationName: String = SEND_PROACTIVE_MESSAGE_MUTATION_NAME
     override fun responseType(): KClass<SendProactiveMessageResult> = SendProactiveMessageResult::class
 
-    data class Variables(val conversationId: String, val chatbotId: Int, val message: String)
-
+    data class Variables(val conversationId: String, val chatBotId: Int, val actionOrMessage: ChatbotActionOrMessageInput)
 }

@@ -16,17 +16,9 @@
 
 package ai.tock.bot.connector.iadvize
 
-import ai.tock.bot.connector.ConnectorBase
-import ai.tock.bot.connector.ConnectorCallback
-import ai.tock.bot.connector.ConnectorData
-import ai.tock.bot.connector.ConnectorMessage
-import ai.tock.bot.connector.ConnectorQueue
-import ai.tock.bot.connector.iadvize.model.request.ConversationsRequest
-import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
-import ai.tock.bot.connector.iadvize.model.request.MessageRequest
+import ai.tock.bot.connector.*
+import ai.tock.bot.connector.iadvize.model.request.*
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
-import ai.tock.bot.connector.iadvize.model.request.TypeMessage
-import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest
 import ai.tock.bot.connector.iadvize.model.request.UnsupportedRequest.UnsupportedRequestJson
 import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies
 import ai.tock.bot.connector.iadvize.model.response.AvailabilityStrategies.Strategy.customAvailability
@@ -36,20 +28,19 @@ import ai.tock.bot.connector.iadvize.model.response.Healthcheck
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
 import ai.tock.bot.connector.iadvize.model.response.conversation.RepliesResponse
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeMessage
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeReply
+import ai.tock.bot.connector.iadvize.model.response.conversation.reply.IadvizeTransfer
 import ai.tock.bot.connector.media.MediaMessage
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.Action
-import ai.tock.bot.engine.action.Footnote
+import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 import ai.tock.bot.engine.event.Event
-import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
-import ai.tock.shared.Executor
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.error
+import ai.tock.iadvize.client.graphql.*
+import ai.tock.shared.*
 import ai.tock.shared.exception.rest.BadRequestException
-import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.github.salomonbrys.kodein.instance
@@ -68,6 +59,12 @@ private const val QUERY_ID_CONVERSATION: String = "idConversation"
 private const val TYPE_TEXT: String = "text"
 private const val ROLE_OPERATOR: String = "operator"
 
+// This is related to and iAdvize issue DERCBOT-850, iAdvize ticket number 119048.
+// RAG responses are proactive, very time-consuming, we don't have UX for that
+// So we're compensating with this message. It will be removed when the iAdvize problem is solved.
+private const val PROPERTY_TOCK_BOT_API_PROACTIVE_START_MESSAGE = "tock_bot_api_proactive_start_message"
+private val proactiveStartMessage: String? = propertyOrNull(PROPERTY_TOCK_BOT_API_PROACTIVE_START_MESSAGE)
+
 /**
  *
  */
@@ -78,7 +75,7 @@ class IadvizeConnector internal constructor(
     val firstMessage: String,
     val distributionRule: String?,
     val secretToken: String?,
-    val distributionRuleUnvailableMessage: String,
+    val distributionRuleUnavailableMessage: String,
     val localeCode: String?
 ) : ConnectorBase(IadvizeConnectorProvider.connectorType) {
 
@@ -226,7 +223,7 @@ class IadvizeConnector internal constructor(
             context,
             conversationRequest,
             distributionRule,
-            distributionRuleUnvailableMessage
+            distributionRuleUnavailableMessage
         )
         callback.answerWithResponse()
     }
@@ -283,8 +280,12 @@ class IadvizeConnector internal constructor(
         }
     }
 
-    override fun startProactiveConversation(callback: ConnectorCallback): Boolean {
-        (callback as? IadvizeConnectorCallback)?.answerWithoutResponse()
+    override fun startProactiveConversation(callback: ConnectorCallback, botBus: BotBus): Boolean {
+        if(!proactiveStartMessage.isNullOrBlank()){
+            // Send a RAG start message
+            botBus.send(proactiveStartMessage)
+        }
+        (callback as? IadvizeConnectorCallback)?.answerWithResponse()
         return true
     }
 
@@ -292,36 +293,43 @@ class IadvizeConnector internal constructor(
         val iadvizeCallback = callback as? IadvizeConnectorCallback
         iadvizeCallback?.actions?.forEach {
             queue.add(it.action , it.delayInMs) {action ->
-                sendProactiveMessage(action, parameters)
+                sendProactiveMessage(iadvizeCallback, action, parameters)
             }
         }
         iadvizeCallback?.actions?.clear()
     }
 
-    private fun sendProactiveMessage(action: Action, parameters: Map<String, String>){
-        IadvizeGraphQLClient().sendProactiveMessage(
-            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
-            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
-            buildGraphQLResponse(action)
-        )
+    /**
+     * Send [Action] using GraphQL
+     * @param callback the [IadvizeConnectorCallback]
+     * @param action the action to send
+     * @param parameters the key value map of parameters
+     */
+    private fun sendProactiveMessage(
+        callback: IadvizeConnectorCallback,
+        action: Action,
+        parameters: Map<String, String>
+    ){
+        when (action) {
+            is SendSentenceWithFootnotes -> action.sendByGraphQL(parameters)
+            is SendSentence -> action.messages
+                .filterIsInstance<IadvizeConnectorMessage>()
+                .flatMap { it.replies }
+                .map { it.sendByGraphQL(parameters, callback) }
+
+        }
     }
 
     override fun endProactiveConversation(callback: ConnectorCallback, parameters: Map<String, String>) {
         flushProactiveConversation(callback, parameters)
     }
 
-    private fun buildGraphQLResponse(action: Action): String =
-        when(action) {
-            is SendSentenceWithFootnotes -> action.toGraphQLMessage()
-            else -> action.toString()
-        }
-
     /**
      * Format the notification Rag message when active
      * default connector without format
      * https://docs.iadvize.dev/technologies/bots#customize-replies-with-markdown
      */
-    private fun SendSentenceWithFootnotes.toGraphQLMessage(): String {
+    private fun SendSentenceWithFootnotes.toMarkdown(): String {
         var counter = 1
         val sources = footnotes.joinToString(", ") { footnote ->
             footnote.url?.let {
@@ -334,6 +342,54 @@ class IadvizeConnector internal constructor(
                 text.toString()
             else
                 "$text\n\n\n*Sources: $sources*"
+    }
+
+    /**
+     * Send [SendSentenceWithFootnotes] markdown using GraphQL
+     * @param parameters the key value map of parameters
+     */
+    private fun SendSentenceWithFootnotes.sendByGraphQL(parameters: Map<String, String>) {
+        IadvizeGraphQLClient().sendProactiveActionOrMessage(
+            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
+            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
+            actionOrMessage = ChatbotActionOrMessageInput(
+                chatbotMessage = ChatbotMessageInput(
+                    chatbotSimpleTextMessage = this.toMarkdown(),
+                )
+            )
+        )
+    }
+
+    /**
+     * Send [IadvizeReply] using GraphQL
+     * @param parameters the key value map of parameters
+     * @param callback the [IadvizeConnectorCallback]
+     */
+    private fun IadvizeReply.sendByGraphQL(parameters: Map<String, String>, callback: IadvizeConnectorCallback) {
+        val actionOrMessage = when (this) {
+            is IadvizeTransfer -> {
+                // Check if a rule is available for distribution
+                val response = callback.addDistributionRulesOnTransfer(this)
+                if (response is IadvizeTransfer){
+                    response.toChatBotActionOrMessageInput()
+                } else {
+                    // If the distribution rule is not available, send the configured message when
+                    ChatbotActionOrMessageInput(
+                        chatbotMessage = ChatbotMessageInput(
+                            chatbotSimpleTextMessage = distributionRuleUnavailableMessage,
+                        )
+                    )
+                }
+            }
+            else -> this.toChatBotActionOrMessageInput()
+        }
+
+        // Send a proactive action or message
+        IadvizeGraphQLClient().sendProactiveActionOrMessage(
+            parameters[IadvizeConnectorMetadata.CONVERSATION_ID.name]!!,
+            parameters[IadvizeConnectorMetadata.CHAT_BOT_ID.name]?.toInt()!!,
+            actionOrMessage = actionOrMessage
+        )
     }
 
     internal fun handleRequest(
@@ -349,7 +405,7 @@ class IadvizeConnector internal constructor(
             context,
             iadvizeRequest,
             distributionRule,
-            distributionRuleUnvailableMessage
+            distributionRuleUnavailableMessage
         )
 
         when (iadvizeRequest) {
