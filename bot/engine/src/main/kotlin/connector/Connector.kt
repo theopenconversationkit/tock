@@ -77,8 +77,9 @@ interface Connector {
     /**
      * Start a proactive conversation
      * @param callback the initial connector callback
+     * @param botBus the bot bus
      */
-    fun startProactiveConversation(callback: ConnectorCallback): Boolean = false
+    fun startProactiveConversation(callback: ConnectorCallback, botBus: BotBus): Boolean = false
 
     /**
      * Proactively send messages to connector

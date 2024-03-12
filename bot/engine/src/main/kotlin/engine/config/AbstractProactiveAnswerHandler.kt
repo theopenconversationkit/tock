@@ -21,8 +21,12 @@ import ai.tock.bot.engine.config.ProactiveConversationStatus
 import ai.tock.bot.engine.config.ProactiveConversationStatus.LUNCHED
 import ai.tock.bot.engine.config.ProactiveConversationStatus.STARTED
 import ai.tock.bot.engine.config.ProactiveConversationStatus.CLOSED
+import ai.tock.shared.Executor
+import ai.tock.shared.injector
+import com.github.salomonbrys.kodein.instance
 
 private const val PROACTIVE_CONVERSATION_STATUS: String = "PROACTIVE_CONVERSATION_STATUS"
+val executor: Executor by injector.instance()
 
 interface AbstractProactiveAnswerHandler {
 
@@ -30,15 +34,17 @@ interface AbstractProactiveAnswerHandler {
     fun handle(botBus: BotBus) {
         with(botBus) {
             startProactiveConversation()
-            handleProactiveAnswer(this)
-            endProactiveConversation()
+            executor.executeBlocking {
+                handleProactiveAnswer(this)
+                endProactiveConversation()
+            }
         }
     }
 
     private fun BotBus.startProactiveConversation() {
         if(getBusContextValue<ProactiveConversationStatus>(PROACTIVE_CONVERSATION_STATUS) == null) {
             setBusContextValue(PROACTIVE_CONVERSATION_STATUS, LUNCHED)
-            if(underlyingConnector.startProactiveConversation(connectorData.callback)){
+            if(underlyingConnector.startProactiveConversation(connectorData.callback, this)){
                 setBusContextValue(PROACTIVE_CONVERSATION_STATUS, STARTED)
             }
         }

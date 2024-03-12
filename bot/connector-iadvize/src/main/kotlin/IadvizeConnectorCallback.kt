@@ -94,11 +94,6 @@ class IadvizeConnectorCallback(override val  applicationId: String,
     }
 
     /**
-     * Respond to a user request with an empty reply
-     */
-    fun answerWithoutResponse() = sendResponse()
-
-    /**
      * Respond to a user request with a non-empty reply,
      * based on actions already stored in the callback
      */
@@ -187,7 +182,7 @@ class IadvizeConnectorCallback(override val  applicationId: String,
      * For IadvizeReply instance of IadvizeTransfer
      * return new IadvizeTransfer with distribution rule configured on connector
      */
-     private val addDistributionRulesOnTransfer:  (IadvizeReply) -> IadvizeReply = {
+     val addDistributionRulesOnTransfer:  (IadvizeReply) -> IadvizeReply = {
 
         if(it is IadvizeTransfer) {
             if(distributionRule == null) {

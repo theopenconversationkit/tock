@@ -21,7 +21,7 @@ import ai.tock.iadvize.client.authentication.IadvizeAuthenticationClient
 import ai.tock.iadvize.client.graphql.models.GraphQLResponse
 import ai.tock.iadvize.client.graphql.models.customData.CustomDataRequest
 import ai.tock.iadvize.client.graphql.models.routingrule.RoutingRuleRequest
-import ai.tock.iadvize.client.graphql.models.sendproactivemessage.SendProactiveMessageRequest
+import ai.tock.iadvize.client.graphql.models.sendproactivemessage.*
 import com.expediagroup.graphql.client.serializer.defaultGraphQLSerializer
 import com.expediagroup.graphql.client.types.GraphQLClientRequest
 import mu.KotlinLogging
@@ -70,14 +70,15 @@ class IadvizeGraphQLClient {
     )
 
     /**
-     * Proactively send messages to the visitor
+     * Proactively send actions or messages to the visitor
      * https://developers.iadvize.com/documentation/building-your-bot-on-iadvize#proactively-send-messages-to-the-visitor
+     * https://graphql.iadvize.dev/mutations/chatbotMessageSend
      * @param conversationId the conversation identifier
-     * @param chatbotId the id of your external bot at iAdvize in integer format
-     * @param message the message to send
+     * @param chatBotId the id of your external bot at iAdvize in integer format
+     * @param actionOrMessage the action or message to send
      */
-    fun sendProactiveMessage(conversationId: String, chatbotId: Int, message: String): Boolean = this.execute(
-        SendProactiveMessageRequest(SendProactiveMessageRequest.Variables(conversationId, chatbotId, message)),
+    fun sendProactiveActionOrMessage(conversationId: String, chatBotId: Int, actionOrMessage: ChatbotActionOrMessageInput): Boolean = this.execute(
+        SendProactiveActionOrMessageRequest(SendProactiveActionOrMessageRequest.Variables(conversationId, chatBotId, actionOrMessage)),
         { sendProactiveMessage(it) },
         {
             it.userErrors == null

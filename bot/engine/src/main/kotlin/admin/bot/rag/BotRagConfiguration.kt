@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.bot.rag
 
-import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import org.litote.kmongo.Id

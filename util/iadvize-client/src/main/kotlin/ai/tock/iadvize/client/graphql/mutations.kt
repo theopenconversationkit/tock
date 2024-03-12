@@ -18,17 +18,14 @@ package ai.tock.iadvize.client.graphql
 
 
 const val SEND_PROACTIVE_MESSAGE_MUTATION_NAME = "SendProactiveMessage"
-const val SEND_PROACTIVE_MESSAGE_MUTATION ="""
-    mutation $SEND_PROACTIVE_MESSAGE_MUTATION_NAME(${'$'}conversationId: UUID!, ${'$'}chatbotId: Int!, ${'$'}message: String!) {
+
+const val SEND_PROACTIVE_ACTION_OR_MESSAGE_MUTATION ="""
+    mutation $SEND_PROACTIVE_MESSAGE_MUTATION_NAME(${'$'}conversationId: UUID!, ${'$'}chatBotId: Int!, ${'$'}actionOrMessage: ChatbotActionOrMessageInput!) {
         chatbotMessageSend(
             input: {
                 conversationId: ${'$'}conversationId,
-                chatbotId: ${'$'}chatbotId,
-                actionOrMessage: {
-                    chatbotMessage: {
-                        chatbotSimpleTextMessage: ${'$'}message,
-                    }
-                }
+                chatbotId: ${'$'}chatBotId,
+                actionOrMessage: ${'$'}actionOrMessage
             }
         ) {
             userErrors {
@@ -36,5 +33,4 @@ const val SEND_PROACTIVE_MESSAGE_MUTATION ="""
             }
         }
     }
-
 """

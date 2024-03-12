@@ -16,4 +16,15 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
-class IadvizeClose : IadvizeReply(ReplyType.close)
+import ai.tock.iadvize.client.graphql.ChatbotActionInput
+import ai.tock.iadvize.client.graphql.ChatbotActionOrMessageInput
+import ai.tock.iadvize.client.graphql.CloseMessageInput
+
+class IadvizeClose : IadvizeReply(ReplyType.close) {
+    override fun toChatBotActionOrMessageInput() =
+        ChatbotActionOrMessageInput(
+            chatbotAction = ChatbotActionInput(
+                closeMessage = CloseMessageInput()
+            )
+        )
+}
