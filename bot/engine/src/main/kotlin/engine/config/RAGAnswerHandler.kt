@@ -34,13 +34,14 @@ import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
 import mu.KotlinLogging
 
-private val k_neighborsDocuments =
+private val kNeighborsDocuments =
     intProperty(name = "tock_gen_ai_orchestrator_document_number_neighbors", defaultValue = 4)
-private val n_lastMessages = intProperty(name = "tock_gen_ai_orchestrator_dialog_number_messages", defaultValue = 10)
+private val nLastMessages = intProperty(name = "tock_gen_ai_orchestrator_dialog_number_messages", defaultValue = 10)
 private val technicalErrorMessage = property(
     "tock_gen_ai_orchestrator_technical_error",
     defaultValue = property("tock_technical_error", "Technical error :( sorry!")
 )
+private val ragDebugEnabled = booleanProperty(name = "tock_gen_ai_orchestrator_rag_debug_enabled", defaultValue = false)
 
 object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
@@ -70,7 +71,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     )
                 )
 
-                if (connectorData.metadata["debugEnabled"].toBoolean()) {
+                if (connectorData.metadata["debugEnabled"].toBoolean() || ragDebugEnabled) {
                     response.debug?.let { sendDebugData("RAG", it) }
                 }
             } else {
@@ -148,12 +149,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         ),
                         documentSearchParams = OpenSearchParams(
                             // The number of neighbors to return for each query_embedding.
-                            k = k_neighborsDocuments,
+                            k = kNeighborsDocuments,
                             filter = listOf(
                                 Term(term = mapOf("metadata.index_session_id.keyword" to ragConfiguration.indexSessionId!!))
                             )
                         ),
-                    ), debug = connectorData.metadata["debugEnabled"].toBoolean()
+                    ), debug = connectorData.metadata["debugEnabled"].toBoolean() || ragDebugEnabled
                 )
 
                 // Handle RAG response
@@ -203,6 +204,6 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             // drop the last message, because it corresponds to the user's current question
             .dropLast(n = 1)
             // take last 10 messages
-            .takeLast(n = n_lastMessages)
+            .takeLast(n = nLastMessages)
 
 }
