@@ -70,7 +70,7 @@
         <batik>1.12</batik>
         <google>26.31.0</google>
         <aws-sdk>1.12.656</aws-sdk>
-        <pac4j>6.0.1</pac4j>
+        <pac4j>5.7.3</pac4j>
         <vertx-pac4j>6.0.2</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
