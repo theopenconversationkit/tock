@@ -52,6 +52,7 @@ class _Settings(BaseSettings):
     )
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     llm_provider_timeout: int = 30
+    llm_provider_max_retries: int = 0
     em_provider_timeout: int = 4
 
     open_search_host: str = 'localhost'
