@@ -142,3 +142,26 @@ Options:
 Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
 ```
 
+### export_run_results.py
+
+Export a LangSmith dataset run results, in csv format.
+
+```
+Usage:
+    export_run_results.py [-v] <dataset_id> <session_ids>...
+    export_run_results.py -h | --help
+    export_run_results.py --version
+
+Arguments:
+    dataset_id      dataset id
+    session_ids     list of session ids
+
+Options:
+    -h --help   Show this screen
+    --version   Show version
+    -v          Verbose output for debugging
+
+The exported CSV file will have these columns :
+'Reference input'|'Reference output'|'Response 1'|'Sources 1'|...|'Response N'|'Sources N'
+NB: There will be as many responses as run sessions
+```
