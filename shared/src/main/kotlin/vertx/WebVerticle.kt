@@ -98,6 +98,8 @@ abstract class WebVerticle : AbstractVerticle() {
         private val tockErrorHandler: ErrorHandler by lazy(PUBLICATION) {
             ErrorHandler.create(vertx)
         }
+
+        private val fileUploadDirectory = property("tock_file_upload_directory", "file-uploads")
     }
 
     open val logger: KLogger = KotlinLogging.logger {}
@@ -795,7 +797,7 @@ abstract class WebVerticle : AbstractVerticle() {
             .allowCredentials(allowCredentials)
 
     protected fun bodyHandler(): BodyHandler {
-        return BodyHandler.create().setBodyLimit(verticleLongProperty("body_limit", 1000000L))
+        return BodyHandler.create(fileUploadDirectory).setBodyLimit(verticleLongProperty("body_limit", 1000000L))
             .setMergeFormAttributes(false)
     }
 
