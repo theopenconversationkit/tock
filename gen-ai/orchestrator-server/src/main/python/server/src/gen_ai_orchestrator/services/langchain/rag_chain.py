@@ -21,8 +21,9 @@ import logging
 import re
 import time
 from logging import ERROR, WARNING
+from typing import List, Optional
 
-from langchain.chains import ConversationalRetrievalChain, LLMChain
+from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 
@@ -39,6 +40,9 @@ from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.rag.rag_models import (
     ChatMessageType,
     Footnote,
+    RagDebugData,
+    RagDocument,
+    RagDocumentMetadata,
     TextWithFootnotes,
 )
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
@@ -126,10 +130,10 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
     # RAG Guard
     __rag_guard(inputs, response)
 
-    logger.info(
-        'RAG chain - End of execution. (Duration : %.2f seconds)',
-        time.time() - start_time,
-    )
+    # Calculation of RAG processing time
+    rag_duration = '{:.2f}'.format(time.time() - start_time)
+    logger.info('RAG chain - End of execution. (Duration : %s seconds)', rag_duration)
+
     # Returning RAG response
     return RagResponse(
         answer=TextWithFootnotes(
@@ -145,7 +149,11 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
                 )
             ),
         ),
-        debug=records_callback_handler.show_records() if debug else None,
+        debug=get_rag_debug_data(
+            query, response, records_callback_handler, rag_duration
+        )
+        if debug
+        else None,
     )
 
 
@@ -214,4 +222,67 @@ def __rag_log(level, message, inputs, response):
             'answer': response['answer'],
             'documents': response['source_documents'],
         },
+    )
+
+
+def get_rag_documents(handler: RetrieverJsonCallbackHandler) -> List[RagDocument]:
+    """
+    Get documents used on RAG context
+
+    Args:
+        handler: the callback handler
+    """
+
+    on_chain_start_records = handler.show_records('on_chain_start_records')
+    return [
+        # Get first 100 char of content
+        RagDocument(
+            content=doc['page_content'][0:100] + '...',
+            metadata=RagDocumentMetadata(**doc['metadata']),
+        )
+        for doc in on_chain_start_records[0]['inputs']['input_documents']
+    ]
+
+
+def get_condense_question(handler: RetrieverJsonCallbackHandler) -> Optional[str]:
+    """Get the condensed question"""
+
+    on_text_records = handler.show_records('on_text_records')
+    # If the handler records 2 texts (prompts), this means that 2 LLM providers are invoked
+    if len(on_text_records) == 2:
+        # So the user question is condensed
+        on_chain_start_records = handler.show_records('on_chain_start_records')
+        return on_chain_start_records[0]['inputs']['question']
+    else:
+        # Else, the user's question was not formulated
+        return None
+
+
+def get_llm_prompts(handler: RetrieverJsonCallbackHandler) -> (Optional[str], str):
+    """Get used llm prompt"""
+
+    on_text_records = handler.show_records('on_text_records')
+    # If the handler records 2 texts (prompts), this means that 2 LLM providers are invoked
+    if len(on_text_records) == 2:
+        return on_text_records[0]['text'], on_text_records[1]['text']
+
+    # Else, only the LLM for "question answering" was invoked
+    return None, on_text_records[0]['text']
+
+
+def get_rag_debug_data(
+    query, response, records_callback_handler, rag_duration
+) -> RagDebugData:
+    """RAG debug data assembly"""
+
+    return RagDebugData(
+        user_question=query.question_answering_prompt_inputs['question'],
+        condense_question_prompt=get_llm_prompts(records_callback_handler)[0],
+        condense_question=get_condense_question(records_callback_handler),
+        question_answering_prompt=get_llm_prompts(records_callback_handler)[1],
+        documents=get_rag_documents(records_callback_handler),
+        document_index_name=query.document_index_name,
+        document_search_params=query.document_search_params,
+        answer=response['answer'],
+        duration=rag_duration,
     )

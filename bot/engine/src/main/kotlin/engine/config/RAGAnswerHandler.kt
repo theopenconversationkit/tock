@@ -51,17 +51,17 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     override fun handleProactiveAnswer(botBus: BotBus) {
         with(botBus) {
             // Call RAG Api - Gen AI Orchestrator
-            val response = rag(this)
+            val (answer, debug) = rag(this)
 
-            if (response != null) {
+            if (answer != null) {
                 logger.info { "Send RAG API response" }
                 send(
                     SendSentenceWithFootnotes(
                         botId,
                         applicationId,
                         userId,
-                        text = response.answer.text,
-                        footnotes = response.answer.footnotes.map {
+                        text = answer.text,
+                        footnotes = answer.footnotes.map {
                             Footnote(
                                 it.identifier,
                                 it.title,
@@ -70,12 +70,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         }.toMutableList()
                     )
                 )
-
-                if (connectorData.metadata["debugEnabled"].toBoolean() || ragDebugEnabled) {
-                    response.debug?.let { sendDebugData("RAG", it) }
-                }
             } else {
                 logger.info { "No RAG response to send!" }
+            }
+
+            if (connectorData.metadata["debugEnabled"].toBoolean() || ragDebugEnabled) {
+                debug?.let { sendDebugData("RAG", it) }
             }
         }
     }
@@ -126,7 +126,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      *
      * @return Rag response if it needs to be handled, null otherwise (already handled by a switch for instance in case of no response)
      */
-    private fun rag(botBus: BotBus): RAGResponse? {
+    private fun rag(botBus: BotBus): Pair<TextWithFootnotes?, Any?> {
         logger.info { "Call Generative AI Orchestrator - RAG API" }
         with(botBus) {
 
@@ -159,18 +159,18 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
                 // Handle RAG response
                 return if (!ragStoryRedirection(this, response)) {
-                    response
+                    Pair(response?.answer, response?.debug)
                 } else {
                     // Do not return a response when the RAG story has been switched to the no RAG answer story
-                    null
+                    Pair(null, response?.debug)
                 }
             } catch (exc: Exception) {
                 logger.error { exc }
                 return if (exc is GenAIOrchestratorBusinessError && exc.error.info.error == "APITimeoutError") {
                     switch(ragConfiguration)
                     // Do not return a response when the RAG story has been switched to the no RAG answer story
-                    null
-                } else RAGResponse(answer = TextWithFootnotes(text = technicalErrorMessage), debug = exc)
+                    Pair(null, null)
+                }else Pair(TextWithFootnotes(text = technicalErrorMessage), exc)
             }
         }
     }

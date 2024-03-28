@@ -15,6 +15,7 @@
 """Retriever callback handler for LangChain."""
 
 import logging
+import re
 from typing import Any, Dict, List, Optional, Union
 
 from langchain.callbacks.base import BaseCallbackHandler
@@ -147,7 +148,7 @@ class RetrieverJsonCallbackHandler(BaseCallbackHandler):
         """Run when agent ends."""
         json_data = {
             'event_name': 'on_text',
-            'text': self.remove_on_text_after_prompt(text),
+            'text': self.normalise_prompt(text),
         }
         if json_data not in self.records['on_text_records']:
             self.records['on_text_records'].append(json_data)
@@ -168,15 +169,20 @@ class RetrieverJsonCallbackHandler(BaseCallbackHandler):
             records = self.records
         return records
 
-    def remove_on_text_after_prompt(self, prompt: str):
-        """remove on after prompt and color on prompt"""
-        _prefix_colored_text = f'\u001b[32m\033[1;3m'
-        _suffix_colored_text = f'\u001b[0m'
-        _prompt_after_formatting = 'Prompt after formatting:\n'
 
-        prompt = (
-            prompt.replace(_prefix_colored_text, '')
-            .replace(_suffix_colored_text, '')
-            .replace(_prompt_after_formatting, '')
-        )
-        return prompt
+    def normalise_prompt(self, prompt: str):
+        """
+        Remove 'on after prompt' and color on prompt.
+        To identify the color ansi sequence, the function uses this regular expression : \x1B\[[0-?]*[ -/]*[@-~]
+
+        Args:
+            prompt: the prompt to normalise
+        """
+
+        # remove ansi escape sequences
+        ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+        prompt = ansi_escape.sub('', prompt)
+
+        # remove a static sentence
+        return prompt.replace('Prompt after formatting:\n', '')
+

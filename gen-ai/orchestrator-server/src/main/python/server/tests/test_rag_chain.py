@@ -15,18 +15,23 @@
 from unittest.mock import patch
 
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_core.prompts.prompt import PromptTemplate
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
-from gen_ai_orchestrator.models.rag.rag_models import TextWithFootnotes
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.langchain import rag_chain
-from gen_ai_orchestrator.services.langchain.rag_chain import execute_qa_chain
+from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
+    RetrieverJsonCallbackHandler,
+)
+from gen_ai_orchestrator.services.langchain.rag_chain import (
+    execute_qa_chain,
+    get_condense_question,
+    get_llm_prompts,
+)
 
 
 # 'Mock an item where it is used, not where it came from.'
@@ -49,7 +54,9 @@ from gen_ai_orchestrator.services.langchain.rag_chain import execute_qa_chain
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.__rag_guard')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagResponse')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.TextWithFootnotes')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.RagDebugData')
 def test_rag_chain(
+    mocked_rag_debug_data,
     mocked_text_with_footnotes,
     mocked_rag_response,
     mocked_rag_guard,
@@ -169,7 +176,7 @@ Answer in {locale}:""",
         answer=mocked_text_with_footnotes(
             text=mocked_rag_answer['answer'], footnotes=[]
         ),
-        debug=mocked_callback.show_records(),
+        debug=mocked_rag_debug_data(query, mocked_rag_answer, mocked_callback, 1),
     )
 
 
@@ -201,3 +208,51 @@ def test_rag_guard_removes_docs_if_no_answer(mocked_log):
     }
     rag_chain.__rag_guard(inputs, response)
     assert response['source_documents'] == []
+
+
+def test_get_llm_prompts_one_record():
+    handler = RetrieverJsonCallbackHandler()
+    handler.on_text(text='LLM 1')
+    llm_1, llm_2 = get_llm_prompts(handler)
+    assert llm_1 is None
+    assert llm_2 == 'LLM 1'
+
+
+def test_get_llm_prompts_one_record():
+    handler = RetrieverJsonCallbackHandler()
+    handler.on_text(text='LLM 1')
+    handler.on_text(text='LLM 2')
+    llm_1, llm_2 = get_llm_prompts(handler)
+    assert llm_1 == 'LLM 1'
+    assert llm_2 == 'LLM 2'
+
+
+def test_get_condense_question_none():
+    handler = RetrieverJsonCallbackHandler()
+    handler.on_text(text='LLM 1')
+    handler.on_chain_start(
+        serialized={},
+        inputs={
+            'input_documents': [],
+            'question': 'Is this a question ?',
+            'chat_history': 'chat_history',
+        },
+    )
+    question = get_condense_question(handler)
+    assert question is None
+
+
+def test_get_condense_question():
+    handler = RetrieverJsonCallbackHandler()
+    handler.on_text(text='LLM 1')
+    handler.on_text(text='LLM 2')
+    handler.on_chain_start(
+        serialized={},
+        inputs={
+            'input_documents': [],
+            'question': 'Is this a question ?',
+            'chat_history': 'chat_history',
+        },
+    )
+    question = get_condense_question(handler)
+    assert question == 'Is this a question ?'
