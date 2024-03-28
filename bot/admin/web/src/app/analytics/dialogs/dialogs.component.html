@@ -14,182 +14,29 @@
   ~ limitations under the License.
   -->
 
-<div class="dialogs">
-  <nb-card>
-    <nb-card-body>
-      <ng-container *ngIf="(isSatisfactionRoute() | async) === false; else satisfaction">
-        <span class="search-input">
-          <input
-            nbInput
-            placeholder="Search user text"
-            status="primary"
-            [(ngModel)]="filter.text"
-            (keyup.enter)="refresh()"
-          />
-        </span>
-        <nb-checkbox
-          class="exact"
-          [(ngModel)]="filter.exactMatch"
-          >Exact text match
-        </nb-checkbox>
-        <span>
-          <nb-select
-            class="select-plan"
-            status="primary"
-            placeholder="Connector type"
-            [(ngModel)]="filter.connectorType"
-            (selectedChange)="refresh()"
-          >
-            <nb-option
-              *ngFor="let c of connectorTypes"
-              [value]="c"
-              >{{ c.id }}</nb-option
-            >
-          </nb-select>
-        </span>
-        &nbsp;
-        <span>
-          <nb-select
-            class="select-plan"
-            status="primary"
-            placeholder="Intent"
-            [(ngModel)]="filter.intentName"
-            (selectedChange)="refresh()"
-          >
-            <nb-option value="">All</nb-option>
-            <nb-option
-              *ngFor="let intent of state.currentApplication.intents"
-              [value]="intent.name"
-            >
-              {{ intent.name }}
-            </nb-option>
-            <nb-option value="unknown">Unknown</nb-option>
-          </nb-select>
-        </span>
-        &nbsp;
-        <nb-toggle
-          class="test"
-          [(ngModel)]="filter.displayTests"
-          (change)="waitAndRefresh()"
-          >Display tests</nb-toggle
-        >
-        <button
-          nbButton
-          (click)="refresh()"
-          size="small"
-          style="margin-left: 10px"
-        >
-          GO
-        </button>
-      </ng-container>
-      <ng-template #satisfaction>
-        <nb-select
-          class="select-plan"
-          status="primary"
-          placeholder="Configuration"
-          [(ngModel)]="filter.configuration"
-          (selectedChange)="refresh()"
-        >
-          <nb-option value="">All</nb-option>
-          <nb-option
-            *ngFor="let config of configurationNameList"
-            [value]="config"
-          >
-            {{ config }}
-          </nb-option>
-        </nb-select>
-        <nb-select
-          class="select-plan"
-          multiple
-          placeholder="Intents"
-          status="primary"
-          [(ngModel)]="filter.intentsToHide"
-          (selectedChange)="refresh()"
-        >
-          <nb-option>Clear selection</nb-option>
-          <nb-option
-            *ngFor="let intent of intents"
-            [value]="intent"
-          >
-            {{ intent }}
-          </nb-option>
-        </nb-select>
-
-        <nb-toggle
-          class="test"
-          [(ngModel)]="filter.displayTests"
-          (change)="waitAndRefresh()"
-          >Display tests</nb-toggle
-        >
-
-        <button
-          nbButton
-          ghost
-          (click)="exportDialogs()"
-          nbTooltip="Export All Dialogs With Ratings"
-        >
-          <nb-icon icon="download-outline"></nb-icon>
-        </button>
-      </ng-template>
-    </nb-card-body>
-  </nb-card>
-  <div *ngIf="total !== -1">
-    <h1 *ngIf="total === 0">
-      No dialogs found!
-      <button
-        nbButton
-        ghost
-        (click)="refresh()"
-      >
-        <nb-icon icon="refresh-outline"></nb-icon>
-      </button>
-    </h1>
-    <h1
-      *ngIf="total !== 0"
-      style="margin: 20px"
+<div class="d-flex flex-wrap align-items-center mt-3">
+  <h1 class="flex-grow-1">
+    Dialogs
+    <span
+      *ngIf="count"
+      class="font-weight-normal"
+      >({{ count }})</span
     >
-      Dialogs : {{ formattedTotal() }}
-      <button
-        nbButton
-        ghost
-        (click)="refresh()"
-        style="vertical-align: top"
-      >
-        <nb-icon icon="refresh-outline"></nb-icon>
-      </button>
-      <button
-        *ngIf="filter.dialogId"
-        nbButton
-        ghost
-        (click)="viewAllWithThisText()"
-        nbTooltip="View all dialogs using this text"
-      >
-        <nb-icon icon="message-square-outline"></nb-icon>
-      </button>
-    </h1>
-    <p></p>
-    <div
-      infinite-scroll
-      [infiniteScrollDistance]="2"
-      [infiniteScrollThrottle]="300"
-      (scrolled)="onScroll()"
+  </h1>
+
+  <div class="d-flex">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      nbTooltip="Refresh dialogs"
+      (click)="refresh()"
     >
-      <div *ngFor="let dialog of data">
-        <tock-display-dialog
-          [dialog]="dialog"
-          [intentsToHide]="filter.intentsToHide"
-        >
-          <div *ngIf="dialog.actions.length === 0">No dialog</div>
-        </tock-display-dialog>
-        <p></p>
-      </div>
-    </div>
+      <nb-icon icon="refresh-outline"></nb-icon>
+    </button>
   </div>
-  <nb-card
-    [nbSpinner]="loading"
-    nbSpinnerStatus="primary"
-    *ngIf="loading"
-  >
-    <nb-card-body></nb-card-body>
-  </nb-card>
 </div>
+
+<tock-dialogs-list #dialogsList></tock-dialogs-list>
+
+<tock-scroll-top-button></tock-scroll-top-button>

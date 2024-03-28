@@ -164,3 +164,20 @@ nb-card.selected {
 .unClickable {
   pointer-events: none;
 }
+
+.shader {
+  position: absolute;
+  bottom: -0.5rem;
+  left: 0;
+  right: 0;
+
+  padding: 1rem;
+
+  pointer-events: none;
+
+  background: linear-gradient(0deg, rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 0) 100%);
+}
+
+.nb-theme-dark .shader {
+  background: linear-gradient(0deg, #222b45 10%, #222b4500 100%);
+}
