@@ -91,7 +91,8 @@ class RestConnector(
                                 locale,
                                 action,
                                 debugEnabled = message.debugEnabled,
-                            )
+                            ),
+                            metadata = mapOf("debugEnabled" to message.debugEnabled.toString()),
                         )
                     )
                 }

@@ -1,0 +1,66 @@
+/*
+ * Copyright (C) 2017/2021 e-voyageurs technologies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '@nebular/theme/styles/theming';
+
+.messages-col {
+  width: 22rem;
+  min-width: 22rem;
+  height: calc(100vh - 340px);
+  overflow: auto;
+}
+
+// ScrollBars
+:host .messages-col::-webkit-scrollbar {
+  width: 0.625rem;
+  height: 0.3125rem;
+}
+
+:host .messages-col::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 0.15625rem;
+}
+
+.nb-theme-default :host .messages-col::-webkit-scrollbar-thumb {
+  background: #e4e9f2;
+}
+.nb-theme-default :host .messages-col::-webkit-scrollbar-track {
+  background: #f7f9fc;
+}
+
+.nb-theme-dark :host .messages-col::-webkit-scrollbar-thumb {
+  background: #101426;
+}
+.nb-theme-dark :host .messages-col::-webkit-scrollbar-track {
+  background: #192038;
+}
+
+.connector {
+  width: 24px;
+  height: 24px;
+}
+
+.tag {
+  display: inline-flex;
+  padding: 0rem 0.9rem;
+  margin-right: 2px;
+  margin-bottom: 2px;
+  border-radius: 10rem;
+  background-color: var(--border-basic-color-3);
+  font-size: 0.7rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+}

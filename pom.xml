@@ -80,6 +80,7 @@
         <assertj>3.22.0</assertj>
         <byte-buddy>1.14.11</byte-buddy>
         <atrium>0.15.0</atrium>
+        <serialization>1.6.2</serialization>
 
         <plugin.surefire>3.0.0-M7</plugin.surefire>
         <plugin.source>3.2.1</plugin.source>
@@ -114,6 +115,7 @@
         <module>translator</module>
         <module>nlp</module>
         <module>bot</module>
+        <module>gen-ai</module>
     </modules>
 
     <dependencies>

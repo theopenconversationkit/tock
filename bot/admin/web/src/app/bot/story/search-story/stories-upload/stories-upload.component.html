@@ -1,17 +1,35 @@
-<nb-card [nbSpinner]="loading">
+<nb-card [nbSpinner]="loading || uploading">
   <nb-card-header>Upload Stories</nb-card-header>
   <nb-card-body>
-    <p>
-      <label for="file">Select a story dump file:&nbsp;</label>
-      <br />
-      <input
-        id="file"
-        type="file"
-        ng2FileSelect
-        [uploader]="uploader"
-      />
-    </p>
+    <form
+      [formGroup]="form"
+      (submit)="import()"
+    >
+      <tock-form-control
+        label="Stories dump file"
+        name="importFile"
+        required="true"
+        [controls]="file"
+        [showError]="isImportSubmitted"
+      >
+        <div
+          *ngIf="fileFormatErrorMessage"
+          class="font-weight-bold text-danger font-italic mb-2"
+        >
+          {{ fileFormatErrorMessage }}
+        </div>
+        <tock-file-upload
+          id="importFile"
+          formControlName="file"
+          [autofocus]="true"
+          [fullWidth]="true"
+          [multiple]="false"
+          [fileTypeAccepted]="['json']"
+        ></tock-file-upload>
+      </tock-form-control>
+    </form>
   </nb-card-body>
+
   <nb-card-footer class="card-footer-actions">
     <button
       nbButton
@@ -23,11 +41,11 @@
     <button
       nbButton
       outline
-      (click)="upload()"
-      [disabled]="!uploader.getNotUploadedItems().length"
+      (click)="import()"
+      [disabled]="!canSaveImport"
       status="primary"
     >
-      Upload
+      Import
     </button>
   </nb-card-footer>
 </nb-card>

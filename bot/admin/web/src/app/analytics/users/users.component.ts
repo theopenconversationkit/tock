@@ -20,7 +20,7 @@ import { UserReport, UserSearchQuery } from './users';
 import { StateService } from '../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs/dialogs';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { DialogReport } from '../../shared/model/dialog-data';
+import { ActionReport, DialogReport } from '../../shared/model/dialog-data';
 import { ScrollComponent } from '../../scroll/scroll.component';
 import { Observable } from 'rxjs';
 import { PaginatedResult } from '../../model/nlp';
@@ -28,18 +28,19 @@ import { PaginatedQuery } from '../../model/commons';
 import { NbToastrService } from '@nebular/theme';
 import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
 import { TestPlan } from '../../test/model/test';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
 
 @Component({
   selector: 'tock-users',
   templateUrl: './users.component.html',
-  styleUrls: ['./users.component.css']
+  styleUrls: ['./users.component.scss']
 })
 export class UsersComponent extends ScrollComponent<UserReport> {
   filter: UserFilter = new UserFilter([], false);
   selectedUser: UserReport;
   selectedPlan: TestPlan;
   configurations: BotApplicationConfiguration[];
-  isCollapsed: boolean = true;
+
   loadingDialog: boolean = false;
 
   constructor(
@@ -53,10 +54,6 @@ export class UsersComponent extends ScrollComponent<UserReport> {
       this.configurations = configs;
       this.refresh();
     });
-  }
-
-  toggle() {
-    this.isCollapsed = !this.isCollapsed;
   }
 
   reload() {
@@ -83,10 +80,6 @@ export class UsersComponent extends ScrollComponent<UserReport> {
   getConnector(applicationId: string): ConnectorType {
     let connectors = this.configurations.filter((config) => config.applicationId === applicationId).map((config) => config.connectorType);
     return connectors && connectors.length > 0 ? connectors[0] : null;
-  }
-
-  getUserPicture(user: UserReport): string {
-    return user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png';
   }
 
   toggleFlag(flag: string) {
@@ -168,6 +161,18 @@ export class UsersComponent extends ScrollComponent<UserReport> {
     this.analytics
       .addDialogToTestPlan(planId, dialog.id)
       .subscribe((_) => this.toastrService.show(`Dialog added to plan`, 'Dialog Added', { duration: 3000 }));
+  }
+
+  getUserName(action: ActionReport): string {
+    return getDialogMessageUserQualifier(action.isBot());
+  }
+
+  getUserAvatar(action: ActionReport): string {
+    return getDialogMessageUserAvatar(action.isBot());
+  }
+
+  getUserPicture(user: UserReport): string {
+    return user.userPreferences.picture ? user.userPreferences.picture : getDialogMessageUserAvatar(false);
   }
 }
 

@@ -1,0 +1,25 @@
+@import '@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/theming';
+@import '@nebular/theme/styles/themes';
+
+.sticky {
+  position: sticky;
+  top: 5em;
+  z-index: 1;
+  background: var(--layout-background-color);
+
+  &.scrolled {
+    margin: -1em;
+    padding: 1em;
+    box-shadow: 0px 8px 11px -13px #000000a6;
+    transition: all 0.1s ease-in;
+  }
+}
+
+.grid-actions {
+  display: grid;
+  grid-gap: 0.5rem;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: end;
+}

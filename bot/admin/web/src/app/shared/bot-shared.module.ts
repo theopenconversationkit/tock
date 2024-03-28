@@ -42,7 +42,8 @@ import {
   NbInputModule,
   NbFormFieldModule,
   NbAutocompleteModule,
-  NbRadioModule
+  NbRadioModule,
+  NbWindowModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -59,10 +60,12 @@ import {
   ChatUiMessageSentenceElementComponent,
   ChatUiMessageSentenceFootnotesComponent,
   ChoiceDialogComponent,
-  DebugViewerComponent,
+  DebugViewerDialogComponent,
+  DebugViewerWindowComponent,
   ErrorHelperComponent,
   FileUploadComponent,
   FormControlComponent,
+  JsonIteratorComponent,
   NoDataFoundComponent,
   PaginationComponent,
   SentenceReviewRequestComponent,
@@ -82,7 +85,6 @@ import { AutofocusDirective } from './directives';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
-import { DebugJsonIteratorComponent } from './components/debug-viewer/debug-json-iterator/debug-json-iterator.component';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
@@ -106,7 +108,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     NbAutocompleteModule,
     NbAlertModule,
     NbRadioModule,
-    NgxSliderModule
+    NgxSliderModule,
+    NbWindowModule
   ],
   declarations: [
     BotMessageComponent,
@@ -145,8 +148,9 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     TokenViewComponent,
     SentenceReviewRequestComponent,
     AutocompleteInputComponent,
-    DebugJsonIteratorComponent,
-    DebugViewerComponent,
+    JsonIteratorComponent,
+    DebugViewerDialogComponent,
+    DebugViewerWindowComponent,
     ScrollTopButtonComponent,
     AutofocusDirective,
     StickyMenuComponent
@@ -171,7 +175,9 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     SentenceTrainingSentenceComponent,
     SentenceTrainingDialogComponent,
     AutocompleteInputComponent,
-    DebugViewerComponent,
+    JsonIteratorComponent,
+    DebugViewerDialogComponent,
+    DebugViewerWindowComponent,
     ScrollTopButtonComponent,
     AutofocusDirective,
     StickyMenuComponent

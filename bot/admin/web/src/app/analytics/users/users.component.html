@@ -13,187 +13,197 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<div class="users">
-  <div class="inbox_msg">
-    <div class="inbox_people">
-      <nb-card>
+
+<div class="d-flex flex-wrap align-items-center mt-3">
+  <h1 class="flex-grow-1">
+    Users
+    <span
+      *ngIf="formattedTotal()"
+      class="font-weight-normal"
+      >({{ formattedTotal() }})</span
+    >
+  </h1>
+
+  <button
+    nbButton
+    ghost
+    shape="round"
+    nbTooltip="Refresh dialogs"
+    (click)="reload()"
+    class="ml-2"
+  >
+    <nb-icon icon="refresh-outline"></nb-icon>
+  </button>
+</div>
+
+<nb-card class="mb-3">
+  <nb-card-body class="d-flex gap-1 align-items-end justify-content-between">
+    <div class="w-50">
+      <input
+        nbInput
+        fullWidth
+        fieldSize="small"
+        placeholder="Data collected after"
+        [nbDatepicker]="from_date"
+        [(ngModel)]="filter.from"
+      />
+      <nb-datepicker
+        (dateChange)="changeAfter()"
+        #from_date
+      ></nb-datepicker>
+    </div>
+
+    <div class="w-50">
+      <input
+        nbInput
+        fullWidth
+        fieldSize="small"
+        placeholder="Data collected before"
+        [nbDatepicker]="to_date"
+        [(ngModel)]="filter.to"
+      />
+      <nb-datepicker
+        (dateChange)="changeBefore()"
+        #to_date
+      ></nb-datepicker>
+    </div>
+
+    <nb-toggle
+      nbTooltip="{{ !filter.displayTests ? 'Display tests' : 'Hide tests' }}"
+      [(ngModel)]="filter.displayTests"
+      (change)="waitAndRefresh()"
+      class="nb-toggle-reset-label-margin text-nowrap"
+    >
+      Display tests
+    </nb-toggle>
+  </nb-card-body>
+</nb-card>
+
+<tock-no-data-found
+  *ngIf="!loading && !data?.length"
+  title="No records found"
+></tock-no-data-found>
+
+<div
+  *ngIf="data.length"
+  [nbSpinner]="loading"
+  class="min-vh-100"
+>
+  <div class="d-flex gap-1">
+    <div
+      class="messages-col position-relative"
+      infinite-scroll
+      [infiniteScrollDistance]="1"
+      (scrolled)="load()"
+      [scrollWindow]="false"
+      [nbSpinner]="loading"
+    >
+      <nb-card
+        *ngFor="let user of data"
+        accent="{{ user.playerId === selectedUser?.playerId ? 'info' : '' }}"
+        class="m-0"
+      >
         <nb-card-header
-          class="card-height"
-          [nbSpinner]="loading"
-          nbSpinnerStatus="primary"
+          (click)="loadDialog(user)"
+          class="d-flex align-items-center justify-content-between pointer"
         >
-          <span *ngIf="total > 0"> users : {{ formattedTotal() }} </span>
-          <span *ngIf="total === 0"> No users </span>
-          <button
-            nbButton
-            ghost="true"
-            (click)="reload()"
-            class="float-right"
-            nbTooltip="Refresh"
+          <nb-user
+            size="large"
+            name="{{ user.userPreferences.firstName ? user.userPreferences.firstName : 'Anonymous' }} {{ user.userPreferences.lastName }}"
+            title="{{ user.lastUpdateDate | amDateFormat: 'DD MMM YYYY HH:mm' }}"
+            picture="{{ getUserPicture(user) }}"
           >
-            <nb-icon icon="refresh-outline"></nb-icon>
-          </button>
+          </nb-user>
+          <img
+            *ngIf="getConnector(user.applicationIds[0])"
+            src="{{ getConnector(user.applicationIds[0]).iconUrl() }}"
+            class="connector"
+            [nbTooltip]="getConnector(user.applicationIds[0]).label()"
+          />
         </nb-card-header>
-        <nb-card-body style="padding: 0">
-          <nb-list
-            nbInfiniteList
-            [threshold]="500"
-            (bottomThreshold)="load()"
-            class="inbox_chat"
-          >
-            <nb-list-item
-              *ngFor="let user of data"
-              class="chat-item"
+
+        <nb-card-body>
+          <div>
+            <span *ngIf="user.botConfiguration">[{{ user.botConfiguration.name }} - {{ user.botConfiguration.connectorType.id }}]</span>
+            <span *ngIf="user.userPreferences.locale">({{ user.userPreferences.locale }})</span>
+            <span
+              class="text-muted"
+              *ngIf="user.lastActionText"
             >
-              <nb-card
-                accent="{{ user.playerId === selectedUser?.playerId ? 'info' : '' }}"
-                class="chat-card"
-              >
-                <nb-card-header (click)="loadDialog(user)">
-                  <img
-                    *ngIf="getConnector(user.applicationIds[0])"
-                    src="{{ getConnector(user.applicationIds[0]).iconUrl() }}"
-                    class="connector"
-                    [nbTooltip]="getConnector(user.applicationIds[0]).label()"
-                  />
-                  <nb-user
-                    size="large"
-                    name="{{ user.userPreferences.firstName ? user.userPreferences.firstName : 'Anonymous' }} {{
-                      user.userPreferences.lastName
-                    }}"
-                    title="{{ user.lastUpdateDate | amDateFormat: 'DD MMM YYYY HH:mm' }}"
-                    picture="{{ getUserPicture(user) }}"
-                  >
-                  </nb-user>
-                </nb-card-header>
-                <nb-card-body style="padding: 0">
-                  <nb-accordion>
-                    <nb-accordion-item
-                      [collapsed]="isCollapsed"
-                      (click)="toggle()"
-                    >
-                      <nb-accordion-item-header>
-                        <p style="text-align: left">
-                          <span *ngIf="user.botConfiguration"
-                            >[{{ user.botConfiguration.name }} - {{ user.botConfiguration.connectorType.id }}]</span
-                          >
-                          <span *ngIf="user.userPreferences.locale">({{ user.userPreferences.locale }})</span>
-                          <span
-                            class="last-action-text"
-                            *ngIf="user.lastActionText"
-                          >
-                            {{ user.lastActionText }}</span
-                          >
-                        </p>
-                      </nb-accordion-item-header>
-                      <nb-accordion-item-body *ngIf="user.userState.flags.length !== 0">
-                        <div
-                          class="tag"
-                          *ngFor="let f of user.userState.flags"
-                          [selected]="containsFlag(f)"
-                          color="accent"
-                          (click)="toggleFlag(f)"
-                          nbTooltip="Filter by flag {{ f }}"
-                        >
-                          {{ f }}
-                        </div>
-                      </nb-accordion-item-body>
-                    </nb-accordion-item>
-                  </nb-accordion>
-                </nb-card-body>
-              </nb-card>
-            </nb-list-item>
-          </nb-list>
+              {{ user.lastActionText }}</span
+            >
+          </div>
+
+          <div
+            class="tag pointer"
+            *ngFor="let f of user.userState.flags"
+            [selected]="containsFlag(f)"
+            color="accent"
+            (click)="toggleFlag(f)"
+            nbTooltip="Filter by flag {{ f }}"
+          >
+            {{ f }}
+          </div>
         </nb-card-body>
       </nb-card>
     </div>
-    <div class="mesgs">
-      <div class="">
-        <nb-card
-          [nbSpinner]="loadingDialog"
-          nbSpinnerStatus="primary"
+
+    <nb-card
+      class="flex-grow-1 mn-0"
+      [nbSpinner]="loadingDialog"
+    >
+      <nb-card-header class="position-relative p-0">
+        <tock-chat-ui
+          height="calc(100vh - 350px)"
+          *ngIf="selectedUser && selectedUser.displayDialogs && selectedUser.userDialog"
         >
-          <nb-card-header class="card-height items-row">
-            <input
-              nbInput
-              placeholder="Modified after"
-              class="date-input"
-              [nbDatepicker]="from_date"
-              [(ngModel)]="filter.from"
-            />
-            <nb-datepicker
-              (dateChange)="changeAfter()"
-              #from_date
-            ></nb-datepicker>
+          <tock-chat-ui-message
+            *ngFor="let action of selectedUser.userDialog.actions"
+            [message]="action.message"
+            [date]="action.date"
+            [reply]="action.isBot()"
+            [replay]="true"
+            [sender]="getUserName(action)"
+            [avatar]="getUserAvatar(action)"
+          >
+          </tock-chat-ui-message>
+        </tock-chat-ui>
 
-            <input
-              nbInput
-              placeholder="Modified before"
-              class="date-input"
-              [nbDatepicker]="to_date"
-              [(ngModel)]="filter.to"
-            />
-            <nb-datepicker
-              (dateChange)="changeBefore()"
-              #to_date
-            ></nb-datepicker>
+        <div class="shader"></div>
+      </nb-card-header>
 
-            <nb-toggle
-              status="info"
-              nbTooltip="{{ !filter.displayTests ? 'Display tests' : 'Hide tests' }}"
-              style="float: right"
-              [(ngModel)]="filter.displayTests"
-              (change)="waitAndRefresh()"
-            >
-            </nb-toggle>
-          </nb-card-header>
-          <nb-card-body style="padding: 0">
-            <div class="inbox_chat">
-              <div
-                *ngIf="!selectedUser"
-                class="default-msg"
-              >
-                Select a user to display dialogs
-              </div>
-              <tock-display-dialog
-                class="dialog"
-                *ngIf="selectedUser && selectedUser.displayDialogs && selectedUser.userDialog"
-                [dialog]="selectedUser.userDialog"
-                [userPicture]="getUserPicture(selectedUser)"
-              >
-                <div *ngIf="selectedUser.userDialog.actions.length === 0">No dialog</div>
-                <div *ngIf="selectedUser.userDialog.actions.length !== 0">
-                  <div
-                    *ngIf="selectedUser.testPlans && selectedUser.testPlans.length !== 0"
-                    class="test-plans"
-                  >
-                    <nb-select
-                      [(ngModel)]="selectedPlan"
-                      placeholder="Select a Test Plan"
-                      class="select-plan"
-                    >
-                      <nb-option
-                        *ngFor="let plan of selectedUser.testPlans"
-                        [value]="plan._id"
-                        >{{ plan.name }}
-                      </nb-option>
-                    </nb-select>
-                    <button
-                      nbButton
-                      (click)="addDialogToTestPlan(selectedPlan, selectedUser.userDialog)"
-                      ghost="true"
-                      status="primary"
-                      nbTooltip="Add dialog to Test Plan"
-                    >
-                      <nb-icon icon="plus-circle-outline"></nb-icon>
-                    </button>
-                  </div>
-                </div>
-              </tock-display-dialog>
-            </div>
-          </nb-card-body>
-        </nb-card>
-      </div>
-    </div>
+      <nb-card-body
+        class="d-flex align-items-center"
+        *ngIf="
+          selectedUser?.displayDialogs &&
+          selectedUser?.userDialog &&
+          selectedUser.userDialog.actions.length !== 0 &&
+          selectedUser.testPlans &&
+          selectedUser.testPlans.length !== 0
+        "
+      >
+        <nb-select
+          fullWidth
+          size="small"
+          [(ngModel)]="selectedPlan"
+          placeholder="Add dialog to Test Plan"
+        >
+          <nb-option
+            *ngFor="let plan of selectedUser.testPlans"
+            [value]="plan._id"
+            >{{ plan.name }}
+          </nb-option>
+        </nb-select>
+        <button
+          nbButton
+          size="small"
+          (click)="addDialogToTestPlan(selectedPlan, selectedUser.userDialog)"
+          ghost="true"
+          nbTooltip="Add dialog to Test Plan"
+        >
+          <nb-icon icon="plus-circle-outline"></nb-icon>
+        </button>
+      </nb-card-body>
+    </nb-card>
   </div>
 </div>

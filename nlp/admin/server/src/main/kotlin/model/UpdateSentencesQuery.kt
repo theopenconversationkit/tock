@@ -16,6 +16,7 @@
 
 package ai.tock.nlp.admin.model
 
+import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT_NAME
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import ai.tock.nlp.front.shared.config.EntityDefinition
@@ -35,4 +36,5 @@ data class UpdateSentencesQuery(
 ) : ApplicationScopedQuery() {
 
     val unknownNewIntent: Boolean get() = UNKNOWN_INTENT_NAME == newIntentId?.toString()
+    val ragExcludedNewIntent: Boolean get() = RAG_EXCLUDED_INTENT_NAME == newIntentId?.toString()
 }

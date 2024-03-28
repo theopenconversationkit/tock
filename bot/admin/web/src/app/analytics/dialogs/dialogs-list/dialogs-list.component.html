@@ -1,0 +1,145 @@
+<nb-card class="mb-2">
+  <nb-card-body class="d-flex flew-wrap gap-1 align-items-center">
+    <ng-container *ngIf="!ratingFilter">
+      <div class="flex-grow-1 min-width-10 d-flex gap-1 align-items-center">
+        <input
+          nbInput
+          fullWidth
+          placeholder="Search user text"
+          [(ngModel)]="filter.text"
+          (keyup.enter)="refresh()"
+        />
+
+        <nb-checkbox
+          class="text-nowrap"
+          [(ngModel)]="filter.exactMatch"
+          >Exact text match
+        </nb-checkbox>
+      </div>
+
+      <nb-select
+        fullWidth
+        placeholder="Connector type"
+        [(ngModel)]="filter.connectorType"
+        (selectedChange)="refresh()"
+      >
+        <nb-option
+          *ngFor="let c of connectorTypes"
+          [value]="c"
+          >{{ c.id }}</nb-option
+        >
+      </nb-select>
+
+      <nb-select
+        fullWidth
+        placeholder="Intent"
+        [(ngModel)]="filter.intentName"
+        (selectedChange)="refresh()"
+      >
+        <nb-option value="">All</nb-option>
+        <nb-option
+          *ngFor="let intent of state.currentApplication.intents"
+          [value]="intent.name"
+        >
+          {{ intent.name }}
+        </nb-option>
+        <nb-option value="unknown">Unknown</nb-option>
+      </nb-select>
+    </ng-container>
+
+    <ng-container *ngIf="ratingFilter">
+      <nb-select
+        fullWidth
+        placeholder="Configuration"
+        [(ngModel)]="filter.configuration"
+        (selectedChange)="refresh()"
+      >
+        <nb-option value="">All</nb-option>
+        <nb-option
+          *ngFor="let config of configurationNameList"
+          [value]="config"
+        >
+          {{ config }}
+        </nb-option>
+      </nb-select>
+
+      <nb-select
+        fullWidth
+        multiple
+        placeholder="Intents"
+        [(ngModel)]="filter.intentsToHide"
+        (selectedChange)="refresh()"
+      >
+        <nb-option>Clear selection</nb-option>
+        <nb-option
+          *ngFor="let intent of intents"
+          [value]="intent"
+        >
+          {{ intent }}
+        </nb-option>
+      </nb-select>
+    </ng-container>
+
+    <nb-toggle
+      class="nb-toggle-reset-label-margin text-nowrap"
+      [(ngModel)]="filter.displayTests"
+      (change)="waitAndRefresh()"
+      >Display tests</nb-toggle
+    >
+  </nb-card-body>
+</nb-card>
+
+<div *ngIf="total !== -1">
+  <h1 *ngIf="total === 0">
+    No dialogs found!
+    <button
+      nbButton
+      ghost
+      (click)="refresh()"
+    >
+      <nb-icon icon="refresh-outline"></nb-icon>
+    </button>
+  </h1>
+
+  <div
+    infinite-scroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="300"
+    (scrolled)="onScroll()"
+  >
+    <div *ngFor="let dialog of data">
+      <nb-card>
+        <nb-card-body class="p-1 pt-2">
+          <tock-chat-ui>
+            <tock-chat-ui-message
+              *ngFor="let action of dialog.actions"
+              [message]="action.message"
+              [date]="action.date"
+              [reply]="action.isBot()"
+              [replay]="true"
+              [sender]="getUserName(action)"
+              [avatar]="getUserAvatar(action)"
+            >
+            </tock-chat-ui-message>
+          </tock-chat-ui>
+        </nb-card-body>
+      </nb-card>
+
+      <!-- <tock-display-dialog
+          [dialog]="dialog"
+          [intentsToHide]="filter.intentsToHide"
+        >
+          <div *ngIf="dialog.actions.length === 0">No dialog</div>
+        </tock-display-dialog> -->
+      <p></p>
+    </div>
+  </div>
+</div>
+
+<nb-card
+  [nbSpinner]="loading"
+  nbSpinnerStatus="primary"
+  *ngIf="loading"
+>
+  <nb-card-body></nb-card-body>
+</nb-card>

@@ -26,6 +26,10 @@ enum class EventType(val action: Boolean = true) {
      */
     sentence,
     /**
+      * [SentenceWithFootnotes] action type.
+     */
+    sentenceWithFootnotes,
+    /**
      * [SendChoice] action type.
      */
     choice,

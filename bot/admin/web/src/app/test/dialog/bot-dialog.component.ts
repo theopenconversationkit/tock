@@ -31,6 +31,7 @@ import { SearchQuery } from '../../model/nlp';
 import { ChatUiComponent } from '../../shared/components';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
+import { getDialogMessageUserAvatar } from '../../shared/utils';
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -227,14 +228,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   }
 
   getUserAvatar(isBot: boolean): string {
-    if (isBot) return this.userIdentities.bot.avatar;
-    return this.userIdentities.client.avatar;
+    return getDialogMessageUserAvatar(isBot);
   }
-
-  userIdentities = {
-    client: { name: 'Human', avatar: 'assets/images/scenario-client.svg' },
-    bot: { name: 'Bot', avatar: 'assets/images/scenario-bot.svg' }
-  };
 
   recentSentences: string[];
   userMessageAutocompleteValues: Observable<string[]>;

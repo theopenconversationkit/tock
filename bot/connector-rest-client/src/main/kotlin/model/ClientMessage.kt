@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = ClientChoice::class, name = "choice"),
     JsonSubTypes.Type(value = ClientLocation::class, name = "location"),
     JsonSubTypes.Type(value = ClientSentence::class, name = "sentence"),
+    JsonSubTypes.Type(value = ClientSentenceWithFootnotes::class, name = "sentenceWithFootnotes"),
     JsonSubTypes.Type(value = ClientDebug::class, name = "debug")
 )
 abstract class ClientMessage(

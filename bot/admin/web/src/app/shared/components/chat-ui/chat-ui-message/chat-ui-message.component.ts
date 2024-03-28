@@ -18,6 +18,11 @@ export class ChatUiMessageComponent {
     this.avatarStyle = value ? this.domSanitizer.bypassSecurityTrustStyle(`url(${value})`) : null;
   }
 
+  isMessageEmpty() {
+    //@ts-ignore
+    return !this.message.text?.trim().length && !this.message.messages?.length;
+  }
+
   avatarStyle: SafeStyle;
 
   @HostBinding('class.not-reply')

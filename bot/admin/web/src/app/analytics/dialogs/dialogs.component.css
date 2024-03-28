@@ -13,28 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.lastUpdateDate {
-  font-style: italic;
-}
-
-.select-plan {
-  width: 10rem;
-  margin-right: 20px;
-}
-
-.search-input {
-  font-size: large;
-  margin-right: 20px;
-}
-
-.exact {
-  padding-right: 10px;
-}
-
-.dialogs {
-  height: 100%;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-}

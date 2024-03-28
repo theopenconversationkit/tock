@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Component, OnInit} from '@angular/core';
-import {AnalyticsService} from "../../analytics.service";
-import {RatingReportQueryResult} from "./RatingReportQueryResult";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AnalyticsService } from '../../analytics.service';
+import { RatingReportQueryResult } from './RatingReportQueryResult';
+import { DialogsListComponent } from '../../dialogs/dialogs-list/dialogs-list.component';
 
 @Component({
   selector: 'tock-satisfaction-details',
@@ -23,51 +24,68 @@ import {RatingReportQueryResult} from "./RatingReportQueryResult";
   styleUrls: ['./satisfaction-details.component.css']
 })
 export class SatisfactionDetailsComponent implements OnInit {
+  loading = false;
 
-  ratingFilter: number[] = [1,2,3,4,5];
+  count: string = '';
+
+  ratingFilter: number[] = [1, 2, 3, 4, 5];
 
   satisfactionStat: RatingReportQueryResult;
 
-  constructor(private analytics: AnalyticsService) {
-  }
+  @ViewChild('dialogsList') dialogsList: DialogsListComponent;
+
+  constructor(private analytics: AnalyticsService) {}
 
   ngOnInit(): void {
-    this.analytics.getSatisfactionStat().subscribe((data : RatingReportQueryResult) => {
+    this.analytics.getSatisfactionStat().subscribe(
+      (data: RatingReportQueryResult) => {
         this.satisfactionStat = data.ratingBot ? data : null;
       },
-      err => console.error(err));
+      (err) => console.error(err)
+    );
   }
 
+  ngAfterViewInit() {
+    this.dialogsList.totalDialogsCount.subscribe((count) => {
+      this.count = count;
+    });
+  }
+
+  refresh() {
+    this.dialogsList.refresh();
+  }
+
+  exportDialogs() {
+    this.dialogsList.exportDialogs();
+  }
 
   updateRatingFilter(event: any) {
     if (event.target.checked) {
       if (this.ratingFilter.length == 5) {
         this.ratingFilter = [];
       }
-      this.ratingFilter = this.ratingFilter.concat(event.currentTarget.value)
+      this.ratingFilter = this.ratingFilter.concat(event.currentTarget.value);
     } else {
       if (this.ratingFilter.length == 1) {
         this.ratingFilter = [1, 2, 3, 4, 5];
       } else {
-        this.ratingFilter = this.ratingFilter.filter(item => item != event.currentTarget.value);
+        this.ratingFilter = this.ratingFilter.filter((item) => item != event.currentTarget.value);
       }
     }
   }
 
   getNbUsersByNote(note: number): number {
-    const res = this.satisfactionStat.ratingDetails.find(it => it.rating == note)
+    const res = this.satisfactionStat.ratingDetails.find((it) => it.rating == note);
     return res ? res.nbUsers : 0;
   }
-
 
   getStarArray(): any[] {
     const roundedRating = Math.round(this.satisfactionStat.ratingBot);
     return Array(roundedRating).fill(0);
   }
 
-
   getStyles() {
-    const percent = this.satisfactionStat.ratingBot / 5 * 100;
+    const percent = (this.satisfactionStat.ratingBot / 5) * 100;
     return {
       background: `conic-gradient(${this.getColorFromRating(this.satisfactionStat.ratingBot)} ${percent}%, #e6e6e6 ${percent}% 100%)`
     };
@@ -84,6 +102,4 @@ export class SatisfactionDetailsComponent implements OnInit {
     // Convert the hue to a CSS color
     return `hsl(${hue}, 70%, 50%)`;
   }
-
 }
-

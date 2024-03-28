@@ -153,20 +153,6 @@
             </span>
             {{ state.intentLabelByName(d.intent) ? '-' : '' }} {{ d.date | amTimeAgo }}
             <span *ngIf="d.durationInMS !== 0">in {{ d.durationInMS }} ms</span>
-            <a
-              *ngIf="d.error && config.displayDialogUrl"
-              [routerLink]="[config.displayDialogUrl]"
-              [queryParams]="{
-                dialogId: d.dialogId,
-                text: d.textRequest()
-              }"
-              nbButton
-              ghost
-              nbTooltip="Display Conversation"
-              color="danger"
-            >
-              <nb-icon icon="message-circle-outline"></nb-icon>
-            </a>
           </div>
 
           <div class="d-flex">

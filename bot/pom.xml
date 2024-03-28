@@ -72,6 +72,16 @@
         <dependencies>
             <dependency>
                 <groupId>ai.tock</groupId>
+                <artifactId>tock-gen-ai-orchestrator-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-gen-ai-orchestrator-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
                 <artifactId>tock-xray-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -46,6 +46,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   @Input() filter: SentenceFilter;
   @Input() displayUnknownButton: boolean = true;
+  @Input() displayRagExcludedButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
 

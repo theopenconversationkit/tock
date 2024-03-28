@@ -24,24 +24,11 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
-import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
+import ai.tock.bot.admin.service.SentenceGenerationService
+import ai.tock.bot.admin.service.RagService
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
 import ai.tock.bot.admin.verticle.IndicatorVerticle
@@ -334,16 +321,16 @@ open class BotAdminVerticle : AdminVerticle() {
                 BotAdminService.search(query)
                     .dialogs
                     .forEach { label ->
-                            printer.printRecord(
-                                        listOf(
-                                            label.actions.first().date,
-                                            label.id,
-                                            label.rating,
-                                            label.review,
-                                        )
+                        printer.printRecord(
+                            listOf(
+                                label.actions.first().date,
+                                label.id,
+                                label.rating,
+                                label.review,
                             )
+                        )
                     }
-                 sb.toString()
+                sb.toString()
             } else {
                 unauthorized()
             }
@@ -445,6 +432,21 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost("/configuration/bots/:botId/rag", admin) { context, configuration: BotRAGConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                BotRAGConfigurationDTO(RagService.saveRag(configuration))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/rag", admin) { context  ->
+            RagService.getRAGConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotRAGConfigurationDTO(it)
+                }
         }
 
         blockingJsonPost(
@@ -678,16 +680,16 @@ open class BotAdminVerticle : AdminVerticle() {
             exportStory?.let { listOf(it) } ?: emptyList()
         }
 
-        blockingUploadJsonPost(
+        blockingJsonPost(
             "/bot/story/:appName/:locale/import",
             botUser,
             simpleLogger("JSON Import Response Labels")
-        ) { context, stories: List<StoryDefinitionConfigurationDump> ->
+        ) { context, dump: StoryDefinitionConfigurationDumpImport ->
             importStories(
                 context.organization,
                 context.path("appName"),
                 context.pathToLocale("locale"),
-                stories,
+                dump,
                 context.userLogin
             )
         }
@@ -1009,6 +1011,27 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost(
+            "/configuration/bots/:botId/sentence-generation",
+            admin
+        ) { context, configuration: BotSentenceGenerationConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                SentenceGenerationService.saveSentenceGeneration(configuration)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet(
+            "/configuration/bots/:botId/sentence-generation",
+            admin
+        ) { context  ->
+            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotSentenceGenerationConfigurationDTO(it)
+                }
         }
 
         blockingJsonGet("/configuration") {

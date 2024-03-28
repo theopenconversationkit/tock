@@ -21,8 +21,10 @@ import ai.tock.bot.admin.bot.BotApplicationConfigurationKey
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.definition.BotDefinition
 import ai.tock.bot.definition.Intent
+import ai.tock.bot.definition.Intent.Companion.ragexcluded
 import ai.tock.bot.definition.Intent.Companion.unknown
 import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.RagStoryDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryTag
@@ -77,11 +79,11 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         this.configuredStories =
                 configuredStories
                         .map {
-                                ConfiguredStoryDefinition(
-                                        definition = this,
-                                        configuration = it,
-                                        configurationStoryHandler = botStoryHandlers[it.storyId]
-                                )
+                            ConfiguredStoryDefinition(
+                                    definition = this,
+                                    configuration = it,
+                                    configurationStoryHandler = botStoryHandlers[it.storyId]
+                            )
                         }
                         .groupBy { it.storyId }
 
@@ -104,7 +106,10 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
 
     override fun findIntent(intent: String, applicationId: String): Intent {
         val i = super.findIntent(intent, applicationId)
-        return if (i == unknown) {
+        return if (i == ragexcluded) {
+            val i2 = botDefinition.findIntent(intent, applicationId)
+            if (i2 == ragexcluded) BotDefinition.findIntent(stories, intent) else i2
+        } else if (i == unknown) {
             val i2 = botDefinition.findIntent(intent, applicationId)
             if (i2 == unknown) BotDefinition.findIntent(stories, intent) else i2
         } else i
@@ -128,7 +133,10 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
                             .toList(),
                     intent,
                     unknownStory,
-                    keywordStory
+                    keywordStory,
+                    ragExcludedStory,
+                    ragStory,
+                    botDefinition.ragConfiguration
             )
 
     internal fun builtInStory(storyId: String): StoryDefinition =

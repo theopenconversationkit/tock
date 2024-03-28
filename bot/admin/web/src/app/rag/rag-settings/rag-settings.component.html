@@ -1,0 +1,250 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<div
+  class="d-flex flex-wrap mt-3 sticky"
+  [ngClass]="{ scrolled: scrolled }"
+>
+  <h1 class="flex-grow-1">Rag settings</h1>
+
+  <section class="grid-actions">
+    <button
+      *ngIf="settingsBackup && form.dirty"
+      nbButton
+      ghost
+      status="primary"
+      nbTooltip="Cancel modifications"
+      (click)="cancel()"
+    >
+      <nb-icon icon="close-circle-outline"></nb-icon>
+      CANCEL
+    </button>
+    <button
+      *ngIf="form.dirty"
+      nbButton
+      status="primary"
+      nbTooltip="Save settings"
+      (click)="submit()"
+    >
+      <nb-icon icon="save-outline"></nb-icon>
+      SAVE
+    </button>
+  </section>
+</div>
+
+<nb-alert
+  *ngIf="configurations?.length < 1"
+  class="alert-config flex-row align-items-center"
+  accent="warning"
+>
+  <nb-icon
+    class="mr-1"
+    icon="alert-triangle-outline"
+    status="warning"
+  ></nb-icon>
+  No bot configuration detected
+</nb-alert>
+
+<form
+  [formGroup]="form"
+  *ngIf="configurations?.length > 0"
+>
+  <nb-card class="mt-1">
+    <nb-card-body [nbSpinner]="loading">
+      <h5 class="section-title">RAG activation</h5>
+
+      <tock-form-control
+        name="enabled"
+        [controls]="enabled"
+        [showError]="isSubmitted"
+        [hasMargin]="false"
+      >
+        <nb-toggle
+          formControlName="enabled"
+          class="mt-1"
+        >
+          <span *ngIf="enabled.value">Rag activated</span>
+          <span *ngIf="!enabled.value">Rag deactivated</span>
+        </nb-toggle>
+      </tock-form-control>
+
+      <h5 class="section-title">LLM engine</h5>
+
+      <tock-form-control
+        name="llmEngine"
+        [controls]="llmEngine"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <nb-radio-group
+          formControlName="llmEngine"
+          name="llmEngine"
+          class="d-flex"
+        >
+          <nb-radio
+            *ngFor="let engine of enginesConfigurations['llmSetting']"
+            [value]="engine.key"
+          >
+            {{ engine.label }}
+          </nb-radio>
+        </nb-radio-group>
+      </tock-form-control>
+
+      <div
+        *ngIf="currentLlmEngine"
+        class="mt-2 mb-2"
+      >
+        <div class="row mb-1">
+          <ng-container *ngFor="let param of currentLlmEngine.params">
+            <div
+              class="col-6"
+              [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
+            >
+              <tock-rag-settings-input
+                parentGroup="llmSetting"
+                [configurationParam]="param"
+                [form]="form"
+                [isSubmitted]="isSubmitted"
+              ></tock-rag-settings-input>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <h5 class="section-title mt-2">Embedding engine</h5>
+
+      <tock-form-control
+        name="emEngine"
+        [controls]="emEngine"
+        [required]="true"
+        [showError]="isSubmitted"
+      >
+        <nb-radio-group
+          formControlName="emEngine"
+          name="emEngine"
+          class="d-flex"
+        >
+          <nb-radio
+            *ngFor="let engine of enginesConfigurations['emSetting']"
+            [value]="engine.key"
+          >
+            {{ engine.label }}
+          </nb-radio>
+        </nb-radio-group>
+      </tock-form-control>
+
+      <div
+        *ngIf="currentEmEngine"
+        class="mt-2 mb-2"
+      >
+        <div class="row mb-1">
+          <div
+            class="col-6"
+            *ngFor="let param of currentEmEngine.params"
+          >
+            <tock-rag-settings-input
+              parentGroup="emSetting"
+              [configurationParam]="param"
+              [form]="form"
+              [isSubmitted]="isSubmitted"
+            ></tock-rag-settings-input>
+          </div>
+        </div>
+      </div>
+
+      <h5 class="section-title mt-2">Indexing session</h5>
+
+      <tock-form-control
+        label="Indexing session id"
+        name="indexingSessionId"
+        [controls]="indexSessionId"
+        [required]="false"
+        [showError]="isSubmitted"
+        [boldLabel]="false"
+      >
+        <input
+          nbInput
+          fullWidth
+          formControlName="indexSessionId"
+        />
+      </tock-form-control>
+
+      <h5 class="section-title mt-2">Conversation flow</h5>
+
+      <tock-form-control
+        label="No answer sentence"
+        name="noAnswerSentence"
+        [controls]="noAnswerSentence"
+        [required]="true"
+        [showError]="isSubmitted"
+        [boldLabel]="false"
+        information="Phrase to be displayed to the user if no response could be given to his request"
+      >
+        <input
+          nbInput
+          fullWidth
+          formControlName="noAnswerSentence"
+        />
+      </tock-form-control>
+
+      <tock-form-control
+        label="Unanswered story redirection"
+        name="noAnswerStoryId"
+        [controls]="noAnswerStoryId"
+        [showError]="isSubmitted"
+        [boldLabel]="false"
+        information="Story to redirect the user to if no answer is given to the request"
+      >
+        <nb-form-field>
+          <input
+            nbInput
+            fullWidth
+            autocomplete="off"
+            type="text"
+            [value]="getCurrentStoryLabel"
+            [nbAutocomplete]="storiesautocomplete"
+            (input)="filterStoriesList($event.target.value)"
+            (change)="onStoryChange($event.target.value)"
+            (focus)="storyInputFocus()"
+            (blur)="storyInputBlur($event)"
+          />
+          <button
+            nbSuffix
+            nbButton
+            ghost
+            nbTooltip="Delete unanswered story redirection"
+            (click)="removeNoAnswerStoryId()"
+            *ngIf="getCurrentStoryLabel !== ''"
+          >
+            <nb-icon icon="close-outline"> </nb-icon>
+          </button>
+        </nb-form-field>
+      </tock-form-control>
+
+      <nb-autocomplete
+        #storiesautocomplete
+        optionsListClass="option-list--break-word"
+        (selectedChange)="storySelectedChange($event)"
+      >
+        <nb-option
+          *ngFor="let option of filteredStories$ | async"
+          [value]="option.storyId"
+        >
+          {{ option.name }}
+        </nb-option>
+      </nb-autocomplete>
+    </nb-card-body>
+  </nb-card>
+</form>

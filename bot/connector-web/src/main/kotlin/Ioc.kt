@@ -29,5 +29,5 @@ val webConnectorModule = Kodein.Module {
 
 // used in file META-INF/services/ai.tock.shared.service.BotAdditionalModulesService
 class IOCModulesService : BotAdditionalModulesService {
-    override fun modules() = setOf(webConnectorModule)
+    override fun defaultModules() = setOf(webConnectorModule)
 }

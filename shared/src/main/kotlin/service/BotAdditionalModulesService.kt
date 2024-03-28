@@ -20,5 +20,13 @@ import com.github.salomonbrys.kodein.Kodein.Module
 
 interface BotAdditionalModulesService {
 
-    fun modules(): Set<Module>
+    /**
+     * A default modules injected first
+     */
+    fun defaultModules(): Set<Module> = emptySet()
+
+    /**
+     * Custom modules that override the default modules
+     */
+    fun customModules(): Set<Module> = emptySet()
 }

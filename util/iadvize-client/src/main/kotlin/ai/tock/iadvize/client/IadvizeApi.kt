@@ -21,6 +21,7 @@ import ai.tock.iadvize.client.authentication.models.AuthResponse
 import ai.tock.iadvize.client.graphql.models.GraphQLResponse
 import ai.tock.iadvize.client.graphql.models.customData.CustomDataResult
 import ai.tock.iadvize.client.graphql.models.routingrule.RoutingRuleResult
+import ai.tock.iadvize.client.graphql.models.sendproactivemessage.SendProactiveMessageResult
 import mu.KLogger
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -29,6 +30,7 @@ import retrofit2.create
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -53,6 +55,10 @@ interface IadvizeApi {
 
     @POST(GRAPHQL_ENDPOINT)
     fun getCustomData(@Body body: RequestBody) : Call<GraphQLResponse<CustomDataResult>>
+
+    @POST(GRAPHQL_ENDPOINT)
+    @Headers("Accept: application/vnd.iadvize.automation-chatbot-conversation-preview+json")
+    fun sendProactiveMessage(@Body body: RequestBody) : Call<GraphQLResponse<SendProactiveMessageResult>>
 
 }
 

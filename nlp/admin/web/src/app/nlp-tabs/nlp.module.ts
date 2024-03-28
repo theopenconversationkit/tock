@@ -116,7 +116,7 @@ import { NlpRoutingModule } from './nlp-routing.module';
     IntentsFiltersComponent,
     IntentsListComponent
   ],
-  exports: [SentenceAnalysisComponent, HighlightComponent],
+  exports: [SentenceAnalysisComponent, HighlightComponent, SentencesScrollComponent],
   providers: [NlpService]
 })
 export class NlpModule {}

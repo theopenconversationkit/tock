@@ -35,6 +35,10 @@ const routes: Routes = [
     path: 'faq',
     loadChildren: () => import('./faq/faq.module').then((m) => m.FaqModule)
   },
+  {
+    path: 'rag',
+    loadChildren: () => import('./rag/rag.module').then((m) => m.RagModule)
+  },
   { path: '**', redirectTo: '/language-understanding/inbox' }
 ];
 

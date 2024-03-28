@@ -32,6 +32,9 @@ data class Intent(
     companion object {
         const val UNKNOWN_INTENT_NAME: String = "$TOCK_NAMESPACE:unknown"
         val UNKNOWN_INTENT: Intent = Intent(UNKNOWN_INTENT_NAME, emptyList())
+
+        const val RAG_EXCLUDED_INTENT_NAME: String = "$TOCK_NAMESPACE:ragexcluded"
+        val RAG_EXCLUDED_INTENT: Intent = Intent(RAG_EXCLUDED_INTENT_NAME, emptyList())
     }
 
     fun hasEntity(entityType: EntityType, role: String) =

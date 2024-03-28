@@ -1,6 +1,6 @@
 <div
   class="wrapper"
-  *ngIf="!message.isDebug()"
+  *ngIf="!message.isDebug() && !isMessageEmpty()"
 >
   <div
     class="avatar"

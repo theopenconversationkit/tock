@@ -48,6 +48,10 @@ data class Intent(
          * The keyword intent.
          */
         val keyword: Intent = Intent("$TOCK_NAMESPACE:keyword")
+        /**
+         * The RAG excluded subject intent.
+         */
+        val ragexcluded: Intent = Intent("$TOCK_NAMESPACE:ragexcluded")
     }
 
     override fun wrappedIntent(): Intent = this

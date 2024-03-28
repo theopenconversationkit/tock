@@ -35,6 +35,10 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-gen-ai-orchestrator-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>nlp-api-client</artifactId>
         </dependency>
         <dependency>

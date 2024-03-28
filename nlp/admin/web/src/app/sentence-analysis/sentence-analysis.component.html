@@ -232,6 +232,18 @@
       Unknown
     </button>
     <button
+      nbButton
+      status="info"
+      size="small"
+      shape="semi-round"
+      class="btn"
+      (click)="onRagExcluded()"
+      *ngIf="displayRagExcludedButton"
+      nbTooltip="Set as ragexcluded. Will not trigger LLM detection"
+    >
+      RAG Excluded
+    </button>
+    <button
       [disabled]="state.isOtherNamespaceIntent(selectedIntent)"
       nbButton
       status="primary"

@@ -22,6 +22,7 @@ export class AutocompleteInputComponent implements OnInit, ControlValueAccessor 
   @Input() name: string = '';
   @Input() options: string[] = [];
   @Input() placeholder: string = 'Select value';
+  @Input() fieldSize: string = 'medium';
 
   @Output() onKeyup = new EventEmitter<{ key: string; value: string }>();
   @Output() onSelectionChange = new EventEmitter<string>();

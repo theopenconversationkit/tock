@@ -20,6 +20,10 @@ import ai.tock.nlp.core.BuildContext
 import ai.tock.nlp.core.CallContext
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityEvaluationContext
+import ai.tock.nlp.core.Intent
+import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT
+import ai.tock.nlp.core.Intent.Companion.RAG_EXCLUDED_INTENT_NAME
+import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.core.ModelCore
 import ai.tock.nlp.core.NlpCore
@@ -236,8 +240,14 @@ object ParserService : Parser {
                         .mapNotNull { it.toEntityRecognition(ConfigurationRepository::toEntity) }
                 )
                 val intent = ConfigurationRepository.getIntentById(validatedSentence.classification.intentId)
+
                 return ParseResult(
-                    intent?.name ?: UNKNOWN_INTENT_NAME.name(),
+                    intent?.name
+                        ?: if (RAG_EXCLUDED_INTENT_NAME == validatedSentence.classification.intentId.toString()) {
+                            RAG_EXCLUDED_INTENT_NAME.name()
+                        } else {
+                            UNKNOWN_INTENT_NAME.name()
+                        },
                     intent?.namespace ?: UNKNOWN_INTENT_NAME.namespace(),
                     language,
                     entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },

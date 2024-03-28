@@ -16,6 +16,7 @@
 
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
+import ai.tock.iadvize.client.graphql.ChatbotActionOrMessageInput
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
@@ -30,4 +31,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(name = "message", value = IadvizeMessage::class),
     JsonSubTypes.Type(name = "transfer", value = IadvizeTransfer::class)
 )
-abstract class IadvizeReply(val type: ReplyType)
+abstract class IadvizeReply(val type: ReplyType) {
+
+    /**
+     * Convert the REST reply [IadvizeReply] to a GraphQL type [ChatbotActionOrMessageInput]
+     */
+    open fun toChatBotActionOrMessageInput() = ChatbotActionOrMessageInput()
+}

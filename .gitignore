@@ -42,3 +42,6 @@ travis
 
 #ngrok
 scripts/connector-messenger/ngrok.exe
+
+# Python
+**/requirements.txt

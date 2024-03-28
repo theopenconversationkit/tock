@@ -132,7 +132,15 @@ internal class TockBotBus(
 
         val actionToSent = applyBotAnswerInterceptor(a)
         story.actions.add(actionToSent)
-        connector.send(connectorData, action, actionToSent, context.currentDelay)
+
+        // The test connector is a rest connector (source),
+        // but it invokes the engine with a target connector,
+        // to receive the corresponding messages
+        if(actionToSent !is SendDebug || ConnectorType.rest == sourceConnectorType) {
+            // If the action is not a SendDebug, or it is, but the source connector is the rest connector
+            connector.send(connectorData, action, actionToSent, context.currentDelay)
+        }
+
         return this
     }
 

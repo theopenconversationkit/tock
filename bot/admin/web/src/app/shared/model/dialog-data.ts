@@ -236,14 +236,14 @@ export class Sentence extends BotMessage {
   }
 }
 
-export interface FootNote {
+export interface Footnote {
   title: string;
   url: string;
   identifier: string;
 }
 
 export class SentenceWithFootnotes extends BotMessage {
-  constructor(public delay: number, public footNotes: FootNote[], public text?: string, public userInterface?: UserInterfaceType) {
+  constructor(public delay: number, public footnotes: Footnote[], public text?: string, public userInterface?: UserInterfaceType) {
     super(EventType.sentenceWithFootnotes, delay);
   }
 
@@ -251,7 +251,7 @@ export class SentenceWithFootnotes extends BotMessage {
     const value = Object.create(SentenceWithFootnotes.prototype);
 
     const result = Object.assign(value, json, {
-      footNotes: json.footNotes,
+      footnotes: json.footnotes,
       eventTypeEnum: EventType.sentenceWithFootnotes
     });
 

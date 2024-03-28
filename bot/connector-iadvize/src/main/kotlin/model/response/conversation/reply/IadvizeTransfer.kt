@@ -17,12 +17,26 @@
 package ai.tock.bot.connector.iadvize.model.response.conversation.reply
 
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
+import ai.tock.iadvize.client.graphql.ChatbotActionInput
+import ai.tock.iadvize.client.graphql.ChatbotActionOrMessageInput
+import ai.tock.iadvize.client.graphql.TransferMessageInput
+import ai.tock.iadvize.client.graphql.TransferOptionsInput
 
 data class IadvizeTransfer(
     val distributionRule: String?,
     val transferOptions: TransferOptions) : IadvizeReply(ReplyType.transfer) {
 
-    data class TransferOptions(val timeout: Duration)
+    /**
+     * Convert a timeout in seconds
+     * @param timeout the [Duration]
+     */
+    data class TransferOptions(val timeout: Duration) {
+        fun getTimeoutInSeconds(): Int = when(timeout.unit){
+            Duration.TimeUnit.minutes -> (timeout.value * 60).toInt()
+            Duration.TimeUnit.seconds -> timeout.value.toInt()
+            Duration.TimeUnit.millis -> (timeout.value / 1000).toInt()
+        }
+    }
 
     /**
      * When an IadvizeTransfer is created on a story, distribution rule is not known.
@@ -37,4 +51,16 @@ data class IadvizeTransfer(
      */
     constructor(timeout: Duration)
             : this(null, TransferOptions(timeout))
+
+    override fun toChatBotActionOrMessageInput() =
+        ChatbotActionOrMessageInput(
+            chatbotAction = ChatbotActionInput(
+                transferMessage = TransferMessageInput(
+                    routingRuleId = distributionRule ?: "unknown_distribution_rule",
+                    transferOptions = TransferOptionsInput(
+                        timeout = transferOptions.getTimeoutInSeconds()
+                    )
+                )
+            )
+        )
 }
