@@ -6,6 +6,10 @@ This documentation provides detailed information about our multilingual synchron
 
 This feature requires the user to specify a source and a target, each associated with a namespace and an application, to synchronize data between different bots. It facilitates the development, testing, and maintenance of your chatbots, whether in monolingual or multilingual mode.
 
+## Activation
+
+Please ask your administrator to switch the `tock_namespace_open_access`property to `true` in tock studio to enable the feature.
+
 ## Key Features:
 
 The synchronization function offers several essential features:

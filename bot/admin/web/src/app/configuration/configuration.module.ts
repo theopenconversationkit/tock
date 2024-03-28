@@ -36,7 +36,7 @@ import {
   NbToastrModule,
   NbTooltipModule,
   NbStepperModule,
-  NbFormFieldModule
+  NbFormFieldModule, NbCheckboxModule
 } from '@nebular/theme';
 import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -44,6 +44,7 @@ import { BotSharedService } from '../shared/bot-shared.service';
 import { ApplicationConfig } from '../applications/application.config';
 import { SelectBotConfigurationDialogComponent } from './bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
 import { BotConfigurationRoutingModule } from './configuration-routing.module';
+import {SynchronizationComponent} from "./synchronization/synchronization.component";
 
 @Injectable()
 export class BotApplicationConfig implements ApplicationConfig {

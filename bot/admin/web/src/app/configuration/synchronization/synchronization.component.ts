@@ -98,7 +98,8 @@ export class SynchronizationComponent implements OnInit{
           this.redirect();
         });
       }
-    })}
+    })
+  }
 
   private redirect() {
     let redirect = '../../';

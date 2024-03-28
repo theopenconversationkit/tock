@@ -92,7 +92,11 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
-import ai.tock.translator.*
+import ai.tock.translator.I18nDAO
+import ai.tock.translator.I18nKeyProvider
+import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.Translator
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
