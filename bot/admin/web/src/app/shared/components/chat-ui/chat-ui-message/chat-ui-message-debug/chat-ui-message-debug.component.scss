@@ -12,10 +12,10 @@
     cursor: pointer;
 
     border-radius: 0.3rem;
-    border: 1px solid nb-theme(chat-message-reply-text-color);
+    border: 1px solid nb-theme(color-basic-500);
 
-    background-color: nb-theme(chat-message-reply-text-color);
-    color: nb-theme(chat-message-reply-background-color);
+    background-color: nb-theme(color-basic-500);
+    color: nb-theme(color-basic-800);
 
     .head {
       padding: 0.1rem 0.5rem;

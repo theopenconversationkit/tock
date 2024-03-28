@@ -7,6 +7,7 @@ import { DialogReportQuery } from '../../../../analytics/dialogs/dialogs';
 import { StateService } from '../../../../core-nlp/state.service';
 import { ActionReport, DialogReport, Sentence } from '../../../../shared/model/dialog-data';
 import { SentenceExtended } from '../sentence-training.component';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../utils';
 
 @Component({
   selector: 'tock-sentence-training-dialog',
@@ -97,19 +98,12 @@ export class SentenceTrainingDialogComponent implements OnChanges, OnDestroy {
   }
 
   getUserName(action: ActionReport): string {
-    if (action.isBot()) return this.userIdentities.bot.name;
-    return this.userIdentities.client.name;
+    return getDialogMessageUserQualifier(action.isBot());
   }
 
   getUserAvatar(action: ActionReport): string {
-    if (action.isBot()) return this.userIdentities.bot.avatar;
-    return this.userIdentities.client.avatar;
+    return getDialogMessageUserAvatar(action.isBot());
   }
-
-  userIdentities = {
-    client: { name: 'Human', avatar: 'assets/images/scenario-client.svg' },
-    bot: { name: 'Bot', avatar: 'assets/images/scenario-bot.svg' }
-  };
 
   searchSentence(action: ActionReport): void {
     if (action.isBot()) return;

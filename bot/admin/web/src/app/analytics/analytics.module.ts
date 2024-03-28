@@ -60,6 +60,7 @@ import { SatisfactionComponent } from './satisfaction/satisfaction.component';
 import { ActivateSatisfactionComponent } from './satisfaction/activate-satisfaction/activate-satisfaction.component';
 import { SatisfactionDetailsComponent } from './satisfaction/satisfaction-details/satisfaction-details.component';
 import { AnalyticsRoutingModule } from './analytics-routing.module';
+import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.component';
 
 export function importEcharts() {
   return import('echarts');
@@ -113,7 +114,8 @@ export function importEcharts() {
     ChartDialogComponent,
     SatisfactionComponent,
     ActivateSatisfactionComponent,
-    SatisfactionDetailsComponent
+    SatisfactionDetailsComponent,
+    DialogsListComponent
   ],
   exports: [],
   providers: [AnalyticsService],
