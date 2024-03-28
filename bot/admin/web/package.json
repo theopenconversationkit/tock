@@ -4,7 +4,7 @@
   "license": "Apache2",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve  --host 0.0.0.0 --disable-host-check",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
@@ -57,7 +57,7 @@
     "@angular-eslint/eslint-plugin-template": "14.4.0",
     "@angular-eslint/schematics": "14.4.0",
     "@angular-eslint/template-parser": "14.4.0",
-    "@angular/cli": "^14.2.10",
+    "@angular/cli": "^14.2.13",
     "@angular/compiler-cli": "^14.2.12",
     "@angular/language-service": "^14.2.12",
     "@types/file-saver-es": "^2.0.1",

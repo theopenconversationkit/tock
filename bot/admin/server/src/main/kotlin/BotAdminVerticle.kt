@@ -24,23 +24,9 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
+import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
@@ -102,6 +88,8 @@ open class BotAdminVerticle : AdminVerticle() {
     private val dialogFlowDAO: DialogFlowDAO by injector.instance()
 
     private val front = FrontClient
+
+    private val synchronizationService = SynchronizationService
 
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
@@ -550,6 +538,20 @@ open class BotAdminVerticle : AdminVerticle() {
                         null
                     }
                 } ?: unauthorized()
+        }
+
+        blockingJsonPost(
+            "/configuration/synchronization", admin, simpleLogger("Overwrite Bot Configuration")
+        ) { context, syncConfig: BotSynchronization ->
+            synchronizationService.synchronize(
+                syncConfig.source.namespace,
+                syncConfig.source.applicationName,
+                syncConfig.source.applicationId.toId(),
+                syncConfig.target.namespace,
+                syncConfig.target.applicationName,
+                syncConfig.withInboxMessages,
+                context.userLogin
+            )
         }
 
         blockingJsonGet("/action/nlp-stats/:actionId", setOf(botUser, faqBotUser)) { context ->

@@ -61,7 +61,8 @@ export class BotApplicationConfig implements ApplicationConfig {
     BotConfigurationsComponent,
     BotConfigurationComponent,
     NewBotComponent,
-    SelectBotConfigurationDialogComponent
+    SelectBotConfigurationDialogComponent,
+    SynchronizationComponent
   ],
   imports: [
     CommonModule,
@@ -83,6 +84,7 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbIconModule,
     NbSelectModule,
     NbStepperModule,
+    NbCheckboxModule,
     NbFormFieldModule
   ],
   providers: [
