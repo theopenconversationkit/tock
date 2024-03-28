@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-package ai.tock.iadvize.client.authentication.credentials
+package ai.tock.iadvize.client
 
-data class Credentials(val username: String, val password: String)
+import ai.tock.iadvize.client.authentication.credentials.EnvCredentialsProvider
+import ai.tock.shared.security.credentials.CredentialsProvider
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.singleton
+
+
+val iAdvizeClientModule = Kodein.Module {
+    bind<CredentialsProvider>() with singleton { EnvCredentialsProvider() }
+}

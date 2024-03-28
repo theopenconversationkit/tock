@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.service
+package ai.tock.shared.security.credentials
 
-import com.github.salomonbrys.kodein.Kodein.Module
-
-interface BotAdditionalModulesService {
-
-    /**
-     * A default modules injected first
-     */
-    fun defaultModules(): Set<Module> = emptySet()
-
-    /**
-     * Custom modules that override the default modules
-     */
-    fun customModules(): Set<Module> = emptySet()
+enum class CredentialsProviderType {
+    ENV,
+    AWS_SECRET_MANAGER
 }

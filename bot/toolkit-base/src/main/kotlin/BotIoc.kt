@@ -40,7 +40,10 @@ object BotIoc {
      */
     val coreModules: List<Module> =
         listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule)
-            .plus(Loader.loadServices<BotAdditionalModulesService>().flatMap { it.modules() }.toList())
+            .plus(Loader.loadServices<BotAdditionalModulesService>().flatMap { it.defaultModules() }.toList())
+            // Add custom modules/services to override default modules/services.
+            // The order is very important: we need to inject the default modules/services first, then the custom modules/services.
+            .plus(Loader.loadServices<BotAdditionalModulesService>().flatMap { it.customModules() }.toList())
 
     /**
      * Start the bot with the specified additional [modules].

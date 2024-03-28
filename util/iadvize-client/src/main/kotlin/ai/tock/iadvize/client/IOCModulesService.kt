@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.aws.model
+package ai.tock.iadvize.client
 
-import kotlinx.serialization.Serializable
+import ai.tock.shared.service.BotAdditionalModulesService
+import com.github.salomonbrys.kodein.Kodein.Module
 
-@Serializable
-data class Credentials(val username: String, val password: String)
+
+class IOCModulesService : BotAdditionalModulesService {
+
+    override fun defaultModules(): Set<Module> = setOf(iAdvizeClientModule)
+}

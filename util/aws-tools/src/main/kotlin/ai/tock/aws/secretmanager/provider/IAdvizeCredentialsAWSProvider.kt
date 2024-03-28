@@ -18,22 +18,28 @@ package ai.tock.aws.secretmanager.provider
 
 
 import ai.tock.aws.EnvConfig
-import ai.tock.aws.model.Credentials
 import ai.tock.aws.secretmanager.dao.SecretDAO
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import ai.tock.shared.security.credentials.Credentials
+import ai.tock.shared.security.credentials.CredentialsProvider
+import ai.tock.shared.security.credentials.CredentialsProviderType
 import kotlinx.serialization.json.Json
 
 /**
  * IAdvize credentials AWS provider
  */
-class IAdvizeCredentialsAWSProvider: IAdvizeCredentialsProvider {
+class IAdvizeCredentialsAWSProvider: CredentialsProvider {
+
     private val secretDAO: SecretDAO get() = injector.provide()
+
+    override val type: CredentialsProviderType
+        get() = CredentialsProviderType.AWS_SECRET_MANAGER
 
     /**
      * Return iAdvize credentials, from an AWS Secret Manager vault.
      */
-    override fun getIAdvizeCredentials(): Credentials {
+    override fun getCredentials(): Credentials {
         return Json.decodeFromString(
             secretDAO.getSecret(EnvConfig.awsIAdvizeCredentialsSecretId)
         )
