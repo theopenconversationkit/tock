@@ -97,18 +97,21 @@ Cette implémentation générique est à utiliser dès que vous souhaitez param�
 
 Voici les propriétés et leurs valeurs par défaut :
 
-| Variable d'environnement             | Exemple de valeur  | Description                                       |
-|--------------------------------------|--------------------|---------------------------------------------------|
-| `tock_oauth2_enabled`                | `true`             | Activation de l'authentification 0Auth2           |
-| `tock_oauth2_client_id`              | `CLIENT_ID`        | Identifiant pour interroger l'API GitHub          |
-| `tock_oauth2_secret_key`             | `SECRET_KEY`       | Mot de passe pour interroger l'API GitHub         |
-| `tock_oauth2_site_url`               | `https://provider` | Url du provider oauth2                            |
-| `tock_oauth2_access_token_path`      | `/oauth2/token`    | Chemin relatif pour récupérer l'access token      |
-| `tock_oauth2_authorize_path`         | `/oauth2/authorize`| Chemin relatif pour récupérer l'authorize         |
-| `tock_oauth2_userinfo_path`          | `/oauth2/userInfo` | Chemin relatif pour récupérer les userinfo        |
-| `tock_oauth2_proxy_host`             |                    | host du proxy (ne pas indiquer si pas de proxy)   |
-| `tock_oauth2_proxy_port`             |                    | port optionnel du proxy                           |
-| `tock_oauth2_user_role_attribute`    | `custom:roles`     | Attribut lu dans le token pour le mapping du role |
+| Variable d'environnement               | Exemple de valeur       | Description                                        | Exemple
+|----------------------------------------|-------------------------|----------------------------------------------------|
+| `tock_oauth2_enabled`                  | `true`                  | Activation de l'authentification 0Auth2            ||
+| `tock_oauth2_client_id`                | `CLIENT_ID`             | Identifiant pour interroger l'API GitHub           ||
+| `tock_oauth2_secret_key`               | `SECRET_KEY`            | Mot de passe pour interroger l'API GitHub          ||
+| `tock_oauth2_site_url`                 | `https://provider`      | Url du provider oauth2                             ||
+| `tock_oauth2_access_token_path`        | `/oauth2/token`         | Chemin relatif pour récupérer l'access token       ||
+| `tock_oauth2_authorize_path`           | `/oauth2/authorize`     | Chemin relatif pour récupérer l'authorize          ||
+| `tock_oauth2_userinfo_path`            | `/oauth2/userInfo`      | Chemin relatif pour récupérer les userinfo         ||
+| `tock_oauth2_proxy_host`               |                         | Host du proxy (ne pas indiquer si pas de proxy)    ||
+| `tock_oauth2_proxy_port`               |                         | Port optionnel du proxy                            ||
+| `tock_oauth2_user_role_attribute`      | `custom:roles`          | Attribut lu dans le token pour le mapping du role  ||
+| `tock_custom_roles_mapping`            |                         | Lien entre les profils OAuth et les rôles Tock     | <id profil1>=nlpUser,botUser,faqNlpUser,faqBotUser|<id profil2>=nlpUser,botUser,admin,technicalAdmin,faqNlpUser,faqBotUser |
+| `tock_custom_namespace_mapping`        |                         | Lien entre les profils OAuth et les namspaces Tock | <id profil1>=sncf|<id profil1>=sncf |
+| `tock_bot_admin_rest_default_base_url` | `http://localhost:8080` | Redirection vers l'url de tock studio si besoin    ||
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
 
