@@ -19,13 +19,7 @@ package ai.tock.bot.connector.whatsapp.cloud
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
-import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTextMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Change
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Entry
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.WebHookEventReceiveMessage
@@ -39,15 +33,18 @@ import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserPreferences
-import ai.tock.shared.*
+import ai.tock.shared.Executor
+import ai.tock.shared.error
+import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.property
 import ai.tock.shared.security.RequestFilter
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.time.Duration
 import java.time.ZoneOffset
-import java.util.*
+import java.util.Locale
 
 class WhatsAppConnectorCloud internal constructor(
         internal val connectorId: String,
@@ -62,13 +59,13 @@ class WhatsAppConnectorCloud internal constructor(
         internal val client: WhatsAppCloudApiClient,
         private val requestFilter: RequestFilter
 
-    ) : ConnectorBase(whatsAppCloudConnectorType) {
+) : ConnectorBase(whatsAppCloudConnectorType) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val whatsAppCloudApiService : WhatsAppCloudApiService = WhatsAppCloudApiService(client)
+    private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
@@ -81,10 +78,10 @@ class WhatsAppConnectorCloud internal constructor(
                     val modeHub = queryParams.get("hub.mode")
                     val verifyTokenMeta = queryParams.get("hub.verify_token")
                     val challenge = queryParams.get("hub.challenge")
-                    if (modeHub == mode && verifyToken == verifyTokenMeta){
+                    if (modeHub == mode && verifyToken == verifyTokenMeta) {
                         logger.info("WEBHOOK_VERIFIED")
                         context.response().setStatusCode(200).end(challenge)
-                    }else{
+                    } else {
                         context.response().end("Invalid verify token")
                     }
 
@@ -94,7 +91,7 @@ class WhatsAppConnectorCloud internal constructor(
                 }
             }
 
-            router.post(path).handler {context ->
+            router.post(path).handler { context ->
                 if (!requestFilter.accept(context.request())) {
                     context.response().setStatusCode(403).end()
                     return@handler
@@ -107,7 +104,7 @@ class WhatsAppConnectorCloud internal constructor(
 
                     handleWebHook(requestBody, controller)
 
-                }catch (e: Throwable) {
+                } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
                     try {
@@ -119,7 +116,7 @@ class WhatsAppConnectorCloud internal constructor(
                 }
 
             }
-            router.post("/create_template").handler {context ->
+            router.post("/create_template").handler { context ->
                 if (!requestFilter.accept(context.request())) {
                     context.response().setStatusCode(403).end()
                     return@handler
@@ -127,16 +124,13 @@ class WhatsAppConnectorCloud internal constructor(
                 val requestTimerData = BotRepository.requestTimer.start("whatsapp_cloud_create_template")
                 try {
                     val body = context.body().asString()
-                    logger.info { body }
+                    logger.debug { body }
                     val requestBody = mapper.readValue<WhatsAppCloudTemplate>(body)
 
                     whatsAppCloudApiService.sendBuildTemplate(
-                            whatsAppBusinessAccountId, token,requestBody
+                            whatsAppBusinessAccountId, token, requestBody
                     )
-
-                    logger.info { "ok" }
-
-                }catch (e: Throwable) {
+                } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
                     try {
@@ -154,18 +148,16 @@ class WhatsAppConnectorCloud internal constructor(
     private fun handleWebHook(requestBody: WebHookEventReceiveMessage, controller: ConnectorController) {
         requestBody.entry.forEach { entry: Entry ->
             entry.changes.forEach { change: Change ->
-                if(change.value.messages.size!=null){
-                    change.value.messages.forEach { message: WhatsAppCloudMessage ->
-                        executor.executeBlocking {
-                            val event =WebhookActionConverter.toEvent(message, applicationId, client)
-                            if (event != null) {
-                                controller.handle(
-                                        event,
-                                        ConnectorData(WhatsAppConnectorCloudCallback(event.applicationId))
-                                )
-                            }else{
-                                logger.warn("unable to convert $message to event")
-                            }
+                change.value.messages.forEach { message: WhatsAppCloudMessage ->
+                    executor.executeBlocking {
+                        val event = WebhookActionConverter.toEvent(message, applicationId, client)
+                        if (event != null) {
+                            controller.handle(
+                                    event,
+                                    ConnectorData(WhatsAppConnectorCloudCallback(event.applicationId))
+                            )
+                        } else {
+                            logger.warn("unable to convert $message to event")
                         }
                     }
                 }
@@ -180,7 +172,7 @@ class WhatsAppConnectorCloud internal constructor(
                         val delay = Duration.ofMillis(delayInMs)
                         executor.executeBlocking(delay) {
                             whatsAppCloudApiService.sendMessage(
-                                    phoneNumberId, token,it
+                                    phoneNumberId, token, it
                             )
                         }
                     }

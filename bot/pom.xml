@@ -42,6 +42,7 @@
         <module>connector-rocketchat</module>
         <module>connector-twitter</module>
         <module>connector-whatsapp</module>
+        <module>connector-whatsapp-cloud</module>
         <module>connector-teams</module>
         <module>connector-businesschat</module>
         <module>connector-web</module>
@@ -65,7 +66,6 @@
         <module>admin</module>
 
         <module>chatbase</module>
-        <module>connector-whatsapp-cloud</module>
 
     </modules>
 

@@ -21,9 +21,6 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSend
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCoudBotMessageType
 
 internal data class WhatsAppCloudSendBotImageMessage(
-//    val image: WhatsAppBotAttachment,
-//    override val recipientType: WhatsAppBotRecipientType,
-//    override val to: String
         override val messagingProduct: String,
         override val to: String?,
         override val recipientType: WhatsAppCloudBotRecipientType?
