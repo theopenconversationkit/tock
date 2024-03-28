@@ -1,4 +1,5 @@
 version: '3.9'
+#basic docker-compose configuration for studio: mongo + node frontend
 
 volumes:
   tockmongo:

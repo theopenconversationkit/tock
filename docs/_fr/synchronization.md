@@ -6,6 +6,10 @@ Cette documentation présente en détail notre fonctionnalité de synchronisatio
 
 Cette fonctionnalité demande à l'utilisateur de spécifier une source et une cible, chacune associée à un namespace et une application, pour synchroniser les données entre différents bots. Elle facilite le développement, les tests et la maintenance de vos chatbots, que ce soit en mode monolingue ou multilingue.
 
+## Activation
+
+Vous devez demander à votre administrateur de passer la propriété `tock_namespace_open_access`à `true` sur tock studio pour pouvoir accéder à cette fonctionnalité.
+
 ## Fonctionnalités Clés :
 
 La fonction de synchronisation offre plusieurs fonctionnalités essentielles :

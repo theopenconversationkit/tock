@@ -95,6 +95,10 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/application/${id}`, Application.fromJSON);
   }
 
+  getApplicationsByNamespace(namespace: string): Observable<Application[]> {
+    return this.rest.get(`/applications/${namespace}`, Application.fromJSONArray);
+  }
+
   saveApplication(application: Application): Observable<Application> {
     return this.rest.post('/application', application, Application.fromJSON);
   }
