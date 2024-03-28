@@ -109,8 +109,8 @@ Voici les propriétés et leurs valeurs par défaut :
 | `tock_oauth2_proxy_host`               |                         | Host du proxy (ne pas indiquer si pas de proxy)    ||
 | `tock_oauth2_proxy_port`               |                         | Port optionnel du proxy                            ||
 | `tock_oauth2_user_role_attribute`      | `custom:roles`          | Attribut lu dans le token pour le mapping du role  ||
-| `tock_custom_roles_mapping`            |                         | Lien entre les profils OAuth et les rôles Tock     | <id profil1>=nlpUser,botUser,faqNlpUser,faqBotUser|<id profil2>=nlpUser,botUser,admin,technicalAdmin,faqNlpUser,faqBotUser |
-| `tock_custom_namespace_mapping`        |                         | Lien entre les profils OAuth et les namspaces Tock | <id profil1>=sncf|<id profil1>=sncf |
+| `tock_custom_roles_mapping`            |                         | Lien entre les profils OAuth et les rôles Tock     | id1=nlpUser,botUser,faqNlpUser,faqBotUser|id2=nlpUser,botUser,admin,technicalAdmin,faqNlpUser,faqBotUser |
+| `tock_custom_namespace_mapping`        |                         | Lien entre les profils OAuth et les namspaces Tock | id1=sncf|id2=sncf |
 | `tock_bot_admin_rest_default_base_url` | `http://localhost:8080` | Redirection vers l'url de tock studio si besoin    ||
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
