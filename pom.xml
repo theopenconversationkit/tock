@@ -75,6 +75,7 @@
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
         <junit-jupiter>5.10.2</junit-jupiter>
+        <testcontainer>testcontainers</testcontainer>
 
         <mockk>1.13.9</mockk>
         <assertj>3.22.0</assertj>
@@ -621,6 +622,24 @@
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-junit5</artifactId>
                 <version>${vertx}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainer}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${testcontainer}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>mongodb</artifactId>
+                <version>${testcontainer}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

@@ -29,6 +29,7 @@ import ai.tock.bot.admin.model.BotConnectorConfiguration
 import ai.tock.bot.admin.model.BotI18nLabel
 import ai.tock.bot.admin.model.BotI18nLabels
 import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
+import ai.tock.bot.admin.model.BotSynchronization
 import ai.tock.bot.admin.model.CreateI18nLabelRequest
 import ai.tock.bot.admin.model.CreateStoryRequest
 import ai.tock.bot.admin.model.DialogFlowRequest
@@ -41,6 +42,7 @@ import ai.tock.bot.admin.model.SummaryStorySearchRequest
 import ai.tock.bot.admin.model.StorySearchRequest
 import ai.tock.bot.admin.model.UserSearchQuery
 import ai.tock.bot.admin.module.satisfactionContentModule
+import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
@@ -61,6 +63,7 @@ import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettingsQuery
+import ai.tock.shared.allowAccessToAllNamespaces
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.error
@@ -102,6 +105,8 @@ open class BotAdminVerticle : AdminVerticle() {
     private val dialogFlowDAO: DialogFlowDAO by injector.instance()
 
     private val front = FrontClient
+
+    private val synchronizationService = SynchronizationService
 
     override val supportCreateNamespace: Boolean = !botAdminConfiguration.botApiSupport
 
@@ -330,20 +335,20 @@ open class BotAdminVerticle : AdminVerticle() {
             if (context.organization == query.namespace) {
                 val sb = StringBuilder()
                 val printer = CsvCodec.newPrinter(sb)
-                printer.printRecord(listOf("Timestamp","Dialog ID", "Note", "Commentaire"))
+                printer.printRecord(listOf("Timestamp", "Dialog ID", "Note", "Commentaire"))
                 BotAdminService.search(query)
                     .dialogs
                     .forEach { label ->
-                            printer.printRecord(
-                                        listOf(
-                                            label.actions.first().date,
-                                            label.id,
-                                            label.rating,
-                                            label.review,
-                                        )
+                        printer.printRecord(
+                            listOf(
+                                label.actions.first().date,
+                                label.id,
+                                label.rating,
+                                label.review,
                             )
+                        )
                     }
-                 sb.toString()
+                sb.toString()
             } else {
                 unauthorized()
             }
@@ -356,7 +361,16 @@ open class BotAdminVerticle : AdminVerticle() {
             if (context.organization == query.namespace) {
                 val sb = StringBuilder()
                 val printer = CsvCodec.newPrinter(sb)
-                printer.printRecord(listOf("Timestamp", "Intent", "Dialog ID", "Player Type", "Application ID", "Message"))
+                printer.printRecord(
+                    listOf(
+                        "Timestamp",
+                        "Intent",
+                        "Dialog ID",
+                        "Player Type",
+                        "Application ID",
+                        "Message"
+                    )
+                )
                 BotAdminService.search(query)
                     .dialogs
                     .forEach { dialog ->
@@ -368,7 +382,11 @@ open class BotAdminVerticle : AdminVerticle() {
                                     dialog.id,
                                     it.playerId.type,
                                     it.applicationId,
-                                    if (it.message.isSimpleMessage()) it.message.toPrettyString().replace("\n"," ") else (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }.replace("\n"," ")
+                                    if (it.message.isSimpleMessage()) it.message.toPrettyString().replace(
+                                        "\n",
+                                        " "
+                                    ) else (it.message as Sentence).messages.joinToString { it.texts.values.joinToString() }
+                                        .replace("\n", " ")
                                 )
                             )
                         }
@@ -390,10 +408,13 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/dialog/:applicationId/:dialogId/satisfaction", setOf(botUser, faqBotUser)) { context, query: Set<String> ->
+        blockingJsonPost(
+            "/dialog/:applicationId/:dialogId/satisfaction",
+            setOf(botUser, faqBotUser)
+        ) { context, query: Set<String> ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {
-                BotAdminService.getDialogObfuscatedById(context.pathId("dialogId"),query)
+                BotAdminService.getDialogObfuscatedById(context.pathId("dialogId"), query)
             } else {
                 unauthorized()
             }
@@ -415,7 +436,7 @@ open class BotAdminVerticle : AdminVerticle() {
             setOf(botUser, faqNlpUser, faqBotUser)
         ) { context ->
             val app = FrontClient.getApplicationById(context.path("applicationId").toId())
-            app?.let { BotAdminService.getIntentsInDialogs(app.namespace,app.name) }
+            app?.let { BotAdminService.getIntentsInDialogs(app.namespace, app.name) }
         }
 
         blockingJsonGet("/bots/:botId", setOf(botUser, faqNlpUser, faqBotUser)) { context ->
@@ -547,9 +568,27 @@ open class BotAdminVerticle : AdminVerticle() {
                         BotAdminService.deleteApplicationConfiguration(it)
                         true
                     } else {
-                        null
+                        false
                     }
                 } ?: unauthorized()
+        }
+
+        blockingJsonPost(
+            "/configuration/synchronization", admin, simpleLogger("Overwrite Bot Configuration")
+        ) { context, syncConfig: BotSynchronization ->
+            if(allowAccessToAllNamespaces) {
+                synchronizationService.synchronize(
+                    syncConfig.source.namespace,
+                    syncConfig.source.applicationName,
+                    syncConfig.source.applicationId.toId(),
+                    syncConfig.target.namespace,
+                    syncConfig.target.applicationName,
+                    syncConfig.withInboxMessages,
+                    context.userLogin
+                )
+            } else {
+                badRequest("The synchronization is disabled - ask your administrator to set the tock_namespace_open_access property")
+            }
         }
 
         blockingJsonGet("/action/nlp-stats/:actionId", setOf(botUser, faqBotUser)) { context ->

@@ -1,0 +1,55 @@
+
+<nb-card>
+  <nb-card-header>
+    <div style="display: flex">
+      <span>Synchronize BOTS contents (configuration)</span>
+    </div>
+  </nb-card-header>
+  <nb-card-body>
+    <table>
+      <thead>
+      <tr>
+        <td colspan="2">FROM</td>
+        <td colspan="2">TO</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><nb-select class="sync-select"
+          placeholder="Source Namespace"
+                       [(selected)]="this.sourceNamespace"
+                       (selectedChange)="selectSourceNamespace(this.sourceNamespace)"
+        >
+          <nb-option *ngFor="let namespace of namespaces" [value]="namespace">{{namespace.namespace}}</nb-option>
+        </nb-select></td>
+        <td rowspan="3"><nb-icon class="arrow-right" icon="arrow-right"></nb-icon></td>
+        <td><nb-select class="sync-select"
+                       placeholder="Target Namespace"
+                       [(selected)]="this.targetNamespace"
+                       (selectedChange)="selectTargetNamespace(this.targetNamespace)"
+        >
+          <nb-option *ngFor="let namespace of namespaces" [value]="namespace">{{namespace.namespace}}</nb-option>
+        </nb-select></td>
+      </tr>
+      <tr>
+        <td><nb-select class="sync-select"
+                       placeholder="Source Application"
+                       [(selected)]="this.sourceApplication"
+        >
+          <nb-option *ngFor="let app of sourceApplications" [value]="app">{{app.name}}</nb-option>
+        </nb-select></td>
+        <td><nb-select class="sync-select"
+                      placeholder="Target Application"
+                      [(selected)]="this.targetApplication"
+        >
+          <nb-option *ngFor="let app of targetApplications" [value]="app">{{app.name}}</nb-option>
+        </nb-select></td>
+      </tr>
+      </tbody>
+    </table>
+    <nb-toggle status="primary" [(ngModel)]="this.shouldSynchronizeInboxMessages"  nbTooltip="Copy inbox messages">Copy inbox messages </nb-toggle>
+    <div>
+      <button mat-raised-button color="primary" (click)="copyConfiguration()">Copy</button>
+    </div>
+  </nb-card-body>
+</nb-card>

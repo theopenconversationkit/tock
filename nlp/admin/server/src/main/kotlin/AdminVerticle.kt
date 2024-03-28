@@ -59,6 +59,7 @@ import ai.tock.shared.Executor
 import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.TOCK_FRONT_DATABASE
 import ai.tock.shared.TOCK_MODEL_DATABASE
+import ai.tock.shared.allowAccessToAllNamespaces
 import ai.tock.shared.devEnvironment
 import ai.tock.shared.error
 import ai.tock.shared.injector
@@ -166,6 +167,20 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        // Retrieve all applications of the selected namespace
+        blockingJsonGet("/applications/:namespace", admin) { context ->
+            if (allowAccessToAllNamespaces) {
+                val namespace: String = context.path("namespace")
+                front.getApplications().filter {
+                    it.namespace == namespace
+                }.map {
+                    service.getApplicationWithIntents(it)
+                }
+            } else {
+                badRequest("The synchronization is disabled - ask your administrator to set the tock_namespace_open_access property")
+            }
+        }
+
         // Retrieve application that matches given identifier
         blockingJsonGet("/application/:applicationId") { context ->
             service.getApplicationWithIntents(context.pathId("applicationId"))
@@ -213,7 +228,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/sentences/dump/:dumpType/:applicationId",
-            setOf(admin,technicalAdmin)
+            setOf(admin, technicalAdmin)
         ) { context, query: SearchQuery ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
@@ -295,20 +310,21 @@ open class AdminVerticle : WebVerticle() {
                 if (existingApp != null && existingApp.name != application.name) {
                     badRequest("Application name cannot be changed")
                 }
-                    val newApp = saveApplication(
+                val newApp = saveApplication(
                     existingApp,
                     application.toApplication().copy(name = application.name.lowercase())
                 )
                 // trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType
-                    || appWithSameName.normalizeText != newApp.normalizeText) {
+                    || appWithSameName.normalizeText != newApp.normalizeText
+                ) {
                     front.triggerBuild(ModelBuildTrigger(newApp._id, true))
                 }
                 ApplicationWithIntents(
                     newApp,
                     front.getIntentsByApplicationId(newApp._id),
                     front.getModelSharedIntents(application.namespace),
-                    )
+                )
             } else {
                 unauthorized()
             }
@@ -316,7 +332,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonGet(
             "/sentence/users/:applicationId",
-            setOf(nlpUser,faqNlpUser)
+            setOf(nlpUser, faqNlpUser)
         ) { context ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
@@ -329,7 +345,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonGet(
             "/sentence/configurations/:applicationId",
-            setOf(nlpUser,faqNlpUser)
+            setOf(nlpUser, faqNlpUser)
         ) { context ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
@@ -553,12 +569,14 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonGet("/locales") {
             supportedLanguages
-                .map { it.key to it.value.getDisplayLanguage(Locale.ENGLISH)
-                    .replaceFirstChar { c -> if (c.isLowerCase()) c.titlecase(Locale.getDefault()) else c.toString() } }
+                .map {
+                    it.key to it.value.getDisplayLanguage(Locale.ENGLISH)
+                        .replaceFirstChar { c -> if (c.isLowerCase()) c.titlecase(Locale.getDefault()) else c.toString() }
+                }
                 .sortedBy { it.second }
         }
 
-        blockingJsonPost("/parse", setOf(nlpUser,faqNlpUser)) { context, query: ParseQuery ->
+        blockingJsonPost("/parse", setOf(nlpUser, faqNlpUser)) { context, query: ParseQuery ->
             if (context.organization == query.namespace) {
                 service.parseSentence(query)
             } else {
@@ -568,7 +586,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/sentence",
-            setOf(nlpUser,faqNlpUser),
+            setOf(nlpUser, faqNlpUser),
             logger<SentenceReport>("Update Sentence") { _, s ->
                 s?.applicationId
             }
@@ -580,7 +598,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/sentences/search", setOf(faqNlpUser,nlpUser)) { context, s: SearchQuery ->
+        blockingJsonPost("/sentences/search", setOf(faqNlpUser, nlpUser)) { context, s: SearchQuery ->
             if (context.organization == s.namespace) {
                 try {
                     service.searchSentences(s)
@@ -826,7 +844,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/intent-errors", setOf(nlpUser,faqNlpUser)) { context, query: TestBuildQuery ->
+        blockingJsonPost("/test/intent-errors", setOf(nlpUser, faqNlpUser)) { context, query: TestBuildQuery ->
             if (context.organization == query.namespace) {
                 val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
                     ?: error("application for $query not found")
@@ -838,7 +856,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/test/intent-error/delete",
-            setOf(nlpUser,faqNlpUser),
+            setOf(nlpUser, faqNlpUser),
             logger<IntentTestErrorWithSentenceReport>("Delete Intent Test Error") { _, e -> e?.sentence?.applicationId }
         ) { context, error: IntentTestErrorWithSentenceReport ->
             if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
@@ -852,7 +870,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/entity-errors", setOf(nlpUser,faqNlpUser)) { context, query: TestBuildQuery ->
+        blockingJsonPost("/test/entity-errors", setOf(nlpUser, faqNlpUser)) { context, query: TestBuildQuery ->
             if (context.organization == query.namespace) {
                 val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
                     ?: error("application for $query not found")
@@ -864,7 +882,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost(
             "/test/entity-error/delete",
-            setOf(nlpUser,faqNlpUser),
+            setOf(nlpUser, faqNlpUser),
             logger<EntityTestErrorWithSentenceReport>("Delete Entity Test Error") { _, e -> e?.sentence?.applicationId }
         ) { context, error: EntityTestErrorWithSentenceReport ->
             if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
@@ -878,7 +896,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/stats", setOf(nlpUser,faqNlpUser)) { context, query: TestBuildQuery ->
+        blockingJsonPost("/test/stats", setOf(nlpUser, faqNlpUser)) { context, query: TestBuildQuery ->
             val app = front.getApplicationByNamespaceAndName(
                 query.namespace,
                 query.applicationName
@@ -1117,7 +1135,7 @@ open class AdminVerticle : WebVerticle() {
             "/configuration/namespace",
             admin,
             simpleLogger("Create or Update Namespace")
-        ) { context, conf : NamespaceConfiguration ->
+        ) { context, conf: NamespaceConfiguration ->
             if (front.isNamespaceOwner(context.userLogin, conf.namespace)) {
                 front.saveNamespaceConfiguration(conf)
             } else {
@@ -1169,8 +1187,8 @@ open class AdminVerticle : WebVerticle() {
                         if (it.succeeded()) {
                             logger.info { "base href: $baseHref" }
                             val content = it.result()
-                                    .toString(UTF_8)
-                                    .replace("<base href=\"/\"", "<base href=\"$baseHref\"")
+                                .toString(UTF_8)
+                                .replace("<base href=\"/\"", "<base href=\"$baseHref\"")
                             logger.debug { "content: $content" }
                             val result = Buffer.buffer(content)
                             if (!devEnvironment) {

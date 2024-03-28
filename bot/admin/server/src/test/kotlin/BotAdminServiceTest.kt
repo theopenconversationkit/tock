@@ -27,11 +27,13 @@ import ai.tock.bot.definition.IntentWithoutNamespace
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.tockInternalInjector
+import ai.tock.translator.I18nDAO
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
@@ -50,10 +52,13 @@ class BotAdminServiceTest : AbstractTest() {
 
     companion object {
         init {
+            val i18nDAO: I18nDAO = mockk(relaxed = true)
             // IOC
             tockInternalInjector = KodeinInjector()
             val specificModule = Kodein.Module {
                 bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionDAO }
+                bind<I18nDAO>() with provider { i18nDAO }
+
             }
             tockInternalInjector.inject(
                 Kodein {
