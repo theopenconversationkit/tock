@@ -65,6 +65,7 @@
         <module>admin</module>
 
         <module>chatbase</module>
+        <module>connector-whatsapp-cloud</module>
 
     </modules>
 
@@ -138,6 +139,11 @@
             <dependency>
                 <groupId>ai.tock</groupId>
                 <artifactId>tock-bot-connector-whatsapp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ai.tock</groupId>
+                <artifactId>tock-bot-connector-whatsapp-cloud</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

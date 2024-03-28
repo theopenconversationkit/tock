@@ -71,6 +71,10 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-bot-connector-whatsapp-cloud</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>tock-bot-connector-teams</artifactId>
         </dependency>
         <dependency>
