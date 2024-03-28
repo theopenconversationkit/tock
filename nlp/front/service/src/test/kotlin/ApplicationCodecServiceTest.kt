@@ -39,7 +39,6 @@ import org.junit.jupiter.api.Test
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
-import java.time.Instant
 import java.time.Instant.now
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -53,7 +52,7 @@ import kotlin.test.assertTrue
 class ApplicationCodecServiceTest : AbstractTest() {
 
     private val logger = KotlinLogging.logger {}
-    val now = Instant.now().truncatedTo(ChronoUnit.MILLIS)
+    val now = now().truncatedTo(ChronoUnit.MILLIS)
 
     @BeforeEach
     fun before() {
@@ -264,7 +263,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
     fun `import sentence flagged of a Locale with country use the Locale language only`() {
         val dump = SentencesDump(
             app.qualifiedName,
-            sentences = listOf(SentenceDump("a", "a", emptyList(), Locale.FRANCE))
+            sentences = listOf(SentenceDump("a", "a", now, emptyList(), Locale.FRANCE))
         )
         ApplicationCodecService.importSentences(app.namespace, dump)
         verify {
@@ -280,6 +279,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
                 SentenceDump(
                     "a",
                     "a",
+                    now,
                     listOf(
                         SentenceEntityDump(
                             "test:e1",
