@@ -21,6 +21,6 @@ import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein.Module
 
 class IOCModulesService : BotAdditionalModulesService {
-    override fun modules(): Set<Module> = setOf(awsToolsModule)
+    override fun customModules(): Set<Module> = setOf(awsToolsModule)
 
 }

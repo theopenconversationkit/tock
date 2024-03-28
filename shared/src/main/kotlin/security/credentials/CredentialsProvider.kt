@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.aws.secretmanager.provider
+package ai.tock.shared.security.credentials
 
-import ai.tock.aws.model.Credentials
+interface CredentialsProvider {
+    val type : CredentialsProviderType
 
-/**
- * IAdvize credentials provider
- */
-interface IAdvizeCredentialsProvider {
-    fun getIAdvizeCredentials(): Credentials
+    fun getCredentials(): Credentials
 }

@@ -18,9 +18,12 @@ package ai.tock.iadvize.client.authentication
 
 import ai.tock.iadvize.client.IadvizeApi
 import ai.tock.iadvize.client.PASSWORD
-import ai.tock.iadvize.client.authentication.credentials.credentialProviderInstance
+import ai.tock.iadvize.client.authentication.credentials.EnvCredentialsProvider
 import ai.tock.iadvize.client.authenticationFailedError
 import ai.tock.iadvize.client.createApi
+import ai.tock.shared.injector
+import ai.tock.shared.provide
+import ai.tock.shared.security.credentials.CredentialsProvider
 import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
@@ -37,7 +40,7 @@ class IadvizeAuthenticationClient {
         const val DELAY_SECONDS = 5
     }
 
-    private val credentialsProvider = credentialProviderInstance()
+    private val credentialsProvider: CredentialsProvider = injector.provide()
 
     internal var iadvizeApi: IadvizeApi = createApi(logger)
 

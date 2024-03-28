@@ -16,32 +16,20 @@
 
 package ai.tock.iadvize.client.authentication.credentials
 
-import ai.tock.iadvize.client.IADVIZE_CREDENTIALS_PROVIDER_TYPE
 import ai.tock.iadvize.client.IADVIZE_PASSWORD_AUTHENTICATION
 import ai.tock.iadvize.client.IADVIZE_USERNAME_AUTHENTICATION
 import ai.tock.iadvize.client.property
-import java.util.*
-
-
-interface CredentialsProvider {
-    val type : String
-    fun getCredentials(): Credentials
-}
+import ai.tock.shared.security.credentials.Credentials
+import ai.tock.shared.security.credentials.CredentialsProvider
+import ai.tock.shared.security.credentials.CredentialsProviderType
 
 class EnvCredentialsProvider : CredentialsProvider {
-    override val type: String
-        get() = "DEFAULT"
+    override val type: CredentialsProviderType
+        get() = CredentialsProviderType.ENV
 
     override fun getCredentials(): Credentials {
         val username = property(IADVIZE_USERNAME_AUTHENTICATION)
         val password = property(IADVIZE_PASSWORD_AUTHENTICATION)
         return Credentials(username, password)
     }
-}
-fun credentialProviderInstance(): CredentialsProvider {
-    return ServiceLoader.load(CredentialsProvider::class.java)
-        .firstOrNull {
-            it.type.equals(
-                property(IADVIZE_CREDENTIALS_PROVIDER_TYPE), true)
-        } ?: EnvCredentialsProvider()
 }

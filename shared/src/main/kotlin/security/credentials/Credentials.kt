@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-package ai.tock.shared.service
+package ai.tock.shared.security.credentials
+import kotlinx.serialization.Serializable
 
-import com.github.salomonbrys.kodein.Kodein.Module
-
-interface BotAdditionalModulesService {
-
-    /**
-     * A default modules injected first
-     */
-    fun defaultModules(): Set<Module> = emptySet()
-
-    /**
-     * Custom modules that override the default modules
-     */
-    fun customModules(): Set<Module> = emptySet()
-}
+@Serializable
+data class Credentials(val username: String, val password: String)
