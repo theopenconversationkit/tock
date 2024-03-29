@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.common
+package ai.tock.bot.connector.whatsapp.cloud
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import ai.tock.bot.connector.ConnectorMessage
+import ai.tock.bot.connector.ConnectorType
+import com.fasterxml.jackson.annotation.JsonIgnore
 
-data class Error(
-        @JsonProperty("code") val code: Int,
-        @JsonProperty("title") val title: String,
-        @JsonProperty("message") val message: String,
-        @JsonProperty("error_data") val errorData: ErrorData,
-)
+abstract class WhatsAppCloudConnectorMessage  : ConnectorMessage {
 
-data class ErrorData(
-        @JsonProperty("detail") val detail: String?
-)
+   override val connectorType: ConnectorType @JsonIgnore get() = WhatsAppConnectorCloudProvider.connectorType
+}

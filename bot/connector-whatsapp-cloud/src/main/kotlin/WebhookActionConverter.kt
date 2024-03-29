@@ -17,9 +17,8 @@
 package ai.tock.bot.connector.whatsapp.cloud
 
 import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache.createHashedId
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudLocationMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.WhatsAppCloudTextMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.*
+import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.action.SendLocation
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.event.Event
@@ -34,17 +33,39 @@ internal object WebhookActionConverter {
         val senderId = createHashedId(message.from)
         return when (message) {
             is WhatsAppCloudTextMessage  -> SendSentence(
-                    PlayerId(senderId),
-                    applicationId,
-                    PlayerId(applicationId, PlayerType.bot),
-                    message.text.body
+                PlayerId(senderId),
+                applicationId,
+                PlayerId(applicationId, PlayerType.bot),
+                message.text.body
             )
             is WhatsAppCloudLocationMessage  -> SendLocation(
-                    PlayerId(senderId),
-                    applicationId,
-                    PlayerId(applicationId, PlayerType.bot),
-                    UserLocation(message.location.latitude, message.location.longitude)
+                PlayerId(senderId),
+                applicationId,
+                PlayerId(applicationId, PlayerType.bot),
+                UserLocation(message.location.latitude, message.location.longitude)
             )
+            is WhatsAppCloudButtonMessage -> {
+                message.button.payload?.let { payload ->
+                    SendChoice.decodeChoice(
+                        payload,
+                        PlayerId(senderId),
+                        applicationId,
+                        PlayerId(applicationId, PlayerType.bot),
+                        message.referral?.ref
+                    )
+                }
+            }
+            is WhatsAppCloudInteractiveMessage ->{
+                message.interactive.buttonReply?.id?.let { payload ->
+                    SendChoice.decodeChoice(
+                        payload,
+                        PlayerId(senderId),
+                        applicationId,
+                        PlayerId(applicationId, PlayerType.bot),
+                        message.referral?.ref
+                    )
+                }
+            }
             else -> null
         }
 
