@@ -25,19 +25,19 @@ enum class WhatsAppCloudBotInteractiveType {
 }
 
 data class WhatsAppCloudBotInteractive(
-        var type: WhatsAppCloudBotInteractiveType,
-        val header: WhatsAppCloudBotInteractiveHeader? = null,
-        val body: WhatsAppCloudBotBody? = null, // optional for product type
-        val footer: WhatsAppCloudBotFooter? = null,
-        val action: WhatsAppCloudBotAction? = null,
+    var type: WhatsAppCloudBotInteractiveType,
+    val header: WhatsAppCloudBotInteractiveHeader? = null,
+    val body: WhatsAppCloudBotBody? = null, // optional for product type
+    val footer: WhatsAppCloudBotFooter? = null,
+    val action: WhatsAppCloudBotAction? = null,
 )
 
 data class WhatsAppCloudBotInteractiveHeader(
-        var type: WhatsAppCloudBotHeaderType,
-        val document: WhatsAppCloudBotMedia? = null,
-        val image: WhatsAppCloudBotMedia? = null,
-        val video: WhatsAppCloudBotMedia? = null,
-        val text: String? = null
+    var type: WhatsAppCloudBotHeaderType,
+    val document: WhatsAppCloudBotMedia? = null,
+    val image: WhatsAppCloudBotMedia? = null,
+    val video: WhatsAppCloudBotMedia? = null,
+    val text: String? = null
 )
 
 enum class WhatsAppCloudBotHeaderType {
@@ -45,81 +45,81 @@ enum class WhatsAppCloudBotHeaderType {
 }
 
 data class WhatsAppCloudBotMedia(
-        val id: String? = null,
-        val link: String? = null,
-        val caption: String? = null,
-        val filename: String? = null,
-        val provider: String? = null,
+    val id: String? = null,
+    val link: String? = null,
+    val caption: String? = null,
+    val filename: String? = null,
+    val provider: String? = null,
 )
 
 data class WhatsAppCloudBotBody(
-        val text: String
+    val text: String
 )
 
 data class WhatsAppCloudBotFooter(
-        val text: String
+    val text: String
 )
 
 data class WhatsAppCloudBotAction(
-        val name : String? = null,
-        val button: String? = null,
-        val buttons: List<WhatsAppCloudBotActionButton>? = null,
-        val sections: List<WhatsAppCloudBotActionSection>? = null,
-        @JsonProperty("catalog_id")
-        val catalogId: String? = null,
-        @JsonProperty("product_retailer_id")
-        val productRetailerId: String? = null,
-        val parameters: ParametersUrl? = null
+    val name : String? = null,
+    val button: String? = null,
+    val buttons: List<WhatsAppCloudBotActionButton>? = null,
+    val sections: List<WhatsAppCloudBotActionSection>? = null,
+    @JsonProperty("catalog_id")
+    val catalogId: String? = null,
+    @JsonProperty("product_retailer_id")
+    val productRetailerId: String? = null,
+    val parameters: ParametersUrl? = null
 )
 
 data class ParametersUrl(
-        @JsonProperty("display_text") val displayText: String,
-        @JsonProperty("url") val url: String
+    @JsonProperty("display_text") val displayText: String,
+    @JsonProperty("url") val url: String
 )
 
 data class WhatsAppCloudBotActionButton(
-        val type: String = "reply",
-        val reply: WhatsAppCloudBotActionButtonReply,
+    val type: String = "reply",
+    val reply: WhatsAppCloudBotActionButtonReply,
 ) {
     fun toChoice(): Choice {
         return SendChoice.decodeChoiceId(reply.id)
-                .let { (intent, params) ->
-                    Choice(
-                            intent,
-                            params + (SendChoice.TITLE_PARAMETER to reply.title)
-                    )
-                }
+            .let { (intent, params) ->
+                Choice(
+                    intent,
+                    params + (SendChoice.TITLE_PARAMETER to reply.title)
+                )
+            }
     }
 }
 
 data class WhatsAppCloudBotActionButtonReply(
-        val title: String,
-        val id: String,
+    val title: String,
+    val id: String,
 )
 
 data class WhatsAppCloudBotActionSection(
-        val title: String? = null,
-        val rows: List<WhatsAppBotRow>? = null,
-        @JsonProperty("product_items")
-        val productItems: List<WhatsAppBotActionSectionProduct>? = null,
+    val title: String? = null,
+    val rows: List<WhatsAppBotRow>? = null,
+    @JsonProperty("product_items")
+    val productItems: List<WhatsAppBotActionSectionProduct>? = null,
 )
 
 data class WhatsAppBotRow(
-        val id: String,
-        val title: String,
-        val description: String? = null,
+    val id: String,
+    val title: String,
+    val description: String? = null,
 ) {
     fun toChoice() : Choice =
-            SendChoice.decodeChoiceId(id)
-                    .let { (intent, params) ->
-                        Choice(
-                                intent,
-                                params + (SendChoice.TITLE_PARAMETER to title)
-                        )
-                    }
+        SendChoice.decodeChoiceId(id)
+            .let { (intent, params) ->
+                Choice(
+                    intent,
+                    params + (SendChoice.TITLE_PARAMETER to title)
+                )
+            }
 }
 
 data class WhatsAppBotActionSectionProduct(
-        @JsonProperty("product_retailer_id")
-        val productRetailerId: String,
+    @JsonProperty("product_retailer_id")
+    val productRetailerId: String,
 )

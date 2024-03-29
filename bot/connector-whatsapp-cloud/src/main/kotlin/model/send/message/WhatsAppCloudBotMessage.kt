@@ -19,6 +19,7 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
+import ai.tock.bot.connector.whatsapp.cloud.WhatsAppCloudConnectorMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotLocationMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTemplateMessage
@@ -30,20 +31,20 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "type"
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type"
 )
 
 @JsonSubTypes(
-        JsonSubTypes.Type(value = WhatsAppCloudBotTextMessage::class, name = "text"),
-        JsonSubTypes.Type(value = WhatsAppCloudBotInteractiveMessage::class, name = "interactive"),
-        JsonSubTypes.Type(value = WhatsAppCloudBotLocationMessage::class, name = "location"),
-        JsonSubTypes.Type(value = WhatsAppCloudBotTemplateMessage::class, name = "template"),
-        )
+    JsonSubTypes.Type(value = WhatsAppCloudBotTextMessage::class, name = "text"),
+    JsonSubTypes.Type(value = WhatsAppCloudBotInteractiveMessage::class, name = "interactive"),
+    JsonSubTypes.Type(value = WhatsAppCloudBotLocationMessage::class, name = "location"),
+    JsonSubTypes.Type(value = WhatsAppCloudBotTemplateMessage::class, name = "template"),
+)
 
 abstract class WhatsAppCloudBotMessage ( val type: WhatsAppCoudBotMessageType, @JsonIgnore internal open val userId: String?) :
-ConnectorMessage{
+    ConnectorMessage, WhatsAppCloudConnectorMessage() {
 
     @get:JsonIgnore
     override val connectorType: ConnectorType = whatsAppCloudConnectorType

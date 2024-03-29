@@ -19,12 +19,12 @@ package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.*
 
 data class WhatsAppCloudButtonMessage(
-        val text: ButtonContent,
-        override val id: String,
-        override val from: String,
-        override val timestamp: String,
-        override val context: ContextContent? = null,
-        override val referral: Referral? = null,
-        override val errors: List<ErrorItem>? = emptyList()
+    val button: ButtonContent,
+    override val id: String,
+    override val from: String,
+    override val timestamp: String,
+    override val context: ContextContent? = null,
+    override val referral: Referral? = null,
+    override val errors: List<ErrorItem>? = emptyList()
 ) : WhatsAppCloudMessage(WhatsAppCloudMessageType.button)
 

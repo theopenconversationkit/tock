@@ -29,15 +29,12 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderPar
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InputStream
 
 class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
@@ -61,41 +58,31 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     }
 
 
-    fun sendMedia (phoneNumberId: String, token: String, fileUrl: String, fileType: String): MediaResponse {
+    fun sendMedia (client: OkHttpClient, phoneNumberId: String, token: String, fileUrl: String, fileType: String): MediaResponse {
         val requestTimerData = BotRepository.requestTimer.start("whatsapp_send_${fileUrl.javaClass.simpleName.lowercase()}")
         try {
 
-            val file = uploadMedia(fileUrl, fileType)
+            val file = uploadMedia(client, fileUrl, fileType)
 
             val body = MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("file","fileimage",file)
-                    .addFormDataPart("messaging_product","whatsapp")
-                    .build()
-            val request2 = Request.Builder()
-                    .url("https://graph.facebook.com/v19.0/$phoneNumberId/media")
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("Authorization", "Bearer $token")
-                    .build()
-            val client = OkHttpClient()
-            val response = client.newCall(request2).execute()
-
-            if (response != null) {
-                if(!response.isSuccessful){
+                .addFormDataPart("file","fileimage",file)
+                .addFormDataPart("messaging_product","whatsapp")
+                .build()
+            val request = Request.Builder()
+                .url("https://graph.facebook.com/v19.0/$phoneNumberId/media")
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
                     throw ConnectorException("Failed to send message: ${response.code}")
                 }
-
+                return mapper.readValue(response.body!!.string(), MediaResponse::class.java)
             }
-
-            return mapper.readValue<MediaResponse>(response.body!!.string())
-
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             BotRepository.requestTimer.throwable(e, requestTimerData)
-            if (e is ConnectorException) {
-                throw e
-            } else {
-                throwError(fileUrl, e.message ?: "")
-            }
+            throw if (e is ConnectorException) e else ConnectorException("Error sending media: ${e.message}")
         } finally {
             BotRepository.requestTimer.end(requestTimerData)
         }
@@ -147,52 +134,39 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
-    private fun replaceWithRealImageId(messageRequest: WhatsAppCloudSendBotTemplateMessage, phoneNumberId: String, token: String) {
+    private fun replaceWithRealImageId(
+        messageRequest: WhatsAppCloudSendBotTemplateMessage,
+        phoneNumberId: String,
+        token: String)
+    {
+        val client = OkHttpClient()
         messageRequest.template.components.forEach { component ->
             if (component is Component.Carousel) {
                 component.cards.forEach { card ->
                     card.components
-                            .filterIsInstance<Component.Header>()
-                            .flatMap { it.parameters }
-                            .filterIsInstance<HeaderParameter.Image>()
-                            .forEach { imageHeader ->
-                                imageHeader.image.id?.let { imageId ->
-                                    val newImageId = sendMedia(phoneNumberId, token, imageId, FileType.PNG.type).id
-                                    imageHeader.image.id = newImageId
-                                }
+                        .filterIsInstance<Component.Header>()
+                        .flatMap { it.parameters }
+                        .filterIsInstance<HeaderParameter.Image>()
+                        .forEach { imageHeader ->
+                            imageHeader.image.id?.let { imageId ->
+                                val newImageId = sendMedia(client, phoneNumberId, token, imageId, FileType.PNG.type).id
+                                imageHeader.image.id = newImageId
                             }
+                        }
                 }
             }
         }
     }
 
-    private fun uploadMedia(fileUrl: String, fileType: String) : RequestBody {
+    private fun uploadMedia(client: OkHttpClient, fileUrl: String, fileType: String) : RequestBody {
 
-        val client = OkHttpClient()
         val request = Request.Builder().url(fileUrl).build()
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("Failed to download file: $fileUrl")
-
-            val inputStream: InputStream = response.body!!.byteStream()
-            return createMultipart(inputStream, fileType)
+            val mediaType = fileType.toMediaTypeOrNull()
+            return response.body!!.byteStream().readBytes().toRequestBody(mediaType)
         }
-
-    }
-
-    private fun createMultipart(stream: InputStream, fileType: String): RequestBody {
-        val dump = ByteArrayOutputStream().apply {
-            var nRead: Int = 0
-            val data = ByteArray(2048)
-            while (nRead != -1) {
-                nRead = stream.read(data, 0, data.size)
-                if (nRead != -1)
-                    write(data, 0, Math.min(nRead, data.size))
-            }
-            flush()
-        }
-
-        return dump.toByteArray().toRequestBody(fileType.toMediaTypeOrNull())
 
     }
 

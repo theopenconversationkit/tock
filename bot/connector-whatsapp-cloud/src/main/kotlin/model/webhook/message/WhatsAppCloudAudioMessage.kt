@@ -22,12 +22,12 @@ import ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content.Referr
 import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 
 data class WhatsAppCloudAudioMessage(
-        val text: TextContent,
-        override val id: String,
-        override val from: String,
-        override val timestamp: String,
-        override val context: ContextContent? = null,
-        override val referral: Referral? = null,
-        override val errors: List<ErrorItem>? = emptyList()
+    val audio: TextContent,
+    override val id: String,
+    override val from: String,
+    override val timestamp: String,
+    override val context: ContextContent? = null,
+    override val referral: Referral? = null,
+    override val errors: List<ErrorItem>? = emptyList()
 ) : WhatsAppCloudMessage(WhatsAppCloudMessageType.text)
 
