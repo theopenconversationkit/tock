@@ -12,23 +12,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating PromptTemplate."""
+"""EMProvider Enumeration."""
 
-from pydantic import BaseModel, Field
-
-from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
+from enum import Enum, unique
 
 
-class PromptTemplate(BaseModel):
-    """A prompt template model, used to specify a formatter"""
+@unique
+class PromptFormatter(str, Enum):
+    """Enumeration to list prompt formatter type"""
 
-    formatter: PromptFormatter = Field(
-        description='The formatter of this prompt.',
-        examples=[PromptFormatter.JINJA2],
-    )
-    template: str = Field(
-        description='The Jinja2 Template for create a prompt.',
-    )
-    inputs: dict = Field(
-        description='inputs for generation of prompt with the template',
-    )
+    F_STRING = 'f-string'
+    JINJA2 = 'jinja2'

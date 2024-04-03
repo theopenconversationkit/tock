@@ -79,37 +79,4 @@ object SentenceGenerationService {
         }
     }
 
-
-    /*private val completionService: CompletionService get() = injector.provide()
-
-    *//**
-     * Generate sentences  and filter errors
-     * @param sentenceGenerationResquestDTO [SentenceGenerationRequestDTO] : the generate sentences request to create or update
-     * @param namespace [String] : the generate sentences request to create or update
-     * @param botId [String] : the generate sentences request to create or update
-     * @throws [BadRequestException] if a generate sentences configuration is invalid
-     * @return [SentenceGenerationResponse?]
-     *//*
-    fun generateSentences(sentenceGenerationResquestDTO : SentenceGenerationRequestDTO, namespace: String, botId: String ): SentenceGenerationResponse? {
-        val sentenceGenerationConfig  = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-            ?: WebVerticle.badRequest("No generate sentences configuration is defined yet [namespace: ${namespace}, botId = ${botId}]")
-
-        val llmSetting = sentenceGenerationConfig.llmSetting
-        val inputs = mapOf(
-            "locale" to sentenceGenerationResquestDTO.locale,
-            "nb_sentences" to sentenceGenerationResquestDTO.nbSentences,
-            "sentences" to sentenceGenerationResquestDTO.sentences,
-            "options" to mapOf<String, Any>(
-                "spelling_mistakes" to sentenceGenerationResquestDTO.options.spellingMistakes,
-                "sms_language" to sentenceGenerationResquestDTO.options.smsLanguage,
-                "abbreviated_language" to sentenceGenerationResquestDTO.options.spellingMistakes
-            )
-        )
-        val prompt = PromptTemplate( Formatter.JINJA2, llmSetting.prompt,  inputs)
-
-        return completionService
-            .generateSentences(SentenceGenerationQuery(llmSetting, prompt))
-    }*/
-
-
 }

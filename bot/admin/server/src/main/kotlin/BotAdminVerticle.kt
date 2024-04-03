@@ -27,7 +27,8 @@ import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
 import ai.tock.bot.admin.service.RAGService
-import ai.tock.bot.admin.service.GenerateSentencesService
+import ai.tock.bot.admin.service.CompletionService
+import ai.tock.bot.admin.service.SentenceGenerationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.service.SynchronizationService
 import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
@@ -1050,6 +1051,13 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost(
+            "/gen-ai/bot/:botId/sentence-generation",
+            setOf(botUser)
+        ) { context, request: SentenceGenerationRequest ->
+            CompletionService.generateSentences(request, namespace = context.organization, botId = context.path("botId"))
         }
 
         blockingJsonPost(
