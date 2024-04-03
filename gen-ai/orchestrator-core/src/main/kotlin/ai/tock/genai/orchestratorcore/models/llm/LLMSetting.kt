@@ -35,4 +35,6 @@ abstract class LLMSetting(
     open val apiKey: String,
     open val temperature: String,
     open val prompt: String
-)
+) {
+    abstract fun copyWithTemperature(temperature: String): LLMSetting
+}

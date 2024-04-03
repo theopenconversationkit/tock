@@ -17,7 +17,7 @@
 package ai.tock.genai.orchestratorclient.responses
 
 class SentenceGenerationResponse(
-    val generatedSentences: List<String>
+    val sentences: List<String>
 )
 
 

@@ -20,10 +20,15 @@ from jinja2 import Template, TemplateError
 from langchain_core.output_parsers import NumberedListOutputParser
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 
-from gen_ai_orchestrator.errors.exceptions.exceptions import GenAIPromptTemplateException
+from gen_ai_orchestrator.errors.exceptions.exceptions import (
+    GenAIPromptTemplateException,
+)
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
+from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
-from gen_ai_orchestrator.routers.requests.requests import SentenceGenerationQuery
+from gen_ai_orchestrator.routers.requests.requests import (
+    SentenceGenerationQuery,
+)
 from gen_ai_orchestrator.routers.responses.responses import (
     SentenceGenerationResponse,
 )
@@ -35,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 def generate_and_split_sentences(
-        query: SentenceGenerationQuery,
+    query: SentenceGenerationQuery,
 ) -> SentenceGenerationResponse:
     """
     Generate sentences using a language model based on the provided query,
@@ -49,8 +54,8 @@ def generate_and_split_sentences(
     validate_prompt_template(query.prompt)
 
     prompt = LangChainPromptTemplate.from_template(
-        template=query.prompt.template,
-        template_format=query.prompt.formatter)
+        template=query.prompt.template, template_format=query.prompt.formatter.value
+    )
     model = get_llm_factory(query.llm_setting).get_language_model()
     parser = NumberedListOutputParser()
 
@@ -72,7 +77,7 @@ def validate_prompt_template(prompt: PromptTemplate):
     Raises:
         GenAIPromptTemplateException if template is incorrect
     """
-    if 'jinja2' == prompt.formatter:
+    if PromptFormatter.JINJA2 == prompt.formatter:
         try:
             Template(prompt.template).render(prompt.inputs)
         except TemplateError as exc:
