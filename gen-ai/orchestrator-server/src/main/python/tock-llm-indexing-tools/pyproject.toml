@@ -15,8 +15,8 @@ langchain = "^0.1.0"
 python-dotenv = "^1.0.0"
 opensearch-py = "^2.4.2"
 gen_ai_orchestrator = {path = "../server"}
-langchain-community = "^0.0.16"
-
+langchain-community = "^0.0.29"
+langsmith = "^0.1.33"
 
 [build-system]
 requires = ["poetry-core"]
