@@ -55,7 +55,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagResponse')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.TextWithFootnotes')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagDebugData')
-def test_rag_chain(
+async def test_rag_chain(
     mocked_rag_debug_data,
     mocked_text_with_footnotes,
     mocked_rag_response,
@@ -129,7 +129,7 @@ Answer in {locale}:""",
     mocked_rag_answer['answer'] = 'an answer from llm'
 
     # Call function
-    execute_qa_chain(query, debug=True)
+    await execute_qa_chain(query, debug=True)
 
     # Assert factories are called with the expected settings from query
     mocked_get_llm_factory.assert_called_once_with(

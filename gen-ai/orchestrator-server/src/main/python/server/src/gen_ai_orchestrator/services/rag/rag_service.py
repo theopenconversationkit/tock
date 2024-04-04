@@ -19,6 +19,6 @@ from gen_ai_orchestrator.routers.responses.responses import RagResponse
 from gen_ai_orchestrator.services.langchain.rag_chain import execute_qa_chain
 
 
-def rag(query: RagQuery, debug: bool) -> RagResponse:
+async def rag(query: RagQuery, debug: bool) -> RagResponse:
     """Launch execution of the RAG chain"""
-    return execute_qa_chain(query, debug)
+    return await execute_qa_chain(query, debug)

@@ -53,11 +53,11 @@ def openai_exception_handler(provider: str):
     def decorator(func):
         """A decorator of handler function"""
 
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             """Exception handling logic"""
 
             try:
-                return func(*args, **kwargs)
+                return await func(*args, **kwargs)
             except APIConnectionError as exc:
                 logger.error(exc)
                 raise GenAIConnectionErrorException(

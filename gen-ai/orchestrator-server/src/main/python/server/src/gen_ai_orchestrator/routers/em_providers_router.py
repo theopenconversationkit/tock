@@ -145,7 +145,7 @@ async def check_em_provider_setting(
 
     try:
         # EM setting check
-        check_em_setting(query.setting)
+        await check_em_setting(query.setting)
 
         return ProviderSettingStatusResponse(valid=True)
     except GenAIOrchestratorException as exc:

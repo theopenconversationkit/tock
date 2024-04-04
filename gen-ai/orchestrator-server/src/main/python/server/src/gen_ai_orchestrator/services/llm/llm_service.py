@@ -28,7 +28,7 @@ from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import Lan
 logger = logging.getLogger(__name__)
 
 
-def check_llm_setting(setting: LLMSetting) -> bool:
+async def check_llm_setting(setting: LLMSetting) -> bool:
     """
     Run a check for a given LLM setting.
 
@@ -40,7 +40,7 @@ def check_llm_setting(setting: LLMSetting) -> bool:
     """
 
     logger.info('Get the LLM Factory, then check the LLM setting.')
-    return get_llm_factory(setting).check_llm_setting()
+    return await get_llm_factory(setting).check_llm_setting()
 
 
 def llm_inference_with_parser(

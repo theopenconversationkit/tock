@@ -24,7 +24,7 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
 logger = logging.getLogger(__name__)
 
 
-def check_em_setting(setting: EMSetting) -> bool:
+async def check_em_setting(setting: EMSetting) -> bool:
     """
     Run a check for a given EM setting.
 
@@ -36,4 +36,4 @@ def check_em_setting(setting: EMSetting) -> bool:
     """
 
     logger.info('Get the EM Factory, then check the EM setting.')
-    return get_em_factory(setting).check_embedding_model_setting()
+    return await get_em_factory(setting).check_embedding_model_setting()

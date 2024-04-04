@@ -100,7 +100,7 @@ docker compose -f docker-compose-opensearch-only.yml up -d
 #### Start the API
 
 ```bash
-gunicorn gen_ai_orchestrator.main:app --reload --bind :8000 --workers=2 --worker-class=uvicorn.workers.UvicornWorker --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini
+uvicorn gen_ai_orchestrator.main:app --reload --host 0.0.0.0 --port 8000 --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini
 ```
 
 ### Dev
@@ -109,7 +109,7 @@ See the installation guide, in your virtual env install extra dependencies and p
 ```bash
 poetry install --with dev
 pre-commit install
-gunicorn gen_ai_orchestrator.main:app --reload --bind :8000 --workers=2 --worker-class=uvicorn.workers.UvicornWorker --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini
+uvicorn gen_ai_orchestrator.main:app --reload --host 0.0.0.0 --port 8000 --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini
 ```
 
 ### Unit tests

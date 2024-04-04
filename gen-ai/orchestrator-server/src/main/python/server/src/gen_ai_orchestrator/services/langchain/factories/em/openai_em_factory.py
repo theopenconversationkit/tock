@@ -41,5 +41,5 @@ class OpenAIEMFactory(LangChainEMFactory):
         )
 
     @openai_exception_handler(provider='OpenAI')
-    def embed_query(self, text: str) -> List[float]:
-        return super().embed_query(text)
+    async def embed_query(self, text: str) -> List[float]:
+        return await super().embed_query(text)

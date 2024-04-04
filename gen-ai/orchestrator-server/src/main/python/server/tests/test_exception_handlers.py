@@ -58,7 +58,7 @@ _request = httpx.Request('GET', 'https://www.dock.tock.ai')
 _response = httpx.Response(request=_request, status_code=400)
 
 
-def test_openai_exception_handler_api_connection_error():
+async def test_openai_exception_handler_api_connection_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     def decorated_function(*args, **kwargs):
         raise APIConnectionError(message='error', request=_request)
@@ -67,7 +67,7 @@ def test_openai_exception_handler_api_connection_error():
         decorated_function()
 
 
-def test_openai_exception_handler_authentication_error():
+async def test_openai_exception_handler_authentication_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     def decorated_function(*args, **kwargs):
         raise AuthenticationError(message='error', response=_response, body=None)
@@ -76,7 +76,7 @@ def test_openai_exception_handler_authentication_error():
         decorated_function()
 
 
-def test_openai_exception_handler_model_not_found_error():
+async def test_openai_exception_handler_model_not_found_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     def decorated_function(*args, **kwargs):
         raise NotFoundError(
@@ -87,7 +87,7 @@ def test_openai_exception_handler_model_not_found_error():
         decorated_function()
 
 
-def test_openai_exception_handler_resource_not_found_error():
+async def test_openai_exception_handler_resource_not_found_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     def decorated_function(*args, **kwargs):
         raise NotFoundError(message='error', response=_response, body=None)
@@ -96,7 +96,7 @@ def test_openai_exception_handler_resource_not_found_error():
         decorated_function()
 
 
-def test_openai_exception_handler_deployment_not_found_error():
+async def test_openai_exception_handler_deployment_not_found_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     def decorated_function(*args, **kwargs):
         raise NotFoundError(
@@ -107,7 +107,7 @@ def test_openai_exception_handler_deployment_not_found_error():
         decorated_function()
 
 
-def test_openai_exception_handler_bad_request_context_len_error():
+async def test_openai_exception_handler_bad_request_context_len_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     def decorated_function(*args, **kwargs):
         raise BadRequestError(
@@ -120,16 +120,16 @@ def test_openai_exception_handler_bad_request_context_len_error():
         decorated_function()
 
 
-def test_openai_exception_handler_bad_request_error():
+async def test_openai_exception_handler_bad_request_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise BadRequestError(message='error', response=_response, body=None)
 
     with pytest.raises(AIProviderAPIBadRequestException):
         decorated_function()
 
 
-def test_openai_exception_handler_api_error():
+async def test_openai_exception_handler_api_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     def decorated_function(*args, **kwargs):
         raise APIError(message='error', request=_request, body=None)
@@ -138,7 +138,7 @@ def test_openai_exception_handler_api_error():
         decorated_function()
 
 
-def test_opensearch_exception_handler_improperly_configured():
+async def test_opensearch_exception_handler_improperly_configured():
     @opensearch_exception_handler
     def decorated_function(*args, **kwargs):
         raise OpenSearchImproperlyConfigured()
@@ -147,7 +147,7 @@ def test_opensearch_exception_handler_improperly_configured():
         decorated_function()
 
 
-def test_opensearch_exception_handler_connexion_error():
+async def test_opensearch_exception_handler_connexion_error():
     @opensearch_exception_handler
     def decorated_function(*args, **kwargs):
         raise OpenSearchAuthenticationException(
@@ -158,7 +158,7 @@ def test_opensearch_exception_handler_connexion_error():
         decorated_function()
 
 
-def test_opensearch_exception_handler_resource_not_found_error():
+async def test_opensearch_exception_handler_resource_not_found_error():
     @opensearch_exception_handler
     def decorated_function(*args, **kwargs):
         raise OpenSearchNotFoundError('400', 'there was an error')
@@ -167,7 +167,7 @@ def test_opensearch_exception_handler_resource_not_found_error():
         decorated_function()
 
 
-def test_opensearch_exception_handler_index_not_found_error():
+async def test_opensearch_exception_handler_index_not_found_error():
     @opensearch_exception_handler
     def decorated_function(*args, **kwargs):
         raise OpenSearchNotFoundError('400', 'index_not_found_exception')
@@ -176,7 +176,7 @@ def test_opensearch_exception_handler_index_not_found_error():
         decorated_function()
 
 
-def test_opensearch_exception_handler_transport_error():
+async def test_opensearch_exception_handler_transport_error():
     @opensearch_exception_handler
     def decorated_function(*args, **kwargs):
         raise OpenSearchTransportError('400', 'there was an error')

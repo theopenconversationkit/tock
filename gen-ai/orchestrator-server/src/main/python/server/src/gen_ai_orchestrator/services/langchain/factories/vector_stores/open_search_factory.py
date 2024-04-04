@@ -13,10 +13,7 @@
 #   limitations under the License.
 #
 """Model for creating OpenSearchFactory"""
-
-from langchain.vectorstores.opensearch_vector_search import (
-    OpenSearchVectorSearch,
-)
+from langchain_community.vectorstores.opensearch_vector_search import OpenSearchVectorSearch
 
 from gen_ai_orchestrator.configurations.environement.settings import (
     application_settings,

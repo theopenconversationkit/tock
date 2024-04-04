@@ -9,7 +9,6 @@ packages = [{include = "gen_ai_orchestrator", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 uvicorn = "^0.25.0"
-gunicorn = "^21.2.0"
 pydantic-settings="^2.1.0"
 fastapi = "^0.109.2"
 langchain = "^0.1.0"
