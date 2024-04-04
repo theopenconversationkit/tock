@@ -78,29 +78,7 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
     logger.info('RAG chain - Start of execution...')
     start_time = time.time()
 
-    llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
-    em_factory = get_em_factory(setting=query.embedding_question_em_setting)
-    vector_store_factory = get_vector_store_factory(
-        vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
-        embedding_function=em_factory.get_embedding_model(),
-        index_name=query.document_index_name,
-    )
-
-    logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
-    conversational_retrieval_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm_factory.get_language_model(),
-        retriever=vector_store_factory.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
-        ),
-        return_source_documents=True,
-        return_generated_question=True,
-        combine_docs_chain_kwargs={
-            'prompt': PromptTemplate(
-                template=llm_factory.setting.prompt,
-                input_variables=__find_input_variables(llm_factory.setting.prompt),
-            )
-        },
-    )
+    conversational_retrieval_chain = create_rag_chain(query=query)
 
     logger.debug(
         'RAG chain - Use chat history: %s', 'Yes' if len(query.history) > 0 else 'No'
@@ -154,6 +132,40 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         )
         if debug
         else None,
+    )
+
+
+def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
+    """
+    Create the RAG chain from RagQuery, using the LLM and Embedding settings specified in the query
+
+    Args:
+        query: The RAG query
+    Returns:
+        The RAG chain.
+    """
+    llm_factory = get_llm_factory(setting=query.question_answering_llm_setting)
+    em_factory = get_em_factory(setting=query.embedding_question_em_setting)
+    vector_store_factory = get_vector_store_factory(
+        vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
+        embedding_function=em_factory.get_embedding_model(),
+        index_name=query.document_index_name,
+    )
+
+    logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
+    return ConversationalRetrievalChain.from_llm(
+        llm=llm_factory.get_language_model(),
+        retriever=vector_store_factory.get_vector_store().as_retriever(
+            search_kwargs=query.document_search_params.to_dict()
+        ),
+        return_source_documents=True,
+        return_generated_question=True,
+        combine_docs_chain_kwargs={
+            'prompt': PromptTemplate(
+                template=llm_factory.setting.prompt,
+                input_variables=__find_input_variables(llm_factory.setting.prompt),
+            )
+        },
     )
 
 
