@@ -64,7 +64,7 @@ logger = logging.getLogger(__name__)
 
 @opensearch_exception_handler
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
+async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
     """
     RAG chain execution, using the LLM and Embedding settings specified in the query
 
@@ -100,7 +100,7 @@ def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         debug,
     )
     records_callback_handler = RetrieverJsonCallbackHandler()
-    response = conversational_retrieval_chain.invoke(
+    response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
         config={'callbacks': [records_callback_handler] if debug else []},
     )

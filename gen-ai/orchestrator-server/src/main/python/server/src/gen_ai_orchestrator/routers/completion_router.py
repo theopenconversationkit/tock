@@ -60,4 +60,4 @@ async def generate_sentences(query: SentenceGenerationQuery):
     """
 
     logger.info('Generate sentences from %s', query.prompt.inputs)
-    return generate_and_split_sentences(query)
+    return await generate_and_split_sentences(query)

@@ -29,4 +29,4 @@ async def ask_rag(query: RagQuery, debug: bool = False) -> RagResponse:
     ## Ask a RAG System
     Ask question to a RAG System, and return answer by using a knowledge base (documents)
     """
-    return rag(query, debug)
+    return await rag(query, debug)

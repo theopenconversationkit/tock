@@ -41,7 +41,7 @@ class LangChainLLMFactory(ABC, BaseModel):
         """
         pass
 
-    def check_llm_setting(self) -> bool:
+    async def check_llm_setting(self) -> bool:
         """
         check the LLM setting validity, by pinging the AI Provider API
         :return: True if the setting is valid.
@@ -49,12 +49,12 @@ class LangChainLLMFactory(ABC, BaseModel):
         """
         logger.info('Invoke LLM provider to check setting')
         query = 'Hi, are you there?'
-        response = self.invoke(query)
+        response = await self.invoke(query)
         logger.info('Invocation successful')
         logger.debug('[query: %s], [response: %s]', query, response)
         return True
 
-    def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
         """
         This is a delegate method that performs the llm invoke.
 
@@ -65,4 +65,4 @@ class LangChainLLMFactory(ABC, BaseModel):
         Returns:
             The output of the runnable.
         """
-        return self.get_language_model().invoke(_input, config)
+        return await self.get_language_model().ainvoke(_input, config)

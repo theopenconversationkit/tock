@@ -44,11 +44,11 @@ logger = logging.getLogger(__name__)
 def opensearch_exception_handler(func):
     """A decorator function for managing OpenSearch exceptions"""
 
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         """Exception handling logic"""
 
         try:
-            return func(*args, **kwargs)
+            return await func(*args, **kwargs)
         except OpenSearchImproperlyConfigured as exc:
             logger.error(exc)
             raise GenAIOpenSearchSettingException(create_error_info_opensearch(exc))
