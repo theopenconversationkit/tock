@@ -122,6 +122,8 @@ This will also produce a Coverage.py code coverage report in coverage.xml.
 
 ### Dependencies analysis
 
+#### Using pip audit
+
 Dev extra dependencies contain the pip-audit package dependencies vulnerability analysis tool (see [pip-audit](https://pypi.org/project/pip-audit)).
 
 Corresponding pre-commit hook will fail if poetry.lock contains any vulnerable dependencies.
@@ -133,6 +135,13 @@ pip-audit
 
 If you happen to use multiple .pre-commit.yaml files (like by developing in both the 'app' and 'tock-llm-indexing-tools' projects), you may encounter a "No <some path>/.pre-commit-config.yaml file was found".
 If so, edit the .git/hooks/pre-commit file (this is the default pre-commit installation path, yours may be elsewhere) and correct <some path> in the ARGS to point to the correct config files.
+
+#### Generate SBOM file using cyclonedx-bom for Dependency Track
+
+If you use [Dependency Track](https://dependencytrack.org/) for dependencies vulnerability management, follow those instruction to generate the SBOM file :
+```bash
+cyclonedx-py poetry . --no-dev -o tock-gen-ai-orchestrator-sbom-$(git rev-parse --short HEAD).json
+```
 
 <!-- USAGE EXAMPLES -->
 ## Usage
