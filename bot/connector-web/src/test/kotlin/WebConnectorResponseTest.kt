@@ -17,13 +17,7 @@
 import ai.tock.bot.connector.web.HrefTargetType
 import ai.tock.bot.connector.web.WebConnectorResponseContent
 import ai.tock.bot.connector.web.WebMediaFile
-import ai.tock.bot.connector.web.send.PostbackButton
-import ai.tock.bot.connector.web.send.QuickReply
-import ai.tock.bot.connector.web.send.UrlButton
-import ai.tock.bot.connector.web.send.WebCard
-import ai.tock.bot.connector.web.send.WebCarousel
-import ai.tock.bot.connector.web.send.WebDeepLink
-import ai.tock.bot.connector.web.send.WebMessageContent
+import ai.tock.bot.connector.web.send.*
 import ai.tock.bot.engine.action.SendAttachment
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.resourceAsStream
@@ -41,6 +35,22 @@ internal class WebConnectorResponseTest {
             )
         )
         val deserializedEvent = mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_only.json"))
+        Assertions.assertThat(deserializedEvent).isEqualTo(expected)
+    }
+
+    @Test
+    fun `text with footnotes`() {
+        val expected = WebConnectorResponseContent(
+            responses = listOf(
+                WebMessageContent(
+                    text = "Text with 2 footnotes", footnotes = listOf(
+                        Footnote("e122e97a5cc7", "title 1", url = "https://doc.tock.ai"),
+                        Footnote("fcad492fdb99", "title 2", url = "https://github.com/theopenconversationkit/tock")
+                    )
+                )
+            )
+        )
+        val deserializedEvent = mapper.readValue<WebConnectorResponseContent>(resourceAsStream("/text_with_footnotes.json"))
         Assertions.assertThat(deserializedEvent).isEqualTo(expected)
     }
 
