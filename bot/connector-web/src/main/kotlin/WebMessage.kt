@@ -18,6 +18,7 @@ package ai.tock.bot.connector.web
 
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.web.send.Button
+import ai.tock.bot.connector.web.send.Footnote
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
 import ai.tock.bot.connector.web.send.WebDeepLink
@@ -40,6 +41,7 @@ data class WebMessage(
     override val image: WebImage? = null,
     override val version: String = "1",
     override val deepLink: WebDeepLink? = null,
+    override val footnotes: List<Footnote> = emptyList(),
 ) : WebMessageContract, WebConnectorMessage {
 
     constructor(content: WebMessageContent) : this(
@@ -50,7 +52,8 @@ data class WebMessage(
         content.widget,
         content.image,
         content.version,
-        content.deepLink
+        content.deepLink,
+        content.footnotes,
     )
 
     @get:JsonIgnore

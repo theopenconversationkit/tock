@@ -16,22 +16,33 @@
 
 package ai.tock.bot.connector.web
 
+import ai.tock.bot.connector.web.send.Footnote
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.SendSentence
+import ai.tock.bot.engine.action.SendSentenceWithFootnotes
 
 internal class WebMessageProcessor(private val processMarkdown: Boolean) {
 
     fun process(action: Action): WebMessage? {
-        return if (action is SendSentence) {
-            val stringText = action.stringText
+        return when(action){
+            is SendSentence -> {
+                val stringText = action.stringText
 
-            if (stringText != null) {
-                WebMessage(postProcess(stringText))
-            } else {
-                postProcess(action.message(webConnectorType) as? WebMessage)
+                if (stringText != null) {
+                    WebMessage(postProcess(stringText))
+                } else {
+                    postProcess(action.message(webConnectorType) as? WebMessage)
+                }
             }
-        } else {
-            null
+            is SendSentenceWithFootnotes -> {
+                val stringText = action.text.toString()
+                WebMessage(
+                    postProcess(stringText),
+                    footnotes = action.footnotes.map {
+                        Footnote(it.identifier, it.title, it.url)
+                    })
+            }
+            else -> null
         }
     }
 

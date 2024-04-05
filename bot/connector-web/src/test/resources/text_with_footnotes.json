@@ -1,0 +1,19 @@
+{
+  "responses": [{
+    "text": "Text with 2 footnotes",
+    "version": "1",
+    "type": "WebMessage",
+    "footnotes": [
+      {
+        "identifier": "e122e97a5cc7",
+        "title": "title 1",
+        "url": "https://doc.tock.ai"
+      },
+      {
+        "identifier": "fcad492fdb99",
+        "title": "title 2",
+        "url": "https://github.com/theopenconversationkit/tock"
+      }
+    ]
+  }]
+}
