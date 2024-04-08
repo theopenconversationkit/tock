@@ -1,59 +1,52 @@
 <a name="readme-top"></a>
 
-<!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
     </li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#getting-started-with-gen-ai-orchestrator">Getting Started with Gen AI Orchestrator</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#dev">Dev</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#prompts-tooling">Prompts tooling</a></li>
   </ol>
 </details>
 
-
-
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
-LLM Orchestrator is the server that handle all LLMs operations : Retrieval Augmented Generation, synthetic sentences generatio. This server is called by Bot API RAG story.
+Gen AI Orchestrator is the server that handle all LLMs operations : Retrieval Augmented Generation, synthetic sentences generation. This server is called by Bot API RAG story.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-* [![Python][Python]][Python-url]
-* [![FastApi][FastApi]][FastApi-url]
-* [![Azure][Azure]][Azure-url]
-* [![AWS][AWS]][AWS-url]
-* [![LangChain][LangChain]][LangChain-url]
-* [![OpenAI][OpenAI]][OpenAI-url]
-* [![AzureOpenAI][AzureOpenAI]][AzureOpenAI-url]
+* [![Python]][Python-url]
+* [![FastApi]][FastApi-url]
+* [![Azure]][Azure-url]
+* [![AWS]][AWS-url]
+* [![LangChain]][LangChain-url]
+* [![OpenAI]][OpenAI-url]
+* [![AzureOpenAI]][AzureOpenAI-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-<!-- GETTING STARTED -->
-## Getting Started with Tock LLM Orchestrator
+## Getting Started with Gen AI Orchestrator
 
 ### Prerequisites
 
 #### Python & Peotry
 
 ##### Using pyenv && poetry (recommended)
-  It's recommended to use pyenv, see install and usage guide here :
-  https://gist.github.com/trongnghia203/9cc8157acb1a9faad2de95c3175aa875
 
-  Basic usage to create a venv with a specific version of Python for this project :
+It's recommended to use pyenv, see install and usage guide here :
+https://gist.github.com/trongnghia203/9cc8157acb1a9faad2de95c3175aa875
+
+Basic usage to create a venv with a specific version of Python for this project :
+
 ```sh
 # In gen-ai/orchestrator-server/src/main/python/server
 pyenv install 3.9.18
@@ -70,11 +63,13 @@ poetry install # Install dependencies for this project in the virtual env
 *Skip this part if you have followed the install using pyenv*
 
 Install python3.9 and poetry :
-  ```sh
-  apt install python3.9 poetry
-  ```
+
+```sh
+apt install python3.9 poetry
+```
 
 Create a virtual env then install dependencies :
+
 ```bash
 python3.9 -m venv .venv
 source .venv/bin/activate # Activate your virtual env
@@ -93,6 +88,7 @@ To run Open Search vector database see [tock-docker](https://github.com/theopenc
 ([see our fork](https://github.com/CreditMutuelArkea/tock-docker/blob/feature/rag/develop/docker-compose-opensearch-only.yml) until it's merge to the upstream)
 
 Start the Open Search cluster using :
+
 ```
 docker compose -f docker-compose-opensearch-only.yml up -d
 ```
@@ -106,18 +102,21 @@ uvicorn gen_ai_orchestrator.main:app --reload --host 0.0.0.0 --port 8000 --log-c
 ### Dev
 
 See the installation guide, in your virtual env install extra dependencies and pre-commit hooks :
+
 ```bash
 poetry install --with dev
 pre-commit install
 uvicorn gen_ai_orchestrator.main:app --reload --host 0.0.0.0 --port 8000 --log-config=./src/gen_ai_orchestrator/configurations/logging/config.ini
 ```
 
-### Unit tests
+#### Unit tests
 
 When dev dependencies are installed, run unit tests for the orchestrator using Tox:
+
 ```
 tox run
 ```
+
 This will also produce a Coverage.py code coverage report in coverage.xml.
 
 ### Dependencies analysis
@@ -129,6 +128,7 @@ Dev extra dependencies contain the pip-audit package dependencies vulnerability 
 Corresponding pre-commit hook will fail if poetry.lock contains any vulnerable dependencies.
 
 To run pip-audit manually, setup in your Poetry env with dev dependencies installed, then:
+
 ```bash
 pip-audit
 ```
@@ -143,22 +143,37 @@ If you use [Dependency Track](https://dependencytrack.org/) for dependencies vul
 cyclonedx-py poetry . --no-dev -o tock-gen-ai-orchestrator-sbom-$(git rev-parse --short HEAD).json
 ```
 
-<!-- USAGE EXAMPLES -->
 ## Usage
 
-Uvicorn Fast API : Go to
-   ```sh
-    http://localhost:8000/
-   ```
+Uvicorn Fast API: go to
 
-_For more information, please refer to the [Swagger](http://localhost:8000/docs)_
+```sh
+ http://localhost:8000/
+```
+
+*For more information, please refer to the [Swagger](http://localhost:8000/docs)*
+
+## Prompts tooling
+
+When a bot is configured to use the Gen AI Orchestrator (through the RAG/RAG settings screen in the Studio), a default prompt is proposed to the bot admin, to carry the user query to the LLM inference point.
+Bot admins can customize this prompt to their specific conversational needs.
+
+The size of this prompt (in tokens) can strongly impact your RAG system's performance if it is too long. *tiktoken* is referenced as a project dependency, to provide a convenience tokens counter tool for this prompt.
+
+Once the project's dependencies are installed in a venv, the prompt tokens can be counted using the corresponding Python interpreter (see [here](https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb) for more details):
+
+```python
+prompt = "my new prompt contents" # put your prompt's text there
+encoding = tiktoken.encoding_for_model("gpt-4") # change according to RAG settings
+num_tokens = len(encoding.encode(prompt))
+print(f"Nb of tokens: {num_tokens}")
+```
+
+If your prompt contents can be made public, you can also use [OpenAI's tokenizer](https://platform.openai.com/tokenizer) as a more convenient method.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-<!-- MARKDOWN LINKS & IMAGES -->
 [product-screenshot]: images/screenshot.png
-
 [Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
 [Python-url]: https://www.langchain.com/
 [FastApi]: https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white
