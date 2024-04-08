@@ -29,6 +29,7 @@ data class BotSentenceGenerationConfigurationDTO(
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
+    val nbSentences: Int,
     val llmSetting: LLMSettingDTO,
 ) {
     constructor(configuration: BotSentenceGenerationConfiguration) : this(
@@ -36,6 +37,7 @@ data class BotSentenceGenerationConfigurationDTO(
         configuration.namespace,
         configuration.botId,
         configuration.enabled,
+        configuration.nbSentences,
         LLMSettingMapper.toDTO(configuration.llmSetting),
     )
 
@@ -45,6 +47,7 @@ data class BotSentenceGenerationConfigurationDTO(
             namespace,
             botId,
             enabled,
+            nbSentences,
             LLMSettingMapper.toEntity(
                 llmSetting,
                 SecurityUtils.generateAwsSecretName(

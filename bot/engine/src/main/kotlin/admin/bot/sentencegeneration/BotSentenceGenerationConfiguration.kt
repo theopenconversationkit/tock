@@ -24,6 +24,7 @@ data class BotSentenceGenerationConfiguration(
     val _id: Id<BotSentenceGenerationConfiguration>,
     val namespace: String,
     val botId: String,
-    val enabled: Boolean = true,
+    val enabled: Boolean = false,
+    val nbSentences: Int,
     val llmSetting: LLMSetting,
 )

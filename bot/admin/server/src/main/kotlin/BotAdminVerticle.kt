@@ -59,10 +59,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.botUser
-import ai.tock.shared.security.TockUserRole.faqBotUser
-import ai.tock.shared.security.TockUserRole.faqNlpUser
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.ServerStatus
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -1057,13 +1054,17 @@ open class BotAdminVerticle : AdminVerticle() {
             "/gen-ai/bot/:botId/sentence-generation",
             setOf(botUser)
         ) { context, request: SentenceGenerationRequest ->
-            CompletionService.generateSentences(request, namespace = context.organization, botId = context.path("botId"))
+            CompletionService.generateSentences(
+                request,
+                namespace = context.organization,
+                botId = context.path("botId")
+            )
         }
 
         blockingJsonPost(
-            "/configuration/bots/:botId/sentence-generation",
+            "/configuration/bots/:botId/sentence-generation/configuration",
             admin
-        ) { context, configuration: BotSentenceGenerationConfigurationDTO  ->
+        ) { context, configuration: BotSentenceGenerationConfigurationDTO ->
             if (context.organization == configuration.namespace) {
                 SentenceGenerationService.saveSentenceGeneration(configuration)
             } else {
@@ -1072,13 +1073,25 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet(
-            "/configuration/bots/:botId/sentence-generation",
+            "/configuration/bots/:botId/sentence-generation/configuration",
             admin
-        ) { context  ->
-            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization, context.path("botId"))
+        ) { context ->
+            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization,
+                context.path("botId"))
                 ?.let {
                     BotSentenceGenerationConfigurationDTO(it)
                 }
+        }
+
+        blockingJsonGet(
+            "/configuration/bots/:botId/sentence-generation/info",
+            nlpUser
+        ) { context ->
+            SentenceGenerationService.getSentenceGenerationConfiguration(context.organization,
+                context.path("botId"))
+                ?.let {
+                    BotSentenceGenerationInfoDTO(it)
+                } ?: BotSentenceGenerationInfoDTO()
         }
 
         blockingJsonGet("/configuration") {

@@ -39,7 +39,7 @@ object CompletionService {
 
     /**
      * Generate sentences
-     * @param request [SentenceGenerationQuery] : the sentence generation request
+     * @param request [SentenceGenerationRequest] : the sentence generation request
      * @param namespace [String] : the namespace
      * @param botId [String] : the bot id
      * @return [SentenceGenerationResponse]
@@ -49,9 +49,16 @@ object CompletionService {
         namespace: String,
         botId: String
     ): SentenceGenerationResponse? {
+        // Check if feature is configured
         val sentenceGenerationConfig = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
             ?: WebVerticle.badRequest("No configuration of sentence generation feature is defined yet " +
                     "[namespace: ${namespace}, botId = ${botId}]")
+
+        // Check if feature is enabled
+        if(!sentenceGenerationConfig.enabled){
+            WebVerticle.badRequest("The sentence generation feature is disabled " +
+                    "[namespace: ${namespace}, botId = ${botId}]")
+        }
 
         // Get LLM Setting and override the temperature
         val llmSetting = sentenceGenerationConfig.llmSetting.copyWithTemperature(request.llmTemperature)
@@ -59,7 +66,7 @@ object CompletionService {
         // Create the inputs map
         val inputs = mapOf(
             "locale" to request.locale,
-            "nb_sentences" to request.nbSentences,
+            "nb_sentences" to sentenceGenerationConfig.nbSentences,
             "sentences" to request.sentences,
             "options" to mapOf<String, Any>(
                 "spelling_mistakes" to request.options.spellingMistakes,
