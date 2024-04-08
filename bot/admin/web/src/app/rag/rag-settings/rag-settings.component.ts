@@ -5,13 +5,14 @@ import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { EnginesConfiguration, EnginesConfigurations } from './models/engines-configurations';
-import { LLMProvider, RagSettings } from './models';
+import { DefaultPrompt, EnginesConfigurations } from './models/engines-configurations';
+import { RagSettings } from './models';
 import { NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { deepCopy } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
+import { EnginesConfiguration, LLMProvider } from '../../shared/model/ai-settings';
 
 interface RagSettingsForm {
   id: FormControl<string>;
@@ -40,6 +41,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   enginesConfigurations = EnginesConfigurations;
 
+  defaultPrompt = DefaultPrompt;
+
   availableStories: StoryDefinitionConfigurationSummary[];
 
   filteredStories$: Observable<StoryDefinitionConfigurationSummary[]>;
@@ -49,20 +52,6 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   isSubmitted: boolean = false;
 
   loading: boolean = false;
-
-  scrolled: boolean = false;
-  prevScrollVal: number;
-
-  @HostListener('window:scroll')
-  onScroll(): void {
-    const offset = 78;
-    const verticalOffset = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-
-    if (verticalOffset === 0 && this.prevScrollVal > offset) return; // deal with <nb-select> reseting page scroll when opening select
-
-    this.scrolled = verticalOffset > offset ? true : false;
-    this.prevScrollVal = verticalOffset;
-  }
 
   constructor(
     private botService: BotService,
@@ -261,7 +250,6 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
         )
       )
       .pipe(take(1));
-
   }
 
   cancel(): void {

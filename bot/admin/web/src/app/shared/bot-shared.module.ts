@@ -43,7 +43,8 @@ import {
   NbFormFieldModule,
   NbAutocompleteModule,
   NbRadioModule,
-  NbWindowModule
+  NbWindowModule,
+  NbListModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -78,7 +79,11 @@ import {
   SliderComponent,
   TokenViewComponent,
   ScrollTopButtonComponent,
-  StickyMenuComponent
+  StickyMenuComponent,
+  AiSettingsEngineConfigParamInputComponent,
+  SentencesGenerationComponent,
+  SentencesGenerationListComponent,
+  SentencesGenerationOptionsComponent
 } from './components';
 
 import { AutofocusDirective } from './directives';
@@ -109,7 +114,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     NbAlertModule,
     NbRadioModule,
     NgxSliderModule,
-    NbWindowModule
+    NbWindowModule,
+    NbListModule
   ],
   declarations: [
     BotMessageComponent,
@@ -153,7 +159,11 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     DebugViewerWindowComponent,
     ScrollTopButtonComponent,
     AutofocusDirective,
-    StickyMenuComponent
+    StickyMenuComponent,
+    AiSettingsEngineConfigParamInputComponent,
+    SentencesGenerationOptionsComponent,
+    SentencesGenerationListComponent,
+    SentencesGenerationComponent
   ],
   exports: [
     BotMessageComponent,
@@ -180,7 +190,9 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     DebugViewerWindowComponent,
     ScrollTopButtonComponent,
     AutofocusDirective,
-    StickyMenuComponent
+    StickyMenuComponent,
+    AiSettingsEngineConfigParamInputComponent,
+    SentencesGenerationComponent
   ],
   providers: [BotSharedService, AnalyticsService]
 })

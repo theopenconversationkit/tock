@@ -1,0 +1,26 @@
+@import '~@nebular/theme/styles/theming';
+@import '~@nebular/theme/styles/themes';
+
+.checkbox-all {
+  padding: 0.6875rem 0;
+}
+
+@include nb-install-component() {
+  .list {
+    position: relative;
+
+    &--header {
+      position: sticky;
+      top: -1rem;
+      left: 0;
+      right: 0;
+      z-index: 1;
+      background-color: nb-theme(card-background-color);
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+  }
+}

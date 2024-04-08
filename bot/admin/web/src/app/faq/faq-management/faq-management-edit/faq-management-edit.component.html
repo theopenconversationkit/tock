@@ -148,28 +148,44 @@
           [required]="true"
           data-testid="question"
         >
-          <div class="d-flex">
-            <input
-              #addUtteranceInput
-              tockAutofocusElement
-              nbInput
-              fullWidth
-              id="question"
-              type="text"
-              placeholder="Type a new wording and press the Enter key"
-              [disabled]="lookingForSameUterranceInOtherInent"
-              (keyup)="resetAlerts()"
-              (keyup.enter)="addUtterance()"
-            />
+          <div class="d-flex gap-1">
+            <nb-form-field class="flex-grow-1">
+              <input
+                #addUtteranceInput
+                tockAutofocusElement
+                nbInput
+                fullWidth
+                id="question"
+                type="text"
+                placeholder="Type a new wording and press the Enter key"
+                [disabled]="lookingForSameUterranceInOtherInent"
+                (keyup)="resetAlerts()"
+                (keyup.enter)="addUtterance()"
+              />
+              <button
+                type="button"
+                nbButton
+                nbSuffix
+                ghost
+                nbTooltip="Add"
+                [disabled]="!addUtteranceInput.value || lookingForSameUterranceInOtherInent"
+                (click)="addUtterance()"
+              >
+                <nb-icon icon="plus-outline"></nb-icon>
+              </button>
+            </nb-form-field>
+
             <button
-              type="button"
               nbButton
+              type="button"
+              nbTooltip="Generate sentences"
               ghost
-              size="small"
-              [disabled]="lookingForSameUterranceInOtherInent"
-              (click)="addUtterance()"
+              shape="round"
+              status="primary"
+              (click)="generateSentences()"
+              [disabled]="!utterances.controls.length"
             >
-              Add
+              <nb-icon icon="bulb-outline"></nb-icon>
             </button>
           </div>
         </tock-form-control>

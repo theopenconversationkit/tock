@@ -44,3 +44,8 @@
   border: 0;
   appearance: none;
 }
+
+.add-utterances {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+}

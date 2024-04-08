@@ -1,0 +1,74 @@
+<nb-alert
+  *ngIf="showAlert"
+  outline="warning"
+  closable
+  (close)="closeAlert()"
+>
+  <div class="d-flex align-items-center gap-1">
+    <nb-icon
+      icon="alert-triangle-outline"
+      status="warning"
+    ></nb-icon>
+    Please note that data will be transmitted to an external partner. Be careful not to send sentences containing "sensitive" information.
+  </div>
+</nb-alert>
+
+<form
+  class="d-flex flex-column"
+  [formGroup]="form"
+>
+  <div>
+    <div class="mb-3">
+      <nb-select
+        *ngIf="sentences.length"
+        class="mb-1"
+        multiple
+        placeholder="Choose until 5 examples among the existing sentences"
+        fullWidth
+        optionsListClass="option-list--break-word"
+        formControlName="sentencesExample"
+      >
+        <nb-option
+          *ngFor="let sentence of sentences"
+          value="{{ sentence }}"
+        >
+          <span class="initial-capitalize">{{ sentence }}</span>
+        </nb-option>
+      </nb-select>
+      <small
+        *ngIf="sentencesExample.errors?.maxlength"
+        class="text-danger"
+      >
+        The model can only take {{ sentencesExampleMax }} sentences as examples
+      </small>
+    </div>
+
+    <div class="d-flex flex-column gap-1">
+      <nb-toggle formControlName="spellingMistakes">Include spellings mistakes</nb-toggle>
+      <nb-toggle formControlName="smsLanguage">Include SMS language</nb-toggle>
+      <nb-toggle formControlName="abbreviatedLanguage">Include abbreviated language</nb-toggle>
+      <div class="form-group">
+        <label for="temperature"
+          >Temperature
+          <nb-icon
+            icon="info-outline"
+            nbTooltip="Controls the randomness: a temperature close to 0 leads to a more deterministic and repetitive generation by the model. A temperature close to 1 makes the model more creative within the limits imposed by the prompt."
+          ></nb-icon
+        ></label>
+        <div class="d-flex flex-column">
+          <input
+            formControlName="llmTemperature"
+            type="range"
+            class="form-control-range"
+            id="temperature"
+            name="temperature"
+            min="0"
+            [max]="maxTemperature"
+            step="0.01"
+          />
+          <small class="align-self-end">{{ llmTemperature.value }} / {{ maxTemperature }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

@@ -33,7 +33,6 @@ import { SourceNormalizationJsonComponent } from './rag-sources/source-normaliza
 import { JsonIteratorComponent } from './rag-sources/source-normalization/json/json-iterator/json-iterator.component';
 import { SourceManagementService } from './rag-sources/source-management.service';
 import { SourceManagementApiService } from './rag-sources/source-management.api.service';
-import { RagSettingsInputComponent } from './rag-settings/rag-settings-input/rag-settings-input.component';
 
 @NgModule({
   imports: [
@@ -68,8 +67,7 @@ import { RagSettingsInputComponent } from './rag-settings/rag-settings-input/rag
     SourceImportComponent,
     SourceNormalizationCsvComponent,
     SourceNormalizationJsonComponent,
-    JsonIteratorComponent,
-    RagSettingsInputComponent
+    JsonIteratorComponent
   ],
   providers: [SourceManagementService, SourceManagementApiService]
 })

@@ -25,6 +25,10 @@ export * from './sentence-training/sentence-training-sentence/token-view/token-v
 export * from './sentence-training/sentence-training-sentence/sentence-training-create-entity/sentence-training-create-entity.component';
 export * from './debug-viewer-dialog/debug-viewer-dialog.component';
 export * from './debug-viewer-window/debug-viewer-window.component';
-export * from './json-iterator/json-iterator.component'
+export * from './json-iterator/json-iterator.component';
 export * from './scroll-top-button/scroll-top-button.component';
 export * from './sticky-menu/sticky-menu.component';
+export * from './ai-settings-engine-config-param-input/ai-settings-engine-config-param-input.component';
+export * from './sentences-generation/sentences-generation-options/sentences-generation-options.component';
+export * from './sentences-generation/sentences-generation-list/sentences-generation-list.component';
+export * from './sentences-generation/sentences-generation.component';

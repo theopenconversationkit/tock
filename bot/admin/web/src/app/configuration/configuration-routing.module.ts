@@ -26,7 +26,7 @@ import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { UserLogsComponent } from '../applications/user/user-logs.component';
 import { NamespacesComponent } from '../applications/namespace/namespaces.component';
 import { SynchronizationComponent } from "./synchronization/synchronization.component";
-
+import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
 
 const routes: Routes = [
   {
@@ -93,6 +93,10 @@ const routes: Routes = [
       {
        path: 'synchronization',
        component: SynchronizationComponent
+      },
+      {
+        path: 'sentence-generation-settings',
+        component: SentenceGenerationSettingsComponent
       }
     ]
   }
