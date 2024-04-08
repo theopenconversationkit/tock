@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.em
+package ai.tock.genai.orchestratorcore.models.security
 
-data class AzureOpenAIEMSetting<T>(
-    override val apiKey: T,
-    val apiBase: String,
-    val deploymentName: String,
-    val apiVersion: String,
-) : EMSettingBase<T>(EMProvider.AzureOpenAIService, apiKey)
 
-typealias AzureOpenAIEMSettingDTO = AzureOpenAIEMSetting<String>
+import ai.tock.genai.orchestratorcore.models.Constants
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "type"
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = RawSecretKey::class, name = Constants.SECRET_KEY_RAW),
+    JsonSubTypes.Type(value = AwsSecretKey::class, name = Constants.SECRET_KEY_AWS)
+)
+abstract class SecretKey(
+    val type: SecretKeyType,
+)

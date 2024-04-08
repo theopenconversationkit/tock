@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.em
+package ai.tock.genai.orchestratorcore.models.security
 
-data class AzureOpenAIEMSetting<T>(
-    override val apiKey: T,
-    val apiBase: String,
-    val deploymentName: String,
-    val apiVersion: String,
-) : EMSettingBase<T>(EMProvider.AzureOpenAIService, apiKey)
-
-typealias AzureOpenAIEMSettingDTO = AzureOpenAIEMSetting<String>
+/**
+ * The Raw Secret Key
+ */
+data class RawSecretKey(
+    val value: String,
+) : SecretKey(SecretKeyType.Raw)

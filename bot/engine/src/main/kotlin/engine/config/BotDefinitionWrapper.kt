@@ -24,7 +24,6 @@ import ai.tock.bot.definition.Intent
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
 import ai.tock.bot.definition.Intent.Companion.unknown
 import ai.tock.bot.definition.IntentAware
-import ai.tock.bot.definition.RagStoryDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.definition.StoryHandler
 import ai.tock.bot.definition.StoryTag

@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.em
+package ai.tock.bot.admin.bot.rag
 
-data class AzureOpenAIEMSetting<T>(
-    override val apiKey: T,
-    val apiBase: String,
-    val deploymentName: String,
-    val apiVersion: String,
-) : EMSettingBase<T>(EMProvider.AzureOpenAIService, apiKey)
+import org.litote.kmongo.Id
 
-typealias AzureOpenAIEMSettingDTO = AzureOpenAIEMSetting<String>
+interface BotRAGConfigurationDAO {
+
+    fun listenChanges(listener: () -> Unit)
+
+    fun save(conf: BotRAGConfiguration): BotRAGConfiguration
+
+    fun findByNamespaceAndBotId(namespace: String, botId: String): BotRAGConfiguration?
+
+    fun delete(id: Id<BotRAGConfiguration>)
+}

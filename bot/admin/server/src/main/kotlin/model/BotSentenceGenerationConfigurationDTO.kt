@@ -17,7 +17,10 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
+import ai.tock.genai.orchestratorcore.models.Constants
+import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
@@ -26,22 +29,28 @@ data class BotSentenceGenerationConfigurationDTO(
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
-    val llmSetting: LLMSetting,
+    val llmSetting: LLMSettingDTO,
 ) {
-    constructor(configuration: BotSentenceGenerationConfiguration): this(
+    constructor(configuration: BotSentenceGenerationConfiguration) : this(
         configuration._id.toString(),
         configuration.namespace,
         configuration.botId,
         configuration.enabled,
-        configuration.llmSetting,
+        LLMSettingMapper.toDTO(configuration.llmSetting),
     )
+
     fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =
         BotSentenceGenerationConfiguration(
             id?.toId() ?: newId(),
             namespace,
             botId,
             enabled,
-            llmSetting
+            LLMSettingMapper.toEntity(
+                llmSetting,
+                SecurityUtils.generateAwsSecretName(
+                    namespace, botId, Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION
+                )
+            )
         )
 }
 

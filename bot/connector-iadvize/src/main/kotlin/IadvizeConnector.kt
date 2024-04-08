@@ -325,7 +325,7 @@ class IadvizeConnector internal constructor(
     }
 
     /**
-     * Format the notification Rag message when active
+     * Format the notification RAG message when active
      * default connector without format
      * https://docs.iadvize.dev/technologies/bots#customize-replies-with-markdown
      */

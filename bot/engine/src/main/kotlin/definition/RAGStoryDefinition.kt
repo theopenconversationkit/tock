@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.rag
+package ai.tock.bot.definition
 
-import org.litote.kmongo.Id
+/**
+ * Retrieval Augmented Generation Story
+ * [RAGStoryDefinition] implementation witch extends [StoryDefinitionBase] and override default [Intent] unknown
+ * @param handler : the configured handler
+ *
+ */
 
-interface BotRagConfigurationDAO {
+class RAGStoryDefinition(handler: StoryHandler) : SimpleStoryDefinition(
+    id = RAG_STORY_NAME,
+    starterIntents = setOf(Intent.unknown),
+    storyHandler = handler,
+) {
 
-    fun listenChanges(listener: () -> Unit)
+    companion object {
+        const val RAG_STORY_NAME = "tock_rag_story"
+    }
 
-    fun save(conf: BotRagConfiguration): BotRagConfiguration
-
-    fun findByNamespaceAndBotId(namespace: String, botId: String): BotRagConfiguration?
-
-    fun delete(id: Id<BotRagConfiguration>)
 }

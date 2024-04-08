@@ -16,9 +16,10 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.genai.orchestratorcore.models.em.OpenAIEMSetting
 import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
+import ai.tock.genai.orchestratorcore.models.security.RawSecretKey
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId
@@ -38,19 +39,19 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `save rag configuration`() {
-        val config = BotRagConfiguration(
+        val config = BotRAGConfiguration(
             newId(),
             "namespace1",
             "botId1",
             false,
             llmSetting = OpenAILLMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
                 temperature = "1F",
                 prompt = "prompt1"
             ),
             emSetting = OpenAIEMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1"
             ),
             noAnswerSentence = "no answer sentence"
@@ -64,37 +65,37 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `update rag configuration`() {
-        val config1 = BotRagConfiguration(
+        val config1 = BotRAGConfiguration(
             newId(),
             "namespace1",
             "botId1",
             false,
             llmSetting = OpenAILLMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
                 temperature = "1F",
                 prompt = "prompt1"
             ),
             emSetting = OpenAIEMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1"
             ),
             noAnswerSentence = "no answer sentence1"
         )
 
-        val config2 = BotRagConfiguration(
+        val config2 = BotRAGConfiguration(
             newId(),
             "namespace1",
             "botId2",
             false,
             llmSetting = OpenAILLMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
                 temperature = "1F",
                 prompt = "prompt1"
             ),
             emSetting = OpenAIEMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1"
             ),
             noAnswerSentence = "no answer sentence1"
@@ -114,19 +115,19 @@ internal class BotRAGConfigurationMongoDAOTest : AbstractTest() {
 
     @Test
     fun `delete rag configuration`() {
-        val config = BotRagConfiguration(
+        val config = BotRAGConfiguration(
             newId(),
             "namespace1",
             "botId1",
             false,
             llmSetting = OpenAILLMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1",
                 temperature = "1F",
                 prompt = "prompt1"
             ),
             emSetting = OpenAIEMSetting(
-                apiKey = "apiKey1",
+                apiKey = RawSecretKey("apiKey1"),
                 model = "modelName1"
             ),
             noAnswerSentence = "no answer sentence"

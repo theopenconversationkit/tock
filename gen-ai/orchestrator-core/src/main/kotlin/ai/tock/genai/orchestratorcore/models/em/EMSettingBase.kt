@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.llm
-
+package ai.tock.genai.orchestratorcore.models.em
 
 import ai.tock.genai.orchestratorcore.models.Constants
+import ai.tock.genai.orchestratorcore.models.security.SecretKey
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
@@ -27,14 +27,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     property = "provider"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = OpenAILLMSetting::class, name = Constants.OPEN_AI),
-    JsonSubTypes.Type(value = AzureOpenAILLMSetting::class, name = Constants.AZURE_OPEN_AI_SERVICE)
+    JsonSubTypes.Type(value = OpenAIEMSetting::class, name = Constants.OPEN_AI),
+    JsonSubTypes.Type(value = AzureOpenAIEMSetting::class, name = Constants.AZURE_OPEN_AI_SERVICE)
 )
-abstract class LLMSetting(
-    val provider: LLMProvider,
-    open val apiKey: String,
-    open val temperature: String,
-    open val prompt: String
-) {
-    abstract fun copyWithTemperature(temperature: String): LLMSetting
-}
+abstract class EMSettingBase<T>(
+    val provider: EMProvider,
+    open val apiKey: T,
+)
+
+typealias EMSettingDTO = EMSettingBase<String>
+typealias EMSetting = EMSettingBase<SecretKey>

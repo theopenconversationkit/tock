@@ -16,7 +16,7 @@
 
 package ai.tock.bot.definition
 
-import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent.Companion.keyword
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
@@ -86,7 +86,7 @@ interface BotDefinition : I18nKeyProvider {
             keywordStory: StoryDefinition,
             ragExcludedStory: StoryDefinition? = null,
             ragStory: StoryDefinition? = null,
-            ragConfiguration: BotRagConfiguration? = null
+            ragConfiguration: BotRAGConfiguration? = null
         ): StoryDefinition {
             return if (intent == null) {
                unknownStory
@@ -120,7 +120,7 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * RAG configuration
      */
-    val ragConfiguration: BotRagConfiguration?
+    val ragConfiguration: BotRAGConfiguration?
 
     /**
      * The list of each stories.

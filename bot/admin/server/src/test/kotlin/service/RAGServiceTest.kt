@@ -19,8 +19,8 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.answer.AnswerConfigurationType
-import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
-import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
+import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -29,8 +29,11 @@ import ai.tock.bot.test.TFunction
 import ai.tock.bot.test.TRunnable
 import ai.tock.bot.test.TSupplier
 import ai.tock.bot.test.TestCase
-import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
-import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
+import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
+import ai.tock.genai.orchestratorclient.services.EMProviderService
+import ai.tock.genai.orchestratorclient.services.LLMProviderService
+import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSettingDTO
+import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSettingDTO
 import ai.tock.nlp.core.Intent
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.withoutNamespace
@@ -38,17 +41,13 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 
-class RagServiceTest : AbstractTest() {
+class RAGServiceTest : AbstractTest() {
 
     companion object {
 
@@ -60,19 +59,20 @@ class RagServiceTest : AbstractTest() {
         const val MODEL = "gpt4"
         const val TEMPERATURE = "0"
         const val PROMPT = "mocked prompt"
+        const val INDEX_SESSION_ID = "1010101"
 
         private val DEFAULT_RAG_CONFIG = BotRAGConfigurationDTO(
             id = "ragId",
             namespace = NAMESPACE,
             botId = BOT_ID,
             enabled = false,
-            llmSetting = OpenAILLMSetting (
+            llmSetting = OpenAILLMSettingDTO (
                 apiKey = "apikey",
                 model = MODEL,
                 prompt = PROMPT,
                 temperature = TEMPERATURE
             ),
-            emSetting = AzureOpenAIEMSetting (
+            emSetting = AzureOpenAIEMSettingDTO (
                 apiKey = "apiKey",
                 apiVersion = "apiVersion",
                 deploymentName = "deployment",
@@ -83,13 +83,15 @@ class RagServiceTest : AbstractTest() {
 
         private val DEFAULT_BOT_CONFIG = aApplication.copy(namespace = NAMESPACE, botId = BOT_ID)
 
-        private fun getRAGConfigurationDTO(enabled: Boolean) = DEFAULT_RAG_CONFIG.copy(enabled = enabled)
+        private fun getRAGConfigurationDTO(enabled: Boolean, indexSessionId: String? = null) = DEFAULT_RAG_CONFIG.copy(enabled = enabled, indexSessionId = indexSessionId)
 
         init {
             tockInternalInjector = KodeinInjector()
             Kodein.Module {
-                bind<BotRagConfigurationDAO>() with singleton { ragDao }
+                bind<BotRAGConfigurationDAO>() with singleton { ragDao }
                 bind<StoryDefinitionConfigurationDAO>() with singleton { storyDao }
+                bind<LLMProviderService>() with singleton { llmProviderService }
+                bind<EMProviderService>() with singleton { emProviderService }
 
             }.also {
                 tockInternalInjector.inject(Kodein {
@@ -99,10 +101,13 @@ class RagServiceTest : AbstractTest() {
             }
         }
 
-        private val ragDao: BotRagConfigurationDAO = mockk(relaxed = false)
+        private val ragDao: BotRAGConfigurationDAO = mockk(relaxed = false)
         private val storyDao: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
 
-        private val slot = slot<BotRagConfiguration>()
+        private val llmProviderService: LLMProviderService = mockk(relaxed = false)
+        private val emProviderService: EMProviderService = mockk(relaxed = false)
+
+        private val slot = slot<BotRAGConfiguration>()
         private val storySlot = slot<StoryDefinitionConfiguration>()
     }
 
@@ -115,29 +120,34 @@ class RagServiceTest : AbstractTest() {
     fun `Save rag configuration enabled when it does not exists`() {
 
         val entry: TSupplier<SaveFnEntry> = {
-            getRAGConfigurationDTO(true)
+            getRAGConfigurationDTO(true, INDEX_SESSION_ID)
         }
 
         val ragNotYetExists: TRunnable = {
             every { BotAdminService.getBotConfigurationsByNamespaceAndBotId(eq(NAMESPACE), eq(BOT_ID)) } returns listOf(
                 DEFAULT_BOT_CONFIG
             )
-            every { ragDao.save(any()) } returns getRAGConfigurationDTO(true).toBotRAGConfiguration()
+            every { ragDao.save(any()) } returns getRAGConfigurationDTO(true, INDEX_SESSION_ID).toBotRAGConfiguration()
+        }
+
+        val checkLlmAndEmSetting: TRunnable = {
+            every { llmProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
+            every { emProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
         }
 
         val captureRagAndStoryToSave: TRunnable = {
             every { storyDao.save(capture(storySlot)) } returns Unit
-            every { ragDao.save(capture(slot)) } returns getRAGConfigurationDTO(true).toBotRAGConfiguration()
+            every { ragDao.save(capture(slot)) } returns getRAGConfigurationDTO(true, INDEX_SESSION_ID).toBotRAGConfiguration()
         }
 
         val callServiceSave: TFunction<SaveFnEntry?, Unit> = {
             Assertions.assertNotNull(it)
-            RagService.saveRag(it!!)
+            RAGService.saveRag(it!!)
         }
 
         val daoSaveByFnIsCalledOnce: TRunnable = {
             verify(exactly = 1) { storyDao.save(any()) }
-            verify(exactly = 1) { ragDao.save(eq(getRAGConfigurationDTO(true).toBotRAGConfiguration())) }
+            verify(exactly = 1) { ragDao.save(eq(getRAGConfigurationDTO(true, INDEX_SESSION_ID).toBotRAGConfiguration())) }
         }
 
         val findCurrentUnknownFnNotCalled: TRunnable = {
@@ -160,12 +170,13 @@ class RagServiceTest : AbstractTest() {
         }
 
 
-        TestCase<SaveFnEntry, Unit>("Save valid Rag Configuration that does not exist yet").given(
+        TestCase<SaveFnEntry, Unit>("Save valid RAG Configuration that does not exist yet").given(
                 "An application name and a valid request",
                 entry
             ).and(
                 "Rag Config not exist with request name or label and the given application name", ragNotYetExists
             ).and("The rag config in database is captured", captureRagAndStoryToSave)
+            .and("The LLM and EM setting are valid", checkLlmAndEmSetting)
             .`when`("RagService's save method is called", callServiceSave)
             .then("The dao's saveEnableRagRequest must be called exactly once", daoSaveByFnIsCalledOnce)
             .and("The dao's to find current unknown story must be not called", findCurrentUnknownFnNotCalled).and(
@@ -189,15 +200,20 @@ class RagServiceTest : AbstractTest() {
                 )
             } returns null
         }
+        val checkLlmAndEmSetting: TRunnable = {
+            every { llmProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
+            every { emProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
+        }
+
         // RAG Configuration
-        val ragConfigurationDTO = getRAGConfigurationDTO(true)
+        val ragConfigurationDTO = getRAGConfigurationDTO(true, INDEX_SESSION_ID)
         val query: TSupplier<SaveFnEntry> = { ragConfigurationDTO }
 
         // WHEN
         // save RAG Configuration
         val callService: TFunction<SaveFnEntry?, Unit> = {
             Assertions.assertNotNull(it)
-            RagService.saveRag(it!!)
+            RAGService.saveRag(it!!)
         }
 
         // WITH
@@ -226,12 +242,13 @@ class RagServiceTest : AbstractTest() {
             verify(exactly = 1) { ragDao.save(eq(ragConfigurationDTO.toBotRAGConfiguration())) }
         }
 
-        TestCase<SaveFnEntry, Unit>("Save valid Rag Configuration")
+        TestCase<SaveFnEntry, Unit>("Save valid RAG Configuration")
             .given(
                 "No story exists for unknown intent",
                 noStoryExistsForUnknownIntent
             )
             .and("Rag Configuration is valid", query)
+            .and("The LLM and EM setting are valid", checkLlmAndEmSetting)
             .and("Bot configuration exists", mocks)
             .`when`("RagService's save method is called", callService)
             .then(
@@ -264,15 +281,20 @@ class RagServiceTest : AbstractTest() {
                 )
             } returns unknownStory
         }
+        val checkLlmAndEmSetting: TRunnable = {
+            every { llmProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
+            every { emProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
+        }
+
         // RAG Configuration (enabled)
-        val ragConfigurationDTO = getRAGConfigurationDTO(true)
+        val ragConfigurationDTO = getRAGConfigurationDTO(true, INDEX_SESSION_ID)
         val query: TSupplier<SaveFnEntry> = { ragConfigurationDTO }
 
         // WHEN
         // save RAG Configuration
         val callService: TFunction<SaveFnEntry?, Unit> = {
             Assertions.assertNotNull(it)
-            RagService.saveRag(it!!)
+            RAGService.saveRag(it!!)
         }
 
         // WITH
@@ -305,11 +327,12 @@ class RagServiceTest : AbstractTest() {
             verify(exactly = 1) { ragDao.save(eq(ragConfigurationDTO.toBotRAGConfiguration())) }
         }
 
-        TestCase<SaveFnEntry, Unit>("Save enabled Rag Configuration")
+        TestCase<SaveFnEntry, Unit>("Save enabled RAG Configuration")
             .given(
                 "Unknown story exists",
                 noStoryExistsForUnknownIntent
             ).and("Rag Configuration is valid", query)
+            .and("The LLM and EM setting are valid", checkLlmAndEmSetting)
             .and("Bot configuration exists", mocks)
             .`when`("RagService's save method is called", callService)
             .then(
@@ -342,6 +365,10 @@ class RagServiceTest : AbstractTest() {
                 )
             } returns unknownStory
         }
+        val checkLlmAndEmSetting: TRunnable = {
+            every { llmProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
+            every { emProviderService.checkSetting(any()) } returns ProviderSettingStatusResponse(valid = true)
+        }
         // RAG Configuration (disabled)
         val ragConfigurationDTO = getRAGConfigurationDTO(false)
         val query: TSupplier<SaveFnEntry> = { ragConfigurationDTO }
@@ -350,7 +377,7 @@ class RagServiceTest : AbstractTest() {
         // save RAG Configuration
         val callService: TFunction<SaveFnEntry?, Unit> = {
             Assertions.assertNotNull(it)
-            RagService.saveRag(it!!)
+            RAGService.saveRag(it!!)
         }
 
         // WITH
@@ -383,11 +410,12 @@ class RagServiceTest : AbstractTest() {
             verify(exactly = 1) { ragDao.save(eq(ragConfigurationDTO.toBotRAGConfiguration())) }
         }
 
-        TestCase<SaveFnEntry, Unit>("Save disabled Rag Configuration")
+        TestCase<SaveFnEntry, Unit>("Save disabled RAG Configuration")
             .given(
                 "Unknown story exists",
                 unknownStoryExists
             ).and("Rag Configuration is valid", query)
+            .and("The LLM and EM setting are valid", checkLlmAndEmSetting)
             .and("Bot configuration exists", mocks)
             .`when`("RagService's save method is called", callService)
             .then(

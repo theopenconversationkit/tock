@@ -17,8 +17,8 @@
 package ai.tock.genai.orchestratorclient.responses
 
 class ProviderSettingStatusResponse(
-    val valid: Boolean,
-    val errors: List<ErrorResponse>
+    val valid: Boolean = false,
+    val errors: List<ErrorResponse> = emptyList()
 )
 
 class ErrorResponse(
