@@ -18,13 +18,11 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from gen_ai_orchestrator.models.em.em_types import EMSetting
+from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
-from gen_ai_orchestrator.routers.requests.types import (
-    DocumentSearchParams,
-    EMSetting,
-    LLMSetting,
-)
+from gen_ai_orchestrator.models.vector_stores.vector_stores_types import DocumentSearchParams
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
@@ -84,7 +82,10 @@ class RagQuery(BaseModel):
                     ],
                     'question_answering_llm_setting': {
                         'provider': 'OpenAI',
-                        'api_key': 'ab7***************************A1IV4B',
+                        'api_key': {
+                            'type': 'Raw',
+                            'value': 'ab7***************************A1IV4B',
+                        },
                         'temperature': 1.2,
                         'prompt': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
@@ -105,7 +106,10 @@ Answer in {locale}:""",
                     },
                     'embedding_question_em_setting': {
                         'provider': 'OpenAI',
-                        'api_key': 'ab7***************************A1IV4B',
+                        'api_key': {
+                            'type': 'Raw',
+                            'value': 'ab7***************************A1IV4B',
+                        },
                         'model': 'text-embedding-ada-002',
                     },
                     'document_index_name': 'my-index-name',

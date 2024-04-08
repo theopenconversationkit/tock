@@ -12,16 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Managing logging configuration"""
+"""Model for creating AIProviderSecret."""
 
-import logging
-import logging.config
-
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
-)
+from pydantic import BaseModel, Field
 
 
-def setup_logging():
-    """Setting up a logging configuration based on an ini file"""
-    logging.config.fileConfig(application_settings.application_logging_config_ini)
+class AIProviderSecret(BaseModel):
+    """The AI provider secret"""
+
+    secret: str = Field(
+        description='The AI provider secret.',
+        examples=['nt-123!-efg1'],
+        min_length=1
+    )

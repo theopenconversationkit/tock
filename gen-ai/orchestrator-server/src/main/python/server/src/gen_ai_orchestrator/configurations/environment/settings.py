@@ -14,21 +14,38 @@
 #
 """
 This module manages the initialization of application settings, based on environment variables
-The OpenSearch master user credentials are retrieved from AWS Secret Manager if
+The OpenSearch master user credentials are retrieved from AWS Secrets Manager if
 open_search_aws_secret_manager_name is set
 """
 
 import logging
 from enum import Enum, unique
-from typing import Optional
+from typing import Optional, Tuple
 
 from path import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from gen_ai_orchestrator.utils.aws.aws_secret_manager import AWSSecretManager
+from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
 from gen_ai_orchestrator.utils.strings import obfuscate
 
 logger = logging.getLogger(__name__)
+
+
+def fetch_open_search_credentials() -> Tuple[Optional[str], Optional[str]]:
+    """Fetch the OpenSearch credentials."""
+    if application_settings.open_search_aws_secret_manager_name is not None:
+        logger.info('Use of AWS Secrets Manager to get OpenSearch credentials...')
+        credentials = AWSSecretsManagerClient().get_credentials(
+            secret_name=application_settings.open_search_aws_secret_manager_name
+        )
+        if credentials is not None:
+            logger.info("The credentials have been successfully retrieved from AWS Secrets Manager.")
+            return credentials.username, credentials.password
+        else:
+            logger.error("No credentials extracted from AWS Secrets Manager.")
+            return None, None
+    else:
+        return application_settings.open_search_user, application_settings.open_search_pwd
 
 
 @unique
@@ -48,7 +65,7 @@ class _Settings(BaseSettings):
 
     application_environment: _Environment = _Environment.DEV
     application_logging_config_ini: str = (
-        Path(__file__).dirname() + '/../logging/config.ini'
+            Path(__file__).dirname() + '/../logging/config.ini'
     )
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     llm_provider_timeout: int = 30
@@ -66,15 +83,7 @@ class _Settings(BaseSettings):
 
 application_settings = _Settings()
 is_prod_environment = _Environment.PROD == application_settings.application_environment
-
-open_search_username = application_settings.open_search_user
-open_search_password = application_settings.open_search_pwd
-
-if application_settings.open_search_aws_secret_manager_name is not None:
-    logger.info('Use of AWS Secret Manager to get OpenSearch credentials...')
-    open_search_username, open_search_password = AWSSecretManager().get_credentials(
-        application_settings.open_search_aws_secret_manager_name
-    )
+open_search_username, open_search_password = fetch_open_search_credentials()
 
 logger.info(
     'OpenSearch user credentials: %s:%s',

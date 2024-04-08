@@ -1,4 +1,4 @@
-#   Copyright (C) 2024 Credit Mutuel Arkea
+#   Copyright (C) 2023-2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,15 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from gen_ai_orchestrator.configurations.environement.settings import _Settings
-from gen_ai_orchestrator.configurations.logging.logger import setup_logging
+"""Module defining generic type alias"""
 
+from typing import Annotated, Union
 
-def test_environment():
-    """Test settings are read successfully"""
-    _Settings()
+from fastapi import Body
 
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_params import (
+    OpenSearchParams,
+)
 
-def test_logging():
-    """Test logger is instantiated successfully."""
-    setup_logging()
+DocumentSearchParams = Annotated[
+    Union[OpenSearchParams], Body(discriminator='provider')
+]

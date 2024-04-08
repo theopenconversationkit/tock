@@ -12,16 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Managing logging configuration"""
+"""Model for creating BaseSecretKey."""
 
-import logging
-import logging.config
+from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
-)
+from gen_ai_orchestrator.models.security.secret_key_type import SecretKeyType
 
 
-def setup_logging():
-    """Setting up a logging configuration based on an ini file"""
-    logging.config.fileConfig(application_settings.application_logging_config_ini)
+class BaseSecretKey(BaseModel):
+    """A base class for Secret Key."""
+
+    type: SecretKeyType = Field(
+        description='The Secret Key type.', examples=[SecretKeyType.AWS_SECRETS_MANAGER]
+    )

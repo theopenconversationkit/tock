@@ -16,7 +16,7 @@
 
 import logging
 
-from gen_ai_orchestrator.routers.requests.types import EMSetting
+from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
 )

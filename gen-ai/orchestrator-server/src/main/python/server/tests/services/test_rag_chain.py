@@ -12,8 +12,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
+import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
@@ -55,6 +56,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagResponse')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.TextWithFootnotes')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.RagDebugData')
+@pytest.mark.asyncio
 async def test_rag_chain(
     mocked_rag_debug_data,
     mocked_text_with_footnotes,
@@ -80,7 +82,7 @@ async def test_rag_chain(
         ],
         'question_answering_llm_setting': {
             'provider': 'OpenAI',
-            'api_key': 'ab7***************************A1IV4B',
+            'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
             'temperature': 1.2,
             'prompt': """Use the following context to answer the question at the end.
 If you don't know the answer, just say {no_answer}.
@@ -101,7 +103,7 @@ Answer in {locale}:""",
         },
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
-            'api_key': 'ab7***************************A1IV4B',
+            'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
             'model': 'text-embedding-ada-002',
         },
         'document_index_name': 'my-index-name',
@@ -125,8 +127,8 @@ Answer in {locale}:""",
     vector_store_factory_instance = mocked_get_vector_store_factory.return_value
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
-    mocked_rag_answer = mocked_chain.invoke.return_value
-    mocked_rag_answer['answer'] = 'an answer from llm'
+    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'source_documents': []})
+    mocked_rag_answer = mocked_chain.ainvoke.return_value
 
     # Call function
     await execute_qa_chain(query, debug=True)
@@ -159,8 +161,8 @@ Answer in {locale}:""",
             )
         },
     )
-    # Assert qa chain is invoke()d with the expected settings from query
-    mocked_chain.invoke.assert_called_once_with(
+    # Assert qa chain is ainvoke()d with the expected settings from query
+    mocked_chain.ainvoke.assert_called_once_with(
         input={
             **query.question_answering_prompt_inputs,
             'chat_history': [

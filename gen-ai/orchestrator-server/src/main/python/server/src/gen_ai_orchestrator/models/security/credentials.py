@@ -12,16 +12,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Managing logging configuration"""
+"""Model for creating Credentials."""
 
-import logging
-import logging.config
-
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
-)
+from pydantic import BaseModel, Field
 
 
-def setup_logging():
-    """Setting up a logging configuration based on an ini file"""
-    logging.config.fileConfig(application_settings.application_logging_config_ini)
+class Credentials(BaseModel):
+    """The basic credentials"""
+
+    username: str = Field(
+        description='The username.',
+        examples=['nt123']
+    )
+    password: str = Field(
+        description='The password.',
+        examples=['a12G-3@p!'],
+        min_length=8
+    )

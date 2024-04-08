@@ -15,7 +15,7 @@
 """Model for creating OpenSearchFactory"""
 from langchain_community.vectorstores.opensearch_vector_search import OpenSearchVectorSearch
 
-from gen_ai_orchestrator.configurations.environement.settings import (
+from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
     is_prod_environment,
     open_search_password,
