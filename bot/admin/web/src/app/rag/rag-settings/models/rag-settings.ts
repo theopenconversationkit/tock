@@ -1,7 +1,4 @@
-export enum LLMProvider {
-  OpenAI = 'OpenAI',
-  AzureOpenAIService = 'AzureOpenAIService'
-}
+import { emSetting, llmSetting } from '../../../shared/model/ai-settings';
 
 export interface RagSettings {
   id: string;
@@ -14,29 +11,4 @@ export interface RagSettings {
 
   llmSetting: llmSetting;
   emSetting: emSetting;
-}
-
-export interface llmSetting {
-  provider: LLMProvider;
-
-  apiKey: String;
-  model: String;
-
-  deploymentName?: String;
-  apiBase?: String;
-  apiVersion?: String;
-
-  temperature?: Number;
-  prompt?: String;
-}
-
-export interface emSetting {
-  provider: LLMProvider;
-
-  apiKey: String;
-  model: String;
-
-  deploymentName?: String;
-  apiBase?: String;
-  apiVersion?: String;
 }

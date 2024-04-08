@@ -1,4 +1,10 @@
-import { LLMProvider } from './rag-settings';
+import {
+  AzureOpenAiApiVersionsList,
+  EnginesConfiguration,
+  LLMProvider,
+  OpenAIEmbeddingModel,
+  OpenAIModelsList
+} from '../../../shared/model/ai-settings';
 
 export const DefaultPrompt: string = `# TOCK (The Open Conversation Kit) chatbot
 
@@ -28,50 +34,6 @@ Answer in {locale}.
 
 {question}
 `;
-
-export interface EnginesConfiguration {
-  label: string;
-  key: LLMProvider;
-  params: EnginesConfigurationParam[];
-}
-
-export interface EnginesConfigurationParam {
-  label: string;
-  key: string;
-  type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
-  source?: string[];
-  inputScale?: 'default' | 'fullwidth';
-  defaultValue?: string;
-}
-
-export const AzureOpenAiApiVersionsList: string[] = [
-  '2022-12-01',
-  '2023-05-15',
-  '2023-06-01-preview',
-  '2023-07-01-preview',
-  '2023-08-01-preview',
-  '2023-09-01-preview'
-];
-
-export const OpenAIModelsList: string[] = [
-  'gpt-4',
-  'gpt-4-0314',
-  'gpt-4-0613',
-  'gpt-4-32k',
-  'gpt-4-32k-0314',
-  'gpt-4-32k-0613',
-
-  'gpt-3.5-turbo',
-  'gpt-3.5-turbo-0613',
-  'gpt-3.5-turbo-16k',
-  'gpt-3.5-turbo-16k-0613',
-  'gpt-3.5-turbo-instruct',
-
-  'babbage-002',
-  'davinci-002'
-];
-
-export const OpenAIEmbeddingModel: string[] = ['text-embedding-ada-002'];
 
 const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   {

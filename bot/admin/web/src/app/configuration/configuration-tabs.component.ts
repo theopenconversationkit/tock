@@ -37,6 +37,11 @@ export class ConfigurationTabsComponent implements OnInit {
       icon: 'link-outline'
     },
     {
+      title: 'Sentence generation settings',
+      route: 'sentence-generation-settings',
+      icon: 'bulb-outline'
+    },
+    {
       title: 'Namespaces',
       route: 'namespaces',
       icon: 'folder-outline'
@@ -60,7 +65,7 @@ export class ConfigurationTabsComponent implements OnInit {
       this.tabs = this.tabs.filter((t) => t.route !== 'users/logs');
     }
     if (!state.hasRole(UserRole.admin)) {
-      this.tabs = this.tabs.filter((t) => t.route !== 'bot');
+      this.tabs = this.tabs.filter((t) => !['bot', 'sentence-generation-settings'].some((r) => r === t.route));
     }
     this.configurationTabLinks = this.tabs;
   }

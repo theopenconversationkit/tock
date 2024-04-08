@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
-import { Observable, of } from 'rxjs';
+import { NbDialogService, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
+import { Observable, Subscription, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { DialogService } from '../../../core-nlp/dialog.service';
@@ -10,7 +10,7 @@ import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
 import { NlpService } from '../../../nlp-tabs/nlp.service';
 import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
-import { ChoiceDialogComponent } from '../../../shared/components';
+import { ChoiceDialogComponent, SentencesGenerationComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
 
 export enum FaqTabs {
@@ -44,7 +44,7 @@ export class FaqManagementEditComponent implements OnChanges {
   @ViewChild('addUtteranceInput') addUtteranceInput: ElementRef;
   @ViewChild('utterancesListWrapper') utterancesListWrapper: ElementRef;
 
-  constructor(private dialogService: DialogService, private nlp: NlpService, private readonly state: StateService) {}
+  constructor(private nbDialogService: NbDialogService, private nlp: NlpService, private readonly state: StateService) {}
 
   faqTabs: typeof FaqTabs = FaqTabs;
   isSubmitted: boolean = false;
@@ -295,7 +295,7 @@ export class FaqManagementEditComponent implements OnChanges {
   close(): Observable<any> {
     const validAction = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
         context: {
           title: `Cancel ${this.faq?.id ? 'edit' : 'create'} faq`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
@@ -347,7 +347,7 @@ export class FaqManagementEditComponent implements OnChanges {
         if (existsInOtherApp) {
           const shareAction = 'Share the intent';
           const createNewAction = 'Create a new intent';
-          const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
+          const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
             context: {
               title: `This intent is already used in another application`,
               subtitle: 'Do you want to share the intent between the two applications or create a new one ?',
@@ -383,5 +383,18 @@ export class FaqManagementEditComponent implements OnChanges {
   save(faqDFata): void {
     this.onSave.emit(faqDFata);
     if (!this.faq.id) this.onClose.emit(true);
+  }
+
+  generateSentences(): void {
+    const dialogRef = this.nbDialogService.open(SentencesGenerationComponent, {
+      context: {
+        sentences: this.utterances.value
+      }
+    });
+
+    dialogRef.componentRef.instance.onValidateSelection.subscribe((generatedSentences: string[]) => {
+      generatedSentences.forEach((generatedSentence: string) => this.addUtterance(generatedSentence));
+      dialogRef.close();
+    });
   }
 }

@@ -47,6 +47,7 @@ import { ApplicationConfig } from '../applications/application.config';
 import { SelectBotConfigurationDialogComponent } from './bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
 import { BotConfigurationRoutingModule } from './configuration-routing.module';
 import {SynchronizationComponent} from "./synchronization/synchronization.component";
+import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
 
 @Injectable()
 export class BotApplicationConfig implements ApplicationConfig {
@@ -65,7 +66,8 @@ export class BotApplicationConfig implements ApplicationConfig {
     BotConfigurationComponent,
     NewBotComponent,
     SelectBotConfigurationDialogComponent,
-    SynchronizationComponent
+    SynchronizationComponent,
+    SentenceGenerationSettingsComponent
   ],
   imports: [
     CommonModule,

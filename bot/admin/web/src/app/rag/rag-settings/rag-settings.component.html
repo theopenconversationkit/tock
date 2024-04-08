@@ -13,36 +13,38 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<div
-  class="d-flex flex-wrap mt-3 sticky"
-  [ngClass]="{ scrolled: scrolled }"
->
-  <h1 class="flex-grow-1">Rag settings</h1>
 
-  <section class="grid-actions">
-    <button
-      *ngIf="settingsBackup && form.dirty"
-      nbButton
-      ghost
-      status="primary"
-      nbTooltip="Cancel modifications"
-      (click)="cancel()"
-    >
-      <nb-icon icon="close-circle-outline"></nb-icon>
-      CANCEL
-    </button>
-    <button
-      *ngIf="form.dirty"
-      nbButton
-      status="primary"
-      nbTooltip="Save settings"
-      (click)="submit()"
-    >
-      <nb-icon icon="save-outline"></nb-icon>
-      SAVE
-    </button>
-  </section>
-</div>
+<div class="mt-3"></div>
+
+<tock-sticky-menu offset="50">
+  <div class="d-flex flex-wrap">
+    <h1 class="flex-grow-1">Rag settings</h1>
+
+    <section class="grid-actions">
+      <button
+        *ngIf="settingsBackup && form.dirty"
+        nbButton
+        ghost
+        status="primary"
+        nbTooltip="Cancel modifications"
+        (click)="cancel()"
+      >
+        <nb-icon icon="close-circle-outline"></nb-icon>
+        CANCEL
+      </button>
+      <button
+        *ngIf="form.dirty"
+        nbButton
+        status="primary"
+        nbTooltip="Save settings"
+        (click)="submit()"
+      >
+        <nb-icon icon="save-outline"></nb-icon>
+        SAVE
+      </button>
+    </section>
+  </div>
+</tock-sticky-menu>
 
 <nb-alert
   *ngIf="configurations?.length < 1"
@@ -112,12 +114,13 @@
               class="col-6"
               [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
             >
-              <tock-rag-settings-input
+              <tock-ai-settings-engine-config-param-input
                 parentGroup="llmSetting"
                 [configurationParam]="param"
                 [form]="form"
                 [isSubmitted]="isSubmitted"
-              ></tock-rag-settings-input>
+                [defaultPrompt]="defaultPrompt"
+              ></tock-ai-settings-engine-config-param-input>
             </div>
           </ng-container>
         </div>
@@ -154,12 +157,12 @@
             class="col-6"
             *ngFor="let param of currentEmEngine.params"
           >
-            <tock-rag-settings-input
+            <tock-ai-settings-engine-config-param-input
               parentGroup="emSetting"
               [configurationParam]="param"
               [form]="form"
               [isSubmitted]="isSubmitted"
-            ></tock-rag-settings-input>
+            ></tock-ai-settings-engine-config-param-input>
           </div>
         </div>
       </div>

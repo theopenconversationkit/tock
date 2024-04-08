@@ -1,17 +1,18 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { DefaultPrompt, EnginesConfigurationParam } from '../models/engines-configurations';
+import { EnginesConfigurationParam } from '../../model/ai-settings';
 import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'tock-rag-settings-input',
-  templateUrl: './rag-settings-input.component.html',
-  styleUrls: ['./rag-settings-input.component.scss']
+  selector: 'tock-ai-settings-engine-config-param-input',
+  templateUrl: './ai-settings-engine-config-param-input.component.html',
+  styleUrls: ['./ai-settings-engine-config-param-input.component.scss']
 })
-export class RagSettingsInputComponent {
+export class AiSettingsEngineConfigParamInputComponent {
   @Input() configurationParam: EnginesConfigurationParam;
   @Input() parentGroup: string;
   @Input() form: FormGroup;
   @Input() isSubmitted: boolean;
+  @Input() defaultPrompt: string = '';
 
   @ViewChild('clearInput') clearInput: ElementRef;
 
@@ -22,7 +23,7 @@ export class RagSettingsInputComponent {
   }
 
   restoreDefaultPrompt(): void {
-    this.form.get(this.parentGroup).get('prompt').setValue(DefaultPrompt);
+    this.form.get(this.parentGroup).get('prompt').setValue(this.defaultPrompt);
     this.form.get(this.parentGroup).get('prompt').markAsDirty();
   }
 
