@@ -16,9 +16,13 @@
 
 package ai.tock.bot.admin.model
 
-import ai.tock.bot.admin.bot.rag.BotRagConfiguration
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
+import ai.tock.genai.orchestratorcore.mappers.EMSettingMapper
+import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
+import ai.tock.genai.orchestratorcore.models.Constants
+import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
+import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
@@ -27,31 +31,41 @@ data class BotRAGConfigurationDTO(
     val namespace: String,
     val botId: String,
     val enabled: Boolean = false,
-    val llmSetting: LLMSetting,
-    val emSetting: EMSetting,
+    val llmSetting: LLMSettingDTO,
+    val emSetting: EMSettingDTO,
     val indexSessionId: String? = null,
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
 ) {
-    constructor(configuration: BotRagConfiguration): this(
+    constructor(configuration: BotRAGConfiguration) : this(
         configuration._id.toString(),
         configuration.namespace,
         configuration.botId,
         configuration.enabled,
-        configuration.llmSetting,
-        configuration.emSetting,
+        LLMSettingMapper.toDTO(configuration.llmSetting),
+        EMSettingMapper.toDTO(configuration.emSetting),
         configuration.indexSessionId,
         configuration.noAnswerSentence,
         configuration.noAnswerStoryId
     )
-    fun toBotRAGConfiguration(): BotRagConfiguration =
-        BotRagConfiguration(
+
+    fun toBotRAGConfiguration(): BotRAGConfiguration =
+        BotRAGConfiguration(
             id?.toId() ?: newId(),
             namespace,
             botId,
             enabled,
-            llmSetting,
-            emSetting,
+            LLMSettingMapper.toEntity(
+                llmSetting,
+                SecurityUtils.generateAwsSecretName(
+                    namespace, botId, Constants.GEN_AI_RAG_QUESTION_ANSWERING
+                )
+            ),
+            EMSettingMapper.toEntity(
+                emSetting,
+                SecurityUtils.generateAwsSecretName(
+                    namespace, botId, Constants.GEN_AI_RAG_EMBEDDING_QUESTION)
+            ),
             indexSessionId = indexSessionId,
             noAnswerSentence = noAnswerSentence,
             noAnswerStoryId = noAnswerStoryId

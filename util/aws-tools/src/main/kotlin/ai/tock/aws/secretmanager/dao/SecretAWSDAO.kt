@@ -25,12 +25,11 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicSessionCredentials
 import com.amazonaws.services.secretsmanager.AWSSecretsManager
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder
-import com.amazonaws.services.secretsmanager.model.AWSSecretsManagerException
-import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest
-import com.amazonaws.services.secretsmanager.model.GetSecretValueResult
+import com.amazonaws.services.secretsmanager.model.*
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest
 import com.amazonaws.services.securitytoken.model.Credentials
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import mu.KLogger
@@ -117,4 +116,30 @@ class SecretAWSDAO : SecretDAO {
                 .withDurationSeconds(900)
         return stsClient.assumeRole(request).credentials
     }
+
+    override fun createOrUpdateSecret(secretName: String, secretObject: Any): String {
+        val secretValue = jacksonObjectMapper().writeValueAsString(secretObject)
+
+        try {
+            // Update the existing secret
+            val updateRequest = UpdateSecretRequest()
+                .withSecretId(secretName)
+                .withSecretString(secretValue)
+            val updateResult: UpdateSecretResult = secretsManagerClient.updateSecret(updateRequest)
+            logger.info { "The secret '$secretName' already exists, so it has been updated with a new value." }
+            return updateResult.arn
+        }catch (exc: ResourceNotFoundException){
+            logger.info { "The secret '$secretName' does not yet exist." }
+            // Create a new secret
+            val createRequest = CreateSecretRequest()
+                .withName(secretName)
+                .withSecretString(secretValue)
+                .withDescription("Created from Tock.")
+            val createResult: CreateSecretResult = secretsManagerClient.createSecret(createRequest)
+            logger.info { "The secret '$secretName' has been created with the value." }
+            return createResult.arn
+        }
+
+    }
+
 }

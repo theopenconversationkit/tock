@@ -106,7 +106,7 @@ abstract class AbstractTest {
             botId = "testBotId",
             namespace = "testNamespace",
             nlpModel = "testNlpModel",
-            connectorType = ConnectorType.rest
+            connectorType = ConnectorType.rest,
         )
 
         val aBuiltinStory = newTestStory("testBuiltinStory", AnswerConfigurationType.builtin)

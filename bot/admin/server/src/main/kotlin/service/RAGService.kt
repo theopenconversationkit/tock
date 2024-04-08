@@ -17,8 +17,8 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.BotAdminService
-import ai.tock.bot.admin.bot.rag.BotRagConfiguration
-import ai.tock.bot.admin.bot.rag.BotRagConfigurationDAO
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
+import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
@@ -36,43 +36,43 @@ import mu.KotlinLogging
 /**
  * Service that manage the retrieval augmented generation (RAG) with Large Language Model (LLM) functionality
  */
-object RagService {
+object RAGService {
 
     private val logger: KLogger = KotlinLogging.logger {}
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
-    private val ragConfigurationDAO: BotRagConfigurationDAO get() = injector.provide()
+    private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
     /**
      * Get the RAG configuration
      */
-    fun getRAGConfiguration(namespace: String, botId: String): BotRagConfiguration? {
+    fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
         return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
     }
 
     /**
-     * Save Rag configuration and filter errors
+     * Save RAG configuration and filter errors
      * @param ragConfig : the rag configuration to create or update
      * @throws [BadRequestException] if a rag configuration is invalid
-     * @return [BotRagConfiguration]
+     * @return [BotRAGConfiguration]
      */
     fun saveRag(
         ragConfig: BotRAGConfigurationDTO
-    ): BotRagConfiguration {
+    ): BotRAGConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId).firstOrNull()
             ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${ragConfig.namespace}, botId = ${ragConfig.botId}]")
         return saveRagConfiguration(ragConfig)
     }
 
     /**
-     * Save the Rag configuration
+     * Save the RAG configuration
      * @param ragConfiguration [BotRAGConfigurationDTO]
      */
     private fun saveRagConfiguration(
         ragConfiguration: BotRAGConfigurationDTO
-    ): BotRagConfiguration {
+    ): BotRAGConfiguration {
         val ragConfig = ragConfiguration.toBotRAGConfiguration()
 
         // Check validity of the rag configuration
-        RagValidationService.validate(ragConfig).let { errors ->
+        RAGValidationService.validate(ragConfig).let { errors ->
             if (errors.isNotEmpty()) {
                 throw BadRequestException(errors)
             }

@@ -16,7 +16,7 @@
 
 package ai.tock.bot.engine.config
 
-import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Footnote
@@ -35,7 +35,7 @@ import engine.config.AbstractProactiveAnswerHandler
 import mu.KotlinLogging
 
 private val kNeighborsDocuments =
-    intProperty(name = "tock_gen_ai_orchestrator_document_number_neighbors", defaultValue = 4)
+    intProperty(name = "tock_gen_ai_orchestrator_document_number_neighbors", defaultValue = 1)
 private val nLastMessages = intProperty(name = "tock_gen_ai_orchestrator_dialog_number_messages", defaultValue = 10)
 private val technicalErrorMessage = property(
     "tock_gen_ai_orchestrator_technical_error",
@@ -104,7 +104,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * @param ragConfig: The RAG configuration
      */
     private fun BotBus.switch(
-        ragConfig: BotRagConfiguration?
+        ragConfig: BotRAGConfiguration?
     ) {
         val noAnswerStory: StoryDefinition
         val noAnswerStoryId = ragConfig?.noAnswerStoryId
@@ -124,7 +124,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * Call RAG API
      * @param botBus
      *
-     * @return Rag response if it needs to be handled, null otherwise (already handled by a switch for instance in case of no response)
+     * @return RAG response if it needs to be handled, null otherwise (already handled by a switch for instance in case of no response)
      */
     private fun rag(botBus: BotBus): Pair<TextWithFootnotes?, Any?> {
         logger.info { "Call Generative AI Orchestrator - RAG API" }

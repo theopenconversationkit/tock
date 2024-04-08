@@ -16,14 +16,13 @@
 
 package ai.tock.bot.admin.service
 
-import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.genai.orchestratorclient.responses.ErrorInfo
 import ai.tock.genai.orchestratorclient.responses.ErrorResponse
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.EMProviderService
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
-import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSetting
+import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSettingDTO
 import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
@@ -32,12 +31,11 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class RagValidationServiceTest {
+class RAGValidationServiceTest {
 
     companion object {
         init {
@@ -60,7 +58,7 @@ class RagValidationServiceTest {
         apiKey = "123-abc", model = "unavailable-model", temperature = "0.4", prompt = "How to bike in the rain"
     )
 
-    private val azureOpenAIEMSetting = AzureOpenAIEMSetting(
+    private val azureOpenAIEMSetting = AzureOpenAIEMSettingDTO(
         apiKey = "123-abc",
         apiBase = "http://my-api-base-endpoint-url.com",
         apiVersion = "2023-08-01-preview",
@@ -80,7 +78,7 @@ class RagValidationServiceTest {
 
         // GIVEN
         // - No error returned by Generative AI Orchestrator for LLM and EM
-        // - Rag enabled
+        // - RAG enabled
         // - Index session ID is provided
         every {
             llmProviderService.checkSetting(any())
@@ -91,7 +89,7 @@ class RagValidationServiceTest {
 
         // WHEN :
         // Launch of validation
-        val errors = RagValidationService.validate(
+        val errors = RAGValidationService.validate(
             ragConfiguration.copy(enabled = true, indexSessionId = "ABC-123").toBotRAGConfiguration()
         )
 
@@ -105,7 +103,7 @@ class RagValidationServiceTest {
 
         // GIVEN
         // - No error returned by Generative AI Orchestrator for LLM and EM
-        // - Rag enabled
+        // - RAG enabled
         // - Index session ID is not provided
         every {
             llmProviderService.checkSetting(any())
@@ -116,7 +114,7 @@ class RagValidationServiceTest {
 
         // WHEN :
         // Launch of validation
-        val errors = RagValidationService.validate(
+        val errors = RAGValidationService.validate(
             ragConfiguration.copy(enabled = true, indexSessionId = null).toBotRAGConfiguration()
         )
 
@@ -131,7 +129,7 @@ class RagValidationServiceTest {
 
         // GIVEN
         // - No error returned by Generative AI Orchestrator for LLM and EM
-        // - Rag is not enabled
+        // - RAG is not enabled
         // - Index session ID is not provided
         every {
             llmProviderService.checkSetting(any())
@@ -142,7 +140,7 @@ class RagValidationServiceTest {
 
         // WHEN :
         // Launch of validation
-        val errors = RagValidationService.validate(
+        val errors = RAGValidationService.validate(
             ragConfiguration.copy(enabled = false, indexSessionId = null).toBotRAGConfiguration()
         )
 
@@ -156,7 +154,7 @@ class RagValidationServiceTest {
 
         // GIVEN
         // - 3 errors returned by Generative AI Orchestrator for LLM (2) and EM (1)
-        // - Rag is not enabled
+        // - RAG is not enabled
         every {
             llmProviderService.checkSetting(any())
         } returns ProviderSettingStatusResponse(
@@ -174,7 +172,7 @@ class RagValidationServiceTest {
 
         // WHEN :
         // Launch of validation
-        val errors = RagValidationService.validate(
+        val errors = RAGValidationService.validate(
             ragConfiguration.copy(enabled = false).toBotRAGConfiguration()
         )
 

@@ -66,7 +66,7 @@ class AWSSecretsManagerClient:
             get_secret_value_response = self.client.get_secret_value(
                 SecretId=secret_name
             )
-            logging.info('Secret retrieved successfully.')
+            logging.info(f'The requested secret {secret_name} has been successfully retrieved.')
             return get_secret_value_response['SecretString']
         except ClientError as e:
             if e.response['Error']['Code'] == 'ResourceNotFoundException':

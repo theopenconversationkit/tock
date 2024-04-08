@@ -16,7 +16,9 @@
 
 package ai.tock.genai.orchestratorcore.models.em
 
-data class OpenAIEMSetting(
-    override val apiKey: String,
+data class OpenAIEMSetting<T>(
+    override val apiKey: T,
     val model: String,
-) : EMSetting(EMProvider.OpenAI, apiKey)
+) : EMSettingBase<T>(EMProvider.OpenAI, apiKey)
+
+typealias OpenAIEMSettingDTO = OpenAIEMSetting<String>

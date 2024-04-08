@@ -16,13 +16,15 @@
 
 package ai.tock.genai.orchestratorcore.models.llm
 
-data class OpenAILLMSetting(
-    override val apiKey: String,
+data class OpenAILLMSetting<T>(
+    override val apiKey: T,
     override val temperature: String,
     override val prompt: String,
     val model: String,
-) : LLMSetting(LLMProvider.OpenAI, apiKey, temperature, prompt){
-    override fun copyWithTemperature(temperature: String): LLMSetting {
+) : LLMSettingBase<T>(LLMProvider.OpenAI, apiKey, temperature, prompt) {
+    override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
         return this.copy(temperature=temperature)
     }
 }
+
+typealias OpenAILLMSettingDTO = OpenAILLMSetting<String>

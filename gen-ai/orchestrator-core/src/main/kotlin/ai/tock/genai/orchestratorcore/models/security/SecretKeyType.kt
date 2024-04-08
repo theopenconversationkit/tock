@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.definition
+package ai.tock.genai.orchestratorcore.models.security
 
-/**
- * Retrieval Augmented Generation Story
- * [RagStoryDefinition] implementation witch extends [StoryDefinitionBase] and override default [Intent] unknown
- * @param handler : the configured handler
- *
- */
-
-class RagStoryDefinition(handler: StoryHandler) : SimpleStoryDefinition(
-    id = RAG_STORY_NAME,
-    starterIntents = setOf(Intent.unknown),
-    storyHandler = handler,
-) {
-
-    companion object {
-        const val RAG_STORY_NAME = "tock_rag_story"
-    }
-
+enum class SecretKeyType {
+    Raw,
+    AwsSecretsManager
 }

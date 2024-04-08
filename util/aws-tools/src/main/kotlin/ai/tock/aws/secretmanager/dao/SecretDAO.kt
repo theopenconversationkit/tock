@@ -21,4 +21,12 @@ package ai.tock.aws.secretmanager.dao
  */
 interface SecretDAO {
     fun getSecret(secretId: String): String
+
+    /**
+     * Create an AWS Secret if it doesn't exist. Else, update it
+     * @param secretName the secret name
+     * @param secretObject the secret object to store
+     * @return the ARN of a created or updated AWS Secret.
+     */
+    fun createOrUpdateSecret(secretName: String, secretObject: Any): String
 }

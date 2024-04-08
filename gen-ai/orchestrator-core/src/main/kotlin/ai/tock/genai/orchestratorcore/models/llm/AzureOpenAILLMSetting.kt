@@ -16,15 +16,18 @@
 
 package ai.tock.genai.orchestratorcore.models.llm
 
-data class AzureOpenAILLMSetting(
-    override val apiKey: String,
+import ai.tock.genai.orchestratorcore.models.security.SecretKey
+
+data class AzureOpenAILLMSetting<T>(
+    override val apiKey: T,
     override val temperature: String,
     override val prompt: String,
     val apiBase: String,
     val deploymentName: String,
     val apiVersion: String,
-) : LLMSetting(LLMProvider.AzureOpenAIService, apiKey, temperature, prompt) {
-    override fun copyWithTemperature(temperature: String): LLMSetting {
+) : LLMSettingBase<T>(LLMProvider.AzureOpenAIService, apiKey, temperature, prompt) {
+    override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
         return this.copy(temperature=temperature)
     }
 }
+typealias AzureOpenAILLMSettingDTO = AzureOpenAILLMSetting<String>

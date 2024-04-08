@@ -16,7 +16,7 @@
 
 package ai.tock.bot.admin.service
 
-import ai.tock.bot.admin.bot.rag.BotRagConfiguration
+import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.genai.orchestratorclient.requests.EMProviderSettingStatusQuery
 import ai.tock.genai.orchestratorclient.requests.LLMProviderSettingStatusQuery
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
@@ -27,13 +27,13 @@ import ai.tock.shared.injector
 import ai.tock.shared.provide
 
 
-object RagValidationService {
+object RAGValidationService {
 
     private val llmProviderService: LLMProviderService get() = injector.provide()
     private val emProviderService: EMProviderService get() = injector.provide()
 
 
-    fun validate(ragConfig: BotRagConfiguration): Set<ErrorMessage> {
+    fun validate(ragConfig: BotRAGConfiguration): Set<ErrorMessage> {
         return mutableSetOf<ErrorMessage>().apply {
             addAll(
                 llmProviderService
@@ -49,7 +49,7 @@ object RagValidationService {
         }
     }
 
-    private fun validateIndexSessionId(ragConfig: BotRagConfiguration): Set<ErrorMessage> {
+    private fun validateIndexSessionId(ragConfig: BotRAGConfiguration): Set<ErrorMessage> {
         val errors = mutableSetOf<ErrorMessage>()
         if (ragConfig.enabled && ragConfig.indexSessionId.isNullOrBlank()) {
             errors.add(

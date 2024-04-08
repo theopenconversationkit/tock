@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.rag
+package ai.tock.aws.model
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import org.litote.kmongo.Id
+import kotlinx.serialization.Serializable
 
-data class BotRagConfiguration(
-    val _id: Id<BotRagConfiguration>,
-    val namespace: String,
-    val botId: String,
-    val enabled: Boolean,
-    val llmSetting: LLMSetting,
-    val emSetting: EMSetting,
-    val indexSessionId: String? = null,
-    val noAnswerSentence: String,
-    val noAnswerStoryId: String? = null,
-)
+@Serializable
+data class AIProviderSecret(val secret: String)
