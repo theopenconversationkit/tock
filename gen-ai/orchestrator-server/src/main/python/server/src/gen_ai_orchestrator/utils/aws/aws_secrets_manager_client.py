@@ -16,20 +16,25 @@
 
 import json
 import logging
+from typing import Optional, Type, TypeVar
 
 import boto3
 from botocore.exceptions import ClientError
 
+from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
+from gen_ai_orchestrator.models.security.credentials import Credentials
+
 logger = logging.getLogger(__name__)
+T = TypeVar('T')
 
 
-class AWSSecretManager:
+class AWSSecretsManagerClient:
     """AWS Secrets Manager Client."""
 
     def __init__(self):
         self.client = boto3.client(service_name='secretsmanager')
 
-    def get_credentials(self, secret_name: str):
+    def get_credentials(self, secret_name: str) -> Optional[Credentials]:
         """
         Get a user credentials
         Expected storage format of the secret : {"username":"opensearch-user","password":"op******3"}
@@ -38,7 +43,18 @@ class AWSSecretManager:
             secret_name: The AWS Secret Name
         """
 
-        return _parse_to_credentials(self.get_secret(secret_name))
+        return parse_secret_data(self.get_secret(secret_name), Credentials)
+
+    def get_ai_provider_secret(self, secret_name: str) -> Optional[AIProviderSecret]:
+        """
+        Get the AI provider secret
+        Expected storage format of the secret : {"secret":"op******3"}
+
+        Args:
+            secret_name: The AWS Secret Name
+        """
+
+        return parse_secret_data(self.get_secret(secret_name), AIProviderSecret)
 
     def get_secret(self, secret_name: str):
         """
@@ -64,21 +80,22 @@ class AWSSecretManager:
             raise
 
 
-def _parse_to_credentials(secret_data):
+def parse_secret_data(secret_data, obj_type: Type[T]) -> Optional[T]:
     """
-    Parse the JSON secret data to retrieve a username and password
+    Parse the JSON secret data to retrieve an object of specified type.
     Args:
         secret_data: A json data
+        obj_type: Type of object to return
 
     Returns:
-        The username and password. Raise JSONDecodeError otherwise
-    """
+        The object of specified type.
 
+    Raises:
+         JSONDecodeError otherwise
+    """
     try:
         secret_dict = json.loads(secret_data)
-        username = secret_dict.get('username')
-        password = secret_dict.get('password')
-        return username, password
+        return obj_type(**secret_dict)
     except json.JSONDecodeError as e:
         logger.error(f'Error parsing secret data: {str(e)}')
-        return None, None
+        return None

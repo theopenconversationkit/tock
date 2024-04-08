@@ -12,16 +12,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Managing logging configuration"""
+"""Module defining generic type alias"""
 
-import logging
-import logging.config
+from typing import Annotated, Union
 
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
+from fastapi import Body
+
+from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
+    AzureOpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
+    OpenAIEMSetting,
 )
 
-
-def setup_logging():
-    """Setting up a logging configuration based on an ini file"""
-    logging.config.fileConfig(application_settings.application_logging_config_ini)
+EMSetting = Annotated[
+    Union[OpenAIEMSetting, AzureOpenAIEMSetting], Body(discriminator='provider')
+]

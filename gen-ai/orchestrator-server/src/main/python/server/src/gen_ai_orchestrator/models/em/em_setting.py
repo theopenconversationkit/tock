@@ -17,6 +17,10 @@
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
+from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
 class BaseEMSetting(BaseModel):
@@ -25,7 +29,7 @@ class BaseEMSetting(BaseModel):
     provider: EMProvider = Field(
         description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
     )
-    api_key: str = Field(
-        description='The API key used to authenticate requests to the AI Provider API.',
-        examples=['ab7***************************A1IV4B'],
+    api_key: SecretKey = Field(
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')]
     )

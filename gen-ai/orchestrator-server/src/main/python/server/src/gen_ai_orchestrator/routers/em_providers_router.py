@@ -30,15 +30,21 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
+
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
+from gen_ai_orchestrator.models.em.em_types import EMSetting
+from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
+    OpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
 from gen_ai_orchestrator.routers.requests.requests import (
     EMProviderSettingStatusQuery,
 )
-from gen_ai_orchestrator.routers.requests.types import EMSetting
 from gen_ai_orchestrator.routers.responses.responses import (
     EMProviderResponse,
     ProviderSettingStatusResponse,
@@ -109,13 +115,13 @@ async def get_em_provider_setting_by_id(
     if provider_id == EMProvider.OPEN_AI:
         return OpenAIEMSetting(
             provider=EMProvider.OPEN_AI,
-            api_key='123-abc-456-def',
+            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
             model='gpt-3.5-turbo',
         )
     elif provider_id == EMProvider.AZURE_OPEN_AI_SERVICE:
         return AzureOpenAIEMSetting(
             provider=EMProvider.AZURE_OPEN_AI_SERVICE,
-            api_key='123-abc-456-def',
+            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
             deployment_name='my-deployment-name',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',

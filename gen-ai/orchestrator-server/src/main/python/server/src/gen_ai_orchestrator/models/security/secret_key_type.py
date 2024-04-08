@@ -12,16 +12,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Managing logging configuration"""
+"""SecretKeyType Enumeration."""
 
-import logging
-import logging.config
-
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
-)
+from enum import Enum, unique
 
 
-def setup_logging():
-    """Setting up a logging configuration based on an ini file"""
-    logging.config.fileConfig(application_settings.application_logging_config_ini)
+@unique
+class SecretKeyType(str, Enum):
+    """Enumeration to list Secret Key types"""
+
+    RAW = 'Raw'
+    AWS_SECRETS_MANAGER = 'AwsSecretsManager'

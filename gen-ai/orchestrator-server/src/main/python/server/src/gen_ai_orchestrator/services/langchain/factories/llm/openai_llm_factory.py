@@ -16,19 +16,27 @@
 from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
-from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
+from langchain_openai import ChatOpenAI
 
-from gen_ai_orchestrator.configurations.environement.settings import application_settings
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
+)
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
 )
 
 
@@ -39,7 +47,7 @@ class OpenAILLMFactory(LangChainLLMFactory):
 
     def get_language_model(self) -> BaseLanguageModel:
         return ChatOpenAI(
-            openai_api_key=self.setting.api_key,
+            openai_api_key=fetch_secret_key_value(self.setting.api_key),
             model_name=self.setting.model,
             temperature=self.setting.temperature,
             request_timeout=application_settings.llm_provider_timeout,

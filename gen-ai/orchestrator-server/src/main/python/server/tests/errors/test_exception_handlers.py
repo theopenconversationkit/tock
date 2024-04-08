@@ -57,59 +57,60 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
 _request = httpx.Request('GET', 'https://www.dock.tock.ai')
 _response = httpx.Response(request=_request, status_code=400)
 
-
+@pytest.mark.asyncio
 async def test_openai_exception_handler_api_connection_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise APIConnectionError(message='error', request=_request)
 
     with pytest.raises(GenAIConnectionErrorException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_openai_exception_handler_authentication_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise AuthenticationError(message='error', response=_response, body=None)
 
     with pytest.raises(GenAIAuthenticationException):
-        decorated_function()
+        await decorated_function()
 
 
+@pytest.mark.asyncio
 async def test_openai_exception_handler_model_not_found_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise NotFoundError(
             message='error', response=_response, body={'code': 'model_not_found'}
         )
 
     with pytest.raises(AIProviderAPIModelException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_openai_exception_handler_resource_not_found_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise NotFoundError(message='error', response=_response, body=None)
 
     with pytest.raises(AIProviderAPIResourceNotFoundException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_openai_exception_handler_deployment_not_found_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise NotFoundError(
             message='error', response=_response, body={'code': 'DeploymentNotFound'}
         )
 
     with pytest.raises(AIProviderAPIDeploymentNotFoundException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_openai_exception_handler_bad_request_context_len_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise BadRequestError(
             message='error',
             response=_response,
@@ -117,69 +118,69 @@ async def test_openai_exception_handler_bad_request_context_len_error():
         )
 
     with pytest.raises(AIProviderAPIContextLengthExceededException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_openai_exception_handler_bad_request_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
     async def decorated_function(*args, **kwargs):
         raise BadRequestError(message='error', response=_response, body=None)
 
     with pytest.raises(AIProviderAPIBadRequestException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_openai_exception_handler_api_error():
     @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise APIError(message='error', request=_request, body=None)
 
     with pytest.raises(AIProviderAPIErrorException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_opensearch_exception_handler_improperly_configured():
     @opensearch_exception_handler
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise OpenSearchImproperlyConfigured()
 
     with pytest.raises(GenAIOpenSearchSettingException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_opensearch_exception_handler_connexion_error():
     @opensearch_exception_handler
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise OpenSearchAuthenticationException(
             'status_code', 'there was an error', 'some info'
         )
 
     with pytest.raises(GenAIAuthenticationException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_opensearch_exception_handler_resource_not_found_error():
     @opensearch_exception_handler
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise OpenSearchNotFoundError('400', 'there was an error')
 
     with pytest.raises(GenAIOpenSearchResourceNotFoundException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_opensearch_exception_handler_index_not_found_error():
     @opensearch_exception_handler
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise OpenSearchNotFoundError('400', 'index_not_found_exception')
 
     with pytest.raises(GenAIOpenSearchIndexNotFoundException):
-        decorated_function()
+        await decorated_function()
 
-
+@pytest.mark.asyncio
 async def test_opensearch_exception_handler_transport_error():
     @opensearch_exception_handler
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         raise OpenSearchTransportError('400', 'there was an error')
 
     with pytest.raises(GenAIOpenSearchTransportException):
-        decorated_function()
+        await decorated_function()

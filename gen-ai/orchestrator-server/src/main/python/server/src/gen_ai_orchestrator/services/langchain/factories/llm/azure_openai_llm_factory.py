@@ -16,19 +16,27 @@
 from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
-from langchain_openai import AzureChatOpenAI
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
+from langchain_openai import AzureChatOpenAI
 
-from gen_ai_orchestrator.configurations.environement.settings import application_settings
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
+)
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
 )
 
 
@@ -39,7 +47,7 @@ class AzureOpenAILLMFactory(LangChainLLMFactory):
 
     def get_language_model(self) -> BaseLanguageModel:
         return AzureChatOpenAI(
-            openai_api_key=self.setting.api_key,
+            openai_api_key=fetch_secret_key_value(self.setting.api_key),
             openai_api_version=self.setting.api_version,
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,

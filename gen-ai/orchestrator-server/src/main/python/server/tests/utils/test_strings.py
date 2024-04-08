@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,16 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Managing logging configuration"""
 
-import logging
-import logging.config
-
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
-)
+from gen_ai_orchestrator.utils.strings import obfuscate
 
 
-def setup_logging():
-    """Setting up a logging configuration based on an ini file"""
-    logging.config.fileConfig(application_settings.application_logging_config_ini)
+def test_obfuscate():
+    obfuscated_str = obfuscate('stg')
+    assert obfuscated_str == '*****'
+    obfuscated_str = obfuscate('something')
+    assert obfuscated_str == 'so******g'

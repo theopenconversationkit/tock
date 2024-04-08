@@ -12,16 +12,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Managing logging configuration"""
+"""Module defining generic type alias"""
 
-import logging
-import logging.config
+from typing import Annotated, Union
 
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
+from fastapi import Body
+
+from gen_ai_orchestrator.models.security.aws_secret_key.aws_secret_key import (
+    AwsSecretKey,
+)
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
 )
 
-
-def setup_logging():
-    """Setting up a logging configuration based on an ini file"""
-    logging.config.fileConfig(application_settings.application_logging_config_ini)
+SecretKey = Annotated[
+    Union[RawSecretKey, AwsSecretKey],
+    Body(discriminator='type'),
+]

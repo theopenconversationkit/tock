@@ -19,11 +19,13 @@ import logging
 from langchain_core.messages import AIMessage
 from langchain_core.output_parsers import BaseOutputParser
 
-from gen_ai_orchestrator.routers.requests.types import LLMSetting
+from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
 )
-from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import LangChainLLMFactory
+from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
+    LangChainLLMFactory,
+)
 
 logger = logging.getLogger(__name__)
 

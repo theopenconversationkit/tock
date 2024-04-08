@@ -16,7 +16,7 @@
 
 import logging
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Request
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
     AIProviderBadQueryException,
@@ -30,18 +30,20 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
     create_error_info_not_found,
     create_error_response,
 )
-from gen_ai_orchestrator.models.errors.errors_models import ErrorCode
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
+from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
+)
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
 )
 from gen_ai_orchestrator.routers.requests.requests import (
     LLMProviderSettingStatusQuery,
 )
-from gen_ai_orchestrator.routers.requests.types import LLMSetting
 from gen_ai_orchestrator.routers.responses.responses import (
     LLMProviderResponse,
     ProviderSettingStatusResponse,
@@ -112,7 +114,7 @@ async def get_llm_provider_setting_by_id(
     if provider_id == LLMProvider.OPEN_AI:
         return OpenAILLMSetting(
             provider=LLMProvider.OPEN_AI,
-            api_key='123-abc-456-def',
+            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
             model='gpt-3.5-turbo',
             temperature=1.3,
             prompt='How to learn to ride a bike without wheels!',
@@ -120,7 +122,7 @@ async def get_llm_provider_setting_by_id(
     elif provider_id == LLMProvider.AZURE_OPEN_AI_SERVICE:
         return AzureOpenAILLMSetting(
             provider=LLMProvider.AZURE_OPEN_AI_SERVICE,
-            api_key='123-abc-456-def',
+            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
             deployment_name='my-deployment-name',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',

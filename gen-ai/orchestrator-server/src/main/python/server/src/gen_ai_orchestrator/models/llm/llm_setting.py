@@ -17,16 +17,19 @@
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
+from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
 class BaseLLMSetting(BaseModel):
     """A base class for Large Language Model Setting."""
 
     provider: LLMProvider = Field(description='The Large Language Model Provider.')
-    api_key: str = Field(
-        description='The API key used to authenticate requests to the AI Provider API.',
-        examples=['ab7***************************A1IV4B'],
-        min_length=1,
+    api_key: SecretKey = Field(
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
     )
     temperature: float = Field(
         description='The temperature that controls the randomness of the text generated.',

@@ -18,7 +18,9 @@ from typing import List
 from langchain.embeddings.base import Embeddings
 from langchain_openai import AzureOpenAIEmbeddings
 
-from gen_ai_orchestrator.configurations.environement.settings import application_settings
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
@@ -27,6 +29,9 @@ from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
 )
 from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
+)
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
 )
 
 
@@ -37,7 +42,7 @@ class AzureOpenAIEMFactory(LangChainEMFactory):
 
     def get_embedding_model(self) -> Embeddings:
         return AzureOpenAIEmbeddings(
-            openai_api_key=self.setting.api_key,
+            openai_api_key=fetch_secret_key_value(self.setting.api_key),
             openai_api_version=self.setting.api_version,
             azure_endpoint=str(self.setting.api_base),
             azure_deployment=self.setting.deployment_name,

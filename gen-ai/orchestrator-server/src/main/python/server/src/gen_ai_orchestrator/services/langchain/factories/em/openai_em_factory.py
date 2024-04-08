@@ -18,13 +18,23 @@ from typing import List
 from langchain.embeddings.base import Embeddings
 from langchain_openai import OpenAIEmbeddings
 
-from gen_ai_orchestrator.configurations.environement.settings import application_settings
+from gen_ai_orchestrator.configurations.environment.settings import (
+    application_settings,
+)
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
     openai_exception_handler,
 )
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
+from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
+    OpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
+)
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
 )
 
 
@@ -35,7 +45,7 @@ class OpenAIEMFactory(LangChainEMFactory):
 
     def get_embedding_model(self) -> Embeddings:
         return OpenAIEmbeddings(
-            openai_api_key=self.setting.api_key,
+            openai_api_key=fetch_secret_key_value(self.setting.api_key),
             model=self.setting.model,
             timeout=application_settings.em_provider_timeout,
         )
