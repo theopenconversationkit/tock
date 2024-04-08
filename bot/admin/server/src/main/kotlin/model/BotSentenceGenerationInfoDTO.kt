@@ -16,16 +16,19 @@
 
 package ai.tock.bot.admin.model
 
-import java.util.Locale
+import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfiguration
 
-data class SentenceGenerationRequest(
-    val llmTemperature: String,
-    val sentences: List<String>,
-    val locale: Locale,
-    val options: SentenceGenerationOptions,
-)
-
-
+data class BotSentenceGenerationInfoDTO(
+    val enabled: Boolean = false,
+    val nbSentences: Int? = null,
+    val llmTemperature: String? = null
+) {
+    constructor(configuration: BotSentenceGenerationConfiguration): this(
+        configuration.enabled,
+        configuration.nbSentences,
+        configuration.llmSetting.temperature
+    )
+}
 
 
 

@@ -17,7 +17,7 @@
 package ai.tock.bot.admin.model
 
 data class SentenceGenerationOptions(
-    val spellingMistakes: Boolean = true ,
-    val smsLanguage: Boolean = true ,
-    val abbreviatedLanguage: Boolean = true ,
+    val spellingMistakes: Boolean = true,
+    val smsLanguage: Boolean = true,
+    val abbreviatedLanguage: Boolean = true,
 )
