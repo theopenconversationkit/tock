@@ -1066,7 +1066,9 @@ open class BotAdminVerticle : AdminVerticle() {
             admin
         ) { context, configuration: BotSentenceGenerationConfigurationDTO ->
             if (context.organization == configuration.namespace) {
-                SentenceGenerationService.saveSentenceGeneration(configuration)
+                BotSentenceGenerationConfigurationDTO(
+                    SentenceGenerationService.saveSentenceGeneration(configuration)
+                )
             } else {
                 unauthorized()
             }
