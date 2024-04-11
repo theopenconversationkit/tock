@@ -21,6 +21,7 @@ import ai.tock.iadvize.client.graphql.ChatbotActionInput
 import ai.tock.iadvize.client.graphql.ChatbotActionOrMessageInput
 import ai.tock.iadvize.client.graphql.TransferMessageInput
 import ai.tock.iadvize.client.graphql.TransferOptionsInput
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class IadvizeTransfer(
     val distributionRule: String?,
@@ -31,6 +32,8 @@ data class IadvizeTransfer(
      * @param timeout the [Duration]
      */
     data class TransferOptions(val timeout: Duration) {
+
+        @JsonIgnore
         fun getTimeoutInSeconds(): Int = when(timeout.unit){
             Duration.TimeUnit.minutes -> (timeout.value * 60).toInt()
             Duration.TimeUnit.seconds -> timeout.value.toInt()
