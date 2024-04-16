@@ -45,3 +45,5 @@ scripts/connector-messenger/ngrok.exe
 
 # Python
 **/requirements.txt
+**/.venv/
+**/.python-version

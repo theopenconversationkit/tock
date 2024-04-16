@@ -8,15 +8,16 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-docopt = "^0.6.2"
-pandas = "^2.1.4"
+docopt-ng = "^0.9.0"
+pandas = "^2.2.1"
+openpyxl = "^3.1.2"
 beautifulsoup4 = "^4.12.2"
 langchain = "^0.1.0"
+langsmith = "^0.1.41"
 python-dotenv = "^1.0.0"
 opensearch-py = "^2.4.2"
 gen_ai_orchestrator = {path = "../server"}
 langchain-community = "^0.0.29"
-langsmith = "^0.1.33"
 
 [build-system]
 requires = ["poetry-core"]
