@@ -1,6 +1,9 @@
-# TOCK indexing tools
+# TOCK indexing and testing tools
 
-A collection of tools to ingest data into a Vector DB.
+A collection of tools to:
+
+- ingest data into a Vector DB
+- test specific RAG settings against a dataset.
 
 ## Installing toolset
 
@@ -12,9 +15,13 @@ Then run the scripts by passing them to a Python interpreter (>= 3.9):
 
 `python <script> <args>`
 
-## Data processing
+## Data ingestion
 
-### smarttribune_formatter.py
+![Data processing and indexing tools](docs/processing_and_indexing.png "Data processing and indexing tools")
+
+### Data processing
+
+#### smarttribune_formatter.py
 
 ```
 Smart Tribune export file formatter.
@@ -42,7 +49,7 @@ Turns a Smart Tribune CSV export file into a ready-to-index CSV file (one 'title
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
 
-### webscraper.py
+#### webscraper.py
 
 ```
 Simple recursive webscraper based on a list of BeautifulSoup filters.
@@ -72,9 +79,9 @@ Recursively browse web URLs (follow links from these base URLs), then scrape lin
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
 
-## Documents indexing
+### Documents indexing
 
-### index_documents.py
+#### index_documents.py
 
 Index a ready-to-index CSV file ('title'|'url'|'text' lines) file contents into an OpenSearch vector database.
 
@@ -116,6 +123,8 @@ A unique indexing session id is produced and printed to the console (will be the
 
 ## Testing RAG settings on dataset
 
+![RAG settings testing tools](docs/rag_testing_tools.png "RAG settings testing tools")
+
 ### generate_dataset.py
 
 Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
@@ -142,6 +151,34 @@ Options:
 Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
 ```
 
+### rag_testing_tool.py
+
+Retrieval-Augmented Generation (RAG) endpoint settings testing tool based on LangSmith's SDK: runs a specific RAG Settings configuration against a reference dataset.
+
+```
+Usage:
+    rag_testing_tool.py [-v] <rag_query> <dataset_name> <test_name> [<delay>]
+    rag_testing_tool.py -h | --help
+    rag_testing_tool.py --version
+
+Arguments:
+    rag_query       path to a JSON 'RAGQuery' JSON file containing RAG settings
+                    to be tested: llm model, embedding model, vector database
+                    provider, indexation session's unique id, and 'k', i.e. nb
+                    of retrieved docs (question and chat history are ignored,
+                    as they will come from the dataset)
+    dataset_name    the reference dataset name
+    test_name       name of the test run
+
+Options:
+    delay       Delay between two calls to the inference method in ms
+    -h --help   Show this screen
+    --version   Show version
+    -v          Verbose output for debugging (without this option, script will
+                be silent but for errors)
+```
+
+Build a RAG (Lang)chain from the RAG Query and runs it against the provided LangSmith dataset. The chain is created anew for each entry of the dataset, and if a delay is provided each chain creation will be delayed accordingly.
 ### export_run_results.py
 
 Export a LangSmith dataset run results, in csv format.

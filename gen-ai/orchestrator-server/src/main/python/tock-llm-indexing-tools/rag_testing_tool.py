@@ -29,15 +29,17 @@ Arguments:
                     as they will come from the dataset)
     dataset_name    the reference dataset name
     test_name       name of the test run
-    delay           delay between two calls to the inference method in ms
 
 Options:
+    delay       Delay between two calls to the inference method in ms
     -h --help   Show this screen
     --version   Show version
     -v          Verbose output for debugging (without this option, script will
                 be silent but for errors)
 
-<full desc>
+Build a RAG (Lang)chain from the RAG Query and runs it against the provided
+LangSmith dataset. The chain is created anew for each entry of the dataset, and
+if a delay is provided, each chain creation will be delayed accordingly.
 """
 import json
 import logging
@@ -73,12 +75,12 @@ def test_rag(args):
     with open(args['<rag_query>'], 'r') as file:
         rag_query = json.load(file)
 
-    # Modify this if you are testing against a dataset that follows another
-    # format
     def _construct_chain():
         if args['<delay>']:
             time.sleep(int(args['<delay>']) / 1000)
 
+        # Modify this if you are testing against a dataset that follows another
+        # format
         return {
             'question': lambda x: x['question'],
             'locale': lambda x: x['locale'],
