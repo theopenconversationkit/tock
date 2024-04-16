@@ -113,3 +113,32 @@ Documents will be indexed in OpenSearch DB under index_name index (index_name sh
 | url              | the 'url' column from original input CSV                         |
 
 A unique indexing session id is produced and printed to the console (will be the last line printed if the '-v' option is used).
+
+## Testing RAG settings on dataset
+
+### generate_dataset.py
+
+Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+
+```
+Usage:
+    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+
+Arguments:
+    input_excel path to the input excel file
+
+Options:
+    --range=<s>                     Range of sheet to be parsed. The expected format is X,Y where X is the first sheet to be included, and Y is the last. Indices are 0-indexed.
+    --sheet=<n>                     Sheet numbers to be parsed. Indices are 0-indexed.
+    --csv-output=<path>             Output path of csv file to be generated.
+    --langsmith-dataset-name=<name> Name of the dataset to be saved on langsmith.
+    --locale=<locale>               Locale to be included in de dataset. [default: French]
+    --no-answer=<na>                Label of no_answer to be included in the dataset. [default: NO_RAG_SENTENCE]
+    -h --help                       Show this screen
+    --version                       Show version
+    -v                              Verbose output for debugging (without this option, script will be silent but for errors)
+
+Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+```
+
