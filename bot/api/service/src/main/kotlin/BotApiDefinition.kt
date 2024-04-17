@@ -76,8 +76,7 @@ internal class ApiStep(s: StepConfiguration) : StoryStep<StoryHandlerDefinition>
 internal class BotApiDefinition(
     configuration: BotConfiguration,
     clientConfiguration: ClientConfiguration?,
-    handler: BotApiHandler,
-    ragConfiguration: BotRAGConfiguration? = null
+    handler: BotApiHandler
 ) : BotDefinitionBase(
     configuration.botId,
     configuration.namespace,
@@ -87,8 +86,7 @@ internal class BotApiDefinition(
         //map stories to SimpleStoryDefinition otherwise empty list
         ?.map { it.mapToSimpleStoryDefinition(handler) } ?: emptyList(),
     configuration.nlpModel,
-    FallbackStoryDefinition(defaultUnknownStory, handler),
-    ragConfiguration = ragConfiguration
+    FallbackStoryDefinition(defaultUnknownStory, handler)
 ) {
     override fun findIntent(intent: String, applicationId: String): Intent =
         super.findIntent(intent, applicationId).let {

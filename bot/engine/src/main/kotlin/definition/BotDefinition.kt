@@ -120,7 +120,7 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * RAG configuration
      */
-    val ragConfiguration: BotRAGConfiguration?
+    var ragConfiguration: BotRAGConfiguration?
 
     /**
      * The list of each stories.
