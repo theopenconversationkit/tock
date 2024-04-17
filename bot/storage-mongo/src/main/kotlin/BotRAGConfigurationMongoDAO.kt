@@ -29,14 +29,14 @@ import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
 
 internal object BotRAGConfigurationMongoDAO : BotRAGConfigurationDAO {
 
     private const val COLLECTION_NAME = "bot_rag_configuration"
     internal val col = database.getCollection<BotRAGConfiguration>(COLLECTION_NAME)
-    private val asyncCol = asyncDatabase.getCollection<BotRAGConfiguration>()
+    private val asyncCol = asyncDatabase.getCollectionOfName<BotRAGConfiguration>(COLLECTION_NAME)
 
     init {
         col.ensureUniqueIndex(Namespace, BotId)
