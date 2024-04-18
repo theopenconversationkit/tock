@@ -26,14 +26,22 @@ import ai.tock.bot.definition.StoryHandlerListener
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.dialog.EventState
+import ai.tock.shared.defaultLocale
+import ai.tock.shared.defaultNamespace
+import ai.tock.translator.I18nLabelValue
+import ai.tock.translator.I18nLocalizedLabel
+import ai.tock.translator.TranslatedSequence
+import ai.tock.translator.UserInterfaceType
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import io.mockk.verify
+import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 /**
  *
@@ -46,7 +54,7 @@ class BotBusMockTest {
     val storyHandler: SimpleStoryHandlerBase = mockk()
     val storyDefinition: StoryDefinition = mockk()
     val action: Action = mockk()
-    val testContext: TestContext = mockk()
+    val testContext: TestContext = spyk(TestContext())
     val metadata = ActionMetadata()
     val botDefinition: BotDefinition = mockk()
 
@@ -61,6 +69,13 @@ class BotBusMockTest {
     @BeforeEach
     fun before() {
         every { storyHandler.handle(any()) } answers {}
+        // Mockk is a bit lost when it comes to overloads+varargs
+        every { storyHandler.i18nKey(key = any(), defaultLabel =  any(), any() )} answers {
+            I18nLabelValue(arg<String>(0), defaultNamespace, "test", arg<CharSequence>(1), arg<Array<Any?>>(3).toList(), arg<Set<I18nLocalizedLabel>>(2))
+        }
+        every { storyHandler.i18nKey(any(), any(), any(), any())} answers {
+            I18nLabelValue(arg<String>(0), defaultNamespace, "test", arg<CharSequence>(1), arg<Array<Any?>>(3).toList(), arg<Set<I18nLocalizedLabel>>(2))
+        }
 
         every { storyDefinition.storyHandler } returns storyHandler
         every { storyDefinition.mainIntent() } returns intent
@@ -75,10 +90,6 @@ class BotBusMockTest {
         every { botDefinition.defaultDelay(any()) } returns 1000
         every { botDefinition.botId } returns "botId"
         every { botDefinition.findIntent(any(), any()) } returns intent
-
-        every { testContext.storyHandlerListeners } returns mutableListOf()
-
-        every { testContext.botAnswerInterceptors } returns mutableListOf()
     }
 
     @Test
@@ -196,5 +207,19 @@ class BotBusMockTest {
         assertThrows(IllegalStateException::class.java) {
             botBus.withMessage(TextMessage("one"))
         }
+    }
+
+    @Test
+    fun `translate uses default localizations`() {
+        val botBus = BotBusMock(context)
+        val inner = botBus.i18nKey("inner", "this is inner text default", localizedDefaults = setOf(
+            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "this is inner text")
+        ))
+        val outer = botBus.i18nKey("outer", "I have a default message: {0}", localizedDefaults = setOf(
+            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "I have a message: “{0}”")
+        ), inner)
+        val translated = botBus.translate(outer)
+        assertIs<TranslatedSequence>(translated)
+        assertEquals("I have a message: “this is inner text”", translated.toString())
     }
 }

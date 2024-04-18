@@ -452,7 +452,12 @@ open class BotBusMock(
                 targetConnectorType.id,
                 dialog.id.toString()
             ),
-            key.args
+            key.args.map { arg ->
+                when (arg) {
+                    is I18nLabelValue -> translate(arg)
+                    else -> arg
+                }
+            }
         ).raw
 
     override fun markAsUnknown() {
