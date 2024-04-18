@@ -21,6 +21,7 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import ai.tock.nlp.front.shared.codec.DumpType
@@ -89,7 +90,7 @@ object SynchronizationService {
                     targetNamespace,
                     targetAppName,
                     group.key ?: Locale.ENGLISH,
-                    group.value,
+                    StoryDefinitionConfigurationDumpImport(group.value),
                     TockUserRole.botUser.name
                 )
             }
