@@ -519,7 +519,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, localizedDefaults: Set<I18nLocalizedLabel>, vararg args: Any?): I18nLabelValue =
         story.definition.storyHandler.let {
-            (it as? StoryHandlerBase<*>)?.i18nKey(key, defaultLabel, localizedDefaults, *args)
+            (it as? StoryHandlerBase<*>)?.i18nKey(key, defaultLabel, defaultI18n = localizedDefaults, args = args)
                 ?: I18nLabelValue(
                     key,
                     botDefinition.namespace,
