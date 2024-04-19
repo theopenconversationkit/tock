@@ -21,10 +21,11 @@ from fastapi import Body
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
     OpenAIEMSetting,
 )
 
 EMSetting = Annotated[
-    Union[OpenAIEMSetting, AzureOpenAIEMSetting], Body(discriminator='provider')
+    Union[OpenAIEMSetting, AzureOpenAIEMSetting, OllamaEMSetting], Body(discriminator='provider')
 ]

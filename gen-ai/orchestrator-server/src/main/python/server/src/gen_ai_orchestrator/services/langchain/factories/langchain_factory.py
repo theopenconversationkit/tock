@@ -39,12 +39,14 @@ from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import FakeLLMSetting
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
+from gen_ai_orchestrator.models.llm.ollama.ollama_llm_setting import OllamaLLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
@@ -66,6 +68,7 @@ from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory
 from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.em.ollama_em_factory import OllamaEMFactory
 from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory import (
     OpenAIEMFactory,
 )
@@ -76,6 +79,7 @@ from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory impor
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.llm.ollama_llm_factory import OllamaLLMFactory
 from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory import (
     OpenAILLMFactory,
 )
@@ -109,6 +113,9 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
     elif isinstance(setting, FakeLLMSetting):
         logger.debug('LLM Factory - FakeLLMFactory')
         return FakeLLMFactory(setting=setting)
+    elif isinstance(setting, OllamaLLMSetting):
+        logger.debug('LLM Factory - OllamaLLMFactory')
+        return OllamaLLMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
 
@@ -130,6 +137,9 @@ def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
     elif isinstance(setting, AzureOpenAIEMSetting):
         logger.debug('EM Factory - AzureOpenAIEMFactory')
         return AzureOpenAIEMFactory(setting=setting)
+    elif isinstance(setting, OllamaEMSetting):
+        logger.debug('LLM Factory - OllamaEMFactory')
+        return OllamaEMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
 

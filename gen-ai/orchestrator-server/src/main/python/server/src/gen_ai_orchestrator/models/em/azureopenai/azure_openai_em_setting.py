@@ -20,6 +20,8 @@ from pydantic import Field, HttpUrl
 
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
+from gen_ai_orchestrator.models.security.security_types import SecretKey
 
 
 class AzureOpenAIEMSetting(BaseEMSetting):
@@ -31,6 +33,10 @@ class AzureOpenAIEMSetting(BaseEMSetting):
     provider: Literal[EMProvider.AZURE_OPEN_AI_SERVICE] = Field(
         description='The Embedding Model Provider.',
         examples=[EMProvider.AZURE_OPEN_AI_SERVICE],
+    )
+    api_key: SecretKey = Field(
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')]
     )
     deployment_name: str = Field(
         description='The deployment name you chose when you deployed the model.',

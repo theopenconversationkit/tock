@@ -16,10 +16,7 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.llm.AzureOpenAILLMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
-import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
+import ai.tock.genai.orchestratorcore.models.llm.*
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
 /**
@@ -33,13 +30,22 @@ object LLMSettingMapper {
      * @return [LLMSettingDTO]
      */
     fun toDTO(entity: LLMSetting): LLMSettingDTO =
-        with(entity){
-            val secretKey = SecurityUtils.fetchSecretKeyValue(apiKey)
-            when(this){
+        with(entity) {
+
+            when (this) {
                 is OpenAILLMSetting ->
-                    OpenAILLMSetting(secretKey, temperature, prompt, model)
+                    OpenAILLMSetting(SecurityUtils.fetchSecretKeyValue(apiKey), temperature, prompt, model)
                 is AzureOpenAILLMSetting ->
-                    AzureOpenAILLMSetting(secretKey, temperature, prompt, apiBase, deploymentName, apiVersion)
+                    AzureOpenAILLMSetting(
+                        SecurityUtils.fetchSecretKeyValue(apiKey),
+                        temperature,
+                        prompt,
+                        apiBase,
+                        deploymentName,
+                        apiVersion
+                    )
+                is OllamaLLMSetting ->
+                    OllamaLLMSetting(temperature, prompt, model, baseUrl)
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }
@@ -54,13 +60,26 @@ object LLMSettingMapper {
      * @return [LLMSetting]
      */
     fun toEntity(namespace: String, botId: String, feature: String, dto: LLMSettingDTO): LLMSetting =
-        with(dto){
-            val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey)
-            when(this){
+        with(dto) {
+            when (this) {
                 is OpenAILLMSetting ->
-                    OpenAILLMSetting(secretKey, temperature, prompt, model)
+                    OpenAILLMSetting(
+                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        temperature,
+                        prompt,
+                        model
+                    )
                 is AzureOpenAILLMSetting ->
-                    AzureOpenAILLMSetting(secretKey, temperature, prompt, apiBase, deploymentName, apiVersion)
+                    AzureOpenAILLMSetting(
+                        SecurityUtils.createSecretKey(namespace, botId, feature, apiKey),
+                        temperature,
+                        prompt,
+                        apiBase,
+                        deploymentName,
+                        apiVersion
+                    )
+                is OllamaLLMSetting ->
+                    OllamaLLMSetting(temperature, prompt, model, baseUrl)
                 else ->
                     throw IllegalArgumentException("Unsupported LLM Setting")
             }
