@@ -53,12 +53,11 @@ def hugging_face_exception_handler(provider: str):
                     create_error_info_hugging_face(exc, provider)
                 )
             except HTTPError as exc:
-                if exc.response.status_code == 400:
-                    logger.error(exc)
-                    raise GenAIAuthenticationException(
-                        create_error_info_hugging_face(exc, provider)
-                    )
-                elif exc.response.status_code == 407 or exc.response.status_code == 511:
+                if (
+                    exc.response.status_code == 400
+                    or exc.response.status_code == 407
+                    or exc.response.status_code == 511
+                ):
                     logger.error(exc)
                     raise GenAIAuthenticationException(
                         create_error_info_hugging_face(exc, provider)

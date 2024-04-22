@@ -32,6 +32,9 @@ from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import 
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,
 )
+from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting import (
+    HuggingFaceTGILLMSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
@@ -55,6 +58,9 @@ from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_facto
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
     FakeLLMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.hugging_face_tgi_llm_factory import (
+    HuggingFaceTGILLMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory import (
     OpenAILLMFactory,
@@ -126,6 +132,28 @@ def test_get_fake_llm_factory():
     )
     assert fake_llm.setting.provider == LLMProvider.FAKE_LLM
     assert isinstance(fake_llm, FakeLLMFactory)
+
+
+def test_get_hugging_face_tgi_llm_factory():
+    hugging_face_tgi = get_llm_factory(
+        setting=HuggingFaceTGILLMSetting(
+            **{
+                'provider': 'HuggingFaceTGI',
+                'repetition_penalty': 1.0,
+                'max_new_tokens': 256,
+                'api_base': 'https://doc.tock.ai/tock',
+                'api_key': {
+                    'type': 'Raw',
+                    'value': 'ab7***************************A1IV4B',
+                },
+                'temperature': 0.7,
+                'prompt': 'List 3 ice cream flavors.',
+                'streaming': False,
+            }
+        )
+    )
+    assert hugging_face_tgi.setting.provider == LLMProvider.HUGGING_FACE_TGI
+    assert isinstance(hugging_face_tgi, HuggingFaceTGILLMFactory)
 
 
 def test_get_unknown_em_factory():
