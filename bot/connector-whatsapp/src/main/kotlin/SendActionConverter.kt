@@ -43,7 +43,7 @@ object SendActionConverter {
                         individual,
                         UserHashedIdCache.getRealId(action.recipientId.id)
                     )
-                } ?: error("null text in action $action")
+                }
         } else {
             null
         }
