@@ -36,6 +36,7 @@
         <module>storage-mongo</module>
         <module>opennlp</module>
         <module>rasa</module>
+        <module>bgem3</module>
     </modules>
 
     <dependencies>

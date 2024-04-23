@@ -41,5 +41,10 @@ data class NlpEngineType(
          * The rasa-based nlp engine.
          */
         val rasa = NlpEngineType("rasa")
+
+        /**
+         * The bgem3 nlp engine.
+         */
+        val bgem3 = NlpEngineType("bgem3")
     }
 }
