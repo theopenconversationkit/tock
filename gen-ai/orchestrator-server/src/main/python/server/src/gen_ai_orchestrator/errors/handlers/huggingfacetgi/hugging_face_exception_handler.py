@@ -25,6 +25,7 @@ from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions im
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIAuthenticationException,
+    GenAIConnectionErrorException,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 
@@ -49,15 +50,11 @@ def hugging_face_exception_handler(provider: str):
                 return func(*args, **kwargs)
             except InferenceTimeoutError as exc:
                 logger.error(exc)
-                raise AIProviderAPIBadRequestException(
+                raise GenAIConnectionErrorException(
                     create_error_info_hugging_face(exc, provider)
                 )
             except HTTPError as exc:
-                if (
-                    exc.response.status_code == 400
-                    or exc.response.status_code == 407
-                    or exc.response.status_code == 511
-                ):
+                if exc.response.status_code == (403, 401):
                     logger.error(exc)
                     raise GenAIAuthenticationException(
                         create_error_info_hugging_face(exc, provider)

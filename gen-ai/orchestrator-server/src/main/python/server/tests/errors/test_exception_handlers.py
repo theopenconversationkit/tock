@@ -172,12 +172,12 @@ async def test_hugging_face_exception_handler_resource_not_found_error():
 
 
 @pytest.mark.asyncio
-async def test_hugging_face_exception_handler_bad_request_error():
+async def test_hugging_face_exception_handler_timeout_error():
     @hugging_face_exception_handler(provider='HuggingFaceTGI')
     async def decorated_function(*args, **kwargs):
-        raise InferenceTimeoutError(message='error', response=_response, body=None)
+        raise InferenceTimeoutError('sdfg')
 
-    with pytest.raises(AIProviderAPIBadRequestException):
+    with pytest.raises(GenAIConnectionErrorException):
         await decorated_function()
 
 
