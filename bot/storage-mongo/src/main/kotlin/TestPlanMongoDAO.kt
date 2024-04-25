@@ -24,6 +24,8 @@ import ai.tock.bot.admin.test.TestPlanExecution_.Companion.TestPlanId
 import ai.tock.bot.admin.test.TestPlan_.Companion.ApplicationId
 import ai.tock.bot.admin.test.TestPlan_.Companion.Name
 import ai.tock.shared.ensureIndex
+import ai.tock.shared.error
+import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.deleteOneById
@@ -38,11 +40,16 @@ import org.litote.kmongo.save
  */
 internal object TestPlanMongoDAO : TestPlanDAO {
 
+    private val logger = KotlinLogging.logger {}
     private val testPlanCol = MongoBotConfiguration.database.getCollection<TestPlan>()
     private val testPlanExecutionCol = MongoBotConfiguration.database.getCollection<TestPlanExecution>()
 
     init {
-        testPlanCol.ensureIndex(ApplicationId)
+        try {
+            testPlanCol.ensureIndex(ApplicationId)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 
     /**
@@ -72,7 +79,10 @@ internal object TestPlanMongoDAO : TestPlanDAO {
         return testPlanCol.findOneById(testPlanId)
     }
 
-    override fun getTestPlanExecution(testPlan: TestPlan, testPlanExecutionId: Id<TestPlanExecution>): TestPlanExecution? {
+    override fun getTestPlanExecution(
+        testPlan: TestPlan,
+        testPlanExecutionId: Id<TestPlanExecution>
+    ): TestPlanExecution? {
         return testPlanExecutionCol.findOneById(testPlanExecutionId)
     }
 

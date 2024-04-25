@@ -59,11 +59,15 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     private val asyncCol = asyncDatabase.getCollectionOfName<BotApplicationConfiguration>("bot_configuration")
 
     init {
-        col.ensureUniqueIndex(ApplicationId, BotId, Namespace)
-        col.ensureUniqueIndex(Path)
-        col.ensureIndex(ApplicationId, BotId)
-        col.ensureIndex(Namespace, BotId)
-        botCol.ensureUniqueIndex(Name, BotId, Namespace)
+        try {
+            col.ensureUniqueIndex(ApplicationId, BotId, Namespace)
+            col.ensureUniqueIndex(Path)
+            col.ensureIndex(ApplicationId, BotId)
+            col.ensureIndex(Namespace, BotId)
+            botCol.ensureUniqueIndex(Name, BotId, Namespace)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 
     override fun listenBotChanges(listener: () -> Unit) {

@@ -34,8 +34,8 @@
         <kotlin>1.9.23</kotlin>
         <coroutine>1.8.0</coroutine>
 
-        <slf4j>2.0.12</slf4j>
-        <logback>1.5.3</logback>
+        <slf4j>2.0.13</slf4j>
+        <logback>1.5.6</logback>
 
         <kotlin-logging>3.0.5</kotlin-logging>
 
@@ -49,7 +49,7 @@
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
         <vertx>4.5.7</vertx>
-        <retrofit>2.10.0</retrofit>
+        <retrofit>2.11.0</retrofit>
         <okhttp>4.12.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
@@ -59,7 +59,7 @@
         <google-http-client>1.44.1</google-http-client>
         <jasypt>1.9.3</jasypt>
         <commons-csv>1.10.0</commons-csv>
-        <commons-text>1.11.0</commons-text>
+        <commons-text>1.12.0</commons-text>
         <emoji>5.1.1</emoji>
         <commons-codec>1.16.1</commons-codec>
         <commons-lang>3.14.0</commons-lang>
@@ -68,8 +68,8 @@
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.34.0</google>
-        <aws-sdk>1.12.689</aws-sdk>
+        <google>26.37.0</google>
+        <aws-sdk>1.12.708</aws-sdk>
         <pac4j>5.7.3</pac4j>
         <vertx-pac4j>6.0.2</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
@@ -79,7 +79,7 @@
 
         <mockk>1.13.10</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.14.12</byte-buddy>
+        <byte-buddy>1.14.14</byte-buddy>
         <atrium>0.15.0</atrium>
 
         <plugin.surefire>3.0.0-M7</plugin.surefire>

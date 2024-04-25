@@ -61,14 +61,18 @@ internal object MongoUserLock : UserLock {
     private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
 
     init {
-        col.ensureIndex(
-            Date,
-            indexOptions = IndexOptions()
-                .expireAfter(
-                    longProperty("mongo_user_ttl_hours", 6),
-                    HOURS
-                )
-        )
+        try {
+            col.ensureIndex(
+                Date,
+                indexOptions = IndexOptions()
+                    .expireAfter(
+                        longProperty("mongo_user_ttl_hours", 6),
+                        HOURS
+                    )
+            )
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 
     override fun lock(userId: String): Boolean {

@@ -91,6 +91,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
 
     private val logger = KotlinLogging.logger {}
     private const val LIMIT_MAX_WORDS = 10
+
     @Data(internal = true)
     @JacksonData(internal = true)
     data class StoryDefinitionConfigurationHistoryCol(
@@ -105,21 +106,25 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
 
     init {
-        col.ensureIndex(Namespace, BotId)
-        historyCol.ensureIndex(Date)
-        historyCol.ensureIndex(Conf.namespace, Conf.storyId, Date)
         try {
-            col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
-        } catch (e: Exception) {
-            logger.warn(e)
-            //there is a misleading data state when creating index
-            logger.warn("try to remove builtin stories and set the index")
+            col.ensureIndex(Namespace, BotId)
+            historyCol.ensureIndex(Date)
+            historyCol.ensureIndex(Conf.namespace, Conf.storyId, Date)
             try {
-                col.deleteMany(CurrentType eq builtin)
                 col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
             } catch (e: Exception) {
-                logger.error(e)
+                logger.warn(e)
+                //there is a misleading data state when creating index
+                logger.warn("try to remove builtin stories and set the index")
+                try {
+                    col.deleteMany(CurrentType eq builtin)
+                    col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
             }
+        } catch (e: Exception) {
+            logger.error(e)
         }
     }
 
@@ -230,7 +235,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             .find(
                 //default list of var args Bson
                 *filterStoryDefinitionSummaries(request)
-                // specific filters for extended
+                    // specific filters for extended
                     .plusElement(
                         request.textSearch?.takeUnless { it.isBlank() }
                             ?.let { Name.regex(customRegexToFindWord(request.textSearch ?: ""), "i") }
@@ -277,7 +282,8 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
      * filter story definition summaries
      */
     private fun filterStoryDefinitionSummaries(request: StoryDefinitionConfigurationSummaryRequest): Array<Bson?> =
-        arrayOf(Namespace eq request.namespace,
+        arrayOf(
+            Namespace eq request.namespace,
             BotId eq request.botId,
             if (request.category.isNullOrBlank()) null else Category eq request.category,
         )
@@ -301,10 +307,12 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         }
         col.deleteOneById(story._id)
     }
+
     override fun deleteByNamespaceAndBotId(namespace: String, botId: String) {
         val deletingStories = col.find(
             Filters.eq("namespace", namespace),
-            Filters.eq("botId", botId)).toList()
+            Filters.eq("botId", botId)
+        ).toList()
         if (deletingStories.isNotEmpty()) {
             deletingStories.forEach { deletingStory ->
                 historyCol.save(StoryDefinitionConfigurationHistoryCol(deletingStory, true))
@@ -317,6 +325,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
             )
         )
     }
+
     override fun createBuiltInStoriesIfNotExist(stories: List<StoryDefinitionConfiguration>) {
         stories.forEach {
             // unique index throws exception if the story already exists
