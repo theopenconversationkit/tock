@@ -14,10 +14,14 @@
 #
 """Model for creating HuggingFaceTGILLMFactory"""
 
+from typing import Optional
+
 from langchain.base_language import BaseLanguageModel
 from langchain_community.llms import HuggingFaceEndpoint
+from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables.utils import Input, Output
 
-from gen_ai_orchestrator.configurations.environement.settings import (
+from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
 from gen_ai_orchestrator.errors.handlers.huggingfacetgi.hugging_face_exception_handler import (
@@ -45,5 +49,7 @@ class HuggingFaceTGILLMFactory(LangChainLLMFactory):
         )
 
     @hugging_face_exception_handler(provider='HuggingFaceTGI')
-    def check_llm_setting(self) -> bool:
-        return super().check_llm_setting()
+    async def invoke(
+        self, _input: Input, config: Optional[RunnableConfig] = None
+    ) -> Output:
+        return await super().invoke(_input, config)

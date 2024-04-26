@@ -155,7 +155,7 @@ async def test_openai_exception_handler_api_error():
 async def test_hugging_face_exception_handler_authentication_error():
     @hugging_face_exception_handler(provider='HuggingFaceTGI')
     async def decorated_function(*args, **kwargs):
-        raise HTTPError(message='error', response=_response, body=None)
+        raise HTTPError(403, _request)
 
     with pytest.raises(GenAIAuthenticationException):
         await decorated_function()
@@ -165,7 +165,7 @@ async def test_hugging_face_exception_handler_authentication_error():
 async def test_hugging_face_exception_handler_resource_not_found_error():
     @hugging_face_exception_handler(provider='HuggingFaceTGI')
     async def decorated_function(*args, **kwargs):
-        raise HTTPError(message='error', response=_response, body=None)
+        raise HTTPError(404, _request)
 
     with pytest.raises(AIProviderAPIResourceNotFoundException):
         await decorated_function()
@@ -175,7 +175,7 @@ async def test_hugging_face_exception_handler_resource_not_found_error():
 async def test_hugging_face_exception_handler_timeout_error():
     @hugging_face_exception_handler(provider='HuggingFaceTGI')
     async def decorated_function(*args, **kwargs):
-        raise InferenceTimeoutError('sdfg')
+        raise InferenceTimeoutError('error timout 408')
 
     with pytest.raises(GenAIConnectionErrorException):
         await decorated_function()

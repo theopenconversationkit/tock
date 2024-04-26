@@ -43,23 +43,23 @@ def hugging_face_exception_handler(provider: str):
     def decorator(func):
         """A decorator of handler function"""
 
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             """Exception handling logic"""
 
             try:
-                return func(*args, **kwargs)
+                return await func(*args, **kwargs)
             except InferenceTimeoutError as exc:
                 logger.error(exc)
                 raise GenAIConnectionErrorException(
-                    create_error_info_hugging_face(exc, provider)
+                    create_error_info_hugging_face_timeout(exc, provider)
                 )
             except HTTPError as exc:
-                if exc.response.status_code == (403, 401):
+                if exc.errno == 403 or exc.errno == 401:
                     logger.error(exc)
                     raise GenAIAuthenticationException(
                         create_error_info_hugging_face(exc, provider)
                     )
-                elif exc.response.status_code == 404:
+                elif exc.errno == 404:
                     logger.error(exc)
                     raise AIProviderAPIResourceNotFoundException(
                         create_error_info_hugging_face(exc, provider)
@@ -81,11 +81,44 @@ def create_error_info_hugging_face(exc: HTTPError, provider: str) -> ErrorInfo:
         The ErrorInfo with the Hugging Face error parameters
     """
     if isinstance(exc, HTTPError):
+        if exc.request:
+            request = f'[{exc.request.method}] {exc.request.url}'
+        else:
+            request = 'no request register'
         return ErrorInfo(
             provider=provider,
-            error=exc.response.status_code,
-            cause=exc.__cause__,
-            request=f'[{exc.request.method}] {exc.request.url}',
+            error=str(exc.errno),
+            cause=str(exc.strerror),
+            request=request,
+        )
+    else:
+        return ErrorInfo(
+            provider=provider, error=exc.response.status_code, cause=str(exc)
+        )
+
+
+def create_error_info_hugging_face_timeout(
+    exc: InferenceTimeoutError, provider: str
+) -> ErrorInfo:
+    """
+    Create ErrorInfo for a Hugging Face Inference Timeout error
+
+    Args:
+        exc: the Hugging Face Inference Timeout error
+        provider: the AI provider type
+    Returns:
+        The ErrorInfo with the Hugging Face Inference Timeout error parameters
+    """
+    if isinstance(exc, InferenceTimeoutError):
+        if exc.request:
+            request = f'[{exc.request.method}] {exc.request.url}'
+        else:
+            request = 'no request register'
+        return ErrorInfo(
+            provider=provider,
+            error=str(exc.errno),
+            cause=str(exc.strerror),
+            request=request,
         )
     else:
         return ErrorInfo(
