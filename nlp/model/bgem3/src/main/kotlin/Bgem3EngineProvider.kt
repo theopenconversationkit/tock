@@ -32,12 +32,10 @@ class Bgem3EngineProvider : NlpEngineProvider {
 
     private val threadLocal = ThreadLocal<Bgem3IntentClassifier>()
 
-    private fun getBgem3Classifier(conf: Bgem3ModelConfiguration? = null, new: Boolean = false): Bgem3IntentClassifier =
+    private fun getBgem3Classifier(conf: Bgem3ModelConfiguration? = null, new: Boolean): Bgem3IntentClassifier =
         if (new) {
             threadLocal.remove()
-            Bgem3IntentClassifier(conf ?: error("no bgem3 configuration")).apply {
-                threadLocal.set(this)
-            }
+            Bgem3IntentClassifier(conf ?: error("no bgem3 configuration")).apply { threadLocal.set(this) }
         } else {
             threadLocal.get().also { threadLocal.remove() } ?: error("no bgem3 classifier found")
         }
@@ -51,9 +49,7 @@ class Bgem3EngineProvider : NlpEngineProvider {
     override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier =
         getBgem3Classifier(model.nativeModel as Bgem3ModelConfiguration, true)
 
-    override fun getEntityClassifier(model: EntityModelHolder): EntityClassifier {
-        TODO("Not yet implemented")
-    }
+    override fun getEntityClassifier(model: EntityModelHolder): EntityClassifier = Bgem3EntityClassifier(model)
 
     override fun getTokenizer(model: TokenizerModelHolder): Tokenizer = object : Tokenizer {
         // do not tokenize anything at this stage - bgem3 internals

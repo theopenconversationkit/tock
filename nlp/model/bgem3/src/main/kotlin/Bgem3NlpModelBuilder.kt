@@ -32,6 +32,7 @@ internal object Bgem3NlpModelBuilder : NlpEngineModelBuilder {
         expressions: List<SampleExpression>
     ): IntentModelHolder {
         TODO("Not yet implemented")
+        // This code is called by BuildModelWorker...
     }
 
     override fun buildEntityModel(

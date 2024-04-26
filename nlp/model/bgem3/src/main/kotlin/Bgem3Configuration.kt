@@ -24,4 +24,5 @@ data class Bgem3Configuration(
     val region: Region,
     val endpointName: String,
     val contentType: String,
-    val profileName: String)
+    val profileName: String
+)

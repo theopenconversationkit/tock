@@ -15,19 +15,42 @@
  */
 package ai.tock.nlp.bgem3
 
+import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedRequest
+import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
+import ai.tock.nlp.core.EntityType
+import ai.tock.nlp.core.EntityValue
 import ai.tock.nlp.model.EntityCallContext
 import ai.tock.nlp.model.service.engine.EntityModelHolder
 import ai.tock.nlp.model.service.engine.NlpEntityClassifier
+import software.amazon.awssdk.regions.Region
 
 internal class Bgem3EntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
+
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
         tokens: Array<String>
     ): List<EntityRecognition> {
-        TODO("Not yet implemented")
+        Bgem3ClientProvider.getClient(
+            Bgem3Configuration(
+                Region.EU_WEST_3,
+                "classifyEntities",
+                "application/json",
+                "sa-voyageurs-dev"
+            )
+        ).parseEntities(ParsedRequest(text)).run {
+            return entities.map { e ->
+                e.role
+                EntityRecognition(
+                    EntityValue(
+                        e.start,
+                        e.end,
+                        Entity(EntityType(e.entityType), e.entity)
+                    ),
+                    e.confidence
+                )
+            }
+        }
     }
-
-
 }
