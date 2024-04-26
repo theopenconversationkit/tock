@@ -15,10 +15,16 @@
  */
 
 import ai.tock.nlp.bgem3.Bgem3AwsClient
+import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedEntityResponse
 import ai.tock.nlp.bgem3.Bgem3Configuration
+import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.regions.Region
+import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /*
@@ -40,15 +46,50 @@ import kotlin.test.assertTrue
 class Bgem3AwsClientTest {
 
     @Test
-    fun test1() {
-        val config = Bgem3Configuration(Region.EU_WEST_3,"test","application/json","sa-voyageurs-dev")
+    fun testParseIntents() {
+        val config = Bgem3Configuration(Region.EU_WEST_3, "test", "application/json", "sa-voyageurs-dev")
         val client = Bgem3AwsClient(config)
-        val response = client.parse(Bgem3AwsClient.ParseRequest("{\n" +
-                "\"inputs\"\n" +
-                ":\n" +
-                "\"I like you so much\"\n" +
-                "}"))
-                assertEquals(response.intent?.label,"POSITIVE")
+        val response = client.parseIntent(Bgem3AwsClient.ParsedRequest("I like you so much"))
+        assertEquals(response.intent?.name, "POSITIVE")
         assertTrue { response.intent?.score!! > 0.99 }
     }
+
+    @Test
+    fun testParseEntities() {
+        val config = Bgem3Configuration(Region.EU_WEST_3, "test", "application/json", "sa-voyageurs-dev")
+        val client = Bgem3AwsClient(config)
+        val response = client.parseEntities(Bgem3AwsClient.ParsedRequest("Paris Marseille demain 15h"))
+        // TODO to complete
+        assertNotNull(response.entities)
+        assertEquals(response.entities[0].entity, "ORIGIN")
+        assertEquals(response.entities[1].entity, "DESTINATION")
+        assertEquals(response.entities[2].entity, "MOMENT")
+    }
+
+    @Test
+    fun testParsedIntentResponseDeserializeJson(){
+        val parsedIntent = Bgem3AwsClient.ParsedIntent("GREETINGS",0.98)
+        val parsedIntentResponse = Bgem3AwsClient.ParsedIntentResponse(parsedIntent)
+        val sdkBytes = SdkBytes.fromString(mapper.writeValueAsString(parsedIntentResponse),Charsets.UTF_8)
+        val builder = InvokeEndpointResponse.builder()
+        builder.body(sdkBytes)
+        builder.contentType("application/json")
+        val response = mapper.readValue<Bgem3AwsClient.ParsedIntentResponse>(builder.build().body().asInputStream())
+        assertEquals(response.intent?.name, "GREETINGS")
+        assertEquals(response.intent?.score, 0.98)
+    }
+
+    @Test
+    fun testParsedEntityResponseDeserializeJson(){
+        val parsedEntity = Bgem3AwsClient.ParsedEntity(0,5,"value","TRAIN","MODE_TRANSPORT",95.2,"role","extractor")
+        val parsedEntityResponse = ParsedEntityResponse(listOf(parsedEntity))
+        val sdkBytes = SdkBytes.fromString(mapper.writeValueAsString(parsedEntityResponse),Charsets.UTF_8)
+        val builder = InvokeEndpointResponse.builder()
+        builder.body(sdkBytes)
+        builder.contentType("application/json")
+        val response = mapper.readValue<ParsedEntityResponse>(builder.build().body().asInputStream())
+        println(response)
+    }
+
+
 }

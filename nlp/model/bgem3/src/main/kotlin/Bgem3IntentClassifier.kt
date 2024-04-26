@@ -15,7 +15,7 @@
  */
 package ai.tock.nlp.bgem3
 
-import ai.tock.nlp.bgem3.Bgem3AwsClient.ParseRequest
+import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedRequest
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.IntentClassification
 import ai.tock.nlp.model.IntentContext
@@ -25,7 +25,14 @@ import software.amazon.awssdk.regions.Region
 internal class Bgem3IntentClassifier(private val conf: Bgem3ModelConfiguration) : IntentClassifier {
 
     override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
-        return Bgem3ClientProvider.getClient(Bgem3Configuration(Region.EU_WEST_3,"test","application/json","sa-voyageurs-dev")).parse(ParseRequest(text))
+        return Bgem3ClientProvider.getClient(
+            Bgem3Configuration(
+                Region.EU_WEST_3,
+                "classifyIntent",
+                "application/json",
+                "sa-voyageurs-dev"
+            )
+        ).parseIntent(ParsedRequest(text))
             .run {
                 object : IntentClassification {
 
@@ -41,7 +48,8 @@ internal class Bgem3IntentClassifier(private val conf: Bgem3ModelConfiguration) 
                             if (proba != null) {
                                 probability = proba
                             }
-                            intent?.let { context.application.getIntent(it.unescapeBgem3Name()) } ?: Intent.UNKNOWN_INTENT
+                            intent?.let { context.application.getIntent(it.unescapeBgem3Name()) }
+                                ?: Intent.UNKNOWN_INTENT
                         }
                     }
                 }

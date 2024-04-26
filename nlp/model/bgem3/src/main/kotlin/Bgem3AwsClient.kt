@@ -15,6 +15,8 @@
  */
 package ai.tock.nlp.bgem3
 
+import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
@@ -23,51 +25,67 @@ import java.nio.charset.Charset
 
 class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
 
-    data class ParsedResponse(
-        val intent: ParsedIntent? = null,
-        val intent_ranking: List<ParsedIntent> = emptyList()
-    )
-
-    data class ParseRequest(
+    // for intentions and entities
+    data class ParsedRequest(
         val text: String
     )
 
+    data class ParsedIntentResponse(
+        val intent: ParsedIntent? = null,
+        // Pas utile dans un 1er temps
+        val intent_ranking: List<ParsedIntent> = emptyList()
+    )
+
     data class ParsedIntent(
-        val label: String?,
+        val name: String?,
         val score: Double?
     )
 
-    private val runtimeClient : SageMakerRuntimeClient = SageMakerRuntimeClient.builder()
+    data class ParsedEntityResponse(
+        val entities: List<ParsedEntity> = emptyList()
+    )
+
+    data class ParsedEntity(
+        val start: Int,
+        val end: Int,
+        val value: String,
+        val entity: String,
+        val entityType: String,
+        val confidence: Double,
+        val role: String? = null,
+        val extractor: String? = null
+    )
+
+    private val runtimeClient: SageMakerRuntimeClient = SageMakerRuntimeClient.builder()
         .region(configuration.region)
         .credentialsProvider(ProfileCredentialsProvider.create(configuration.profileName))
         .build()
 
-    fun parse(request: ParseRequest): ParsedResponse = invokeSageMakerEndpoint(request.text)
+    fun parseIntent(request: ParsedRequest): ParsedIntentResponse = invokeSageMakerIntentEndpoint(request.text)
 
-    private fun invokeSageMakerEndpoint(
+    fun parseEntities(request: ParsedRequest): ParsedEntityResponse = invokeSageMakerEntitiesEndpoint(request.text)
+
+    private fun invokeSageMakerEntitiesEndpoint(
         payload: String,
-    ): ParsedResponse {
+    ): ParsedEntityResponse {
         val endpointRequest = InvokeEndpointRequest.builder()
             .endpointName(configuration.endpointName)
             .contentType(configuration.contentType)
             .body(SdkBytes.fromString(payload, Charset.defaultCharset()))
             .build()
         val response = runtimeClient.invokeEndpoint(endpointRequest)
-        val jsonString = response.body().asString(Charset.defaultCharset())
-        val label = extractLabel(jsonString)
-        val score = extractScore(jsonString)
-        return ParsedResponse(ParsedIntent(label,score))
+        return mapper.readValue<ParsedEntityResponse>(response.body().asInputStream())
     }
 
-    private fun extractLabel(jsonString: String): String? {
-        val regex = "\"label\":\\s*\"([^\"]+)\"".toRegex()
-        val matchResult = regex.find(jsonString)
-        return matchResult?.groupValues?.get(1)
-    }
-
-    private fun extractScore(jsonString: String): Double? {
-        val regex = "\"score\":\\s*([\\d.]+)".toRegex()
-        val matchResult = regex.find(jsonString)
-        return matchResult?.groupValues?.get(1)?.toDoubleOrNull()
+    private fun invokeSageMakerIntentEndpoint(
+        payload: String,
+    ): ParsedIntentResponse {
+        val endpointRequest = InvokeEndpointRequest.builder()
+            .endpointName(configuration.endpointName)
+            .contentType(configuration.contentType)
+            .body(SdkBytes.fromString(payload, Charset.defaultCharset()))
+            .build()
+        val response = runtimeClient.invokeEndpoint(endpointRequest)
+        return mapper.readValue<ParsedIntentResponse>(response.body().asInputStream())
     }
 }
