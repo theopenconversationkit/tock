@@ -192,7 +192,7 @@ internal object ApplicationCodecService : ApplicationCodec {
             }
 
             val appName =
-                if (configuration.newApplicationName.isNullOrBlank()) dump.application.name else configuration.newApplicationName!!.trim()
+                if (configuration.newApplicationName.isNullOrBlank()) dump.application.name else configuration.newApplicationName!!.lowercase().trim()
             val app = config.getApplicationByNamespaceAndName(namespace, appName)
                 .let { app ->
                     if (app == null) {
