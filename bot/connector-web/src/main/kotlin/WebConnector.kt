@@ -26,7 +26,6 @@ import ai.tock.bot.connector.media.MediaAction
 import ai.tock.bot.connector.media.MediaCard
 import ai.tock.bot.connector.media.MediaCarousel
 import ai.tock.bot.connector.media.MediaMessage
-import ai.tock.bot.connector.web.channel.ChannelMongoDAO
 import ai.tock.bot.connector.web.channel.Channels
 import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
@@ -57,6 +56,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
 import ai.tock.shared.longProperty
+import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.shared.provide
 import ai.tock.shared.vertx.vertx
@@ -83,10 +83,12 @@ private const val TOCK_USER_ID = "tock_user_id"
  */
 val webConnectorType = ConnectorType(WEB_CONNECTOR_ID)
 
+private val corsPattern = property("tock_web_cors_pattern", ".*")
 private val sseEnabled = booleanProperty("tock_web_sse", false)
 private val sseKeepaliveDelay = longProperty("tock_web_sse_keepalive_delay", 10)
 private val cookieAuth = booleanProperty("tock_web_cookie_auth", false)
 private val cookieAuthMaxAge = longProperty("tock_web_cookie_auth_max_age", -1)
+private val cookieAuthPath = propertyOrNull("tock_web_cookie_auth_path")
 
 private val webConnectorBridgeEnabled = booleanProperty("tock_web_connector_bridge_enabled", false)
 
@@ -125,7 +127,7 @@ class WebConnector internal constructor(
             router.route(path)
                 .handler(
                     CorsHandler.create()
-                        .addRelativeOrigin(".*") // "*"+credentials is rejected by browsers, so we use the equivalent regex instead
+                        .addRelativeOrigin(corsPattern)
                         .allowedMethod(HttpMethod.POST)
                         .run {
                             if (sseEnabled) allowedMethod(HttpMethod.GET) else this
@@ -215,6 +217,10 @@ class WebConnector internal constructor(
 
             if (cookieAuthMaxAge >= 0) {
                 cookie.setMaxAge(cookieAuthMaxAge)
+            }
+
+            if (cookieAuthPath != null) {
+                cookie.setPath(cookieAuthPath)
             }
 
             context.response().addCookie(cookie)
