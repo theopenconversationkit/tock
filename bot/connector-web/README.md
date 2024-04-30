@@ -129,6 +129,11 @@ response:
 
 A simple [Swagger descriptor](./Swagger_TOCKWebConnector.yaml) of the rest service is provided¬.
 
+### CORS Configuration
+
+By default, the web connector accepts requests from any origin. If a stricter CORS configuration is required, the
+`tock_web_cors_pattern` property can be set to any Regex pattern, against which origin hosts get matched.
+
 ## Additional features
 
 Several features can be optionally used with the Web Connector. Some require specific properties to be set, either
@@ -214,6 +219,11 @@ makes it so the server stores users' identifiers in a secure, HTTP-only cookie, 
 Additionally, setting the `tock_web_cookie_auth_max_age` property to any positive number will configure
 the cookie's `Max-Age` property to the specified number of seconds. If left to the default or set to a negative value,
 the cookie will not have a `Max-Age` and will expire at the end of the user's browsing session.
+
+The cookie does not have a [Path](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#path_attribute) set by default,
+which potentially allows per-connector user identifiers if the connector paths are sufficiently distinct.
+If sharing the cookie between connectors is the preferred behavior, the `tock_web_cookie_auth_path` property can be used
+to set a fixed `Path` shared by all web connectors.
 
 ### Markdown processing
 
