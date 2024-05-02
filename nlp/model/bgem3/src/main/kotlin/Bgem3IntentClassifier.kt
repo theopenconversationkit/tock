@@ -28,7 +28,7 @@ internal class Bgem3IntentClassifier(private val conf: Bgem3ModelConfiguration) 
         return Bgem3ClientProvider.getClient(
             Bgem3Configuration(
                 Region.EU_WEST_3,
-                "classifyIntent",
+                "bge-m3-model-intent--v0",
                 "application/json",
                 "sa-voyageurs-dev"
             )

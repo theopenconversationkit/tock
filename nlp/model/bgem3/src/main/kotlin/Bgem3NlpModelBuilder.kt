@@ -31,8 +31,11 @@ internal object Bgem3NlpModelBuilder : NlpEngineModelBuilder {
         configuration: NlpApplicationConfiguration,
         expressions: List<SampleExpression>
     ): IntentModelHolder {
-        TODO("Not yet implemented")
-        // This code is called by BuildModelWorker...
+        return IntentModelHolder(
+            application = context.application,
+            nativeModel = Bgem3ModelConfiguration("evoyageurs:bgem3-fr-bgem3"),
+            configuration = configuration
+        )
     }
 
     override fun buildEntityModel(
