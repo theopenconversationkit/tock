@@ -35,7 +35,7 @@ internal class Bgem3EntityClassifier(model: EntityModelHolder) : NlpEntityClassi
         Bgem3ClientProvider.getClient(
             Bgem3Configuration(
                 Region.EU_WEST_3,
-                "classifyEntities",
+                "bge-m3-model-entities",
                 "application/json",
                 "sa-voyageurs-dev"
             )
@@ -46,7 +46,8 @@ internal class Bgem3EntityClassifier(model: EntityModelHolder) : NlpEntityClassi
                     EntityValue(
                         e.start,
                         e.end,
-                        Entity(EntityType(e.entityType), e.entity)
+                        // entity is entityType in fact -- do not modify for the moment
+                        Entity(EntityType(e.entity),e.role.toString())
                     ),
                     e.confidence
                 )

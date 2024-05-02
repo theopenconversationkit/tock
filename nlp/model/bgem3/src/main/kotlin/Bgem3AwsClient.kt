@@ -32,7 +32,6 @@ class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
 
     data class ParsedIntentResponse(
         val intent: ParsedIntent? = null,
-        // Pas utile dans un 1er temps
         val intent_ranking: List<ParsedIntent> = emptyList()
     )
 
@@ -41,7 +40,7 @@ class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
         val score: Double?
     )
 
-    data class ParsedEntityResponse(
+    data class ParsedEntitiesResponse(
         val entities: List<ParsedEntity> = emptyList()
     )
 
@@ -50,10 +49,8 @@ class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
         val end: Int,
         val value: String,
         val entity: String,
-        val entityType: String,
         val confidence: Double,
         val role: String? = null,
-        val extractor: String? = null
     )
 
     private val runtimeClient: SageMakerRuntimeClient = SageMakerRuntimeClient.builder()
@@ -61,20 +58,21 @@ class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
         .credentialsProvider(ProfileCredentialsProvider.create(configuration.profileName))
         .build()
 
-    fun parseIntent(request: ParsedRequest): ParsedIntentResponse = invokeSageMakerIntentEndpoint(request.text)
+    fun parseIntent(request: ParsedRequest) = invokeSageMakerIntentEndpoint(request.text)
 
-    fun parseEntities(request: ParsedRequest): ParsedEntityResponse = invokeSageMakerEntitiesEndpoint(request.text)
+    fun parseEntities(request: ParsedRequest): ParsedEntitiesResponse = invokeSageMakerEntitiesEndpoint(request.text)
 
     private fun invokeSageMakerEntitiesEndpoint(
         payload: String,
-    ): ParsedEntityResponse {
+    ): ParsedEntitiesResponse {
         val endpointRequest = InvokeEndpointRequest.builder()
             .endpointName(configuration.endpointName)
             .contentType(configuration.contentType)
-            .body(SdkBytes.fromString(payload, Charset.defaultCharset()))
+            .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
             .build()
         val response = runtimeClient.invokeEndpoint(endpointRequest)
-        return mapper.readValue<ParsedEntityResponse>(response.body().asInputStream())
+        val entities = mapper.readValue<List<ParsedEntity>>(response.body().asInputStream())
+        return ParsedEntitiesResponse(entities)
     }
 
     private fun invokeSageMakerIntentEndpoint(
@@ -83,7 +81,7 @@ class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
         val endpointRequest = InvokeEndpointRequest.builder()
             .endpointName(configuration.endpointName)
             .contentType(configuration.contentType)
-            .body(SdkBytes.fromString(payload, Charset.defaultCharset()))
+            .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
             .build()
         val response = runtimeClient.invokeEndpoint(endpointRequest)
         return mapper.readValue<ParsedIntentResponse>(response.body().asInputStream())
