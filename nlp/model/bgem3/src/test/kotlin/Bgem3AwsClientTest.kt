@@ -16,7 +16,7 @@
 
 import ai.tock.nlp.bgem3.Bgem3AwsClient
 import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedEntitiesResponse
-import ai.tock.nlp.bgem3.Bgem3Configuration
+import ai.tock.nlp.bgem3.Bgem3AwsClientProperties
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import software.amazon.awssdk.core.SdkBytes
@@ -46,7 +46,7 @@ class Bgem3AwsClientTest {
 
     @Test
     fun testParseIntents() {
-        val config = Bgem3Configuration(Region.EU_WEST_3, "bge-m3-model-intent--v0", "application/json", "sa-voyageurs-dev")
+        val config = Bgem3AwsClientProperties(Region.EU_WEST_3, "bge-m3-model-intent--v0", "application/json", "sa-voyageurs-dev")
         val client = Bgem3AwsClient(config)
         val response = client.parseIntent(Bgem3AwsClient.ParsedRequest("je veux un TGV Paris Marseille demain à 18h"))
         assertEquals(response.intent?.name, "evoyageurs:search_by_od")
@@ -55,7 +55,7 @@ class Bgem3AwsClientTest {
 
     @Test
     fun testParseEntities() {
-        val config = Bgem3Configuration(Region.EU_WEST_3, "bge-m3-model-entities", "application/json", "sa-voyageurs-dev")
+        val config = Bgem3AwsClientProperties(Region.EU_WEST_3, "bge-m3-model-entities", "application/json", "sa-voyageurs-dev")
         val client = Bgem3AwsClient(config)
         val response = client.parseEntities(Bgem3AwsClient.ParsedRequest("Est-ce que mon TGV 8536 de Cannes à Montpellier a du retard ?"))
         println(response)

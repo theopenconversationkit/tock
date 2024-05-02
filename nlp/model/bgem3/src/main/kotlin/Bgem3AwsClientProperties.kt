@@ -20,7 +20,7 @@ import software.amazon.awssdk.regions.Region
 
 internal fun String.unescapeBgem3Name(): String = replace("___", ":")
 
-data class Bgem3Configuration(
+data class Bgem3AwsClientProperties(
     val region: Region,
     val endpointName: String,
     val contentType: String,
