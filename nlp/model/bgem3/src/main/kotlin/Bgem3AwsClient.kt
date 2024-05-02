@@ -23,7 +23,7 @@ import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest
 import java.nio.charset.Charset
 
-class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
+class Bgem3AwsClient(private val configuration: Bgem3AwsClientProperties) {
 
     // for intentions and entities
     data class ParsedRequest(
@@ -62,6 +62,18 @@ class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
 
     fun parseEntities(request: ParsedRequest): ParsedEntitiesResponse = invokeSageMakerEntitiesEndpoint(request.text)
 
+    private fun invokeSageMakerIntentEndpoint(
+        payload: String,
+    ): ParsedIntentResponse {
+        val endpointRequest = InvokeEndpointRequest.builder()
+            .endpointName(configuration.endpointName)
+            .contentType(configuration.contentType)
+            .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
+            .build()
+        val response = runtimeClient.invokeEndpoint(endpointRequest)
+        return mapper.readValue<ParsedIntentResponse>(response.body().asInputStream())
+    }
+
     private fun invokeSageMakerEntitiesEndpoint(
         payload: String,
     ): ParsedEntitiesResponse {
@@ -73,17 +85,5 @@ class Bgem3AwsClient(private val configuration: Bgem3Configuration) {
         val response = runtimeClient.invokeEndpoint(endpointRequest)
         val entities = mapper.readValue<List<ParsedEntity>>(response.body().asInputStream())
         return ParsedEntitiesResponse(entities)
-    }
-
-    private fun invokeSageMakerIntentEndpoint(
-        payload: String,
-    ): ParsedIntentResponse {
-        val endpointRequest = InvokeEndpointRequest.builder()
-            .endpointName(configuration.endpointName)
-            .contentType(configuration.contentType)
-            .body(SdkBytes.fromString("{\"inputs\":\"$payload\"}", Charset.defaultCharset()))
-            .build()
-        val response = runtimeClient.invokeEndpoint(endpointRequest)
-        return mapper.readValue<ParsedIntentResponse>(response.body().asInputStream())
     }
 }

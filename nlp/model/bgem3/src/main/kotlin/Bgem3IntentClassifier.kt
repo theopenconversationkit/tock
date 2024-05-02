@@ -20,17 +20,18 @@ import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.IntentClassification
 import ai.tock.nlp.model.IntentContext
 import ai.tock.nlp.model.service.engine.IntentClassifier
+import ai.tock.shared.property
 import software.amazon.awssdk.regions.Region
 
 internal class Bgem3IntentClassifier(private val conf: Bgem3ModelConfiguration) : IntentClassifier {
 
     override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
         return Bgem3ClientProvider.getClient(
-            Bgem3Configuration(
-                Region.EU_WEST_3,
-                "bge-m3-model-intent--v0",
-                "application/json",
-                "sa-voyageurs-dev"
+            Bgem3AwsClientProperties(
+                Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
+                property("tock_sagemaker_aws_intent_endpoint_name", "bge-m3-model-intent--v0"),
+                property("tock_sagemaker_aws_content_type", "application/json"),
+                property("tock_sagemaker_aws_profile_name", "sa-voyageurs-dev"),
             )
         ).parseIntent(ParsedRequest(text))
             .run {

@@ -18,8 +18,8 @@ package ai.tock.nlp.bgem3
 import java.util.concurrent.ConcurrentHashMap
 
 internal object Bgem3ClientProvider {
-    private val clientMap = ConcurrentHashMap<Bgem3Configuration, Bgem3AwsClient>()
+    private val clientMap = ConcurrentHashMap<Bgem3AwsClientProperties, Bgem3AwsClient>()
 
-    fun getClient(conf: Bgem3Configuration): Bgem3AwsClient =
+    fun getClient(conf: Bgem3AwsClientProperties): Bgem3AwsClient =
         clientMap.getOrPut(conf) { Bgem3AwsClient(conf) }
 }
