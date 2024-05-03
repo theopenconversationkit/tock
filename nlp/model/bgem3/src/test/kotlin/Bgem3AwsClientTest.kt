@@ -19,6 +19,7 @@ import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedEntitiesResponse
 import ai.tock.nlp.bgem3.Bgem3AwsClientProperties
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.junit.jupiter.api.Disabled
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointResponse
@@ -45,6 +46,7 @@ import kotlin.test.assertTrue
 class Bgem3AwsClientTest {
 
     @Test
+    @Disabled  // Test is disabled because it calls a sagemaker endpoint on aws that can be expensive. So be careful if you want to really execute it
     fun testParseIntents() {
         val config = Bgem3AwsClientProperties(Region.EU_WEST_3, "bge-m3-model-intent--v0", "application/json", "sa-voyageurs-dev")
         val client = Bgem3AwsClient(config)
@@ -54,6 +56,7 @@ class Bgem3AwsClientTest {
     }
 
     @Test
+    @Disabled // Test is disabled because it calls a sagemaker endpoint on aws that can be expensive. So be careful if you want to really execute it
     fun testParseEntities() {
         val config = Bgem3AwsClientProperties(Region.EU_WEST_3, "bge-m3-model-entities", "application/json", "sa-voyageurs-dev")
         val client = Bgem3AwsClient(config)
