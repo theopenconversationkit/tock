@@ -17,7 +17,6 @@ package ai.tock.nlp.bgem3
 
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider
 import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest
@@ -55,7 +54,6 @@ class Bgem3AwsClient(private val configuration: Bgem3AwsClientProperties) {
 
     private val runtimeClient: SageMakerRuntimeClient = SageMakerRuntimeClient.builder()
         .region(configuration.region)
-        .credentialsProvider(ProfileCredentialsProvider.create(configuration.profileName))
         .build()
 
     fun parseIntent(request: ParsedRequest) = invokeSageMakerIntentEndpoint(request.text)
