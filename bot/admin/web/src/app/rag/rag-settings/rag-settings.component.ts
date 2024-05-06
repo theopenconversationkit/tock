@@ -2,7 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil } from 'rxjs';
 import { BotService } from '../../bot/bot-service';
-import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../bot/model/story';
+import { StoryDefinitionConfiguration, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { DefaultPrompt, EnginesConfigurations } from './models/engines-configurations';
@@ -43,9 +43,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   defaultPrompt = DefaultPrompt;
 
-  availableStories: StoryDefinitionConfigurationSummary[];
+  availableStories: StoryDefinitionConfiguration[];
 
-  filteredStories$: Observable<StoryDefinitionConfigurationSummary[]>;
+  filteredStories$: Observable<StoryDefinitionConfiguration[]>;
 
   settingsBackup: RagSettings;
 
@@ -150,6 +150,15 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return currentStory?.name || '';
   }
 
+  isStoryEnabled(story) {
+    for (let i = 0; i < story.features.length; i++) {
+      if (!story.features[i].enabled && !story.features[i].switchToStoryId && !story.features[i].endWithStoryId) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   storySelectedChange(storyId: string): void {
     this.noAnswerStoryId.patchValue(storyId);
     this.form.markAsDirty();
@@ -167,7 +176,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   filterStoriesList(e: string): void {
-    this.filteredStories$ = of(this.availableStories.filter((optionValue) => optionValue.name.toLowerCase().includes(e)));
+    this.filteredStories$ = of(this.availableStories.filter((optionValue) => optionValue.name.toLowerCase().includes(e.toLowerCase())));
   }
 
   storyInputFocus(): void {
@@ -175,10 +184,13 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   storyInputBlur(e: InputEvent): void {
-    const target: HTMLInputElement = e.target as HTMLInputElement;
-    target.value = this.getCurrentStoryLabel;
+    setTimeout(() => {
+      // timeout needed to avoid reseting input and filtered stories when clicking on autocomplete suggestions (which fires blur event)
+      const target: HTMLInputElement = e.target as HTMLInputElement;
+      target.value = this.getCurrentStoryLabel;
 
-    this.filteredStories$ = of(this.availableStories);
+      this.filteredStories$ = of(this.availableStories);
+    }, 100);
   }
 
   initFormSettings(group: 'llmSetting' | 'emSetting', provider: LLMProvider): void {
@@ -235,9 +247,9 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     return EnginesConfigurations['emSetting'].find((e) => e.key === this.emEngine.value);
   }
 
-  private getStoriesLoader(): Observable<StoryDefinitionConfigurationSummary[]> {
+  private getStoriesLoader(): Observable<StoryDefinitionConfiguration[]> {
     return this.botService
-      .searchStories(
+      .getStories(
         new StorySearchQuery(
           this.state.currentApplication.namespace,
           this.state.currentApplication.name,
