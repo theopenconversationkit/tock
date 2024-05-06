@@ -42,10 +42,11 @@ class HuggingFaceTGILLMFactory(LangChainLLMFactory):
 
     def get_language_model(self) -> BaseLanguageModel:
         return HuggingFaceEndpoint(
-            endpoint_url=self.settings.api_base,
-            temperature=self.settings.temperature,
-            repetition_penalty=self.settings.repetition_penalty,
-            max_new_tokens=self.settings.max_new_tokens,
+            endpoint_url=self.setting.api_base,
+            temperature=self.setting.temperature,
+            repetition_penalty=self.setting.repetition_penalty,
+            max_new_tokens=self.setting.max_new_tokens,
+            huggingfacehub_api_token=self.setting.api_key.value,
         )
 
     @hugging_face_exception_handler(provider='HuggingFaceTGI')
