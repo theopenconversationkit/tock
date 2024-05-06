@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotService } from '../../bot-service';
 import { StateService } from '../../../core-nlp/state.service';
 import { RuleType, StoryFeature, StorySearchQuery } from '../../model/story';
@@ -27,7 +27,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './story-rule.component.html',
   styleUrls: ['./story-rule.component.css']
 })
-export class StoryRuleComponent implements OnInit {
+export class StoryRuleComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   loading: boolean = false;

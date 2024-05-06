@@ -244,8 +244,9 @@
         <nb-option
           *ngFor="let option of filteredStories$ | async"
           [value]="option.storyId"
+          [disabled]="!isStoryEnabled(option)"
         >
-          {{ option.name }}
+          {{ option.name }} <span *ngIf="!isStoryEnabled(option)"> &nbsp;(disabled)</span>
         </nb-option>
       </nb-autocomplete>
     </nb-card-body>
