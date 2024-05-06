@@ -33,7 +33,7 @@ internal object Bgem3NlpModelBuilder : NlpEngineModelBuilder {
     ): IntentModelHolder {
         return IntentModelHolder(
             application = context.application,
-            nativeModel = Bgem3ModelConfiguration("evoyageurs:bgem3-fr-bgem3"),
+            nativeModel = Bgem3ModelConfiguration(),
             configuration = configuration
         )
     }

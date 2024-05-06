@@ -28,8 +28,7 @@ internal object Bgem3NlpModelIo : NlpEngineModelIo {
     }
 
     override fun loadIntentModel(input: NlpModelStream): Any {
-        // TODO parameterize the model name
-        return Bgem3ModelConfiguration("evoyageurs:bgem3-fr-bgem3")
+        return Bgem3ModelConfiguration()
     }
 
     override fun loadEntityModel(input: NlpModelStream): Any =

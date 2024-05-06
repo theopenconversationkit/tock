@@ -17,5 +17,5 @@
 package ai.tock.nlp.bgem3
 
 internal data class Bgem3ModelConfiguration(
-    val modelFileName: String
+    val modelFileName: String = "evoyageurs:bgem3-fr-bgem3"
 )
