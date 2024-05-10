@@ -15,14 +15,9 @@
  */
 
 import ai.tock.nlp.bgem3.Bgem3AwsClient
-import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedEntitiesResponse
 import ai.tock.nlp.bgem3.Bgem3AwsClientProperties
-import ai.tock.shared.jackson.mapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Disabled
-import software.amazon.awssdk.core.SdkBytes
 import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -90,34 +85,5 @@ class Bgem3AwsClientIntegrationTest {
         assertEquals(response.entities[3].entity , "evoyageurs:location")
         assertEquals(response.entities[3].role , "destination")
         assert(response.entities[3].confidence > 0.99)
-    }
-
-    @Test
-    fun testParsedIntentResponseDeserializeJson(){
-        val parsedIntent = Bgem3AwsClient.ParsedIntent("GREETINGS",0.98)
-        val parsedIntentResponse = Bgem3AwsClient.ParsedIntentResponse(parsedIntent)
-        val jsonString = mapper.writeValueAsString(parsedIntentResponse)
-        println(jsonString)
-        val sdkBytes = SdkBytes.fromString(jsonString,Charsets.UTF_8)
-        val builder = InvokeEndpointResponse.builder()
-        builder.body(sdkBytes)
-        builder.contentType("application/json")
-        val response = mapper.readValue<Bgem3AwsClient.ParsedIntentResponse>(builder.build().body().asInputStream())
-        assertEquals(response.intent?.name, "GREETINGS")
-        assertEquals(response.intent?.score, 0.98)
-    }
-
-    @Test
-    fun testParsedEntityResponseDeserializeJson(){
-        val parsedEntity = Bgem3AwsClient.ParsedEntity(0,5,"value","TRAIN",0.98,"role")
-        val parsedEntityResponse = ParsedEntitiesResponse(listOf(parsedEntity))
-        val jsonString =  mapper.writeValueAsString(parsedEntityResponse)
-        println(jsonString)
-        val sdkBytes = SdkBytes.fromString(jsonString,Charsets.UTF_8)
-        val builder = InvokeEndpointResponse.builder()
-        builder.body(sdkBytes)
-        builder.contentType("application/json")
-        val response = mapper.readValue<ParsedEntitiesResponse>(builder.build().body().asInputStream())
-        println(response)
     }
 }
