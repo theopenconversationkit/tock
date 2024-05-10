@@ -30,7 +30,7 @@
     <description>Bgem3 client for Tock NLP Model</description>
 
     <properties>
-        <aws.version>2.20.26</aws.version>
+        <aws.version>2.25.45</aws.version>
     </properties>
 
     <dependencies>
