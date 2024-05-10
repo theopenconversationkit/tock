@@ -10,13 +10,9 @@ Intent and entities models are independent, unlike the older models
 
 To see sagemaker endpoints : 
 - connect to aws
-- choose the good aws profile (ex : sa-voyageurs-dev)
-- open sagemaker studio https://studio-d-fgw0kprare3q.studio.eu-west-3.sagemaker.aws/
+- choose the good aws profile
+- open sagemaker studio
 - open deployments/Endpoints. Normally, the 2 endpoints appear
 
 Check the status of the endpoints (normally in service). If not, contact the data scientists
-Then, you will be able to test the endpoints locally (see Bgem3AwsClientTest)
-
-
-
-
+Then, you will be able to test the endpoints locally (see Bgem3AwsClientIntegrationTest)
