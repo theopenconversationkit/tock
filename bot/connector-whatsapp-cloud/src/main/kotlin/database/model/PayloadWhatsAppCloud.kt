@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.webhook.message.content
+package ai.tock.bot.connector.whatsapp.cloud.database.model
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import org.bson.codecs.pojo.annotations.BsonId
+import java.util.*
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class InteractiveContent(
-    val type: String?,
-    @JsonProperty("button_reply") val buttonReply: ButtonReply?,
-    @JsonProperty("list_reply") val listReply: ListReply?
-)
-
-data class ButtonReply(
+data class PayloadWhatsAppCloud(
+    @BsonId
     val id: String,
-    val title: String
-)
-
-data class ListReply(
-    val id: String,
-    val title: String,
-    val description: String?
+    val payload: String,
+    val payloadExpireDate: Date,
 )

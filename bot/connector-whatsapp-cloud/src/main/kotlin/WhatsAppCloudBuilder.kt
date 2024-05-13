@@ -33,6 +33,7 @@ import ai.tock.bot.engine.Bus
 import ai.tock.bot.engine.I18nTranslator
 import ai.tock.bot.engine.action.SendChoice
 import mu.KotlinLogging
+import java.util.*
 
 private val logger = KotlinLogging.logger {}
 
@@ -404,7 +405,7 @@ fun headerTemplate(
 
 private fun String.checkLength(maxLength: Int) : String {
     if (maxLength > 0 && this.length > maxLength) {
-        error("text $this should not exceed $maxLength chars.")
+        logger.info { "text $this should not exceed $maxLength chars." }
     }
     return this
 }
