@@ -70,6 +70,10 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
     });
   }
 
+  indicatorIsNotPredefined(indicator) {
+    return typeof indicator.botId === 'undefined' || indicator.botId.trim().length > 0;
+  }
+
   search(): void {
     this.loading.list = true;
     const url = `/bot/${this.stateService.currentApplication.name}/indicators`;

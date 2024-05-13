@@ -49,6 +49,7 @@
       *ngFor="let metric of processedStoriesMetrics"
       class="stats-line d-flex justify-content-between gap-2 py-2"
       [ngClass]="{
+        'text-success': metric.ragStory,
         'text-warning': metric.unknownStory,
         'text-danger': metric.deletedStories,
         'font-italic': metric.deletedStories || metric.unknownStory

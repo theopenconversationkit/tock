@@ -80,7 +80,10 @@
               <li *ngFor="let value of indicator.values">{{ value.label }}</li>
             </ul>
 
-            <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div
+              *ngIf="indicatorIsNotPredefined(indicator)"
+              class="d-flex flex-wrap align-items-center justify-content-between"
+            >
               <button
                 nbButton
                 ghost

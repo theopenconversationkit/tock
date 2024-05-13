@@ -15,7 +15,7 @@ import { heuristicValueColorDetection } from '../commons/utils';
 import { IndicatorDefinition, IndicatorValueDefinition, MetricResult, StorySummary } from '../models';
 import { MetricsByStoriesComponent } from './metrics-by-stories/metrics-by-stories.component';
 import { StoriesHitsComponent } from './stories-hits/stories-hits.component';
-import {toISOStringWithoutOffset} from "../../shared/utils";
+import { toISOStringWithoutOffset } from '../../shared/utils';
 
 export enum TimeRanges {
   day = 1,
@@ -33,6 +33,7 @@ enum StoriesFilterType {
 export type StoriesFilter = { type: StoriesFilterType; value: string | AnswerConfigurationType };
 
 export const unknownIntentName = 'unknown';
+export const ragStoryId = 'tock_rag_story';
 
 @Component({
   selector: 'tock-metrics-board',
@@ -196,10 +197,11 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
   private initStoriesHitsChart(): void {
     const filteredMetrics = [];
     let deletedStoriesHits = 0;
+
     this.storiesMetrics.forEach((metric) => {
       const story = this.getStorySummaryById(metric.row.trackedStoryId);
 
-      // the story may have been deleted but still appear in the recorded hits
+      // the story may be the Rag story or may have been deleted but still appear in the recorded hits
       if (story) {
         if (!story.metricStory || this.selectedStoriesFilters.find((filter) => filter.type === StoriesFilterType.metricsStories)) {
           if (
@@ -218,7 +220,15 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
           }
         }
       } else {
-        deletedStoriesHits += metric.count;
+        if (metric.row.trackedStoryId === ragStoryId) {
+          filteredMetrics.push({
+            value: metric.count,
+            name: 'RAG',
+            color: '#00d68f'
+          });
+        } else {
+          deletedStoriesHits += metric.count;
+        }
       }
     });
 
@@ -331,6 +341,7 @@ export class MetricsBoardComponent implements OnInit, OnDestroy {
         let indicatorValue = this.getIndicatorValueByName(imr.row.indicatorName, imr.row.indicatorValueName);
         if (indicatorValue) {
           const valueLabel = this.getIndicatorValueLabelByName(imr.row.indicatorName, imr.row.indicatorValueName);
+
           entries.push({
             value: imr.count,
             name: valueLabel,
