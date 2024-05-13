@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { MetricResult, StorySummary } from '../../models';
-import { unknownIntentName } from '../metrics-board.component';
+import { ragStoryId, unknownIntentName } from '../metrics-board.component';
 
 enum SortingCriteria {
   name,
@@ -23,7 +23,7 @@ export class StoriesHitsComponent implements OnInit {
     this.processMetrics();
   }
 
-  processedStoriesMetrics: { name: string; count: number; unknownStory?: boolean; deletedStories?: boolean }[];
+  processedStoriesMetrics: { name: string; count: number; unknownStory?: boolean; deletedStories?: boolean; ragStory?: boolean }[];
 
   private processMetrics(): void {
     this.processedStoriesMetrics = [];
@@ -40,8 +40,16 @@ export class StoriesHitsComponent implements OnInit {
           unknownStory: story.intent.name === unknownIntentName
         });
       } else {
-        deletedStoriesNumber++;
-        deletedStoriesCount += metric.count;
+        if (metric.row.trackedStoryId === ragStoryId) {
+          this.processedStoriesMetrics.push({
+            name: 'RAG',
+            count: metric.count,
+            ragStory: true
+          });
+        } else {
+          deletedStoriesNumber++;
+          deletedStoriesCount += metric.count;
+        }
       }
     });
 
