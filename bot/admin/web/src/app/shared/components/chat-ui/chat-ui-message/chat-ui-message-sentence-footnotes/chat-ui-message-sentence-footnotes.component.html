@@ -27,7 +27,13 @@
       {{ footNote.title }}
     </span>
     <span
-      *ngIf="!last"
+      *ngIf="footNote.content"
+      class="d-block"
+    >
+      {{ footNote.content }}
+    </span>
+    <span
+      *ngIf="!footNote.content && !last"
       class="mx-1"
       >|</span
     >
