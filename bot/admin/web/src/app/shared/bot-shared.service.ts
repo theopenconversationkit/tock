@@ -24,7 +24,7 @@ import { NlpCallStats } from './model/dialog-data';
 import { AdminConfiguration } from './model/conf';
 
 export interface TockSimpleSessionStorage {
-  test: { debug: boolean };
+  test: { debug: boolean; sourceWithContent?: boolean };
 }
 
 @Injectable({
@@ -46,9 +46,8 @@ export class BotSharedService {
     }
   }
 
-
-  getIntentsByApplication(applicationId : string): Observable<string[]> {
-      return this.rest.get(`/dialogs/intents/`+applicationId, (i) => i);
+  getIntentsByApplication(applicationId: string): Observable<string[]> {
+    return this.rest.get(`/dialogs/intents/` + applicationId, (i) => i);
   }
 
   findConnectorConfiguration(connectorType: ConnectorType): ConnectorTypeConfiguration {

@@ -66,10 +66,23 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   set debug(value: boolean) {
     this._debug = value;
-    this.shared.session_storage = { ...this.shared.session_storage, ...{ test: { debug: value } } };
+    this.shared.session_storage = { ...this.shared.session_storage, ...{ test: { ...this.shared.session_storage?.test, debug: value } } };
   }
   get debug() {
     return this._debug;
+  }
+
+  _sourceWithContent: boolean = false;
+
+  set sourceWithContent(value: boolean) {
+    this._sourceWithContent = value;
+    this.shared.session_storage = {
+      ...this.shared.session_storage,
+      ...{ test: { ...this.shared.session_storage?.test, sourceWithContent: value } }
+    };
+  }
+  get sourceWithContent() {
+    return this._sourceWithContent;
   }
 
   @ViewChild('chatUi') private chatUi: ChatUiComponent;
@@ -92,6 +105,10 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
     if (this.shared.session_storage?.test?.debug) {
       this._debug = this.shared.session_storage.test.debug;
+    }
+
+    if (this.shared.session_storage?.test?.sourceWithContent) {
+      this._sourceWithContent = this.shared.session_storage.test.sourceWithContent;
     }
   }
 
@@ -146,7 +163,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
           this.state.currentLocale,
           this.userModifierId
         ),
-        this.debug
+        this.debug,
+        this.sourceWithContent
       )
       .subscribe((r) => {
         this.loading = false;
