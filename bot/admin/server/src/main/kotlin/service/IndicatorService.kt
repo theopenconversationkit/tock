@@ -20,6 +20,7 @@ import ai.tock.bot.admin.indicators.Indicator
 import ai.tock.bot.admin.indicators.IndicatorDAO
 import ai.tock.bot.admin.indicators.IndicatorError
 import ai.tock.bot.admin.indicators.IndicatorValue
+import ai.tock.bot.admin.indicators.PredefinedIndicators
 import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.model.indicator.IndicatorResponse
 import ai.tock.bot.admin.model.indicator.SaveIndicatorRequest
@@ -40,7 +41,7 @@ object IndicatorService {
      * @throws [IndicatorError.IndicatorAlreadyExists]
      */
     fun save(botId: String, request: Valid<SaveIndicatorRequest>) = request.data.let {
-        if (dao.existByNameAndBotId(it.name, botId)) {
+        if (!PredefinedIndicators.has(it.name) && dao.existByNameAndBotId(it.name, botId)) {
             throw IndicatorError.IndicatorAlreadyExists(it.name, it.label, botId)
         }
         dao.save(toIndicator(botId, it))
