@@ -16,27 +16,50 @@
 
 package engine.config
 
+import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.config.ProactiveConversationStatus
-import ai.tock.bot.engine.config.ProactiveConversationStatus.LUNCHED
-import ai.tock.bot.engine.config.ProactiveConversationStatus.STARTED
-import ai.tock.bot.engine.config.ProactiveConversationStatus.CLOSED
+import ai.tock.bot.engine.config.ProactiveConversationStatus.*
+import ai.tock.bot.engine.user.UserTimelineDAO
 import ai.tock.shared.Executor
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
+import mu.KotlinLogging
 
 private const val PROACTIVE_CONVERSATION_STATUS: String = "PROACTIVE_CONVERSATION_STATUS"
-val executor: Executor by injector.instance()
+private val executor: Executor by injector.instance()
+private val userTimelineDAO: UserTimelineDAO by injector.instance()
+private val logger = KotlinLogging.logger {}
 
 interface AbstractProactiveAnswerHandler {
 
-    fun handleProactiveAnswer(botBus: BotBus)
+    fun handleProactiveAnswer(botBus: BotBus): StoryDefinition? = null
     fun handle(botBus: BotBus) {
         with(botBus) {
             startProactiveConversation()
             executor.executeBlocking {
-                handleProactiveAnswer(this)
-                endProactiveConversation()
+                val noAnswerStory = handleProactiveAnswer(this)
+
+                // Switch to the noAnswerStory if returned
+                if(noAnswerStory != null){
+                    logger.info { "The no-answer story is returned, which means we'll have to move on to this one." }
+                    // flush optional messages
+                    flushProactiveConversation()
+
+                    // Switch to the story
+                    logger.info { "Run the story intent=${noAnswerStory.mainIntent()}, id=${noAnswerStory.id}" }
+                    handleAndSwitchStory(noAnswerStory, noAnswerStory.mainIntent())
+
+                    // The switching operation ends the conversation, so there's no need to proactively terminate it.
+                } else {
+                    // Ending proactive conversation
+                    endProactiveConversation()
+                }
+
+                // Save the dialog
+                if (connectorData.saveTimeline) {
+                    userTimelineDAO.save(userTimeline, botDefinition)
+                }
             }
         }
     }
