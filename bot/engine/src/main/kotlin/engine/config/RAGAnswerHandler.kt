@@ -17,9 +17,13 @@
 package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
+import ai.tock.bot.admin.indicators.IndicatorValues
+import ai.tock.bot.admin.indicators.Indicators
+import ai.tock.bot.admin.indicators.metric.MetricType
 import ai.tock.bot.definition.RAGStoryDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
+import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
@@ -50,8 +54,12 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     private val logger = KotlinLogging.logger {}
     private val ragService: RAGService get() = injector.provide()
 
+
     override fun handleProactiveAnswer(botBus: BotBus): StoryDefinition? {
         return with(botBus) {
+            // Save story handled metric
+            BotRepository.saveMetric(createMetric(MetricType.STORY_HANDLED))
+
             // Call RAG Api - Gen AI Orchestrator
             val (answer, debug, noAnswerStory) = rag(this)
 
@@ -66,15 +74,9 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 logger.info { "Send RAG answer." }
                 send(
                     SendSentenceWithFootnotes(
-                        botId,
-                        applicationId,
-                        userId,
-                        text = answer.text,
-                        footnotes = answer.footnotes.map {
+                        botId, applicationId, userId, text = answer.text, footnotes = answer.footnotes.map {
                             Footnote(
-                                it.identifier,
-                                it.title,
-                                it.url
+                                it.identifier, it.title, it.url
                             )
                         }.toMutableList()
                     )
@@ -95,12 +97,22 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      */
     private fun ragStoryRedirection(botBus: BotBus, response: RAGResponse?): StoryDefinition? {
         return with(botBus) {
-            val ragConfig = botDefinition.ragConfiguration
-            if (ragConfig?.noAnswerStoryId != null
-                && response?.answer?.text.equals(ragConfig.noAnswerSentence, ignoreCase = true)) {
-                logger.info { "The RAG response is equal to the configured no-answer sentence, so switch to the no-answer story." }
-                getNoAnswerRAGStory(ragConfig)
-            } else null
+            botDefinition.ragConfiguration?.let { ragConfig ->
+                if (response?.answer?.text.equals(ragConfig.noAnswerSentence, ignoreCase = true)) {
+                    // Save no answer metric
+                    saveRagMetric(IndicatorValues.NO_ANSWER)
+
+                    // Switch to no answer story if configured
+                    if (!ragConfig.noAnswerStoryId.isNullOrBlank()) {
+                        logger.info { "The RAG response is equal to the configured no-answer sentence, so switch to the no-answer story." }
+                        getNoAnswerRAGStory(ragConfig)
+                    } else null
+                } else {
+                    // Save success metric
+                    saveRagMetric(IndicatorValues.SUCCESS)
+                    null
+                }
+            }
         }
     }
 
@@ -110,15 +122,15 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * @param ragConfig: The RAG configuration
      */
     private fun BotBus.getNoAnswerRAGStory(
-        ragConfig: BotRAGConfiguration?
+        ragConfig: BotRAGConfiguration
     ): StoryDefinition {
         val noAnswerStory: StoryDefinition
-        val noAnswerStoryId = ragConfig?.noAnswerStoryId
+        val noAnswerStoryId = ragConfig.noAnswerStoryId
         if (!noAnswerStoryId.isNullOrBlank()) {
             logger.info { "A no-answer story $noAnswerStoryId is configured, so run it." }
             noAnswerStory = botDefinition.findStoryDefinitionById(noAnswerStoryId, applicationId).let {
                 // Prevent infinite loop when the noAnswerStory is removed or disabled
-                if(it.id == RAGStoryDefinition.RAG_STORY_NAME){
+                if (it.id == RAGStoryDefinition.RAG_STORY_NAME) {
                     logger.info { "The no-answer story is removed or disabled, so run the default unknown story." }
                     botDefinition.unknownStory
                 } else it
@@ -155,13 +167,11 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                         ),
                         embeddingQuestionEmSetting = ragConfiguration.emSetting,
                         documentIndexName = OpenSearchUtils.normalizeDocumentIndexName(
-                            ragConfiguration.namespace,
-                            ragConfiguration.botId
+                            ragConfiguration.namespace, ragConfiguration.botId
                         ),
                         documentSearchParams = OpenSearchParams(
                             // The number of neighbors to return for each query_embedding.
-                            k = kNeighborsDocuments,
-                            filter = listOf(
+                            k = kNeighborsDocuments, filter = listOf(
                                 Term(term = mapOf("metadata.index_session_id.keyword" to ragConfiguration.indexSessionId!!))
                             )
                         ),
@@ -172,6 +182,9 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                 return RAGResult(response?.answer, response?.debug, ragStoryRedirection(this, response))
             } catch (exc: Exception) {
                 logger.error { exc }
+                // Save failure metric
+                saveRagMetric(IndicatorValues.FAILURE)
+
                 return if (exc is GenAIOrchestratorBusinessError && exc.error.info.error == "APITimeoutError") {
                     logger.info { "The APITimeoutError is raised, so switch to the no-answer story." }
                     RAGResult(noAnswerStory = getNoAnswerRAGStory(ragConfiguration))
@@ -192,33 +205,34 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
      * Create a dialog history (Human and Bot message)
      * @param dialog
      */
-    private fun getDialogHistory(dialog: Dialog): List<ChatMessage> =
-        dialog.stories
-            .flatMap { it.actions }
-            .mapNotNull {
-                when (it) {
-                    is SendSentence -> if (it.text == null)
-                        null
-                    else ChatMessage(
-                        text = it.text.toString(),
-                        type = if (PlayerType.user == it.playerId.type) ChatMessageType.HUMAN
-                        else ChatMessageType.AI
-                    )
+    private fun getDialogHistory(dialog: Dialog): List<ChatMessage> = dialog.stories.flatMap { it.actions }.mapNotNull {
+        when (it) {
+            is SendSentence -> if (it.text == null) null
+            else ChatMessage(
+                text = it.text.toString(), type = if (PlayerType.user == it.playerId.type) ChatMessageType.HUMAN
+                else ChatMessageType.AI
+            )
 
-                    is SendSentenceWithFootnotes -> ChatMessage(
-                        text = it.text.toString(),
-                        type = ChatMessageType.AI
-                    )
+            is SendSentenceWithFootnotes -> ChatMessage(
+                text = it.text.toString(), type = ChatMessageType.AI
+            )
 
-                    // Other types of action are not considered part of history.
-                    else -> null
-                }
-            }
-            // drop the last message, because it corresponds to the user's current question
-            .dropLast(n = 1)
-            // take last 10 messages
-            .takeLast(n = nLastMessages)
+            // Other types of action are not considered part of history.
+            else -> null
+        }
+    }
+        // drop the last message, because it corresponds to the user's current question
+        .dropLast(n = 1)
+        // take last 10 messages
+        .takeLast(n = nLastMessages)
 
+    private fun BotBus.saveRagMetric(indicator: IndicatorValues) {
+        BotRepository.saveMetric(
+            createMetric(
+                MetricType.QUESTION_REPLIED, Indicators.RAG.value.name, indicator.value.name
+            )
+        )
+    }
 }
 
 /**

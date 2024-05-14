@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.verticle
 
 import ai.tock.bot.admin.indicators.IndicatorError
+import ai.tock.bot.admin.indicators.PredefinedIndicators
 import ai.tock.bot.admin.indicators.metric.MetricFilter
 import ai.tock.bot.admin.model.Valid
 import ai.tock.bot.admin.model.ValidationError
@@ -117,7 +118,7 @@ class IndicatorVerticle {
                 checkNamespaceAndExecute(context, currentContextApp) {
                     tryExecute(context) {
                         logger.info { "retrieve indicators from ${it.name}" }
-                        IndicatorService.findAllByBotId(it.name)
+                        IndicatorService.findAllByBotId(it.name) + PredefinedIndicators.indicators
                     }
                 }
             }
