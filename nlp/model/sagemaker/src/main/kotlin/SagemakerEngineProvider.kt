@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.bgem3
+package ai.tock.nlp.sagemaker
 
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.model.TokenizerContext
@@ -28,31 +28,32 @@ import ai.tock.nlp.model.service.engine.NlpEngineProvider
 import ai.tock.nlp.model.service.engine.Tokenizer
 import ai.tock.nlp.model.service.engine.TokenizerModelHolder
 
-class Bgem3EngineProvider : NlpEngineProvider {
+class SagemakerEngineProvider : NlpEngineProvider {
 
-    private val threadLocal = ThreadLocal<Bgem3IntentClassifier>()
+    private val threadLocal = ThreadLocal<SagemakerIntentClassifier>()
 
-    private fun getBgem3Classifier(conf: Bgem3ModelConfiguration? = null, new: Boolean): Bgem3IntentClassifier =
+    private fun getSagemakerClassifier(conf: SagemakerModelConfiguration? = null, new: Boolean): SagemakerIntentClassifier =
         if (new) {
             threadLocal.remove()
-            Bgem3IntentClassifier(conf ?: error("no bgem3 configuration")).apply { threadLocal.set(this) }
+            SagemakerIntentClassifier(conf ?: error("no sagemaker configuration")).apply { threadLocal.set(this) }
         } else {
-            threadLocal.get().also { threadLocal.remove() } ?: error("no bgem3 classifier found")
+            threadLocal.get().also { threadLocal.remove() } ?: error("no sagemaker classifier found")
         }
 
-    override val type: NlpEngineType = NlpEngineType.bgem3
+    // Default sagemaker model
+    override val type: NlpEngineType = NlpEngineType.sagemaker
 
-    override val modelBuilder: NlpEngineModelBuilder = Bgem3NlpModelBuilder
+    override val modelBuilder: NlpEngineModelBuilder = SagemakerNlpModelBuilder
 
-    override val modelIo: NlpEngineModelIo = Bgem3NlpModelIo
+    override val modelIo: NlpEngineModelIo = SagemakerNlpModelIo
 
     override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier =
-        getBgem3Classifier(model.nativeModel as Bgem3ModelConfiguration, true)
+        getSagemakerClassifier(model.nativeModel as SagemakerModelConfiguration, true)
 
-    override fun getEntityClassifier(model: EntityModelHolder): EntityClassifier = Bgem3EntityClassifier(model)
+    override fun getEntityClassifier(model: EntityModelHolder): EntityClassifier = SagemakerEntityClassifier(model)
 
     override fun getTokenizer(model: TokenizerModelHolder): Tokenizer = object : Tokenizer {
-        // do not tokenize anything at this stage - bgem3 internals
+        // do not tokenize anything at this stage
         override fun tokenize(context: TokenizerContext, text: String): Array<String> = arrayOf(text)
     }
 }

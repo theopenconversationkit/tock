@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.nlp.bgem3
+package ai.tock.nlp.sagemaker
 
 import ai.tock.nlp.core.NlpEngineType
 import ai.tock.nlp.core.configuration.NlpApplicationConfiguration
@@ -25,7 +25,7 @@ import ai.tock.nlp.model.service.engine.EntityModelHolder
 import ai.tock.nlp.model.service.engine.IntentModelHolder
 import ai.tock.nlp.model.service.engine.NlpEngineModelBuilder
 
-internal object Bgem3NlpModelBuilder : NlpEngineModelBuilder {
+internal object SagemakerNlpModelBuilder : NlpEngineModelBuilder {
     override fun buildIntentModel(
         context: IntentContext,
         configuration: NlpApplicationConfiguration,
@@ -33,7 +33,7 @@ internal object Bgem3NlpModelBuilder : NlpEngineModelBuilder {
     ): IntentModelHolder {
         return IntentModelHolder(
             application = context.application,
-            nativeModel = Bgem3ModelConfiguration(),
+            nativeModel = SagemakerModelConfiguration(),
             configuration = configuration
         )
     }
@@ -44,7 +44,7 @@ internal object Bgem3NlpModelBuilder : NlpEngineModelBuilder {
         expressions: List<SampleExpression>
     ): EntityModelHolder =
         EntityModelHolder(
-            nativeModel = NlpEngineType.bgem3.name,
+            nativeModel = NlpEngineType.sagemaker.name,
             configuration = configuration
         )
 

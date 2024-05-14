@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.nlp.bgem3
+package ai.tock.nlp.sagemaker
 
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -22,7 +22,7 @@ import software.amazon.awssdk.services.sagemakerruntime.SageMakerRuntimeClient
 import software.amazon.awssdk.services.sagemakerruntime.model.InvokeEndpointRequest
 import java.nio.charset.Charset
 
-class Bgem3AwsClient(private val configuration: Bgem3AwsClientProperties) {
+class SagemakerAwsClient(private val configuration: SagemakerAwsClientProperties) {
 
     // for intentions and entities
     data class ParsedRequest(

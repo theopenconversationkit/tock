@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.nlp.bgem3
+package ai.tock.nlp.sagemaker
 
-import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedRequest
+import ai.tock.nlp.sagemaker.SagemakerAwsClient.ParsedRequest
 import ai.tock.nlp.core.Entity
 import ai.tock.nlp.core.EntityRecognition
 import ai.tock.nlp.core.EntityType
@@ -26,15 +26,15 @@ import ai.tock.nlp.model.service.engine.NlpEntityClassifier
 import ai.tock.shared.property
 import software.amazon.awssdk.regions.Region
 
-internal class Bgem3EntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
+internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
 
     override fun classifyEntities(
         context: EntityCallContext,
         text: String,
         tokens: Array<String>
     ): List<EntityRecognition> {
-        Bgem3ClientProvider.getClient(
-            Bgem3AwsClientProperties(
+        SagemakerClientProvider.getClient(
+            SagemakerAwsClientProperties(
                 Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
                 property("tock_sagemaker_aws_entities_endpoint_name", "bge-m3-model-entities"),
                 property("tock_sagemaker_aws_content_type", "application/json"),

@@ -43,11 +43,6 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
-            <artifactId>tock-nlp-model-bgem3</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ai.tock</groupId>
             <artifactId>tock-nlp-model-service</artifactId>
         </dependency>
         <dependency>

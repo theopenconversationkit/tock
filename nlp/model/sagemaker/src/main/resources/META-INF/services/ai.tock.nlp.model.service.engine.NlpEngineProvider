@@ -30,4 +30,4 @@
 # limitations under the License.
 #
 
-ai.tock.nlp.bgem3.Bgem3EngineProvider
+ai.tock.nlp.sagemaker.SagemakerEngineProvider

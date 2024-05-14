@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.nlp.bgem3
+package ai.tock.nlp.sagemaker
 
 import software.amazon.awssdk.regions.Region
 
-internal fun String.unescapeBgem3Name(): String = replace("___", ":")
+internal fun String.unescapeSagemakerName(): String = replace("___", ":")
 
-data class Bgem3AwsClientProperties(
+data class SagemakerAwsClientProperties(
     val region: Region,
     val endpointName: String,
     val contentType: String,

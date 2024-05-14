@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.nlp.bgem3
+package ai.tock.nlp.sagemaker
 
-import ai.tock.nlp.bgem3.Bgem3AwsClient.ParsedRequest
+import ai.tock.nlp.sagemaker.SagemakerAwsClient.ParsedRequest
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.IntentClassification
 import ai.tock.nlp.model.IntentContext
@@ -23,11 +23,11 @@ import ai.tock.nlp.model.service.engine.IntentClassifier
 import ai.tock.shared.property
 import software.amazon.awssdk.regions.Region
 
-internal class Bgem3IntentClassifier(private val conf: Bgem3ModelConfiguration) : IntentClassifier {
+internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfiguration) : IntentClassifier {
 
     override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
-        return Bgem3ClientProvider.getClient(
-            Bgem3AwsClientProperties(
+        return SagemakerClientProvider.getClient(
+            SagemakerAwsClientProperties(
                 Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
                 property("tock_sagemaker_aws_intent_endpoint_name", "bge-m3-model-intent--v0"),
                 property("tock_sagemaker_aws_content_type", "application/json"),
@@ -49,7 +49,7 @@ internal class Bgem3IntentClassifier(private val conf: Bgem3ModelConfiguration) 
                             if (proba != null) {
                                 probability = proba
                             }
-                            intent?.let { context.application.getIntent(it.unescapeBgem3Name()) }
+                            intent?.let { context.application.getIntent(it.unescapeSagemakerName()) }
                                 ?: Intent.UNKNOWN_INTENT
                         }
                     }

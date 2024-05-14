@@ -43,8 +43,8 @@ data class NlpEngineType(
         val rasa = NlpEngineType("rasa")
 
         /**
-         * The bgem3 nlp engine.
+         * Sagemaker nlp engine (bgem3 by default)
          */
-        val bgem3 = NlpEngineType("bgem3")
+        val sagemaker = NlpEngineType("bgem3")
     }
 }

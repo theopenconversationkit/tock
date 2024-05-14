@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.nlp.bgem3
+package ai.tock.nlp.sagemaker
 
 import ai.tock.nlp.model.service.engine.NlpEngineModelIo
 import ai.tock.nlp.model.service.storage.NlpModelStream
@@ -21,14 +21,14 @@ import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.OutputStream
 
-internal object Bgem3NlpModelIo : NlpEngineModelIo {
+internal object SagemakerNlpModelIo : NlpEngineModelIo {
 
     override fun loadTokenizerModel(input: NlpModelStream): Any {
         error("loading tokenizer model is not supported")
     }
 
     override fun loadIntentModel(input: NlpModelStream): Any {
-        return Bgem3ModelConfiguration()
+        return SagemakerModelConfiguration()
     }
 
     override fun loadEntityModel(input: NlpModelStream): Any =

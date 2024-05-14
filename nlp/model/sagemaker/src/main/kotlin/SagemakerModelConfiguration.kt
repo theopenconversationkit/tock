@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ai.tock.nlp.bgem3
 
-import java.util.concurrent.ConcurrentHashMap
+package ai.tock.nlp.sagemaker
 
-internal object Bgem3ClientProvider {
-    private val clientMap = ConcurrentHashMap<Bgem3AwsClientProperties, Bgem3AwsClient>()
-
-    fun getClient(conf: Bgem3AwsClientProperties): Bgem3AwsClient =
-        clientMap.getOrPut(conf) { Bgem3AwsClient(conf) }
-}
+internal data class SagemakerModelConfiguration(
+    // Default model name
+    val modelFileName: String = "evoyageurs:bgem3-fr-bgem3"
+)

@@ -25,9 +25,9 @@
         <version>23.9.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tock-nlp-model-bgem3</artifactId>
-    <name>Tock NLP Bgem3 Model</name>
-    <description>Bgem3 client for Tock NLP Model</description>
+    <artifactId>tock-nlp-model-sagemaker</artifactId>
+    <name>Tock NLP Sagemaker Model</name>
+    <description>Sagemaker client for Tock NLP Model</description>
 
     <properties>
         <aws.version>2.25.45</aws.version>
