@@ -48,6 +48,26 @@ class WebhookActionConverterTest {
     }
 
     @Test
+    fun `test with null action message`() {
+        val from = "my phone number"
+        val message = WhatsAppTextMessage(WhatsAppTextBody("text"), "id", from, "a")
+        val s = WebhookActionConverter.toEvent(message, "appId", mockk()) as SendSentence
+
+        assertNotEquals(from, s.playerId.id)
+
+        val output = SendActionConverter.toBotMessage(
+            SendSentence(
+                PlayerId("botId", bot),
+                "appId",
+                PlayerId(s.playerId.id),
+                null
+            )
+        )
+
+        assertEquals(output?.to, null)
+    }
+
+    @Test
     fun `checks that two messages of the same user has the same encrypted id`() {
         val from = "my phone number"
         val message = WhatsAppTextMessage(WhatsAppTextBody("text"), "id", from, "a")
