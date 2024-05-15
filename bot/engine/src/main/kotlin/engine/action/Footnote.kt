@@ -33,4 +33,8 @@ data class Footnote(
      * A footnote link
      */
     val url: String?,
+    /**
+     * A footnote content
+     */
+    val content: String?,
 )

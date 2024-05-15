@@ -22,5 +22,6 @@ package ai.tock.bot.connector.rest.client.model
 data class ClientFootnote(
     val identifier: String,
     val title: String,
-    val url: String?
+    val url: String?,
+    val content: String?
 )

@@ -139,14 +139,15 @@ class TestCoreService : TestService {
         blockingJsonPost("/test/talk", setOf(botUser,faqNlpUser,faqBotUser)) { context, query: BotDialogRequest ->
             if (context.organization == query.namespace) {
                 val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
-                talk(query, debugEnabled)
+                val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false
+                talk(query, debugEnabled, sourceWithContent)
             } else {
                 Companion.unauthorized()
             }
         }
     }
 
-    private fun talk(request: BotDialogRequest, debugEnabled: Boolean = false): BotDialogResponse {
+    private fun talk(request: BotDialogRequest, debugEnabled: Boolean, sourceWithContent: Boolean): BotDialogResponse {
         val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
         return try {
             val restClient = getRestClient(conf)
@@ -158,7 +159,8 @@ class TestCoreService : TestService {
                     "test_bot_${conf._id}_${request.currentLanguage}",
                     request.message.toClientMessage(),
                     conf.targetConnectorType.toClientConnectorType(),
-                    debugEnabled = debugEnabled
+                    debugEnabled = debugEnabled,
+                    sourceWithContent = sourceWithContent
                 )
             )
 

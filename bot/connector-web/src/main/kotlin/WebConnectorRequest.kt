@@ -35,6 +35,7 @@ data class WebConnectorRequest(
     override val ref: String? = null,
     override val connectorId: String? = null,
     override val returnsHistory: Boolean = false,
+    override val sourceWithContent: Boolean = false,
 ) : WebConnectorRequestContract {
 
     fun toEvent(applicationId: String): Event =
@@ -44,7 +45,7 @@ data class WebConnectorRequest(
                 applicationId,
                 PlayerId(applicationId, bot),
                 query,
-                metadata = ActionMetadata(returnsHistory = returnsHistory)
+                metadata = ActionMetadata(returnsHistory = returnsHistory, sourceWithContent = sourceWithContent)
             )
         } else if (payload != null) {
             val (intent, parameters) = SendChoice.decodeChoiceId(payload)

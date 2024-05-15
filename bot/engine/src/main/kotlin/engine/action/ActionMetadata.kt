@@ -35,5 +35,9 @@ data class ActionMetadata(
     val orchestratedBy: String? = null,
     /** Does the action returns history ? **/
     val returnsHistory: Boolean = false,
+    /** Is the debugging function enabled? **/
+    var debugEnabled: Boolean = false,
+    /** Does the action returns source content ? **/
+    var sourceWithContent: Boolean = false,
 )
 

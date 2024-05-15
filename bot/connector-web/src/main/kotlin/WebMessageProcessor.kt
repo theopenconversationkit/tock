@@ -38,8 +38,13 @@ internal class WebMessageProcessor(private val processMarkdown: Boolean) {
                 val stringText = action.text.toString()
                 WebMessage(
                     postProcess(stringText),
-                    footnotes = action.footnotes.map {
-                        Footnote(it.identifier, it.title, it.url)
+                    footnotes = action.footnotes.map { footnote ->
+                        Footnote(
+                            footnote.identifier,
+                            footnote.title,
+                            footnote.url,
+                            footnote.content?.let { postProcess(it) }
+                        )
                     })
             }
             else -> null
