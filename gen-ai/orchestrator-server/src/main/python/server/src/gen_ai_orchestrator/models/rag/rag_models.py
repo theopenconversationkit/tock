@@ -30,21 +30,23 @@ class Footnote(BaseModel):
     url: Optional[AnyUrl] = Field(
         description='Footnote url', examples=['https://doc.tock.ai/tock/'], default=None
     )
+    content: str = Field(description='Footnote content', examples=['Tock: The Open Conversation Kit'])
 
     def __eq__(self, other):
         """
         Footnotes are identified by their title and URL.
-        When the identifier is not the same for identical footnotes,
+        When the identifier or the content are not the same for identical footnotes,
         this means that the sources are parts of the same document.
         """
         return (
                 isinstance(other, Footnote)
                 and self.title == other.title
                 and self.url == other.url
+                and self.content == other.content
         )
 
     def __hash__(self):
-        return hash((self.title, self.url))
+        return hash((self.title, self.url, self.content))
 
 
 class TextWithFootnotes(BaseModel):

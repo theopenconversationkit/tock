@@ -29,7 +29,8 @@ internal data class MessageRequest(
     val message: Message,
     val targetConnectorType: ConnectorType,
     val test: Boolean = false,
-    val debugEnabled: Boolean = false
+    val debugEnabled: Boolean = false,
+    val sourceWithContent: Boolean = false,
 ) : ConnectorMessage {
     override val connectorType: ConnectorType = ConnectorType.rest
 }

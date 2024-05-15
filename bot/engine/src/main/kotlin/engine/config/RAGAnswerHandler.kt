@@ -64,7 +64,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
             val (answer, debug, noAnswerStory) = rag(this)
 
             // Add debug data if available and if debugging is enabled
-            if (debug != null && (connectorData.metadata["debugEnabled"].toBoolean() || ragDebugEnabled)) {
+            if (debug != null && (action.metadata.debugEnabled || ragDebugEnabled)) {
                 logger.info { "Send RAG debug data." }
                 sendDebugData("RAG", debug)
             }
@@ -76,7 +76,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                     SendSentenceWithFootnotes(
                         botId, applicationId, userId, text = answer.text, footnotes = answer.footnotes.map {
                             Footnote(
-                                it.identifier, it.title, it.url
+                                it.identifier, it.title, it.url,
+                                if(action.metadata.sourceWithContent) it.content else null
                             )
                         }.toMutableList()
                     )
@@ -175,7 +176,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 Term(term = mapOf("metadata.index_session_id.keyword" to ragConfiguration.indexSessionId!!))
                             )
                         ),
-                    ), debug = connectorData.metadata["debugEnabled"].toBoolean() || ragDebugEnabled
+                    ), debug = action.metadata.debugEnabled || ragDebugEnabled
                 )
 
                 // Handle RAG response

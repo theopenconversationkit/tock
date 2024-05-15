@@ -25,5 +25,6 @@ data class ClientMessageRequest(
     val message: ClientMessage,
     val targetConnectorType: ClientConnectorType,
     val test: Boolean = false,
-    val debugEnabled: Boolean = false
+    val debugEnabled: Boolean = false,
+    val sourceWithContent: Boolean = false,
 )

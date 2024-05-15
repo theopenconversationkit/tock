@@ -43,8 +43,7 @@ internal class RestConnectorCallback(
     val testContext: TestBehaviour?,
     val locale: Locale,
     private val userAction: Action,
-    val actions: MutableList<Action> = CopyOnWriteArrayList(),
-    private val debugEnabled: Boolean = false
+    val actions: MutableList<Action> = CopyOnWriteArrayList()
 ) : ConnectorCallbackBase(applicationId, connectorType) {
 
     companion object {
@@ -74,7 +73,7 @@ internal class RestConnectorCallback(
             val r = mapper.writeValueAsString(
                     MessageResponse(
                             actions.filter {
-                                if(!debugEnabled) it !is SendDebug else true
+                                if(!userAction.metadata.debugEnabled) it !is SendDebug else true
                             }.map { it.toMessage() },
                             applicationId,
                             userAction.id.toString(),
