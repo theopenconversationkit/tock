@@ -41,7 +41,7 @@ class SagemakerEngineProvider : NlpEngineProvider {
         }
 
     // Default sagemaker model
-    override val type: NlpEngineType = NlpEngineType.sagemaker
+    override val type: NlpEngineType = NlpEngineType.bgem3
 
     override val modelBuilder: NlpEngineModelBuilder = SagemakerNlpModelBuilder
 

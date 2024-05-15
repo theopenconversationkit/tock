@@ -44,7 +44,7 @@ internal object SagemakerNlpModelBuilder : NlpEngineModelBuilder {
         expressions: List<SampleExpression>
     ): EntityModelHolder =
         EntityModelHolder(
-            nativeModel = NlpEngineType.sagemaker.name,
+            nativeModel = NlpEngineType.bgem3.name,
             configuration = configuration
         )
 
