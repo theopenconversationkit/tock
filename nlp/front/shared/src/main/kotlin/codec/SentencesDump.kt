@@ -19,6 +19,7 @@ package ai.tock.nlp.front.shared.codec
 import ai.tock.nlp.front.shared.config.ClassifiedEntity
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 /**
@@ -33,7 +34,7 @@ data class SentencesDump(
 data class SentenceDump(
     val text: String,
     val intent: String,
-    val creationDate : Instant,
+    val creationDate : Instant = Instant.now().truncatedTo(ChronoUnit.MILLIS),
     val entities: List<SentenceEntityDump> = emptyList(),
     val language: Locale? = null,
     val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model,
