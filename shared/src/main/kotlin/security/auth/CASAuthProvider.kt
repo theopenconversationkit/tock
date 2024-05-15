@@ -183,7 +183,10 @@ abstract class CASAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx) {
             } else {
                 rc.next()
             }
-        })
+        }).failureHandler { rc ->
+            logger.error("Authentication failure", rc.failure())
+            handleUpgradeFailure(rc, 500, null)
+        }
 
         with(verticle) {
             router.get("$basePath/user").handler {
