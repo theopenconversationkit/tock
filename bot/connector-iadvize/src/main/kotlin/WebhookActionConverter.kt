@@ -32,7 +32,7 @@ internal object WebhookActionConverter {
         applicationId: String
     ): Event {
         val playerId = PlayerId(request.idConversation, PlayerType.user)
-        val recipientId = PlayerId(request.idConversation, PlayerType.bot)
+        val recipientId = PlayerId(applicationId, PlayerType.bot)
         return SendSentence(
             playerId,
             applicationId,
