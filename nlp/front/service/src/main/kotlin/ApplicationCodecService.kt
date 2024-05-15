@@ -16,7 +16,6 @@
 
 package ai.tock.nlp.front.service
 
-import ai.tock.nlp.core.Intent
 import ai.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import ai.tock.nlp.core.NlpCore
 import ai.tock.nlp.front.service.ConfigurationRepository.entityTypeExists
@@ -509,7 +508,8 @@ internal object ApplicationCodecService : ApplicationCodec {
                     } else {
                         SentenceDump(
                             s.text,
-                            sentenceIntent?.qualifiedName ?: Intent.UNKNOWN_INTENT_NAME,
+                            sentenceIntent?.qualifiedName ?: UNKNOWN_INTENT_NAME,
+                            s.creationDate,
                             s.classification.entities.map { SentenceEntityDump(it) },
                             s.language,
                             s.status,
