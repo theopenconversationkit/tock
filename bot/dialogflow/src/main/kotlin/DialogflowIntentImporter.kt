@@ -96,11 +96,10 @@ object DialogflowIntentImporter {
 
                         sentences.add(
                             SentenceDump(
-                                text,
-                                intentDefinition.qualifiedName,
-                                emptyList(),
-                                locale,
-                                ClassifiedSentenceStatus.model
+                                text = text,
+                                intent = intentDefinition.qualifiedName,
+                                language = locale,
+                                status = ClassifiedSentenceStatus.model
                             )
                         )
                     }
