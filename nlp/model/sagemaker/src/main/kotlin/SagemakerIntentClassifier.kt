@@ -29,9 +29,9 @@ internal class SagemakerIntentClassifier(private val conf: SagemakerModelConfigu
         return SagemakerClientProvider.getClient(
             SagemakerAwsClientProperties(
                 Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
-                property("tock_sagemaker_aws_intent_endpoint_name", "bge-m3-model-intent--v0"),
+                property("tock_sagemaker_aws_intent_endpoint_name", "default"),
                 property("tock_sagemaker_aws_content_type", "application/json"),
-                property("tock_sagemaker_aws_profile_name", "sa-voyageurs-dev"),
+                property("tock_sagemaker_aws_profile_name", "default"),
             )
         ).parseIntent(ParsedRequest(text))
             .run {

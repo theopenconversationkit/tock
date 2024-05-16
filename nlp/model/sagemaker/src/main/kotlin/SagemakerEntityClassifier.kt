@@ -36,9 +36,9 @@ internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityCl
         SagemakerClientProvider.getClient(
             SagemakerAwsClientProperties(
                 Region.of(property("tock_sagemaker_aws_region_name", "eu-west-3")),
-                property("tock_sagemaker_aws_entities_endpoint_name", "bge-m3-model-entities"),
+                property("tock_sagemaker_aws_entities_endpoint_name", "default"),
                 property("tock_sagemaker_aws_content_type", "application/json"),
-                property("tock_sagemaker_aws_profile_name", "sa-voyageurs-dev"),
+                property("tock_sagemaker_aws_profile_name", "default"),
             )
         ).parseEntities(ParsedRequest(text)).run {
             return entities.map { e ->
