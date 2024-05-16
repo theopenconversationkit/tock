@@ -43,7 +43,7 @@ class SagemakerAwsClientIntegrationTest {
     @Test
     @Disabled  // Test is disabled because it calls a sagemaker endpoint on aws that can be expensive. So be careful if you want to really execute it
     fun testParseIntents() {
-        val config = SagemakerAwsClientProperties(Region.EU_WEST_3, "bge-m3-model-intent--v0", "application/json", "sa-voyageurs-dev")
+        val config = SagemakerAwsClientProperties(Region.EU_WEST_3, "default", "application/json", "default")
         val client = SagemakerAwsClient(config)
         val response = client.parseIntent(SagemakerAwsClient.ParsedRequest("je veux un TGV Paris Marseille demain à 18h"))
         assertEquals(response.intent?.name, "evoyageurs:search_by_od")
@@ -53,7 +53,7 @@ class SagemakerAwsClientIntegrationTest {
     @Test
     @Disabled // Test is disabled because it calls a sagemaker endpoint on aws that can be expensive. So be careful if you want to really execute it
     fun testParseEntities() {
-        val config = SagemakerAwsClientProperties(Region.EU_WEST_3, "bge-m3-model-entities", "application/json", "sa-voyageurs-dev")
+        val config = SagemakerAwsClientProperties(Region.EU_WEST_3, "default", "application/json", "default")
         val client = SagemakerAwsClient(config)
         val response = client.parseEntities(SagemakerAwsClient.ParsedRequest("Est-ce que mon TGV 8536 de Cannes à Montpellier a du retard ?"))
         println(response)
