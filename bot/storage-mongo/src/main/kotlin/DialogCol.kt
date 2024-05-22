@@ -39,8 +39,10 @@ import ai.tock.bot.engine.dialog.Story
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLocation
 import ai.tock.shared.checkMaxLengthAllowed
+import ai.tock.shared.isDocumentDB
 import ai.tock.shared.jackson.AnyValueWrapper
 import ai.tock.shared.security.TockObfuscatorService.obfuscate
+import ai.tock.shared.transformData
 import ai.tock.translator.UserInterfaceType.textChat
 import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -359,7 +361,7 @@ internal data class DialogCol(
         constructor(debug: SendDebug) :
                 this(
                     debug.text,
-                    debug.data
+                    transformData(debug.data)
                 ) {
             assignFrom(debug)
         }
@@ -370,7 +372,7 @@ internal data class DialogCol(
                     applicationId,
                     recipientId,
                     text,
-                    data,
+                    transformData(data),
                     id,
                     date,
                     state,
