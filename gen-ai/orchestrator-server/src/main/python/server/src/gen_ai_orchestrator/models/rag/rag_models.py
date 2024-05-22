@@ -88,9 +88,10 @@ class RagDocumentMetadata(BaseModel):
     title: str = Field(
         description='The document title.',
         examples=['Tracking shot'])
-    url: HttpUrl = Field(
+    url: Optional[HttpUrl] = Field(
         description='The document url.',
-        examples=['https://en.wikipedia.org/wiki/Tracking_shot']
+        examples=['https://en.wikipedia.org/wiki/Tracking_shot'],
+        default=None
     )
     chunk: str = Field(
         description='The document chunk.',
