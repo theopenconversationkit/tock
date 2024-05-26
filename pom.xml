@@ -32,7 +32,7 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <kotlin>1.9.23</kotlin>
-        <coroutine>1.8.0</coroutine>
+        <coroutine>1.8.1</coroutine>
 
         <slf4j>2.0.13</slf4j>
         <logback>1.5.6</logback>
@@ -40,46 +40,46 @@
         <kotlin-logging>3.0.5</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>4.11.0</kmongo>
-        <jackson>2.17.0</jackson>
-        <jackson-databind>2.17.0</jackson-databind>
-        <jackson-module>2.17.0</jackson-module>
+        <kmongo>5.1.0</kmongo>
+        <jackson>2.17.1</jackson>
+        <jackson-databind>2.17.1</jackson-databind>
+        <jackson-module>2.17.1</jackson-module>
         <jackson-module-loader>0.4.0</jackson-module-loader>
         <jackson-data>0.4.0</jackson-data>
         <jackson-generator>0.4.0</jackson-generator>
         <klaxon>5.6</klaxon>
-        <vertx>4.5.7</vertx>
+        <vertx>4.5.8</vertx>
         <retrofit>2.11.0</retrofit>
         <okhttp>4.12.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>1.7.1</circuitbreaker>
-        <guava>33.1.0-jre</guava>
-        <google-auth>1.35.0</google-auth>
-        <google-http-client>1.44.1</google-http-client>
+        <guava>33.2.0-jre</guava>
+        <google-auth>1.36.0</google-auth>
+        <google-http-client>1.44.2</google-http-client>
         <jasypt>1.9.3</jasypt>
-        <commons-csv>1.10.0</commons-csv>
+        <commons-csv>1.11.0</commons-csv>
         <commons-text>1.12.0</commons-text>
         <emoji>5.1.1</emoji>
-        <commons-codec>1.16.1</commons-codec>
+        <commons-codec>1.17.0</commons-codec>
         <commons-lang>3.14.0</commons-lang>
         <commonmark>0.22.0</commonmark>
         <json>20240303</json>
         <httpclient>4.5.14</httpclient>
         <simmetrics>4.1.1</simmetrics>
         <batik>1.12</batik>
-        <google>26.37.0</google>
-        <aws-sdk>1.12.708</aws-sdk>
+        <google>26.39.0</google>
+        <aws-sdk>1.12.730</aws-sdk>
         <pac4j>5.7.3</pac4j>
         <vertx-pac4j>6.0.2</vertx-pac4j>
         <graphql-kotlin>6.3.0</graphql-kotlin>
 
         <junit-jupiter>5.10.2</junit-jupiter>
-        <testcontainer>1.19.7</testcontainer>
+        <testcontainer>1.19.8</testcontainer>
 
-        <mockk>1.13.10</mockk>
+        <mockk>1.13.11</mockk>
         <assertj>3.22.0</assertj>
-        <byte-buddy>1.14.14</byte-buddy>
+        <byte-buddy>1.14.16</byte-buddy>
         <atrium>0.15.0</atrium>
         <serialization>1.6.2</serialization>
 
@@ -106,7 +106,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <node>v20.12.0</node>
+        <node>v20.13.1</node>
     </properties>
 
     <modules>

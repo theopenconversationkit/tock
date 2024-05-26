@@ -44,7 +44,7 @@ import com.mongodb.client.model.CountOptions
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
-import com.mongodb.connection.netty.NettyStreamFactoryFactory
+import com.mongodb.connection.TransportSettings
 import com.mongodb.reactivestreams.client.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
 import mu.KotlinLogging
@@ -199,7 +199,7 @@ internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by
                     }
                 }
                 if (asyncMongoUrl.sslEnabled == true) {
-                    streamFactoryFactory(NettyStreamFactoryFactory.builder().build())
+                    transportSettings(TransportSettings.nettyBuilder().build())
                 }
             }
             .build()
