@@ -31,13 +31,21 @@ import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.loadProperties
 import ai.tock.shared.resourceAsString
+import ai.tock.shared.security.credentials.CredentialsProvider
+import ai.tock.shared.sharedTestModule
+import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.raw
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.mockk.*
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -55,7 +63,18 @@ class IadvizeConnectorTest {
     val firstMessage = "firstMessage"
     val distributionRule = "distributionRuleId"
     val distributionRuleUnavailableMessage = "distributionRuleUnavailableMessage"
-    val connector = IadvizeConnector(applicationId, path, editorURL,firstMessage, distributionRule, null, distributionRuleUnavailableMessage, null)
+    val connector: IadvizeConnector by lazy {
+        IadvizeConnector(
+            applicationId,
+            path,
+            editorURL,
+            firstMessage,
+            distributionRule,
+            null,
+            distributionRuleUnavailableMessage,
+            null
+        )
+    }
     val controller: ConnectorController = mockk(relaxed = true)
     val context: RoutingContext = mockk(relaxed = true)
     val response: HttpServerResponse = mockk(relaxed = true)
@@ -71,8 +90,16 @@ class IadvizeConnectorTest {
     private val marcus2: String = "MARCUS2"
 
     private val iadvizeGraphQLClient: IadvizeGraphQLClient = mockk(relaxed = true)
+
     @BeforeEach
     fun before() {
+        tockInternalInjector = KodeinInjector()
+        tockInternalInjector.inject(
+            Kodein {
+                import(sharedTestModule)
+            }
+        )
+
         every { context.response() } returns response
         every { response.putHeader("Content-Type", "application/json") } returns response
         every { controller.botConfiguration.name } returns botName
@@ -83,13 +110,25 @@ class IadvizeConnectorTest {
         every { controller.botDefinition.i18nTranslator(any(), any(), any(), any()) } returns translator
 
         val messageSlot = slot<CharSequence>()
-        every { translator.translate(capture(messageSlot)) } answers { I18nLabelValue("", "", "", messageSlot.captured).raw }
+        every { translator.translate(capture(messageSlot)) } answers {
+            I18nLabelValue(
+                "",
+                "",
+                "",
+                messageSlot.captured
+            ).raw
+        }
 
         // Force date to expected date
         mockkStatic(LocalDateTime::class)
         every { LocalDateTime.now() } returns LocalDateTime.of(2022, 4, 8, 16, 52, 37)
         every { LocalDateTime.of(2022, 4, 8, 16, 52, 37) } answers { callOriginal() }
 
+    }
+
+    @AfterEach
+    fun after() {
+        tockInternalInjector = KodeinInjector()
     }
 
     @Test
@@ -125,10 +164,17 @@ class IadvizeConnectorTest {
         val iAdvizeRequest: IadvizeRequest = getIadvizeRequestMessage("/request_message_text.json", conversationId)
         val expectedResponse: String = resourceAsStringMinified("/response_message_quickreply.json")
 
-        val iadvizeReply: IadvizeReply = IadvizeMessage(TextPayload("MARCUS"), mutableListOf(QuickReply("MARCUS_YES"), QuickReply("MARCUS_NO")))
+        val iadvizeReply: IadvizeReply =
+            IadvizeMessage(TextPayload("MARCUS"), mutableListOf(QuickReply("MARCUS_YES"), QuickReply("MARCUS_NO")))
         val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeReply)
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeConnectorMessage))
+        val action = SendSentence(
+            PlayerId("MockPlayerId"),
+            "applicationId",
+            PlayerId("recipientId"),
+            text = null,
+            messages = mutableListOf(iadvizeConnectorMessage)
+        )
         val connectorData = slot<ConnectorData>()
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
@@ -157,10 +203,16 @@ class IadvizeConnectorTest {
         val iadvizeTransfer: IadvizeReply = IadvizeTransfer(0)
         val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeTransfer)
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeConnectorMessage))
+        val action = SendSentence(
+            PlayerId("MockPlayerId"),
+            "applicationId",
+            PlayerId("recipientId"),
+            text = null,
+            messages = mutableListOf(iadvizeConnectorMessage)
+        )
         val connectorData = slot<ConnectorData>()
 
-        every {  iadvizeGraphQLClient.isAvailable(distributionRule)  } returns true
+        every { iadvizeGraphQLClient.isAvailable(distributionRule) } returns true
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
             callback.iadvizeGraphQLClient = iadvizeGraphQLClient
@@ -190,9 +242,15 @@ class IadvizeConnectorTest {
         val iadvizeTransfer: IadvizeReply = IadvizeTransfer(0)
         val iadvizeConnectorMessage = IadvizeConnectorMessage(iadvizeTransfer)
 
-        val action = SendSentence(PlayerId("MockPlayerId"), "applicationId", PlayerId("recipientId"), text = null, messages = mutableListOf(iadvizeConnectorMessage))
+        val action = SendSentence(
+            PlayerId("MockPlayerId"),
+            "applicationId",
+            PlayerId("recipientId"),
+            text = null,
+            messages = mutableListOf(iadvizeConnectorMessage)
+        )
         val connectorData = slot<ConnectorData>()
-        every {  iadvizeGraphQLClient.isAvailable(distributionRule)  } returns false
+        every { iadvizeGraphQLClient.isAvailable(distributionRule) } returns false
 
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
@@ -238,7 +296,7 @@ class IadvizeConnectorTest {
 
         val connectorData = slot<ConnectorData>()
 
-        every {  iadvizeGraphQLClient.isAvailable(distributionRule)  } returns true
+        every { iadvizeGraphQLClient.isAvailable(distributionRule) } returns true
 
         every { controller.handle(any(), capture(connectorData)) } answers {
             val callback = connectorData.captured.callback as IadvizeConnectorCallback
@@ -406,14 +464,15 @@ class IadvizeConnectorTest {
     }
 
     private fun getIadvizeRequestMessage(json: String, idConversation: String): IadvizeRequest {
-        val messageRequestJson : MessageRequestJson = mapper.readValue(
+        val messageRequestJson: MessageRequestJson = mapper.readValue(
             resourceAsString(json),
-            MessageRequestJson::class.java)
+            MessageRequestJson::class.java
+        )
         return MessageRequest(messageRequestJson, idConversation)
     }
 
     private fun resourceAsStringMinified(path: String): String {
-        val text  = resourceAsString(path)
+        val text = resourceAsString(path)
         return (ObjectMapper().readTree(text) as JsonNode).toString()
     }
 

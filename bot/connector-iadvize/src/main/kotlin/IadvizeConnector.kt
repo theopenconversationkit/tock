@@ -419,7 +419,7 @@ class IadvizeConnector internal constructor(
                             // iAdvize environment sd- or ha-
                             IadvizeConnectorMetadata.IADVIZE_ENV.name to iadvizeRequest.idOperator.split("-")[0],
                             // the operator id (=chatbotId) prefixed with the iAdvize environment
-                            IadvizeConnectorMetadata.CHAT_BOT_ID.name to iadvizeRequest.idOperator.split("-")[1],
+                            IadvizeConnectorMetadata.CHAT_BOT_ID.name to (iadvizeRequest.idOperator.split("-").getOrNull(1) ?: "unknown"),
                         )
                     )
                 )

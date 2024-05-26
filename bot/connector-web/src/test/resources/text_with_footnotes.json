@@ -7,12 +7,14 @@
       {
         "identifier": "e122e97a5cc7",
         "title": "title 1",
-        "url": "https://doc.tock.ai"
+        "url": "https://doc.tock.ai",
+        "content": "content 1"
       },
       {
         "identifier": "fcad492fdb99",
         "title": "title 2",
-        "url": "https://github.com/theopenconversationkit/tock"
+        "url": "https://github.com/theopenconversationkit/tock",
+        "content": "content 2"
       }
     ]
   }]

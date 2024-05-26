@@ -20,17 +20,24 @@ package ai.tock.iadvize.client.authentication
 import ai.tock.iadvize.client.AuthenticationFailedError
 import ai.tock.iadvize.client.IadvizeApi
 import ai.tock.iadvize.client.authentication.models.AuthResponse
+import ai.tock.shared.security.credentials.CredentialsProvider
+import ai.tock.shared.tockInternalInjector
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import java.rmi.Naming.bind
 import java.time.LocalDateTime
 import java.time.Month
-
 
 
 class IadvizeAuthenticationClientTest {
@@ -39,19 +46,37 @@ class IadvizeAuthenticationClientTest {
         const val ACCESS_TOKEN = "access token"
         const val EXPIRES_IN = 3600
     }
-    private val  api : IadvizeApi = mockk(relaxed = true)
+
+    private val api: IadvizeApi = mockk(relaxed = true)
     private val client = IadvizeAuthenticationClient()
 
 
     @BeforeEach
     fun setUp() {
 
-        every { api.createToken(any(), any(), any()).execute().body() } returns AuthResponse(accessToken = ACCESS_TOKEN, expiresIn = EXPIRES_IN)
+        tockInternalInjector = KodeinInjector()
+        tockInternalInjector.inject(
+            Kodein {
+                import(Kodein.Module {
+                    bind<CredentialsProvider>() with provider { mockk(relaxed = true) }
+                })
+            }
+        )
+
+        every { api.createToken(any(), any(), any()).execute().body() } returns AuthResponse(
+            accessToken = ACCESS_TOKEN,
+            expiresIn = EXPIRES_IN
+        )
 
         client.iadvizeApi = api
 
         mockkStatic(LocalDateTime::class)
-        every { LocalDateTime.now() } returns LocalDateTime.of(2023, Month.JANUARY, 10, 10, 0 , 0)
+        every { LocalDateTime.now() } returns LocalDateTime.of(2023, Month.JANUARY, 10, 10, 0, 0)
+    }
+
+    @AfterEach
+    fun cleanup() {
+        tockInternalInjector = KodeinInjector()
     }
 
     @Test
@@ -64,6 +89,7 @@ class IadvizeAuthenticationClientTest {
         }
 
     }
+
     @Test
     fun `get access token at first time`() {
 
@@ -73,7 +99,10 @@ class IadvizeAuthenticationClientTest {
 
         assertNotNull(token)
         assertEquals(token!!.value, ACCESS_TOKEN)
-        assertEquals(token.expireAt, LocalDateTime.now().plusSeconds(EXPIRES_IN.toLong() - IadvizeAuthenticationClient.DELAY_SECONDS))
+        assertEquals(
+            token.expireAt,
+            LocalDateTime.now().plusSeconds(EXPIRES_IN.toLong() - IadvizeAuthenticationClient.DELAY_SECONDS)
+        )
         assertEquals(ACCESS_TOKEN, accessToken)
 
         verify(exactly = 1) { api.createToken(any(), any(), any()) }
@@ -82,7 +111,12 @@ class IadvizeAuthenticationClientTest {
     @Test
     fun `get access token when token has already been set and is not expired yet`() {
 
-        IadvizeAuthenticationClient.token.set(IadvizeAuthenticationClient.Token(ACCESS_TOKEN, LocalDateTime.now().minusSeconds(1000)))
+        IadvizeAuthenticationClient.token.set(
+            IadvizeAuthenticationClient.Token(
+                ACCESS_TOKEN,
+                LocalDateTime.now().minusSeconds(1000)
+            )
+        )
 
         val accessToken = client.getAccessToken()
 
@@ -98,7 +132,12 @@ class IadvizeAuthenticationClientTest {
     @Test
     fun `get access token when token has already been set and already expired`() {
 
-        IadvizeAuthenticationClient.token.set(IadvizeAuthenticationClient.Token(ACCESS_TOKEN, LocalDateTime.now().plusSeconds(1000)))
+        IadvizeAuthenticationClient.token.set(
+            IadvizeAuthenticationClient.Token(
+                ACCESS_TOKEN,
+                LocalDateTime.now().plusSeconds(1000)
+            )
+        )
 
         val accessToken = client.getAccessToken()
 

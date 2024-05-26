@@ -40,7 +40,7 @@ class IadvizeAuthenticationClient {
         const val DELAY_SECONDS = 5
     }
 
-    private val credentialsProvider: CredentialsProvider = injector.provide()
+    private val credentialsProvider: CredentialsProvider by lazy { injector.provide() }
 
     internal var iadvizeApi: IadvizeApi = createApi(logger)
 
