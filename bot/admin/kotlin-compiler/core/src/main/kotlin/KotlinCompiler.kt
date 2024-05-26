@@ -219,7 +219,7 @@ internal object KotlinCompiler {
     @Synchronized
     fun analyzeFileForJvm(files: List<KtFile>, project: Project): Pair<AnalysisResult, ComponentProvider> {
         val environment = EnvironmentManager.environment!!
-        val trace = CliBindingTrace()
+        val trace = CliBindingTrace(project)
 
         val configuration = environment.configuration
         // configuration.put(JVMConfigurationKeys.ADD_BUILT_INS_FROM_COMPILER_TO_DEPENDENCIES, true)
