@@ -31,5 +31,5 @@ val WhatsAppCloudConnectorModule = Kodein.Module {
 
 // used in file META-INF/services/ai.tock.shared.service.BotAdditionalModulesService
 class IOCModulesService : BotAdditionalModulesService {
-    override fun customModules() = setOf(WhatsAppCloudConnectorModule)
+    override fun defaultModules() = setOf(WhatsAppCloudConnectorModule)
 }
