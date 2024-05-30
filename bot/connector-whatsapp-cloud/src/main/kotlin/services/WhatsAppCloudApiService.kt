@@ -29,8 +29,10 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.*
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Component
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.PayloadParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
 import ai.tock.bot.engine.BotRepository
+import ai.tock.shared.TockProxyAuthenticator
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import mu.KotlinLogging
@@ -128,10 +130,54 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         token: String,
         messageRequest: WhatsAppCloudSendBotTemplateMessage
     ) {
-        val updatedButtons = messageRequest.template.components
-            .filterIsInstance<Component.Button>()
-            .map { button -> updateTemplateButton(button) }
-        sendUpdatedTemplateMessage(phoneNumberId, token, messageRequest, updatedButtons)
+        val updatedComponents = messageRequest.template.components.map { component ->
+            if (component is Component.Carousel) {
+                updateCarouselPayloads(component)
+            } else {
+                component
+            }
+        }
+
+        val updatedMessageRequest = messageRequest.copy(
+            template = messageRequest.template.copy(
+                components = updatedComponents
+            )
+        )
+
+        sendUpdatedTemplateMessage(phoneNumberId, token, updatedMessageRequest)
+    }
+
+    fun updatePayloadParameter(payloadParameter: PayloadParameter, newPayload: String?): PayloadParameter {
+        return payloadParameter.copy(type = payloadParameter.type, payload = newPayload, text = payloadParameter.text)
+    }
+
+    fun updateCarouselPayloads(carousel: Component.Carousel): Component.Carousel {
+        val updatedCards = carousel.cards.map { card ->
+            val updatedComponents = card.components.map { component ->
+                if (component is Component.Button) {
+                    val updatedParameters = component.parameters.map { param ->
+                        if ((param.payload?.length ?: 0) > 128) {
+                            val newPayload = UUID.randomUUID().toString()
+                            payloadWhatsApp.save(
+                                PayloadWhatsAppCloud(
+                                    newPayload,
+                                    param.payload!!,
+                                    Date.from(Instant.now())
+                                )
+                            )
+                            updatePayloadParameter(param, newPayload)
+                        } else {
+                            param
+                        }
+                    }
+                    component.copy(parameters = updatedParameters)
+                } else {
+                    component
+                }
+            }
+            card.copy(components = updatedComponents)
+        }
+        return carousel.copy(cards = updatedCards)
     }
 
     private fun updateTemplateButton(button: Component.Button): Component.Button =
@@ -147,13 +193,11 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         phoneNumberId: String,
         token: String,
         messageRequest: WhatsAppCloudSendBotTemplateMessage,
-        updatedButtons: List<Component.Button>
     ) {
-        val updatedMessageRequest =
-            messageRequest.copy(template = messageRequest.template.copy(components = updatedButtons))
-        replaceWithRealImageId(updatedMessageRequest, phoneNumberId, token)
-        send(updatedMessageRequest) {
-            apiClient.graphApi.sendMessage(phoneNumberId, token, updatedMessageRequest).execute()
+
+        replaceWithRealImageId(messageRequest, phoneNumberId, token)
+        send(messageRequest) {
+            apiClient.graphApi.sendMessage(phoneNumberId, token, messageRequest).execute()
         }
     }
 
@@ -256,7 +300,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         phoneNumberId: String,
         token: String
     ) {
-        val client = OkHttpClient()
+        val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
         messageRequest.template.components
             .asSequence()
             .filterIsInstance<Component.Carousel>()
@@ -275,7 +319,8 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     private fun uploadMedia(client: OkHttpClient, fileUrl: String, fileType: String): RequestBody {
 
-        val request = Request.Builder().url(fileUrl).build()
+        val request = Request.Builder()
+            .url(fileUrl).build()
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("Failed to download file: $fileUrl")
