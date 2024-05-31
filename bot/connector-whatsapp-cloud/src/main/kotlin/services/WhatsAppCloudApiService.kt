@@ -26,13 +26,18 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.ResponseCr
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.*
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotInteractiveMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotLocationMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTemplateMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTextMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Component
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.PayloadParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.TockProxyAuthenticator
+import ai.tock.shared.cache.getOrCache
 import ai.tock.shared.error
 import ai.tock.shared.jackson.mapper
 import mu.KotlinLogging
@@ -42,10 +47,12 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.litote.kmongo.toId
 import retrofit2.Response
 import java.io.IOException
 import java.time.Instant
-import java.util.*
+import java.util.Date
+import java.util.UUID
 
 class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
@@ -210,32 +217,36 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     ): MediaResponse {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_${fileUrl.javaClass.simpleName.lowercase()}")
-        try {
 
-            val file = uploadMedia(client, fileUrl, fileType)
+        return getOrCache("$phoneNumberId-$fileUrl".toId(), IMAGE_ID_CACHE) {
+            try {
+                val file = uploadMedia(client, fileUrl, fileType)
 
-            val body = MultipartBody.Builder().setType(MultipartBody.FORM)
-                .addFormDataPart("file", "fileimage", file)
-                .addFormDataPart("messaging_product", "whatsapp")
-                .build()
-            val request = Request.Builder()
-                .url("https://graph.facebook.com/v19.0/$phoneNumberId/media")
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-            client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    throw ConnectorException("Failed to send message: ${response.code}")
+                val body = MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("file", "fileimage", file)
+                    .addFormDataPart("messaging_product", "whatsapp")
+                    .build()
+                val request = Request.Builder()
+                    .url("https://graph.facebook.com/v19.0/$phoneNumberId/media")
+                    .post(body)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Authorization", "Bearer $token")
+                    .build()
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        throw ConnectorException("Failed to send message: ${response.code}")
+                    }
+                    mapper.readValue(response.body!!.string(), MediaResponse::class.java).id
                 }
-                return mapper.readValue(response.body!!.string(), MediaResponse::class.java)
+            } catch (e: Exception) {
+                BotRepository.requestTimer.throwable(e, requestTimerData)
+                throw if (e is ConnectorException) e else ConnectorException("Error sending media: ${e.message}")
+            } finally {
+                BotRepository.requestTimer.end(requestTimerData)
             }
-        } catch (e: Exception) {
-            BotRepository.requestTimer.throwable(e, requestTimerData)
-            throw if (e is ConnectorException) e else ConnectorException("Error sending media: ${e.message}")
-        } finally {
-            BotRepository.requestTimer.end(requestTimerData)
-        }
+        }?.let { mediaId ->
+            MediaResponse(mediaId)
+        } ?: throw ConnectorException("Error sending media")
     }
 
     fun sendBuildTemplate(whatsAppBusinessAccountId: String, token: String, messageTemplate: WhatsAppCloudTemplate) {
@@ -335,3 +346,5 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         throw ConnectorException(errorMessage)
     }
 }
+
+private const val IMAGE_ID_CACHE = "whatsapp_image_id_cache"
