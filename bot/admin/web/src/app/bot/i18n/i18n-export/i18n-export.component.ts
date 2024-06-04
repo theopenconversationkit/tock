@@ -92,7 +92,7 @@ export class I18nExportComponent implements OnInit {
       }
 
       if (form.format === 'json') {
-        this.botService.downloadI18nLabelsCsv(query).subscribe((blob) => {
+        this.botService.downloadI18nLabelsJson(query).subscribe((blob) => {
           saveAs(blob, 'labels' + queryString + '.json');
           this.cancel();
         });
