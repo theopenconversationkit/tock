@@ -21,8 +21,12 @@ from jinja2 import Template, TemplateError
 from langchain_core.output_parsers import NumberedListOutputParser
 from langchain_core.prompts import PromptTemplate as LangChainPromptTemplate
 
-from gen_ai_orchestrator.errors.exceptions.exceptions import GenAIPromptTemplateException
-from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import openai_exception_handler
+from gen_ai_orchestrator.errors.exceptions.exceptions import (
+    GenAIPromptTemplateException,
+)
+from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
+    openai_exception_handler,
+)
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.prompt.prompt_formatter import PromptFormatter
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
@@ -41,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 @openai_exception_handler(provider='OpenAI or AzureOpenAIService')
 async def generate_and_split_sentences(
-        query: SentenceGenerationQuery,
+    query: SentenceGenerationQuery,
 ) -> SentenceGenerationResponse:
     """
     Generate sentences using a language model based on the provided query,
@@ -56,11 +60,13 @@ async def generate_and_split_sentences(
     logger.info('Prompt completion - template validation')
     validate_prompt_template(query.prompt)
 
+    parser = NumberedListOutputParser()
     prompt = LangChainPromptTemplate.from_template(
-        template=query.prompt.template, template_format=query.prompt.formatter.value
+        template=query.prompt.template,
+        template_format=query.prompt.formatter.value,
+        partial_variables={'format_instructions': parser.get_format_instructions()},
     )
     model = get_llm_factory(query.llm_setting).get_language_model()
-    parser = NumberedListOutputParser()
 
     chain = prompt | model | parser
     sentences = await chain.ainvoke(query.prompt.inputs)
