@@ -16,12 +16,7 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.media.content
 
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
-
 data class WhatsAppCloudBotMedia(
-        val filePath: String,
-        val mediaType: String,
+    val filePath: String,
+    val mediaType: String,
 )

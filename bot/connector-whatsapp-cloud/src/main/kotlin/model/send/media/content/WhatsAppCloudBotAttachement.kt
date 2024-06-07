@@ -17,6 +17,6 @@
 package ai.tock.bot.connector.whatsapp.cloud.model.send.media.content
 
 data class WhatsAppCloudBotAttachement(
-        val fileUrl: String,
-        val fileType: String,
+    val fileUrl: String,
+    val fileType: String,
 )

@@ -39,7 +39,6 @@ import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.TockProxyAuthenticator
 import ai.tock.shared.cache.getOrCache
 import ai.tock.shared.error
-import ai.tock.shared.jackson.mapper
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -49,7 +48,6 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.litote.kmongo.toId
 import retrofit2.Response
-import java.io.IOException
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
@@ -220,32 +218,23 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
         return getOrCache("$phoneNumberId-$fileUrl".toId(), IMAGE_ID_CACHE) {
             try {
-                val file = uploadMedia(client, fileUrl, fileType)
+                val file = retrieveMedia(client, fileUrl, fileType)
 
-                val body = MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("file", "fileimage", file)
-                    .addFormDataPart("messaging_product", "whatsapp")
-                    .build()
-                val request = Request.Builder()
-                    .url("https://graph.facebook.com/v19.0/$phoneNumberId/media")
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("Authorization", "Bearer $token")
-                    .build()
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        throw ConnectorException("Failed to send message: ${response.code}")
-                    }
-                    mapper.readValue(response.body!!.string(), MediaResponse::class.java).id
-                }
+                val media = apiClient.graphApi.uploadMediaInWhatsAppAccount(
+                    phoneNumberId,
+                    MultipartBody.Builder().setType(MultipartBody.FORM)
+                        .addFormDataPart("file", "fileimage", file)
+                        .addFormDataPart("messaging_product", "whatsapp")
+                        .build()
+                )
+
+                media.execute().body()
             } catch (e: Exception) {
                 BotRepository.requestTimer.throwable(e, requestTimerData)
                 throw if (e is ConnectorException) e else ConnectorException("Error sending media: ${e.message}")
             } finally {
                 BotRepository.requestTimer.end(requestTimerData)
             }
-        }?.let { mediaId ->
-            MediaResponse(mediaId)
         } ?: throw ConnectorException("Error sending media")
     }
 
@@ -277,7 +266,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             if (e is ConnectorException) {
                 throw e
             } else {
-                throwError(request, e.message ?: "")
+                throwError(e.message ?: "")
             }
         } finally {
             BotRepository.requestTimer.end(requestTimerData)
@@ -299,7 +288,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             if (e is ConnectorException) {
                 throw e
             } else {
-                throwError(request, e.message ?: "")
+                throwError(e.message ?: "")
             }
         } finally {
             BotRepository.requestTimer.end(requestTimerData)
@@ -328,21 +317,21 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             }
     }
 
-    private fun uploadMedia(client: OkHttpClient, fileUrl: String, fileType: String): RequestBody {
+    private fun retrieveMedia(client: OkHttpClient, fileUrl: String, fileType: String): RequestBody {
 
         val request = Request.Builder()
             .url(fileUrl).build()
 
         client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Failed to download file: $fileUrl")
+            if (!response.isSuccessful) error("Failed to download file: $fileUrl - ${response.message}")
             val mediaType = fileType.toMediaTypeOrNull()
-            return response.body!!.byteStream().readBytes().toRequestBody(mediaType)
+            return response.body?.byteStream()?.readBytes()?.toRequestBody(mediaType)
+                ?: error("no response message for: $fileUrl")
         }
 
     }
 
-    private fun <T> throwError(request: T, errorMessage: String): Nothing {
-        //warnRequest(request) { mapper.writeValueAsString(request) }
+    private fun throwError(errorMessage: String): Nothing {
         throw ConnectorException(errorMessage)
     }
 }

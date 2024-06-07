@@ -24,9 +24,9 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
     private const val APP_ID = "appId"
     private const val WHATSAPP_PHONE_NUMBER_ID = "whatsAppPhoneNumberId"
     private const val WHATSAPP_BUSINESS_ACCOUNT_ID = "whatsAppBusinessAccountId"
-    private const val TOKEN = "token"
+    internal const val TOKEN = "token"
     private const val VERIFY_TOKEN = "verifyToken"
-    private const val SECRET = "secret"
+    internal const val SECRET = "secret"
     private const val MODE = "mode"
 
     override val connectorType: ConnectorType get() = whatsAppCloudConnectorType
@@ -34,7 +34,7 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration){
             val appId = parameters[APP_ID]?.takeIf { it.isNotBlank() } ?: connectorId
-            return WhatsAppConnectorCloud(
+            return WhatsAppConnectorCloudConnector(
                 connectorId,
                 appId,
                 parameters.getValue(WHATSAPP_PHONE_NUMBER_ID),
@@ -44,7 +44,7 @@ internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
                 parameters.getValue(TOKEN),
                 parameters[VERIFY_TOKEN],
                 parameters.getValue(MODE),
-                WhatsAppCloudApiClient(parameters.getValue(SECRET), parameters.getValue(TOKEN)),
+                createCloudApiClient(this),
                 createRequestFilter(connectorConfiguration)
 
             )

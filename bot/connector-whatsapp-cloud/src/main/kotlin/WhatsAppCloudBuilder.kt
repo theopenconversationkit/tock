@@ -49,7 +49,6 @@ private const val WHATS_APP_MAX_SECTIONS = 10
 
 /**
  * The WhatsApp cloud connector type.
- * Les methodes présente ici sont utilisé pour que le chat bot répond a l'utilisateur
  */
 val whatsAppCloudConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
 

@@ -16,9 +16,11 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
-import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.*
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTextMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotLocationMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCoudBotMessageType
 import ai.tock.bot.engine.message.GenericMessage
 
 data class WhatsAppCloudBotLocationMessage(

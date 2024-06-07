@@ -33,7 +33,7 @@ internal object WebhookActionConverter {
 
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
 
-    fun toEvent(message: WhatsAppCloudMessage, applicationId: String, client: WhatsAppCloudApiClient): Event? {
+    fun toEvent(message: WhatsAppCloudMessage, applicationId: String): Event? {
         val senderId = createHashedId(message.from)
         return when (message) {
             is WhatsAppCloudTextMessage -> SendSentence(

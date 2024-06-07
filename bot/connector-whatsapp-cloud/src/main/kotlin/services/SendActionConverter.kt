@@ -31,22 +31,22 @@ import ai.tock.bot.engine.action.SendSentence
 
 object SendActionConverter {
 
-    fun toBotMessage(action: Action) : WhatsAppCloudSendBotMessage?{
+    fun toBotMessage(action: Action): WhatsAppCloudSendBotMessage? {
         return if (action is SendSentence) {
             (action.message(whatsAppCloudConnectorType) as? WhatsAppCloudBotMessage)
-                    ?.let {
-                        it.toSendBotMessage(
-                                (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) }
-                        )
-                    }
-                    ?: action.stringText?.let { text ->
-                        WhatsAppCloudSendBotTextMessage(
-                                "whatsapp",
-                                TextContent(text),
-                                individual,
-                                UserHashedIdCache.getRealId(action.recipientId.id)
-                        )
-                    } ?: error("null text in action $action")
+                ?.let {
+                    it.toSendBotMessage(
+                        (it.userId ?: action.recipientId.id).let { id -> UserHashedIdCache.getRealId(id) }
+                    )
+                }
+                ?: action.stringText?.let { text ->
+                    WhatsAppCloudSendBotTextMessage(
+                        "whatsapp",
+                        TextContent(text),
+                        individual,
+                        UserHashedIdCache.getRealId(action.recipientId.id)
+                    )
+                } ?: error("null text in action $action")
 
         } else {
             null

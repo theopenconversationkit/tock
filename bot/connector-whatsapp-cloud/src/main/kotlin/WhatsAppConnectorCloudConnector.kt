@@ -19,13 +19,7 @@ package ai.tock.bot.connector.whatsapp.cloud
 import ai.tock.bot.connector.ConnectorBase
 import ai.tock.bot.connector.ConnectorCallback
 import ai.tock.bot.connector.ConnectorData
-import ai.tock.bot.connector.ConnectorType
-import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
-import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTextMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Change
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.Entry
 import ai.tock.bot.connector.whatsapp.cloud.model.webhook.WebHookEventReceiveMessage
@@ -49,7 +43,7 @@ import java.time.Duration
 import java.time.ZoneOffset
 import java.util.*
 
-class WhatsAppConnectorCloud internal constructor(
+class WhatsAppConnectorCloudConnector internal constructor(
     internal val connectorId: String,
     private val applicationId: String,
     private val phoneNumberId: String,
@@ -68,7 +62,7 @@ class WhatsAppConnectorCloud internal constructor(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val whatsAppCloudApiService : WhatsAppCloudApiService = WhatsAppCloudApiService(client)
+    private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
@@ -81,10 +75,10 @@ class WhatsAppConnectorCloud internal constructor(
                     val modeHub = queryParams.get("hub.mode")
                     val verifyTokenMeta = queryParams.get("hub.verify_token")
                     val challenge = queryParams.get("hub.challenge")
-                    if (modeHub == mode && verifyToken == verifyTokenMeta){
+                    if (modeHub == mode && verifyToken == verifyTokenMeta) {
                         logger.info("WEBHOOK_VERIFIED")
                         context.response().setStatusCode(200).end(challenge)
-                    }else{
+                    } else {
                         context.response().end("Invalid verify token")
                     }
 
@@ -94,7 +88,7 @@ class WhatsAppConnectorCloud internal constructor(
                 }
             }
 
-            router.post(path).handler {context ->
+            router.post(path).handler { context ->
                 if (!requestFilter.accept(context.request())) {
                     context.response().setStatusCode(403).end()
                     return@handler
@@ -107,7 +101,7 @@ class WhatsAppConnectorCloud internal constructor(
 
                     handleWebHook(requestBody, controller)
 
-                }catch (e: Throwable) {
+                } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
                     try {
@@ -119,7 +113,7 @@ class WhatsAppConnectorCloud internal constructor(
                 }
 
             }
-            router.post("/create_template").handler {context ->
+            router.post("/create_template").handler { context ->
                 if (!requestFilter.accept(context.request())) {
                     context.response().setStatusCode(403).end()
                     return@handler
@@ -131,12 +125,12 @@ class WhatsAppConnectorCloud internal constructor(
                     val requestBody = mapper.readValue<WhatsAppCloudTemplate>(body)
 
                     whatsAppCloudApiService.sendBuildTemplate(
-                        whatsAppBusinessAccountId, token,requestBody
+                        whatsAppBusinessAccountId, token, requestBody
                     )
 
                     logger.info { "ok" }
 
-                }catch (e: Throwable) {
+                } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
                     try {
@@ -154,18 +148,16 @@ class WhatsAppConnectorCloud internal constructor(
     private fun handleWebHook(requestBody: WebHookEventReceiveMessage, controller: ConnectorController) {
         requestBody.entry.forEach { entry: Entry ->
             entry.changes.forEach { change: Change ->
-                if(change.value.messages.size!=null){
-                    change.value.messages.forEach { message: WhatsAppCloudMessage ->
-                        executor.executeBlocking {
-                            val event =WebhookActionConverter.toEvent(message, applicationId, client)
-                            if (event != null) {
-                                controller.handle(
-                                    event,
-                                    ConnectorData(WhatsAppConnectorCloudCallback(event.applicationId))
-                                )
-                            }else{
-                                logger.warn("unable to convert $message to event")
-                            }
+                change.value.messages.forEach { message: WhatsAppCloudMessage ->
+                    executor.executeBlocking {
+                        val event = WebhookActionConverter.toEvent(message, applicationId)
+                        if (event != null) {
+                            controller.handle(
+                                event,
+                                ConnectorData(WhatsAppConnectorCloudCallback(event.applicationId))
+                            )
+                        } else {
+                            logger.warn("unable to convert $message to event")
                         }
                     }
                 }
@@ -180,28 +172,12 @@ class WhatsAppConnectorCloud internal constructor(
                     val delay = Duration.ofMillis(delayInMs)
                     executor.executeBlocking(delay) {
                         whatsAppCloudApiService.sendMessage(
-                            phoneNumberId, token,it
+                            phoneNumberId, token, it
                         )
                     }
                 }
         }
     }
 
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
-        try {
-            return UserPreferences(
-                null,
-                null,
-                null,
-                ZoneOffset.ofHours(3),
-                Locale(property("tock_default_locale", "fr")),
-                null,
-                null,
-                initialLocale = Locale(property("tock_default_locale", "fr"))
-            )
-        } catch (e: Exception) {
-            logger.error(e)
-        }
-        return UserPreferences()
-    }
+    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences = UserPreferences()
 }

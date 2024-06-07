@@ -35,61 +35,62 @@ private const val VERSION = "19.0"
 
 class WhatsAppCloudApiClient(val secretKey: String, val token: String) {
 
-    interface  GraphApi {
+    interface GraphApi {
 
         @POST("v$VERSION/{phoneNumberId}/messages")
-        fun sendMessage(@Path("phoneNumberId") phoneNumberId: String,
-                        @Query("access_token") accessToken: String,
-                        @Body messageRequest: WhatsAppCloudSendBotMessage
+        fun sendMessage(
+            @Path("phoneNumberId") phoneNumberId: String,
+            @Query("access_token") accessToken: String,
+            @Body messageRequest: WhatsAppCloudSendBotMessage
         ): Call<SendSuccessfulResponse>
 
         @POST("v$VERSION/{phoneNumberId}/media")
         fun uploadMediaInWhatsAppAccount(
-                @Path("phoneNumberId") phoneNumberId: String,
-                @Body body: RequestBody
+            @Path("phoneNumberId") phoneNumberId: String,
+            @Body body: RequestBody
         ): Call<MediaResponse>
 
 
-
         @GET("v$VERSION/{media-id}")
-        fun retrieveMediaUrl(@Path("media-id") mediaId: String?,
-                         @Query("access_token") accessToken: String
+        fun retrieveMediaUrl(
+            @Path("media-id") mediaId: String?,
+            @Query("access_token") accessToken: String
         ): Call<Media?>?
 
         @GET
         @Streaming
         @Headers(value = ["User-Agent:curl/7.64.1"])
-        fun downloadMediaFile(@Url url: String?,
-                          @Query("access_token") accessToken: String
+        fun downloadMediaFile(
+            @Url url: String?,
+            @Query("access_token") accessToken: String
         ): Call<ResponseBody?>?
 
         @DELETE("v$VERSION/{media-id}")
-        fun deleteMedia(@Path("media-id") mediaId: String?,
-                        @Query("access_token") accessToken: String
+        fun deleteMedia(
+            @Path("media-id") mediaId: String?,
+            @Query("access_token") accessToken: String
         ): Call<ResponseDeleteMedia?>?
 
 
         @POST("v$VERSION/{whatsAppBusinessAccountId}/message_templates")
         fun createMessageTemplate(
-                @Path("whatsAppBusinessAccountId") whatsappBusinessAccountId: String?,
-                @Query("access_token") accessToken: String,
-                @Body messageTemplate: WhatsAppCloudTemplate?)
-        : Call<ResponseCreateTemplate>
+            @Path("whatsAppBusinessAccountId") whatsappBusinessAccountId: String?,
+            @Query("access_token") accessToken: String,
+            @Body messageTemplate: WhatsAppCloudTemplate?
+        )
+                : Call<ResponseCreateTemplate>
 
     }
 
     private val logger = KotlinLogging.logger {}
-    val graphApi: GraphApi
+    val graphApi: GraphApi = retrofitBuilderWithTimeoutAndLogger(
+        longProperty("tock_whatsappcloud_request_timeout_ms", 30000),
+        logger,
+        requestGZipEncoding = booleanProperty("tock_whatsappcloud_request_gzip", true)
+    )
+        .baseUrl("https://graph.facebook.com")
+        .addJacksonConverter()
+        .build()
+        .create()
 
-    init {
-        graphApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_whatsappcloud_request_timeout_ms", 30000),
-                logger,
-                requestGZipEncoding = booleanProperty("tock_whatsappcloud_request_gzip", true)
-        )
-                .baseUrl("https://graph.facebook.com")
-                .addJacksonConverter()
-                .build()
-                .create()
-    }
 }
