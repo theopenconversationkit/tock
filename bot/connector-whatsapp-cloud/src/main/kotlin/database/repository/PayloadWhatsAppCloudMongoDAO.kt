@@ -20,6 +20,8 @@ import ai.tock.bot.connector.whatsapp.cloud.database.model.PayloadWhatsAppCloud
 import ai.tock.shared.TOCK_BOT_DATABASE
 import ai.tock.shared.error
 import ai.tock.shared.injector
+import ai.tock.shared.intProperty
+import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.MongoCollection
@@ -35,6 +37,7 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
      * Name of the MongoDB database collection used to store WhatsApp payloads.
      */
     private val collectionName = property("tock_whatsapp_payload", "whatsapp_payload")
+    private val payloadTTL = longProperty("tock_whatsapp_payload_ttl_days", 10)
     private val uuidRegex = Regex("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 
     private val database: MongoDatabase by injector.instance(
@@ -79,7 +82,7 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
         try {
             this.ensureIndex(
                 PayloadWhatsAppCloud::payloadExpireDate,
-                indexOptions = IndexOptions().expireAfter(1L, TimeUnit.DAYS)
+                indexOptions = IndexOptions().expireAfter(payloadTTL, TimeUnit.DAYS)
             )
         } catch (e: Exception) {
             logger.error(e)

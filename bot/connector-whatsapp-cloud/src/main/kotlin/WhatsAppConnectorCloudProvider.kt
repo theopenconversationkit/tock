@@ -22,7 +22,7 @@ import ai.tock.shared.resourceAsString
 internal object WhatsAppConnectorCloudProvider : ConnectorProvider {
 
     private const val APP_ID = "appId"
-    private const val WHATSAPP_PHONE_NUMBER_ID = "whatsAppPhoneNumberId"
+    internal const val WHATSAPP_PHONE_NUMBER_ID = "whatsAppPhoneNumberId"
     private const val WHATSAPP_BUSINESS_ACCOUNT_ID = "whatsAppBusinessAccountId"
     internal const val TOKEN = "token"
     private const val VERIFY_TOKEN = "verifyToken"

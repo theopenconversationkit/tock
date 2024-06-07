@@ -55,7 +55,7 @@ val whatsAppCloudConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
 /**
  * Sends an WhatsApp message only if the [ConnectorType] of the current [BotBus] is [whatsAppCloudConnectorType].
  */
-fun <T : Bus<T>> T.sendToWhatsApp(
+fun <T : Bus<T>> T.sendToWhatsAppCloud(
     messageProvider: T.() -> WhatsAppCloudBotMessage,
     delay: Long = defaultDelay(currentAnswerIndex)
 ): T {
@@ -81,7 +81,7 @@ fun <T : Bus<T>> T.withWhatsAppCloud(messageProvider: () -> WhatsAppCloudConnect
  * @param text the text sent
  * @param previewUrl is preview mode is used?
  */
-fun BotBus.whatsAppText(
+fun BotBus.whatsAppCloudText(
     text: CharSequence,
     previewUrl: Boolean = false
 ): WhatsAppCloudBotTextMessage =
@@ -92,16 +92,17 @@ fun BotBus.whatsAppText(
         userId = userId.id,
     )
 
-fun I18nTranslator.replyButtonMessage(
+fun I18nTranslator.whatsAppCloudReplyButtonMessage(
     text: CharSequence,
     vararg replies: QuickReply,
 
-    ) : WhatsAppCloudBotInteractiveMessage = replyButtonMessage(text, replies.toList())
+    ): WhatsAppCloudBotInteractiveMessage =
+    whatsAppCloudReplyButtonMessage(text, replies.toList())
 
-fun I18nTranslator.replyButtonMessage(
+fun I18nTranslator.whatsAppCloudReplyButtonMessage(
     text: CharSequence,
     replies: List<QuickReply>,
-) : WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
+): WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
     messagingProduct = "whatsapp",
     recipientType = WhatsAppCloudBotRecipientType.individual,
     interactive = WhatsAppCloudBotInteractive(
@@ -120,11 +121,11 @@ fun I18nTranslator.replyButtonMessage(
     )
 )
 
-fun I18nTranslator.urlButtonMessage(
-    text: CharSequence?=null,
+fun I18nTranslator.whatsAppCloudUrlButtonMessage(
+    text: CharSequence? = null,
     textButton: String,
     url: String
-) : WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
+): WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
     messagingProduct = "whatsapp",
     recipientType = WhatsAppCloudBotRecipientType.individual,
     interactive = WhatsAppCloudBotInteractive(
@@ -140,41 +141,41 @@ fun I18nTranslator.urlButtonMessage(
     )
 )
 
-fun I18nTranslator.listMessage(
+fun I18nTranslator.whatsAppCloudListMessage(
     text: CharSequence,
     button: CharSequence,
     vararg replies: QuickReply
-) : WhatsAppCloudBotInteractiveMessage =
-    listMessage(text, button, replies.toList())
+): WhatsAppCloudBotInteractiveMessage =
+    whatsAppCloudListMessage(text, button, replies.toList())
 
-fun I18nTranslator.listMessage(
+fun I18nTranslator.whatsAppCloudListMessage(
     text: CharSequence,
     button: CharSequence,
     replies: List<QuickReply>
-) : WhatsAppCloudBotInteractiveMessage =
-    completeListMessage(
+): WhatsAppCloudBotInteractiveMessage =
+    whatsAppCloudCompleteListMessage(
         text, button, WhatsAppCloudBotActionSection(rows = replies.map {
-        WhatsAppBotRow(
-            id = it.payload,
-            title = it.title,
-        )
-    })
+            WhatsAppBotRow(
+                id = it.payload,
+                title = it.title,
+            )
+        })
     )
 
-fun I18nTranslator.completeListMessage(
+fun I18nTranslator.whatsAppCloudCompleteListMessage(
     text: CharSequence,
     button: CharSequence,
     vararg sections: WhatsAppCloudBotActionSection
-) : WhatsAppCloudBotInteractiveMessage = completeListMessage(text, button, sections.toList())
+): WhatsAppCloudBotInteractiveMessage = whatsAppCloudCompleteListMessage(text, button, sections.toList())
 
-fun I18nTranslator.completeListMessage(
+fun I18nTranslator.whatsAppCloudCompleteListMessage(
     text: CharSequence,
     button: CharSequence,
     sections: List<WhatsAppCloudBotActionSection>,
-) : WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
+): WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
     messagingProduct = "whatsapp",
     recipientType = WhatsAppCloudBotRecipientType.individual,
-    interactive =  WhatsAppCloudBotInteractive(
+    interactive = WhatsAppCloudBotInteractive(
         type = WhatsAppCloudBotInteractiveType.list,
         body = WhatsAppCloudBotBody(translate(text).toString()),
         action = WhatsAppCloudBotAction(
@@ -186,7 +187,8 @@ fun I18nTranslator.completeListMessage(
                         WhatsAppBotRow(
                             id = row.id.checkLength(WHATS_APP_ROW_ID_MAX_LENGTH),
                             title = translate(row.title).toString().checkLength(WHATS_APP_ROW_TITLE_MAX_LENGTH),
-                            description = translate(row.description).toString().checkLength(WHATS_APP_ROW_DESCRIPTION_MAX_LENGTH)
+                            description = translate(row.description).toString()
+                                .checkLength(WHATS_APP_ROW_DESCRIPTION_MAX_LENGTH)
                         )
                     }
                 )
@@ -206,9 +208,9 @@ fun I18nTranslator.completeListMessage(
 }
 
 
-fun I18nTranslator.replyLocationMessage(
+fun I18nTranslator.whatsAppCloudReplyLocationMessage(
     text: CharSequence
-) : WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
+): WhatsAppCloudBotInteractiveMessage = WhatsAppCloudBotInteractiveMessage(
     messagingProduct = "whatsapp",
     recipientType = WhatsAppCloudBotRecipientType.individual,
     interactive = WhatsAppCloudBotInteractive(
@@ -221,54 +223,54 @@ fun I18nTranslator.replyLocationMessage(
 )
 
 
-fun <T: Bus<T>> T.quickReply(
+fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     parameters: Parameters
 ): QuickReply =
-    quickReply(title, targetIntent, stepName, parameters.toMap())
+    whatsAppCloudQuickReply(title, targetIntent, stepName, parameters.toMap())
 
-fun <T: Bus<T>> T.quickReply(
+fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     vararg parameters: Pair<String, String>
-) : QuickReply = quickReply(title, targetIntent.wrappedIntent(), step?.name, parameters.toMap())
+): QuickReply = whatsAppCloudQuickReply(title, targetIntent.wrappedIntent(), step?.name, parameters.toMap())
 
-fun <T: Bus<T>> T.quickReply(
+fun <T : Bus<T>> T.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     step: String? = null,
     parameters: Map<String, String> = mapOf()
-) : QuickReply =
-    quickReply(title, targetIntent, step, parameters) { intent, s, params ->
+): QuickReply =
+    whatsAppCloudQuickReply(title, targetIntent, step, parameters) { intent, s, params ->
         SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
     }
 
-private fun I18nTranslator.quickReply(
+private fun I18nTranslator.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
     step: String? = null,
     parameters: Map<String, String>,
     payloadEncoder: (IntentAware, String?, Map<String, String>) -> String
-) : QuickReply = QuickReply(
+): QuickReply = QuickReply(
     translate(title).toString(),
     payloadEncoder.invoke(targetIntent, step, parameters)
 )
 
-fun I18nTranslator.nlpQuickReply(
+fun I18nTranslator.whatsAppCloudNlpQuickReply(
     title: CharSequence,
     textToSend: CharSequence = title,
-) : QuickReply = QuickReply(
+): QuickReply = QuickReply(
     translate(title).toString(),
     SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
 )
 
-fun I18nTranslator.buildTemplateMessage(
+fun I18nTranslator.whatsAppCloudBuildTemplateMessage(
     templateName: String,
     languageCode: String,
     components: List<Component>
-):  WhatsAppCloudBotTemplateMessage {
+): WhatsAppCloudBotTemplateMessage {
     return WhatsAppCloudBotTemplateMessage(
         messagingProduct = "whatsapp",
         recipientType = WhatsAppCloudBotRecipientType.individual,
@@ -283,9 +285,9 @@ fun I18nTranslator.buildTemplateMessage(
 }
 
 
-fun I18nTranslator.buildTemplateMessageCarousel(
+fun I18nTranslator.whatsAppCloudBuildTemplateMessageCarousel(
     templateName: String,
-    components : List<Component.Card>,
+    components: List<Component.Card>,
     languageCode: String
 ): WhatsAppCloudBotTemplateMessage {
     return WhatsAppCloudBotTemplateMessage(
@@ -307,102 +309,108 @@ fun I18nTranslator.buildTemplateMessageCarousel(
 }
 
 
-fun <T : Bus<T>> T.cardCarousel(
+fun <T : Bus<T>> T.whatsAppCloudCardCarousel(
     cardIndex: Int,
     components: List<Component>
 ): Component.Card = Component.Card(
     cardIndex = cardIndex,
     components = components
 )
-fun <T : Bus<T>> T.bodyTemplate(
+
+fun <T : Bus<T>> T.whatsAppCloudBodyTemplate(
     parameters: List<TextParameter>
-):Component.Body = Component.Body(
+): Component.Body = Component.Body(
     type = ComponentType.BODY,
     parameters = parameters
 )
 
-fun <T : Bus<T>> T.TextParameterTemplate(
-    typeParameter:CharSequence?,
+fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
+    typeParameter: CharSequence?,
     textButton: CharSequence?
-):TextParameter = TextParameter(
+): TextParameter = TextParameter(
     type = ParameterType.valueOf(translate(typeParameter).toString()),
     text = translate(textButton).toString(),
 )
 
-fun buttonTemplate(
+fun whatsAppCloudButtonTemplate(
     index: String,
     subType: String,
     parameters: List<PayloadParameter>
-):Component.Button = Component.Button(
+): Component.Button = Component.Button(
     type = ComponentType.BUTTON,
     subType = ButtonSubType.valueOf(subType),
     index = index,
     parameters = parameters
 )
 
-fun <T : Bus<T>> T.postbackButton(
+fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     index: String,
     textButton: String,
     payload: String?
-):Component.Button = buttonTemplate(index, ButtonSubType.QUICK_REPLY.name, listOf(
-    payloadParameterTemplate(textButton, payload, ParameterType.PAYLOAD.name)
-))
+): Component.Button = whatsAppCloudButtonTemplate(
+    index, ButtonSubType.QUICK_REPLY.name, listOf(
+        whatsAppCloudPayloadParameterTemplate(textButton, payload, ParameterType.PAYLOAD.name)
+    )
+)
 
-fun <T : Bus<T>> T.whatsAppPostbackButton(
+fun <T : Bus<T>> T.whatsAppCloudPostbackButton(
     index: String,
     title: CharSequence,
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>? = null,
     parameters: Parameters = Parameters()
-):Component.Button = postbackButton(
+): Component.Button = whatsAppCloudPostbackButton(
     index = index,
     textButton = translate(title).toString(),
-    targetIntent.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap()+(index to index)) }
+    targetIntent.let { i -> SendChoice.encodeChoiceId(this, i, step, parameters.toMap() + (index to index)) }
 )
 
-fun <T : Bus<T>> T.whatsAppNLPPostbackButton(
+fun <T : Bus<T>> T.whatsAppCloudNLPPostbackButton(
     index: String,
     title: CharSequence,
     textToSend: CharSequence = title,
-):Component.Button = postbackButton(
+): Component.Button = whatsAppCloudPostbackButton(
     index = index,
     textButton = translate(title).toString(),
     payload = SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
 )
 
-fun <T : Bus<T>> T.whatsAppUrlButton(
+fun <T : Bus<T>> T.whatsAppCloudUrlButton(
     index: String,
     textButton: String,
-):Component.Button = buttonTemplate(index, ButtonSubType.URL.name, listOf(
-    payloadParameterTemplate(textButton, null,ParameterType.TEXT.name)
-))
+): Component.Button = whatsAppCloudButtonTemplate(
+    index, ButtonSubType.URL.name, listOf(
+        whatsAppCloudPayloadParameterTemplate(textButton, null, ParameterType.TEXT.name)
+    )
+)
 
-fun payloadParameterTemplate(
+fun whatsAppCloudPayloadParameterTemplate(
     textButton: String,
     payload: String?,
-    typeParameter:String,
-):PayloadParameter = PayloadParameter(
+    typeParameter: String,
+): PayloadParameter = PayloadParameter(
     type = ParameterType.valueOf(typeParameter),
     payload = payload,
     text = textButton,
 )
 
 
-fun headerTemplate(
-    typeParameter:String,
+fun whatsAppCloudHeaderTemplate(
+    typeParameter: String,
     imageId: String
-):Component.Header = Component.Header(
+): Component.Header = Component.Header(
     type = ComponentType.HEADER,
-    parameters = listOf(HeaderParameter.Image(
-        type = ParameterType.valueOf(typeParameter),
-        image = ImageId(
-            id = imageId
+    parameters = listOf(
+        HeaderParameter.Image(
+            type = ParameterType.valueOf(typeParameter),
+            image = ImageId(
+                id = imageId
+            )
         )
-    )
     )
 )
 
-private fun String.checkLength(maxLength: Int) : String {
+private fun String.checkLength(maxLength: Int): String {
     if (maxLength > 0 && this.length > maxLength) {
         logger.info { "text $this should not exceed $maxLength chars." }
     }

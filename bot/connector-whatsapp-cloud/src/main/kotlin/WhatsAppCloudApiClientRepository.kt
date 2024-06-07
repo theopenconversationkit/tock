@@ -19,6 +19,7 @@ package ai.tock.bot.connector.whatsapp.cloud
 import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.whatsapp.cloud.WhatsAppConnectorCloudProvider.SECRET
 import ai.tock.bot.connector.whatsapp.cloud.WhatsAppConnectorCloudProvider.TOKEN
+import ai.tock.bot.connector.whatsapp.cloud.WhatsAppConnectorCloudProvider.WHATSAPP_PHONE_NUMBER_ID
 import java.util.concurrent.ConcurrentHashMap
 
 private val cloudApiClientCache = ConcurrentHashMap<String, WhatsAppCloudApiClient>()
@@ -26,7 +27,8 @@ private val cloudApiClientCache = ConcurrentHashMap<String, WhatsAppCloudApiClie
 internal fun createCloudApiClient(connectorConfiguration: ConnectorConfiguration): WhatsAppCloudApiClient =
     WhatsAppCloudApiClient(
         connectorConfiguration.parameters.getValue(SECRET),
-        connectorConfiguration.parameters.getValue(TOKEN)
+        connectorConfiguration.parameters.getValue(TOKEN),
+        connectorConfiguration.parameters.getValue(WHATSAPP_PHONE_NUMBER_ID),
     )
         .apply {
             cloudApiClientCache[connectorConfiguration.connectorId] = this

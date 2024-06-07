@@ -36,9 +36,13 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderPar
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.PayloadParameter
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotActionButton
 import ai.tock.bot.engine.BotRepository
+import ai.tock.shared.Executor
 import ai.tock.shared.TockProxyAuthenticator
 import ai.tock.shared.cache.getOrCache
 import ai.tock.shared.error
+import ai.tock.shared.injector
+import ai.tock.shared.provide
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -56,6 +60,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     private val logger = KotlinLogging.logger {}
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
+    private val executor:Executor = injector.provide()
 
     fun sendMessage(phoneNumberId: String, token: String, messageRequest: WhatsAppCloudSendBotMessage) {
         try {
@@ -98,13 +103,15 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
     private fun updateButton(button: WhatsAppCloudBotActionButton): WhatsAppCloudBotActionButton =
         if (button.reply.id.length >= 256) {
             val uuidPayload = UUID.randomUUID().toString()
-            payloadWhatsApp.save(
-                PayloadWhatsAppCloud(
-                    uuidPayload,
-                    button.reply.id,
-                    Date.from(Instant.now()),
+            executor.executeBlocking {
+                payloadWhatsApp.save(
+                    PayloadWhatsAppCloud(
+                        uuidPayload,
+                        button.reply.id,
+                        Date.from(Instant.now()),
+                    )
                 )
-            )
+            }
             val copyReply = button.reply.copy(title = button.reply.title, id = uuidPayload)
             button.copy(reply = copyReply)
         } else {
@@ -163,13 +170,15 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
                     val updatedParameters = component.parameters.map { param ->
                         if ((param.payload?.length ?: 0) > 128) {
                             val newPayload = UUID.randomUUID().toString()
-                            payloadWhatsApp.save(
-                                PayloadWhatsAppCloud(
-                                    newPayload,
-                                    param.payload!!,
-                                    Date.from(Instant.now())
+                            executor.executeBlocking {
+                                payloadWhatsApp.save(
+                                    PayloadWhatsAppCloud(
+                                        newPayload,
+                                        param.payload!!,
+                                        Date.from(Instant.now())
+                                    )
                                 )
-                            )
+                            }
                             updatePayloadParameter(param, newPayload)
                         } else {
                             param
@@ -189,7 +198,9 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         button.copy(parameters = button.parameters.map { parameters ->
             parameters.payload?.takeIf { it.length >= 128 }?.let {
                 val uuidPayload = UUID.randomUUID().toString()
-                payloadWhatsApp.save(PayloadWhatsAppCloud(uuidPayload, it, Date.from(Instant.now())))
+                executor.executeBlocking {
+                    payloadWhatsApp.save(PayloadWhatsAppCloud(uuidPayload, it, Date.from(Instant.now())))
+                }
                 parameters.copy(payload = uuidPayload)
             } ?: parameters
         })
