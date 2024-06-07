@@ -305,18 +305,29 @@ fun <T : Bus<T>> T.webCardWithAttachment(
 
 /**
  * Creates a [WebMessage] from a [WebImage].
+ *
+ * On the frontend, this will usually be rendered as an img tag.
+ *
+ * Specific buttons like [webUrlButton] and [webPostbackButton] may not be supported by the frontend - in this case,
+ * [webCardWithAttachment] should be considered as an alternative.
+ *
+ * @param imageUrl the location of the image file to display (should be one of the [image formats supported by the img tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#supported_image_formats))
+ * @param title a title for the image, which is also used as a file name and an alternative description when `description` is left unspecified
+ * @param description the alternate description for the image
  */
-
-fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence, description: CharSequence? = null): WebMessage =
-    WebMessage(
+fun <T : Bus<T>> T.webImage(imageUrl: String, title: CharSequence, description: CharSequence? = null): WebMessage {
+    val translatedTitle = translate(title)
+    return WebMessage(
         image = WebImage(
             WebMediaFile(
                 imageUrl,
-                title.toString(),
+                translatedTitle.toString(),
                 AttachmentType.image,
                 if (description != null) translate(description).toString() else null
-            ),title)
+            ), translatedTitle
+        )
     )
+}
 
 /**
  * Creates a [WebMessage] from a [WebCarousel].
