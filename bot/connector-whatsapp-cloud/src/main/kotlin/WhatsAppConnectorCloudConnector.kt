@@ -147,7 +147,9 @@ class WhatsAppConnectorCloudConnector internal constructor(
 
     private fun handleWebHook(requestBody: WebHookEventReceiveMessage, controller: ConnectorController) {
         requestBody.entry.forEach { entry: Entry ->
-            entry.changes.forEach { change: Change ->
+            entry.changes.filter {
+                it.value.metadata.phoneNumberId == phoneNumberId
+            }.forEach { change: Change ->
                 change.value.messages.forEach { message: WhatsAppCloudMessage ->
                     executor.executeBlocking {
                         val event = WebhookActionConverter.toEvent(message, applicationId)
