@@ -19,7 +19,7 @@ package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 import ai.tock.bot.connector.whatsapp.cloud.model.common.TextContent
 import com.fasterxml.jackson.annotation.JsonProperty
 
-internal data  class WhatsAppCloudSendBotTextMessage (
+data class WhatsAppCloudSendBotTextMessage (
         override val messagingProduct: String,
         val text: TextContent,
         override val recipientType: WhatsAppCloudBotRecipientType,
