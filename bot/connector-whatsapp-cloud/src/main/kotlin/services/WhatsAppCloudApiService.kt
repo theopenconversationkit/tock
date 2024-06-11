@@ -233,6 +233,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
                 val media = apiClient.graphApi.uploadMediaInWhatsAppAccount(
                     phoneNumberId,
+                    "Bearer $token",
                     MultipartBody.Builder().setType(MultipartBody.FORM)
                         .addFormDataPart("file", "fileimage", file)
                         .addFormDataPart("messaging_product", "whatsapp")

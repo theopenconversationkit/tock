@@ -47,6 +47,7 @@ class WhatsAppCloudApiClient(val secretKey: String, val token: String, val phone
         @POST("v$VERSION/{phoneNumberId}/media")
         fun uploadMediaInWhatsAppAccount(
             @Path("phoneNumberId") phoneNumberId: String,
+            @Header("Authorization") headerValue: String,
             @Body body: RequestBody
         ): Call<MediaResponse>
 
@@ -86,7 +87,7 @@ class WhatsAppCloudApiClient(val secretKey: String, val token: String, val phone
     val graphApi: GraphApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_whatsappcloud_request_timeout_ms", 30000),
         logger,
-        requestGZipEncoding = booleanProperty("tock_whatsappcloud_request_gzip", true)
+        requestGZipEncoding = booleanProperty("tock_whatsappcloud_request_gzip", false)
     )
         .baseUrl("https://graph.facebook.com")
         .addJacksonConverter()
