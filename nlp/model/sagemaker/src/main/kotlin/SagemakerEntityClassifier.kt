@@ -48,7 +48,8 @@ internal class SagemakerEntityClassifier(model: EntityModelHolder) : NlpEntityCl
                         e.start,
                         e.end,
                         // entity is entityType in fact -- do not modify for the moment
-                        Entity(EntityType(e.entity),e.role.toString())
+                        Entity(EntityType(e.entity),e.role.toString()),
+                            e.value
                     ),
                     e.confidence
                 )
