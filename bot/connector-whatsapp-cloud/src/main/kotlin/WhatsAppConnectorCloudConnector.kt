@@ -180,6 +180,4 @@ class WhatsAppConnectorCloudConnector internal constructor(
                 }
         }
     }
-
-    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences = UserPreferences()
 }

@@ -92,11 +92,21 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         token: String,
         messageRequest: WhatsAppCloudSendBotInteractiveMessage
     ) {
-        messageRequest.interactive.action?.buttons?.let { buttons ->
-            val updateButtons = buttons.map { button ->
-                updateButton(button)
+        messageRequest.interactive.action?.let { action ->
+            if (!action.buttons.isNullOrEmpty()) {
+                val updateButtons = action.buttons.map { button ->
+                    updateButton(button)
+                }
+                sendUpdatedInteractiveMessage(phoneNumberId, token, messageRequest, updateButtons)
+            } else {
+                send(messageRequest) {
+                    apiClient.graphApi.sendMessage(
+                        phoneNumberId,
+                        token,
+                        messageRequest
+                    ).execute()
+                }
             }
-            sendUpdatedInteractiveMessage(phoneNumberId, token, messageRequest, updateButtons)
         }
     }
 
