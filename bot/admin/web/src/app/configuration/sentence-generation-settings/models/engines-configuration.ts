@@ -26,7 +26,8 @@ Answer in '{{locale}}' (language locale).
 
 ## Base sentences
 
-{% for sentence in sentences %}- {{sentence}}{% endfor %}
+{% for sentence in sentences %}
+- {{sentence}}{% endfor %}
 
 ## Generated sentences
 `;
