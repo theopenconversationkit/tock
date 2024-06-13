@@ -31,8 +31,6 @@ import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.monitoring.logError
-import ai.tock.bot.engine.user.PlayerId
-import ai.tock.bot.engine.user.UserPreferences
 import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.security.RequestFilter
@@ -40,8 +38,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.time.Duration
-import java.time.ZoneOffset
-import java.util.*
 
 class WhatsAppConnectorCloudConnector internal constructor(
     internal val connectorId: String,
@@ -64,6 +60,8 @@ class WhatsAppConnectorCloudConnector internal constructor(
 
     private val whatsAppCloudApiService: WhatsAppCloudApiService = WhatsAppCloudApiService(client)
     private val executor: Executor by injector.instance()
+
+    private val restrictedPhoneNumbers = listProperty("tock_whatsapp_cloud_restricted_phone_numbers", emptyList()).toSet().takeIf { it.isNotEmpty() }
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -150,7 +148,9 @@ class WhatsAppConnectorCloudConnector internal constructor(
             entry.changes.filter {
                 it.value.metadata.phoneNumberId == phoneNumberId
             }.forEach { change: Change ->
-                change.value.messages.forEach { message: WhatsAppCloudMessage ->
+                change.value.messages.filter {
+                    restrictedPhoneNumbers?.contains(it.from) ?: true
+                }.forEach { message: WhatsAppCloudMessage ->
                     executor.executeBlocking {
                         val event = WebhookActionConverter.toEvent(message, applicationId)
                         if (event != null) {
