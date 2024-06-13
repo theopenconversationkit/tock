@@ -1,24 +1,35 @@
 import { AzureOpenAiApiVersionsList, EnginesConfiguration, LLMProvider, OpenAIModelsList } from '../../../shared/model/ai-settings';
 
-export const DefaultPrompt: string = `Given the base sentences provided below, generate a list of {{nb_sentences}} unique sentences that convey the same meaning but vary in their presentation. 
+export const DefaultPrompt: string = `# Sentences generation instructions
+
+## Task description
+
+Given the base sentences provided below, generate a list of {{nb_sentences}} unique sentences that convey the same meaning but vary in their presentation. Ensure that all generated sentences remain intelligible and their meaning can be easily understood, despite the variations introduced.
+
+## Variations
 
 The variations should reflect a diverse range of alterations, including but not limited to:
-{% if options.spelling_mistakes %}
-- Spelling Mistakes: Introduce common and uncommon spelling errors that do not hinder the overall comprehension of the sentence.
-{% endif %}
-{% if options.sms_language %}
-- Incorporation of Non-Standard Language Features: Where appropriate, use features like onomatopoeia, mimetic words, or linguistic innovations unique to digital communication.
-{% endif %}
-{% if options.abbreviated_language %}
-- Abbreviations and DM (Direct Message) Language: Transform parts of the sentence using popular text messaging abbreviations, internet slang, and shorthand commonly found in online and informal communication.
-{% endif %}
-- Answer as a numbered list.
-- Answer in {{locale}}.
 
-Base Sentences (remember: you must answer as a numbered list):
+{% if options.spelling_mistakes %}- Spelling Mistakes: Introduce common and uncommon spelling errors that do not hinder the overall comprehension of the sentence.{% endif %}
+{% if options.sms_language %}- Incorporation of Non-Standard Language Features: Where appropriate, use features like onomatopoeia, mimetic words, or linguistic innovations unique to digital communication.{% endif %}
+{% if options.abbreviated_language %}- Abbreviations and DM (Direct Message) Language: Transform parts of the sentence using popular text messaging abbreviations, internet slang, and shorthand commonly found in online and informal communication.{% endif %}
+
+(if nothing is listed in this 'Variations' entry, find some)
+
+## Generated sentences language
+
+Answer in '{{locale}}' (language locale).
+
+## Format
+
+{{format_instructions}}
+
+## Base sentences
+
 {% for sentence in sentences %}
-- {{ sentence }}
-{% endfor %}
+- {{sentence}}{% endfor %}
+
+## Generated sentences
 `;
 
 export const EngineConfigurations: EnginesConfiguration[] = [
