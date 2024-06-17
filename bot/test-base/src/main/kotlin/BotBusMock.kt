@@ -461,6 +461,7 @@ open class BotBusMock(
             key.args.map { arg ->
                 when (arg) {
                     is I18nLabelValue -> translate(arg)
+                    is Pair<*, *> -> if (arg.second is I18nLabelValue) Pair(arg.first, translate(arg.second as I18nLabelValue)) else arg
                     else -> arg
                 }
             }
