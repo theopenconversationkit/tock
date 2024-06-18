@@ -122,7 +122,9 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
                         identifier=f'{doc.metadata["id"]}',
                         title=doc.metadata['title'],
                         url=doc.metadata['url'],
-                        content=doc.metadata['original_text'],
+                        content=doc.metadata['original_text']
+                        if 'original_text' in doc.metadata
+                        else doc.page_content,
                     ),
                     response['source_documents'],
                 )
