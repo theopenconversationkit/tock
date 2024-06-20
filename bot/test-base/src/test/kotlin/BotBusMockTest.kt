@@ -73,7 +73,7 @@ class BotBusMockTest {
         every { storyHandler.i18nKey(key = any(), defaultLabel =  any(), any() )} answers {
             I18nLabelValue(arg<String>(0), defaultNamespace, "test", arg<CharSequence>(1), arg<Array<Any?>>(3).toList(), arg<Set<I18nLocalizedLabel>>(2))
         }
-        every { storyHandler.i18nKey(any(), any(), any(), any())} answers {
+        every { storyHandler.i18nKey(any(), any(), any(), any(), any())} answers {
             I18nLabelValue(arg<String>(0), defaultNamespace, "test", arg<CharSequence>(1), arg<Array<Any?>>(3).toList(), arg<Set<I18nLocalizedLabel>>(2))
         }
 
@@ -215,11 +215,14 @@ class BotBusMockTest {
         val inner = botBus.i18nKey("inner", "this is inner text default", localizedDefaults = setOf(
             I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "this is inner text")
         ))
-        val outer = botBus.i18nKey("outer", "I have a default message: {0}", localizedDefaults = setOf(
-            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "I have a message: “{0}”")
-        ), inner)
+        val innerNamed = botBus.i18nKey("inner-named", "this is named inner text default", localizedDefaults = setOf(
+            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "this is named inner text")
+        ))
+        val outer = botBus.i18nKey("outer", "I have a default message: {0} and {:named}", localizedDefaults = setOf(
+            I18nLocalizedLabel(defaultLocale, UserInterfaceType.textChat, "I have a message: “{0}” and “{:named}”")
+        ), "named" to innerNamed, inner)
         val translated = botBus.translate(outer)
         assertIs<TranslatedSequence>(translated)
-        assertEquals("I have a message: “this is inner text”", translated.toString())
+        assertEquals("I have a message: “this is inner text” and “this is named inner text”", translated.toString())
     }
 }
