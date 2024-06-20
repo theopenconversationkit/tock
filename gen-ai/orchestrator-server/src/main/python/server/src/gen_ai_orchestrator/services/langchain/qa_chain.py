@@ -21,6 +21,7 @@ import logging
 import time
 from operator import itemgetter
 
+from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import Runnable
 
 from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
@@ -61,9 +62,9 @@ async def execute_qa_chain(query: QAQuery) -> QAResponse:
 
     conversational_qa_chain = create_qa_chain(query)
 
-    inputs = {**query.question_answering_prompt_inputs}
-
-    response = await conversational_qa_chain.ainvoke(inputs)
+    response = await conversational_qa_chain.ainvoke(
+        **query.question_answering_prompt_inputs
+    )
 
     qa_duration = '{:.2f}'.format(time.time() - start_time)
     logger.info('QA chain - End of execution. (Duration : %s seconds)', qa_duration)
@@ -76,10 +77,22 @@ async def execute_qa_chain(query: QAQuery) -> QAResponse:
                     url=doc.metadata['url'],
                     content=doc.page_content,
                 ),
-                response['source_documents'],
+                response,
             )
         ),
     )
+
+
+def build_chain(retriever: BaseRetriever) -> Runnable:
+    """
+    Create the QA chain using the specified retriever.
+
+    Args:
+        retriever: The retriever used in the QA system
+    Returns:
+        The QA chain.
+    """
+    return itemgetter('question') | retriever
 
 
 def create_qa_chain(query: QAQuery) -> Runnable:
@@ -104,4 +117,4 @@ def create_qa_chain(query: QAQuery) -> Runnable:
 
     logger.debug('QA chain - Create a QA chain')
 
-    return itemgetter('question') | retriever
+    return build_chain(retriever)

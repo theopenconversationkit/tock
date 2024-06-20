@@ -94,13 +94,8 @@ class RagResponse(BaseModel):
 class QAResponse(BaseModel):
     """The QA response model"""
 
-    documents: list[Source] = Field(
+    documents: set[Source] = Field(
         description='The sources corresponding to the QA request.'
-    )
-    debug: Optional[Any] = Field(
-        description='Debug data',
-        examples=[{'action': 'retrieve', 'result': 'OK', 'errors': []}],
-        default=None,
     )
 
 
