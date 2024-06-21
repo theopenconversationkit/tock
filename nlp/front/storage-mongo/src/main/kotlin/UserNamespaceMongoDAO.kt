@@ -23,13 +23,16 @@ import ai.tock.nlp.front.shared.user.UserNamespace_.Companion.Login
 import ai.tock.nlp.front.shared.user.UserNamespace_.Companion.Namespace
 import ai.tock.nlp.front.shared.user.UserNamespace_.Companion.Owner
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Filters
 import com.mongodb.client.model.ReplaceOptions
+import org.bson.conversions.Bson
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.setValue
+import java.util.regex.Pattern
 
 object UserNamespaceMongoDAO : UserNamespaceDAO {
 
@@ -43,7 +46,8 @@ object UserNamespaceMongoDAO : UserNamespaceDAO {
 
     override fun getNamespaces(user: String): List<UserNamespace> = col.find(Login eq user).toList()
 
-    override fun getUsers(namespace: String): List<UserNamespace> = col.find(Namespace eq namespace).toList()
+    override fun getUsers(namespace: String): List<UserNamespace> =
+        col.find(getCaseInsensitiveBsonFilter(Namespace.name, namespace)).toList()
 
     override fun saveNamespace(namespace: UserNamespace) {
         col.replaceOne(
@@ -68,6 +72,15 @@ object UserNamespaceMongoDAO : UserNamespaceDAO {
     override fun isNamespaceOwner(user: String, namespace: String): Boolean =
         col.countDocuments(and(Login eq user, Namespace eq namespace, Owner eq true)) == 1L
 
-    override fun isExistingNamespace(namespace: String): Boolean =
-        col.countDocuments(Namespace eq namespace) != 0L
+    override fun isExistingNamespace(namespace: String): Boolean {
+        return col.countDocuments(getCaseInsensitiveBsonFilter(Namespace.name, namespace)) != 0L
+    }
+
+    /**
+     * obtain the case-insensitive bson filter
+     */
+    private fun getCaseInsensitiveBsonFilter(field: String, input: String): Bson {
+        val escapedNamespace = Pattern.quote(input)
+        return Filters.regex(Namespace.name, "^$escapedNamespace$", "i")
+    }
 }
