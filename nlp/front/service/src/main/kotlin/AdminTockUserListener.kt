@@ -42,7 +42,7 @@ object AdminTockUserListener : TockUserListener {
 
             // if existing: take it
             do {
-                selected = existingNamespaces.find { it.namespace == namespace }?.copy(current = true)
+                selected = existingNamespaces.find { it.namespace.equals(namespace, ignoreCase = true) }?.copy(current = true)
                 if (selected == null && (joinNamespace || namespaceDAO.getUsers(namespace).isEmpty())) {
                     selected = UserNamespace(user.user, namespace, true, true)
                 } else {
