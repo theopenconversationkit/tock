@@ -51,10 +51,10 @@ def test_get_llm_provider_by_id_wrong_id():
 
 
 def test_get_llm_provider_setting_by_id():
-    """Test getting provider setting example for id (use first provider listed provider class)."""
-    response = client.get(f'{urls_prefix}/{list(LLMProvider)[0]}/setting/example')
+    """Test getting provider setting example for id (use fourth provider listed provider class)."""
+    response = client.get(f'{urls_prefix}/{list(LLMProvider)[3]}/setting/example')
     assert response.status_code == 200
-    assert response.json()['provider'] == list(LLMProvider)[0]
+    assert response.json()['provider'] == list(LLMProvider)[3]
 
 
 def test_check_llm_provider_setting():

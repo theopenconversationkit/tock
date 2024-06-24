@@ -29,9 +29,11 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
 from gen_ai_orchestrator.routers.app_monitors_router import (
     application_check_router,
 )
-from gen_ai_orchestrator.routers.em_providers_router import em_providers_router
 from gen_ai_orchestrator.routers.completion_router import completion_router
-from gen_ai_orchestrator.routers.llm_providers_router import llm_providers_router
+from gen_ai_orchestrator.routers.em_providers_router import em_providers_router
+from gen_ai_orchestrator.routers.llm_providers_router import (
+    llm_providers_router,
+)
 from gen_ai_orchestrator.routers.rag_router import rag_router
 
 # configure logging

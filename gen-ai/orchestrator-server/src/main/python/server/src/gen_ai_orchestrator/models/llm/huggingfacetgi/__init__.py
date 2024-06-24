@@ -12,15 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating Credentials."""
-
-from pydantic import BaseModel, Field
-
-
-class Credentials(BaseModel):
-    """The basic credentials"""
-
-    username: str = Field(description='The username.', examples=['nt123'])
-    password: str = Field(
-        description='The password.', examples=['a12G-3@p!'], min_length=8
-    )

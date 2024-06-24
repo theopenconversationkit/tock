@@ -33,6 +33,12 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
+    FakeLLMSetting,
+)
+from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting import (
+    HuggingFaceTGILLMSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
@@ -128,6 +134,23 @@ async def get_llm_provider_setting_by_id(
             api_version='2023-05-15',
             temperature=0.7,
             prompt='How to learn to ride a bike without wheels!',
+        )
+    elif provider_id == LLMProvider.HUGGING_FACE_TGI:
+        return HuggingFaceTGILLMSetting(
+            provider=LLMProvider.HUGGING_FACE_TGI,
+            temperature=0.8,
+            prompt='How to learn to ride a bike without wheels!',
+            repetition_penalty=1,
+            max_new_tokens=256,
+            api_base='https://mixtral-8x7b.inference-rec.s.arkea.com',
+        )
+    elif provider_id == LLMProvider.FAKE_LLM:
+        return FakeLLMSetting(
+            provider=LLMProvider.FAKE_LLM,
+            api_key=RawSecretKey(value='ab7***************************A1IV4B'),
+            temperature=0.8,
+            prompt='How to learn to ride a bike whtihout wheels!',
+            responses=['Hello', 'Hi'],
         )
 
 

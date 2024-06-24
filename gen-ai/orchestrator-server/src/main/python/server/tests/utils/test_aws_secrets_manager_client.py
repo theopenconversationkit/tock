@@ -17,7 +17,9 @@ from unittest.mock import MagicMock, patch
 import pytest
 from botocore.exceptions import ClientError
 
-from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
+from gen_ai_orchestrator.models.security.ai_provider_secret import (
+    AIProviderSecret,
+)
 from gen_ai_orchestrator.models.security.credentials import Credentials
 from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import (
     AWSSecretsManagerClient,
@@ -64,4 +66,3 @@ def test_parse_to_ai_provider_secret():
     json_str = '{"secret": "my_ai_secret"}'
     ai_provider_secret = parse_secret_data(json_str, AIProviderSecret)
     assert ai_provider_secret.secret == 'my_ai_secret'
-

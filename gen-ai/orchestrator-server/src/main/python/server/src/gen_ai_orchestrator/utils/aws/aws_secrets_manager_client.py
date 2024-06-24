@@ -21,7 +21,9 @@ from typing import Optional, Type, TypeVar
 import boto3
 from botocore.exceptions import ClientError
 
-from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
+from gen_ai_orchestrator.models.security.ai_provider_secret import (
+    AIProviderSecret,
+)
 from gen_ai_orchestrator.models.security.credentials import Credentials
 
 logger = logging.getLogger(__name__)
@@ -66,7 +68,9 @@ class AWSSecretsManagerClient:
             get_secret_value_response = self.client.get_secret_value(
                 SecretId=secret_name
             )
-            logging.info(f'The requested secret {secret_name} has been successfully retrieved.')
+            logging.info(
+                f'The requested secret {secret_name} has been successfully retrieved.'
+            )
             return get_secret_value_response['SecretString']
         except ClientError as e:
             if e.response['Error']['Code'] == 'ResourceNotFoundException':

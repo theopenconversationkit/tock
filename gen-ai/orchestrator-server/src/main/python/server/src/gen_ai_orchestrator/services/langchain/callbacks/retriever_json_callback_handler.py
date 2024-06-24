@@ -169,7 +169,6 @@ class RetrieverJsonCallbackHandler(BaseCallbackHandler):
             records = self.records
         return records
 
-
     def normalise_prompt(self, prompt: str):
         """
         Remove 'on after prompt' and color on prompt.
@@ -185,4 +184,3 @@ class RetrieverJsonCallbackHandler(BaseCallbackHandler):
 
         # remove a static sentence
         return prompt.replace('Prompt after formatting:\n', '')
-

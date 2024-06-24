@@ -19,7 +19,10 @@ from typing import Any, Optional
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
-from gen_ai_orchestrator.models.errors.errors_models import ErrorCode, ErrorInfo
+from gen_ai_orchestrator.models.errors.errors_models import (
+    ErrorCode,
+    ErrorInfo,
+)
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.rag.rag_models import TextWithFootnotes
 
@@ -92,6 +95,5 @@ class SentenceGenerationResponse(BaseModel):
     """The sentence generation response model"""
 
     sentences: list[str] = Field(
-        description='The list of generated sentences.',
-        default=[]
+        description='The list of generated sentences.', default=[]
     )

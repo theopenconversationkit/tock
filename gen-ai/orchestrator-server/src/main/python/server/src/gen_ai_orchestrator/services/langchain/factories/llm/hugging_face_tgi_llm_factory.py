@@ -12,49 +12,47 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating OpenAILLMFactory"""
+"""Model for creating HuggingFaceTGILLMFactory"""
+
 from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
-from langchain_openai import ChatOpenAI
+from langchain_huggingface import HuggingFaceEndpoint
 
 from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
 )
-from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import (
-    openai_exception_handler,
+from gen_ai_orchestrator.errors.handlers.huggingfacetgi.hugging_face_exception_handler import (
+    hugging_face_exception_handler,
 )
-from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
-    OpenAILLMSetting,
-)
-from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
-    RawSecretKey,
+from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting import (
+    HuggingFaceTGILLMSetting,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
 )
-from gen_ai_orchestrator.services.security.security_service import (
-    fetch_secret_key_value,
-)
 
 
-class OpenAILLMFactory(LangChainLLMFactory):
-    """A class for LangChain OpenAI LLM Factory"""
+class HuggingFaceTGILLMFactory(LangChainLLMFactory):
+    """A class for LangChain Hugging Face LLM Factory"""
 
-    setting: OpenAILLMSetting
+    setting: HuggingFaceTGILLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:
-        return ChatOpenAI(
-            openai_api_key=fetch_secret_key_value(self.setting.api_key),
-            model_name=self.setting.model,
+        return HuggingFaceEndpoint(
+            endpoint_url=self.setting.api_base,
             temperature=self.setting.temperature,
-            request_timeout=application_settings.llm_provider_timeout,
-            max_retries=application_settings.llm_provider_max_retries,
+            repetition_penalty=self.setting.repetition_penalty,
+            max_new_tokens=self.setting.max_new_tokens,
+            huggingfacehub_api_token=None,
+            task='text-generation',
+            timeout=120,
+            server_kwargs={'proxy': 'http://localhost:3128'},
         )
 
-    @openai_exception_handler(provider='OpenAI')
+    @hugging_face_exception_handler(provider='HuggingFaceTGI')
     async def invoke(
         self, _input: Input, config: Optional[RunnableConfig] = None
     ) -> Output:

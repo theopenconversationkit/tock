@@ -28,20 +28,29 @@
 import unittest
 from unittest.mock import patch
 
-from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
-from gen_ai_orchestrator.models.security.aws_secret_key.aws_secret_key import AwsSecretKey
-from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
-from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
+from gen_ai_orchestrator.models.security.ai_provider_secret import (
+    AIProviderSecret,
+)
+from gen_ai_orchestrator.models.security.aws_secret_key.aws_secret_key import (
+    AwsSecretKey,
+)
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
+    RawSecretKey,
+)
+from gen_ai_orchestrator.services.security.security_service import (
+    fetch_secret_key_value,
+)
 
 
 class TestSecurityService(unittest.TestCase):
-
     def test_fetch_unknown_secret_key_value(self):
         # Test data
         my_secret_api_key = '123abc!'
 
         # Call the function to fetch aws secret key
-        value = fetch_secret_key_value({'type': 'UnknownSecretKey', 'value': my_secret_api_key})
+        value = fetch_secret_key_value(
+            {'type': 'UnknownSecretKey', 'value': my_secret_api_key}
+        )
 
         # Check test results
         self.assertIsNone(value)
@@ -57,11 +66,15 @@ class TestSecurityService(unittest.TestCase):
         self.assertEqual(value, my_secret_api_key)
 
     @patch('boto3.client')
-    @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret')
-    def test_fetch_aws_secret_key_value(self, mock_get_ai_provider_secret, mock_boto3_client):
+    @patch(
+        'gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret'
+    )
+    def test_fetch_aws_secret_key_value(
+        self, mock_get_ai_provider_secret, mock_boto3_client
+    ):
         # Test data
-        aws_secret_name = "my_secret_key"
-        my_secret_api_key = AIProviderSecret(secret="my_secret_key_value")
+        aws_secret_name = 'my_secret_key'
+        my_secret_api_key = AIProviderSecret(secret='my_secret_key_value')
 
         # Configure the mocks to return specific values
         mock_boto3_client.return_value = None
@@ -76,10 +89,14 @@ class TestSecurityService(unittest.TestCase):
         self.assertEqual(value, my_secret_api_key.secret)
 
     @patch('boto3.client')
-    @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret')
-    def test_fetch_bad_aws_secret_key_value(self, mock_get_ai_provider_secret, mock_boto3_client):
+    @patch(
+        'gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_ai_provider_secret'
+    )
+    def test_fetch_bad_aws_secret_key_value(
+        self, mock_get_ai_provider_secret, mock_boto3_client
+    ):
         # Test data
-        aws_secret_name = "my_secret_key"
+        aws_secret_name = 'my_secret_key'
         my_secret_api_key = None
 
         # Configure the mocks to return specific values

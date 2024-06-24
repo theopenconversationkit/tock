@@ -116,5 +116,5 @@ def create_error_response(exc: GenAIOrchestratorException) -> ErrorResponse:
         code=exc.error_code.value,
         message=exc.message,
         detail=exc.detail,
-        info=exc.info,
+        info=ErrorInfo(error=''),
     )

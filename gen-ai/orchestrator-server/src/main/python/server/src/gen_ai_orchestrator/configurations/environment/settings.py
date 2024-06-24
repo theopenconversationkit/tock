@@ -25,7 +25,9 @@ from typing import Optional, Tuple
 from path import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
+from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import (
+    AWSSecretsManagerClient,
+)
 from gen_ai_orchestrator.utils.strings import obfuscate
 
 logger = logging.getLogger(__name__)
@@ -39,13 +41,18 @@ def fetch_open_search_credentials() -> Tuple[Optional[str], Optional[str]]:
             secret_name=application_settings.open_search_aws_secret_manager_name
         )
         if credentials is not None:
-            logger.info("The credentials have been successfully retrieved from AWS Secrets Manager.")
+            logger.info(
+                'The credentials have been successfully retrieved from AWS Secrets Manager.'
+            )
             return credentials.username, credentials.password
         else:
-            logger.error("No credentials extracted from AWS Secrets Manager.")
+            logger.error('No credentials extracted from AWS Secrets Manager.')
             return None, None
     else:
-        return application_settings.open_search_user, application_settings.open_search_pwd
+        return (
+            application_settings.open_search_user,
+            application_settings.open_search_pwd,
+        )
 
 
 @unique
@@ -65,7 +72,7 @@ class _Settings(BaseSettings):
 
     application_environment: _Environment = _Environment.DEV
     application_logging_config_ini: str = (
-            Path(__file__).dirname() + '/../logging/config.ini'
+        Path(__file__).dirname() + '/../logging/config.ini'
     )
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     llm_provider_timeout: int = 30

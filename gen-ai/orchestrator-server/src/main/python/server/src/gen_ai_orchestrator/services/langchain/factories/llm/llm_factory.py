@@ -54,7 +54,9 @@ class LangChainLLMFactory(ABC, BaseModel):
         logger.debug('[query: %s], [response: %s]', query, response)
         return True
 
-    async def invoke(self, _input: Input, config: Optional[RunnableConfig] = None) -> Output:
+    async def invoke(
+        self, _input: Input, config: Optional[RunnableConfig] = None
+    ) -> Output:
         """
         This is a delegate method that performs the llm invoke.
 

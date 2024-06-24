@@ -31,7 +31,9 @@ import logging
 
 from fastapi import APIRouter
 
-from gen_ai_orchestrator.routers.requests.requests import SentenceGenerationQuery
+from gen_ai_orchestrator.routers.requests.requests import (
+    SentenceGenerationQuery,
+)
 from gen_ai_orchestrator.services.completion.completion_service import (
     generate_and_split_sentences,
 )

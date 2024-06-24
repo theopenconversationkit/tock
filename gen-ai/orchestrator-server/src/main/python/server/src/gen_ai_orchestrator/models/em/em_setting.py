@@ -31,5 +31,5 @@ class BaseEMSetting(BaseModel):
     )
     api_key: SecretKey = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')]
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
     )

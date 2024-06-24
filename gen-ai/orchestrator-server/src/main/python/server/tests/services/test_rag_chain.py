@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage
@@ -127,7 +127,9 @@ Answer in {locale}:""",
     vector_store_factory_instance = mocked_get_vector_store_factory.return_value
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
-    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'source_documents': []})
+    mocked_chain.ainvoke = AsyncMock(
+        return_value={'answer': 'an answer from llm', 'source_documents': []}
+    )
     mocked_rag_answer = mocked_chain.ainvoke.return_value
 
     # Call function

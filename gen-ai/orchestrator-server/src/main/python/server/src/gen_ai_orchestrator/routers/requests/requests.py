@@ -22,7 +22,9 @@ from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
-from gen_ai_orchestrator.models.vector_stores.vector_stores_types import DocumentSearchParams
+from gen_ai_orchestrator.models.vector_stores.vector_stores_types import (
+    DocumentSearchParams,
+)
 
 
 class LLMProviderSettingStatusQuery(BaseModel):

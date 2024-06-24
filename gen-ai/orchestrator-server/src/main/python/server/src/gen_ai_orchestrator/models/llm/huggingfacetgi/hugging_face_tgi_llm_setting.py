@@ -12,9 +12,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating FakeLLMSetting."""
+"""Model for creating OpenAILLMSetting."""
 
-from typing import List, Literal
+from typing import Literal
 
 from pydantic import Field
 
@@ -22,15 +22,20 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
 
-class FakeLLMSetting(BaseLLMSetting):
+class HuggingFaceTGILLMSetting(BaseLLMSetting):
     """
-    A class for Fake Large Language Model Setting.
-    Usage docs: https://js.langchain.com/docs/integrations/llms/fake
+    A class for Hugging Face TGI Large Language Model Setting.
+    Usage docs: https://platform.openai.com/docs/models
     """
 
-    provider: Literal[LLMProvider.FAKE_LLM] = Field(
-        description='The Large Language Model provider.'
+    provider: Literal[LLMProvider.HUGGING_FACE_TGI] = Field(
+        description='The Large Language Model Provider.',
+        examples=[LLMProvider.HUGGING_FACE_TGI],
     )
-    responses: List[str] = Field(
-        description='The responses given when the Fake LLM is called'
+    repetition_penalty: float = Field(
+        description='Penalty on model repetition.', default=1.0
     )
+    max_new_tokens: int = Field(
+        description='Maximum length of the llm response.', default=256
+    )
+    api_base: str = Field(description='TGI API base URL.')

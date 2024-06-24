@@ -23,7 +23,9 @@ from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.models.security.security_types import SecretKey
-from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
+from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import (
+    AWSSecretsManagerClient,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +41,9 @@ def fetch_secret_key_value(secret_key: SecretKey) -> Optional[str]:
         return secret_key.value
     elif isinstance(secret_key, AwsSecretKey):
         # Get secret from AWS Secrets Manager
-        aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(secret_name=secret_key.secret_name)
+        aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(
+            secret_name=secret_key.secret_name
+        )
         if aws_secret is not None:
             return aws_secret.secret
 
