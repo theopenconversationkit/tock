@@ -4,7 +4,7 @@ import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { RagExcludedComponent } from './rag-excluded/rag-excluded.component';
 import { RagSettingsComponent } from './rag-settings/rag-settings.component';
-import { RagTabsComponent } from './rag-tabs/rag-tabs.component';
+import { RagTabsComponent } from './rag-tabs.component';
 import { RagSourcesBoardComponent } from './rag-sources/rag-sources-board.component';
 
 const routes: Routes = [

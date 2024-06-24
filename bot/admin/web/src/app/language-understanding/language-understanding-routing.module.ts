@@ -23,7 +23,7 @@ import { NgModule } from '@angular/core';
 import { SentencesInboxComponent } from './sentences/sentences-inbox/sentences-inbox.component';
 import { SentencesUnknownComponent } from './sentences/sentences-unknown/sentences-unknown.component';
 import { SentencesSearchComponent } from './sentences/sentences-search/sentences-search.component';
-import { LanguageUnderstandingTabsComponent } from './language-understanding-tabs/language-understanding-tabs.component';
+import { LanguageUnderstandingTabsComponent } from './language-understanding-tabs.component';
 import { SentenceNewComponent } from './sentences/sentence-new/sentence-new.component';
 import { IntentsLogsComponent } from './intents-logs/intents-logs.component';
 

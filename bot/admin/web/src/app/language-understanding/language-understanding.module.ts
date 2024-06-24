@@ -16,7 +16,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LanguageUnderstandingTabsComponent } from './language-understanding-tabs/language-understanding-tabs.component';
+import { LanguageUnderstandingTabsComponent } from './language-understanding-tabs.component';
 import {
   NbAccordionModule,
   NbButtonModule,

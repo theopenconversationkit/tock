@@ -35,6 +35,7 @@ import { AuthService } from '../../../core-nlp/auth/auth.service';
         class="menu-sidebar"
         tag="menu-sidebar"
         responsive
+        compactedBreakpoints="['xs', 'sm']"
         *ngIf="auth.isLoggedIn()"
       >
         <ng-content select="nb-menu"></ng-content>

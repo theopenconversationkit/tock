@@ -19,25 +19,12 @@ import { Router } from '@angular/router';
 import { StateService } from '../core-nlp/state.service';
 import { UserRole } from '../model/auth';
 
-class TabLink {
-  constructor(public route: string, public title: string, public icon?: string) {}
-}
-
-const tabs = [new TabLink('test', 'Test the bot', 'smiling-face-outline'), new TabLink('plan', 'Test Plans', 'map-outline')];
-
 @Component({
   selector: 'tock-test-tabs',
-  templateUrl: './test-tabs.component.html',
-  styleUrls: ['./test-tabs.component.css']
+  template: '<nb-route-tabset></nb-route-tabset>'
 })
 export class TestTabsComponent implements OnInit {
-  testTabLinks = tabs;
-
-  constructor(private router: Router, private state: StateService) {
-    if (!state.hasRole(UserRole.botUser)) {
-      this.testTabLinks = this.testTabLinks.filter((t) => t.route !== 'plan');
-    }
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
     if (this.router.routerState.snapshot.url.endsWith('/test')) {

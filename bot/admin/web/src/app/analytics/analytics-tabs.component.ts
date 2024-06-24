@@ -16,36 +16,13 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { StateService } from '../core-nlp/state.service';
-import { UserRole } from '../model/auth';
-
-class TabLink {
-  constructor(public route: string, public title: string, public icon?: string) {}
-}
-
-const tabs = [
-  new TabLink('activity', 'Activity', 'activity-outline'),
-  new TabLink('behavior', 'Behavior', 'pie-chart-outline'),
-  new TabLink('flow', 'Flow', 'funnel-outline'),
-  new TabLink('users', 'Users', 'people-outline'),
-  new TabLink('dialogs', 'Search', 'search-outline'),
-  new TabLink('preferences', 'Preferences', 'settings-2-outline'),
-  new TabLink('satisfaction', 'Satisfaction', 'star-outline')
-];
 
 @Component({
   selector: 'tock-analytics-tabs',
-  templateUrl: './analytics-tabs.component.html',
-  styleUrls: ['./analytics-tabs.component.css']
+  template: '<nb-route-tabset></nb-route-tabset>'
 })
 export class AnalyticsTabsComponent implements OnInit {
-  analyticsTabLinks = tabs;
-
-  constructor(private router: Router, private state: StateService) {
-    if (!state.hasRole(UserRole.botUser)) {
-      this.analyticsTabLinks = this.analyticsTabLinks.filter((t) => !['flow', 'users'].includes(t.route));
-    }
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
     if (this.router.routerState.snapshot.url.endsWith('/analytics')) {

@@ -4,7 +4,7 @@ import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { IndicatorsComponent } from './indicators/indicators.component';
 import { MetricsBoardComponent } from './metrics-board/metrics-board.component';
-import { MetricsTabsComponent } from './metrics-tabs/metrics-tabs.component';
+import { MetricsTabsComponent } from './metrics-tabs.component';
 
 const routes: Routes = [
   {

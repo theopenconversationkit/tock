@@ -21,54 +21,10 @@ import { UserRole } from '../model/auth';
 
 @Component({
   selector: 'tock-configuration-tabs',
-  templateUrl: './configuration-tabs.component.html',
-  styleUrls: ['./configuration-tabs.component.css', './tabs.component.scss']
+  template: '<nb-route-tabset></nb-route-tabset>'
 })
 export class ConfigurationTabsComponent implements OnInit {
-  tabs = [
-    {
-      title: 'Applications',
-      route: 'nlp',
-      icon: 'browser-outline'
-    },
-    {
-      title: 'Configurations',
-      route: 'bot',
-      icon: 'link-outline'
-    },
-    {
-      title: 'Sentence generation settings',
-      route: 'sentence-generation-settings',
-      icon: 'bulb-outline'
-    },
-    {
-      title: 'Namespaces',
-      route: 'namespaces',
-      icon: 'folder-outline'
-    },
-    {
-      title: 'Log',
-      route: 'users/logs',
-      icon: 'eye-outline'
-    },
-    {
-     title: 'Synchronization',
-     route: 'synchronization',
-     icon: 'sync'
-    }
-  ];
-
-  configurationTabLinks;
-
-  constructor(private router: Router, private state: StateService) {
-    if (!state.hasRole(UserRole.technicalAdmin)) {
-      this.tabs = this.tabs.filter((t) => t.route !== 'users/logs');
-    }
-    if (!state.hasRole(UserRole.admin)) {
-      this.tabs = this.tabs.filter((t) => !['bot', 'sentence-generation-settings'].some((r) => r === t.route));
-    }
-    this.configurationTabLinks = this.tabs;
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
     if (this.router.routerState.snapshot.url.endsWith('/configuration')) {

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ModelQualityRoutingModule } from './model-quality-routing.module';
-import { ModelQualityTabsComponent } from './model-quality-tabs/model-quality-tabs.component';
+import { ModelQualityTabsComponent } from './model-quality-tabs.component';
 import {
   NbButtonModule,
   NbCardModule,
