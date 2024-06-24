@@ -27,8 +27,8 @@ object OpenSearchUtils {
     fun normalizeDocumentIndexName(namespace: String, botId: String): String {
         // Convert to lowercase
         var normalized = "ns-$namespace-bot-$botId".lowercase()
-        // Replace underscores with hyphens
-        normalized = normalized.replace('_', '-')
+        // Replace underscores and space with hyphens
+        normalized = normalized.replace('_', '-').replace(' ', '-')
         // Remove invalid characters
         val invalidCharacters = setOf(' ', ',', ':', '"', '*', '+', '/', '\\', '|', '?', '#', '>', '<')
         normalized = normalized.filter { it !in invalidCharacters }
