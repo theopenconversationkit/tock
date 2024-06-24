@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RagTabsComponent } from './rag-tabs/rag-tabs.component';
+import { RagTabsComponent } from './rag-tabs.component';
 import {
   NbAccordionModule,
   NbAlertModule,

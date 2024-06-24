@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
-import { ModelQualityTabsComponent } from './model-quality-tabs/model-quality-tabs.component';
+import { ModelQualityTabsComponent } from './model-quality-tabs.component';
 import { LogStatsComponent } from './log-stats/log-stats.component';
 import { TestBuildsComponent } from './test-builds/test-builds.component';
 import { TestIntentErrorsComponent } from './test-intent-errors/test-intent-errors.component';

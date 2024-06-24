@@ -23,7 +23,6 @@ import { NlpModule } from '../nlp-tabs/nlp.module';
 
 import { FaqManagementComponent } from './faq-management/faq-management.component';
 import { FaqRoutingModule } from './faq-routing.module';
-import { FaqTrainingComponent } from './faq-training/faq-training.component';
 import { SharedModule } from '../shared-nlp/shared.module';
 import { MomentModule } from 'ngx-moment';
 import { FaqManagementFiltersComponent } from './faq-management/faq-management-filters/faq-management-filters.component';
@@ -34,7 +33,7 @@ import { FaqManagementSettingsComponent } from './faq-management/faq-management-
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FaqService } from './services/faq.service';
 import { BotAnalyticsModule } from '../analytics/analytics.module';
-import { FaqTabsComponent } from './faq-tabs/faq-tabs.component';
+import { FaqTabsComponent } from './faq-tabs.component';
 
 @NgModule({
   imports: [
@@ -66,7 +65,6 @@ import { FaqTabsComponent } from './faq-tabs/faq-tabs.component';
   ],
   declarations: [
     FaqManagementComponent,
-    FaqTrainingComponent,
     FaqManagementFiltersComponent,
     FaqManagementListComponent,
     FaqManagementEditComponent,

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MetricsBoardComponent } from './metrics-board/metrics-board.component';
 import { MetricsRoutingModule } from './metrics-routing.module';
 import { BotSharedModule } from '../shared/bot-shared.module';
-import { MetricsTabsComponent } from './metrics-tabs/metrics-tabs.component';
+import { MetricsTabsComponent } from './metrics-tabs.component';
 import {
   NbAccordionModule,
   NbButtonModule,

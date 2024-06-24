@@ -181,3 +181,11 @@ nb-card.selected {
 .nb-theme-dark .shader {
   background: linear-gradient(0deg, #222b45 10%, #222b4500 100%);
 }
+
+nb-menu {
+  .menu-item {
+    .menu-icon {
+      min-width: 1em;
+    }
+  }
+}

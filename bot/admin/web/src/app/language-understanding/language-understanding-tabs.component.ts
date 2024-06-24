@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-nb-tabset {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
+import { Component, OnInit } from '@angular/core';
 
-:host ::ng-deep ngx-tab1,
-:host ::ng-deep ngx-tab2 {
-  display: block;
-  padding: 1rem 2rem;
-}
+@Component({
+  selector: 'tock-language-understanding-tabs',
+  template: '<nb-route-tabset></nb-route-tabset>'
+})
+export class LanguageUnderstandingTabsComponent {}

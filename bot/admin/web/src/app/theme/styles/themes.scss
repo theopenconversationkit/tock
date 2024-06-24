@@ -22,7 +22,8 @@
 
 $nb-themes: nb-register-theme(
   (
-    layout-padding-top: 2.25rem,
+    layout-padding: 1.25rem 2.25rem,
+    layout-padding-top: 1rem,
 
     menu-item-icon-margin: 0 0.5rem 0 0,
 
@@ -53,7 +54,10 @@ $nb-themes: nb-register-theme(
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),
     tree-grid-cell-padding: 30px,
 
-    route-tabset-tab-padding: 0.5rem 1rem
+    route-tabset-tab-padding: 0.5rem 1rem,
+
+    sidebar-width: 18em,
+    menu-submenu-item-padding: 0.75rem 0 0.75rem 1rem
   ),
   default,
   default
@@ -61,7 +65,8 @@ $nb-themes: nb-register-theme(
 
 $nb-themes: nb-register-theme(
   (
-    layout-padding-top: 2.25rem,
+    layout-padding: 1.25rem 2.25rem,
+    layout-padding-top: 1rem,
 
     menu-item-icon-margin: 0 0.5rem 0 0,
 
@@ -93,7 +98,10 @@ $nb-themes: nb-register-theme(
     color-basic-transparent-200: rgba(143, 155, 179, 0.4),
     tree-grid-cell-padding: 30px,
 
-    route-tabset-tab-padding: 0.5rem 1rem
+    route-tabset-tab-padding: 0.5rem 1rem,
+
+    sidebar-width: 18em,
+    menu-submenu-item-padding: 0.75rem 0 0.75rem 1rem
   ),
   dark,
   dark
