@@ -49,6 +49,8 @@ import { SelectBotConfigurationDialogComponent } from './bot-configurations/sele
 import { BotConfigurationRoutingModule } from './configuration-routing.module';
 import { SynchronizationComponent } from './synchronization/synchronization.component';
 import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
+import { ObservabilitySettingsComponent } from './observability-settings/observability-settings.component';
+import { ObservabilityProviderConfigParamInputComponent } from './observability-settings/observability-provider-config-param-input/observability-provider-config-param-input.component';
 
 @Injectable()
 export class BotApplicationConfig implements ApplicationConfig {
@@ -68,7 +70,9 @@ export class BotApplicationConfig implements ApplicationConfig {
     NewBotComponent,
     SelectBotConfigurationDialogComponent,
     SynchronizationComponent,
-    SentenceGenerationSettingsComponent
+    SentenceGenerationSettingsComponent,
+    ObservabilitySettingsComponent,
+    ObservabilityProviderConfigParamInputComponent
   ],
   imports: [
     CommonModule,
