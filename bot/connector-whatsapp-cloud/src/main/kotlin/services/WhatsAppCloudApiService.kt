@@ -309,7 +309,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         token: String
     ) {
         val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
-        val headerImagesToReplace = messageRequest.template.components
+        messageRequest.template.components
             .asSequence()
             .filterIsInstance<Component.Carousel>()
             .flatMap { it.cards }
