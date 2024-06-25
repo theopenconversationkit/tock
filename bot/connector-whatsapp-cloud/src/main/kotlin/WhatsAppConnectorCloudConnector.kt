@@ -40,7 +40,7 @@ import mu.KotlinLogging
 import java.time.Duration
 
 class WhatsAppConnectorCloudConnector internal constructor(
-    internal val connectorId: String,
+    val connectorId: String,
     private val applicationId: String,
     private val phoneNumberId: String,
     private val whatsAppBusinessAccountId: String,
