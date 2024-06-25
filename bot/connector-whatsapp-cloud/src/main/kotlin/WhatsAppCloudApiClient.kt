@@ -45,11 +45,11 @@ class WhatsAppCloudApiClient(val secretKey: String, val token: String, val phone
         ): Call<SendSuccessfulResponse>
 
         @POST("v$VERSION/{phoneNumberId}/media")
-        suspend fun uploadMediaInWhatsAppAccount(
+        fun uploadMediaInWhatsAppAccount(
             @Path("phoneNumberId") phoneNumberId: String,
             @Header("Authorization") headerValue: String,
             @Body body: RequestBody
-        ): MediaResponse
+        ): Call<MediaResponse>
 
 
         @GET("v$VERSION/{media-id}")
