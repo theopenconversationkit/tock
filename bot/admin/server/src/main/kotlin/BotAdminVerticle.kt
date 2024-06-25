@@ -161,13 +161,13 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/analytics/messages", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+        blockingJsonPost("/analytics/messages", setOf(botUser)) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByType(request)
             }
         }
 
-        blockingJsonPost("/analytics/users", setOf(botUser, faqBotUser)) { context, request: DialogFlowRequest ->
+        blockingJsonPost("/analytics/users", setOf(botUser)) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportUsersByType(request)
             }
@@ -175,7 +175,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byConnectorType",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.countMessagesByConnectorType(request)
@@ -184,7 +184,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byConfiguration",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByConfiguration(request)
@@ -193,7 +193,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byConnectorType",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByConnectorType(request)
@@ -202,7 +202,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byDayOfWeek",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByDayOfWeek(request)
@@ -211,7 +211,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byHour",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByHour(request)
@@ -220,7 +220,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byIntent",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByIntent(request)
@@ -229,7 +229,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byDateAndIntent",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByDateAndIntent(request)
@@ -238,7 +238,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byDateAndStory",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByDateAndStory(request)
@@ -247,7 +247,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byStory",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByStory(request)
@@ -256,7 +256,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byStoryCategory",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByStoryCategory(request)
@@ -265,7 +265,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byStoryType",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByStoryType(request)
@@ -274,7 +274,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byStoryLocale",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByStoryLocale(request)
@@ -283,7 +283,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/messages/byActionType",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: DialogFlowRequest ->
             checkAndMeasure(context, request) {
                 BotAdminAnalyticsService.reportMessagesByActionType(request)
@@ -292,7 +292,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/satisfaction/active",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, query: ApplicationScopedQuery ->
             val botConf =
                 getBotConfigurationsByNamespaceAndBotId(query.namespace, query.applicationName).firstOrNull()
@@ -307,7 +307,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/satisfaction/init",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, query: ApplicationScopedQuery ->
             val botConf =
                 getBotConfigurationsByNamespaceAndBotId(query.namespace, query.applicationName).firstOrNull()
@@ -328,7 +328,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/analytics/satisfaction",
-            setOf(botUser, faqNlpUser, faqBotUser)
+            setOf(botUser)
         ) { context, query: DialogsSearchQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.searchRating(query)
@@ -339,7 +339,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/dialogs/ratings/export",
-            setOf(botUser, faqNlpUser, faqBotUser)
+            setOf(botUser)
         ) { context, query: DialogsSearchQuery ->
             if (context.organization == query.namespace) {
                 val sb = StringBuilder()
@@ -365,7 +365,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/dialogs/ratings/intents/export",
-            setOf(botUser, faqNlpUser, faqBotUser)
+            setOf(botUser)
         ) { context, query: DialogsSearchQuery ->
             if (context.organization == query.namespace) {
                 val sb = StringBuilder()
@@ -408,7 +408,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
 
-        blockingJsonGet("/dialog/:applicationId/:dialogId", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/dialog/:applicationId/:dialogId", setOf(botUser)) { context ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {
                 dialogReportDAO.getDialog(context.path("dialogId").toId())
@@ -419,7 +419,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/dialog/:applicationId/:dialogId/satisfaction",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, query: Set<String> ->
             val app = FrontClient.getApplicationById(context.pathId("applicationId"))
             if (context.organization == app?.namespace) {
@@ -431,7 +431,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/dialogs/search",
-            setOf(botUser, faqNlpUser, faqBotUser)
+            setOf(botUser)
         ) { context, query: DialogsSearchQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.search(query)
@@ -442,13 +442,13 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonGet(
             "/dialogs/intents/:applicationId",
-            setOf(botUser, faqNlpUser, faqBotUser)
+            setOf(botUser)
         ) { context ->
             val app = FrontClient.getApplicationById(context.path("applicationId").toId())
             app?.let { BotAdminService.getIntentsInDialogs(app.namespace, app.name) }
         }
 
-        blockingJsonGet("/bots/:botId", setOf(botUser, faqNlpUser, faqBotUser)) { context ->
+        blockingJsonGet("/bots/:botId", setOf(botUser)) { context ->
             BotAdminService.getBots(context.organization, context.path("botId"))
         }
 
@@ -465,7 +465,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/configuration/bots/:botId", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/configuration/bots/:botId", setOf(botUser)) { context ->
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, context.path("botId"))
         }
 
@@ -615,18 +615,18 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/action/nlp-stats/:actionId", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/action/nlp-stats/:actionId", setOf(botUser)) { context ->
             dialogReportDAO.getNlpCallStats(context.pathId("actionId"), context.organization)
         }
 
-        blockingJsonGet("/feature/:applicationId", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/feature/:applicationId", setOf(botUser)) { context ->
             val applicationId = context.path("applicationId")
             BotAdminService.getFeatures(applicationId, context.organization)
         }
 
         blockingPost(
             "/feature/:applicationId/toggle",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Toogle Application Feature", { it.body().asString() })
         ) { context ->
             val applicationId = context.path("applicationId")
@@ -637,7 +637,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingPost(
             "/feature/:applicationId/update",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Update Application Feature", { it.body().asString() })
         ) { context ->
             val applicationId = context.path("applicationId")
@@ -652,7 +652,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingPost(
             "/feature/:applicationId/add",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Create Application Feature", { it.body().asString() })
         ) { context ->
             val applicationId = context.path("applicationId")
@@ -711,7 +711,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/bot/story/new",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             logger<CreateStoryRequest>("Create Story") { context, r ->
                 r?.story?.let { s ->
                     BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
@@ -757,7 +757,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/bot/story",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             logger<BotStoryDefinitionConfiguration>("Update Story") { context, r ->
                 r?.let { s ->
                     getBotConfigurationsByNamespaceAndBotId(context.organization, s.botId)
@@ -774,7 +774,7 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.saveStory(context.organization, story, context.userLogin) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/story/load", setOf(botUser, faqBotUser)) { context, request: StorySearchRequest ->
+        blockingJsonPost("/bot/story/load", setOf(botUser)) { context, request: StorySearchRequest ->
             if (context.organization == request.namespace) {
                 BotAdminService.loadStories(request)
             } else {
@@ -782,7 +782,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/bot/story/search", setOf(botUser, faqBotUser)) { context, request: StorySearchRequest ->
+        blockingJsonPost("/bot/story/search", setOf(botUser)) { context, request: StorySearchRequest ->
             if (context.organization == request.namespace) {
                 BotAdminService.searchStories(request)
             } else {
@@ -792,7 +792,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/bot/story/search/summary",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, request: SummaryStorySearchRequest ->
             if (context.organization == request.namespace) {
                 if (request.applicationName.isEmpty()) {
@@ -804,7 +804,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/bot/story/:storyId", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/bot/story/:storyId", setOf(botUser)) { context ->
             BotAdminService.findStory(context.organization, context.path("storyId"))
         }
 
@@ -829,7 +829,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonDelete(
             "/bot/story/:storyId",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Delete Story", { it.path("storyId") })
         ) { context ->
             BotAdminService.deleteStory(context.organization, context.path("storyId"))
@@ -848,7 +848,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/i18n", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/i18n", setOf(botUser)) { context ->
             val stats = i18n.getLabelStats(context.organization).groupBy { it.labelId }
             BotI18nLabels(
                 i18n
@@ -864,7 +864,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/complete",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Complete Responses Labels")
         ) { context, labels: List<I18nLabel> ->
             if (!injector.provide<TranslatorEngine>().supportAdminTranslation) {
@@ -875,7 +875,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/saveAll",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Save Responses Labels")
         ) { context, labels: List<BotI18nLabelUpdate> ->
             i18n.save(labels.filter { it.namespace == context.organization })
@@ -883,7 +883,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/save",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Save Response Label")
         ) { context, label: BotI18nLabelUpdate ->
             if (label.namespace == context.organization) {
@@ -895,7 +895,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/i18n/create",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Create Response Label")
         ) { context, request: CreateI18nLabelRequest ->
             createI18nRequest(context.organization, request)
@@ -903,17 +903,17 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingDelete(
             "/i18n/:id",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Delete Response Label", { it.path("id") })
         ) { context ->
             i18n.deleteByNamespaceAndId(context.organization, context.pathId("id"))
         }
 
-        blockingJsonGet("/i18n/export/csv", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/i18n/export/csv", setOf(botUser)) { context ->
             I18nCsvCodec.exportCsv(context.organization)
         }
 
-        blockingJsonPost("/i18n/export/csv", setOf(botUser, faqBotUser)) { context, query: I18LabelQuery ->
+        blockingJsonPost("/i18n/export/csv", setOf(botUser)) { context, query: I18LabelQuery ->
             I18nCsvCodec.exportCsv(context.organization, query)
         }
 
@@ -927,18 +927,18 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/i18n/export/json", setOf(botUser, faqBotUser)) { context ->
+        blockingJsonGet("/i18n/export/json", setOf(botUser)) { context ->
             mapper.writeValueAsString(i18n.getLabels(context.organization))
         }
 
-        blockingJsonPost("/i18n/export/json", setOf(botUser, faqBotUser)) { context, query: I18LabelQuery ->
+        blockingJsonPost("/i18n/export/json", setOf(botUser)) { context, query: I18LabelQuery ->
             val labels = i18n.getLabels(context.organization, query.toI18nLabelFilter())
             mapper.writeValueAsString(labels)
         }
 
         blockingUploadJsonPost(
             "/i18n/import/json",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("JSON Import Response Labels")
         ) { context, labels: List<I18nLabel> ->
             measureTimeMillis(context) {
@@ -971,7 +971,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/connectorTypes", setOf(botUser, faqBotUser, faqNlpUser)) {
+        blockingJsonGet("/connectorTypes", setOf(botUser)) {
             ConnectorTypeConfiguration.connectorConfigurations
         }
 
@@ -985,7 +985,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/faq",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             logger<FaqDefinitionRequest>("Save FAQ")
         ) { context, query: FaqDefinitionRequest ->
             if (query.utterances.isEmpty() && query.title.isBlank() && query.answer.isBlank()) {
@@ -1005,13 +1005,13 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonDelete(
             "/faq/:faqId",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             simpleLogger("Delete Story", { it.path("faqId") })
         ) { context ->
             FaqAdminService.deleteFaqDefinition(context.organization, context.path("faqId"))
         }
 
-        blockingJsonPost("/faq/tags", setOf(botUser, faqBotUser)) { context, applicationId: String ->
+        blockingJsonPost("/faq/tags", setOf(botUser)) { context, applicationId: String ->
             val applicationDefinition = front.getApplicationById(applicationId.toId())
             if (context.organization == applicationDefinition?.namespace) {
                 try {
@@ -1027,7 +1027,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/faq/search",
-            setOf(botUser, faqBotUser),
+            setOf(botUser),
             logger<FaqSearchRequest>("Search FAQ")
         )
         { context, request: FaqSearchRequest ->
@@ -1052,7 +1052,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonGet(
             "/faq/settings/:applicationId",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context ->
             val applicationDefinition = front.getApplicationById(context.pathId("applicationId"))
             if (context.organization == applicationDefinition?.namespace) {
@@ -1064,7 +1064,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost(
             "/faq/settings/:applicationId",
-            setOf(botUser, faqBotUser)
+            setOf(botUser)
         ) { context, faqSettingsQuery: FaqSettingsQuery ->
             val applicationDefinition = front.getApplicationById(context.pathId("applicationId"))
             if (context.organization == applicationDefinition?.namespace) {
