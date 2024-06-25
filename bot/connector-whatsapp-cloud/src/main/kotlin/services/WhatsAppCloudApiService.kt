@@ -25,6 +25,7 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.SendSuccessfulResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.ResponseCreateTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.media.Media
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotInteractiveMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotLocationMessage
@@ -54,7 +55,9 @@ import retrofit2.Response
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
+import java.util.concurrent.Callable
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
@@ -316,15 +319,14 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             .filterIsInstance<HeaderParameter.Image>()
             .filter { it.image.id != null }
             .map {
-                it to Executors.newSingleThreadExecutor().submit {
-                    sendMedia(client, phoneNumberId, token, it.image.id!!, FileType.PNG.type)
-                }
+                it to Executors.newSingleThreadExecutor()
+                    .submit(Callable { sendMedia(client, phoneNumberId, token, it.image.id!!, FileType.PNG.type) })
             }
             //exit from sequence
             .toList()
             .forEach {
                 val imageHeader = it.first
-                val newImageId = (it.second.get() as MediaResponse).id
+                val newImageId = it.second.get().id
                 imageHeader.image.id = newImageId
             }
     }
