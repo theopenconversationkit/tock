@@ -38,10 +38,13 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppC
 import ai.tock.bot.engine.BotRepository
 import ai.tock.shared.Executor
 import ai.tock.shared.TockProxyAuthenticator
-import ai.tock.shared.cache.getOrCache
+import ai.tock.shared.cache.getOrCacheSuspend
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -52,14 +55,13 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.litote.kmongo.toId
 import retrofit2.Response
 import java.time.Instant
-import java.util.Date
-import java.util.UUID
+import java.util.*
 
 class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     private val logger = KotlinLogging.logger {}
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
-    private val executor:Executor = injector.provide()
+    private val executor: Executor = injector.provide()
 
     fun sendMessage(phoneNumberId: String, token: String, messageRequest: WhatsAppCloudSendBotMessage) {
         try {
@@ -209,7 +211,7 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         }
     }
 
-    private fun sendMedia(
+    private suspend fun sendMedia(
         client: OkHttpClient,
         phoneNumberId: String,
         token: String,
@@ -219,11 +221,11 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         val requestTimerData =
             BotRepository.requestTimer.start("whatsapp_send_${fileUrl.javaClass.simpleName.lowercase()}")
 
-        return getOrCache("$phoneNumberId-$fileUrl".toId(), IMAGE_ID_CACHE) {
+        return getOrCacheSuspend("$phoneNumberId-$fileUrl".toId(), IMAGE_ID_CACHE) {
             try {
                 val file = retrieveMedia(client, fileUrl, fileType)
 
-                val media = apiClient.graphApi.uploadMediaInWhatsAppAccount(
+                apiClient.graphApi.uploadMediaInWhatsAppAccount(
                     phoneNumberId,
                     "Bearer $token",
                     MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -231,8 +233,6 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
                         .addFormDataPart("messaging_product", "whatsapp")
                         .build()
                 )
-
-                media.execute().body()
             } catch (e: Exception) {
                 BotRepository.requestTimer.throwable(e, requestTimerData)
                 throw if (e is ConnectorException) e else ConnectorException("Error sending media: ${e.message}")
@@ -304,21 +304,26 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         phoneNumberId: String,
         token: String
     ) {
-        val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
-        messageRequest.template.components
-            .asSequence()
-            .filterIsInstance<Component.Carousel>()
-            .flatMap { it.cards }
-            .flatMap { it.components }
-            .filterIsInstance<Component.Header>()
-            .flatMap { it.parameters }
-            .filterIsInstance<HeaderParameter.Image>()
-            .forEach { imageHeader ->
-                imageHeader.image.id?.let { imageId ->
-                    val newImageId = sendMedia(client, phoneNumberId, token, imageId, FileType.PNG.type).id
-                    imageHeader.image.id = newImageId
+        runBlocking {
+            val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
+            val headerImagesToReplace = messageRequest.template.components
+                .asSequence()
+                .filterIsInstance<Component.Carousel>()
+                .flatMap { it.cards }
+                .flatMap { it.components }
+                .filterIsInstance<Component.Header>()
+                .flatMap { it.parameters }
+                .filterIsInstance<HeaderParameter.Image>().toList()
+                .filter { it.image.id != null }
+            val imageReplacements = headerImagesToReplace.map {
+                async {
+                    sendMedia(client, phoneNumberId, token, it.image.id!!, FileType.PNG.type)
                 }
             }
+            imageReplacements.awaitAll().forEachIndexed { index, imageReplacement ->
+                headerImagesToReplace[index].image.id = imageReplacement.id
+            }
+        }
     }
 
     private fun retrieveMedia(client: OkHttpClient, fileUrl: String, fileType: String): RequestBody {

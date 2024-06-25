@@ -73,6 +73,19 @@ fun <T : Any> getOrCache(id: Id<T>, type: String, valueProvider: () -> T?): T? {
     }.replaceNotPresent()
 }
 
+suspend fun <T : Any> getOrCacheSuspend(id: Id<T>, type: String, valueProvider: suspend () -> T?): T? {
+    return inMemoryCache.getIfPresent(inMemoryKey(id, type))?.let { it as? T }
+        ?: cache.get(id, type)
+            ?: try {
+                valueProvider.invoke()?.apply {
+                    putInCache(id, type, this)
+                }
+            } catch (e: Exception) {
+                logger.error(e)
+                null
+            }
+}
+
 /**
  * Returns the value for specified id and type.
  * If no value exists, null is returned.
