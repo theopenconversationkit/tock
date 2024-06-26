@@ -230,7 +230,7 @@ describe('FaqManagementEditComponent', () => {
         enabled: true,
         applicationName: 'app',
         language: 'fr',
-        _initUtterance: 'test'
+        _initQuestion: 'test'
       };
       component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
       fixture.detectChanges();

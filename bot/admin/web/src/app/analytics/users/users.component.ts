@@ -30,6 +30,10 @@ import { BotApplicationConfiguration, ConnectorType } from '../../core/model/con
 import { TestPlan } from '../../test/model/test';
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
 
+export class UserFilter {
+  constructor(public flags: string[], public displayTests: boolean, public from?: Date, public to?: Date, public intent: string = '') {}
+}
+
 @Component({
   selector: 'tock-users',
   templateUrl: './users.component.html',
@@ -174,8 +178,4 @@ export class UsersComponent extends ScrollComponent<UserReport> {
   getUserPicture(user: UserReport): string {
     return user.userPreferences.picture ? user.userPreferences.picture : getDialogMessageUserAvatar(false);
   }
-}
-
-export class UserFilter {
-  constructor(public flags: string[], public displayTests: boolean, public from?: Date, public to?: Date, public intent: string = '') {}
 }

@@ -120,20 +120,20 @@ export class FaqManagementEditComponent implements OnChanges {
           this.utterances.push(new FormControl(utterance));
         });
 
-        if (faq._initUtterance) {
+        if (faq._initQuestion) {
           this.form.markAsDirty();
           this.form.markAsTouched();
 
           this.setCurrentTab({ tabTitle: FaqTabs.QUESTION } as NbTabComponent);
 
           setTimeout(() => {
-            this.addUtterance(faq._initUtterance);
-            delete faq._initUtterance;
+            this.addUtterance(faq._initQuestion);
+            delete faq._initQuestion;
           });
         }
       }
 
-      if (!faq.id && !faq._initUtterance) {
+      if (!faq.id && !faq._initQuestion) {
         this.setCurrentTab({ tabTitle: FaqTabs.INFO } as NbTabComponent);
       }
     }

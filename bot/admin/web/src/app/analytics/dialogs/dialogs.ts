@@ -34,8 +34,8 @@ export class DialogReportQuery extends PaginatedQuery {
     public displayTests?: boolean,
     public ratings?: number[],
     public applicationId?: string,
-
-    public intentsToHide? : string[]
+    public intentsToHide?: string[],
+    public isGenAiRagDialog?: boolean
   ) {
     super(namespace, applicationName, language, start, size);
   }
