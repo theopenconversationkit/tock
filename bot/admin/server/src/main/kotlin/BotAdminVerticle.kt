@@ -24,34 +24,9 @@ import ai.tock.bot.admin.BotAdminService.importStories
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotConfiguration
 import ai.tock.bot.admin.constants.Properties
-import ai.tock.bot.admin.model.BotAdminConfiguration
-import ai.tock.bot.admin.model.BotConnectorConfiguration
-import ai.tock.bot.admin.model.BotI18nLabel
-import ai.tock.bot.admin.model.BotI18nLabelUpdate
-import ai.tock.bot.admin.model.BotI18nLabels
-import ai.tock.bot.admin.model.BotRAGConfigurationDTO
-import ai.tock.bot.admin.model.BotSentenceGenerationConfigurationDTO
-import ai.tock.bot.admin.model.BotSentenceGenerationInfoDTO
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.BotSynchronization
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.FaqDefinitionRequest
-import ai.tock.bot.admin.model.FaqSearchRequest
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.I18LabelQuery
-import ai.tock.bot.admin.model.SentenceGenerationRequest
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
+import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
-import ai.tock.bot.admin.service.CompletionService
-import ai.tock.bot.admin.service.RAGService
-import ai.tock.bot.admin.service.SentenceGenerationService
-import ai.tock.bot.admin.service.SynchronizationService
-import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
+import ai.tock.bot.admin.service.*
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
 import ai.tock.bot.admin.verticle.IndicatorVerticle
@@ -79,11 +54,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
-import ai.tock.shared.security.TockUserRole.admin
-import ai.tock.shared.security.TockUserRole.botUser
-import ai.tock.shared.security.TockUserRole.faqBotUser
-import ai.tock.shared.security.TockUserRole.faqNlpUser
-import ai.tock.shared.security.TockUserRole.nlpUser
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.ServerStatus
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
@@ -489,6 +460,21 @@ open class BotAdminVerticle : AdminVerticle() {
             RAGService.getRAGConfiguration(context.organization, context.path("botId"))
                 ?.let {
                     BotRAGConfigurationDTO(it)
+                }
+        }
+
+        blockingJsonPost("/configuration/bots/:botId/observability", admin) { context, configuration: BotObservabilityConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                BotObservabilityConfigurationDTO(ObservabilityService.saveObservability(configuration))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/observability", admin) { context  ->
+            ObservabilityService.getObservabilityConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotObservabilityConfigurationDTO(it)
                 }
         }
 
