@@ -84,6 +84,11 @@ object CompletionService {
 
         // call the completion service to generate sentences
         return completionService
-            .generateSentences(SentenceGenerationQuery(llmSetting, prompt))
+            .generateSentences(
+                SentenceGenerationQuery(
+                    llmSetting, prompt,
+                    ObservabilityService.getObservabilityConfiguration(namespace, botId, enabled = true)?.setting
+                )
+            )
     }
 }

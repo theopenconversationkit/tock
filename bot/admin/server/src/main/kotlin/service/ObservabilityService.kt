@@ -43,6 +43,16 @@ object ObservabilityService {
     }
 
     /**
+     * Get the Observability configuration
+     * @param namespace: the namespace
+     * @param botId: the botId
+     * @param enabled: the observability activation (enabled or not)
+     */
+    fun getObservabilityConfiguration(namespace: String, botId: String, enabled: Boolean): BotObservabilityConfiguration? {
+        return observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
+    }
+
+    /**
      * Save Observability configuration and filter errors
      * @param observabilityConfig : the observability configuration to create or update
      * @throws [BadRequestException] if the observability configuration is invalid

@@ -16,7 +16,6 @@
 
 package ai.tock.bot.admin.bot.observability
 
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 import org.litote.kmongo.Id
 

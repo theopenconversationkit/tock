@@ -26,5 +26,7 @@ interface BotObservabilityConfigurationDAO {
 
     fun findByNamespaceAndBotId(namespace: String, botId: String): BotObservabilityConfiguration?
 
+    fun findByNamespaceAndBotIdAndEnabled(namespace: String, botId: String, enabled: Boolean): BotObservabilityConfiguration?
+
     fun delete(id: Id<BotObservabilityConfiguration>)
 }

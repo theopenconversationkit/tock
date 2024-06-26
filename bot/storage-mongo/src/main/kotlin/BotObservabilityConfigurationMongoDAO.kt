@@ -26,6 +26,8 @@ import ai.tock.shared.ensureUniqueIndex
 import ai.tock.shared.watch
 import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollectionOfName
+import org.litote.kmongo.save
+import kotlin.reflect.jvm.internal.impl.types.checker.TypeRefinementSupport.Enabled
 
 internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigurationDAO {
 
@@ -34,7 +36,7 @@ internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigur
     private val asyncCol = asyncDatabase.getCollectionOfName<BotObservabilityConfiguration>(COLLECTION_NAME)
 
     init {
-        col.ensureUniqueIndex(Namespace, BotId)
+        col.ensureUniqueIndex(BotObservabilityConfiguration::namespace, BotObservabilityConfiguration::botId)
     }
 
     override fun listenChanges(listener: () -> Unit) {
@@ -45,7 +47,22 @@ internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigur
         namespace: String,
         botId: String
     ): BotObservabilityConfiguration? {
-        return col.findOne(Namespace eq namespace, BotId eq botId)
+        return col.findOne(
+            BotObservabilityConfiguration::namespace eq namespace,
+            BotObservabilityConfiguration::botId eq botId
+        )
+    }
+
+    override fun findByNamespaceAndBotIdAndEnabled(
+        namespace: String,
+        botId: String,
+        enabled: Boolean
+    ): BotObservabilityConfiguration? {
+        return col.findOne(
+            BotObservabilityConfiguration::namespace eq namespace,
+            BotObservabilityConfiguration::botId eq botId,
+            BotObservabilityConfiguration::enabled eq enabled
+        )
     }
 
     override fun save(conf: BotObservabilityConfiguration): BotObservabilityConfiguration {
