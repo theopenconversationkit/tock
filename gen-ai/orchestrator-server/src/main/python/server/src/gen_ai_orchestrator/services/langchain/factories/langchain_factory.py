@@ -21,13 +21,17 @@ It manages the creation of :
 """
 
 import logging
+from typing import Optional
 
 from langchain_core.embeddings import Embeddings
+from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
     VectorStoreUnknownException,
 )
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
+    GenAIUnknownObservabilityProviderSettingException
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -41,9 +45,17 @@ from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
+from gen_ai_orchestrator.models.observability.observability_setting import BaseObservabilitySetting
+from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
+from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import \
+    LangChainCallbackHandlerFactory
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
+    LangfuseCallbackHandlerFactory
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -119,9 +131,9 @@ def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
 
 
 def get_vector_store_factory(
-    vector_store_provider: VectorStoreProvider,
-    embedding_function: Embeddings,
-    index_name: str,
+        vector_store_provider: VectorStoreProvider,
+        embedding_function: Embeddings,
+        index_name: str,
 ) -> LangChainVectorStoreFactory:
     """
     Creates an LangChain Vector Store Factory according to the vector store provider
@@ -142,3 +154,41 @@ def get_vector_store_factory(
         )
     else:
         raise VectorStoreUnknownException()
+
+
+def get_callback_handler_factory(setting: BaseObservabilitySetting) -> LangChainCallbackHandlerFactory:
+    """
+    Creates a Langchain Callback Handler Factory according to the given setting
+    Args:
+        setting: The Observability setting
+
+    Returns:
+        The Observability Factory, or raise an exception otherwise
+    """
+
+    logger.info('Get Observability Factory for the given setting')
+    if isinstance(setting, LangfuseObservabilitySetting):
+        logger.debug('Observability Factory - LangfuseCallbackHandlerFactory')
+        return LangfuseCallbackHandlerFactory(setting=setting)
+    else:
+        raise GenAIUnknownObservabilityProviderSettingException()
+
+
+def create_observability_callback_handler(
+        observability_setting: Optional[ObservabilitySetting],
+        trace_name: ObservabilityTrace) -> Optional[LangfuseCallbackHandler]:
+    """
+    Create the Observability Callback Handler
+
+    Args:
+        observability_setting: The Observability Settings
+        trace_name: The trace name
+
+    Returns:
+        The Observability Callback Handler
+    """
+    if observability_setting is not None:
+        return get_callback_handler_factory(setting=observability_setting).get_callback_handler(
+            trace_name=trace_name.value)
+
+    return None

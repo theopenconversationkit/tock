@@ -12,22 +12,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating FakeLLMFactory"""
+"""ObservabilityTrace Enumeration."""
 
-from langchain.base_language import BaseLanguageModel
-from langchain_community.chat_models.fake import FakeListChatModel
-
-from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
-    FakeLLMSetting,
-)
-from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
-    LangChainLLMFactory,
-)
+from enum import Enum, unique
 
 
-class FakeLLMFactory(LangChainLLMFactory):
-    """A class for LangChain Fake LLM Factory"""
-    setting: FakeLLMSetting
+@unique
+class ObservabilityTrace(str, Enum):
+    """Enumeration to list Observability Trace type"""
 
-    def get_language_model(self) -> BaseLanguageModel:
-        return FakeListChatModel(responses=self.setting.responses)
+    RAG = 'RAG'
+    CHECK_LLM_SETTINGS = 'Check LLM Settings'
+    SENTENCE_GENERATION = 'Sentence Generation'
+    CHECK_OBSERVABILITY_SETTINGS = 'Check Observability Settings'
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_

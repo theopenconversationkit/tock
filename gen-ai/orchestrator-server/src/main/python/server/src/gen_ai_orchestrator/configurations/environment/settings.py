@@ -25,6 +25,7 @@ from typing import Optional, Tuple
 from path import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from gen_ai_orchestrator.models.security.proxy_server_type import ProxyServerType
 from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
 from gen_ai_orchestrator.utils.strings import obfuscate
 
@@ -79,6 +80,21 @@ class _Settings(BaseSettings):
     open_search_pwd: Optional[str] = 'admin'
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     open_search_timeout: int = 4
+
+    observability_provider_max_retries: int = 0
+    """Request timeout (in seconds)."""
+    observability_provider_timeout: int = 3
+
+    """
+    This AWSLambda proxy is used when the architecture implemented for the Langfuse
+    observability tool places it behind an API Gateway which requires its
+    own authentication, itself invoked by an AWS Lambda.
+    The API Gateway uses the standard "Authorization" header,
+    and uses observability_proxy_server_authorization_header_name
+    to define the "Authorization bearer token" for Langfuse.
+    """
+    observability_proxy_server: Optional[ProxyServerType] = None
+    observability_proxy_server_authorization_header_name: Optional[str] = None
 
 
 application_settings = _Settings()

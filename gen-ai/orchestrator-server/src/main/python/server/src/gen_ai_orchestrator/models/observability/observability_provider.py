@@ -12,22 +12,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating FakeLLMFactory"""
+"""ObservabilityProvider Enumeration."""
 
-from langchain.base_language import BaseLanguageModel
-from langchain_community.chat_models.fake import FakeListChatModel
-
-from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
-    FakeLLMSetting,
-)
-from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
-    LangChainLLMFactory,
-)
+from enum import Enum, unique
 
 
-class FakeLLMFactory(LangChainLLMFactory):
-    """A class for LangChain Fake LLM Factory"""
-    setting: FakeLLMSetting
+@unique
+class ObservabilityProvider(str, Enum):
+    """Enumeration to list Observability Provider type"""
 
-    def get_language_model(self) -> BaseLanguageModel:
-        return FakeListChatModel(responses=self.setting.responses)
+    LANGFUSE = 'Langfuse'
+
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_

@@ -12,22 +12,21 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating FakeLLMFactory"""
+"""ProxyServerType Enumeration."""
 
-from langchain.base_language import BaseLanguageModel
-from langchain_community.chat_models.fake import FakeListChatModel
-
-from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
-    FakeLLMSetting,
-)
-from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
-    LangChainLLMFactory,
-)
+from enum import Enum, unique
 
 
-class FakeLLMFactory(LangChainLLMFactory):
-    """A class for LangChain Fake LLM Factory"""
-    setting: FakeLLMSetting
+@unique
+class ProxyServerType(str, Enum):
+    """Enumeration to list Proxy Server types
 
-    def get_language_model(self) -> BaseLanguageModel:
-        return FakeListChatModel(responses=self.setting.responses)
+    This AWSLambda proxy is used when the architecture implemented for the Langfuse
+    observability tool places it behind an API Gateway which requires its
+    own authentication, itself invoked by an AWS Lambda.
+    The API Gateway uses the standard "Authorization" header,
+    and uses observability_proxy_server_authorization_header_name
+    to define the "Authorization bearer token" for Langfuse.
+    """
+
+    AWS_LAMBDA = 'AwsLambda'

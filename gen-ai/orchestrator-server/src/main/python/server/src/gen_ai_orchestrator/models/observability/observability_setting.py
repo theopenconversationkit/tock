@@ -12,22 +12,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating FakeLLMFactory"""
+"""Model for creating BaseObservabilitySetting."""
 
-from langchain.base_language import BaseLanguageModel
-from langchain_community.chat_models.fake import FakeListChatModel
+from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
-    FakeLLMSetting,
-)
-from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
-    LangChainLLMFactory,
-)
+from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
 
 
-class FakeLLMFactory(LangChainLLMFactory):
-    """A class for LangChain Fake LLM Factory"""
-    setting: FakeLLMSetting
+class BaseObservabilitySetting(BaseModel):
+    """A base class for Langfuse Observability Setting."""
 
-    def get_language_model(self) -> BaseLanguageModel:
-        return FakeListChatModel(responses=self.setting.responses)
+    provider: ObservabilityProvider = Field(description='The Observability Provider.')
+
