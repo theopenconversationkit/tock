@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActionReport, BotMessage, DialogReport, SentenceWithFootnotes } from '../../../shared/model/dialog-data';
+import { ActionReport, Debug, DialogReport, SentenceWithFootnotes } from '../../../shared/model/dialog-data';
 import { ConnectorType } from '../../../core/model/configuration';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
@@ -224,12 +224,21 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   createFaq(action: ActionReport, actionsStack: ActionReport[]) {
     const actionIndex = actionsStack.findIndex((act) => act === action);
     if (actionIndex > 0) {
+      const answerSentence = action.message as unknown as SentenceWithFootnotes;
+      const answer = answerSentence.text;
+
+      let question;
       const questionAction = actionsStack[actionIndex - 1];
-      if (!questionAction.isBot()) {
+
+      if (questionAction.message.isDebug()) {
+        const actionDebug = questionAction.message as unknown as Debug;
+        question = actionDebug.data.condense_question || actionDebug.data.user_question;
+      } else if (!questionAction.isBot()) {
         const questionSentence = questionAction.message as unknown as Sentence;
-        const question = questionSentence.text;
-        const answerSentence = action.message as unknown as SentenceWithFootnotes;
-        const answer = answerSentence.text;
+        question = questionSentence.text;
+      }
+
+      if (question && answer) {
         this.router.navigate(['faq/management'], { state: { question, answer } });
       }
     }

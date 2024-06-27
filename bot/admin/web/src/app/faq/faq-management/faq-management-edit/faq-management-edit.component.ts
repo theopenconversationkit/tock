@@ -1,10 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NbDialogService, NbTabComponent, NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
-import { Observable, Subscription, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { DialogService } from '../../../core-nlp/dialog.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
@@ -199,7 +198,7 @@ export class FaqManagementEditComponent implements OnChanges {
     this.intentNameExistInApp = undefined;
   }
 
-  addUtterance(utt?) {
+  addUtterance(utt?: string) {
     this.resetAlerts();
 
     let utterance = utt || this.addUtteranceInput.nativeElement.value.trim();
