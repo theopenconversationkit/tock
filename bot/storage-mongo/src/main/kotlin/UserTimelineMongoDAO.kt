@@ -571,7 +571,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName,
                 if (query.ratings.isNotEmpty()) DialogCol_.Rating `in` query.ratings.toSet() else null,
                 if (query.applicationId.isNullOrBlank()) null else  DialogCol_.ApplicationIds `in` setOf( query.applicationId))
-            logger.debug("dialog search query: $filter")
+            logger.debug { "dialog search query: $filter" }
             val c = dialogCol.withReadPreference(secondaryPreferred())
             val count = c.countDocuments(filter, defaultCountOptions)
             return if (count > start) {
