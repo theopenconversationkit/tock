@@ -233,6 +233,12 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             link: '/configuration/sentence-generation-settings',
             icon: 'list-outline',
             hidden: !this.state.hasRole(UserRole.admin)
+          },
+          {
+            title: 'Observability settings',
+            link: '/configuration/observability-settings',
+            icon: 'monitor-outline',
+            hidden: !this.state.hasRole(UserRole.admin)
           }
         ]
       },
