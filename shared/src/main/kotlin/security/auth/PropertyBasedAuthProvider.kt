@@ -28,6 +28,8 @@ import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.TockUserRole
 import ai.tock.shared.security.TockUserRole.admin
 import ai.tock.shared.security.TockUserRole.botUser
+import ai.tock.shared.security.TockUserRole.faqBotUser
+import ai.tock.shared.security.TockUserRole.faqNlpUser
 import ai.tock.shared.security.TockUserRole.nlpUser
 import ai.tock.shared.security.TockUserRole.technicalAdmin
 import ai.tock.shared.security.TockUserRole.values
@@ -91,24 +93,30 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                         val user = it.result()
                         context.setUser(user)
                         context.isAuthorized(nlpUser) { nlpUserResult ->
-                            context.isAuthorized(botUser) { botUserResult ->
-                                context.isAuthorized(admin) { adminResult ->
-                                    context.isAuthorized(technicalAdmin) { technicalAdminResult ->
-                                        context.endJson(
-                                            // if any of the role is detected for the user
-                                            // add the role to the response
-                                            AuthenticateResponse(
-                                                true,
-                                                request.email,
-                                                (user as TockUser).namespace,
-                                                listOfNotNull(
-                                                    if (nlpUserResult.result()) nlpUser else null,
-                                                    if (botUserResult.result()) botUser else null,
-                                                    if (adminResult.result()) admin else null,
-                                                    if (technicalAdminResult.result()) technicalAdmin else null
+                            context.isAuthorized((faqNlpUser)) { faqNlpUserResult ->
+                                context.isAuthorized((faqBotUser)) { faqBotUserResult ->
+                                    context.isAuthorized(botUser) { botUserResult ->
+                                        context.isAuthorized(admin) { adminResult ->
+                                            context.isAuthorized(technicalAdmin) { technicalAdminResult ->
+                                                context.endJson(
+                                                    // if any of the role is detected for the user
+                                                    // add the role to the response
+                                                    AuthenticateResponse(
+                                                        true,
+                                                        request.email,
+                                                        (user as TockUser).namespace,
+                                                        listOfNotNull(
+                                                            if (nlpUserResult.result()) nlpUser else null,
+                                                            if (faqNlpUserResult.result()) nlpUser else null,
+                                                            if (faqBotUserResult.result()) botUser else null,
+                                                            if (botUserResult.result()) botUser else null,
+                                                            if (adminResult.result()) admin else null,
+                                                            if (technicalAdminResult.result()) technicalAdmin else null
+                                                        )
+                                                    )
                                                 )
-                                            )
-                                        )
+                                            }
+                                        }
                                     }
                                 }
                             }
