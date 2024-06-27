@@ -41,11 +41,9 @@ import java.time.Duration
 
 class WhatsAppConnectorCloudConnector internal constructor(
     val connectorId: String,
-    private val applicationId: String,
     private val phoneNumberId: String,
     private val whatsAppBusinessAccountId: String,
     private val path: String,
-    private val appToken: String,
     private val token: String,
     private val verifyToken: String?,
     private val mode: String,
@@ -152,7 +150,7 @@ class WhatsAppConnectorCloudConnector internal constructor(
                     restrictedPhoneNumbers?.contains(it.from) ?: true
                 }.forEach { message: WhatsAppCloudMessage ->
                     executor.executeBlocking {
-                        val event = WebhookActionConverter.toEvent(message, applicationId)
+                        val event = WebhookActionConverter.toEvent(message, connectorId)
                         if (event != null) {
                             controller.handle(
                                 event,
