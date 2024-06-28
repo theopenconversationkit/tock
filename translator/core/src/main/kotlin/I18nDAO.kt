@@ -16,8 +16,8 @@
 
 package ai.tock.translator
 
-import org.litote.kmongo.Id
 import java.time.Instant
+import org.litote.kmongo.Id
 
 /**
  * I18n storage.
@@ -39,20 +39,23 @@ interface I18nDAO {
      */
     fun getLabelById(id: Id<I18nLabel>): I18nLabel?
 
+    @Deprecated(message = "Replaced with more generic method", level = DeprecationLevel.HIDDEN)
+    fun save(label: I18nLabel) = save(label as I18nLabelPartial)
+
     /**
      * Saves label.
      */
-    fun save(label: I18nLabel)
+    fun save(label: I18nLabelPartial)
 
     /**
      * Saves all specified labels.
      */
-    fun save(i18n: List<I18nLabel>)
+    fun save(i18n: List<I18nLabelPartial>)
 
     /**
      * Saves all labels that does not exist yet.
      */
-    fun saveIfNotExist(i18n: List<I18nLabel>)
+    fun saveIfNotExist(i18n: List<I18nLabelPartial>)
 
     /**
      * Delete the label of specified id if and only if it has the specified namespace.

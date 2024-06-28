@@ -56,7 +56,8 @@ class I18nLabelValue constructor(
             label._id.toString(),
             label.namespace,
             label.category,
-            label.defaultLabel ?: ""
+            label.defaultLabel ?: "",
+            defaultI18n = label.defaultI18n,
         )
 
     /**
