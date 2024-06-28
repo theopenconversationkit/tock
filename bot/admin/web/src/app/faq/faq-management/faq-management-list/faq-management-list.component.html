@@ -34,6 +34,15 @@
               First question (out of {{ faq.utterances.length }})
             </small>
             {{ faq.utterances[0] }}
+            <button
+              nbButton
+              ghost
+              size="tiny"
+              nbTooltip="Copy question"
+              (click)="copyString(faq.utterances[0])"
+            >
+              <nb-icon icon="copy-outline"></nb-icon>
+            </button>
           </div>
         </div>
 
