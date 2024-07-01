@@ -34,8 +34,6 @@ import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
 import ai.tock.shared.security.TockUserRole.botUser
-import ai.tock.shared.security.TockUserRole.faqBotUser
-import ai.tock.shared.security.TockUserRole.faqNlpUser
 import ai.tock.shared.vertx.WebVerticle
 import ai.tock.shared.vertx.WebVerticle.Companion
 import io.vertx.ext.web.RoutingContext
@@ -136,7 +134,7 @@ class TestCoreService : TestService {
             }
         }
 
-        blockingJsonPost("/test/talk", setOf(botUser,faqNlpUser,faqBotUser)) { context, query: BotDialogRequest ->
+        blockingJsonPost("/test/talk", setOf(botUser)) { context, query: BotDialogRequest ->
             if (context.organization == query.namespace) {
                 val debugEnabled = context.queryParams()["debug"]?.toBoolean() ?: false
                 val sourceWithContent = context.queryParams()["sourceWithContent"]?.toBoolean() ?: false

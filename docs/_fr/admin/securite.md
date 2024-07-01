@@ -39,14 +39,14 @@ un ou plusieurs de ces rôles, lui donnant différents accès dans l'application
 
 Les rôles disponibles sont définis dans l'enum `TockUserRole`:
 
-| Rôle             | Description                                                                                                    |
-|------------------|----------------------------------------------------------------------------------------------------------------|
-| `nlpUser`        | NLP platform user, allowed to qualify and search sentences.                                                    |
-| `faqNlpUser`     | FAQ NLP platform user, allowed to qualify and search sentences.                                                |
-| `faqBotUser`     | A faq bot user is allowed to manage the FAQ content, and train the FAQ                                            |
-| `botUser`        | Bot platform user, allowed to create and modify stories, rules and answers.                                    |
-| `admin`          | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc.. |
-| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc.                                        |
+| Rôle            | Description                                                                                                                  |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------|
+| `nlpUser`       | NLP platform user, allowed to qualify and search sentences.                                                                  |
+| ~~`faqNlpUser`~~ | ~~FAQ NLP platform user, allowed to qualify and search sentences.~~<br/> (Deprecated: Use the 'nlpUser' role instead)        |
+| ~~`faqBotUser`~~ | ~~A faq bot user is allowed to manage the FAQ content, and train the FAQ~~<br/> (Deprecated: Use the 'botUser' role instead) |
+| `botUser`       | Bot platform user, allowed to create and modify stories, rules and answers.                                                  |
+| `admin`         | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc..               |
+| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc.                                                      |
 
 La manière de configurer quel utilisateur _Tock Studio_ a quel rôle dépend du mode d'authentification, 
 autrement dit l'implémentation de `TockAuthProvider` utilisée.
@@ -109,7 +109,7 @@ Voici les propriétés et leurs valeurs par défaut :
 | `tock_oauth2_proxy_host`               |                         | Host du proxy (ne pas indiquer si pas de proxy)    ||
 | `tock_oauth2_proxy_port`               |                         | Port optionnel du proxy                            ||
 | `tock_oauth2_user_role_attribute`      | `custom:roles`          | Attribut lu dans le token pour le mapping du role  ||
-| `tock_custom_roles_mapping`            |                         | Lien entre les profils OAuth et les rôles Tock     | `id1=nlpUser,botUser,faqNlpUser,faqBotUser|id2=nlpUser,botUser,admin,technicalAdmin,faqNlpUser,faqBotUser` |
+| `tock_custom_roles_mapping`            |                         | Lien entre les profils OAuth et les rôles Tock     | `id1=nlpUser,botUser|id2=nlpUser,botUser,admin,technicalAdmin` |
 | `tock_custom_namespace_mapping`        |                         | Lien entre les profils OAuth et les namspaces Tock | `id1=sncf|id2=sncf` |
 | `tock_bot_admin_rest_default_base_url` | `http://localhost:8080` | Redirection vers l'url de tock studio si besoin    ||
 

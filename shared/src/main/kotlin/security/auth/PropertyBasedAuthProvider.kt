@@ -107,8 +107,8 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                                                         (user as TockUser).namespace,
                                                         listOfNotNull(
                                                             if (nlpUserResult.result()) nlpUser else null,
-                                                            if (faqNlpUserResult.result()) faqNlpUser else null,
-                                                            if (faqBotUserResult.result()) faqBotUser else null,
+                                                            if (faqNlpUserResult.result()) nlpUser else null,
+                                                            if (faqBotUserResult.result()) botUser else null,
                                                             if (botUserResult.result()) botUser else null,
                                                             if (adminResult.result()) admin else null,
                                                             if (technicalAdminResult.result()) technicalAdmin else null
