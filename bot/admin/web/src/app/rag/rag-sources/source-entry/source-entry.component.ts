@@ -116,17 +116,17 @@ export class SourceEntryComponent implements OnDestroy {
     });
   }
 
-  editSource(event: PointerEvent): void {
+  editSource(event: MouseEvent): void {
     event.stopPropagation();
     this.onEdit.emit(this.source);
   }
 
-  deleteSource(event: PointerEvent): void {
+  deleteSource(event: MouseEvent): void {
     event.stopPropagation();
     this.onDelete.emit(this.source);
   }
 
-  updateSource(event: PointerEvent): void {
+  updateSource(event: MouseEvent): void {
     event.stopPropagation();
     this.onUpdate.emit(this.source);
   }

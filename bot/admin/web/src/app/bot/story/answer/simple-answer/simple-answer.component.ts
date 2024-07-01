@@ -39,7 +39,7 @@ export class SimpleAnswerComponent implements OnInit {
   newAnswer: string;
   newMedia: Media;
 
-  constructor(private state: StateService, private bot: BotService, private dialog: DialogService) {}
+  constructor(public state: StateService, private bot: BotService, private dialog: DialogService) {}
 
   ngOnInit(): void {
     const _this = this;

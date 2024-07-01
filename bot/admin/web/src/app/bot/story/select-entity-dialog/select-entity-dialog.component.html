@@ -44,8 +44,8 @@
         autocomplete="off"
         [nbAutocomplete]="intentAuto"
         [(ngModel)]="intent.name"
-        (keyup)="onIntentChange($event.target.value)"
-        (focus)="onIntentChange($event.target.value)"
+        (keyup)="onIntentChange($any($event.target))"
+        (focus)="onIntentChange($any($event.target))"
       />
     </tock-form-control>
 
@@ -58,7 +58,7 @@
           *ngFor="let e of entities"
           class="pointer"
           [text]="e.nameWithoutNamespace(stateService.currentApplication.namespace)"
-          [status]="e.name === selectedEntity || e === selectedEntity ? 'info' : e.dictionary ? 'success' : 'basic'"
+          [status]="e === selectedEntity ? 'info' : e.dictionary ? 'success' : 'basic'"
           (click)="selectEntityType(e)"
         ></nb-tag>
       </nb-tag-list>
@@ -92,7 +92,7 @@
           *ngFor="let e of entityValues"
           class="pointer"
           [text]="e"
-          [status]="e === entityValues ? 'basic' : 'info'"
+          status="info"
           (click)="selectEntityValue(e)"
         ></nb-tag>
       </nb-tag-list>
@@ -140,7 +140,7 @@
 
 <nb-autocomplete
   #intentAuto
-  activeFirst
+  [activeFirst]="true"
 >
   <nb-option-group
     *ngFor="let category of currentIntentCategories"

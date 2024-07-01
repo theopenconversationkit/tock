@@ -21,7 +21,7 @@ export class FaqManagementListComponent {
   @Output() onDelete = new EventEmitter<FaqDefinitionExtended>();
   @Output() onEnable = new EventEmitter<FaqDefinitionExtended>();
 
-  constructor(private state: StateService, private dialogService: DialogService, private toastrService: NbToastrService) {}
+  constructor(public state: StateService, private dialogService: DialogService, private toastrService: NbToastrService) {}
 
   toggleEnabled(faq: FaqDefinitionExtended) {
     let action = 'Enable';

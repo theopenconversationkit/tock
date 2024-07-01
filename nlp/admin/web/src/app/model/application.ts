@@ -52,8 +52,8 @@ export class Application {
     );
   }
 
-  isOtherNamespaceIntent(intent: Intent) : boolean {
-    return this.namespaceIntents.findIndex(i => i.namespace === intent.namespace && i.name === intent.name) !== -1;
+  isOtherNamespaceIntent(intent: Intent): boolean {
+    return this.namespaceIntents.findIndex((i) => i.namespace === intent.namespace && i.name === intent.name) !== -1;
   }
 
   removeIntentById(id: string) {
@@ -75,7 +75,7 @@ export class Application {
   }
 
   intentById(id: string): Intent {
-    return this.intents.find((i) => i._id === id)
+    return this.intents.find((i) => i._id === id);
   }
 
   supportLocale(locale: string): boolean {
@@ -117,7 +117,7 @@ export class Application {
       intents: Intent.fromJSONArray(json.intents),
       nlpEngineType: NlpEngineType.fromJSON(json.nlpEngineType),
       label: json.label || json.name,
-      namespaceIntents: Intent.fromJSONArray(json.namespaceIntents),
+      namespaceIntents: Intent.fromJSONArray(json.namespaceIntents)
     });
 
     return result;
@@ -157,7 +157,7 @@ export class ModelBuild {
     public language: string,
     public type: string,
     public nbSentences: number,
-    public duration: Date,
+    public duration: string,
     public error: boolean,
     public date: Date,
     public errorMessage?: string,

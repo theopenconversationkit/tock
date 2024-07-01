@@ -37,7 +37,7 @@ export class CreateEntityDialogComponent {
   error: string;
   entityTypes: EntityType[];
 
-  constructor(public dialogRef: NbDialogRef<CreateEntityDialogComponent>, private state: StateService) {
+  constructor(public dialogRef: NbDialogRef<CreateEntityDialogComponent>, public state: StateService) {
     this.state.entityTypesSortedByName().subscribe((entities) => (this.entityTypes = entities));
   }
 

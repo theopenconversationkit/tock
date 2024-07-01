@@ -63,7 +63,7 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   dialogReportQuery: DialogReportQuery;
 
   constructor(
-    private state: StateService,
+    public state: StateService,
     private analytics: AnalyticsService,
     private botConfiguration: BotConfigurationService,
     private route: ActivatedRoute,

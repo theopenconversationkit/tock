@@ -158,8 +158,11 @@
             class="d-flex gap-1 justify-content-between"
             *ngFor="let i of sentence.notRetainedEntitiesContainer().getEntities()"
           >
-            <span>{{ entity.value ? container.entityText(entity) : '' }} {{ container.entityValue(entity) }}</span>
-            <span>{{ entity.probability | percent: '1.0-2' }}</span>
+            <span
+              >{{ i.value ? sentence.notRetainedEntitiesContainer().entityText(i) : '' }}
+              {{ sentence.notRetainedEntitiesContainer().entityValue(i) }}</span
+            >
+            <span>{{ i.probability | percent: '1.0-2' }}</span>
           </div>
         </div>
       </div>

@@ -27,13 +27,13 @@
       {{ footNote.title }}
     </span>
     <span
-      *ngIf="footNote.content"
+      *ngIf="$any(footNote).content"
       class="d-block"
     >
-      {{ footNote.content }}
+      {{ $any(footNote).content }}
     </span>
     <span
-      *ngIf="!footNote.content && !last"
+      *ngIf="!$any(footNote).content && !last"
       class="mx-1"
       >|</span
     >

@@ -91,8 +91,8 @@
               fieldSize="small"
               [(ngModel)]="e.intent.name"
               [nbAutocomplete]="intentAuto"
-              (keyup)="onIntentChange(e, $event.target.value)"
-              (focus)="onIntentChange(e, $event.target.value)"
+              (keyup)="onIntentChange(e, $any($event.target).value)"
+              (focus)="onIntentChange(e, $any($event.target).value)"
               (blur)="validateIntent(e)"
             />
           </tock-form-control>
@@ -165,8 +165,8 @@
             fieldSize="small"
             [(ngModel)]="newEntity.intent.name"
             [nbAutocomplete]="intentAuto"
-            (keyup)="onIntentChange(newEntity, $event.target.value)"
-            (focus)="onIntentChange(newEntity, $event.target.value)"
+            (keyup)="onIntentChange(newEntity, $any($event.target).value)"
+            (focus)="onIntentChange(newEntity, $any($event.target).value)"
             (blur)="validateIntent(newEntity)"
           />
         </tock-form-control>
@@ -208,7 +208,7 @@
 
 <nb-autocomplete
   #intentAuto
-  activeFirst
+  [activeFirst]="true"
 >
   <nb-option-group
     *ngFor="let category of currentIntentCategories"
