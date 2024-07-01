@@ -20,7 +20,7 @@ import ai.tock.genai.orchestratorcore.models.observability.*
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
 /**
- * The Large Language Model Setting Mapper
+ * The Observability Setting Mapper
  */
 object ObservabilitySettingMapper {
 

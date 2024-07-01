@@ -16,7 +16,7 @@
 
 package ai.tock.bot.engine.config
 
-import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.engine.Bot
 import ai.tock.shared.injector
 import com.github.salomonbrys.kodein.instance
@@ -26,17 +26,17 @@ import java.util.concurrent.CopyOnWriteArraySet
 /**
  *
  */
-internal object BotRAGConfigurationMonitor {
+internal object BotVectorStoreConfigurationMonitor {
 
     private val logger = KotlinLogging.logger {}
 
-    private val ragConfigurationDAO: BotRAGConfigurationDAO by injector.instance()
+    private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO by injector.instance()
     private val botsToMonitor: MutableSet<Bot> = CopyOnWriteArraySet()
 
     init {
-        logger.info { "start bot RAG configuration monitor" }
-        ragConfigurationDAO.listenChanges {
-            logger.info { "refresh bots RAG configuration" }
+        logger.info { "start bot vector store configuration monitor" }
+        vectorStoreConfigurationDAO.listenChanges {
+            logger.info { "refresh bots vector store configuration" }
             botsToMonitor.forEach {
                 refresh(it)
             }
@@ -44,7 +44,7 @@ internal object BotRAGConfigurationMonitor {
     }
 
     fun monitor(bot: Bot) {
-        logger.debug { "load RAG configuration & monitor bot $bot" }
+        logger.debug { "load vector store configuration & monitor bot $bot" }
         refresh(bot)
         botsToMonitor.add(bot)
     }
@@ -54,8 +54,8 @@ internal object BotRAGConfigurationMonitor {
     }
 
     private fun refresh(bot: Bot) {
-        logger.debug { "Refreshing bot RAG configuration ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
-        bot.botDefinition.ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
+        logger.debug { "Refreshing bot vector store configuration ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
+        bot.botDefinition.vectorStoreConfiguration = vectorStoreConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
             bot.botDefinition.namespace,
             bot.botDefinition.botId,
             enabled = true

@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.rag
+package ai.tock.genai.orchestratorcore.models.vectorstore
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import org.litote.kmongo.Id
+enum class VectorStoreProvider{
+    OpenSearch;
 
-data class BotRAGConfiguration(
-    val _id: Id<BotRAGConfiguration>,
-    val namespace: String,
-    val botId: String,
-    val enabled: Boolean,
-    val llmSetting: LLMSetting,
-    val emSetting: EMSetting,
-    val indexSessionId: String? = null,
-    val noAnswerSentence: String,
-    val noAnswerStoryId: String? = null,
-)
-
-fun BotRAGConfiguration?.isEnabled(): Boolean = this?.enabled ?: false
+    companion object {
+        fun findByName(provider: String): VectorStoreProvider? {
+            return entries.firstOrNull { it.name == provider }
+        }
+    }
+}

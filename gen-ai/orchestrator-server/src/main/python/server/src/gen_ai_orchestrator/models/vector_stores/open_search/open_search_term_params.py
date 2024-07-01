@@ -16,13 +16,6 @@
 
 from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.models.vector_stores.vector_store_search_params import (
-    BaseVectorStoreSearchParams,
-)
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
-)
-
 
 class OpenSearchTermParams(BaseModel):
     """The OpenSearch term param. Used to perform a Boolean query.
