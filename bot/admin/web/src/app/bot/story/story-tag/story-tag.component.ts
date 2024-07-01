@@ -31,7 +31,7 @@ export class StoryTagComponent implements OnInit {
   selectedTag: string;
 
   @Output()
-  selectedTagChange: EventEmitter<String> = new EventEmitter<String>();
+  selectedTagChange: EventEmitter<string> = new EventEmitter<string>();
 
   tags: Tag[] = [
     { value: 'ENABLE', label: 'Trigger Bot activation' },

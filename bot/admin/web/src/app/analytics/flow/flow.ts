@@ -19,9 +19,9 @@ import { AnswerConfigurationType } from '../../bot/model/story';
 
 export class DialogFlowRequest extends ApplicationScopedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
     public botId: string,
     public botConfigurationName: string,
     public botConfigurationId?: string,

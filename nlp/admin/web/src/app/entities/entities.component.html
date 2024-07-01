@@ -121,17 +121,18 @@
                   Download Dictionary
                 </button>
                 <button
+                  *ngIf="showUploadDictionaryButton"
                   nbButton
                   size="small"
-                  (click)="file.hidden = false; $event.srcElement.setAttribute('style', 'display:none')"
-                  nbTooltip="Download Dictionary"
+                  (click)="showUploadDictionaryButton = false"
+                  nbTooltip="Upload Dictionary"
                 >
                   <nb-icon icon="upload-outline"></nb-icon>
                   Upload Dictionary
                 </button>
                 <input
                   #file
-                  [hidden]="true"
+                  *ngIf="!showUploadDictionaryButton"
                   id="file"
                   type="file"
                   ng2FileSelect
@@ -157,7 +158,7 @@
                     nbInput
                     fieldSize="small"
                     #predefValueEdit
-                    [(value)]="predefinedValue.value"
+                    [(value)]="$any(predefinedValue).value"
                     (blur)="updatePredefinedValueName(predefinedValue, predefValueEdit)"
                   />
                 </td>

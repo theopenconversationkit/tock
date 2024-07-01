@@ -4,15 +4,15 @@ import { FaqDefinition } from '../models';
 
 export class FaqSearchQuery extends PaginatedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
     public tags: string[] = [],
-    public searchMark?: SearchMark,
+    public override searchMark?: SearchMark,
     public search?: string,
-    public sort?: Entry<string, boolean>[],
+    public override sort?: Entry<string, boolean>[],
     public enabled: Boolean = null,
     public user?: string,
     public allButUser?: string

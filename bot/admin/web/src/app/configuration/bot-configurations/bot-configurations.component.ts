@@ -35,7 +35,7 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
   displayTestConfigurations = false;
 
   constructor(
-    private state: StateService,
+    public state: StateService,
     private botConfiguration: BotConfigurationService,
     private dialogService: DialogService,
     private toastrService: NbToastrService

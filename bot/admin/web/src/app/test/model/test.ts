@@ -22,9 +22,9 @@ export class BotDialogRequest extends ApplicationScopedQuery {
   constructor(
     public botApplicationConfigurationId: string,
     public message: BotMessage,
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
     public userIdModifier: string
   ) {
     super(namespace, applicationName, language);

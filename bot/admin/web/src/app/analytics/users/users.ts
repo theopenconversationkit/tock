@@ -22,11 +22,11 @@ import { PaginatedResult } from '../../model/nlp';
 
 export class UserSearchQuery extends PaginatedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
     public name?: String,
     public from?: Date,
     public to?: Date,

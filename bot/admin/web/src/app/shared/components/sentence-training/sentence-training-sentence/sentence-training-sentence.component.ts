@@ -60,7 +60,7 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
   getContrastYIQ = getContrastYIQ;
 
   constructor(
-    private state: StateService,
+    public state: StateService,
     private sentenceTrainingService: SentenceTrainingService,
     private cd: ChangeDetectorRef,
     private self: ElementRef,

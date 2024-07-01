@@ -61,7 +61,7 @@ export class IntentsLogsComponent {
     public state: StateService,
     private nlp: NlpService,
     private dialogService: NbDialogService,
-    private config: CoreConfig,
+    public config: CoreConfig,
     private toastrService: NbToastrService,
     private router: Router,
     @Inject(DOCUMENT) private document: Document

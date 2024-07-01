@@ -6,10 +6,10 @@ import { RouterModule } from '@angular/router';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { NbThemeModule } from '@nebular/theme';
 
-import { AutofocusDirective, FullscreenDirective } from '../app/shared/directives';
+import { FullscreenDirective } from '../app/shared/directives';
 
 @NgModule({
-  declarations: [AutofocusDirective, FullscreenDirective],
+  declarations: [FullscreenDirective],
   imports: [
     BrowserAnimationsModule,
     CommonModule,
@@ -20,6 +20,6 @@ import { AutofocusDirective, FullscreenDirective } from '../app/shared/directive
     NbThemeModule.forRoot({ name: 'default' }),
     NbEvaIconsModule
   ],
-  exports: [AutofocusDirective, FullscreenDirective, CommonModule, FormsModule, ReactiveFormsModule]
+  exports: [FullscreenDirective, CommonModule, FormsModule, ReactiveFormsModule]
 })
 export class TestingModule {}

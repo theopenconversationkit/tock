@@ -97,12 +97,12 @@
           [(ngModel)]="intent"
           (keyup)="intentCategoryChange()"
           (focus)="intentCategoryChange()"
-          (change)="intent = $event.target.value"
+          (change)="intent = $any($event.target)"
         />
       </tock-form-control>
       <nb-autocomplete
         #intentAuto
-        activeFirst
+        [activeFirst]="true"
       >
         <nb-option-group
           *ngFor="let category of intentCategories"
@@ -136,7 +136,7 @@
       </tock-form-control>
       <nb-autocomplete
         #catAuto
-        activeFirst
+        [activeFirst]="true"
       >
         <nb-option
           *ngFor="let category of categories"

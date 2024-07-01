@@ -35,7 +35,7 @@
       >
         <a
           [routerLink]="[coreConfig.displayDialogUrl]"
-          [queryParams]="{ text: this.sentence.text }"
+          [queryParams]="{ text: $any(this.sentence).text }"
           target="_blank"
         >
           <nb-icon icon="menu-outline"></nb-icon>
@@ -85,7 +85,7 @@
         [style.font-size]="fontSize"
         [style.background]="t.color()"
         [id]="t.index"
-        [nbTooltip]="t.display(sentence, state.user)"
+        [nbTooltip]="t.display($any(sentence), state.user)"
         >{{ t.text }}</span
       >
     </div>

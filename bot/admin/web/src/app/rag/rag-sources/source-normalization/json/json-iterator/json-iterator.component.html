@@ -46,8 +46,8 @@
           placeholder="Select a data type"
           size="small"
           *ngIf="isPrimitive(list.value)"
-          (selectedChange)="selectDataType($event, list.key)"
-          [selected]="isSelected(list.key)"
+          (selectedChange)="selectDataType($event, $any(list).key)"
+          [selected]="isSelected($any(list).key)"
           class="my-2"
         >
           <nb-option
@@ -72,14 +72,13 @@
 
       <tock-json-iterator
         *ngIf="isRoot || i <= 5"
-        [dataTypesDefinition]="dataTypesDefinition"
         [associations]="associations"
         [recursiveList]="list.value"
-        [parentKey]="list.key"
+        [parentKey]="$any(list).key"
         [parentType]="getType(recursiveList)"
         [upstreamPath]="path"
         (riseSelection)="upriseSelection($event)"
-        isRoot="false"
+        [isRoot]="false"
       ></tock-json-iterator>
     </li>
   </ul>

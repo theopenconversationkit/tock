@@ -215,7 +215,7 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
     this.setIntentsListFilter(which);
   }
 
-  onBlurIntentsInput(which: string, event: KeyboardEvent): void {
+  onBlurIntentsInput(which: string, event: KeyboardEvent | Event): void {
     if (which === 'filter') {
       if (!this.getFormControl('intent').value) (event.target as HTMLInputElement).value = '';
       else {

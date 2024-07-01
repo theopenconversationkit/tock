@@ -36,6 +36,7 @@ import { Observable } from 'rxjs';
 export class EntitiesComponent implements OnInit {
   selectedEntityType: EntityType;
   selectedDictionary: Dictionary;
+  showUploadDictionaryButton: boolean = true;
   public uploader: FileUploader;
 
   @ViewChild('addLabelInput') addLabelInput: ElementRef;

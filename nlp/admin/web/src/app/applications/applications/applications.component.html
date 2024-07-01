@@ -56,11 +56,15 @@
   </section>
 </div>
 
-<tock-no-data-found
+<!-- <tock-no-data-found
   *ngIf="!state.applications.length"
   title="No application detected"
   message="Use the NEW APPLICATION button to create one"
-></tock-no-data-found>
+></tock-no-data-found> -->
+<div *ngIf="!state.applications.length">
+  <strong>No application detected</strong>
+  <p>Use the NEW APPLICATION button to create one</p>
+</div>
 
 <nb-card
   *ngFor="let app of state.applications"

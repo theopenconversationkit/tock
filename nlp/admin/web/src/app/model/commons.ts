@@ -73,9 +73,9 @@ export class ApplicationScopedQuery {
 
 export class PaginatedQuery extends ApplicationScopedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
     public start: number,
     public size: number,
     public searchMark?: SearchMark,

@@ -33,7 +33,7 @@ export class ModelBuildsComponent implements OnInit {
     this.search();
   }
 
-  duration(d: number): string {
+  duration(d: string): string {
     const duration = moment.duration(d, 's');
     return (
       this.formatDuration(duration.get('hours')) +

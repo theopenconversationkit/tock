@@ -32,7 +32,7 @@ import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
   styleUrls: ['./logs.component.css']
 })
 export class LogsComponent extends ScrollComponent<Log> {
-  title: string = 'Logs';
+  override title: string = 'Logs';
   text: string;
   test: boolean = false;
   onlyCurrentLocale: boolean = false;
@@ -41,17 +41,17 @@ export class LogsComponent extends ScrollComponent<Log> {
     state: StateService,
     private nlp: NlpService,
     private dialogService: NbDialogService,
-    private config: CoreConfig,
+    public config: CoreConfig,
     private toastrService: NbToastrService
   ) {
     super(state);
   }
 
-  protected searchMark(t: Log): SearchMark {
+  protected override searchMark(t: Log): SearchMark {
     return new SearchMark(t.textRequest(), t.date);
   }
 
-  search(query: PaginatedQuery): Observable<PaginatedResult<Log>> {
+  override search(query: PaginatedQuery): Observable<PaginatedResult<Log>> {
     return this.nlp.searchLogs(
       new LogsQuery(
         query.namespace,
@@ -66,7 +66,7 @@ export class LogsComponent extends ScrollComponent<Log> {
     );
   }
 
-  dataEquals(d1: Log, d2: Log): boolean {
+  override dataEquals(d1: Log, d2: Log): boolean {
     return d1.request === d2.request;
   }
 

@@ -24,7 +24,6 @@
       shape="round"
       nbTooltip="Edit {{ answerLabel }}"
       [size]="editableIconSize"
-      [color]="answer.currentAnswer().isEmpty() ? 'basic' : 'primary'"
       (click)="$event.stopPropagation(); editAnswer()"
     >
       <nb-icon icon="message-square-outline"></nb-icon>

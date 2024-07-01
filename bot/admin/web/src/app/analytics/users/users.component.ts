@@ -27,7 +27,6 @@ import { PaginatedResult } from '../../model/nlp';
 import { PaginatedQuery } from '../../model/commons';
 import { NbToastrService } from '@nebular/theme';
 import { BotApplicationConfiguration, ConnectorType } from '../../core/model/configuration';
-import { TestPlan } from '../../test/model/test';
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
 
 export class UserFilter {
@@ -42,7 +41,7 @@ export class UserFilter {
 export class UsersComponent extends ScrollComponent<UserReport> {
   filter: UserFilter = new UserFilter([], false);
   selectedUser: UserReport;
-  selectedPlan: TestPlan;
+  selectedPlanId: string;
   configurations: BotApplicationConfiguration[];
 
   loadingDialog: boolean = false;
@@ -65,7 +64,7 @@ export class UsersComponent extends ScrollComponent<UserReport> {
     this.refresh();
   }
 
-  protected loadResults(result: PaginatedResult<UserReport>, init: boolean): boolean {
+  protected override loadResults(result: PaginatedResult<UserReport>, init: boolean): boolean {
     if (super.loadResults(result, init)) {
       if (this.data.length !== 0 && this.selectedUser == null) {
         this.selectedUser = this.data[0];
@@ -115,11 +114,11 @@ export class UsersComponent extends ScrollComponent<UserReport> {
     setTimeout((_) => this.reload());
   }
 
-  search(query: PaginatedQuery): Observable<PaginatedResult<UserReport>> {
+  override search(query: PaginatedQuery): Observable<PaginatedResult<UserReport>> {
     return this.analytics.users(this.buildUserSearchQuery(query));
   }
 
-  dataEquals(d1: UserReport, d2: UserReport): boolean {
+  override dataEquals(d1: UserReport, d2: UserReport): boolean {
     return d1.playerId === d2.playerId;
   }
 

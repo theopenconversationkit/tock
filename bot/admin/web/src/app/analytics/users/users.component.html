@@ -100,7 +100,7 @@
     >
       <nb-card
         *ngFor="let user of data"
-        accent="{{ user.playerId === selectedUser?.playerId ? 'info' : '' }}"
+        [accent]="user.playerId === selectedUser?.playerId ? 'info' : ''"
         class="m-0"
       >
         <nb-card-header
@@ -185,7 +185,7 @@
         <nb-select
           fullWidth
           size="small"
-          [(ngModel)]="selectedPlan"
+          [(ngModel)]="selectedPlanId"
           placeholder="Add dialog to Test Plan"
         >
           <nb-option
@@ -197,7 +197,7 @@
         <button
           nbButton
           size="small"
-          (click)="addDialogToTestPlan(selectedPlan, selectedUser.userDialog)"
+          (click)="addDialogToTestPlan(selectedPlanId, selectedUser.userDialog)"
           ghost="true"
           nbTooltip="Add dialog to Test Plan"
         >

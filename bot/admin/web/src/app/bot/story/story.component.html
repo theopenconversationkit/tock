@@ -16,8 +16,8 @@
 
 <nb-accordion *ngIf="story">
   <nb-accordion-item
-    [expanded]="storyNode || !story._id || story.selected"
-    [disabled]="storyNode || !story._id"
+    [expanded]="!!storyNode || !story._id || story.selected"
+    [disabled]="!!storyNode || !story._id"
     (collapsedChange)="toggleStoryPanel($event)"
   >
     <nb-accordion-item-header>

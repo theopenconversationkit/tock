@@ -36,7 +36,7 @@
   </nb-card-body>
 
   <nb-card-body *ngIf="!uploading">
-    <span *ngIf="source.type === sourceTypes.remote"> Import sources now ? </span>
+    <span *ngIf="source.source_type === sourceTypes.remote"> Import sources now ? </span>
 
     <form
       [formGroup]="importForm"
@@ -46,7 +46,7 @@
         *ngIf="source.source_type === sourceTypes.file"
         label="Source import file"
         name="importFile"
-        required="true"
+        [required]="true"
         [controls]="filesSources"
         [showError]="isImportSubmitted"
       >
@@ -57,7 +57,6 @@
           [fullWidth]="true"
           [multiple]="false"
           [fileTypeAccepted]="['csv']"
-          [filesInError]="filesInError"
         ></tock-file-upload>
       </tock-form-control>
     </form>

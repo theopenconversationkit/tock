@@ -28,11 +28,11 @@ export class CreateStoryRequest {
 
 export class StorySearchQuery extends PaginatedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
     public category?: string,
     public textSearch?: string,
     public onlyConfiguredStory?: boolean
@@ -171,7 +171,7 @@ export class StoryDefinitionConfiguration extends AnswerContainer {
     public storyId: string,
     public botId: string,
     public intent: IntentName,
-    public currentType: AnswerConfigurationType,
+    public override currentType: AnswerConfigurationType,
     public namespace: string,
     answers: AnswerConfiguration[] = [],
     category: string = 'default',
@@ -430,7 +430,7 @@ export class StoryStep extends AnswerContainer {
     return of(this);
   }
 
-  allowNoAnwser(): boolean {
+  override allowNoAnwser(): boolean {
     return true;
   }
 
@@ -543,7 +543,7 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
     super(AnswerConfigurationType.simple);
   }
 
-  static fromJSON(json: any): SimpleAnswerConfiguration {
+  static override fromJSON(json: any): SimpleAnswerConfiguration {
     const value = Object.create(SimpleAnswerConfiguration.prototype);
     const result = Object.assign(value, json, {
       answers: SimpleAnswer.fromJSONArray(json.answers),
@@ -562,7 +562,7 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
     return r.substring(0, Math.min(r.length, limit)) + (r.length > limit || this.answers.length > 1 ? '...' : '');
   }
 
-  invalidMessage(): string {
+  override invalidMessage(): string {
     if (!this.allowNoAnswer && this.answers.length === 0) {
       return 'Please set at least one sentence';
     } else {
@@ -608,7 +608,7 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
     );
   }
 
-  checkAfterReset(bot: BotService) {
+  override checkAfterReset(bot: BotService) {
     super.checkAfterReset(bot);
     // save again label if useful
     let count = 0;
@@ -680,7 +680,7 @@ export class MediaCard extends Media {
   public titleLabel: string;
   public subTitleLabel: string;
 
-  static fromJSON(json: any): MediaCard {
+  static override fromJSON(json: any): MediaCard {
     const value = Object.create(MediaCard.prototype);
     const result = Object.assign(value, json, {
       title: json.title ? I18nLabel.fromJSON(json.title) : null,
@@ -692,7 +692,7 @@ export class MediaCard extends Media {
     return result;
   }
 
-  clone(): Media {
+  override clone(): Media {
     return new MediaCard(
       this.actions.map((a) => a.clone()),
       this.title ? this.title.clone() : null,
@@ -711,11 +711,11 @@ export class MediaAction extends Media {
   public titleLabel = '';
   public readonly internalId = Math.random();
 
-  static fromJSON(json: any): MediaAction {
+  static override fromJSON(json: any): MediaAction {
     const value = Object.create(MediaAction.prototype);
     const result = Object.assign(value, json, {
       title: I18nLabel.fromJSON(json.title),
-      internalId : Math.random(),
+      internalId: Math.random(),
       type: MediaType.action
     });
     return result;
@@ -725,7 +725,7 @@ export class MediaAction extends Media {
     return json ? json.map(MediaAction.fromJSON) : [];
   }
 
-  clone(): MediaAction {
+  override clone(): MediaAction {
     return new MediaAction(this.title ? this.title.clone() : null, this.url);
   }
 }
@@ -788,7 +788,7 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
     super(AnswerConfigurationType.script);
   }
 
-  static fromJSON(json: any): ScriptAnswerConfiguration {
+  static override fromJSON(json: any): ScriptAnswerConfiguration {
     const value = Object.create(ScriptAnswerConfiguration.prototype);
     const result = Object.assign(value, json, {
       scriptVersions: ScriptAnswerVersionedConfiguration.fromJSONArray(json.scriptVersions),
@@ -798,7 +798,7 @@ export class ScriptAnswerConfiguration extends AnswerConfiguration {
     return result;
   }
 
-  invalidMessage(): string {
+  override invalidMessage(): string {
     if (this.current.script.trim().length === 0) {
       return 'Please set a non empty script';
     } else {
@@ -845,13 +845,13 @@ export class BuiltinAnswerConfiguration extends AnswerConfiguration {
     super(AnswerConfigurationType.builtin);
   }
 
-  static fromJSON(json: any): BuiltinAnswerConfiguration {
+  static override fromJSON(json: any): BuiltinAnswerConfiguration {
     const value = Object.create(BuiltinAnswerConfiguration.prototype);
     const result = Object.assign(value, json, {});
     return result;
   }
 
-  invalidMessage(): string {
+  override invalidMessage(): string {
     return null;
   }
 
@@ -952,7 +952,7 @@ export class CustomAnswerContainer extends AnswerContainer {
     return of(this);
   }
 
-  changeCurrentType(value: AnswerConfigurationType) {
+  override changeCurrentType(value: AnswerConfigurationType) {
     super.changeCurrentType(value);
     this.botConfigurationAnswer.currentType = value;
   }

@@ -32,7 +32,7 @@ export class SentencesGenerationComponent implements OnInit {
 
   informNoResult: boolean = false;
 
-  options: SentencesGenerationOptions = {
+  options: Partial<SentencesGenerationOptions> = {
     abbreviatedLanguage: false,
     sentencesExample: [],
     spellingMistakes: false,
@@ -42,7 +42,7 @@ export class SentencesGenerationComponent implements OnInit {
 
   constructor(
     public dialogRef: NbDialogRef<SentencesGenerationComponent>,
-    private state: StateService,
+    public state: StateService,
     private restService: RestService,
     private router: Router
   ) {}
@@ -79,11 +79,11 @@ export class SentencesGenerationComponent implements OnInit {
     this.onValidateSelection.emit(generatedSentences);
   }
 
-  updateOptions(options: SentencesGenerationOptions): void {
+  updateOptions(options: Partial<SentencesGenerationOptions>): void {
     this.options = { ...options };
   }
 
-  generate(options: SentencesGenerationOptions = this.options): void {
+  generate(options: Partial<SentencesGenerationOptions> = this.options): void {
     this.informNoResult = false;
 
     const { abbreviatedLanguage, sentencesExample, smsLanguage, spellingMistakes, llmTemperature } = options;

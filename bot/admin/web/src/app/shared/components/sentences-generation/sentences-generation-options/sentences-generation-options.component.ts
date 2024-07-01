@@ -10,7 +10,7 @@ import { SentencesGenerationOptions } from './../models';
 })
 export class SentencesGenerationOptionsComponent implements OnInit {
   @Input() sentences: string[] = [];
-  @Input() options!: SentencesGenerationOptions;
+  @Input() options!: Partial<SentencesGenerationOptions>;
 
   @Output() onOptionsUpdate = new EventEmitter<Partial<SentencesGenerationOptions>>();
 

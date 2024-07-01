@@ -245,7 +245,7 @@
                     ghost
                     size="tiny"
                     nbTooltip="Display indicator metrics for each story"
-                    (click)="loadIndicatorMetrics(chart.indicatorName)"
+                    (click)="loadIndicatorMetrics($any(chart).indicatorName)"
                   >
                     Detail by stories
                   </button>

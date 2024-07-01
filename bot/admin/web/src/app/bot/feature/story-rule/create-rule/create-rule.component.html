@@ -36,8 +36,8 @@
               [value]="getCurrentStoryLabel(mainOrTarget.mainStory)"
               autocomplete="off"
               [nbAutocomplete]="storyAutocomplete"
-              (input)="filterStoriesList($event.target.value)"
-              (change)="onStoryChange(mainOrTarget.mainStory, $event.target.value)"
+              (input)="filterStoriesList($any($event.target).value)"
+              (change)="onStoryChange(mainOrTarget.mainStory, $any($event.target).value)"
               (focus)="storyInputFocus()"
               (blur)="storyInputBlur(mainOrTarget.mainStory, $event)"
             />
@@ -80,8 +80,8 @@
               [value]="getCurrentStoryLabel(mainOrTarget.targetStory)"
               autocomplete="off"
               [nbAutocomplete]="targetAutocomplete"
-              (input)="filterStoriesList($event.target.value)"
-              (change)="onStoryChange(mainOrTarget.targetStory, $event.target.value)"
+              (input)="filterStoriesList($any($event.target).value)"
+              (change)="onStoryChange(mainOrTarget.targetStory, $any($event.target).value)"
               (focus)="storyInputFocus()"
               (blur)="storyInputBlur(mainOrTarget.targetStory, $event)"
             />

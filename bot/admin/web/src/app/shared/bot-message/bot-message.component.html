@@ -16,11 +16,11 @@
 
 <div *ngIf="message">
   <div *ngIf="message.isAttachment()">
-    <tock-bot-message-attachment [attachment]="message"></tock-bot-message-attachment>
+    <tock-bot-message-attachment [attachment]="$any(message)"></tock-bot-message-attachment>
   </div>
   <div *ngIf="message.isChoice()">
     <tock-bot-message-choice
-      [choice]="message"
+      [choice]="$any(message)"
       [user]="user"
       (sendMessage)="sendReply($event)"
     ></tock-bot-message-choice>
@@ -30,7 +30,7 @@
   </div>
   <div *ngIf="message.isSentence()">
     <tock-bot-message-sentence
-      [sentence]="message"
+      [sentence]="$any(message)"
       [user]="user"
       (sendMessage)="sendReply($event)"
     ></tock-bot-message-sentence>

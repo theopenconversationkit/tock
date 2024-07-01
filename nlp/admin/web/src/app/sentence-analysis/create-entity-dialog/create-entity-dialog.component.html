@@ -30,7 +30,6 @@
         <span
           *ngFor="let e of entityTypes"
           nbTooltip="Select {{ e.qualifiedName(state.user) }}"
-          selected="{{ e === entityType }}"
           (click)="onSelect(e)"
           class="tag"
           [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)"

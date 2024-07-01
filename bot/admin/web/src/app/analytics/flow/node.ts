@@ -15,7 +15,7 @@
  */
 
 import { DialogFlowStateData, DialogFlowStateTransitionData, DialogFlowStateTransitionType } from './flow';
-import { AnswerConfigurationType } from '../../bot/model/story';
+import { AnswerConfigurationType, StoryDefinitionConfiguration } from '../../bot/model/story';
 
 export class StoryNode {
   public dynamic: boolean;
@@ -107,7 +107,7 @@ export class NodeTypeFilter {
     public name: string,
     public description: string,
     public alwaysDisplay: boolean,
-    public filter: (node: StoryNode) => boolean
+    public filter: (node: StoryNode | StoryDefinitionConfiguration) => boolean
   ) {}
 }
 
@@ -119,5 +119,11 @@ export const NodeTypeFilters = [
   //new NodeTypeFilter('Message', 'Only Message Type', true, node => node.isMessageAnswer()),
   new NodeTypeFilter('Script', 'Only Script Type', true, (node) => node.isScriptAnswer()),
   new NodeTypeFilter('Built-in', 'Only Built-in', true, (node) => node.isBuiltIn()),
-  new NodeTypeFilter('Unknown', 'Unknown Type', false, (node) => node.storyType == undefined)
+  new NodeTypeFilter('Unknown', 'Unknown Type', false, (node) => {
+    if (node instanceof StoryNode) {
+      return node.storyType == undefined;
+    } else if (node instanceof StoryDefinitionConfiguration) {
+      return node.currentType == undefined;
+    }
+  })
 ];

@@ -118,13 +118,13 @@
         >
           <ng-container *ngFor="let valueDefinition of values.controls; let i = index">
             <div
-              [formGroup]="valueDefinition"
+              [formGroup]="$any(valueDefinition)"
               class="row"
             >
               <div class="col-10 pr-0">
                 <tock-form-control
                   name="valueLabel"
-                  [controls]="valueDefinition.controls.label"
+                  [controls]="$any(valueDefinition).controls.label"
                   [showError]="isSubmitted"
                   [required]="true"
                 >

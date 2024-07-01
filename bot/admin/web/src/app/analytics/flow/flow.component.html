@@ -135,7 +135,7 @@
                   class="story-type"
                   icon="code"
                 ></nb-icon>
-                <span class="story-label">{{ selectedStory.name }}</span>
+                <span class="story-label">{{ selectedStory.storyName }}</span>
               </span>
             </nb-select-label>
             <nb-option [value]="undefined">All</nb-option>
@@ -468,8 +468,8 @@
     <nb-card-body>
       <google-chart
         *ngIf="flowData !== null"
-        type="Sankey"
-        [data]="flowData.data"
+        [type]="SankeyChartType"
+        [data]="$any(flowData.data)"
         [columns]="flowData.columnNames"
         [options]="flowData.options"
         [dynamicResize]="true"

@@ -11,7 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
 export class JsonIteratorComponent {
   destroy = new Subject();
 
-  @Input() data: any;
+  @Input() data: { [key: string]: any };
   @Input() isRoot: boolean = true;
   @Input() parentKey: string;
 

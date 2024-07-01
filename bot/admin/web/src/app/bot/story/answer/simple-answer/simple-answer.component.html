@@ -116,7 +116,7 @@
         shape="round"
         [status]="newMedia ? 'primary' : 'basic'"
         nbTooltip="Edit media message"
-        (click)="displayMediaMessage(a)"
+        (click)="displayMediaMessage()"
       >
         <nb-icon icon="image-outline"></nb-icon>
       </button>
@@ -132,11 +132,12 @@
     </div>
   </div>
 </div>
+
 <div *ngIf="fullDisplay">
   <tock-i18n-label
     *ngFor="let a of answer.answers"
+    [i18nLabel]="a.label"
     [deleteLabelAllowed]="answer.answers.length !== 1"
-    [i]="a.label"
     (delete)="deleteAnswer(a, false)"
   ></tock-i18n-label>
 </div>

@@ -104,7 +104,7 @@
               fieldSize="small"
               class="date-field"
               placeholder="start date"
-              (keyup.enter)="changeStartDate(f, $event)"
+              (keyup.enter)="changeStartDate(feature, $event)"
               [(ngModel)]="feature.startDate"
               [nbDatepicker]="startDate"
               (ngModelChange)="changeStartDate(feature, $event)"

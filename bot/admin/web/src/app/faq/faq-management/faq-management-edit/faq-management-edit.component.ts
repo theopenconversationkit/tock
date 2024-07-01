@@ -263,25 +263,23 @@ export class FaqManagementEditComponent implements OnChanges {
     );
   }
 
-  utteranceEditionValue: string;
+  editedUtterance: AbstractControl<any, any>;
+  editedUtteranceValue: string;
   editUtterance(utterance: string): void {
-    this.utterances.controls.forEach((c) => {
-      delete c['_edit'];
-    });
     const ctrl = this.utterances.controls.find((u) => u.value == utterance);
-    this.utteranceEditionValue = ctrl.value;
-    ctrl['_edit'] = true;
+    this.editedUtterance = ctrl;
+    this.editedUtteranceValue = ctrl.value;
   }
 
-  validateEditUtterance(utterance: FormControl): void {
-    utterance.setValue(this.utteranceEditionValue);
-    this.cancelEditUtterance(utterance);
+  validateEditUtterance(utterance: AbstractControl<any, any>): void {
+    utterance.setValue(this.editedUtteranceValue);
+    this.cancelEditUtterance();
     this.form.markAsDirty();
     this.form.markAsTouched();
   }
 
-  cancelEditUtterance(utterance: FormControl): void {
-    delete utterance['_edit'];
+  cancelEditUtterance(): void {
+    this.editedUtterance = undefined;
   }
 
   removeUtterance(utterance: string): void {

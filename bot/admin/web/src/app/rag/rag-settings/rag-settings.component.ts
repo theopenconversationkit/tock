@@ -183,7 +183,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     this.filteredStories$ = of(this.availableStories);
   }
 
-  storyInputBlur(e: InputEvent): void {
+  storyInputBlur(e: FocusEvent): void {
     setTimeout(() => {
       // timeout needed to avoid reseting input and filtered stories when clicking on autocomplete suggestions (which fires blur event)
       const target: HTMLInputElement = e.target as HTMLInputElement;

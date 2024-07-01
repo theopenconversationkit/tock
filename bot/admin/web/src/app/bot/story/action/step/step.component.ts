@@ -316,7 +316,7 @@ export class StepComponent implements OnInit {
 
   intentsAutocompleteValues: Observable<any[]>;
 
-  private updateIntentsAutocompleteValues(event?: any): void {
+  updateIntentsAutocompleteValues(event?: any): void {
     let res: IntentsCategory[];
     if (event?.target?.value?.trim().length) {
       res = this.currentIntentCategories

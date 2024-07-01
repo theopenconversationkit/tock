@@ -56,8 +56,8 @@
         [required]="true"
         [boldLabel]="false"
         [hasMargin]="false"
-        showError="true"
-        [controls]="{ errors: step.new }"
+        [showError]="true"
+        [controls]="$any({ errors: step.new })"
       >
         <input
           nbInput
@@ -67,7 +67,7 @@
           placeholder="Enter a user phrase"
           *ngIf="!step.new"
           [(ngModel)]="step.userSentence.defaultLabel"
-          (blur)="userSentenceChange($event.target.value)"
+          (blur)="userSentenceChange($any($event.target).value)"
         />
         <input
           nbInput
@@ -77,7 +77,7 @@
           placeholder="Enter a user phrase"
           *ngIf="step.new"
           [(ngModel)]="step.newUserSentence"
-          (blur)="userSentenceChange($event.target.value)"
+          (blur)="userSentenceChange($any($event.target).value)"
         />
       </tock-form-control>
     </div>
@@ -165,8 +165,8 @@
         placeholder="Target intent"
         #targetIntent
         [(ngModel)]="step.targetIntent.name"
-        (keyup)="onIntentChange(step, $event.target.value)"
-        (focus)="onIntentChange(step, $event.target.value)"
+        (keyup)="onIntentChange(step, $any($event.target).value)"
+        (focus)="onIntentChange(step, $any($event.target).value)"
         (blur)="validateIntent(step, true)"
         autocomplete="off"
         (keyup)="updateIntentsAutocompleteValues($event)"

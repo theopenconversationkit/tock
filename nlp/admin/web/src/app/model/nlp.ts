@@ -65,7 +65,12 @@ export class EntityDefinition {
 }
 
 export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
-  constructor(public namespace: string, public applicationName: string, public language: string, public entity: EntityDefinition) {
+  constructor(
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public entity: EntityDefinition
+  ) {
     super(namespace, applicationName, language);
   }
 }
@@ -524,7 +529,7 @@ export class EntityWithSubEntities extends EntityContainer {
     this.endSelection = undefined;
   }
 
-  rootEntity(): ClassifiedEntity {
+  override rootEntity(): ClassifiedEntity {
     return this.root;
   }
 
@@ -746,9 +751,9 @@ export class NlpEngineType {
 
 export class ParseQuery extends ApplicationScopedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
     public query: string,
     public checkExistingQuery: boolean,
     public state?: string
@@ -759,12 +764,12 @@ export class ParseQuery extends ApplicationScopedQuery {
 
 export class SearchQuery extends PaginatedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
-    public searchMark?: SearchMark,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
+    public override searchMark?: SearchMark,
     public search?: string,
     public intentId?: string,
     public status?: SentenceStatus[],
@@ -773,7 +778,7 @@ export class SearchQuery extends PaginatedQuery {
     public entityRolesToExclude: string[] = [],
     public modifiedAfter?: Date,
     public modifiedBefore?: Date,
-    public sort?: Entry<string, boolean>[],
+    public override sort?: Entry<string, boolean>[],
     public onlyToReview: boolean = false,
     public searchSubEntities: boolean = false,
     public user?: string,
@@ -787,7 +792,12 @@ export class SearchQuery extends PaginatedQuery {
 }
 
 export class SentencesTextQuery extends ApplicationScopedQuery {
-  constructor(public namespace: string, public applicationName: string, public language: string, public texts?: string[]) {
+  constructor(
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public texts?: string[]
+  ) {
     super(namespace, applicationName, language);
   }
 }
@@ -815,12 +825,12 @@ export class SentencesResult implements PaginatedResult<Sentence> {
 
 export class LogsQuery extends PaginatedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
-    public searchMark?: SearchMark,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
+    public override searchMark?: SearchMark,
     public search?: string,
     public test?: boolean
   ) {
@@ -883,9 +893,9 @@ export class Log {
 
 export class LogStatsQuery extends ApplicationScopedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
     public intent?: string,
     public minOccurrences?: number,
     public onlyCurrentLocale?: boolean
@@ -1008,11 +1018,11 @@ export class TestErrorQuery extends PaginatedQuery {
   }
 
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
     public intentName?: string,
     public after?: Date
   ) {
@@ -1034,11 +1044,11 @@ export class LogCountQuery extends PaginatedQuery {
   }
 
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
     public intentName?: string,
     public minCount?: number,
     public validated?: boolean
@@ -1126,9 +1136,9 @@ export class IntentQA {
 
 export class UpdateSentencesQuery extends ApplicationScopedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
     public selectedSentences: Sentence[],
     public searchQuery?: SearchQuery,
     public newIntentId?: string,
@@ -1154,9 +1164,9 @@ export class UpdateSentencesReport {
 
 export class TranslateSentencesQuery extends ApplicationScopedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
     public targetLanguage: string,
     public selectedSentences: Sentence[],
     public searchQuery?: SearchQuery
