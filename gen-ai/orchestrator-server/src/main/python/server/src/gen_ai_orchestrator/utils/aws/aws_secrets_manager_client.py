@@ -91,7 +91,7 @@ def parse_secret_data(secret_data, obj_type: Type[T]) -> Optional[T]:
         The object of specified type.
 
     Raises:
-         JSONDecodeError otherwise
+         JSONDecodeError: otherwise
     """
     try:
         secret_dict = json.loads(secret_data)

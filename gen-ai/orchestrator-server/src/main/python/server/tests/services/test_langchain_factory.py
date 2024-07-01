@@ -19,6 +19,8 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
     VectorStoreUnknownException,
 )
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
+    GenAIUnknownObservabilityProviderException, GenAIUnknownObservabilityProviderSettingException
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -36,9 +38,14 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
+from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
+from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
+    LangfuseCallbackHandlerFactory
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -48,7 +55,7 @@ from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory impor
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_llm_factory,
-    get_vector_store_factory,
+    get_vector_store_factory, get_callback_handler_factory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
@@ -200,3 +207,26 @@ def test_get_unknown_vector_store_factory():
             embedding_function=None,
             index_name='an index name',
         )
+
+
+def test_get_unknown_observability_factory():
+    with pytest.raises(GenAIUnknownObservabilityProviderSettingException):
+        get_callback_handler_factory(setting='settings with incorrect type')
+
+
+def test_get_langfuse_observability_factory():
+    langfuse_factory = get_callback_handler_factory(
+        setting=ObservabilitySetting(
+            **{
+                'provider': 'Langfuse',
+                'secret_key': {
+                    'type': 'Raw',
+                    'value': 'ab7***************************A1IV4B',
+                },
+                'public_key': 'df41*********f',
+                'url': 'https://myServer:3000'
+            }
+        )
+    )
+    assert langfuse_factory.setting.provider == ObservabilityProvider.LANGFUSE
+    assert isinstance(langfuse_factory, LangfuseCallbackHandlerFactory)

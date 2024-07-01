@@ -28,7 +28,16 @@ object SentenceGenerationValidationService {
 
     fun validate(sentenceGenerationConfig: BotSentenceGenerationConfiguration): Set<ErrorMessage> {
         return llmProviderService
-            .checkSetting(LLMProviderSettingStatusQuery(sentenceGenerationConfig.llmSetting))
+            .checkSetting(
+                LLMProviderSettingStatusQuery(
+                    sentenceGenerationConfig.llmSetting,
+                    ObservabilityService.getObservabilityConfiguration(
+                        sentenceGenerationConfig.namespace,
+                        sentenceGenerationConfig.botId,
+                        enabled = true
+                    )?.setting
+                )
+            )
             .getErrors("LLM setting check failed")
             .toSet()
     }

@@ -37,6 +37,7 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
     opensearch_exception_handler,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
+from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
 from gen_ai_orchestrator.models.rag.rag_models import (
     ChatMessageType,
     Footnote,
@@ -56,7 +57,7 @@ from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_ha
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_llm_factory,
-    get_vector_store_factory,
+    get_vector_store_factory, create_observability_callback_handler,
 )
 
 logger = logging.getLogger(__name__)
@@ -99,10 +100,22 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         'RAG chain - Use RetrieverJsonCallbackHandler for debugging : %s',
         debug,
     )
+
+    callback_handlers = []
     records_callback_handler = RetrieverJsonCallbackHandler()
+    if debug:
+        # Debug callback handler
+        callback_handlers.append(records_callback_handler)
+    if query.observability_setting is not None:
+        # Langfuse callback handler
+        callback_handlers.append(
+            create_observability_callback_handler(
+                observability_setting=query.observability_setting,
+                trace_name=ObservabilityTrace.RAG))
+
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
-        config={'callbacks': [records_callback_handler] if debug else []},
+        config={'callbacks': callback_handlers},
     )
 
     # RAG Guard
@@ -132,7 +145,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
             query, response, records_callback_handler, rag_duration
         )
         if debug
-        else None,
+        else None
     )
 
 

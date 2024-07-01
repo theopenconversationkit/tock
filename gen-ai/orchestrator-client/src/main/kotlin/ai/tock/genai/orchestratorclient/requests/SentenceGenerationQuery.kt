@@ -17,9 +17,11 @@
 package ai.tock.genai.orchestratorclient.requests
 
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
 class SentenceGenerationQuery(
     val llmSetting: LLMSetting,
-    val prompt: PromptTemplate
+    val prompt: PromptTemplate,
+    val observabilitySetting: ObservabilitySetting?
 )
 

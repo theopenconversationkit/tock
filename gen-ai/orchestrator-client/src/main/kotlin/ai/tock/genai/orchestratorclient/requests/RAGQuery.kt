@@ -18,6 +18,7 @@ package ai.tock.genai.orchestratorclient.requests
 import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.llm.LLMProvider
+import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
 
 data class RAGQuery(
     // val condenseQuestionLlmSetting: LLMSetting,
@@ -27,7 +28,8 @@ data class RAGQuery(
     val questionAnsweringPromptInputs: Map<String, String>,
     val embeddingQuestionEmSetting: EMSetting,
     val documentIndexName: String,
-    val documentSearchParams: DocumentSearchParams
+    val documentSearchParams: DocumentSearchParams,
+    val observabilitySetting: ObservabilitySetting?
 )
 
 data class ChatMessage(

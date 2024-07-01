@@ -82,7 +82,7 @@ async def get_llm_provider_by_id(
         The LLM Provider Response
 
     Raises:
-        GenAIUnknownProviderException if the provider is unknown
+        GenAIUnknownProviderException: if the provider is unknown
     """
 
     # Query validation
@@ -105,7 +105,7 @@ async def get_llm_provider_setting_by_id(
         The LLM Provider Setting
 
     Raises:
-        GenAIUnknownProviderException if the provider is unknown
+        GenAIUnknownProviderException: if the provider is unknown
     """
 
     # Query validation
@@ -146,7 +146,7 @@ async def check_llm_provider_setting(
         ProviderSettingStatusResponse
 
     Raises:
-        AIProviderBadQueryException if the provider ID is not consistent with the request body
+        AIProviderBadQueryException: if the provider ID is not consistent with the request body
     """
 
     logger.info('Start LLM setting check for provider %s', provider_id)
@@ -155,7 +155,7 @@ async def check_llm_provider_setting(
 
     try:
         # LLM setting check
-        await check_llm_setting(query.setting)
+        await check_llm_setting(query)
 
         logger.info('The LLM setting is valid')
         return ProviderSettingStatusResponse(valid=True)
@@ -174,7 +174,7 @@ def validate_query(request: Request, provider_id: str, setting: LLMSetting):
         setting:  The LLM Provider Setting
 
     Raises:
-        AIProviderBadQueryException if the provider ID is not consistent with the request body
+        AIProviderBadQueryException: if the provider ID is not consistent with the request body
     """
 
     logger.debug('LLM setting - Query validation')
@@ -193,7 +193,7 @@ def validate_llm_provider(request: Request, provider_id: str):
         provider_id: The provider ID
 
     Raises:
-        GenAIUnknownProviderException if the provider is unknown
+        GenAIUnknownProviderException: if the provider is unknown
     """
 
     if not LLMProvider.has_value(provider_id):

@@ -43,6 +43,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 # @patch('llm_orchestrator.services.langchain.factories.langchain_factory.get_llm_factory')
 # --> But where it is used (in the execute_qa_chain method of the llm_orchestrator.services.langchain.rag_chain
 # module that imports get_llm_factory):
+@patch('gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_em_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_vector_store_factory')
@@ -69,6 +70,7 @@ async def test_rag_chain(
     mocked_get_vector_store_factory,
     mocked_get_em_factory,
     mocked_get_llm_factory,
+    mocked_get_callback_handler_factory
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RagQuery
@@ -118,15 +120,26 @@ Answer in {locale}:""",
             ],
             'k': 4,
         },
+        'observability_setting': {
+            'provider': 'Langfuse',
+            'url': 'http://localhost:3000',
+            'secret_key': {
+              'type': 'Raw',
+              'value': 'sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f'
+            },
+            'public_key': 'pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c'
+        }
     }
     query = RagQuery(**query_dict)
 
     # Setup mock factories/init return value
     em_factory_instance = mocked_get_em_factory.return_value
     llm_factory_instance = mocked_get_llm_factory.return_value
+    observability_factory_instance = mocked_get_callback_handler_factory.return_value
     vector_store_factory_instance = mocked_get_vector_store_factory.return_value
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
+    mocked_langfuse_callback = observability_factory_instance.get_callback_handler()
     mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'source_documents': []})
     mocked_rag_answer = mocked_chain.ainvoke.return_value
 
@@ -144,6 +157,9 @@ Answer in {locale}:""",
         vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
         embedding_function=em_factory_instance.get_embedding_model(),
         index_name=query.document_index_name,
+    )
+    mocked_get_callback_handler_factory.assert_called_once_with(
+        setting=query.observability_setting
     )
     # Assert LangChain qa chain is created using the expected settings from query
     mocked_chain_builder.assert_called_once_with(
@@ -170,7 +186,7 @@ Answer in {locale}:""",
                 AIMessage(content='you can do this with the following method ....'),
             ],
         },
-        config={'callbacks': [mocked_callback]},
+        config={'callbacks': [mocked_callback, mocked_langfuse_callback]},
     )
     # Assert the response is build using the expected settings
     mocked_rag_response.assert_called_once_with(

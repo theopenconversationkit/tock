@@ -21,6 +21,4 @@ import ai.tock.genai.orchestratorclient.responses.SentenceGenerationResponse
 
 interface CompletionService {
     fun generateSentences(query: SentenceGenerationQuery):  SentenceGenerationResponse?
-
-
 }
