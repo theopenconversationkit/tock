@@ -57,6 +57,7 @@ import ai.tock.shared.provide
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.I18nLabelValue
 import ai.tock.translator.I18nLocalizedLabel
+import java.util.Locale
 
 /**
  * Bus implementation for Tock integrated mode.
@@ -298,6 +299,12 @@ interface BotBus : Bus<BotBus> {
     fun resetDialogState() {
         dialog.state.resetState()
     }
+
+    /**
+     * Sets the user's [current locale][UserPreferences.locale], and updates this bus
+     * so that following translations use the same locale
+     */
+    fun changeUserLocale(locale: Locale)
 
     /**
      * Returns the persistent current context value.

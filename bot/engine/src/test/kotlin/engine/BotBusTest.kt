@@ -37,13 +37,13 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 /**
  *
@@ -87,6 +87,14 @@ class BotBusTest : BotEngineTest() {
         bus.reloadProfile()
         assertNull(bus.userPreferences.firstName)
         assertNull(bus.userPreferences.lastName)
+    }
+
+    @Test
+    fun `reloadProfile should use new user locale when connectorLoadProfile returns valid value`() {
+        every { connector.loadProfile(any(), any()) } returns UserPreferences(locale = Locale.FRENCH)
+        assertEquals(Locale.ENGLISH, bus.userLocale)
+        bus.reloadProfile()
+        assertEquals(Locale.FRENCH, bus.userLocale)
     }
 
     @Test
