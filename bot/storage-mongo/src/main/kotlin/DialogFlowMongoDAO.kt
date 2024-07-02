@@ -88,6 +88,7 @@ import org.litote.kmongo.all
 import org.litote.kmongo.and
 import org.litote.kmongo.dateToString
 import org.litote.kmongo.deleteMany
+import org.litote.kmongo.distinct
 import org.litote.kmongo.document
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -114,6 +115,8 @@ import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
 import java.time.DayOfWeek
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit.DAYS
@@ -182,6 +185,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 }
             }
 
+    private val flowTransitionStatsDialogAggregationColTTL = longProperty("tock_bot_flow_stats_index_ttl_days", 365)
+
     private val flowTransitionStatsDialogAggregationCol =
         MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatDialogAggregationCol>("flow_transition_stats_dialog")
             .apply {
@@ -194,7 +199,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     ensureIndex(
                         Date,
                         indexOptions = IndexOptions()
-                            .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
+                            .expireAfter(flowTransitionStatsDialogAggregationColTTL, TimeUnit.DAYS)
                     )
                 } catch (e: Exception) {
                     logger.error(e)
@@ -400,42 +405,80 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         if (minDate != null) {
                             logger.debug { "min date $minDate" }
                             val match = match(DialogFlowStateTransitionStatDialogAggregationCol_.Date gte minDate)
-                            val distinct = group(
-                                document(
-                                    ApplicationId from ApplicationId,
-                                    Date from Date
-                                ),
-                                Count sum 1
-                            )
-                            val proj = project(
-                                Date from GroupByIdContainer_._id.date.projection,
-                                ApplicationId from GroupByIdContainer_._id.applicationId.projection,
-                                Count from Count.projection
-                            )
-                            val userStats: List<UpdateOneModel<DialogFlowStateTransitionStatUserAggregationCol>> =
-                                flowTransitionStatsDialogAggregationCol
-                                    .aggregate<DialogFlowAggregateApplicationIdResult>(match, distinct, proj)
-                                    .toList()
-                                    .map {
-                                        logger.debug { it }
-                                        UpdateOneModel(
-                                            and(
-                                                ApplicationId eq it.applicationId,
-                                                DialogFlowStateTransitionStatUserAggregationCol_.Date eq it.date
-                                            ),
-                                            set(Count setTo it.count),
-                                            UpdateOptions().upsert(true)
-                                        )
-                                    }
-                            if (userStats.isNotEmpty()) {
-                                flowTransitionStatsUserAggregationCol.bulkWrite(userStats)
-                            }
+                            updateUserStats(match)
                         }
                     } catch (e: Throwable) {
                         logger.error(e)
                     }
                 }
+
+                //check data
+                val now = Instant.now().atZone(defaultZoneId)
+                schedule(
+                    Duration.between(now, now.plusDays(1).withHour(1)).seconds,
+                    TimeUnit.SECONDS
+                ) {
+                    try {
+                        val distinct = group(
+                            document(
+                                ApplicationId from ApplicationId,
+                                Date from Date
+                            )
+                        )
+                        val proj = project(
+                            Date from GroupByIdContainer_._id.date.projection,
+                            ApplicationId from GroupByIdContainer_._id.applicationId.projection
+                        )
+                        flowTransitionStatsDateAggregationCol
+                            .aggregate<DialogFlowAggregateApplicationIdResult>(distinct, proj)
+                            .forEach {
+                                if (Duration.between(it.date.atZone(defaultZoneId), now)
+                                        .toDays() < flowTransitionStatsDialogAggregationColTTL - 2
+                                ) {
+                                    val match =
+                                        match(DialogFlowStateTransitionStatDialogAggregationCol_.Date eq it.date)
+                                    updateUserStats(match)
+                                }
+                            }
+
+                    } catch (e: Throwable) {
+                        logger.error(e)
+                    }
+                }
             }
+        }
+    }
+
+    private fun updateUserStats(match: Bson) {
+        val distinct = group(
+            document(
+                ApplicationId from ApplicationId,
+                Date from Date
+            ),
+            Count sum 1
+        )
+        val proj = project(
+            Date from GroupByIdContainer_._id.date.projection,
+            ApplicationId from GroupByIdContainer_._id.applicationId.projection,
+            Count from Count.projection
+        )
+        val userStats: List<UpdateOneModel<DialogFlowStateTransitionStatUserAggregationCol>> =
+            flowTransitionStatsDialogAggregationCol
+                .aggregate<DialogFlowAggregateApplicationIdResult>(match, distinct, proj)
+                .toList()
+                .map {
+                    logger.debug { it }
+                    UpdateOneModel(
+                        and(
+                            ApplicationId eq it.applicationId,
+                            DialogFlowStateTransitionStatUserAggregationCol_.Date eq it.date
+                        ),
+                        set(Count setTo it.count),
+                        UpdateOptions().upsert(true)
+                    )
+                }
+        if (userStats.isNotEmpty()) {
+            flowTransitionStatsUserAggregationCol.bulkWrite(userStats)
         }
     }
 
