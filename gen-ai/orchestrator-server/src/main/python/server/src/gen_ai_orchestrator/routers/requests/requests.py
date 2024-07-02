@@ -22,7 +22,9 @@ from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
-from gen_ai_orchestrator.models.vector_stores.vector_stores_types import DocumentSearchParams
+from gen_ai_orchestrator.models.vector_stores.vector_stores_types import (
+    DocumentSearchParams,
+)
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
@@ -39,7 +41,57 @@ class EMProviderSettingStatusQuery(BaseModel):
     )
 
 
-class RagQuery(BaseModel):
+class QAQuery(BaseModel):
+    """The QA query model"""
+
+    embedding_question_em_setting: EMSetting = Field(
+        description="Embedding model setting, used to calculate the user's question vector."
+    )
+    document_index_name: str = Field(
+        description='Index name corresponding to a document collection in the vector database.',
+    )
+    document_search_params: DocumentSearchParams = Field(
+        description='The document search parameters. Ex: number of documents, metadata filter',
+    )
+    question_answering_prompt_inputs: Any = Field(
+        description='Key-value inputs for the llm prompt when used as a template. Please note that the '
+        'chat_history field must not be specified here, it will be override by the history field',
+    )
+
+    model_config = {
+        'json_schema_extra': {
+            'examples': [
+                {
+                    'embedding_question_em_setting': {
+                        'provider': 'OpenAI',
+                        'api_key': {
+                            'type': 'Raw',
+                            'value': 'ab7***************************A1IV4B',
+                        },
+                        'model': 'text-embedding-ada-002',
+                    },
+                    'question_answering_prompt_inputs': {
+                        'question': 'How to get started playing guitar ?',
+                    },
+                    'document_index_name': 'my-index-name',
+                    'document_search_params': {
+                        'provider': 'OpenSearch',
+                        'filter': [
+                            {
+                                'term': {
+                                    'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
+                                }
+                            }
+                        ],
+                        'k': 4,
+                    },
+                }
+            ]
+        }
+    }
+
+
+class RagQuery(QAQuery):
     """The RAG query model"""
 
     history: list[ChatMessage] = Field(
@@ -54,19 +106,6 @@ class RagQuery(BaseModel):
     #     )
     question_answering_llm_setting: LLMSetting = Field(
         description='LLM setting, used to perform a QA Prompt.'
-    )
-    question_answering_prompt_inputs: Any = Field(
-        description='Key-value inputs for the llm prompt when used as a template. Please note that the '
-        'chat_history field must not be specified here, it will be override by the history field',
-    )
-    embedding_question_em_setting: EMSetting = Field(
-        description="Embedding model setting, used to calculate the user's question vector."
-    )
-    document_index_name: str = Field(
-        description='Index name corresponding to a document collection in the vector database.',
-    )
-    document_search_params: DocumentSearchParams = Field(
-        description='The document search parameters. Ex: number of documents, metadata filter',
     )
 
     model_config = {
