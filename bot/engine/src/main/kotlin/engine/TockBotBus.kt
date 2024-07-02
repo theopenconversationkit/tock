@@ -37,7 +37,7 @@ import ai.tock.bot.engine.user.UserTimeline
 import ai.tock.shared.defaultLocale
 import ai.tock.translator.I18nKeyProvider
 import ai.tock.translator.UserInterfaceType
-import java.util.*
+import java.util.Locale
 
 /**
  *
@@ -65,16 +65,8 @@ internal class TockBotBus(
     override val botId = action.recipientId
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
-    override val userLocale: Locale =
-        userPreferences.locale.let { locale ->
-            val supp = bot.supportedLocales
-            when {
-                supp.contains(locale) || supp.isEmpty() -> locale
-                supp.any { it.language == locale.language } -> Locale(locale.language)
-                supp.contains(defaultLocale) -> defaultLocale
-                else -> supp.first()
-            }
-        }
+    override var userLocale: Locale = findSupportedLocale(userPreferences.locale)
+        private set
 
     override val userInterfaceType: UserInterfaceType =
         action.state.userInterface ?: connector.connectorType.userInterfaceType
@@ -97,6 +89,21 @@ internal class TockBotBus(
 
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
+
+    private fun findSupportedLocale(locale: Locale): Locale {
+        val supp = bot.supportedLocales
+        return when {
+            supp.contains(locale) || supp.isEmpty() -> locale
+            supp.any { it.language == locale.language } -> Locale(locale.language)
+            supp.contains(defaultLocale) -> defaultLocale
+            else -> supp.first()
+        }
+    }
+
+    override fun changeUserLocale(locale: Locale) {
+        userPreferences.locale = locale
+        userLocale = findSupportedLocale(locale)
+    }
 
     /**
      * Returns the non persistent current context value.
@@ -207,6 +214,7 @@ internal class TockBotBus(
         } else {
             userPreferences.fillWith(UserPreferences())
         }
+        changeUserLocale(userPreferences.locale)
     }
 
     override fun markAsUnknown() {
