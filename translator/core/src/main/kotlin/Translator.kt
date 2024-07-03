@@ -122,19 +122,22 @@ object Translator {
     fun getLabel(id: String): I18nLabel? = loadLabel(id)
 
     private fun getExistingLabel(key: I18nLabelValue, checkDefaults: Boolean) =
-        getLabel(key.key)?.takeUnless {  stored ->
-            checkDefaults && !checkDefaultConsistency(key, stored) && resetValueWhenDefaultChanges
+        getLabel(key.key)?.takeUnless { stored ->
+            checkDefaults && checkDefaultConsistency(key, stored)
         }
 
+    /**
+     * @return `true` if the label should be reset due to a default value mismatch.
+     */
     private fun checkDefaultConsistency(key: I18nLabelValue, value: I18nLabel): Boolean {
-        if (value.defaultLabel != null && value.defaultLabel != key.defaultLabel.toString()) {
-            logger.warn { "default label has changed - old value ${value.defaultLabel} - new value : ${key.defaultLabel}" }
-            return false
-        } else if (value.defaultI18n != key.defaultI18n) {
+        if (value.defaultI18n != key.defaultI18n) {
             logger.warn { "default localizations have changed - old values ${value.defaultI18n} - new values : ${key.defaultI18n}" }
-            return false
+            return resetValueWhenDefaultChanges
+        } else if (value.defaultLabel != null && value.defaultLabel != key.defaultLabel.toString()) {
+            logger.warn { "default label has changed - old value ${value.defaultLabel} - new value : ${key.defaultLabel}" }
+            return false // defaultLabel is reset every time the label is updated in TOCK Studio -> not a reference
         } else {
-            return true
+            return false
         }
     }
 
@@ -155,7 +158,8 @@ object Translator {
                 value.namespace,
                 value.category,
                 LinkedHashSet(listOf(defaultLabel)),
-                defaultLabelKey
+                defaultLabelKey,
+                defaultI18n = value.defaultI18n,
             )
             if (!readOnly) {
                 i18nDAO.save(label)
@@ -408,7 +412,7 @@ object Translator {
                         val b = prefix
                         val c = s.substring(index + prefix.length, s.length)
                         splitPattern = splitPattern.subList(0, i) + listOf(a) + listOf(b) + listOf(c) +
-                            splitPattern.subList(i + 1, splitPattern.size)
+                                splitPattern.subList(i + 1, splitPattern.size)
                     }
                 }
             }
