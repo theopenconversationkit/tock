@@ -112,7 +112,7 @@ export class CreateRuleComponent implements OnInit {
     this.filteredStories$ = of(this.availableStories);
   }
 
-  storyInputBlur(wich: mainOrTarget, e: InputEvent): void {
+  storyInputBlur(wich: mainOrTarget, e: FocusEvent): void {
     const target: HTMLInputElement = e.target as HTMLInputElement;
     target.value = this.getCurrentStoryLabel(wich);
 

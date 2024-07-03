@@ -67,7 +67,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     super(state);
   }
 
-  protected searchMark(t: Sentence): SearchMark {
+  protected override searchMark(t: Sentence): SearchMark {
     return new SearchMark(t.text, t.updateDate);
   }
 
@@ -82,7 +82,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     this.displayedColumns = columns;
   }
 
-  ngOnInit(): void {
+  override ngOnInit(): void {
     this.initColumns();
 
     super.ngOnInit();
@@ -114,7 +114,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   ngAfterViewInit(): void {}
 
-  resetCursor() {
+  override resetCursor() {
     super.resetCursor();
     this.pageIndex = 0;
     this.selection.clear();
@@ -148,11 +148,11 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     );
   }
 
-  search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
+  override search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
     return this.nlp.searchSentences(this.toSearchQuery(query));
   }
 
-  dataEquals(d1: Sentence, d2: Sentence): boolean {
+  override dataEquals(d1: Sentence, d2: Sentence): boolean {
     return d1.text === d2.text;
   }
 
@@ -202,7 +202,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     this.nodes = [...this.nodes]; // Just refresh the table
   }
 
-  protected loadResults(result: PaginatedResult<Sentence>, init: boolean): boolean {
+  protected override loadResults(result: PaginatedResult<Sentence>, init: boolean): boolean {
     if (super.loadResults(result, init)) {
       this.nodes = this.toNodes(result.rows);
       this.pageIndex = Math.floor(result.start / this.pageSize);

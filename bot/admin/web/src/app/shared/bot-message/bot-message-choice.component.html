@@ -23,7 +23,7 @@
   <button
     (click)="click()"
     nbButton
-    color="{{ url() ? 'warn' : 'primary' }}"
+    status="{{ url() ? 'warn' : 'primary' }}"
     class="choice"
     [nbTooltip]="title() ? title() + ' - ' + parameters() : parameters()"
   >

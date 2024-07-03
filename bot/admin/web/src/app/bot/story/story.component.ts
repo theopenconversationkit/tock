@@ -53,7 +53,7 @@ export class StoryComponent implements OnChanges {
   storyNode: StoryNode = null;
 
   @Input()
-  storyTag = '';
+  storyTag: string = '';
 
   @Input()
   fullDisplay = false;
@@ -170,7 +170,7 @@ export class StoryComponent implements OnChanges {
     });
   }
 
-  private saveStory(selectStoryAfterSave: boolean) {
+  saveStory(selectStoryAfterSave: boolean) {
     this.story.steps = StoryStep.filterNew(this.story.steps);
     if (!this.canBeMetricStory()) this.story.metricStory = false;
     this.story.tags = !this.storyTag || this.storyTag.length === 0 ? [] : [this.storyTag];

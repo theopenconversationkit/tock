@@ -446,7 +446,7 @@ describe('FaqManagementEditComponent', () => {
     expect(component.utterances.value).toHaveSize(2);
     expect(component.utterances.value).toEqual(['question 1', 'question 2']);
 
-    component.utteranceEditionValue = 'test';
+    component.editedUtteranceValue = 'test';
     component.validateEditUtterance(Array.from(component.utterances.controls.values())[1] as FormControl);
     expect(component.utterances.value).toHaveSize(2);
     expect(component.utterances.value).toEqual(['question 1', 'test']);

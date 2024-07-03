@@ -37,7 +37,7 @@
     class="d-flex gap-1 align-items-center"
   >
     <nb-checkbox
-      [checked]="entity.atStartOfDay"
+      [checked]="$any(entity.atStartOfDay)"
       (checkedChange)="entity.atStartOfDay = !entity.atStartOfDay; update()"
       nbTooltip="Useful for non relative time"
       >Evaluate at start of day

@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    // "noImplicitOverride": true,
+    "noImplicitOverride": true,
     "importHelpers": true,
     "sourceMap": true,
     "declaration": false,
@@ -19,7 +19,7 @@
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
-    // "strictTemplates": true
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   }
 }

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, forwardRef, Input, OnInit, Output } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { NbComponentSize } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -22,7 +23,7 @@ export class AutocompleteInputComponent implements OnInit, ControlValueAccessor 
   @Input() name: string = '';
   @Input() options: string[] = [];
   @Input() placeholder: string = 'Select value';
-  @Input() fieldSize: string = 'medium';
+  @Input() fieldSize: NbComponentSize = 'medium';
 
   @Output() onKeyup = new EventEmitter<{ key: string; value: string }>();
   @Output() onSelectionChange = new EventEmitter<string>();
@@ -51,7 +52,7 @@ export class AutocompleteInputComponent implements OnInit, ControlValueAccessor 
     return of(value).pipe(map((filterString) => this.filter(filterString)));
   }
 
-  valueChange(input: InputEvent): void {
+  valueChange(input: Event): void {
     const target: HTMLInputElement = input.target as HTMLInputElement;
     const value = target.value;
 

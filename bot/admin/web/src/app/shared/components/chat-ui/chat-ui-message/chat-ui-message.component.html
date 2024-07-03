@@ -19,7 +19,7 @@
       <div class="text">
         <tock-chat-ui-message-sentence
           *ngIf="message.isSentence()"
-          [sentence]="message"
+          [sentence]="$any(message)"
           [replay]="replay"
           [reply]="reply"
           (sendMessage)="replyMessage($event)"
@@ -27,26 +27,25 @@
 
         <tock-chat-ui-message-sentence-footnotes
           *ngIf="message.isSentenceWithFootnotes()"
-          [sentence]="message"
+          [sentence]="$any(message)"
           [reply]="reply"
         ></tock-chat-ui-message-sentence-footnotes>
 
         <tock-chat-ui-message-choice
           *ngIf="message.isChoice()"
-          [choice]="message"
+          [choice]="$any(message)"
           [replay]="true"
           [reply]="reply"
-          (sendMessage)="sendReply($event)"
         ></tock-chat-ui-message-choice>
 
         <tock-chat-ui-message-attachment
           *ngIf="message.isAttachment()"
-          [attachment]="message"
+          [attachment]="$any(message)"
         ></tock-chat-ui-message-attachment>
 
         <tock-chat-ui-message-location
           *ngIf="message.isLocation()"
-          [location]="l"
+          [location]="$any(message)"
         ></tock-chat-ui-message-location>
       </div>
     </div>
@@ -55,7 +54,7 @@
 
 <tock-chat-ui-message-debug
   *ngIf="message.isDebug()"
-  [message]="message"
+  [message]="$any(message)"
 ></tock-chat-ui-message-debug>
 
 <ng-content></ng-content>

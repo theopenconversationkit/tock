@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<div *ngIf="i18nLabel.i18n.length">
+<div *ngIf="i18nLabel?.i18n.length">
   <nb-card>
     <nb-card-header>
       <div class="d-flex justify-content-between align-items-start">
@@ -195,7 +195,7 @@
                 nbInput
                 [value]="a"
                 [disabled]="!isSupportedLocale(l)"
-                (change)="addAlternative(l, index, $event.target.value)"
+                (change)="addAlternative(l, index, $any($event.target).value)"
                 rows="1"
               ></textarea>
             </div>
