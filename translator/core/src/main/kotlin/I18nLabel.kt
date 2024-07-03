@@ -33,7 +33,7 @@ data class I18nLabel(
     override val defaultLocale: Locale = findDefaultLabelLocale(defaultLabel, i18n),
     override val defaultI18n: Set<I18nLocalizedLabel> = emptySet(),
     override val version: Int = 0
-) : I18nLabelPartial {
+) : I18nLabelContract {
     override fun withDefaultLabel(defaultLabel: String?) = copy(defaultLabel = defaultLabel)
     override fun withUpdatedI18n(i18n: LinkedHashSet<I18nLocalizedLabel>, version: Int?) = copy(i18n = i18n, version = version ?: 0)
 

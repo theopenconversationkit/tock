@@ -33,8 +33,8 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.watch
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nLabelContract
 import ai.tock.translator.I18nLabelFilter
-import ai.tock.translator.I18nLabelPartial
 import ai.tock.translator.I18nLabelStat
 import ai.tock.translator.I18nLabelStat_
 import ai.tock.translator.I18nLabelStateFilter.ALL
@@ -114,7 +114,7 @@ internal object I18nMongoDAO : I18nDAO {
     private fun sortLocalizedLabels(list: MutableSet<I18nLocalizedLabel>): LinkedHashSet<I18nLocalizedLabel> =
         LinkedHashSet(list.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }, { it.connectorId })))
 
-    private fun sortLocalizedLabels(label: I18nLabelPartial): I18nLabelPartial =
+    private fun sortLocalizedLabels(label: I18nLabelContract): I18nLabelContract =
         label.withUpdatedI18n(sortLocalizedLabels(label.i18n), version = label.version?.apply(Int::inc))
 
     override fun listenI18n(listener: (Id<I18nLabel>) -> Unit) {
@@ -157,7 +157,7 @@ internal object I18nMongoDAO : I18nDAO {
         return col.findOneById(id)
     }
 
-    override fun save(label: I18nLabelPartial) {
+    override fun save(label: I18nLabelContract) {
         val sortedLabel = sortLocalizedLabels(label)
         //update default label
         val defaultLabel = sortedLabel.run {
@@ -166,11 +166,11 @@ internal object I18nMongoDAO : I18nDAO {
         col.updateOneById(defaultLabel._id, defaultLabel, options = UpdateOptions().upsert(true), updateOnlyNotNullProperties = true)
     }
 
-    override fun save(i18n: List<I18nLabelPartial>) {
+    override fun save(i18n: List<I18nLabelContract>) {
         i18n.forEach { save(it) }
     }
 
-    override fun saveIfNotExist(i18n: List<I18nLabelPartial>) {
+    override fun saveIfNotExist(i18n: List<I18nLabelContract>) {
         val existingIds = sortLabels(col.find().toList()).map { it._id }.toSet()
         save(i18n.filterNot { existingIds.contains(it._id) })
     }

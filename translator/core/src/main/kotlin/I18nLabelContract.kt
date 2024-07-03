@@ -19,7 +19,7 @@ package ai.tock.translator
 import java.util.Locale
 import org.litote.kmongo.Id
 
-interface I18nLabelPartial {
+interface I18nLabelContract {
     val _id: Id<I18nLabel>
     val namespace: String?
     val category: String
@@ -29,6 +29,6 @@ interface I18nLabelPartial {
     val defaultI18n: Set<I18nLocalizedLabel>?
     val version: Int?
 
-    fun withDefaultLabel(defaultLabel: String?): I18nLabelPartial
-    fun withUpdatedI18n(i18n: LinkedHashSet<I18nLocalizedLabel>, version: Int?): I18nLabelPartial
+    fun withDefaultLabel(defaultLabel: String?): I18nLabelContract
+    fun withUpdatedI18n(i18n: LinkedHashSet<I18nLocalizedLabel>, version: Int?): I18nLabelContract
 }

@@ -40,22 +40,22 @@ interface I18nDAO {
     fun getLabelById(id: Id<I18nLabel>): I18nLabel?
 
     @Deprecated(message = "Replaced with more generic method", level = DeprecationLevel.HIDDEN)
-    fun save(label: I18nLabel) = save(label as I18nLabelPartial)
+    fun save(label: I18nLabel) = save(label as I18nLabelContract)
 
     /**
      * Saves label.
      */
-    fun save(label: I18nLabelPartial)
+    fun save(label: I18nLabelContract)
 
     /**
      * Saves all specified labels.
      */
-    fun save(i18n: List<I18nLabelPartial>)
+    fun save(i18n: List<I18nLabelContract>)
 
     /**
      * Saves all labels that does not exist yet.
      */
-    fun saveIfNotExist(i18n: List<I18nLabelPartial>)
+    fun saveIfNotExist(i18n: List<I18nLabelContract>)
 
     /**
      * Delete the label of specified id if and only if it has the specified namespace.

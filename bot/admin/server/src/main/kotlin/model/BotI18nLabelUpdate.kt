@@ -18,7 +18,7 @@ package ai.tock.bot.admin.model
 
 import ai.tock.shared.defaultNamespace
 import ai.tock.translator.I18nLabel
-import ai.tock.translator.I18nLabelPartial
+import ai.tock.translator.I18nLabelContract
 import ai.tock.translator.I18nLocalizedLabel
 import java.util.Locale
 import org.litote.kmongo.Id
@@ -34,7 +34,7 @@ data class BotI18nLabelUpdate(
     override val defaultLabel: String? = null,
     override val defaultLocale: Locale = ai.tock.shared.defaultLocale,
     override val version: Int?,
-) : I18nLabelPartial {
+) : I18nLabelContract {
     override val defaultI18n: Set<I18nLocalizedLabel>?
         get() = null
 
