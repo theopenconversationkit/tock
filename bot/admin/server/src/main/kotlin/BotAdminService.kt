@@ -96,6 +96,7 @@ import ai.tock.shared.Dice
 import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.provide
+import ai.tock.shared.safeHTML
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
 import ai.tock.shared.withoutNamespace
@@ -1068,7 +1069,7 @@ object BotAdminService {
         val labelKey =
             I18nKeyProvider
                 .simpleKeyProvider(namespace, request.category)
-                .i18n(request.label)
+                .i18n(safeHTML(request.label))
         return Translator.create(labelKey, request.locale)
     }
 

@@ -18,6 +18,7 @@ package ai.tock.shared
 
 import java.text.Normalizer
 import java.util.Locale
+import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 
 /**
  * This is the maximum text size allowed.
@@ -96,3 +97,5 @@ fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", 
         .replace("n", "[nñ]", ignoreCase = true)
         .replace(" ", "['-_ ]")
         .replace("c", "[cç]", ignoreCase = true)
+
+ fun safeHTML(value: String): String = escapeHtml4(value)
