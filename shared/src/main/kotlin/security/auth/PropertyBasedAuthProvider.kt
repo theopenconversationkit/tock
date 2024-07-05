@@ -58,7 +58,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
         val authenticated: Boolean,
         val email: String? = null,
         val organization: String? = null,
-        val roles: List<TockUserRole> = emptyList()
+        val roles: Set<TockUserRole> = emptySet()
     )
 
     private val allRoles: Set<String> = values().map { it.name }.toSet()
@@ -105,7 +105,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                                                         true,
                                                         request.email,
                                                         (user as TockUser).namespace,
-                                                        listOfNotNull(
+                                                        setOfNotNull(
                                                             if (nlpUserResult.result()) nlpUser else null,
                                                             if (faqNlpUserResult.result()) nlpUser else null,
                                                             if (faqBotUserResult.result()) botUser else null,
