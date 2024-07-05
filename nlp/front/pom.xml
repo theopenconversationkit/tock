@@ -69,8 +69,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
-    </build>
-
 </project>

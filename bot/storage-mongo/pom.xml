@@ -85,8 +85,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -100,9 +98,11 @@
                             <goal>kapt</goal>
                         </goals>
                         <configuration>
-<!--                            <sourceDirs>-->
-<!--                                <sourceDir>${project.build.directory}/generated-source/kapt</sourceDir>-->
-<!--                            </sourceDirs>-->
+                            <sourceDirs>
+                                <sourceDir>src/main/kotlin</sourceDir>
+                                <sourceDir>../engine/src/main/kotlin</sourceDir>
+                                <sourceDir>../../translator/core/src/main/kotlin</sourceDir>
+                            </sourceDirs>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
                                     <groupId>org.litote.jackson</groupId>

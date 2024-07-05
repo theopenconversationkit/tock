@@ -64,8 +64,6 @@
         </dependency>
     </dependencies>
     <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -79,6 +77,11 @@
                             <goal>kapt</goal>
                         </goals>
                         <configuration>
+                            <sourceDirs>
+                                <sourceDir>src/main/kotlin</sourceDir>
+                                <sourceDir>../shared/src/main/kotlin</sourceDir>
+                                <sourceDir>../../core/shared/src/main/kotlin</sourceDir>
+                            </sourceDirs>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
                                     <groupId>org.litote.jackson</groupId>
