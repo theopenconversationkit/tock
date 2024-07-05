@@ -35,4 +35,25 @@ class StringsTest {
         assertEquals(allowDiacriticsInRegexp("demo"), "d[eéèêë]m[oòóôõöø]")
         assertEquals(allowDiacriticsInRegexp("c est une mise a jour"), "[cç]['-_ ][eéèêë]st['-_ ][uùúûü][nñ][eéèêë]['-_ ]m[iìíîï]s[eéèêë]['-_ ][aàáâãä]['-_ ]j[oòóôõöø][uùúûü]r")
     }
+
+    @Test
+    fun `Safe HTML`() {
+        val xssExample = "<script>alert('xss')</script>"
+        assertEquals(safeHTML(xssExample), "&lt;script&gt;alert('xss')&lt;/script&gt;")
+
+        val htmlExample = "\\<a onmouseover=\"alert(document.cookie)\"\\>xxs link\\</a\\>"
+        assertEquals(safeHTML(htmlExample), "\\&lt;a onmouseover=&quot;alert(document.cookie)&quot;\\&gt;xxs link\\&lt;/a\\&gt;")
+
+        val htmlExample2 = "<IMG SRC=\"jav&#x09;ascript:alert('XSS');\">"
+        assertEquals(safeHTML(htmlExample2), "&lt;IMG SRC=&quot;jav&amp;#x09;ascript:alert('XSS');&quot;&gt;")
+
+        val alertJs = "<object data=\"data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==\"></object>"
+        assertEquals(safeHTML(alertJs),"&lt;object data=&quot;data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==&quot;&gt;&lt;/object&gt;")
+
+        val malformedIMGTags = "<IMG \"\"\"><SCRIPT>alert(\"XSS\")</SCRIPT>\"\\>"
+        assertEquals(safeHTML(malformedIMGTags),"&lt;IMG &quot;&quot;&quot;&gt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;)&lt;/SCRIPT&gt;&quot;\\&gt;")
+
+        val fromCharCode = "<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>"
+        assertEquals(safeHTML(fromCharCode),"&lt;IMG SRC=javascript:alert(String.fromCharCode(88,83,83))&gt;")
+    }
 }
