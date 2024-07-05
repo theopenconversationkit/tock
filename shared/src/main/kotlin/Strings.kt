@@ -16,8 +16,11 @@
 
 package ai.tock.shared
 
+import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 import java.text.Normalizer
 import java.util.Locale
+import java.util.regex.Pattern
+
 
 /**
  * This is the maximum text size allowed.
@@ -78,21 +81,117 @@ fun concat(s1: String?, s2: String?): String {
 }
 
 private val trailingRegexp = "[.,:;?!]+$".toRegex()
-private val accentsRegexp = "[\\p{InCombiningDiacriticalMarks}]".toRegex()
+private val accentsRegexp = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 
-private fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
+private const val HTML_TAG_PLACEHOLDER = "CHANGE_IT"
+private var regexToDetectHTMLAllowedBalise = "(?:&lt;$HTML_TAG_PLACEHOLDER)(.*?)(?:&gt;)"
+
+private val regexToDetectNotAllowedValue = property("tock_safehtml_block_tag", "(?i)s*(script|iframe|object|embed|form|input|link|meta|onload|alert|onerror|href)[^>]")
+private val allowedList =  listProperty("tock_safehtml_allowed_tag", listOf("ul", "li", "⭐"))
+
+val htmlToFrenchLettre = mapOf(
+    "&agrave;" to "à", "&acirc;" to "â", "&auml;" to "ä", "&ccedil;" to "ç",
+    "&egrave;" to "è", "&eacute;" to "é", "&ecirc;" to "ê", "&euml;" to "ë",
+    "&icirc;" to "î", "&iuml;" to "ï", "&ocirc;" to "ô", "&ouml;" to "ö",
+    "&ugrave;" to "ù", "&ucirc;" to "û", "&uuml;" to "ü", "&ntilde;" to "ñ"
+)
+
+private fun String.removeTrailingPunctuation() = replace(trailingRegexp, "").trim()
 
 fun String.stripAccents(): String =
     Normalizer.normalize(this, Normalizer.Form.NFD).replace(accentsRegexp, "")
 
 fun String.normalize(locale: Locale): String =
-    this.lowercase(locale).removeTrailingPunctuation().stripAccents()
+    lowercase(locale).removeTrailingPunctuation().stripAccents()
 
-fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", ignoreCase = true)
-        .replace("a", "[aàáâãä]", ignoreCase = true)
-        .replace("i", "[iìíîï]", ignoreCase = true)
-        .replace("o", "[oòóôõöø]", ignoreCase = true)
-        .replace("u", "[uùúûü]", ignoreCase = true)
-        .replace("n", "[nñ]", ignoreCase = true)
-        .replace(" ", "['-_ ]")
-        .replace("c", "[cç]", ignoreCase = true)
+fun allowDiacriticsInRegexp(s: String): String {
+    val replacements = mapOf(
+        'e' to "[eéèêë]",
+        'a' to "[aàáâãä]",
+        'i' to "[iìíîï]",
+        'o' to "[oòóôõöø]",
+        'u' to "[uùúûü]",
+        'n' to "[nñ]",
+        'c' to "[cç]"
+    )
+
+    return s.fold("") { acc, c ->
+        acc + (replacements[c.lowercaseChar()] ?: c)
+    }.replace(" ", "['-_ ]")
+}
+
+fun safeHTML(value: String): String {
+
+    var simpelValue = escapeHtml4(value)
+
+     // Replace html tag to real tag
+    for (allowed in allowedList) {
+        var tmp = detectIfHTMLBaliseIsAllowed(simpelValue, allowed)
+        if ( tmp != null){
+            simpelValue = simpelValue.replace(tmp, tmp.replace("&lt;$allowed", "<$allowed"))
+            tmp = tmp.replace("&lt;$allowed", "<$allowed")
+            simpelValue = simpelValue.replace(tmp, tmp.replace("&gt;", ">"))
+        }
+    }
+
+     for (allowed in allowedList) {
+         simpelValue = simpelValue.replace("&lt;$allowed&gt;", "<$allowed>")
+         simpelValue = simpelValue.replace("&lt;/$allowed&gt;", "</$allowed>")
+         simpelValue = simpelValue.replace("&lt;$allowed", "<$allowed")
+     }
+
+     simpelValue = simpelValue.replace("&quot;", "\"")
+
+     // Replace html letter to real letter
+    for (entry in htmlToFrenchLettre) {
+        simpelValue = simpelValue.replace(entry.key, entry.value)
+    }
+
+    // Remove bad value
+     simpelValue = extractAndRemoveBadValue(regexToDetectNotAllowedValue, simpelValue)
+
+    return filterAllowedAndStandardCharacters(simpelValue)
+ }
+
+private fun detectIfHTMLBaliseIsAllowed(text: String, allowed: String): String? {
+    val value = extractFullMatcherWithRegex(regexToDetectHTMLAllowedBalise.replace("CHANGE_IT", "$allowed"), text)
+    return value
+}
+
+private fun extractAndRemoveBadValue(regexValue: String, value: String): String {
+    val pattern = Pattern.compile(regexValue, Pattern.MULTILINE)
+    val matcher = pattern.matcher(value)
+
+    var tmp = value
+    while (matcher.find()) {
+        for (i in 1..matcher.groupCount()) {
+            matcher.group(i)?.let {
+                tmp = tmp.replace(it, "")
+            }
+        }
+    }
+    return tmp
+}
+
+fun extractFullMatcherWithRegex(regexPattern: String?, value: String?): String? {
+    if (regexPattern == null || value == null) return null
+
+    val pattern = Pattern.compile(regexPattern, Pattern.MULTILINE)
+    val matcher = pattern.matcher(value)
+
+    return if (matcher.find()) matcher.group(0) else null
+}
+
+fun filterAllowedAndStandardCharacters(value: String): String {
+    val result = StringBuilder()
+
+    for (char in value) {
+        when {
+            allowedList.contains(char.toString()) -> result.append(char)
+            htmlToFrenchLettre.values.contains(char.toString()) -> result.append(char)
+            char.code < 192 -> result.append(char)
+        }
+    }
+
+    return result.toString()
+}
