@@ -9,7 +9,11 @@ A collection of tools to:
 
 Install tools using Poetry from package directory base:
 
-`poetry install`
+`poetry install --no-root`
+
+Install pre-commit for format code before commit:
+
+`pre-commit install`
 
 Then run the scripts by passing them to a Python interpreter (>= 3.9):
 
@@ -48,6 +52,42 @@ Turns a Smart Tribune CSV export file into a ready-to-index CSV file (one 'title
 | ------------ | -------------------- | ----------------------- |
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
+
+
+### smarttribune_consumer.py
+
+```
+Smart Tribune import data and formatter for send in opensearch.
+
+Usage:
+    smarttribune_consumer.py [-v]  <knowledge_base>  <base_url> <output_csv> [options]
+
+Arguments:
+    knowledge_base  name of the target knowledge base, ex: "name1 | name2 | name3"
+    base_url    the base URL to prefix every FAQ entry's query parameter to
+                create a full URL
+    output_csv  path to the output, ready-to-index CSV file
+
+Options:
+    --tag_title=<value>
+    -h --help   Show this screen
+    --version   Show version
+    -v          Verbose output for debugging (without this option, script will
+                be silent but for errors)
+
+Import and Format a Smart Tribune data by API  into a ready-to-index CSV file
+(one 'title'|'url'|'text' line per filtered entry).
+```
+Set in a .env your APIKEY and your APISECRET
+
+Import data from smart tribune API and return a ready-to-index CSV file (one 'title'|'url'|'text' line per filtered entry):
+
+
+| Title      | URL                | Text                  |
+| ------------ | -------------------- | ----------------------- |
+| Some title | http://example.com | This is example text. |
+| ...        | ...                | ...                   |
+
 
 #### webscraper.py
 
