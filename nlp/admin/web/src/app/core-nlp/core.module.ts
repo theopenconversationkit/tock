@@ -37,8 +37,6 @@ export class NlpCoreConfig implements CoreConfig {
   /** url map for each default rights */
   roleMap: Map<UserRole, string[]> = new Map([
     [UserRole.nlpUser, ['/nlp']],
-    [UserRole.faqNlpUser, ['/faq/training']],
-    [UserRole.faqBotUser, ['/faq/management']],
     [UserRole.admin, ['/configuration']],
     [UserRole.technicalAdmin, ['/configuration']]
   ]);

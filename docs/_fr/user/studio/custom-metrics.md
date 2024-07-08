@@ -7,7 +7,7 @@ title: Custom Metrics
 Le menu _Custom Metrics_ permet de créer et visualiser des statistiques de consultation et d'usage des stories Tock.
 Il est destiné à un public métier qui souhaite monitorer la performance des stories (faqs, scénarios...) au sein d'une application Tock.
 
-> Pour accéder à cette page il faut bénéficier du rôle _botUser_ ou _faqBotUser_.
+> Pour accéder à cette page il faut bénéficier du rôle _botUser_.
 
 ## Onglet _Metrics_
 
@@ -22,7 +22,7 @@ Viennent ensuite, pour la période choisie, les statistiques suivantes :
 - Nombre de questions non comprises par le bot
 - Taux de réponse du bot
 
-![schéma Tock](../../../img/metrics_metrics-1.png 'Page Metrics')
+![schéma Tock](../../../img/metrics_metrics-1.png "Page Metrics")
 
 > Pour pouvoir obtenir des statistiques fiables et correctement ventilées, il est nécessaire de créer une story de type unknown (cf. section [Créer une story Unknown](#create-unknown-story)).
 
@@ -116,7 +116,7 @@ Pour créer une _story unknown_, rendez vous sur _Stories & Answers_ dans le men
 Dans le champ proposé, donnez un nom à votre _story unknown_ (par exemple `story unknown`) et cliquez sur le bouton _add_.
 Sur la page qui apparaît, cliquez sur le bouton _Edit story_.
 
-![schéma Tock](../../../img/metrics_unknown-1.png 'Bouton Edit story')
+![schéma Tock](../../../img/metrics_unknown-1.png "Bouton Edit story")
 
 Une fenêtre s'ouvre. Dans le champ _Intent_ saisissez la chaîne de caractères `unknown` et cliquez sur _Save_.
 Dans la section _Answers_ saisissez la réponse à retourner aux utilisateurs lorsque leur question n'a pas été comprise, puis cliquez sur _Create story_.
@@ -138,7 +138,7 @@ Indiquez un nom d'_Intent_ pour l'action (par exemple `satisfaction_ok`). Une fe
 Saisissez une réponse à l'aide du champ _Answer_ de l'action (par exemple `Je suis ravi d'avoir pu vous aider`).
 Dans la liste _Indicators_, sélectionnez la valeur de l'indicateur prévu à cet effet (dans notre exemple, `Satisfaction globale : Satisfait`).
 
-![schéma Tock](../../../img/metrics_story-1.png 'Etape 1 de Metric Story')
+![schéma Tock](../../../img/metrics_story-1.png "Etape 1 de Metric Story")
 
 Répétez l'opération pour l'action "Non satisfait" :
 
@@ -148,7 +148,7 @@ Indiquez un nom d'_Intent_ pour l'action (par exemple `satisfaction_nok`).
 Saississez une réponse à l'aide du champ _Answer_ (par exemple `Pouvez-vous préciser le problème rencontré ?`).
 Dans la liste _Indicators_, sélectionnez la valeur de l'indicateur prévu à cet effet (dans notre exemple, `Satisfaction globale : Non satisfait`).
 
-![schéma Tock](../../../img/metrics_story-2.png 'Etape 2 de Metric Story')
+![schéma Tock](../../../img/metrics_story-2.png "Etape 2 de Metric Story")
 
 Vous allez maintenant pouvoir définir les _Actions_ à proposer aux utilisateurs qui ont répondu `Non` à la question initiale :
 
@@ -159,13 +159,13 @@ Indiquez un nom d'_Intent_ pour l'action (par exemple `satisfaction_questionmalc
 Saisissez une réponse à l'aide du champ _Answer_ (par exemple `Merci pour votre aide. Souhaitez-vous essayer de reformuler votre question ou être mis en relation avec un conseiller ?`).
 Dans la liste _Indicators_, sélectionnez la valeur de l'indicateur prévu à cet effet (dans notre exemple, `Satisfaction globale : question non comprise`).
 
-![schéma Tock](../../../img/metrics_story-3.png 'Etape 3 de Metric Story')
+![schéma Tock](../../../img/metrics_story-3.png "Etape 3 de Metric Story")
 
 Poursuivez les opérations décrites ci-dessus jusqu'à avoir entièrement défini votre _story_ de satisfaction en fonction des indicateurs voulus.
 
 Maintenant que vous avez assigné au moins un indicateur à une action, vous avez la possibilité de marquer cette _story_ comme _Metric story_ grâce au commutateur situé en haut à droite de la section _Actions_.
 
-![schéma Tock](../../../img/metrics_story-4.png 'Etape 4 de Metric Story')
+![schéma Tock](../../../img/metrics_story-4.png "Etape 4 de Metric Story")
 
 Vous pouvez désormais valider la création de la _Metric story_ en cliquant sur le bouton _Create story_ en bas de page.
 
@@ -176,11 +176,11 @@ Vous pouvez désormais valider la création de la _Metric story_ en cliquant sur
 Pour définir une _Metric Story_ comme _story_ de redirection de l'ensemble vos Faqs, rendez-vous, à l'aide du menu principal, sur l'entrée _Faq Management_.
 Cliquez sur l'icône `Faq parameters` en haut à droite de la page.
 
-![schéma Tock](../../../img/metrics_redirection-1.png 'Le bouton Faq parameters')
+![schéma Tock](../../../img/metrics_redirection-1.png "Le bouton Faq parameters")
 
 Activez la case à cocher _Ask for satisfaction after answering on FAQ question_ puis sélectionnez la _Metric story_ précédemment créée.
 
-![schéma Tock](../../../img/metrics_redirection-2.png 'Story de redirection')
+![schéma Tock](../../../img/metrics_redirection-2.png "Story de redirection")
 
 Cliquez sur le bouton _Save_.
 
