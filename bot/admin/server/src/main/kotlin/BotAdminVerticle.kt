@@ -27,6 +27,7 @@ import ai.tock.bot.admin.constants.Properties
 import ai.tock.bot.admin.model.*
 import ai.tock.bot.admin.module.satisfactionContentModule
 import ai.tock.bot.admin.service.*
+import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
 import ai.tock.bot.admin.test.TestPlanService
 import ai.tock.bot.admin.test.findTestService
 import ai.tock.bot.admin.verticle.IndicatorVerticle
