@@ -33,6 +33,7 @@
         <module>core</module>
         <module>noop</module>
         <module>google-translate</module>
+        <module>deepl-translate</module>
     </modules>
 
     <dependencies>
