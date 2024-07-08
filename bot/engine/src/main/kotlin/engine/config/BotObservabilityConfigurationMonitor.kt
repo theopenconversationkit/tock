@@ -55,6 +55,10 @@ internal object BotObservabilityConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         logger.debug { "Refreshing bot observability configuration ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
-        bot.botDefinition.observabilityConfiguration = observabilityConfigurationDAO.findByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
+        bot.botDefinition.observabilityConfiguration = observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
+            bot.botDefinition.namespace,
+            bot.botDefinition.botId,
+            enabled = true
+        )
     }
 }
