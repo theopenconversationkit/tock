@@ -16,19 +16,22 @@
 
 package ai.tock.bot.engine.event
 
+import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.dialog.hasEntityPredefinedValue
 import ai.tock.bot.engine.dialog.hasSubEntity
+import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
 
 /**
  * The base class for all events or actions.
  */
 abstract class Event(
     /**
-     * The bot application id.
+     * The bot application id (corresponds to the connector identifier in the admin).
+     *
+     * @see ConnectorConfiguration.connectorId
      */
     val applicationId: String,
     /**
