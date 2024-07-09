@@ -166,42 +166,37 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
       {
         title: 'Stories & Answers',
         icon: 'book-open-outline',
+        hidden: !this.state.hasRole(UserRole.botUser),
         children: [
           {
             link: '/build/story-create',
             title: 'New Story',
-            icon: 'plus-circle-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'plus-circle-outline'
           },
           {
             link: '/build/story-search',
             title: 'All stories',
-            icon: 'layers-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'layers-outline'
           },
           {
             link: '/faq/management',
             title: 'FAQs management',
-            icon: 'message-square-outline',
-            hidden: !this.state.hasRole(UserRole.faqBotUser)
+            icon: 'message-square-outline'
           },
           {
             link: '/build/story-rules',
             title: 'Rules',
-            icon: 'toggle-right-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'toggle-right-outline'
           },
           {
             link: '/build/i18n',
             title: 'Answers',
-            icon: 'color-palette-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'color-palette-outline'
           },
           {
             link: '/build/story-documents',
             title: 'Documents',
-            icon: 'folder-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'folder-outline'
           }
         ]
       },
@@ -240,7 +235,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
       {
         title: 'Test',
         icon: 'play-circle-outline',
-        hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqNlpUser),
+        hidden: !this.state.hasRole(UserRole.botUser),
 
         children: [
           {
@@ -251,15 +246,14 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           {
             link: '/test/plan',
             title: 'Test plans',
-            icon: 'map-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'map-outline'
           }
         ]
       },
       {
         title: 'Analytics',
         icon: 'trending-up-outline',
-        hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqBotUser),
+        hidden: !this.state.hasRole(UserRole.botUser),
         children: [
           {
             link: '/analytics/activity',
@@ -274,14 +268,12 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
           {
             link: '/analytics/flow',
             title: 'Flow',
-            icon: 'funnel-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'funnel-outline'
           },
           {
             link: '/analytics/users',
             title: 'Users',
-            icon: 'people-outline',
-            hidden: !this.state.hasRole(UserRole.botUser)
+            icon: 'people-outline'
           },
           {
             link: '/analytics/dialogs',
@@ -303,7 +295,7 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
       {
         title: 'Custom Metrics',
         icon: 'pie-chart-outline',
-        hidden: !this.state.hasRole(UserRole.botUser) && !this.state.hasRole(UserRole.faqBotUser),
+        hidden: !this.state.hasRole(UserRole.botUser),
         children: [
           {
             link: '/business-metrics/board',
@@ -358,13 +350,6 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             icon: 'alert-triangle-outline'
           }
         ]
-      },
-
-      {
-        title: 'Answers',
-        icon: 'color-palette-outline',
-        link: '/build/i18n',
-        hidden: this.state.hasRole(UserRole.botUser) || !this.state.hasRole(UserRole.faqBotUser)
       },
       {
         title: 'Settings',

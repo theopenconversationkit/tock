@@ -85,10 +85,6 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     });
   }
 
-  get isAuthorized(): boolean {
-    return this.stateService.hasRole(UserRole.faqBotUser);
-  }
-
   pagination: Pagination = {
     start: 0,
     end: undefined,

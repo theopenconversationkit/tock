@@ -70,10 +70,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         // try to navigate to the first url present for the role
         if (this.userState.hasRole(UserRole.nlpUser)) {
           this.router.navigateByUrl(this.rolesMap.get(UserRole.nlpUser)[0]);
-        } else if (this.userState.hasRole(UserRole.faqNlpUser)) {
-          this.router.navigateByUrl(this.rolesMap.get(UserRole.faqNlpUser)[0]);
-        } else if (this.userState.hasRole(UserRole.faqBotUser)) {
-          this.router.navigateByUrl(this.rolesMap.get(UserRole.faqBotUser)[0]);
         } else if (this.userState.hasRole(UserRole.botUser)) {
           this.router.navigateByUrl(this.rolesMap.get(UserRole.botUser)[0]);
         } else if (this.userState.hasRole(UserRole.admin)) {
