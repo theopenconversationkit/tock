@@ -60,7 +60,7 @@ object PayloadWhatsAppCloudMongoDAO : PayloadWhatsAppCloudDAO {
         return if (isUUID(id)) {
             collection.findOneById(id)?.payload
         } else {
-            null
+            id
         }
     }
 

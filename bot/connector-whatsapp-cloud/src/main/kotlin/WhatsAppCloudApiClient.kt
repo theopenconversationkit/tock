@@ -33,7 +33,7 @@ import retrofit2.http.Headers
 private const val VERSION = "19.0"
 
 
-class WhatsAppCloudApiClient(val secretKey: String, val token: String, val phoneNumber: String) {
+class WhatsAppCloudApiClient(val token: String, val phoneNumber: String) {
 
     interface GraphApi {
 

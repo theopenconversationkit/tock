@@ -64,16 +64,23 @@ internal object WebhookActionConverter {
             }
 
             is WhatsAppCloudInteractiveMessage -> {
+
                 val messageCopy = getMessageInteractiveCopy(message)
-                messageCopy.interactive.buttonReply?.id?.let { payload ->
+
+                val payloadButtonReply = messageCopy.interactive.buttonReply?.id
+                val payloadListReply = messageCopy.interactive.listReply?.id
+
+                val payload = payloadButtonReply ?: payloadListReply
+                return payload?.let {
                     SendChoice.decodeChoice(
-                        payload,
+                        it,
                         PlayerId(senderId),
                         applicationId,
                         PlayerId(applicationId, PlayerType.bot),
                         messageCopy.referral?.ref
                     )
                 }
+
             }
 
             else -> null
@@ -84,27 +91,33 @@ internal object WebhookActionConverter {
         message: WhatsAppCloudInteractiveMessage
     )
         : WhatsAppCloudInteractiveMessage {
-        val payload = payloadWhatsApp.getPayloadById(message.interactive.buttonReply!!.id)
-        return if (payload != null) {
-            val copyButtonReply = message.interactive.buttonReply.copy(
-                id = payload,
-                title = message.interactive.buttonReply.title
-            )
-            val copyInteractive =
-                message.interactive.copy(buttonReply = copyButtonReply, listReply = message.interactive.listReply)
-            message.copy(
-                interactive = copyInteractive,
-                id = message.id,
-                from = message.from,
-                timestamp = message.timestamp,
-                context = message.context,
-                referral = message.referral,
-                errors = message.errors
-            )
 
-        } else {
-            message
-        }
+        val buttonReply = message.interactive.buttonReply
+        val listReply = message.interactive.listReply
+
+
+        val payloadButtonReply = buttonReply?.let { payloadWhatsApp.getPayloadById(it.id) }
+        val payloadListReply = listReply?.let { payloadWhatsApp.getPayloadById(it.id) }
+
+
+        val copyInteractive = message.interactive.copy(
+            buttonReply = payloadButtonReply?.let {
+                buttonReply.copy(id = it, title = buttonReply.title)
+            },
+            listReply = payloadListReply?.let {
+                listReply.copy(id = it, title = listReply.title, description = listReply.description)
+            }
+        )
+
+        return message.copy(
+            interactive = copyInteractive,
+            id = message.id,
+            from = message.from,
+            timestamp = message.timestamp,
+            context = message.context,
+            referral = message.referral,
+            errors = message.errors
+        )
     }
 
     private fun getMessageButtonCopy(message: WhatsAppCloudButtonMessage): WhatsAppCloudButtonMessage {
