@@ -29,6 +29,7 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.security.auth.CASAuthProvider
 import ai.tock.shared.security.auth.GithubOAuthProvider
 import ai.tock.shared.security.auth.OAuth2Provider
@@ -897,7 +898,18 @@ abstract class WebVerticle : AbstractVerticle() {
         get() = user?.namespace ?: "none"
 
     val RoutingContext.user: TockUser?
-        get() = cachedAuthProvider?.toTockUser(this)
+        get() = cachedAuthProvider?.toTockUser(this)?.let {
+            // Temporary role mapping, pending definitive removal of "faq" roles
+            it.copy(
+                roles = it.roles.map { role ->
+                    when (role) {
+                        faqBotUser.name -> botUser.name
+                        faqNlpUser.name -> nlpUser.name
+                        else -> role
+                    }
+                }.toSet()
+            )
+        }
 
     val RoutingContext.userLogin: String
         get() = user?.user ?: error("no user in session")
