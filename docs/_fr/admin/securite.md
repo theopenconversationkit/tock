@@ -39,12 +39,15 @@ un ou plusieurs de ces rôles, lui donnant différents accès dans l'application
 
 Les rôles disponibles sont définis dans l'enum `TockUserRole`:
 
-| Rôle             | Description                                                                                                    |
-| ---------------- | -------------------------------------------------------------------------------------------------------------- |
-| `nlpUser`        | NLP platform user, allowed to qualify and search sentences.                                                    |
-| `botUser`        | Bot platform user, allowed to create and modify stories, rules and answers.                                    |
-| `admin`          | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc.. |
-| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc.                                        |
+| Rôle            | Description                                                                                                                  |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------|
+| `nlpUser`       | NLP platform user, allowed to qualify and search sentences.                                                                  |
+| ~~`faqNlpUser`~~ | ~~FAQ NLP platform user, allowed to qualify and search sentences.~~<br/> (Deprecated: Use the 'nlpUser' role instead)        |
+| ~~`faqBotUser`~~ | ~~A faq bot user is allowed to manage the FAQ content, and train the FAQ~~<br/> (Deprecated: Use the 'botUser' role instead) |
+| `botUser`       | Bot platform user, allowed to create and modify stories, rules and answers.                                                  |
+| `admin`         | Allowed to update applications and configurations/connectors, import/export intents, sentences, stories, etc..               |
+| `technicalAdmin` | Allowed to access encrypted data, import/export application dumps, etc.                                                      |
+
 
 La manière de configurer quel utilisateur _Tock Studio_ a quel rôle dépend du mode d'authentification,
 autrement dit l'implémentation de `TockAuthProvider` utilisée.
@@ -95,21 +98,22 @@ Cette implémentation générique est à utiliser dès que vous souhaitez param�
 
 Voici les propriétés et leurs valeurs par défaut :
 
-| Variable d'environnement               | Exemple de valeur       | Description                                        | Exemple              |
-| -------------------------------------- | ----------------------- | -------------------------------------------------- | -------------------- | ----------------------------------------- |
-| `tock_oauth2_enabled`                  | `true`                  | Activation de l'authentification 0Auth2            |                      |
-| `tock_oauth2_client_id`                | `CLIENT_ID`             | Identifiant pour interroger l'API GitHub           |                      |
-| `tock_oauth2_secret_key`               | `SECRET_KEY`            | Mot de passe pour interroger l'API GitHub          |                      |
-| `tock_oauth2_site_url`                 | `https://provider`      | Url du provider oauth2                             |                      |
-| `tock_oauth2_access_token_path`        | `/oauth2/token`         | Chemin relatif pour récupérer l'access token       |                      |
-| `tock_oauth2_authorize_path`           | `/oauth2/authorize`     | Chemin relatif pour récupérer l'authorize          |                      |
-| `tock_oauth2_userinfo_path`            | `/oauth2/userInfo`      | Chemin relatif pour récupérer les userinfo         |                      |
-| `tock_oauth2_proxy_host`               |                         | Host du proxy (ne pas indiquer si pas de proxy)    |                      |
-| `tock_oauth2_proxy_port`               |                         | Port optionnel du proxy                            |                      |
-| `tock_oauth2_user_role_attribute`      | `custom:roles`          | Attribut lu dans le token pour le mapping du role  |                      |
-| `tock_custom_roles_mapping`            |                         | Lien entre les profils OAuth et les rôles Tock     | `id1=nlpUser,botUser | id2=nlpUser,botUser,admin,technicalAdmin` |
-| `tock_custom_namespace_mapping`        |                         | Lien entre les profils OAuth et les namspaces Tock | `id1=sncf            | id2=sncf`                                 |
-| `tock_bot_admin_rest_default_base_url` | `http://localhost:8080` | Redirection vers l'url de tock studio si besoin    |                      |
+| Variable d'environnement               | Exemple de valeur       | Description                                        | Exemple
+|----------------------------------------|-------------------------|----------------------------------------------------|
+| `tock_oauth2_enabled`                  | `true`                  | Activation de l'authentification 0Auth2            ||
+| `tock_oauth2_client_id`                | `CLIENT_ID`             | Identifiant pour interroger l'API GitHub           ||
+| `tock_oauth2_secret_key`               | `SECRET_KEY`            | Mot de passe pour interroger l'API GitHub          ||
+| `tock_oauth2_site_url`                 | `https://provider`      | Url du provider oauth2                             ||
+| `tock_oauth2_access_token_path`        | `/oauth2/token`         | Chemin relatif pour récupérer l'access token       ||
+| `tock_oauth2_authorize_path`           | `/oauth2/authorize`     | Chemin relatif pour récupérer l'authorize          ||
+| `tock_oauth2_userinfo_path`            | `/oauth2/userInfo`      | Chemin relatif pour récupérer les userinfo         ||
+| `tock_oauth2_proxy_host`               |                         | Host du proxy (ne pas indiquer si pas de proxy)    ||
+| `tock_oauth2_proxy_port`               |                         | Port optionnel du proxy                            ||
+| `tock_oauth2_user_role_attribute`      | `custom:roles`          | Attribut lu dans le token pour le mapping du role  ||
+| `tock_custom_roles_mapping`            |                         | Lien entre les profils OAuth et les rôles Tock     | `id1=nlpUser,botUser|id2=nlpUser,botUser,admin,technicalAdmin` |
+| `tock_custom_namespace_mapping`        |                         | Lien entre les profils OAuth et les namspaces Tock | `id1=sncf|id2=sncf` |
+| `tock_bot_admin_rest_default_base_url` | `http://localhost:8080` | Redirection vers l'url de tock studio si besoin    ||
+
 
 Il est nécessaire d'indiquer en callback url `https://[host admin]/rest/callback`.
 
