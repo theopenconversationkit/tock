@@ -1,9 +1,3 @@
-import ai.tock.translator.deepl.DeeplTranslatorEngine
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
-import java.util.Locale
-import kotlin.test.assertEquals
-
 /*
  * Copyright (C) 2017/2021 e-voyageurs technologies
  *
@@ -19,6 +13,13 @@ import kotlin.test.assertEquals
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package ai.tock.translator.deepl
+
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
+import java.util.Locale
+import kotlin.test.assertEquals
 
 /**
  * All these tests are disabled because it uses Deepl pro api that can be expensive
@@ -38,16 +39,18 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun testWithEmoticonAndAntislash() {
-        val result = DeeplTranslatorEngine.translate("Bonjour, je suis l'Agent virtuel SNCF Voyageurs! \uD83E\uDD16\n" +
-                "Je vous informe sur l'état du trafic en temps réel.\n" +
-                "Dites-moi par exemple \"Mon train 6111 est-il à l'heure ?\", \"Aller à Saint-Lazare\", \"Prochains départs Gare de Lyon\" ...",
+        val result = DeeplTranslatorEngine.translate(
+            "Bonjour, je suis l'Agent virtuel SNCF Voyageurs! \uD83E\uDD16\n" +
+                    "Je vous informe sur l'état du trafic en temps réel.\n" +
+                    "Dites-moi par exemple \"Mon train 6111 est-il à l'heure ?\", \"Aller à Saint-Lazare\", \"Prochains départs Gare de Lyon\" ...",
             Locale.FRENCH,
             Locale.ENGLISH
         )
 
-        assertEquals("Hello, I'm the SNCF Voyageurs Virtual Agent! \uD83E\uDD16\n" +
-                "I inform you about traffic conditions in real time.\n" +
-                "Tell me for example \"Is my train 6111 on time?\", \"Going to Saint-Lazare\", \"Next departures Gare de Lyon\" ...",
+        assertEquals(
+            "Hello, I'm the SNCF Voyageurs Virtual Agent! \uD83E\uDD16\n" +
+                    "I inform you about traffic conditions in real time.\n" +
+                    "Tell me for example \"Is my train 6111 on time?\", \"Going to Saint-Lazare\", \"Next departures Gare de Lyon\" ...",
             result
         )
     }
@@ -60,7 +63,7 @@ class DeeplTranslateIntegrationTest {
             Locale.FRENCH,
             Locale.GERMAN
         )
-        assertEquals("Hallo, ich möchte nach {:city} {:date} reisen", result)
+        assertEquals("Hallo, ich würde gerne nach {:city} {:date} fahren.", result)
     }
 
     @Test

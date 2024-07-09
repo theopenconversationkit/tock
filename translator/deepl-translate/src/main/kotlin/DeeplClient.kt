@@ -15,29 +15,27 @@
  */
 
 package ai.tock.translator.deepl
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+
+import ai.tock.shared.jackson.mapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.io.IOException
 import java.util.regex.Pattern
 
-data class TranslationResponse(
+internal data class TranslationResponse(
     val translations: List<Translation>
 )
 
-data class Translation(
+internal data class Translation(
     val text: String
 )
 
 const val TAG_HANDLING = "xml"
 
-class DeeplClient(private val apiURL: String, private val apiKey: String) {
+internal class DeeplClient(private val apiURL: String, private val apiKey: String?) {
     private val client = OkHttpClient()
-    private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-    private val jsonAdapter = moshi.adapter(TranslationResponse::class.java)
 
     private fun replaceSpecificPlaceholders(text: String): Pair<String, List<String>> {
         // Store original placeholders for later restoration
@@ -63,35 +61,43 @@ class DeeplClient(private val apiURL: String, private val apiKey: String) {
         return resultText
     }
 
-    fun translate(text: String, sourceLang: String,targetLang: String,preserveFormatting: Boolean,glossaryId:String?): String? {
+    fun translate(
+        text: String,
+        sourceLang: String,
+        targetLang: String,
+        preserveFormatting: Boolean,
+        glossaryId: String?
+    ): String? {
         val (textWithPlaceholders, originalPlaceholders) = replaceSpecificPlaceholders(text)
 
-        val requestBody = buildString {
-            append("text=$textWithPlaceholders")
-            append("&source_lang=$sourceLang")
-            append("&target_lang=$targetLang")
-            append("&preserve_formatting=$preserveFormatting")
-            append("&tag_handling=$TAG_HANDLING")
+        val formBuilder = FormBody.Builder()
 
-            if (glossaryId != "default") {
-                append("&glossary=$glossaryId")
-            }
+        val requestBody = formBuilder
+            .add("text",textWithPlaceholders)
+            .add("source_lang",sourceLang)
+            .add("target_lang",targetLang)
+            .add("preserve_formatting", preserveFormatting.toString())
+            .add("tag_handling",TAG_HANDLING)
+            .build()
+
+        glossaryId?.let {
+            formBuilder.add("glossaryId", it)
         }
 
         val request = Request.Builder()
             .url(apiURL)
             .addHeader("Authorization", "DeepL-Auth-Key $apiKey")
-            .post(requestBody.trimIndent().toRequestBody("application/x-www-form-urlencoded".toMediaTypeOrNull()))
+            .post(requestBody)
             .build()
 
         client.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
             val responseBody = response.body?.string()
-            val translationResponse = jsonAdapter.fromJson(responseBody!!)
+            val translationResponse = mapper.readValue<TranslationResponse>(responseBody!!)
 
-            val translatedText = translationResponse?.translations?.firstOrNull()?.text
-            return translatedText?.let { revertSpecificPlaceholders(it,originalPlaceholders) }
+            val translatedText = translationResponse.translations.firstOrNull()?.text
+            return translatedText?.let { revertSpecificPlaceholders(it, originalPlaceholders) }
         }
     }
 }
