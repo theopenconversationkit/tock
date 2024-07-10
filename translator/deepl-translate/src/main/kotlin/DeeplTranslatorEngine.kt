@@ -16,21 +16,17 @@
 
 package ai.tock.translator.deepl
 
-import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.translator.TranslatorEngine
-import org.apache.commons.text.StringEscapeUtils
 import java.util.Locale
+import org.apache.commons.text.StringEscapeUtils
 
-internal object DeeplTranslatorEngine : TranslatorEngine {
+internal class DeeplTranslatorEngine(client: DeeplClient) : TranslatorEngine {
     private val supportedLanguagesProperty = propertyOrNull("tock_translator_deepl_target_languages")
     private val supportedLanguages: Set<String>? = supportedLanguagesProperty?.split(",")?.map { it.trim() }?.toSet()
 
-    private val deeplClient = DeeplClient(
-        property("tock_translator_deepl_api_url", "https://api.deepl.com/v2/translate"),
-        propertyOrNull("tock_translator_deepl_api_key")
-    )
-    private val glossaryId = propertyOrNull("tock_translator_deepl_glossaryId")
+    private val deeplClient = client
+    private val glossaryId = propertyOrNull("tock_translator_deepl_glossary_id")
     override val supportAdminTranslation: Boolean = true
 
     override fun translate(text: String, source: Locale, target: Locale): String {

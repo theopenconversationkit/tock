@@ -17,12 +17,14 @@
 package ai.tock.translator.deepl
 
 import ai.tock.shared.jackson.mapper
+import ai.tock.shared.property
+import ai.tock.shared.propertyOrNull
 import com.fasterxml.jackson.module.kotlin.readValue
+import java.io.IOException
+import java.util.regex.Pattern
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
-import java.util.regex.Pattern
 
 internal data class TranslationResponse(
     val translations: List<Translation>
@@ -34,8 +36,22 @@ internal data class Translation(
 
 const val TAG_HANDLING = "xml"
 
-internal class DeeplClient(private val apiURL: String, private val apiKey: String?) {
-    private val client = OkHttpClient()
+interface DeeplClient {
+    fun translate(
+        text: String,
+        sourceLang: String,
+        targetLang: String,
+        preserveFormatting: Boolean,
+        glossaryId: String?
+    ): String?
+}
+
+class OkHttpDeeplClient(
+    private val apiURL: String = property("tock_translator_deepl_api_url", "https://api.deepl.com/v2/translate"),
+    private val apiKey: String? = propertyOrNull("tock_translator_deepl_api_key"),
+    okHttpCustomizer: OkHttpClient.Builder.() -> Unit = {}
+) : DeeplClient {
+    private val client = OkHttpClient.Builder().apply(okHttpCustomizer).build()
 
     private fun replaceSpecificPlaceholders(text: String): Pair<String, List<String>> {
         // Store original placeholders for later restoration
@@ -61,7 +77,7 @@ internal class DeeplClient(private val apiURL: String, private val apiKey: Strin
         return resultText
     }
 
-    fun translate(
+    override fun translate(
         text: String,
         sourceLang: String,
         targetLang: String,
