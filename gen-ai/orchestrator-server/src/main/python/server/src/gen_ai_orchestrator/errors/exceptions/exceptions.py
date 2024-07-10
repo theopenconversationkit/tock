@@ -97,3 +97,10 @@ class GenAIPromptTemplateException(GenAIOrchestratorException):
 
     def __init__(self, info: ErrorInfo):
         super().__init__(ErrorCode.GEN_AI_PROMPT_TEMPLATE_ERROR, info)
+
+
+class CompressorUnknownException(GenAIOrchestratorException):
+    """Unknown Compressor Provider"""
+
+    def __init__(self):
+        super().__init__(ErrorCode.COMPRESSOR_UNKNOWN)
