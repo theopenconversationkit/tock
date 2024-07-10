@@ -28,10 +28,11 @@ from langfuse.callback import CallbackHandler as LangfuseCallbackHandler
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
-    VectorStoreUnknownException,
+    VectorStoreUnknownException, CompressorUnknownException,
 )
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
     GenAIUnknownObservabilityProviderSettingException
+from gen_ai_orchestrator.models.compressors.compressor_types import DocumentCompressorParams
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -56,6 +57,12 @@ from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback
     LangChainCallbackHandlerFactory
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
     LangfuseCallbackHandlerFactory
+from gen_ai_orchestrator.models.compressors.compressor_provider import (
+    CompressorProvider,
+)
+from gen_ai_orchestrator.services.langchain.factories.compressor.compressor_factory import LangChainCompressorFactory
+from gen_ai_orchestrator.services.langchain.factories.compressor.flashrank_rerank_compressor_factory import (
+    FlashrankRerankCompressorFactory, )
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -192,3 +199,21 @@ def create_observability_callback_handler(
             trace_name=trace_name.value)
 
     return None
+
+
+def get_compressor_factory(param: DocumentCompressorParams) -> LangChainCompressorFactory:
+    """
+    Creates a Langchain Compressor Factory according to the compressor provider
+    Args:
+        param: The document compressor parameter
+
+    Returns:
+        The LangChain Compressor Factory, or raise an exception otherwise
+    """
+
+    logger.info('Get Langchain Factory for the given provider')
+
+    if param.provider == CompressorProvider.FLASHRANK_RERANK:
+        return FlashrankRerankCompressorFactory(param=param)
+    else:
+        raise CompressorUnknownException()
