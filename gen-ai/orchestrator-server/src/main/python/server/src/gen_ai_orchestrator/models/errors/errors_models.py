@@ -60,6 +60,9 @@ class ErrorCode(Enum):
     OBSERVABILITY_UNKNOWN_PROVIDER_SETTING = 5001
     OBSERVABILITY_API_ERROR = 5002
 
+    # Compressor Errors
+    COMPRESSOR_UNKNOWN = 5000
+
     @classmethod
     def __get_pydantic_json_schema__(
         cls, core_schema: core_schema.JsonSchema, handler: GetJsonSchemaHandler
@@ -183,12 +186,17 @@ class ErrorMessages:
             detail='Ensure that the index exists and create it if it does not.',
         ),
         # Observability Errors
-        ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER: ErrorMessage(message='Unknown Observability Provider.'),
+        ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER: ErrorMessage(
+            message='Unknown Observability Provider.'
+        ),
         ErrorCode.OBSERVABILITY_UNKNOWN_PROVIDER_SETTING: ErrorMessage(
-            message='Unknown Observability Provider Settings.'),
+            message='Unknown Observability Provider Settings.'
+        ),
         ErrorCode.OBSERVABILITY_API_ERROR: ErrorMessage(
             message='API error.',
         ),
+        # Compressor Errors
+        ErrorCode.COMPRESSOR_UNKNOWN: ErrorMessage(message='Unknown compressor.'),
     }
 
     def get_message(self, code: ErrorCode) -> ErrorMessage:
