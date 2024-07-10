@@ -1,6 +1,6 @@
 <div class="mt-3"></div>
 
-<tock-sticky-menu offset="50">
+<tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap">
     <h1 class="flex-grow-1">Observability settings</h1>
 
@@ -103,7 +103,6 @@
                 [configurationParam]="param"
                 [form]="form"
                 [isSubmitted]="isSubmitted"
-                [defaultPrompt]="defaultPrompt"
               ></tock-observability-provider-config-param-input>
             </div>
           </ng-container>

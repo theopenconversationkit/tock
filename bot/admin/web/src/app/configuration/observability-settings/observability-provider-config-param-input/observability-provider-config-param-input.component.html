@@ -13,7 +13,7 @@
           nbInput
           fullWidth
           fieldSize="small"
-          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
         />
       </ng-container>
 
@@ -32,7 +32,7 @@
           nbInput
           fullWidth
           fieldSize="small"
-          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
           (blur)="hideInput()"
         />
       </ng-container>
@@ -43,7 +43,7 @@
           fullWidth
           rows="8"
           fieldSize="small"
-          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
         ></textarea>
 
         <div class="mt-1">
@@ -60,7 +60,7 @@
       <ng-container *ngIf="configurationParam.type === 'list'">
         <nb-select
           fullWidth
-          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
           size="small"
         >
           <nb-option
@@ -76,17 +76,17 @@
         <tock-autocomplete-input
           fieldSize="small"
           placeholder=""
-          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
           [options]="configurationParam.source"
         ></tock-autocomplete-input>
       </ng-container>
 
       <ng-container *ngIf="configurationParam.type === 'number'">
         <tock-slider
-          min="0"
-          max="1"
-          step="0.05"
-          [formControl]="form.get(parentGroup).get(configurationParam.key)"
+          [min]="0"
+          [max]="1"
+          [step]="0.05"
+          [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
         ></tock-slider>
       </ng-container>
     </tock-form-control>
