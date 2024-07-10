@@ -15,7 +15,7 @@
 """Model for creating FakeLLMFactory"""
 
 from langchain.base_language import BaseLanguageModel
-from langchain.chat_models.fake import FakeListChatModel
+from langchain_community.chat_models.fake import FakeListChatModel
 
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,

@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent.Companion.keyword
@@ -121,6 +122,11 @@ interface BotDefinition : I18nKeyProvider {
      * RAG configuration
      */
     var ragConfiguration: BotRAGConfiguration?
+
+    /**
+     * Observability configuration
+     */
+    var observabilityConfiguration: BotObservabilityConfiguration?
 
     /**
      * The list of each stories.

@@ -32,12 +32,20 @@ object RAGValidationService {
     private val llmProviderService: LLMProviderService get() = injector.provide()
     private val emProviderService: EMProviderService get() = injector.provide()
 
-
     fun validate(ragConfig: BotRAGConfiguration): Set<ErrorMessage> {
         return mutableSetOf<ErrorMessage>().apply {
             addAll(
                 llmProviderService
-                    .checkSetting(LLMProviderSettingStatusQuery(ragConfig.llmSetting))
+                    .checkSetting(
+                        LLMProviderSettingStatusQuery(
+                            ragConfig.llmSetting,
+                            ObservabilityService.getObservabilityConfiguration(
+                                ragConfig.namespace,
+                                ragConfig.botId,
+                                enabled = true
+                            )?.setting
+                        )
+                    )
                     .getErrors("LLM setting check failed")
             )
             addAll(

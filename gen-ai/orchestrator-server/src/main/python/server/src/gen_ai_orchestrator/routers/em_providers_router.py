@@ -83,7 +83,7 @@ async def get_em_provider_by_id(
         The EM Provider Response.
 
     Raises:
-        GenAIUnknownProviderException if the provider is unknown
+        GenAIUnknownProviderException: if the provider is unknown
     """
 
     # Query validation
@@ -106,7 +106,7 @@ async def get_em_provider_setting_by_id(
         The EM Provider Setting
 
     Raises:
-        GenAIUnknownProviderException if the provider is unknown
+        GenAIUnknownProviderException: if the provider is unknown
     """
 
     # Query validation
@@ -143,7 +143,7 @@ async def check_em_provider_setting(
         ProviderSettingStatusResponse
 
     Raises:
-        AIProviderBadQueryException if the provider ID is not consistent with the request body
+        AIProviderBadQueryException: if the provider ID is not consistent with the request body
     """
 
     # Query validation
@@ -168,7 +168,7 @@ def validate_query(request: Request, provider_id: str, setting: EMSetting):
         setting:  The EM Provider Setting
 
     Raises:
-        AIProviderBadQueryException if the provider ID is not consistent with the request body
+        AIProviderBadQueryException: if the provider ID is not consistent with the request body
     """
 
     validate_em_provider(request, provider_id)
@@ -186,7 +186,7 @@ def validate_em_provider(request: Request, provider_id: str):
         provider_id: The provider ID
 
     Raises:
-        GenAIUnknownProviderException if the provider is unknown
+        GenAIUnknownProviderException: if the provider is unknown
     """
 
     if not EMProvider.has_value(provider_id):

@@ -25,8 +25,9 @@ import { ApplicationsResolver } from '../applications/applications.resolver';
 import { NewBotComponent } from './bot-configurations/new-bot.component';
 import { UserLogsComponent } from '../applications/user/user-logs.component';
 import { NamespacesComponent } from '../applications/namespace/namespaces.component';
-import { SynchronizationComponent } from "./synchronization/synchronization.component";
+import { SynchronizationComponent } from './synchronization/synchronization.component';
 import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
+import { ObservabilitySettingsComponent } from './observability-settings/observability-settings.component';
 
 const routes: Routes = [
   {
@@ -91,12 +92,16 @@ const routes: Routes = [
         component: NamespacesComponent
       },
       {
-       path: 'synchronization',
-       component: SynchronizationComponent
+        path: 'synchronization',
+        component: SynchronizationComponent
       },
       {
         path: 'sentence-generation-settings',
         component: SentenceGenerationSettingsComponent
+      },
+      {
+        path: 'observability-settings',
+        component: ObservabilitySettingsComponent
       }
     ]
   }

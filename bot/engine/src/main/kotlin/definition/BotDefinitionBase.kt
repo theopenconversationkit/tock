@@ -16,6 +16,7 @@
 
 package ai.tock.bot.definition
 
+import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.action.Action
@@ -58,7 +59,8 @@ open class BotDefinitionBase(
     override val botEnabledListener: (Action) -> Unit = {},
     override val ragExcludedStory: StoryDefinition = defaultRagExcludedStory,
     override val ragStory: StoryDefinition = defaultRagStory,
-    override var ragConfiguration: BotRAGConfiguration? = null
+    override var ragConfiguration: BotRAGConfiguration? = null,
+    override var observabilityConfiguration: BotObservabilityConfiguration? = null
 ) : BotDefinition {
 
     companion object {
