@@ -17,13 +17,10 @@
 from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
-from langchain_community.llms import HuggingFaceEndpoint
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
+from langchain_huggingface import HuggingFaceEndpoint
 
-from gen_ai_orchestrator.configurations.environment.settings import (
-    application_settings,
-)
 from gen_ai_orchestrator.errors.handlers.huggingfacetgi.hugging_face_exception_handler import (
     hugging_face_exception_handler,
 )
@@ -46,7 +43,6 @@ class HuggingFaceTGILLMFactory(LangChainLLMFactory):
             temperature=self.setting.temperature,
             repetition_penalty=self.setting.repetition_penalty,
             max_new_tokens=self.setting.max_new_tokens,
-            huggingfacehub_api_token=self.setting.api_key.value,
         )
 
     @hugging_face_exception_handler(provider='HuggingFaceTGI')

@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating OpenAILLMSetting."""
+"""Model for creating HuggingFaceTGILLMSetting."""
 
 from typing import Literal
 
@@ -25,7 +25,6 @@ from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 class HuggingFaceTGILLMSetting(BaseLLMSetting):
     """
     A class for Hugging Face TGI Large Language Model Setting.
-    Usage docs: https://platform.openai.com/docs/models
     """
 
     provider: Literal[LLMProvider.HUGGING_FACE_TGI] = Field(
