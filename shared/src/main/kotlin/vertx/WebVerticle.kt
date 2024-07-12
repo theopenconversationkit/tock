@@ -898,18 +898,7 @@ abstract class WebVerticle : AbstractVerticle() {
         get() = user?.namespace ?: "none"
 
     val RoutingContext.user: TockUser?
-        get() = cachedAuthProvider?.toTockUser(this)?.let {
-            // Temporary role mapping, pending definitive removal of "faq" roles
-            it.copy(
-                roles = it.roles.map { role ->
-                    when (role) {
-                        faqBotUser.name -> botUser.name
-                        faqNlpUser.name -> nlpUser.name
-                        else -> role
-                    }
-                }.toSet()
-            )
-        }
+        get() = cachedAuthProvider?.toTockUser(this)
 
     val RoutingContext.userLogin: String
         get() = user?.user ?: error("no user in session")
