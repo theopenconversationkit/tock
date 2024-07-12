@@ -29,7 +29,9 @@ import org.litote.kmongo.newId
  */
 abstract class Event(
     /**
-     * The bot application id (corresponds to the connector identifier in the admin).
+     * The TOCK application id.
+     *
+     * This ID should match the connector identifier in TOCK Studio.
      *
      * @see ConnectorConfiguration.connectorId
      */

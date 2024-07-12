@@ -75,9 +75,12 @@ interface BotBus : Bus<BotBus> {
     }
 
     /**
-     * The current application id.
+     * The current TOCK application id.
      *
-     * This id matches the identifier of the [underlyingConnector].
+     * This identifier matches the identifier of the [underlyingConnector], as defined in TOCK Studio.
+     *
+     * *This identifier is not to be confused with the chat platform's application id (this is not a Messenger/Whatsapp
+     * application ID).*
      *
      * @see ConnectorConfiguration.connectorId
      */

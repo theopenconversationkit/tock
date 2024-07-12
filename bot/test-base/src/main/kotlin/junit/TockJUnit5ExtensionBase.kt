@@ -63,6 +63,17 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
 
     /**
      * Sends a choice and execute the tests.
+     *
+     * @param intent the intent triggered by the simulated button click
+     * @param parameters the extra parameters associated with the simulated button click
+     * @param connectorType the [ConnectorType] on which the simulated action happens
+     * @param userInterfaceType the [UserInterfaceType] through which the simulated action happens
+     * @param locale see [BotBusMock.userLocale]
+     * @param userId see [BotBusMock.userId]
+     * @param botId see [BotBusMock.botId]
+     * @param applicationId see [BotBusMock.applicationId]
+     * @param userPreferences see [BotBusMock.userPreferences]
+     * @param tests a callback defining the assertions to execute after sending the choice
      */
     fun sendChoice(
         intent: IntentAware = testContext.defaultStoryDefinition(botDefinition),
@@ -100,6 +111,17 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
 
     /**
      * Sends a message and execute the tests.
+     *
+     * @param intent the intent triggered by the simulated message
+     * @param message the user message - this message does not go through NLP
+     * @param connectorType the [ConnectorType] on which the simulated action happens
+     * @param userInterfaceType the [UserInterfaceType] through which the simulated action happens
+     * @param locale see [BotBusMock.userLocale]
+     * @param userId see [BotBusMock.userId]
+     * @param botId see [BotBusMock.botId]
+     * @param applicationId see [BotBusMock.applicationId]
+     * @param userPreferences see [BotBusMock.userPreferences]
+     * @param tests a callback containing the assertions to execute after sending the message
      */
     fun sendMessage(
         intent: IntentAware = testContext.defaultStoryDefinition(botDefinition),
@@ -160,6 +182,18 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
 
     /**
      * Sends a sentence and execute the tests.
+     *
+     * @param text the text sent by the user - this text does not go through NLP
+     * @param intent the intent triggered by the [text]
+     * @param entities the entities found in the [text]
+     * @param connectorType the [ConnectorType] on which the simulated action happens
+     * @param userInterfaceType the [UserInterfaceType] through which the simulated action happens
+     * @param locale see [BotBusMock.userLocale]
+     * @param userId see [BotBusMock.userId]
+     * @param botId see [BotBusMock.botId]
+     * @param applicationId see [BotBusMock.applicationId]
+     * @param userPreferences see [BotBusMock.userPreferences]
+     * @param tests a callback containing the assertions to execute after sending the text
      */
     fun send(
         text: String = "",
@@ -243,6 +277,17 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
 
     /**
      * Creates a new choice request (not yet sent).
+     *
+     * @param intent the intent triggered by the simulated button click
+     * @param parameters the extra parameters associated with the simulated button click
+     * @param connectorType the [ConnectorType] on which the simulated action happens
+     * @param userInterfaceType the [UserInterfaceType] through which the simulated action happens
+     * @param locale see [BotBusMock.userLocale]
+     * @param userId see [BotBusMock.userId]
+     * @param botId see [BotBusMock.botId]
+     * @param applicationId see [BotBusMock.applicationId]
+     * @param userPreferences see [BotBusMock.userPreferences]
+     * @param tests a callback containing the test code to execute in the context of the newly setup [BotBusMock]
      */
     fun newChoiceRequest(
         intent: IntentAware = testContext.defaultStoryDefinition(botDefinition),
