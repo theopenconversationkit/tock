@@ -17,7 +17,7 @@
 from typing import Literal, Optional
 
 from pydantic import Field
-
+from langchain.retrievers.document_compressors import FlashrankRerank
 from gen_ai_orchestrator.models.compressors.compressor_provider import (
     CompressorProvider,
 )
@@ -31,11 +31,12 @@ class FlashrankRerankCompressorParams(BaseCompressorParams):
         description='The Flashrank Rerank Model Provider.',
         examples=[CompressorProvider.FLASHRANK_RERANK],
     )
-    model: Optional[str] = Field(
-        description='The model id', examples=['text-embedding-ada-002'], default=None
-    )
-    min_score: Optional[float] = Field(description='Minimum retailment score.')
-    max_documents: Optional[int] = Field(
-        description='Maximum number of documents to return',
-        default=4,
-    )
+    model: Optional[str] = Field(description='The model id', examples=[],
+                                 default=FlashrankRerank.__fields__['model'].default
+                                 )
+    min_score: Optional[float] = Field(description='Minimum retailment score.',
+                                       default=FlashrankRerank.__fields__['score_threshold'].default
+                                       )
+    max_documents: Optional[int] = Field(description='Maximum number of documents to return',
+                                         default=FlashrankRerank.__fields__['top_n'].default
+                                         )
