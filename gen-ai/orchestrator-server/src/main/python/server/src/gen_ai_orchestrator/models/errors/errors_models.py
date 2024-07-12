@@ -61,7 +61,7 @@ class ErrorCode(Enum):
     OBSERVABILITY_API_ERROR = 5002
 
     # Compressor Errors
-    COMPRESSOR_UNKNOWN = 5000
+    COMPRESSOR_UNKNOWN = 6000
 
     @classmethod
     def __get_pydantic_json_schema__(

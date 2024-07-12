@@ -33,6 +33,8 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
     GenAIUnknownObservabilityProviderSettingException
 from gen_ai_orchestrator.models.compressors.compressor_types import DocumentCompressorParams
+from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
+    FlashrankRerankCompressorParams
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -213,7 +215,7 @@ def get_compressor_factory(param: DocumentCompressorParams) -> LangChainCompress
 
     logger.info('Get Langchain Factory for the given provider')
 
-    if param.provider == CompressorProvider.FLASHRANK_RERANK:
+    if isinstance(param, FlashrankRerankCompressorParams):
         return FlashrankRerankCompressorFactory(param=param)
     else:
         raise CompressorUnknownException()

@@ -33,6 +33,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
     get_condense_question,
     get_llm_prompts,
 )
+from langchain.retrievers import ContextualCompressionRetriever
 
 
 # 'Mock an item where it is used, not where it came from.'
@@ -47,6 +48,7 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_em_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_vector_store_factory')
+@patch('gen_ai_orchestrator.services.langchain.rag_chain.get_compressor_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.PromptTemplate')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.__find_input_variables')
 @patch(
@@ -70,7 +72,8 @@ async def test_rag_chain(
     mocked_get_vector_store_factory,
     mocked_get_em_factory,
     mocked_get_llm_factory,
-    mocked_get_callback_handler_factory
+        mocked_get_callback_handler_factory,
+        mocked_get_compressor_factory
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RagQuery
@@ -118,7 +121,7 @@ Answer in {locale}:""",
                     }
                 }
             ],
-            'k': 4,
+            'k': 8,
         },
         'observability_setting': {
             'provider': 'Langfuse',
@@ -128,8 +131,15 @@ Answer in {locale}:""",
               'value': 'sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f'
             },
             'public_key': 'pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c'
+        },
+        'document_compressor_params': {
+            'provider': 'FlashrankRerank',
+            'max_documents': 4,
+            'model': None,
+            'min_score': 0.995,
         }
     }
+
     query = RagQuery(**query_dict)
 
     # Setup mock factories/init return value
@@ -137,6 +147,7 @@ Answer in {locale}:""",
     llm_factory_instance = mocked_get_llm_factory.return_value
     observability_factory_instance = mocked_get_callback_handler_factory.return_value
     vector_store_factory_instance = mocked_get_vector_store_factory.return_value
+    compressor_factory_instance = mocked_get_compressor_factory.return_value
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
     mocked_langfuse_callback = observability_factory_instance.get_callback_handler()
@@ -161,12 +172,21 @@ Answer in {locale}:""",
     mocked_get_callback_handler_factory.assert_called_once_with(
         setting=query.observability_setting
     )
+    mocked_get_compressor_factory.assert_called_once_with(
+        param=query.document_compressor_params
+    )
     # Assert LangChain qa chain is created using the expected settings from query
+    compressor = compressor_factory_instance.get_compressor()
+    retriever = vector_store_factory_instance.get_vector_store().as_retriever(
+        search_kwargs=query.document_search_params.to_dict()
+    ),
     mocked_chain_builder.assert_called_once_with(
         llm=llm_factory_instance.get_language_model(),
-        retriever=vector_store_factory_instance.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
+        retriever=ContextualCompressionRetriever(
+            base_compressor=compressor,
+            base_retriever=retriever
         ),
+
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={

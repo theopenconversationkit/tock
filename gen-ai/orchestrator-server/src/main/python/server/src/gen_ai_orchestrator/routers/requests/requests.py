@@ -20,6 +20,8 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.compressors.compressor_types import DocumentCompressorParams
+from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
+    FlashrankRerankCompressorParams
 from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
@@ -86,8 +88,10 @@ class RagQuery(BaseModel):
         description='The observability settings.',
         default=None
     )
-    document_compressor_params: DocumentCompressorParams = Field(
+    document_compressor_params: Optional[DocumentCompressorParams] = Field(
         description='The document compressor parameters. Ex: number of documents, seuil minimum du score, metadata filter',
+        default=FlashrankRerankCompressorParams,
+
     )
 
     model_config = {

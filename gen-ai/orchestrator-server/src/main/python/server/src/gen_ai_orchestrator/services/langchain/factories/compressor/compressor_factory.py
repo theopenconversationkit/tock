@@ -16,9 +16,7 @@
 
 from abc import ABC, abstractmethod
 
-from langchain_core.embeddings import Embeddings
-from langchain_core.vectorstores import VectorStore
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from langchain.retrievers.document_compressors.base import BaseDocumentCompressor
 
 from gen_ai_orchestrator.models.compressors.compressor_types import DocumentCompressorParams
@@ -35,3 +33,4 @@ class LangChainCompressorFactory(ABC, BaseModel):
                 :return: BaseDocumentCompressor .
                 """
         pass
+

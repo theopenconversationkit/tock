@@ -14,20 +14,38 @@
 #
 """Model for creating FlashrankRerankCompressorFactory"""
 
+import logging
 from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
     FlashrankRerankCompressorParams
 from gen_ai_orchestrator.services.langchain.factories.compressor.compressor_factory import LangChainCompressorFactory
 
 from langchain.retrievers.document_compressors import FlashrankRerank
+from gen_ai_orchestrator.utils.singleton import singleton
+
+logger = logging.getLogger(__name__)
 
 
+@singleton
 class FlashrankRerankCompressorFactory(LangChainCompressorFactory):
     """A class for LangChain Flashrank Rerank Compressor Factory"""
     param: FlashrankRerankCompressorParams
 
-    def get_compressor(self):
-        return FlashrankRerank(
-            top_n=self.param.min_score,
-            score_threshold=self.param.max_documents,
-            model=self.param.model
+    pool_singleton: dict[str, FlashrankRerank] = dict[str, FlashrankRerank]
+
+    def __init__(self):
+        logger.debug(
+            'creation  FlashrankRerankCompressorFactory'
         )
+
+    def create_hash(self):
+        model = self.param.model if self.param.model else "none"
+        return model + '-' + str(self.param.max_documents) + '-' + str(self.param.min_score)
+
+    def get_compressor(self):
+        if not self.pool_singleton[self.create_hash()]:
+            self.pool_singleton[self.create_hash()] = FlashrankRerank(
+                top_n=self.param.min_score,
+                score_threshold=self.param.max_documents,
+                model=self.param.model
+            )
+        return self.pool_singleton[self.create_hash()]
