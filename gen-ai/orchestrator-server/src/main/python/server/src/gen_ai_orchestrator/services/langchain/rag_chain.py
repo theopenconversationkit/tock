@@ -27,6 +27,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 
+from gen_ai_orchestrator.configurations.environment.settings import application_settings
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
@@ -36,6 +37,8 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
 )
+from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
+    FlashrankRerankCompressorParams
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
 from gen_ai_orchestrator.models.rag.rag_models import (
@@ -169,10 +172,20 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
         embedding_function=em_factory.get_embedding_model(),
         index_name=query.document_index_name,
     )
-    compressor = get_compressor_factory(param=query.document_compressor_params)
+
+    # TODO to be removed after tests of flashrank rerank
+    compressor = None
+    if query.document_index_name in application_settings.flashrank_rerank_doc_index_to_compress:
+        flashrank_rerank_params = (
+            FlashrankRerankCompressorParams(provider='FlashrankRerank',
+                                            model=application_settings.flashrank_rerank_default_model,
+                                            min_score=application_settings.flashrank_rerank_default_min_score,
+                                            max_documents=application_settings.flashrank_rerank_default_max_documents))
+        compressor = get_compressor_factory(param=flashrank_rerank_params)
+
+        query.document_search_params.k = application_settings.flashrank_rerank_override_vectordb_document_number_neighbors
 
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
-    compressor = compressor.get_compressor()
     retriever = vector_store_factory.get_vector_store().as_retriever(
         search_kwargs=query.document_search_params.to_dict()
     )

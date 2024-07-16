@@ -24,10 +24,9 @@ from gen_ai_orchestrator.models.compressors.compressor_types import DocumentComp
 
 class LangChainCompressorFactory(ABC, BaseModel):
     """A base class for LangChain Compressor Factory"""
-    param: DocumentCompressorParams
 
     @abstractmethod
-    def get_compressor(self) -> BaseDocumentCompressor:
+    def get_compressor(self, param) -> BaseDocumentCompressor:
         """
                 Fabric the Compressor.
                 :return: BaseDocumentCompressor .
