@@ -30,6 +30,7 @@ class FlashrankRerankCompressorParams(BaseCompressorParams):
     provider: Literal[CompressorProvider.FLASHRANK_RERANK] = Field(
         description='The Flashrank Rerank Model Provider.',
         examples=[CompressorProvider.FLASHRANK_RERANK],
+        default=CompressorProvider.FLASHRANK_RERANK.value
     )
     model: Optional[str] = Field(description='The model id', examples=[],
                                  default=FlashrankRerank.__fields__['model'].default

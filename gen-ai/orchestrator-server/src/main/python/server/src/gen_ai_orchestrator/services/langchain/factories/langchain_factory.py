@@ -32,7 +32,7 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 )
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
     GenAIUnknownObservabilityProviderSettingException
-from gen_ai_orchestrator.models.compressors.compressor_types import DocumentCompressorParams
+from gen_ai_orchestrator.models.compressors.document_compressor_params import BaseCompressorParams
 from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
     FlashrankRerankCompressorParams
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
@@ -59,12 +59,9 @@ from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback
     LangChainCallbackHandlerFactory
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
     LangfuseCallbackHandlerFactory
-from gen_ai_orchestrator.models.compressors.compressor_provider import (
-    CompressorProvider,
-)
 from gen_ai_orchestrator.services.langchain.factories.compressor.compressor_factory import LangChainCompressorFactory
 from gen_ai_orchestrator.services.langchain.factories.compressor.flashrank_rerank_compressor_factory import (
-    FlashrankRerankCompressorFactory, )
+    flash_rankrerank_factory)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -203,7 +200,7 @@ def create_observability_callback_handler(
     return None
 
 
-def get_compressor_factory(param: DocumentCompressorParams) -> LangChainCompressorFactory:
+def get_compressor_factory(param: BaseCompressorParams) -> LangChainCompressorFactory:
     """
     Creates a Langchain Compressor Factory according to the compressor provider
     Args:
@@ -213,9 +210,10 @@ def get_compressor_factory(param: DocumentCompressorParams) -> LangChainCompress
         The LangChain Compressor Factory, or raise an exception otherwise
     """
 
-    logger.info('Get Langchain Factory for the given provider')
+    logger.info('Get Compressor Factory for the given parameter')
 
     if isinstance(param, FlashrankRerankCompressorParams):
-        return FlashrankRerankCompressorFactory(param=param)
+        logger.debug('Compressor Factory - FlashrankRerankCompressorFactory')
+        return flash_rankrerank_factory.get_compressor(param=param)
     else:
         raise CompressorUnknownException()

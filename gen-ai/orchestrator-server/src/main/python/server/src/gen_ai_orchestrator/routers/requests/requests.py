@@ -90,7 +90,7 @@ class RagQuery(BaseModel):
     )
     document_compressor_params: Optional[DocumentCompressorParams] = Field(
         description='The document compressor parameters. Ex: number of documents, seuil minimum du score, metadata filter',
-        default=FlashrankRerankCompressorParams,
+        default=None,
 
     )
 

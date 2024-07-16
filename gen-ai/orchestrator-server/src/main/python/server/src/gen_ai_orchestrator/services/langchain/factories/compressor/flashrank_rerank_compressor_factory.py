@@ -15,37 +15,47 @@
 """Model for creating FlashrankRerankCompressorFactory"""
 
 import logging
+from typing import Dict
+
 from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
     FlashrankRerankCompressorParams
 from gen_ai_orchestrator.services.langchain.factories.compressor.compressor_factory import LangChainCompressorFactory
 
 from langchain.retrievers.document_compressors import FlashrankRerank
-from gen_ai_orchestrator.utils.singleton import singleton
+from pydantic import Field
 
 logger = logging.getLogger(__name__)
 
 
-@singleton
+def _create_hash(param: FlashrankRerankCompressorParams) -> str:
+    model = param.model if param.model else "none"
+    return model + '-' + str(param.max_documents) + '-' + str(param.min_score)
+
+
 class FlashrankRerankCompressorFactory(LangChainCompressorFactory):
     """A class for LangChain Flashrank Rerank Compressor Factory"""
-    param: FlashrankRerankCompressorParams
 
     pool_singleton: dict[str, FlashrankRerank] = dict[str, FlashrankRerank]
 
-    def __init__(self):
-        logger.debug(
-            'creation  FlashrankRerankCompressorFactory'
-        )
+    def get_compressor(self, param: FlashrankRerankCompressorParams):
+        """
+        get compressor
 
-    def create_hash(self):
-        model = self.param.model if self.param.model else "none"
-        return model + '-' + str(self.param.max_documents) + '-' + str(self.param.min_score)
+        Args:
+            param: flashrank rerank parameter
 
-    def get_compressor(self):
-        if not self.pool_singleton[self.create_hash()]:
-            self.pool_singleton[self.create_hash()] = FlashrankRerank(
-                top_n=self.param.min_score,
-                score_threshold=self.param.max_documents,
-                model=self.param.model
+        Returns:
+            FlashrankRerank Compressor.
+        """
+        client_hash = _create_hash(param)
+        compressor = self.pool_singleton.get(client_hash)
+        if compressor is None:
+            compressor = FlashrankRerank(
+                top_n=param.min_score,
+                score_threshold=param.max_documents,
+                model=param.model
             )
-        return self.pool_singleton[self.create_hash()]
+        return compressor
+
+
+flash_rankrerank_factory = FlashrankRerankCompressorFactory()  # Init it as Singleton in a package.
