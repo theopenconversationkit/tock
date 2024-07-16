@@ -35,7 +35,7 @@ def _create_hash(param: FlashrankRerankCompressorParams) -> str:
 class FlashrankRerankCompressorFactory(LangChainCompressorFactory):
     """A class for LangChain Flashrank Rerank Compressor Factory"""
 
-    pool_singleton: dict[str, FlashrankRerank] = dict[str, FlashrankRerank]
+    pool_singleton: Dict[str, FlashrankRerank] = Field(default={})
 
     def get_compressor(self, param: FlashrankRerankCompressorParams):
         """

@@ -191,7 +191,8 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
     )
     return ConversationalRetrievalChain.from_llm(
         llm=llm_factory.get_language_model(),
-        retriever=ContextualCompressionRetriever(base_compressor=compressor, base_retriever=retriever),
+        retriever=ContextualCompressionRetriever(base_compressor=compressor,
+                                                 base_retriever=retriever) if compressor else retriever,
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
