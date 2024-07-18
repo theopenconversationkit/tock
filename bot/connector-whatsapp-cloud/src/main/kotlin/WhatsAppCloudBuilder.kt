@@ -92,6 +92,18 @@ fun BotBus.whatsAppCloudText(
         userId = userId.id,
     )
 
+fun BotBus.whatsAppCloudImage(
+    id: String,
+    link: String? = null,
+    caption: String? = null,
+    ): WhatsAppCloudBotImageMessage =
+    WhatsAppCloudBotImageMessage(
+        messagingProduct = "whatsapp",
+        image = WhatsAppCloudBotImage(id, link, caption),
+        recipientType = WhatsAppCloudBotRecipientType.individual,
+        userId = userId.id,
+    )
+
 fun I18nTranslator.whatsAppCloudReplyButtonMessage(
     text: CharSequence,
     vararg replies: QuickReply,
@@ -328,7 +340,7 @@ fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
     typeParameter: CharSequence?,
     textButton: CharSequence?
 ): TextParameter = TextParameter(
-    type = ParameterType.valueOf(translate(typeParameter).toString()),
+    type = ParameterType.valueOf((typeParameter).toString()),
     text = translate(textButton).toString(),
 )
 
