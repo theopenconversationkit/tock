@@ -95,11 +95,15 @@ fun BotBus.whatsAppCloudText(
 fun BotBus.whatsAppCloudImage(
     id: String,
     link: String? = null,
-    caption: String? = null,
+    caption: CharSequence? = null,
     ): WhatsAppCloudBotImageMessage =
     WhatsAppCloudBotImageMessage(
         messagingProduct = "whatsapp",
-        image = WhatsAppCloudBotImage(id, link, caption),
+        image = WhatsAppCloudBotImage(
+            id = id,
+            link = link,
+            caption = translate(caption).toString()
+        ),
         recipientType = WhatsAppCloudBotRecipientType.individual,
         userId = userId.id,
     )
@@ -340,7 +344,7 @@ fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
     typeParameter: CharSequence?,
     textButton: CharSequence?
 ): TextParameter = TextParameter(
-    type = ParameterType.valueOf((typeParameter).toString()),
+    type = ParameterType.valueOf(translate(typeParameter).toString()),
     text = translate(textButton).toString(),
 )
 

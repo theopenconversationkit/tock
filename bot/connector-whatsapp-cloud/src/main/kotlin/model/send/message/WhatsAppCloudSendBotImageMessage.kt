@@ -23,4 +23,4 @@ data class WhatsAppCloudSendBotImageMessage(
     val image: WhatsAppCloudBotImage,
     override val recipientType: WhatsAppCloudBotRecipientType,
     override val to: String,
-) : WhatsAppCloudSendBotMessage(WhatsAppCoudBotMessageType.image)
+) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.image)

@@ -23,4 +23,4 @@ data class WhatsAppCloudSendBotInteractiveMessage(
         val interactive: WhatsAppCloudBotInteractive,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val to: String,
-) : WhatsAppCloudSendBotMessage(WhatsAppCoudBotMessageType.interactive)
+) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.interactive)

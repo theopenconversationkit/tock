@@ -16,6 +16,6 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
-enum class WhatsAppCoudBotMessageType {
+enum class WhatsAppCloudBotMessageType {
     text, reaction, image, audio , video, location, contacts, interactive, template
 }

@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = WhatsAppCloudBotImageMessage::class, name = "image")
     )
 
-abstract class WhatsAppCloudBotMessage ( val type: WhatsAppCoudBotMessageType, @JsonIgnore internal open val userId: String?) :
+abstract class WhatsAppCloudBotMessage (val type: WhatsAppCloudBotMessageType, @JsonIgnore internal open val userId: String?) :
     ConnectorMessage, WhatsAppCloudConnectorMessage() {
 
     @get:JsonIgnore
