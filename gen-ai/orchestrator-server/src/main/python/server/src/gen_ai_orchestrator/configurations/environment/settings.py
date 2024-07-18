@@ -100,10 +100,10 @@ class _Settings(BaseSettings):
     List of indexes names that will have default flashrank rerank enabled.
     """
     # TODO should be removed.
-    flashrank_rerank_doc_index_to_compress: Optional[str] = ''
+    flashrank_rerank_doc_index_to_compress: Optional[str] = 'ns-03-bot-cmso'
     flashrank_rerank_default_model: Optional[str] = 'ms-marco-MultiBERT-L-12'
-    flashrank_rerank_default_min_score: int = 4
-    flashrank_rerank_default_max_documents: float = 0.0
+    flashrank_rerank_default_min_score: float = 0.999
+    flashrank_rerank_default_max_documents: int = 6
     flashrank_rerank_override_vectordb_document_number_neighbors: int = 8
 
 
