@@ -196,7 +196,7 @@ class ErrorMessages:
             message='API error.',
         ),
         # Compressor Errors
-        ErrorCode.COMPRESSOR_UNKNOWN: ErrorMessage(message='Unknown compressor.'),
+        ErrorCode.COMPRESSOR_UNKNOWN: ErrorMessage(message='Unknown compressor provider.'),
     }
 
     def get_message(self, code: ErrorCode) -> ErrorMessage:

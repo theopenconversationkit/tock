@@ -174,8 +174,10 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
     )
 
     # TODO to be removed after tests of flashrank rerank
+    #  we are creating a compressor based on env variable for experimental purposes
     compressor = None
     if query.document_index_name in application_settings.flashrank_rerank_doc_index_to_compress:
+        logger.debug('RAG chain - the document_inddex_name is eligible to Flashrank rerank compressor')
         flashrank_rerank_params = (
             FlashrankRerankCompressorParams(provider='FlashrankRerank',
                                             model=application_settings.flashrank_rerank_default_model,

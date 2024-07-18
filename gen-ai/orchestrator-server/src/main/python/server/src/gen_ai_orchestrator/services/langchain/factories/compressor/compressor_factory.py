@@ -18,15 +18,14 @@ from abc import ABC, abstractmethod
 
 from pydantic import BaseModel
 from langchain.retrievers.document_compressors.base import BaseDocumentCompressor
-
-from gen_ai_orchestrator.models.compressors.compressor_types import DocumentCompressorParams
+from gen_ai_orchestrator.models.compressors.document_compressor_params import BaseCompressorParams
 
 
 class LangChainCompressorFactory(ABC, BaseModel):
     """A base class for LangChain Compressor Factory"""
 
     @abstractmethod
-    def get_compressor(self, param) -> BaseDocumentCompressor:
+    def get_compressor(self, param: BaseCompressorParams) -> BaseDocumentCompressor:
         """
                 Fabric the Compressor.
                 :return: BaseDocumentCompressor .

@@ -28,12 +28,22 @@ logger = logging.getLogger(__name__)
 
 
 def _create_hash(param: FlashrankRerankCompressorParams) -> str:
+    """
+    create hash for id on pool_singletion
+
+    Args:
+        param: flashrank rerank parameter
+
+    Returns:
+        the hash
+    """
     model = param.model if param.model else "none"
     return model + '-' + str(param.max_documents) + '-' + str(param.min_score)
 
 
 class FlashrankRerankCompressorFactory(LangChainCompressorFactory):
-    """A class for LangChain Flashrank Rerank Compressor Factory"""
+    """A class for LangChain Flashrank Rerank Compressor Factory
+        for a specific set of parameters we will only instantiate 1 compressor to lower memory usage"""
 
     pool_singleton: Dict[str, FlashrankRerank] = Field(default={})
 
@@ -50,11 +60,14 @@ class FlashrankRerankCompressorFactory(LangChainCompressorFactory):
         client_hash = _create_hash(param)
         compressor = self.pool_singleton.get(client_hash)
         if compressor is None:
+            logger.debug('RAG chain - create new compressor flashrankRerank')
             compressor = FlashrankRerank(
-                top_n=param.min_score,
-                score_threshold=param.max_documents,
+                top_n=param.max_documents,
+                score_threshold=param.min_score,
                 model=param.model
             )
+            self.pool_singleton[client_hash] = compressor
+
         return compressor
 
 

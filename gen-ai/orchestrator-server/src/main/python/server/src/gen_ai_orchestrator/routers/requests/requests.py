@@ -152,7 +152,7 @@ Answer in {locale}:""",
                     'document_compressor_params': {
                         'provider': 'FlashrankRerank',
                         'max_documents': 4,
-                        'model': None,
+                        'model': "'ms-marco-MultiBERT-L-12'",
                         'min_score': 0.995,
                     },
                     'observability_setting' : None

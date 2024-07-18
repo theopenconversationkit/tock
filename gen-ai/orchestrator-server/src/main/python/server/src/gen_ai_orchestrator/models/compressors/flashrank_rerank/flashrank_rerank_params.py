@@ -28,14 +28,15 @@ from gen_ai_orchestrator.models.compressors.document_compressor_params import (
 
 class FlashrankRerankCompressorParams(BaseCompressorParams):
     provider: Literal[CompressorProvider.FLASHRANK_RERANK] = Field(
-        description='The Flashrank Rerank Model Provider.',
+        description='The Flashrank Rerank Model Provider, '
+                    'https://github.com/PrithivirajDamodaran/FlashRank?tab=readme-ov-file.',
         examples=[CompressorProvider.FLASHRANK_RERANK],
         default=CompressorProvider.FLASHRANK_RERANK.value
     )
-    model: Optional[str] = Field(description='The model id', examples=[],
+    model: Optional[str] = Field(description='The model id', examples=["ms-marco-TinyBERT-L-2-v2"],
                                  default=FlashrankRerank.__fields__['model'].default
                                  )
-    min_score: Optional[float] = Field(description='Minimum retailment score.',
+    min_score: Optional[float] = Field(description='Minimum retained score.',
                                        default=FlashrankRerank.__fields__['score_threshold'].default
                                        )
     max_documents: Optional[int] = Field(description='Maximum number of documents to return',
