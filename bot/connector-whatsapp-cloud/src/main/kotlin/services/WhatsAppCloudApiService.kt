@@ -26,10 +26,11 @@ import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.ResponseCr
 import ai.tock.bot.connector.whatsapp.cloud.model.send.manageTemplate.WhatsAppCloudTemplate
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.FileType
 import ai.tock.bot.connector.whatsapp.cloud.model.send.media.MediaResponse
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTemplateMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotInteractiveMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotImageMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotLocationMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTemplateMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTextMessage
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.Component
 import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.HeaderParameter
@@ -68,7 +69,10 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         try {
             when (messageRequest) {
                 is WhatsAppCloudSendBotTextMessage,
+
                 is WhatsAppCloudSendBotLocationMessage -> handleSimpleMessage(phoneNumberId, token, messageRequest)
+
+                is WhatsAppCloudSendBotImageMessage -> handleImageMessage(phoneNumberId, token, messageRequest)
 
                 is WhatsAppCloudSendBotInteractiveMessage -> handleInteractiveMessage(
                     phoneNumberId,
@@ -80,6 +84,13 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             }
         } catch (e: Exception) {
             logger.error(e)
+        }
+    }
+
+    private fun handleImageMessage(phoneNumberId: String, token: String, messageRequest: WhatsAppCloudSendBotImageMessage) {
+        replaceWithRealMessageImageId(messageRequest, phoneNumberId, token)
+        send(messageRequest) {
+            apiClient.graphApi.sendMessage(phoneNumberId, token, messageRequest).execute()
         }
     }
 
@@ -301,6 +312,27 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             BotRepository.requestTimer.end(requestTimerData)
         }
     }
+
+    private fun replaceWithRealMessageImageId(
+        messageRequest: WhatsAppCloudSendBotImageMessage,
+        phoneNumberId: String,
+        token: String
+    ) {
+        val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
+
+        var res = sendMedia(
+            client,
+            phoneNumberId,
+            token,
+            messageRequest.image.id,
+            FileType.PNG.type
+        )
+
+        val image = messageRequest.image
+        val newImageId = res.id
+        image.id = newImageId
+    }
+
 
     private fun replaceWithRealImageId(
         messageRequest: WhatsAppCloudSendBotTemplateMessage,
