@@ -236,6 +236,12 @@ export class BotAdminAppComponent implements AuthListener, OnInit, OnDestroy {
             link: '/configuration/observability-settings',
             icon: 'display',
             hidden: !this.state.hasRole(UserRole.admin)
+          },
+          {
+            link: '/configuration/vector-db-settings',
+            title: 'Vector DB settings',
+            icon: 'cube-outline',
+            hidden: !this.state.hasRole(UserRole.admin)
           }
         ]
       },

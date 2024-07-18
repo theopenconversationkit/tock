@@ -51,6 +51,8 @@ import { SynchronizationComponent } from './synchronization/synchronization.comp
 import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
 import { ObservabilitySettingsComponent } from './observability-settings/observability-settings.component';
 import { ObservabilityProviderConfigParamInputComponent } from './observability-settings/observability-provider-config-param-input/observability-provider-config-param-input.component';
+import { VectorDbSettingsComponent } from './vector-db-settings/vector-db-settings.component';
+import { VectorDbProviderConfigParamInputComponent } from './vector-db-settings/vector-db-provider-config-param-input/vector-db-provider-config-param-input.component';
 
 @Injectable()
 export class BotApplicationConfig implements ApplicationConfig {
@@ -72,7 +74,9 @@ export class BotApplicationConfig implements ApplicationConfig {
     SynchronizationComponent,
     SentenceGenerationSettingsComponent,
     ObservabilitySettingsComponent,
-    ObservabilityProviderConfigParamInputComponent
+    ObservabilityProviderConfigParamInputComponent,
+    VectorDbSettingsComponent,
+    VectorDbProviderConfigParamInputComponent
   ],
   imports: [
     CommonModule,
