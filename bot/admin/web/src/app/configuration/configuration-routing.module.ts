@@ -28,6 +28,7 @@ import { NamespacesComponent } from '../applications/namespace/namespaces.compon
 import { SynchronizationComponent } from './synchronization/synchronization.component';
 import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
 import { ObservabilitySettingsComponent } from './observability-settings/observability-settings.component';
+import { VectorDbSettingsComponent } from './vector-db-settings/vector-db-settings.component';
 
 const routes: Routes = [
   {
@@ -102,6 +103,10 @@ const routes: Routes = [
       {
         path: 'observability-settings',
         component: ObservabilitySettingsComponent
+      },
+      {
+        path: 'vector-db-settings',
+        component: VectorDbSettingsComponent
       }
     ]
   }
