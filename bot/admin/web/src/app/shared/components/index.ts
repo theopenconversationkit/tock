@@ -23,6 +23,7 @@ export * from './sentence-training/sentence-training-sentence/sentence-training-
 export * from './sentence-training/sentence-review-request/sentence-review-request.component';
 export * from './sentence-training/sentence-training-sentence/token-view/token-view.component';
 export * from './sentence-training/sentence-training-sentence/sentence-training-create-entity/sentence-training-create-entity.component';
+export * from './intent-story-details/intent-story-details.component';
 export * from './debug-viewer-dialog/debug-viewer-dialog.component';
 export * from './debug-viewer-window/debug-viewer-window.component';
 export * from './json-iterator/json-iterator.component';

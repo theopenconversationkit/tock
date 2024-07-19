@@ -27,6 +27,7 @@ import { Router } from '@angular/router';
 import { truncate } from '../../../../model/commons';
 import { getSentenceId } from '../commons/utils';
 import { copyToClipboard } from '../../../utils';
+import { IntentStoryDetailsComponent } from '../../intent-story-details/intent-story-details.component';
 
 @Component({
   selector: 'tock-sentence-training-entry',
@@ -187,6 +188,18 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
     if (isSelected) this.selection.select(newSentence);
 
     this.resetIntentsListFilter();
+  }
+
+  isIntentStorySearchable() {
+    return this.sentence.classification.intentId !== Intent.unknown && this.sentence.classification.intentId !== Intent.ragExcluded;
+  }
+
+  displayIntentStoryDetails() {
+    const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
+      context: {
+        intentId: this.sentence.classification.intentId
+      }
+    });
   }
 
   resetIntentsListFilter(): void {
