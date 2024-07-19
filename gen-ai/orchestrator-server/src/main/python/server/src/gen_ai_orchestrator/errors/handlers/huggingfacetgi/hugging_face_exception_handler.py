@@ -20,7 +20,6 @@ from huggingface_hub import InferenceTimeoutError
 from requests import HTTPError
 
 from gen_ai_orchestrator.errors.exceptions.ai_provider.ai_provider_exceptions import (
-    AIProviderAPIBadRequestException,
     AIProviderAPIResourceNotFoundException,
 )
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
@@ -54,11 +53,13 @@ def hugging_face_exception_handler(provider: str):
                     create_error_info_hugging_face_timeout(exc, provider)
                 )
             except HTTPError as exc:
+                # 401 Unauthorized  403 : Forbidden
                 if exc.errno == 403 or exc.errno == 401:
                     logger.error(exc)
                     raise GenAIAuthenticationException(
                         create_error_info_hugging_face(exc, provider)
                     )
+                # 404 Not Found
                 elif exc.errno == 404:
                     logger.error(exc)
                     raise AIProviderAPIResourceNotFoundException(
@@ -98,7 +99,7 @@ def create_error_info_hugging_face(exc: HTTPError, provider: str) -> ErrorInfo:
 
 
 def create_error_info_hugging_face_timeout(
-    exc: InferenceTimeoutError, provider: str
+        exc: InferenceTimeoutError, provider: str
 ) -> ErrorInfo:
     """
     Create ErrorInfo for a Hugging Face Inference Timeout error

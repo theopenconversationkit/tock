@@ -32,9 +32,12 @@ class HuggingFaceTGILLMSetting(BaseLLMSetting):
         examples=[LLMProvider.HUGGING_FACE_TGI],
     )
     repetition_penalty: float = Field(
-        description='Penalty on model repetition.', default=1.0
-    )
+        description='Penalty on model repetition.',
+        default=1.0,
+        examples=[1.0])
     max_new_tokens: int = Field(
-        description='Maximum length of the llm response.', default=256
-    )
-    api_base: str = Field(description='TGI API base URL.')
+        description='Maximum length of the llm response in tokens.',
+        default=256,
+        examples=[256])
+    api_base: str = Field(description='TGI API base URL.',
+                          examples=["https://doc.tock.ai/tock/fr/"])
