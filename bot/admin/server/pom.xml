@@ -39,6 +39,21 @@
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
+            <artifactId>tock-aws-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-gcp-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-env-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
             <artifactId>bot-test-base</artifactId>
         </dependency>
         <dependency>

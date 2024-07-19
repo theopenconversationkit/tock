@@ -88,9 +88,11 @@ object RAGService {
         val ragConfig = ragConfiguration.toBotRAGConfiguration()
 
         // Check validity of the rag configuration
-        RAGValidationService.validate(ragConfig).let { errors ->
-            if (errors.isNotEmpty()) {
-                throw BadRequestException(errors)
+        if(ragConfig.enabled) {
+            RAGValidationService.validate(ragConfig).let { errors ->
+                if (errors.isNotEmpty()) {
+                    throw BadRequestException(errors)
+                }
             }
         }
 

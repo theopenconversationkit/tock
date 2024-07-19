@@ -18,7 +18,7 @@ package ai.tock.genai.orchestratorcore.models.llm
 
 
 import ai.tock.genai.orchestratorcore.models.Constants
-import ai.tock.genai.orchestratorcore.models.security.SecretKey
+import ai.tock.shared.security.key.SecretKey
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 

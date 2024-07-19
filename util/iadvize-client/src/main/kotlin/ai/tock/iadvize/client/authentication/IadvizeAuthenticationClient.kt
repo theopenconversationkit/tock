@@ -16,18 +16,25 @@
 
 package ai.tock.iadvize.client.authentication
 
-import ai.tock.iadvize.client.IadvizeApi
-import ai.tock.iadvize.client.PASSWORD
-import ai.tock.iadvize.client.authentication.credentials.EnvCredentialsProvider
-import ai.tock.iadvize.client.authenticationFailedError
-import ai.tock.iadvize.client.createApi
+import ai.tock.iadvize.client.*
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import ai.tock.shared.security.credentials.CredentialsProvider
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.SecretManagerService
+import ai.tock.shared.security.credentials.Credentials
 import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
+// The expected values correspond to the names of the SecretManagerProviderType elements
+val iAdvizeSecretManagerProvider: String = property(
+    name = "tock_iadvize_secret_manager_provider",
+    defaultValue = SecretManagerProviderType.ENV.name
+)
+val iAdvizeCredentialsSecretName: String = property(
+    name = "tock_iadvize_credentials_secret_name",
+    defaultValue = "iadvize_credentials",
+)
 
 /**
  * Authentication client.
@@ -40,16 +47,14 @@ class IadvizeAuthenticationClient {
         const val DELAY_SECONDS = 5
     }
 
-    private val credentialsProvider: CredentialsProvider by lazy { injector.provide() }
-
     internal var iadvizeApi: IadvizeApi = createApi(logger)
 
-    private val username: String by lazy {
-        credentialsProvider.getCredentials().username
+    private val secretMangerService: SecretManagerService by lazy {
+        injector.provide(tag = iAdvizeSecretManagerProvider)
     }
 
-    private val password: String by lazy {
-        credentialsProvider.getCredentials().password
+    private val credentials: Credentials by lazy {
+        secretMangerService.getCredentials(iAdvizeCredentialsSecretName)
     }
 
     /**
@@ -57,9 +62,7 @@ class IadvizeAuthenticationClient {
      * if the access token is expired, a new one is requested and stored.
      */
     fun getAccessToken() : String {
-
         var t = token.get()
-
         if (t == null || (t.expireAt?.isBefore(LocalDateTime.now()) == true)) {
             t = getToken()
         }
@@ -71,7 +74,7 @@ class IadvizeAuthenticationClient {
      * Request a new access token.
      */
     private fun getToken(): Token {
-        return iadvizeApi.createToken(username, password, grantType = PASSWORD).execute().body()
+        return iadvizeApi.createToken(credentials.username, credentials.password, grantType = PASSWORD).execute().body()
             ?.let {
                 val value = it.accessToken ?: authenticationFailedError()
                 val time = it.expiresIn?.let { s -> LocalDateTime.now().plusSeconds(s.toLong() - DELAY_SECONDS) }

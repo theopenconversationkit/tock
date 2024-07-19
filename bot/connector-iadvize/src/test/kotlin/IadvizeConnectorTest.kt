@@ -16,12 +16,12 @@
 package ai.tock.bot.connector.iadvize
 
 import ai.tock.bot.connector.ConnectorData
+import ai.tock.bot.connector.iadvize.model.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.request.IadvizeRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest
 import ai.tock.bot.connector.iadvize.model.request.MessageRequest.MessageRequestJson
 import ai.tock.bot.connector.iadvize.model.response.conversation.Duration
 import ai.tock.bot.connector.iadvize.model.response.conversation.QuickReply
-import ai.tock.bot.connector.iadvize.model.payload.TextPayload
 import ai.tock.bot.connector.iadvize.model.response.conversation.reply.*
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.I18nTranslator
@@ -31,7 +31,6 @@ import ai.tock.iadvize.client.graphql.IadvizeGraphQLClient
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.loadProperties
 import ai.tock.shared.resourceAsString
-import ai.tock.shared.security.credentials.CredentialsProvider
 import ai.tock.shared.sharedTestModule
 import ai.tock.shared.tockInternalInjector
 import ai.tock.translator.I18nLabelValue
@@ -40,8 +39,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import io.mockk.*
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
