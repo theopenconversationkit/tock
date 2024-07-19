@@ -78,6 +78,7 @@ class GCPSecretManagerClient:
             payload = response.payload.data.decode("UTF-8")
             logging.info(f'The requested secret {secret_name} has been successfully retrieved.')
             return payload
+        # TODO MASS : DefaultCredentialsError(GoogleAuthError)
 #        except ClientError as e:
 #            if e.response['Error']['Code'] == 'ResourceNotFoundException':
 #                logger.error(f'The requested secret {secret_name} was not found.')
