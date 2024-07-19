@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating AwsSecretKey."""
+"""Model for creating GcpSecretKey."""
 
 from typing import Literal
 
@@ -22,19 +22,19 @@ from gen_ai_orchestrator.models.security.secret_key import BaseSecretKey
 from gen_ai_orchestrator.models.security.secret_key_type import SecretKeyType
 
 
-class AwsSecretKey(BaseSecretKey):
+class GcpSecretKey(BaseSecretKey):
     """
-    A class for AWS Secret Key.
-    Used to store the secret name managed in AWS Secrets Manager.
+    A class for GCP Secret Key.
+    Used to store the secret name managed in GCP Secret Manager.
     """
 
-    type: Literal[SecretKeyType.AWS_SECRETS_MANAGER] = Field(
+    type: Literal[SecretKeyType.GCP_SECRET_MANAGER] = Field(
         description='The Secret Key type.',
-        examples=[SecretKeyType.AWS_SECRETS_MANAGER],
-        default=SecretKeyType.AWS_SECRETS_MANAGER,
+        examples=[SecretKeyType.GCP_SECRET_MANAGER],
+        default=SecretKeyType.GCP_SECRET_MANAGER,
     )
     secret_name: str = Field(
-        description='The secret name managed in AWS Secrets Manager.',
+        description='The secret name managed in GCP Secret Manager.',
         examples=['PROD/App/openaiapi_key'],
         min_length=1,
     )

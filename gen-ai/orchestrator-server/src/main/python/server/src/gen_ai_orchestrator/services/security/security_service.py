@@ -19,11 +19,13 @@ from typing import Optional
 from gen_ai_orchestrator.models.security.aws_secret_key.aws_secret_key import (
     AwsSecretKey,
 )
+from gen_ai_orchestrator.models.security.gcp_secret_key.gcp_secret_key import GcpSecretKey
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 from gen_ai_orchestrator.models.security.security_types import SecretKey
 from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
+from gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client import GCPSecretManagerClient
 
 logger = logging.getLogger(__name__)
 
@@ -42,5 +44,10 @@ def fetch_secret_key_value(secret_key: SecretKey) -> Optional[str]:
         aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(secret_name=secret_key.secret_name)
         if aws_secret is not None:
             return aws_secret.secret
+    elif isinstance(secret_key, GcpSecretKey):
+        # Get secret from GCP Secret Manager
+        gcp_secret = GCPSecretManagerClient().get_ai_provider_secret(secret_name=secret_key.secret_name)
+        if gcp_secret is not None:
+            return gcp_secret.secret
 
     return None

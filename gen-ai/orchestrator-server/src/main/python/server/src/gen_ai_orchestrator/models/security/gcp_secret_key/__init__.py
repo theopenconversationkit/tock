@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,15 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""SecretKeyType Enumeration."""
-
-from enum import Enum, unique
-
-
-@unique
-class SecretKeyType(str, Enum):
-    """Enumeration to list Secret Key types"""
-
-    RAW = 'Raw'
-    AWS_SECRETS_MANAGER = 'AwsSecretsManager'
-    GCP_SECRET_MANAGER = 'GcpSecretManager'

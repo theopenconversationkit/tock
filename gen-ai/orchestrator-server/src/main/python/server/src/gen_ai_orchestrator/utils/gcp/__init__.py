@@ -12,15 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""SecretKeyType Enumeration."""
-
-from enum import Enum, unique
-
-
-@unique
-class SecretKeyType(str, Enum):
-    """Enumeration to list Secret Key types"""
-
-    RAW = 'Raw'
-    AWS_SECRETS_MANAGER = 'AwsSecretsManager'
-    GCP_SECRET_MANAGER = 'GcpSecretManager'
