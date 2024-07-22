@@ -15,6 +15,7 @@
           fullWidth
           fieldSize="small"
           [formControl]="$any(form.get(parentGroup).get(configurationParam.key))"
+          [readonly]="configurationParam.readonly"
         />
       </ng-container>
 

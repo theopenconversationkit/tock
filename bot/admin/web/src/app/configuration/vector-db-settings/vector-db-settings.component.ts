@@ -140,7 +140,18 @@ export class VectorDbSettingsComponent implements OnInit {
       });
 
       requiredConfiguration.params.forEach((param) => {
-        this.form.controls['setting'].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
+        let defaultValue = param.defaultValue;
+        if (param.computedDefaultValue) {
+          defaultValue = param.computedDefaultValue({
+            namespace: this.state.currentApplication.namespace,
+            botId: this.state.currentApplication.name
+          });
+        }
+
+        this.form.controls['setting'].addControl(
+          param.key,
+          new FormControl({ value: defaultValue, disabled: param.disabled }, Validators.required)
+        );
       });
 
       this.form.controls['setting'].addControl('provider', new FormControl(provider));
