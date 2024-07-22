@@ -35,6 +35,10 @@ content:
         url: 'en/dev/i18n'
       - title: 'API documentation'
         url: 'en/api'
+      - title: 'Feature technical designs'
+        children:
+          - title: '#1696 GCP Secret Manager'
+            url: 'en/dev/feature-technical-designs/1696-gcp-secrets'
   - title: 'About'
     children:
       - title: 'Why Tock'
