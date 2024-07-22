@@ -20,6 +20,7 @@ import ai.tock.aws.model.AIProviderSecret
 import ai.tock.aws.secretmanager.provider.AWSSecretsManagerService
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.security.AwsSecretKey
+import ai.tock.genai.orchestratorcore.models.security.GcpSecretKey
 import ai.tock.genai.orchestratorcore.models.security.RawSecretKey
 import ai.tock.genai.orchestratorcore.models.security.SecretKey
 import ai.tock.shared.injector
@@ -38,6 +39,10 @@ object SecurityUtils {
      * The AWS Secrets Manager Service
      */
     private val awsSecretsManagerClient: AWSSecretsManagerService get() = injector.provide()
+    /**
+     * The GCP Secret Manager Service
+     */
+    private val gcpSecretManagerClient: AWSSecretsManagerService get() = injector.provide()
 
     /**
      * Fetch the secret key value. Raw Value or Aws Secret Value
@@ -65,6 +70,12 @@ object SecurityUtils {
                 awsSecretsManagerClient.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
                 // The return the Secret Key
                 AwsSecretKey(secretName)
+            }
+            Constants.SECRET_KEY_GCP -> {
+                // Create or update the [AIProviderSecret] on GCP Secret Manager
+                awsSecretsManagerClient.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
+                // The return the Secret Key
+                GcpSecretKey(secretName)
             }
             else -> throw IllegalArgumentException("Unsupported secret key type")
         }

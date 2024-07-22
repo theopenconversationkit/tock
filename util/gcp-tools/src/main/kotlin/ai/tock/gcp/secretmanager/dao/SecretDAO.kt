@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.security
+package ai.tock.gcp.secretmanager.dao
 
-enum class SecretKeyType {
-    Raw,
-    AwsSecretsManager,
-    GcpSecretManager,
+/**
+ * Retrieve secret from a secured source
+ */
+interface SecretDAO {
+    fun getSecret(secretId: String): String
+
+    /**
+     * Create an GCP Secret if it doesn't exist. Else, update it
+     * @param secretId the secret id
+     * @param secretObject the secret object to store
+     * @return the created or updated GCP Secret.
+     */
+    fun createOrUpdateSecret(secretId: String, secretObject: Any): String
 }

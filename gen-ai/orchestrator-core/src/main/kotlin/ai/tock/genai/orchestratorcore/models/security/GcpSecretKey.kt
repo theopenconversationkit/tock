@@ -16,8 +16,9 @@
 
 package ai.tock.genai.orchestratorcore.models.security
 
-enum class SecretKeyType {
-    Raw,
-    AwsSecretsManager,
-    GcpSecretManager,
-}
+/**
+ * The GCP Secret Key
+ */
+data class GcpSecretKey(
+    val secretName: String,
+) : SecretKey(SecretKeyType.GcpSecretManager)

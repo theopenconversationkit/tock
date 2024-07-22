@@ -18,5 +18,6 @@ package ai.tock.shared.security.credentials
 
 enum class CredentialsProviderType {
     ENV,
-    AWS_SECRET_MANAGER
+    AWS_SECRET_MANAGER,
+    GCP_SECRET_MANAGER
 }

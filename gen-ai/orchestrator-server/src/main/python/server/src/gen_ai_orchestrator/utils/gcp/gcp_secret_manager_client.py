@@ -74,6 +74,13 @@ class GCPSecretManagerClient:
 
         try:
             # Access the secret version.
+
+            # TODO MASS
+            # Build the resource name of the secret.
+            # name = client.secret_path(project_id, secret_id)
+            # Get the secret.
+            # response = self.client.get_secret(request={"name": name})
+
             response = self.client.access_secret_version(request={"name": secret_name})
             payload = response.payload.data.decode("UTF-8")
             logging.info(f'The requested secret {secret_name} has been successfully retrieved.')

@@ -24,6 +24,7 @@ object Constants {
 
     const val SECRET_KEY_RAW = "Raw"
     const val SECRET_KEY_AWS = "AwsSecretsManager"
+    const val SECRET_KEY_GCP = "GcpSecretManager"
 
     private const val GEN_AI="GenAI"
     private const val GEN_AI_RAG="$GEN_AI/RAG"

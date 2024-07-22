@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.security
+package ai.tock.gcp.service
 
-enum class SecretKeyType {
-    Raw,
-    AwsSecretsManager,
-    GcpSecretManager,
+import ai.tock.gcp.gcpToolsModule
+import ai.tock.shared.service.BotAdditionalModulesService
+import com.github.salomonbrys.kodein.Kodein.Module
+
+class IOCModulesService : BotAdditionalModulesService {
+    override fun customModules(): Set<Module> = setOf(gcpToolsModule)
 }

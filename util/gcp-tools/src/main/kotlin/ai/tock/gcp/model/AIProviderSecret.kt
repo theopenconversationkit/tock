@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.security
+package ai.tock.gcp.model
 
-enum class SecretKeyType {
-    Raw,
-    AwsSecretsManager,
-    GcpSecretManager,
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class AIProviderSecret(val secret: String)
