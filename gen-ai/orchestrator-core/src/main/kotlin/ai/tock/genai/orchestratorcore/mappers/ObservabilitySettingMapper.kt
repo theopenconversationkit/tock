@@ -16,6 +16,7 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
+import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.observability.*
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
@@ -44,16 +45,16 @@ object ObservabilitySettingMapper {
     /**
      * Convert the Observability setting DTO to an Entity
      * @param dto the [ObservabilitySettingDTO]
-     * @param secretName the secret name
      * @return [ObservabilitySetting]
      */
-    fun toEntity(dto: ObservabilitySettingDTO, secretName: String): ObservabilitySetting =
-        with(dto){
-            when(this){
+    fun toEntity(namespace: String, botId: String, feature: String, dto: ObservabilitySettingDTO): ObservabilitySetting =
+        with(dto) {
+            when (this) {
                 is LangfuseObservabilitySetting -> {
-                    val secretKey = SecurityUtils.getSecretKey(secretKey, secretName)
+                    val secretKey = SecurityUtils.getSecretKey(namespace, botId, feature, secretKey)
                     return LangfuseObservabilitySetting(secretKey, publicKey, url)
                 }
+
                 else ->
                     throw IllegalArgumentException("Unsupported Observability Setting")
             }

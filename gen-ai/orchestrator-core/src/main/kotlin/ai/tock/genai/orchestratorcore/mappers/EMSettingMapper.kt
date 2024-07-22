@@ -49,12 +49,11 @@ object EMSettingMapper {
     /**
      * Convert the Embedding setting DTO to an Entity
      * @param dto the [EMSettingDTO]
-     * @param secretName the secret name
      * @return [EMSetting]
      */
-    fun toEntity(dto: EMSettingDTO, secretName: String): EMSetting =
+    fun toEntity(namespace: String, botId: String, feature: String, dto: EMSettingDTO): EMSetting =
         with(dto){
-            val secretKey = SecurityUtils.getSecretKey(apiKey, secretName)
+            val secretKey = SecurityUtils.getSecretKey(namespace, botId, feature, apiKey)
             when(this){
                 is OpenAIEMSetting ->
                     OpenAIEMSetting(secretKey, model)

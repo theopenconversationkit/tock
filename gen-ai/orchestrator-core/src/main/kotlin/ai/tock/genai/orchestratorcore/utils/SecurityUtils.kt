@@ -18,6 +18,7 @@ package ai.tock.genai.orchestratorcore.utils
 
 import ai.tock.aws.model.AIProviderSecret
 import ai.tock.aws.secretmanager.provider.AWSSecretsManagerService
+import ai.tock.gcp.secretmanager.provider.GCPSecretManagerService
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.security.AwsSecretKey
 import ai.tock.genai.orchestratorcore.models.security.GcpSecretKey
@@ -39,13 +40,14 @@ object SecurityUtils {
      * The AWS Secrets Manager Service
      */
     private val awsSecretsManagerClient: AWSSecretsManagerService get() = injector.provide()
+
     /**
      * The GCP Secret Manager Service
      */
-    private val gcpSecretManagerClient: AWSSecretsManagerService get() = injector.provide()
+    private val gcpSecretManagerClient: GCPSecretManagerService get() = injector.provide()
 
     /**
-     * Fetch the secret key value. Raw Value or Aws Secret Value
+     * Fetch the secret key value.
      * @param secret the secret key
      * @return the secret value as String
      */
@@ -53,27 +55,29 @@ object SecurityUtils {
         when(secret){
             is RawSecretKey -> secret.value
             is AwsSecretKey -> awsSecretsManagerClient.getAIProviderSecret(secret.secretName).secret
+            is GcpSecretKey -> gcpSecretManagerClient.getAIProviderSecret(secret.secretName).secret
             else -> throw IllegalArgumentException("Unsupported secret key type")
         }
 
     /**
      * Create a secret key. If secret storage type is Raw, so it creates [RawSecretKey], else if it is AwsSecretsManager then it creates [AwsSecretKey]
      * @param secretValue the secret value
-     * @param secretName the secret name
      * @return [SecretKey]
      */
-    fun getSecretKey(secretValue: String, secretName: String): SecretKey =
+    fun getSecretKey(namespace: String, botId: String, feature: String, secretValue: String): SecretKey =
         when(secretStorageType){
             Constants.SECRET_KEY_RAW -> RawSecretKey(secretValue)
             Constants.SECRET_KEY_AWS -> {
+                val secretName = generateAwsSecretName(namespace, botId, feature)
                 // Create or update the [AIProviderSecret] on AWS Secrets Manager
                 awsSecretsManagerClient.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
                 // The return the Secret Key
                 AwsSecretKey(secretName)
             }
             Constants.SECRET_KEY_GCP -> {
+                val secretName = generateGcpSecretName(namespace, botId, feature)
                 // Create or update the [AIProviderSecret] on GCP Secret Manager
-                awsSecretsManagerClient.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
+                gcpSecretManagerClient.createOrUpdateAIProviderSecret(secretName, ai.tock.gcp.model.AIProviderSecret(secretValue))
                 // The return the Secret Key
                 GcpSecretKey(secretName)
             }
@@ -89,6 +93,10 @@ object SecurityUtils {
      */
     fun generateAwsSecretName(namespace: String, botId: String, feature: String): String
         = normalizeAwsSecretName("$secretStoragePrefix/$namespace/$botId/$feature")
+
+    // TODO MASS
+    private fun generateGcpSecretName(namespace: String, botId: String, feature: String): String
+            = normalizeGcpSecretName("$secretStoragePrefix/$namespace/$botId/$feature")
 
     /**
      * Name standardization
@@ -121,6 +129,25 @@ object SecurityUtils {
         }
 
         return normalized
+    }
+
+    private fun normalizeGcpSecretName(name: String): String {
+        // Filter authorised characters: letters, numbers, hyphens and underscores
+        var filteredName = name.filter { it.isLetterOrDigit() || it == '-' || it == '_' }
+
+        // Make sure the name starts with a letter
+        if (filteredName.isNotEmpty() && !filteredName.first().isLetter()) {
+            filteredName = "a$filteredName"
+        }
+
+        // Limit length to 255 characters
+        val normalizedName = if (filteredName.length > 255) {
+            filteredName.substring(0, 255)
+        } else {
+            filteredName
+        }
+
+        return normalizedName
     }
 
 }

@@ -47,10 +47,10 @@ data class BotObservabilityConfigurationDTO(
             botId,
             enabled,
             ObservabilitySettingMapper.toEntity(
-                setting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_OBSERVABILITY
-                )
+                namespace,
+                botId,
+                Constants.GEN_AI_OBSERVABILITY,
+                setting
             ),
         )
 }

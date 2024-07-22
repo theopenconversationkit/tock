@@ -18,21 +18,10 @@ package ai.tock.gcp.secretmanager.dao
 
 import ai.tock.gcp.EnvConfig
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.google.cloud.secretmanager.v1.AccessSecretVersionResponse
-import com.google.cloud.secretmanager.v1.ProjectName
-import com.google.cloud.secretmanager.v1.Replication
-import com.google.cloud.secretmanager.v1.Secret
-import com.google.cloud.secretmanager.v1.SecretManagerServiceClient
-import com.google.cloud.secretmanager.v1.SecretName
-import com.google.cloud.secretmanager.v1.SecretPayload
-import com.google.cloud.secretmanager.v1.SecretVersion
-import com.google.cloud.secretmanager.v1.SecretVersionName
+import com.google.cloud.secretmanager.v1.*
 import com.google.protobuf.ByteString
 import mu.KLogger
 import mu.KotlinLogging
-import java.util.zip.CRC32C
-
-
 
 
 /**

@@ -48,12 +48,11 @@ object LLMSettingMapper {
     /**
      * Convert the LLM setting DTO to an Entity
      * @param dto the [LLMSettingDTO]
-     * @param secretName the secret name
      * @return [LLMSetting]
      */
-    fun toEntity(dto: LLMSettingDTO, secretName: String): LLMSetting =
+    fun toEntity(namespace: String, botId: String, feature: String, dto: LLMSettingDTO): LLMSetting =
         with(dto){
-            val secretKey = SecurityUtils.getSecretKey(apiKey, secretName)
+            val secretKey = SecurityUtils.getSecretKey(namespace, botId, feature, apiKey)
             when(this){
                 is OpenAILLMSetting ->
                     OpenAILLMSetting(secretKey, temperature, prompt, model)

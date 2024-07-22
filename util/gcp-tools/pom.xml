@@ -5,10 +5,9 @@
         <groupId>ai.tock</groupId>
         <artifactId>tock-root</artifactId>
         <version>24.3.5-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gcp-tools</artifactId>
+    <artifactId>tock-gcp-tools</artifactId>
     <packaging>jar</packaging>
 
     <name>gcp-tools</name>
