@@ -217,3 +217,9 @@ nb-menu {
 .list-group-item {
   background-color: unset;
 }
+
+[nbInput].status-basic:read-only {
+  background-color: var(--input-basic-disabled-background-color);
+  border-color: var(--input-basic-disabled-border-color);
+  color: var(--input-basic-disabled-text-color);
+}
