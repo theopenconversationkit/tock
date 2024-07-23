@@ -6,6 +6,7 @@
   <div class="table-list-entry bordered text-center">Entities</div>
   <div class="table-list-entry bordered text-center">Shared Intents</div>
   <div class="table-list-entry bordered text-center">Mandatory States</div>
+  <div class="table-list-entry bordered text-center">Story</div>
   <div class="table-list-entry text-center">Actions</div>
 </div>
 <div
@@ -131,6 +132,18 @@
       (click)="addState(intent)"
     >
       <nb-icon icon="plus-circle-outline"></nb-icon>
+    </button>
+  </div>
+
+  <div class="table-list-entry bordered text-center">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      (click)="displayIntentStoryDetails(intent)"
+      nbTooltip="Show intent story details"
+    >
+      <nb-icon icon="book-open-outline"></nb-icon>
     </button>
   </div>
 

@@ -35,6 +35,10 @@
   color: nb-theme(color-basic-600);
 }
 
+.text-mitigated-light {
+  color: nb-theme(color-basic-600);
+}
+
 .text-muted {
   color: #8f959b;
 }
@@ -204,4 +208,12 @@ nb-menu {
 
 .min-width-20 {
   min-width: 20em;
+}
+
+.min-width-90vw {
+  min-width: 90vw;
+}
+
+.list-group-item {
+  background-color: unset;
 }
