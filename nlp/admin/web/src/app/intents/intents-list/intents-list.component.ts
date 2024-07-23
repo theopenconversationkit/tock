@@ -4,7 +4,6 @@ import { StateService } from '../../core-nlp/state.service';
 import { EntityDefinition, Intent } from '../../model/nlp';
 import { UserRole } from '../../model/auth';
 import { NbDialogService } from '@nebular/theme';
-import { IntentStoryDetailsComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-intents-list',
@@ -79,11 +78,12 @@ export class IntentsListComponent implements OnInit, OnDestroy {
     return yiq >= 128 ? 'black' : 'white';
   }
 
-  displayIntentStoryDetails(intent: Intent) {
-    const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
-      context: {
-        intentId: intent._id
-      }
-    });
-  }
+  // To be restored after bot/nlp merge
+  // displayIntentStoryDetails(intent: Intent) {
+  //   const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
+  //     context: {
+  //       intentId: intent._id
+  //     }
+  //   });
+  // }
 }
