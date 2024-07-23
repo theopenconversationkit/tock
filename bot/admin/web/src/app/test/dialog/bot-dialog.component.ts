@@ -99,7 +99,14 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.rest.errorEmitter.pipe(takeUntil(this.destroy)).subscribe((e) => (this.loading = false));
-    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => this.clear());
+
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
+      this.loading = true;
+      this.clear();
+      this.fillTestPlanFilter();
+      this.getRecentSentences();
+    });
+
     this.fillTestPlanFilter();
     this.getRecentSentences();
 
@@ -270,6 +277,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((res) => {
         this.recentSentences = res.rows.map((r) => r.text);
+        this.loading = false;
       });
   }
 
