@@ -19,7 +19,7 @@ content:
         children:
           - title: 'Multilingual bot'
             url: 'en/user/guides/i18n'
-  - title: 'Develop Stories'
+  - title: 'Develop'
     children:
       - title: 'Bot API mode'
         url: 'en/dev/bot-api'

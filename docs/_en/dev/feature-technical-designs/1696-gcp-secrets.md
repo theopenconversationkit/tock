@@ -4,7 +4,7 @@ title: GCP - Overall secret management design
 
 # GCP - Overall secret management design
 
-- Proposal PR: 
+- Proposal PR: https://github.com/theopenconversationkit/tock/pull/1697
 - Github Issue for this feature: https://github.com/theopenconversationkit/tock/issues/1696
 
 
@@ -14,7 +14,7 @@ API version used : v1 of Google Secret Manager, reference version here.
 
 This is the overall architecture of the components interacting with secrets.
 
-[![Architecture générale composants impactés et flux](../../img/feat-design-1696-architecture_gcp_secrets.excalidraw.png)](../../img/feat-design-1696-architecture_gcp_secrets.excalidraw.png)
+[![Architecture générale composants impactés et flux](../../../img/feat-design-1696-architecture_gcp_secrets.excalidraw.png)](../../../img/feat-design-1696-architecture_gcp_secrets.excalidraw.png){:target="_blank"}
 
 *File editable using [Excalidraw](https://excalidraw.com/) simply import the PNG, it contains scene data.*
 
@@ -93,7 +93,7 @@ Feature env cleaner role `feature-env-cleaner` :
 
 ## Gen AI Orchestrator secret payload format
 
-Secret payload data have the following base format : 
+Secret payload data have the following base format :
 
 ```json
 {
@@ -128,7 +128,7 @@ Here is a exemple of how it should be stored in the database :
 
 ## Gen AI Orchestrator secret format in API calls
 
-POST /llm-providers/OpenAI/setting/status 
+POST /llm-providers/OpenAI/setting/status
 ```json
 {
   "setting": {
