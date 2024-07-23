@@ -25,21 +25,31 @@ import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import java.time.Instant
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 
 /**
  * A user (or bot) action.
- *
- * @param applicationId the TOCK application id (matches the id of the connector)
  */
 abstract class Action(
     val playerId: PlayerId,
     val recipientId: PlayerId,
-    applicationId: String,
+    connectorId: String,
     id: Id<Action>,
     date: Instant,
     state: EventState,
     val metadata: ActionMetadata = ActionMetadata()
-) : Event(applicationId, id, date, state) {
+) : Event(connectorId, id, date, state) {
+    @Deprecated("Use constructor with connectorId", ReplaceWith("Action(playerId = playerId, recipientId = recipientId, connectorId = applicationId, id = id, date = date, state = state, metadata = metadata)"))
+    constructor(
+        playerId: PlayerId,
+        recipientId: PlayerId,
+        applicationId: String,
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata(),
+        _deprecatedConstructor: Nothing? = null,
+    ): this(playerId, recipientId, applicationId, id, date, state, metadata)
 
     abstract fun toMessage(): Message
 

@@ -20,9 +20,9 @@ import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.message.SentenceWithFootnotes
 import ai.tock.bot.engine.user.PlayerId
+import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
 
 
 open class SendSentenceWithFootnotes(
@@ -37,6 +37,29 @@ open class SendSentenceWithFootnotes(
     metadata: ActionMetadata = ActionMetadata()
 ) :
     Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+    @Deprecated("Use constructor with connectorId", ReplaceWith("SendChoice(" +
+            "playerId, " +
+            "connectorId = applicationId, " +
+            "recipientId, " +
+            "text, " +
+            "footnotes, " +
+            "id, " +
+            "date, " +
+            "state, " +
+            "metadata)"))
+    constructor(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        text: CharSequence,
+        footnotes: MutableList<Footnote> = mutableListOf(),
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata(),
+        _deprecatedConstructor: Nothing? = null,
+    ): this(playerId, applicationId, recipientId, text, footnotes, id, date, state, metadata)
+
     override fun toMessage(): Message = SentenceWithFootnotes(text.toString(), footnotes.toList())
 }
 

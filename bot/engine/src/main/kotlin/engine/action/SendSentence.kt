@@ -31,12 +31,10 @@ import org.litote.kmongo.newId
 /**
  * The most important [Action] class.
  * Could be a simple text, or a complex message using one or more [ConnectorMessage].
- *
- * @param applicationId the TOCK application id (matches the id of the connector)
  */
 open class SendSentence(
     playerId: PlayerId,
-    applicationId: String,
+    connectorId: String,
     recipientId: PlayerId,
     val text: CharSequence?,
     open val messages: MutableList<ConnectorMessage> = mutableListOf(),
@@ -50,7 +48,34 @@ open class SendSentence(
      */
     var precomputedNlp: NlpResult? = null
 ) :
-    Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+    Action(playerId, recipientId, connectorId, id, date, state, metadata) {
+
+    @Deprecated("Use constructor with connectorId", ReplaceWith("SendSentence(" +
+            "playerId, " +
+            "connectorId = applicationId, " +
+            "recipientId, " +
+            "text, " +
+            "messages, " +
+            "id, " +
+            "date, " +
+            "state, " +
+            "metadata, " +
+            "nlpStats, " +
+            "precomputedNlp)"))
+    constructor(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        text: CharSequence?,
+        messages: MutableList<ConnectorMessage> = mutableListOf(),
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata(),
+        nlpStats: NlpCallStats? = null,
+        precomputedNlp: NlpResult? = null,
+        _deprecatedConstructor: Nothing? = null,
+    ): this(playerId, applicationId, recipientId, text, messages, id, date, state, metadata, nlpStats, precomputedNlp)
 
     @Transient
     val stringText: String? = text?.toString()

@@ -29,7 +29,7 @@ interface Message {
     val eventType: EventType
     val delay: Long
 
-    fun toAction(bus: BotBus): Action = toAction(bus.botId, bus.applicationId, bus.userId)
+    fun toAction(bus: BotBus): Action = toAction(bus.botId, bus.connectorId, bus.userId)
 
     fun toAction(
         playerId: PlayerId,

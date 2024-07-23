@@ -77,7 +77,7 @@ private fun BotBus.toRequestContext(): RequestContext =
         sourceConnectorType,
         targetConnectorType,
         userInterfaceType,
-        applicationId,
+        connectorId,
         userId,
         botId,
         userPreferences.toUserData(),

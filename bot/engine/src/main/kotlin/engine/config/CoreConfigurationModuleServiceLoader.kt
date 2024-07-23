@@ -45,7 +45,7 @@ private val satisfactionModule = BotConfigurationModule(
         SATISFACTION_MODULE_ID,
         listOf(
                 BotConfigurationStoryHandlerBase(REVIEW_ASK.id) {
-                    val storyReview = botDefinition.findStoryDefinitionById(SATISFACTION_MODULE_ID, applicationId)
+                    val storyReview = botDefinition.findStoryDefinitionById(SATISFACTION_MODULE_ID, connectorId)
                     val ratingIndex = storyReview.steps.indexOfFirst {
                         (it as? StoryDefinitionConfigurationStep.Step)
                             ?.configuration?.userSentenceLabel?.defaultLabel == userText?.trim()
@@ -65,7 +65,7 @@ private val satisfactionModule = BotConfigurationModule(
                         changeContextValue(REVIEW_COMMENT_PARAMETER, true)
                     } else {
                         dialog.review = userText
-                        handleAndSwitchStory(botDefinition.findStoryDefinitionById(SatisfactionIntent.REVIEW_ADDED.id, applicationId))
+                        handleAndSwitchStory(botDefinition.findStoryDefinitionById(SatisfactionIntent.REVIEW_ADDED.id, connectorId))
                     }
                 }
         )

@@ -116,7 +116,7 @@ internal class ConfiguredStoryHandler(
                     ?: (bus.intent.takeIf { !step.hasCurrentAnswer() }?.wrappedIntent()?.name)
                 bus.botDefinition
                     .takeIf { targetIntent != null }
-                    ?.findStoryDefinition(targetIntent, bus.applicationId)
+                    ?.findStoryDefinition(targetIntent, bus.connectorId)
                     ?.takeUnless { it == bus.botDefinition.unknownStory }
                     ?.takeUnless { bus.viewedStories.contains(it) }
                     ?.apply {
@@ -236,8 +236,8 @@ internal class ConfiguredStoryHandler(
             bus: BotBus
     ) {
         if (!isMissingMandatoryEntities(bus) && bus.story.definition.steps.isEmpty() || step?.hasNoChildren == true) {
-            configuration.findEnabledEndWithStoryId(bus.applicationId)
-                    ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.applicationId) }
+            configuration.findEnabledEndWithStoryId(bus.connectorId)
+                    ?.let { bus.botDefinition.findStoryDefinitionById(it, bus.connectorId) }
                     ?.let {
                         // before switching story (Only for an ending rule), we need to save a snapshot with the current intent
                         if (bus.connectorData.saveTimeline){
@@ -296,7 +296,7 @@ internal class ConfiguredStoryHandler(
                         }
                     it.last().apply {
                         val currentStep = (step as? Step)?.configuration
-                        val endingStoryRule = configuration.findEnabledEndWithStoryId(applicationId) != null
+                        val endingStoryRule = configuration.findEnabledEndWithStoryId(connectorId) != null
                         send(
                             container, this,
                             isMissingMandatoryEntities ||
@@ -394,7 +394,7 @@ internal class ConfiguredStoryHandler(
             .map {
                 SendSentence(
                     botId,
-                    applicationId,
+                    connectorId,
                     userId,
                     null,
                     mutableListOf(it)
@@ -406,7 +406,7 @@ internal class ConfiguredStoryHandler(
                 ?.let {
                     SendSentenceWithFootnotes(
                         playerId = botId,
-                        applicationId = applicationId,
+                        applicationId = connectorId,
                         recipientId = userId,
                         text = label,
                         footnotes = it.toMutableList()
@@ -414,7 +414,7 @@ internal class ConfiguredStoryHandler(
                 } ?:
                     SendSentence(
                         botId,
-                        applicationId,
+                        connectorId,
                         userId,
                         label
                     )

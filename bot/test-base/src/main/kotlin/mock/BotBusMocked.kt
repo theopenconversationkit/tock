@@ -155,7 +155,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
     every { bus.userId } returns playerId
     val botId = PlayerId("bot")
     every { bus.botId } returns botId
-    every { bus.applicationId } returns "appId"
+    every { bus.connectorId } returns "appId"
 
     val userTimeline: UserTimeline = mockk()
     val userState = UserState(Instant.now())
@@ -193,7 +193,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
             null,
-            bus.applicationId
+            bus.connectorId
         )
     }
     every {
@@ -206,7 +206,7 @@ fun provideMockedBusCommon(bus: BotBus = mockk()): BotBus {
             (args[3] as? Map<String, String>) ?: emptyMap(),
             null,
             null,
-            bus.applicationId
+            bus.connectorId
         )
     }
     val state = mockk<EventState>(relaxed = true)
