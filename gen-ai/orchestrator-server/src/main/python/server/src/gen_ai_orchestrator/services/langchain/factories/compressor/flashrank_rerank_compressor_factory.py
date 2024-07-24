@@ -17,12 +17,12 @@
 import logging
 from typing import Dict
 
+from langchain.retrievers.document_compressors import FlashrankRerank
+from pydantic import Field
+
 from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
     FlashrankRerankCompressorParams
 from gen_ai_orchestrator.services.langchain.factories.compressor.compressor_factory import LangChainCompressorFactory
-
-from langchain.retrievers.document_compressors import FlashrankRerank
-from pydantic import Field
 
 logger = logging.getLogger(__name__)
 
@@ -64,11 +64,12 @@ class FlashrankRerankCompressorFactory(LangChainCompressorFactory):
             compressor = FlashrankRerank(
                 top_n=param.max_documents,
                 score_threshold=param.min_score,
-                model=param.model
+                model=param.model,
+                prefix_metadata="flashrank_rerank_",
             )
             self.pool_singleton[client_hash] = compressor
 
         return compressor
 
 
-flash_rankrerank_factory = FlashrankRerankCompressorFactory()  # Init it as Singleton in a package.
+flashrank_rerank_factory = FlashrankRerankCompressorFactory()  # Init it as Singleton in a package.
