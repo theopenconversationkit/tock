@@ -16,9 +16,12 @@
 
 package ai.tock.shared
 
+import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
 import java.text.Normalizer
 import java.util.Locale
-import org.apache.commons.lang3.StringEscapeUtils.escapeHtml4
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 
 /**
  * This is the maximum text size allowed.
@@ -81,6 +84,16 @@ fun concat(s1: String?, s2: String?): String {
 private val trailingRegexp = "[.,:;?!]+$".toRegex()
 private val accentsRegexp = "[\\p{InCombiningDiacriticalMarks}]".toRegex()
 
+private var regexToDetectHTMLAllowedBalise = "(?:&lt;CHANGE_IT)(.*?)(?:&gt;)"
+
+private val regexToDetectNotAllowedValue = property("tock_safehtml_block_tag", "(?i)s*(script|iframe|object|embed|form|input|link|meta|onload|alert|onerror|href)[^>]")
+private val allowedList =  listProperty("tock_safehtml_allowed_tag", listOf("ul", "li", "⭐"))
+
+val htmlToFrenchLettre = mapOf("&agrave;" to "à", "&acirc;" to "â", "&auml;" to "ä", "&ccedil;" to "ç", "&egrave;" to "è",
+    "&eacute;" to "é", "&ecirc;" to "ê", "&euml;" to "ë", "&icirc;" to "î", "&iuml;" to "ï", "&ocirc;" to "ô",
+    "&ouml;" to "ö", "&ugrave;" to "ù", "&ucirc;" to "û", "&uuml;" to "ü", "&ntilde;" to "ñ")
+
+
 private fun String.removeTrailingPunctuation() = this.replace(trailingRegexp, "").trim()
 
 fun String.stripAccents(): String =
@@ -98,4 +111,81 @@ fun allowDiacriticsInRegexp(s: String) : String = s.replace("e", "[eéèêë]", 
         .replace(" ", "['-_ ]")
         .replace("c", "[cç]", ignoreCase = true)
 
- fun safeHTML(value: String): String = escapeHtml4(value)
+ fun safeHTML(value: String): String {
+
+    var simpelValue = escapeHtml4(value)
+
+     // Replace html tag to real tag
+    for (allowed in allowedList) {
+        var tmp = detectIfHTMLBaliseIsAllowed(simpelValue, allowed)
+        if ( tmp != null){
+            simpelValue = simpelValue.replace(tmp, tmp.replace("&lt;$allowed", "<$allowed"))
+            tmp = tmp.replace("&lt;$allowed", "<$allowed")
+            simpelValue = simpelValue.replace(tmp, tmp.replace("&gt;", ">"))
+        }
+    }
+
+     for (allowed in allowedList) {
+         simpelValue = simpelValue.replace("&lt;$allowed&gt;", "<$allowed>")
+         simpelValue = simpelValue.replace("&lt;/$allowed&gt;", "</$allowed>")
+         simpelValue = simpelValue.replace("&lt;$allowed", "<$allowed")
+     }
+
+     simpelValue = simpelValue.replace("&quot;", "\"")
+
+     // Replace html letter to real letter
+    for (entry in htmlToFrenchLettre) {
+        simpelValue = simpelValue.replace(entry.key, entry.value)
+    }
+
+    // Remove bad value
+     simpelValue = extractAndRemoveBadValue(regexToDetectNotAllowedValue, simpelValue)
+
+    return removeNonAscii(simpelValue)
+ }
+
+private fun detectIfHTMLBaliseIsAllowed(text: String, allowed: String): String? {
+    val value = extractFullMatcherWithRegex(regexToDetectHTMLAllowedBalise.replace("CHANGE_IT", "$allowed"), text)
+    return value
+}
+
+private fun extractAndRemoveBadValue(regexValue: String, value: String): String {
+    val pattern = Pattern.compile(regexValue, Pattern.MULTILINE)
+    val matcher: Matcher = pattern.matcher(value)
+    var tmp = value
+
+    while (matcher.find()) {
+        for (i in 1..matcher.groupCount()) {
+            tmp = tmp.replace(matcher.group(i).toString(), "")
+        }
+    }
+    return tmp
+}
+
+fun extractFullMatcherWithRegex(regexValue: String?, value: String?): String? {
+    if (regexValue == null || value == null) return null
+    var data: String? = null
+    val pattern = Pattern.compile(regexValue, Pattern.MULTILINE)
+    val matcher: Matcher = pattern.matcher(value)
+
+    while (matcher.find()) {
+        data = matcher.group(0)
+    }
+    return data
+}
+
+
+fun removeNonAscii(value: String): String {
+    val result = StringBuilder()
+    for (`val` in value.toCharArray()) {
+
+        if( allowedList.contains(`val`.toString())){
+            result.append(`val`)
+        }
+        htmlToFrenchLettre.forEach { (key, value) ->
+            if (`val`.toString() == value) result.append(value)
+        }
+        if (`val`.code < 192) result.append(`val`)
+    }
+    return result.toString()
+}
