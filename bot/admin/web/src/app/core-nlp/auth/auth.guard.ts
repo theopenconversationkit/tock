@@ -64,8 +64,8 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     const login = this.authService.isLoggedIn();
     if (login) {
       // check the user connected has the role
-      // and check there is an url present in configuration.roleMap in core.module.ts in tock-nlp-admin-web
-      // and bot-core.module.ts in tock-bot-admin
+      // and check there is an url present in configuration.roleMap in core.module.ts
+      // in bot-core.module.ts in tock-bot-admin
       if (!this.isAllowedToAccess(url)) {
         // try to navigate to the first url present for the role
         if (this.userState.hasRole(UserRole.nlpUser)) {
