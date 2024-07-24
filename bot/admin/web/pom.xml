@@ -33,16 +33,6 @@
     <project.build.frontend.directory>${project.build.directory}/frontend</project.build.frontend.directory>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>ai.tock</groupId>
-      <artifactId>tock-nlp-admin-web</artifactId>
-      <version>${project.version}</version>
-      <type>zip</type>
-      <classifier>sources</classifier>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>
