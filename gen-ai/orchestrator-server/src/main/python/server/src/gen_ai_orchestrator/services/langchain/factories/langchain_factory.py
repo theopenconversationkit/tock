@@ -61,7 +61,7 @@ from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse
     LangfuseCallbackHandlerFactory
 from gen_ai_orchestrator.services.langchain.factories.compressor.compressor_factory import LangChainCompressorFactory
 from gen_ai_orchestrator.services.langchain.factories.compressor.flashrank_rerank_compressor_factory import (
-    flash_rankrerank_factory)
+    flashrank_rerank_factory)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -214,6 +214,6 @@ def get_compressor_factory(param: BaseCompressorParams) -> LangChainCompressorFa
 
     if isinstance(param, FlashrankRerankCompressorParams):
         logger.debug('Compressor Factory - FlashrankRerankCompressorFactory')
-        return flash_rankrerank_factory.get_compressor(param=param)
+        return flashrank_rerank_factory.get_compressor(param=param)
     else:
         raise CompressorUnknownException()
