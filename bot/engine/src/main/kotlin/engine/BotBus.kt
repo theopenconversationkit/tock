@@ -19,6 +19,7 @@ package ai.tock.bot.engine
 import ai.tock.bot.admin.indicators.metric.Metric
 import ai.tock.bot.admin.indicators.metric.MetricType
 import ai.tock.bot.connector.Connector
+import ai.tock.bot.connector.ConnectorConfiguration
 import ai.tock.bot.connector.ConnectorData
 import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
@@ -72,6 +73,18 @@ interface BotBus : Bus<BotBus> {
          */
         fun retrieveCurrentBus(): BotBus? = Bot.retrieveCurrentBus()
     }
+
+    /**
+     * The current TOCK application id.
+     *
+     * This identifier matches the identifier of the [underlyingConnector], as defined in TOCK Studio.
+     *
+     * *This identifier is not to be confused with the chat platform's application id (this is not a Messenger/Whatsapp
+     * application ID).*
+     *
+     * @see ConnectorConfiguration.connectorId
+     */
+    override val applicationId: String
 
     /**
      * The bot definition of the current bot.
@@ -449,7 +462,6 @@ interface BotBus : Bus<BotBus> {
     fun handleAndSwitchStory(storyDefinition: StoryDefinition, starterIntent: Intent = storyDefinition.mainIntent()) {
         switchStory(storyDefinition, starterIntent)
         hasCurrentSwitchStoryProcess = false
-        @Suppress("UNCHECKED_CAST")
         storyDefinition.storyHandler.handle(this)
     }
 

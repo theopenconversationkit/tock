@@ -30,7 +30,7 @@ import ai.tock.bot.engine.user.PlayerId
 interface Bus<T : Bus<T>> : I18nTranslator {
 
     /**
-     * The current application id.
+     * The current TOCK application id.
      */
     val applicationId: String
 

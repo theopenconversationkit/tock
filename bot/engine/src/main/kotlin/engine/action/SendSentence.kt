@@ -24,13 +24,15 @@ import ai.tock.bot.engine.message.Sentence
 import ai.tock.bot.engine.nlp.NlpCallStats
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.nlp.api.client.model.NlpResult
+import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
 
 /**
  * The most important [Action] class.
  * Could be a simple text, or a complex message using one or more [ConnectorMessage].
+ *
+ * @param applicationId the TOCK application id (matches the id of the connector)
  */
 open class SendSentence(
     playerId: PlayerId,

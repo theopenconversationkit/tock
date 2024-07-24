@@ -20,12 +20,14 @@ import ai.tock.bot.engine.dialog.EventState
 import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
+import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
 
 /**
  * A simple attachment file sent.
+ *
+ * @param applicationId the TOCK application id (matches the id of the connector)
  */
 open class SendAttachment(
     playerId: PlayerId,
