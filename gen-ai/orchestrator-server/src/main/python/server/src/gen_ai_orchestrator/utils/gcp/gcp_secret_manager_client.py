@@ -20,68 +20,56 @@ from typing import Optional, Type, TypeVar
 
 from google.cloud import secretmanager
 
-
+from gen_ai_orchestrator.configurations.environment.settings import application_settings
 from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
 from gen_ai_orchestrator.models.security.credentials import Credentials
+from gen_ai_orchestrator.utils.instance import singleton
 
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
-# GCP project in which to store secrets in Secret Manager.
-project_id = "YOUR_PROJECT_ID"
-# Build the parent name from the project.
-parent = f"projects/{project_id}"
 
-# ID of the secret to create.
-secret_id = "YOUR_SECRET_ID"
-
-
+@singleton
 class GCPSecretManagerClient:
     """GCP Secret Manager Client."""
 
     def __init__(self):
-        #  self.client = boto3.client(service_name='secretsmanager')
         # Create the Secret Manager client.
         self.client = secretmanager.SecretManagerServiceClient()
 
-    def get_credentials(self, secret_name: str) -> Optional[Credentials]:
+    def get_credentials(self, secret_id: str) -> Optional[Credentials]:
         """
         Get a user credentials
-        Expected storage format of the secret : {"username":"opensearch-user","password":"op******3"}
+        Expected storage format of the secret : {"username":"my-user_name","password":"op******3"}
 
         Args:
-            secret_name: The GCP Secret Name
+            secret_id: The GCP Secret ID
         """
 
-        return parse_secret_data(self.get_secret(secret_name), Credentials)
+        return parse_secret_data(self.get_secret(secret_id), Credentials)
 
-    def get_ai_provider_secret(self, secret_name: str) -> Optional[AIProviderSecret]:
+    def get_ai_provider_secret(self, secret_id: str) -> Optional[AIProviderSecret]:
         """
         Get the AI provider secret
         Expected storage format of the secret : {"secret":"op******3"}
 
         Args:
-            secret_name: The GCP Secret Name
+            secret_id: The GCP Secret ID
         """
 
-        return parse_secret_data(self.get_secret(secret_name), AIProviderSecret)
+        return parse_secret_data(self.get_secret(secret_id), AIProviderSecret)
 
-    def get_secret(self, secret_name: str):
+    def get_secret(self, secret_id: str):
         """
         Retrieve individual secret by name, using the access_secret_version API.
-        :param secret_name: The name of the secret to be fetched.
+        :param secret_id: The id of the secret to be fetched.
         """
 
         try:
+            # Build the resource name of the secret
+            secret_name = f"projects/{application_settings.gcp_project_id}/secrets/{secret_id}/versions/latest"
             # Access the secret version.
-
-            # TODO MASS
-            # Build the resource name of the secret.
-            # name = client.secret_path(project_id, secret_id)
-            # Get the secret.
-            # response = self.client.get_secret(request={"name": name})
-
-            response = self.client.access_secret_version(request={"name": secret_name})
+            response = self.client.access_secret_version(name=secret_name)
             payload = response.payload.data.decode("UTF-8")
             logging.info(f'The requested secret {secret_name} has been successfully retrieved.')
             return payload

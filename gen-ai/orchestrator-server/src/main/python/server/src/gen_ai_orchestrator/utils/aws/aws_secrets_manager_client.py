@@ -23,11 +23,13 @@ from botocore.exceptions import ClientError
 
 from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
 from gen_ai_orchestrator.models.security.credentials import Credentials
+from gen_ai_orchestrator.utils.instance import singleton
 
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
 
+@singleton
 class AWSSecretsManagerClient:
     """AWS Secrets Manager Client."""
 

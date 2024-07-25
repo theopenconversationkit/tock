@@ -41,12 +41,12 @@ def fetch_secret_key_value(secret_key: SecretKey) -> Optional[str]:
         return secret_key.value
     elif isinstance(secret_key, AwsSecretKey):
         # Get secret from AWS Secrets Manager
-        aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(secret_name=secret_key.secret_name)
+        aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(secret_key.secret_name)
         if aws_secret is not None:
             return aws_secret.secret
     elif isinstance(secret_key, GcpSecretKey):
         # Get secret from GCP Secret Manager
-        gcp_secret = GCPSecretManagerClient().get_ai_provider_secret(secret_name=secret_key.secret_name)
+        gcp_secret = GCPSecretManagerClient().get_ai_provider_secret(secret_key.secret_name)
         if gcp_secret is not None:
             return gcp_secret.secret
 
