@@ -17,7 +17,7 @@
 import { map } from 'rxjs/operators';
 import { Component, Input } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
-import { NlpService } from '../../nlp-tabs/nlp.service';
+import { NlpService } from '../../nlp-service/nlp.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { EntityDefinition, EntityType } from '../../model/nlp';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';

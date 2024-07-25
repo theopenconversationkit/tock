@@ -22,7 +22,7 @@ import { Action, SentenceTrainingMode } from '../models';
 import { IntentDialogComponent } from '../../../../language-understanding/intent-dialog/intent-dialog.component';
 import { ConfirmDialogComponent } from '../../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { UserRole } from '../../../../model/auth';
-import { NlpService } from '../../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../../nlp-service/nlp.service';
 import { Router } from '@angular/router';
 import { truncate } from '../../../../model/commons';
 import { getSentenceId } from '../commons/utils';

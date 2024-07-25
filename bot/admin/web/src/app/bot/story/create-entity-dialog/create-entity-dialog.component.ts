@@ -16,9 +16,8 @@
 
 import { Component, Input } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-
-import { StateService } from '../../core-nlp/state.service';
-import { entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole } from '../../model/nlp';
+import { EntityType, entityNameFromQualifiedName, qualifiedNameWithoutRole } from '../../../model/nlp';
+import { StateService } from '../../../core-nlp/state.service';
 
 export interface EntityProvider {
   hasEntityRole(role: string): boolean;

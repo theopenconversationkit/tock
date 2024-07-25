@@ -29,7 +29,7 @@ import { NbDialogService, NbToastrService } from '@nebular/theme';
 
 import { SearchQuery, SentenceStatus } from '../../model/nlp';
 import { ChatUiComponent } from '../../shared/components';
-import { NlpService } from '../../nlp-tabs/nlp.service';
+import { NlpService } from '../../nlp-service/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
 import { getDialogMessageUserAvatar } from '../../shared/utils';
 

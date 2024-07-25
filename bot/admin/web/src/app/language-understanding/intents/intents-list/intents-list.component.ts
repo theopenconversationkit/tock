@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
-import { StateService } from '../../core-nlp/state.service';
-import { EntityDefinition, Intent } from '../../model/nlp';
-import { UserRole } from '../../model/auth';
 import { NbDialogService } from '@nebular/theme';
-import { IntentStoryDetailsComponent } from '../../shared/components';
-import { getContrastYIQ } from '../../shared/utils';
+import { UserRole } from '../../../model/auth';
+import { EntityDefinition, Intent } from '../../../model/nlp';
+import { getContrastYIQ } from '../../../shared/utils';
+import { StateService } from '../../../core-nlp/state.service';
+import { IntentStoryDetailsComponent } from '../../../shared/components';
 
 @Component({
   selector: 'tock-intents-list',

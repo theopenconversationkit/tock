@@ -37,7 +37,7 @@ import {
   NbIconModule
 } from '@nebular/theme';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NlpService } from '../nlp-tabs/nlp.service';
+import { NlpService } from '../nlp-service/nlp.service';
 import { NlpStatsDisplayComponent } from './dialog/nlp-stats-display/nlp-stats-display.component';
 import { BotTestRoutingModule } from './test-routing.module';
 

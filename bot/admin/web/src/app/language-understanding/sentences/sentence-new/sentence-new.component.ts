@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ParseQuery, Sentence } from '../../../model/nlp';
 import { Subject, takeUntil } from 'rxjs';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../nlp-service/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NbToastrService } from '@nebular/theme';
 

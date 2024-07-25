@@ -16,17 +16,17 @@
 
 import { saveAs } from 'file-saver-es';
 import { Component, OnInit } from '@angular/core';
-import { StateService } from '../core-nlp/state.service';
-import { EntityDefinition, Intent, IntentsCategory } from '../model/nlp';
-import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
-import { NlpService } from '../nlp-tabs/nlp.service';
-import { ApplicationService } from '../core-nlp/applications.service';
 import { AddStateDialogComponent } from './add-state/add-state-dialog.component';
-import { UserRole } from '../model/auth';
-import { IntentDialogComponent } from '../language-understanding/intent-dialog/intent-dialog.component';
-import { DialogService } from '../core-nlp/dialog.service';
 import { AddSharedIntentDialogComponent } from './add-shared-intent/add-shared-intent-dialog.component';
 import { IntentsFilter } from './intents-filters/intents-filters.component';
+import { StateService } from '../../core-nlp/state.service';
+import { UserRole } from '../../model/auth';
+import { EntityDefinition, Intent, IntentsCategory } from '../../model/nlp';
+import { NlpService } from '../../nlp-service/nlp.service';
+import { DialogService } from '../../core-nlp/dialog.service';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { IntentDialogComponent } from '../intent-dialog/intent-dialog.component';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'tock-intents',

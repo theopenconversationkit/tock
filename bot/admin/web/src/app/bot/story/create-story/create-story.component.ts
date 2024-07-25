@@ -15,7 +15,7 @@
  */
 
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../nlp-service/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { NormalizeUtil } from '../../../model/commons';
 import { ParseQuery, Sentence } from '../../../model/nlp';

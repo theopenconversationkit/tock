@@ -48,35 +48,15 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { EntitiesComponent } from './entities/entities.component';
 import { EntityDetailsComponent } from './entities/entity-details.component';
 import { FileUploadModule } from 'ng2-file-upload';
-import { IntentsComponent } from '../intents/intents.component';
-import { IntentsFiltersComponent } from '../intents/intents-filters/intents-filters.component';
-import { IntentsListComponent } from '../intents/intents-list/intents-list.component';
+import { IntentsComponent } from './intents/intents.component';
+import { IntentsFiltersComponent } from './intents/intents-filters/intents-filters.component';
+import { IntentsListComponent } from './intents/intents-list/intents-list.component';
 
-import { AddStateDialogComponent } from '../intents/add-state/add-state-dialog.component';
-import { AddSharedIntentDialogComponent } from '../intents/add-shared-intent/add-shared-intent-dialog.component';
+import { AddStateDialogComponent } from './intents/add-state/add-state-dialog.component';
+import { AddSharedIntentDialogComponent } from './intents/add-shared-intent/add-shared-intent-dialog.component';
 import { IntentDialogComponent } from './intent-dialog/intent-dialog.component';
-import { CreateEntityDialogComponent } from '../sentence-analysis/create-entity-dialog/create-entity-dialog.component';
 
 @NgModule({
-  declarations: [
-    LanguageUnderstandingTabsComponent,
-    SentencesInboxComponent,
-    SentencesSearchComponent,
-    SentencesUnknownComponent,
-    SentenceNewComponent,
-    IntentsLogsComponent,
-    DisplayIntentFullLogComponent,
-    EntitiesComponent,
-    EntityDetailsComponent,
-    IntentsComponent,
-    IntentsFiltersComponent,
-    IntentsListComponent,
-
-    AddStateDialogComponent,
-    AddSharedIntentDialogComponent,
-    IntentDialogComponent,
-    CreateEntityDialogComponent
-  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -101,6 +81,24 @@ import { CreateEntityDialogComponent } from '../sentence-analysis/create-entity-
     MomentModule,
     InfiniteScrollModule,
     FileUploadModule
+  ],
+  declarations: [
+    LanguageUnderstandingTabsComponent,
+    SentencesInboxComponent,
+    SentencesSearchComponent,
+    SentencesUnknownComponent,
+    SentenceNewComponent,
+    IntentsLogsComponent,
+    DisplayIntentFullLogComponent,
+    EntitiesComponent,
+    EntityDetailsComponent,
+    IntentsComponent,
+    IntentsFiltersComponent,
+    IntentsListComponent,
+
+    AddStateDialogComponent,
+    AddSharedIntentDialogComponent,
+    IntentDialogComponent
   ]
 })
 export class LanguageUnderstandingModule {}

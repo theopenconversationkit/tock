@@ -75,6 +75,7 @@ import { I18nExportComponent } from './i18n/i18n-export/i18n-export.component';
 import { I18nImportComponent } from './i18n/i18n-import/i18n-import.component';
 import { I18nLabelComponent } from './i18n/i18n-label/i18n-label.component';
 import { DocumentsStoryComponent } from './story/documents-story/documents-story.component';
+import { CreateEntityDialogComponent } from './story/create-entity-dialog/create-entity-dialog.component';
 
 @NgModule({
   imports: [
@@ -142,7 +143,8 @@ import { DocumentsStoryComponent } from './story/documents-story/documents-story
     StoriesFilterComponent,
     EditStoryComponent,
     StoriesUploadComponent,
-    I18nFiltersComponent
+    I18nFiltersComponent,
+    CreateEntityDialogComponent
   ],
   exports: []
 })

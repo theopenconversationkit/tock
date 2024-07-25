@@ -21,7 +21,7 @@ import {
 import { of } from 'rxjs';
 
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../nlp-service/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqManagementEditComponent, FaqTabs } from './faq-management-edit.component';
