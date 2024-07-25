@@ -16,11 +16,11 @@
 
 <div class="d-flex align-items-end flex-wrap mt-3 mb-2">
   <h1 class="flex-grow-1">Users logs</h1>
-  <tock-temp-pagination
+  <tock-pagination
     *ngIf="dataSource && dataSource.length"
     [pagination]="pagination"
     (onPaginationChange)="search()"
-  ></tock-temp-pagination>
+  ></tock-pagination>
 </div>
 
 <nb-card class="mb-1">
@@ -111,9 +111,9 @@
 </nb-card>
 
 <div class="d-flex flex-row-reverse">
-  <tock-temp-pagination
+  <tock-pagination
     *ngIf="dataSource && dataSource.length"
     [pagination]="pagination"
     (onPaginationChange)="search()"
-  ></tock-temp-pagination>
+  ></tock-pagination>
 </div>

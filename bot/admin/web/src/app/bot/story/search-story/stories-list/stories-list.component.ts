@@ -11,7 +11,7 @@ import { IntentStoryDetailsComponent } from '../../../../shared/components';
   templateUrl: './stories-list.component.html',
   styleUrls: ['./stories-list.component.scss']
 })
-export class StoriesListComponent implements OnInit {
+export class StoriesListComponent {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   @Input() stories: StoryDefinitionConfigurationSummary[];
@@ -23,8 +23,6 @@ export class StoriesListComponent implements OnInit {
   dateFormat = 'dd/MM/yyyy HH:mm';
 
   constructor(public state: StateService, private nbDialogService: NbDialogService) {}
-
-  ngOnInit(): void {}
 
   editStory(story) {
     this.onEditStory.emit(story);

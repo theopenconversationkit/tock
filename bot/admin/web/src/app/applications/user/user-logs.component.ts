@@ -21,7 +21,7 @@ import { StateService } from '../../core-nlp/state.service';
 import { UserLog } from '../../model/application';
 import { PaginatedQuery } from '../../model/commons';
 import { DisplayUserDataComponent } from './display-user-data/display-user-data.component';
-import { Pagination } from '../../shared-nlp/temp-pagination/temp-pagination.component';
+import { Pagination } from '../../shared/components';
 
 @Component({
   selector: 'tock-user-logs',

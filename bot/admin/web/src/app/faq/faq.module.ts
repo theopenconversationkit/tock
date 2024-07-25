@@ -19,7 +19,6 @@ import {
   NbTagModule,
   NbTooltipModule
 } from '@nebular/theme';
-import { NlpModule } from '../nlp-tabs/nlp.module';
 
 import { FaqManagementComponent } from './faq-management/faq-management.component';
 import { FaqRoutingModule } from './faq-routing.module';
@@ -40,7 +39,7 @@ import { FaqTabsComponent } from './faq-tabs.component';
     CommonModule,
     BotSharedModule,
     FaqRoutingModule,
-    NlpModule,
+
     MomentModule,
     SharedModule,
     ReactiveFormsModule,

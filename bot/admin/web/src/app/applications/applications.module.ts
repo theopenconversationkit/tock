@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { SharedModule } from '../shared-nlp/shared.module';
 import { CommonModule } from '@angular/common';
 import { Injectable, NgModule } from '@angular/core';
 import { ApplicationsComponent } from './applications/applications.component';
@@ -30,11 +29,14 @@ import {
   NbCardModule,
   NbCheckboxModule,
   NbDialogModule,
+  NbIconModule,
+  NbInputModule,
   NbRadioModule,
   NbRouteTabsetModule,
   NbSelectModule,
   NbSpinnerModule,
   NbTabsetModule,
+  NbToggleModule,
   NbTooltipModule
 } from '@nebular/theme';
 import { UserLogsComponent } from './user/user-logs.component';
@@ -48,6 +50,7 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { CreateNamespaceComponent } from './namespace/create-namespace/create-namespace.component';
 import { ApplicationsRoutingModule } from './applications-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BotSharedModule } from '../shared/bot-shared.module';
 
 @Injectable()
 export class NlpApplicationConfig implements ApplicationConfig {
@@ -60,7 +63,7 @@ export class NlpApplicationConfig implements ApplicationConfig {
 @NgModule({
   imports: [
     CommonModule,
-    SharedModule,
+    BotSharedModule,
     MomentModule,
     ApplicationsRoutingModule,
     NbTabsetModule,
@@ -76,6 +79,9 @@ export class NlpApplicationConfig implements ApplicationConfig {
     NbAccordionModule,
     NbSpinnerModule,
     NbRadioModule,
+    NbIconModule,
+    NbToggleModule,
+    NbInputModule,
     NgJsonEditorModule,
     NbDialogModule.forRoot(),
     NgbPaginationModule,

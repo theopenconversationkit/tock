@@ -25,7 +25,6 @@ import { TestEntityErrorComponent } from '../test-nlp/test-entity-error.componen
 import { TestBuildsComponent } from '../test-nlp/test-builds.component';
 import { QualityTabsComponent } from './quality-tabs.component';
 import { QualityService } from './quality.service';
-import { NlpModule } from '../nlp-tabs/nlp.module';
 import { LogStatsComponent } from '../logs/log-stats.component';
 import { ModelBuildsComponent } from '../build/model-builds.component';
 import { IntentQAComponent } from '../intents/quality/intent-qa.component';
@@ -36,13 +35,14 @@ import {
   NbButtonModule,
   NbSelectModule,
   NbTooltipModule,
-  NbSpinnerModule, NbCheckboxModule
+  NbSpinnerModule,
+  NbCheckboxModule
 } from '@nebular/theme';
 import { ThemeModule } from '../theme/theme.module';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { QualityRoutingModule } from './quality-routing.module';
-import {LogCountComponent} from "../logs/log-count.component";
+import { LogCountComponent } from '../logs/log-count.component';
 
 export function importEcharts() {
   return import('echarts');
@@ -54,7 +54,6 @@ export function importEcharts() {
     SharedModule,
     QualityRoutingModule,
     ApplicationsModule,
-    NlpModule,
     MomentModule,
     NbThemeModule,
     ThemeModule,

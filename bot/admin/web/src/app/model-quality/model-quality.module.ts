@@ -25,7 +25,7 @@ import { TestBuildsComponent } from './test-builds/test-builds.component';
 import { TestIntentErrorsComponent } from './test-intent-errors/test-intent-errors.component';
 import { MomentModule } from 'ngx-moment';
 import { TestEntityErrorsComponent } from './test-entity-errors/test-entity-errors.component';
-import { NlpModule } from '../nlp-tabs/nlp.module';
+
 import { ModelBuildsComponent } from './model-builds/model-builds.component';
 import { IntentQualityComponent } from './intent-quality/intent-quality.component';
 import { CountStatsComponent } from './count-stats/count-stats.component';
@@ -61,8 +61,7 @@ import { CountStatsComponent } from './count-stats/count-stats.component';
     MomentModule,
     NgxEchartsModule.forRoot({
       echarts: () => import('echarts')
-    }),
-    NlpModule // temporary import for <tock-highlight>. Should be replaced with <tock-sentence-training-sentence> after merge of https://github.com/theopenconversationkit/tock/pull/1573
+    })
   ],
   providers: [QualityService]
 })

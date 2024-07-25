@@ -17,7 +17,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CoreModule } from './core-nlp/core.module';
-import { SharedModule } from './shared-nlp/shared.module';
 import { BotAdminAppComponent } from './bot-admin-app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BotCoreModule } from './core/bot-core.module';
@@ -49,7 +48,6 @@ import { ragexcludeIcon } from './theme/icons/ragexclude';
     HttpClientModule,
     CoreModule,
     BotCoreModule,
-    SharedModule,
     BotAdminAppRoutingModule,
 
     ThemeModule.forRoot(),

@@ -44,7 +44,8 @@ import {
   NbAutocompleteModule,
   NbRadioModule,
   NbWindowModule,
-  NbListModule
+  NbListModule,
+  NbToggleModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
@@ -116,7 +117,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     NbRadioModule,
     NgxSliderModule,
     NbWindowModule,
-    NbListModule
+    NbListModule,
+    NbToggleModule
   ],
   declarations: [
     BotMessageComponent,

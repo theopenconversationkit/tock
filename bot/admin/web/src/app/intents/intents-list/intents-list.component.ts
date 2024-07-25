@@ -4,13 +4,15 @@ import { StateService } from '../../core-nlp/state.service';
 import { EntityDefinition, Intent } from '../../model/nlp';
 import { UserRole } from '../../model/auth';
 import { NbDialogService } from '@nebular/theme';
+import { IntentStoryDetailsComponent } from '../../shared/components';
+import { getContrastYIQ } from '../../shared/utils';
 
 @Component({
   selector: 'tock-intents-list',
   templateUrl: './intents-list.component.html',
   styleUrls: ['./intents-list.component.scss']
 })
-export class IntentsListComponent implements OnInit, OnDestroy {
+export class IntentsListComponent implements OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   UserRole = UserRole;
@@ -26,9 +28,9 @@ export class IntentsListComponent implements OnInit, OnDestroy {
   @Output() onDownloadSentencesDump = new EventEmitter();
   @Output() onDeleteIntent = new EventEmitter();
 
-  constructor(public state: StateService, private nbDialogService: NbDialogService) {}
+  getContrastYIQ = getContrastYIQ;
 
-  ngOnInit(): void {}
+  constructor(public state: StateService, private nbDialogService: NbDialogService) {}
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
@@ -67,23 +69,11 @@ export class IntentsListComponent implements OnInit, OnDestroy {
     this.onDeleteIntent.emit(intent);
   }
 
-  // To share with Scenario's version after merge
-  getContrastYIQ(hexcolor: string): '' | 'black' | 'white' {
-    if (!hexcolor) return '';
-    hexcolor = hexcolor.replace('#', '');
-    let r = parseInt(hexcolor.substring(0, 2), 16);
-    let g = parseInt(hexcolor.substring(2, 4), 16);
-    let b = parseInt(hexcolor.substring(4, 6), 16);
-    let yiq = (r * 299 + g * 587 + b * 114) / 1000;
-    return yiq >= 128 ? 'black' : 'white';
+  displayIntentStoryDetails(intent: Intent) {
+    const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
+      context: {
+        intentId: intent._id
+      }
+    });
   }
-
-  // To be restored after bot/nlp merge
-  // displayIntentStoryDetails(intent: Intent) {
-  //   const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
-  //     context: {
-  //       intentId: intent._id
-  //     }
-  //   });
-  // }
 }

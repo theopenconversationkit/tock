@@ -64,11 +64,13 @@ import { ThemeModule } from '../theme/theme.module';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NlpRoutingModule } from './nlp-routing.module';
+import { BotSharedModule } from '../shared/bot-shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
+    BotSharedModule,
     NlpRoutingModule,
     ApplicationsModule,
     InfiniteScrollModule,

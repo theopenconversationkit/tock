@@ -104,7 +104,6 @@ export class BotApplicationConfig implements ApplicationConfig {
       provide: ApplicationConfig,
       useClass: BotApplicationConfig
     }
-  ],
-  bootstrap: []
+  ]
 })
 export class BotConfigurationModule {}

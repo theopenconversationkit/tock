@@ -32,7 +32,6 @@ import {
   NbCardModule,
   NbSelectModule
 } from '@nebular/theme';
-import { TempPaginationComponent } from './temp-pagination/temp-pagination.component';
 
 @NgModule({
   imports: [
@@ -48,7 +47,7 @@ import { TempPaginationComponent } from './temp-pagination/temp-pagination.compo
     NbCardModule,
     NbSelectModule
   ],
-  declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent, TempPaginationComponent],
+  declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
   exports: [
     FormsModule,
@@ -60,8 +59,7 @@ import { TempPaginationComponent } from './temp-pagination/temp-pagination.compo
     NbIconModule,
     NbInputModule,
     NbToggleModule,
-    NbTreeGridModule,
-    TempPaginationComponent
+    NbTreeGridModule
   ]
 })
 export class SharedModule {}

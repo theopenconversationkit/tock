@@ -23,6 +23,7 @@ import { EntityDefinition, EntityType } from '../model/nlp';
 import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
 import { DialogService } from '../core-nlp/dialog.service';
+import { getContrastYIQ } from '../shared/utils';
 
 @Component({
   selector: 'tock-entity-details',
@@ -32,6 +33,8 @@ import { DialogService } from '../core-nlp/dialog.service';
 export class EntityDetailsComponent {
   @Input() entity: EntityDefinition;
   @Input() entityType: EntityType;
+
+  getContrastYIQ = getContrastYIQ;
 
   constructor(
     public state: StateService,
@@ -81,21 +84,5 @@ export class EntityDetailsComponent {
       //filter sub entities already seen (avoid direct recursive problem)
       return entityType.subEntities.filter((s) => s.entityTypeName !== entityType.name);
     }
-  }
-
-  // to be replaced by shared/utils version
-  getContrastYIQ(hexcolor: string, blackOutput?: string, whiteOutput?: string): string {
-    if (!hexcolor) return '';
-    blackOutput = blackOutput || 'black';
-    whiteOutput = whiteOutput || 'white';
-
-    hexcolor = hexcolor.replace('#', '');
-
-    let r = parseInt(hexcolor.substring(0, 2), 16);
-    let g = parseInt(hexcolor.substring(2, 4), 16);
-    let b = parseInt(hexcolor.substring(4, 6), 16);
-    let yiq = (r * 299 + g * 587 + b * 114) / 1000;
-
-    return yiq >= 140 ? blackOutput : whiteOutput;
   }
 }

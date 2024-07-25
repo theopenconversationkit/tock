@@ -27,7 +27,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { DialogService } from '../core-nlp/dialog.service';
 import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbSortDirection, NbSortRequest } from '@nebular/theme';
-import { Pagination } from '../shared-nlp/temp-pagination/temp-pagination.component';
+import { Pagination } from '../shared/components';
 
 interface TreeNode<T> {
   data: T;

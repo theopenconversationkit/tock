@@ -24,7 +24,6 @@ import { MomentModule } from 'ngx-moment';
 import { CreateStoryComponent } from './story/create-story/create-story.component';
 import { BotTabsComponent } from './bot-tabs.component';
 import { SearchStoryComponent } from './story/search-story/search-story.component';
-import { NlpModule } from '../nlp-tabs/nlp.module';
 import { I18nComponent } from './i18n/i18n.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import { FeatureComponent } from './feature/feature.component';
@@ -77,7 +76,6 @@ import { I18nImportComponent } from './i18n/i18n-import/i18n-import.component';
 import { I18nLabelComponent } from './i18n/i18n-label/i18n-label.component';
 import { DocumentsStoryComponent } from './story/documents-story/documents-story.component';
 
-
 @NgModule({
   imports: [
     ReactiveFormsModule,
@@ -87,7 +85,6 @@ import { DocumentsStoryComponent } from './story/documents-story/documents-story
     BotRoutingModule,
     InfiniteScrollModule,
     MomentModule,
-    NlpModule,
     FileUploadModule,
     BotConfigurationModule,
     ThemeModule,

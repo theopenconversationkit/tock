@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IntentQA, LogStatsQuery } from '../../model/nlp';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { StateService } from '../../core-nlp/state.service';
@@ -14,7 +14,7 @@ interface FilterForm {
   templateUrl: './intent-quality.component.html',
   styleUrls: ['./intent-quality.component.scss']
 })
-export class IntentQualityComponent implements OnInit {
+export class IntentQualityComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   public dataSource: IntentQA[];

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Feature } from '../../model/feature';
 import { BotService } from '../../bot-service';
 import { StateService } from '../../../core-nlp/state.service';
@@ -26,7 +26,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './application-feature.component.html',
   styleUrls: ['./application-feature.component.css']
 })
-export class ApplicationFeatureComponent implements OnInit {
+export class ApplicationFeatureComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   botFeatures: Feature[] = [];

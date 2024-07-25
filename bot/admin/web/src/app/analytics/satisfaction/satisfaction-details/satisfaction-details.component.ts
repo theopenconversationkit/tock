@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { AnalyticsService } from '../../analytics.service';
 import { RatingReportQueryResult } from './RatingReportQueryResult';
 import { DialogsListComponent } from '../../dialogs/dialogs-list/dialogs-list.component';
@@ -23,7 +23,7 @@ import { DialogsListComponent } from '../../dialogs/dialogs-list/dialogs-list.co
   templateUrl: './satisfaction-details.component.html',
   styleUrls: ['./satisfaction-details.component.css']
 })
-export class SatisfactionDetailsComponent implements OnInit {
+export class SatisfactionDetailsComponent implements OnInit, AfterViewInit {
   loading = false;
 
   count: string = '';

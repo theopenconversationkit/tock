@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { StateService } from '../../core-nlp/state.service';
 import { QualityService } from '../../quality-nlp/quality.service';
@@ -10,7 +10,7 @@ import { formatStatDate } from '../../model/commons';
   templateUrl: './log-stats.component.html',
   styleUrls: ['./log-stats.component.scss']
 })
-export class LogStatsComponent implements OnInit {
+export class LogStatsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   public probabilityChartOptions: any;

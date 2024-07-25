@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { StateService } from '../../core-nlp/state.service';
 import { QualityService } from '../../quality-nlp/quality.service';
@@ -40,7 +40,7 @@ function displayDuration(d): string {
   templateUrl: './test-builds.component.html',
   styleUrls: ['./test-builds.component.scss']
 })
-export class TestBuildsComponent implements OnInit {
+export class TestBuildsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   public errors: Array<any>;

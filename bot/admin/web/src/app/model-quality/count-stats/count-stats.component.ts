@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LogCount, LogCountQuery } from '../../model/nlp';
 import { StateService } from '../../core-nlp/state.service';
 import { QualityService } from '../../quality-nlp/quality.service';
@@ -16,7 +16,7 @@ interface FilterForm {
   templateUrl: './count-stats.component.html',
   styleUrls: ['./count-stats.component.scss']
 })
-export class CountStatsComponent implements OnInit {
+export class CountStatsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   dataSource: LogCount[] = [];

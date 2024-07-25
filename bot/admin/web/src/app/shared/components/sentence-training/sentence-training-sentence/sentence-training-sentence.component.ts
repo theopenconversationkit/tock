@@ -50,6 +50,7 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
   @Input() sentence: Sentence;
   @Input() prefix: string = 's';
   @Input() readOnly: boolean = false;
+  @Input() fontsize: string = '';
 
   @ViewChild('tokensContainer') tokensContainer: ElementRef;
 

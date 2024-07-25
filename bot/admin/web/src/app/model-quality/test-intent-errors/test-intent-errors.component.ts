@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IntentTestError, TestErrorQuery } from '../../model/nlp';
 import { StateService } from '../../core-nlp/state.service';
 import { QualityService } from '../../quality-nlp/quality.service';
@@ -17,7 +17,7 @@ import { Pagination } from '../../shared/components';
   templateUrl: './test-intent-errors.component.html',
   styleUrls: ['./test-intent-errors.component.scss']
 })
-export class TestIntentErrorsComponent implements OnInit {
+export class TestIntentErrorsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   dataSource: IntentTestError[] = [];
@@ -77,12 +77,7 @@ export class TestIntentErrorsComponent implements OnInit {
 
   change(error: IntentTestError) {
     this.qualityService.deleteIntentError(error).subscribe((e) => {
-      this.router.navigate(['/nlp/search'], {
-        queryParams: {
-          text: '^' + escapeRegex(error.sentence.text) + '$',
-          status: 'model'
-        }
-      });
+      this.router.navigate(['/language-understanding/search'], { state: { searchIntent: '^' + escapeRegex(error.sentence.text) + '$' } });
     });
   }
 

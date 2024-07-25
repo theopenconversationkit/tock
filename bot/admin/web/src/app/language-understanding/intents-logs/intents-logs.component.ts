@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { saveAs } from 'file-saver-es';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
@@ -41,7 +41,7 @@ interface IntentsLogsFilterForm {
   templateUrl: './intents-logs.component.html',
   styleUrls: ['./intents-logs.component.scss']
 })
-export class IntentsLogsComponent {
+export class IntentsLogsComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   loading: boolean = false;

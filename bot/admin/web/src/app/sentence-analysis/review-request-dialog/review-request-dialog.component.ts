@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
 import { StateService } from '../../core-nlp/state.service';
 import { flatMap } from '../../model/commons';

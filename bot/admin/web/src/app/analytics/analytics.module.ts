@@ -23,7 +23,6 @@ import { UsersComponent } from './users/users.component';
 import { AnalyticsService } from './analytics.service';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { BotModule } from '../bot/bot.module';
-import { NlpModule } from '../nlp-tabs/nlp.module';
 import { MomentModule } from 'ngx-moment';
 import { DialogsComponent } from './dialogs/dialogs.component';
 import {
@@ -76,7 +75,6 @@ export function importEcharts() {
     MomentModule,
     BotSharedModule,
     BotModule,
-    NlpModule,
     NbRouteTabsetModule,
     NbCheckboxModule,
     NbCardModule,
