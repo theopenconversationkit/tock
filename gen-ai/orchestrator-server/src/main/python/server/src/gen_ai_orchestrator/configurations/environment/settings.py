@@ -96,7 +96,7 @@ class _Settings(BaseSettings):
     observability_proxy_server: Optional[ProxyServerType] = None
     observability_proxy_server_authorization_header_name: Optional[str] = None
 
-    gcp_project_id: Optional[str] = None
+    gcp_project_id: Optional[str] = 'bdi01-e99-secret-rec-584'
 
 
 application_settings = _Settings()

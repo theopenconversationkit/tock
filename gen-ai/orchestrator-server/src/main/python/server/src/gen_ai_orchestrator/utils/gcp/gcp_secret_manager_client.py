@@ -15,6 +15,7 @@
 """API Client to consume GCP Secret Manager API"""
 
 import json
+import os
 import logging
 from typing import Optional, Type, TypeVar
 
@@ -27,6 +28,13 @@ from gen_ai_orchestrator.utils.instance import singleton
 
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
+
+# Set the environment variable to point to the service account key
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = \
+ '/home/Mohamed.Assoukti/Téléchargements/bx270-e99-secret-rec-543-e95f8a906655.json'
+#    '/home/Mohamed.Assoukti/Téléchargements/bdi01-e99-secret-rec-584-4e3c2e3454fd.json'
+
+
 
 
 @singleton
@@ -66,8 +74,39 @@ class GCPSecretManagerClient:
         """
 
         try:
+            # Build the parent name from the project.
+            parent = f"projects/{application_settings.gcp_project_id}"
+            # Define the replication policy with a specific location
+            replication = {
+                "user_managed": {
+                    "replicas": [
+                        {
+                            "location": "europe-west9"
+                        }
+                    ]
+                }
+            }
+
+            # Create the parent secret.
+            # secret = self.client.create_secret(
+            #     request={
+            #         "parent": parent,
+            #         "secret_id": secret_id,
+            #         "secret": {"replication": replication},
+            #     }
+            # )
+            # 'projects/364419067793/secrets/ASSOUKTI'
+            # logging.info(f'secret:{secret.name}')
+            # Add the secret version.
+            # version = self.client.add_secret_version(
+            #     request={"parent": f'projects/{application_settings.gcp_project_id}/secrets/{secret_id}',
+            #              "payload": {"data": b"hello world!"}}
+            # )
+            # logging.info(f'version:{version.name}')
+
             # Build the resource name of the secret
             secret_name = f"projects/{application_settings.gcp_project_id}/secrets/{secret_id}/versions/latest"
+
             # Access the secret version.
             response = self.client.access_secret_version(name=secret_name)
             payload = response.payload.data.decode("UTF-8")
@@ -83,6 +122,19 @@ class GCPSecretManagerClient:
 #                raise
         except Exception as e:
             logger.error(f'An unknown error occurred: {str(e)}.')
+            # PermissionDenied("Permission 'secretmanager.versions.access' denied for resource 'projects/bx270-e99-secret-rec-543/secrets/hhh/versions/latest' (or it may not exist).")
+
+
+            # Avec: bx270-e99-secret-rec-543-e95f8a906655.json
+            # PermissionDenied("Permission 'secretmanager.secrets.create' denied for resource 'projects/bx270-e99-secret-rec-543' (or it may not exist).")
+
+            # Avec: bdi01-e99-secret-rec-584-4e3c2e3454fd.json
+            # 400 Constraint constraints/gcp.resourceLocations violated for [orgpolicy:projects/364419067793] attempting to create a secret in [global]. For more information, see https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations. [violations {
+            #   type: "constraints/gcp.resourceLocations"
+            #   subject: "orgpolicy:projects/364419067793"
+            #   description: "Constraint constraints/gcp.resourceLocations violated for [orgpolicy:projects/364419067793] attempting to create a secret in [global]. For more information, see https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations."
+            # }
+            # ]
             raise
 
 
