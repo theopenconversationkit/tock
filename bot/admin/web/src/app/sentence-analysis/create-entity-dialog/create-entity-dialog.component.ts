@@ -19,7 +19,10 @@ import { NbDialogRef } from '@nebular/theme';
 
 import { StateService } from '../../core-nlp/state.service';
 import { entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole } from '../../model/nlp';
-import { EntityProvider } from '../highlight/highlight.component';
+
+export interface EntityProvider {
+  hasEntityRole(role: string): boolean;
+}
 
 @Component({
   selector: 'tock-create-entity-dialog',

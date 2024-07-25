@@ -18,7 +18,7 @@ import {
 } from '@nebular/theme';
 import { LogStatsComponent } from './log-stats/log-stats.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { QualityService } from '../quality-nlp/quality.service';
+import { QualityService } from './quality.service';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { TestBuildsComponent } from './test-builds/test-builds.component';

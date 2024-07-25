@@ -17,7 +17,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotService } from '../../bot/bot-service';
 import { AnalyticsService } from '../analytics.service';
-import { NlpService } from '../../nlp-tabs/nlp.service';
 import { StateService } from '../../core-nlp/state.service';
 import {
   ApplicationDialogFlow,
@@ -182,7 +181,6 @@ export class FlowComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private nlp: NlpService,
     public state: StateService,
     private analytics: AnalyticsService,
     private bot: BotService,

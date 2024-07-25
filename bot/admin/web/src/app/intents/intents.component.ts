@@ -23,7 +23,7 @@ import { NlpService } from '../nlp-tabs/nlp.service';
 import { ApplicationService } from '../core-nlp/applications.service';
 import { AddStateDialogComponent } from './add-state/add-state-dialog.component';
 import { UserRole } from '../model/auth';
-import { IntentDialogComponent } from '../sentence-analysis/intent-dialog/intent-dialog.component';
+import { IntentDialogComponent } from '../language-understanding/intent-dialog/intent-dialog.component';
 import { DialogService } from '../core-nlp/dialog.service';
 import { AddSharedIntentDialogComponent } from './add-shared-intent/add-shared-intent-dialog.component';
 import { IntentsFilter } from './intents-filters/intents-filters.component';

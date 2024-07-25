@@ -91,12 +91,14 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
 
   constructor(public state: StateService, private nlp: NlpService, private router: Router) {
     const search = this.router.getCurrentNavigation().extras?.state?.searchIntent;
-    this.form.patchValue({
-      search: search
-    });
-    setTimeout(() => {
-      this.submitFiltersChange();
-    }, 500);
+    if (search) {
+      this.form.patchValue({
+        search: search
+      });
+      setTimeout(() => {
+        this.submitFiltersChange();
+      }, 500);
+    }
   }
 
   form = new FormGroup<SentenceTrainingFilterForm>({

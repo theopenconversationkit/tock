@@ -19,7 +19,7 @@ import { Observable, Subject, lastValueFrom, of, takeUntil } from 'rxjs';
 import { Intent, IntentsCategory, nameFromQualifiedName, SentenceStatus } from '../../../../model/nlp';
 import { SentenceReviewRequestComponent } from '../sentence-review-request/sentence-review-request.component';
 import { Action, SentenceTrainingMode } from '../models';
-import { IntentDialogComponent } from '../../../../sentence-analysis/intent-dialog/intent-dialog.component';
+import { IntentDialogComponent } from '../../../../language-understanding/intent-dialog/intent-dialog.component';
 import { ConfirmDialogComponent } from '../../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { UserRole } from '../../../../model/auth';
 import { NlpService } from '../../../../nlp-tabs/nlp.service';

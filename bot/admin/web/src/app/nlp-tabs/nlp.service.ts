@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { RestService } from '../core-nlp/rest/rest.service';
 import { StateService } from '../core-nlp/state.service';
 import {
@@ -44,7 +44,7 @@ import { FileUploader } from 'ng2-file-upload';
 @Injectable({
   providedIn: 'root'
 })
-export class NlpService implements OnDestroy {
+export class NlpService {
   private resetConfigurationUnsuscriber: any;
 
   constructor(private rest: RestService, private state: StateService) {

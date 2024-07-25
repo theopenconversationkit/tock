@@ -16,14 +16,14 @@
 
 import { map } from 'rxjs/operators';
 import { Component, Input } from '@angular/core';
-import { StateService } from '../core-nlp/state.service';
-import { NlpService } from '../nlp-tabs/nlp.service';
-import { ApplicationService } from '../core-nlp/applications.service';
-import { EntityDefinition, EntityType } from '../model/nlp';
-import { ConfirmDialogComponent } from '../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { StateService } from '../../core-nlp/state.service';
+import { NlpService } from '../../nlp-tabs/nlp.service';
+import { ApplicationService } from '../../core-nlp/applications.service';
+import { EntityDefinition, EntityType } from '../../model/nlp';
+import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
-import { DialogService } from '../core-nlp/dialog.service';
-import { getContrastYIQ } from '../shared/utils';
+import { DialogService } from '../../core-nlp/dialog.service';
+import { getContrastYIQ } from '../../shared/utils';
 
 @Component({
   selector: 'tock-entity-details',

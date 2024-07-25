@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IntentTestError, TestErrorQuery } from '../../model/nlp';
 import { StateService } from '../../core-nlp/state.service';
-import { QualityService } from '../../quality-nlp/quality.service';
+import { QualityService } from '../quality.service';
 import { NbToastrService } from '@nebular/theme';
 import { Router } from '@angular/router';
 import { DialogService } from '../../core-nlp/dialog.service';

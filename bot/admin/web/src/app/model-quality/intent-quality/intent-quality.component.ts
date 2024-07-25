@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IntentQA, LogStatsQuery } from '../../model/nlp';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { StateService } from '../../core-nlp/state.service';
-import { QualityService } from '../../quality-nlp/quality.service';
+import { QualityService } from '../quality.service';
 import { FormControl, FormGroup } from '@angular/forms';
 
 interface FilterForm {

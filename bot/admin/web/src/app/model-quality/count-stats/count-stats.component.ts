@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LogCount, LogCountQuery } from '../../model/nlp';
 import { StateService } from '../../core-nlp/state.service';
-import { QualityService } from '../../quality-nlp/quality.service';
+import { QualityService } from '../quality.service';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { Pagination } from '../../shared/components';
 import { FormControl, FormGroup } from '@angular/forms';

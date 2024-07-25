@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { StateService } from '../../core-nlp/state.service';
-import { QualityService } from '../../quality-nlp/quality.service';
+import { QualityService } from '../quality.service';
 import { TestErrorQuery } from '../../model/nlp';
 import { formatStatDateTime } from '../../model/commons';
 import moment from 'moment';

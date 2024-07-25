@@ -39,6 +39,7 @@ import { BotService } from './bot/bot-service';
 import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
 import { ragIcon } from './theme/icons/rag';
 import { ragexcludeIcon } from './theme/icons/ragexclude';
+import { NlpService } from './nlp-tabs/nlp.service';
 
 @NgModule({
   declarations: [BotAdminAppComponent],
@@ -47,6 +48,7 @@ import { ragexcludeIcon } from './theme/icons/ragexclude';
     BrowserAnimationsModule,
     HttpClientModule,
     CoreModule,
+
     BotCoreModule,
     BotAdminAppRoutingModule,
 
@@ -67,7 +69,8 @@ import { ragexcludeIcon } from './theme/icons/ragexclude';
       useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
       deps: [PlatformLocation]
     },
-    BotService
+    BotService,
+    NlpService
   ],
   bootstrap: [BotAdminAppComponent]
 })

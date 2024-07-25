@@ -24,14 +24,54 @@ import { BotSharedService } from '../../shared/bot-shared.service';
 import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
 import { PaginatedQuery, randomString } from '../../model/commons';
 import { Observable, of, Subject, take, takeUntil } from 'rxjs';
-import { SentenceFilter } from '../../sentences-scroll/sentences-scroll.component';
+
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 
-import { SearchQuery } from '../../model/nlp';
+import { SearchQuery, SentenceStatus } from '../../model/nlp';
 import { ChatUiComponent } from '../../shared/components';
 import { NlpService } from '../../nlp-tabs/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
 import { getDialogMessageUserAvatar } from '../../shared/utils';
+
+export class SentenceFilter {
+  constructor(
+    public search?: string,
+    public intentId?: string,
+    public status?: SentenceStatus[],
+    public entityType?: string,
+    public entityRolesToInclude: string[] = [],
+    public entityRolesToExclude: string[] = [],
+    public modifiedAfter?: Date,
+    public modifiedBefore?: Date,
+    public onlyToReview: boolean = false,
+    public searchSubEntities: boolean = false,
+    public user?: string,
+    public allButUser?: string,
+    public maxIntentProbability: number = 100,
+    public minIntentProbability: number = 0,
+    public configuration?: string
+  ) {}
+
+  clone(): SentenceFilter {
+    return new SentenceFilter(
+      this.search,
+      this.intentId,
+      this.status,
+      this.entityType,
+      this.entityRolesToInclude,
+      this.entityRolesToInclude,
+      this.modifiedAfter,
+      this.modifiedBefore,
+      this.onlyToReview,
+      this.searchSubEntities,
+      this.user,
+      this.allButUser,
+      this.maxIntentProbability,
+      this.minIntentProbability,
+      this.configuration
+    );
+  }
+}
 
 @Component({
   selector: 'tock-bot-dialog',

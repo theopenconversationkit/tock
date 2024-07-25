@@ -18,7 +18,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core-nlp/auth/auth.guard';
 import { ApplicationResolver } from '../core-nlp/application.resolver';
 import { IntentsComponent } from '../intents/intents.component';
-import { EntitiesComponent } from '../entities/entities.component';
+import { EntitiesComponent } from './entities/entities.component';
 import { NgModule } from '@angular/core';
 import { SentencesInboxComponent } from './sentences/sentences-inbox/sentences-inbox.component';
 import { SentencesUnknownComponent } from './sentences/sentences-unknown/sentences-unknown.component';

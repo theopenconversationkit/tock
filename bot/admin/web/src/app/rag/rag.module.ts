@@ -22,7 +22,6 @@ import { RagSettingsComponent } from './rag-settings/rag-settings.component';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { RagRoutingModule } from './rag-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NlpModule } from '../nlp-tabs/nlp.module';
 import { RagExcludedComponent } from './rag-excluded/rag-excluded.component';
 import { RagSourcesBoardComponent } from './rag-sources/rag-sources-board.component';
 import { NewSourceComponent } from './rag-sources/new-source/new-source.component';
@@ -48,7 +47,6 @@ import { SourceManagementApiService } from './rag-sources/source-management.api.
     NbCardModule,
     NbButtonModule,
     NbInputModule,
-    NlpModule,
     NbIconModule,
     NbAccordionModule,
     NbTooltipModule,
