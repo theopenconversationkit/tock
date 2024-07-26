@@ -29,8 +29,6 @@ import com.github.salomonbrys.kodein.singleton
 
 val gcpToolsModule = Kodein.Module {
     bind<SecretDAO>() with singleton { SecretGCPDAO() }
-    bind<CredentialsProvider>(overrides = true) with singleton { IAdvizeCredentialsGCPProvider() }
     bind<GCPSecretManagerService>() with singleton { GCPSecretManagerServiceImpl() }
-    
     bind<CredentialsProvider>(tag = "IAdvizeCredentialsGCP") with singleton { IAdvizeCredentialsGCPProvider() }
 }

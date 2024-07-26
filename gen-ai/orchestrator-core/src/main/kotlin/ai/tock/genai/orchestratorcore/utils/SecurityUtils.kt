@@ -27,14 +27,18 @@ import ai.tock.genai.orchestratorcore.models.security.SecretKey
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
+import mu.KLogger
+import mu.KotlinLogging
 
-val secretStorageType: String = property("tock_gen_ai_orchestrator_secret_storage_type", Constants.SECRET_KEY_RAW)
-val secretStoragePrefix: String = property("tock_gen_ai_orchestrator_secret_storage_prefix_name", "/DEV")
+val secretStorageType: String = property("tock_gen_ai_orchestrator_secret_storage_type", Constants.SECRET_KEY_GCP) // TODO MASS Constants.SECRET_KEY_RAW
+val secretStoragePrefix: String = property("tock_gen_ai_orchestrator_secret_storage_prefix_name", "/DEV/TOCK")
 
 /**
  * The security utilities class
  */
 object SecurityUtils {
+
+    private val logger: KLogger = KotlinLogging.logger {}
 
     /**
      * The AWS Secrets Manager Service
@@ -51,13 +55,19 @@ object SecurityUtils {
      * @param secret the secret key
      * @return the secret value as String
      */
-    fun fetchSecretKeyValue(secret: SecretKey): String =
-        when(secret){
-            is RawSecretKey -> secret.value
-            is AwsSecretKey -> awsSecretsManagerClient.getAIProviderSecret(secret.secretName).secret
-            is GcpSecretKey -> gcpSecretManagerClient.getAIProviderSecret(secret.secretName).secret
-            else -> throw IllegalArgumentException("Unsupported secret key type")
+    fun fetchSecretKeyValue(secret: SecretKey): String {
+        try {
+            return when (secret) {
+                is RawSecretKey -> secret.value
+                is AwsSecretKey -> awsSecretsManagerClient.getAIProviderSecret(secret.secretName).secret
+                is GcpSecretKey -> gcpSecretManagerClient.getAIProviderSecret(secret.secretName).secret
+                else -> throw IllegalArgumentException("Unsupported secret key type")
+            }
+        } catch (e: Exception) {
+            logger.warn("The secret has not been recovered.", e)
+            return ""
         }
+    }
 
     /**
      * Create a secret key. If secret storage type is Raw, so it creates [RawSecretKey], else if it is AwsSecretsManager then it creates [AwsSecretKey]
@@ -91,10 +101,16 @@ object SecurityUtils {
      * @param feature the feature for which the secret will be created
      * @return the generate secret name
      */
-    fun generateAwsSecretName(namespace: String, botId: String, feature: String): String
+    private fun generateAwsSecretName(namespace: String, botId: String, feature: String): String
         = normalizeAwsSecretName("$secretStoragePrefix/$namespace/$botId/$feature")
 
-    // TODO MASS
+    /**
+     * Generate an GCP Secret Name
+     * @param namespace the bot namespace
+     * @param botId the bot id
+     * @param feature the feature for which the secret will be created
+     * @return the generate secret name
+     */
     private fun generateGcpSecretName(namespace: String, botId: String, feature: String): String
             = normalizeGcpSecretName("$secretStoragePrefix/$namespace/$botId/$feature")
 
@@ -131,20 +147,18 @@ object SecurityUtils {
         return normalized
     }
 
-    private fun normalizeGcpSecretName(name: String): String {
-        // Filter authorised characters: letters, numbers, hyphens and underscores
-        var filteredName = name.filter { it.isLetterOrDigit() || it == '-' || it == '_' }
+    private fun normalizeGcpSecretName(input: String): String {
+        // Replace underscores and space with hyphens
+        val normalized = input.trim().replace('/', '-').replace(' ', '-')
 
-        // Make sure the name starts with a letter
-        if (filteredName.isNotEmpty() && !filteredName.first().isLetter()) {
-            filteredName = "a$filteredName"
-        }
+        // Filter authorised characters: letters, numbers, hyphens and underscores
+        val filteredInput = normalized.filter { it.isLetterOrDigit() || it == '-' || it == '_' }
 
         // Limit length to 255 characters
-        val normalizedName = if (filteredName.length > 255) {
-            filteredName.substring(0, 255)
+        val normalizedName = if (filteredInput.length > 255) {
+            filteredInput.substring(0, 255)
         } else {
-            filteredName
+            filteredInput
         }
 
         return normalizedName

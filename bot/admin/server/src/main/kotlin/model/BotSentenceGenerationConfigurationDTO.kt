@@ -49,10 +49,10 @@ data class BotSentenceGenerationConfigurationDTO(
             enabled,
             nbSentences,
             LLMSettingMapper.toEntity(
-                llmSetting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION
-                )
+                namespace,
+                botId,
+                Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
+                llmSetting
             )
         )
 }
