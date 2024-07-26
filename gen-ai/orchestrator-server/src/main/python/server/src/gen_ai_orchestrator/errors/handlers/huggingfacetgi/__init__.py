@@ -12,20 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""LLMProvider Enumeration."""
-
-from enum import Enum, unique
-
-
-@unique
-class LLMProvider(str, Enum):
-    """Enumeration to list Large Language Provider type"""
-
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    HUGGING_FACE_TGI = 'HuggingFaceTGI'
-    FAKE_LLM = 'FakeLLM'
-
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_

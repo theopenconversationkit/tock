@@ -30,32 +30,50 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
     VectorStoreUnknownException,
 )
-from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIUnknownObservabilityProviderSettingException
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
+    GenAIUnknownObservabilityProviderSettingException,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
+from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
+    OpenAIEMSetting,
+)
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import FakeLLMSetting
+from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
+    FakeLLMSetting,
+)
+from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting import (
+    HuggingFaceTGILLMSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
-from gen_ai_orchestrator.models.observability.observability_setting import BaseObservabilitySetting
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_setting import (
+    BaseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import \
-    LangChainCallbackHandlerFactory
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
-    LangfuseCallbackHandlerFactory
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import (
+    LangChainCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
+    LangfuseCallbackHandlerFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -68,7 +86,12 @@ from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory impor
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import FakeLLMFactory
+from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
+    FakeLLMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.hugging_face_tgi_llm_factory import (
+    HuggingFaceTGILLMFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
 )
@@ -105,6 +128,9 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
     elif isinstance(setting, FakeLLMSetting):
         logger.debug('LLM Factory - FakeLLMFactory')
         return FakeLLMFactory(setting=setting)
+    elif isinstance(setting, HuggingFaceTGILLMSetting):
+        logger.debug('LLM Factory - HuggingFaceTGILLMFactory')
+        return HuggingFaceTGILLMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
 
@@ -131,9 +157,9 @@ def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
 
 
 def get_vector_store_factory(
-        vector_store_provider: VectorStoreProvider,
-        embedding_function: Embeddings,
-        index_name: str,
+    vector_store_provider: VectorStoreProvider,
+    embedding_function: Embeddings,
+    index_name: str,
 ) -> LangChainVectorStoreFactory:
     """
     Creates an LangChain Vector Store Factory according to the vector store provider
@@ -156,7 +182,9 @@ def get_vector_store_factory(
         raise VectorStoreUnknownException()
 
 
-def get_callback_handler_factory(setting: BaseObservabilitySetting) -> LangChainCallbackHandlerFactory:
+def get_callback_handler_factory(
+    setting: BaseObservabilitySetting,
+) -> LangChainCallbackHandlerFactory:
     """
     Creates a Langchain Callback Handler Factory according to the given setting
     Args:
@@ -175,8 +203,9 @@ def get_callback_handler_factory(setting: BaseObservabilitySetting) -> LangChain
 
 
 def create_observability_callback_handler(
-        observability_setting: Optional[ObservabilitySetting],
-        trace_name: ObservabilityTrace) -> Optional[LangfuseCallbackHandler]:
+    observability_setting: Optional[ObservabilitySetting],
+    trace_name: ObservabilityTrace,
+) -> Optional[LangfuseCallbackHandler]:
     """
     Create the Observability Callback Handler
 
@@ -188,7 +217,8 @@ def create_observability_callback_handler(
         The Observability Callback Handler
     """
     if observability_setting is not None:
-        return get_callback_handler_factory(setting=observability_setting).get_callback_handler(
-            trace_name=trace_name.value)
+        return get_callback_handler_factory(
+            setting=observability_setting
+        ).get_callback_handler(trace_name=trace_name.value)
 
     return None
