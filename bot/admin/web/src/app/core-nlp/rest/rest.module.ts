@@ -15,11 +15,10 @@
  */
 
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../../shared-nlp/shared.module';
 import { CommonModule } from '@angular/common';
 import { RestService } from './rest.service';
 @NgModule({
-  imports: [CommonModule, SharedModule],
+  imports: [CommonModule],
   declarations: [],
   providers: [RestService]
 })

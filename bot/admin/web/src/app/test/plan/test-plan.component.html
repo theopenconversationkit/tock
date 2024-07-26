@@ -198,10 +198,11 @@
             <li *ngFor="let d of p.dialogs">
               <span *ngIf="d.actions.length === 0"> (no content) </span>
               <span *ngIf="d.actions.length !== 0">
-                <tock-bot-message
+                <tock-chat-ui-message
                   [message]="d.actions[0].messages[0]"
-                  [user]="true"
-                ></tock-bot-message>
+                  [reply]="false"
+                  [replay]="true"
+                ></tock-chat-ui-message>
               </span>
               ...
               <button
@@ -228,10 +229,18 @@
                 <nb-icon icon="trash-2-outline"></nb-icon>
                 Remove dialog
               </button>
-              <tock-display-dialog
-                *ngIf="d.displayActions"
-                [dialog]="d.toDialogReport()"
-              ></tock-display-dialog>
+              <tock-chat-ui *ngIf="d.displayActions">
+                <ng-container *ngFor="let action of d.toDialogReport().actions">
+                  <tock-chat-ui-message
+                    [message]="action.message"
+                    [date]="action.date"
+                    [reply]="action.isBot()"
+                    [replay]="true"
+                    [sender]="getUserName(action)"
+                    [avatar]="getUserAvatar(action)"
+                  ></tock-chat-ui-message>
+                </ng-container>
+              </tock-chat-ui>
             </li>
           </ol>
 
@@ -307,14 +316,28 @@
                           Error
                           <span *ngIf="details.dialogReport">
                             <h4>Expected dialog:</h4>
-                            <tock-display-dialog [dialog]="details.dialogReport"></tock-display-dialog>
+
+                            <tock-chat-ui>
+                              <ng-container *ngFor="let action of details.dialogReport.actions">
+                                <tock-chat-ui-message
+                                  [message]="action.message"
+                                  [date]="action.date"
+                                  [reply]="action.isBot()"
+                                  [replay]="true"
+                                  [sender]="getUserName(action)"
+                                  [avatar]="getUserAvatar(action)"
+                                ></tock-chat-ui-message>
+                              </ng-container>
+                            </tock-chat-ui>
+
                             <span *ngIf="details.returnedMessage">
                               <h4>But last answer was:</h4>
-                              <tock-bot-message
-                                class="botAction"
+
+                              <tock-chat-ui-message
                                 [message]="details.returnedMessage"
-                                [user]="false"
-                              ></tock-bot-message>
+                                [reply]="true"
+                                [replay]="true"
+                              ></tock-chat-ui-message>
                             </span>
                           </span>
                           <span *ngIf="details.errorMessage">{{ details.errorMessage }}</span>

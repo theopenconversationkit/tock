@@ -20,10 +20,10 @@ import { StateService } from '../../core-nlp/state.service';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { EntityDefinition, EntityType } from '../../model/nlp';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { NbToastrService } from '@nebular/theme';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { getContrastYIQ } from '../../shared/utils';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-entity-details',
@@ -56,15 +56,19 @@ export class EntityDetailsComponent {
   }
 
   remove() {
-    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+    const action = 'remove';
+    let dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
         title: `Remove the subentity ${this.entity.entityTypeName}`,
         subtitle: 'Are you sure?',
-        action: 'Remove'
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
+      if (result === action) {
         this.nlp.removeSubEntity(this.state.currentApplication, this.entityType, this.entity).subscribe(
           (_) => {
             this.state.resetConfiguration();

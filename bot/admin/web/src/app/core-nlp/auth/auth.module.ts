@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { SharedModule } from '../../shared-nlp/shared.module';
 import { NgModule } from '@angular/core';
 import { LoginComponent } from './login/login.component';
 import { AuthService } from './auth.service';
@@ -23,9 +22,10 @@ import { CommonModule } from '@angular/common';
 import { RestModule } from '../rest/rest.module';
 import { NbCardModule, NbCheckboxModule } from '@nebular/theme';
 import { AuthRoutingModule } from './auth-routing.module';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  imports: [CommonModule, SharedModule, RestModule, AuthRoutingModule, NbCardModule, NbCheckboxModule],
+  imports: [CommonModule, FormsModule, RestModule, AuthRoutingModule, NbCardModule, NbCheckboxModule],
   declarations: [LoginComponent],
   providers: [AuthService, AuthGuard]
 })

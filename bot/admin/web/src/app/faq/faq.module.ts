@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
   NbAlertModule,
   NbAutocompleteModule,
@@ -17,12 +17,12 @@ import {
   NbSpinnerModule,
   NbTabsetModule,
   NbTagModule,
+  NbToggleModule,
   NbTooltipModule
 } from '@nebular/theme';
 
 import { FaqManagementComponent } from './faq-management/faq-management.component';
 import { FaqRoutingModule } from './faq-routing.module';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { MomentModule } from 'ngx-moment';
 import { FaqManagementFiltersComponent } from './faq-management/faq-management-filters/faq-management-filters.component';
 import { FaqManagementListComponent } from './faq-management/faq-management-list/faq-management-list.component';
@@ -37,11 +37,10 @@ import { FaqTabsComponent } from './faq-tabs.component';
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     BotSharedModule,
     FaqRoutingModule,
-
     MomentModule,
-    SharedModule,
     ReactiveFormsModule,
     NbAutocompleteModule,
     NbBadgeModule,
@@ -60,7 +59,8 @@ import { FaqTabsComponent } from './faq-tabs.component';
     NbChatModule,
     InfiniteScrollModule,
     BotAnalyticsModule,
-    NbRouteTabsetModule
+    NbRouteTabsetModule,
+    NbToggleModule
   ],
   declarations: [
     FaqManagementComponent,

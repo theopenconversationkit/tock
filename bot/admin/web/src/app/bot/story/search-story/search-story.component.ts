@@ -20,7 +20,6 @@ import { BotService } from '../../bot-service';
 import { StateService } from '../../../core-nlp/state.service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../model/story';
 import { Subject, takeUntil } from 'rxjs';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
@@ -29,6 +28,7 @@ import { BotConfigurationService } from '../../../core/bot-configuration.service
 import { BotApplicationConfiguration } from '../../../core/model/configuration';
 import { StoriesUploadComponent } from './stories-upload/stories-upload.component';
 import { normalize } from '../../../shared/utils';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 export type StoriesByCategory = { category: string; stories: StoryDefinitionConfigurationSummary[] };
 
@@ -209,15 +209,20 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
   }
 
   deleteStory(story: StoryDefinitionConfigurationSummary) {
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+    const action = 'remove';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Remove the story '${story.name}'`,
+        title: `Remove the story "${story.name}"`,
         subtitle: 'Are you sure?',
-        action: 'Remove'
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ],
+        modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
+      if (result === action) {
         this.bot.deleteStory(story._id).subscribe((_) => {
           this.stories = this.stories.filter((str) => story != str);
           this.filterStories();

@@ -17,7 +17,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { BotConfigurationModule } from '../configuration/configuration.module';
 import { MomentModule } from 'ngx-moment';
@@ -42,6 +41,7 @@ import {
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
+  NbDatepickerModule,
   NbDialogModule,
   NbFormFieldModule,
   NbIconModule,
@@ -52,7 +52,9 @@ import {
   NbSelectModule,
   NbSpinnerModule,
   NbTagModule,
-  NbTooltipModule
+  NbToggleModule,
+  NbTooltipModule,
+  NbTreeGridModule
 } from '@nebular/theme';
 import { ApplicationFeatureComponent } from './feature/application-feature/application-feature.component';
 import { StoryRuleComponent } from './feature/story-rule/story-rule.component';
@@ -63,7 +65,7 @@ import { ApplicationFeaturesTableComponent } from './feature/application-feature
 
 import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
 import { StoriesFilterComponent } from './story/search-story/stories-filter/stories-filter.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditStoryComponent } from './story/edit-story/edit-story.component';
 import { StoriesUploadComponent } from './story/search-story/stories-upload/stories-upload.component';
 import { BotRoutingModule } from './bot-routing.module';
@@ -79,9 +81,9 @@ import { CreateEntityDialogComponent } from './story/create-entity-dialog/create
 
 @NgModule({
   imports: [
-    ReactiveFormsModule,
     CommonModule,
-    SharedModule,
+    FormsModule,
+    ReactiveFormsModule,
     BotSharedModule,
     BotRoutingModule,
     InfiniteScrollModule,
@@ -107,7 +109,10 @@ import { CreateEntityDialogComponent } from './story/create-entity-dialog/create
     NbBadgeModule,
     NbListModule,
     NbTagModule,
-    NbAlertModule
+    NbAlertModule,
+    NbToggleModule,
+    NbTreeGridModule,
+    NbDatepickerModule
   ],
   declarations: [
     BotTabsComponent,

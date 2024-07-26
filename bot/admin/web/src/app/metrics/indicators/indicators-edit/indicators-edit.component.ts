@@ -14,10 +14,10 @@ import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, V
 import { NbTagComponent, NbTagInputAddEvent } from '@nebular/theme';
 import { Observable, of } from 'rxjs';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { normalizedCamelCase } from '../../../shared/utils';
 import { IndicatorDefinition, IndicatorValueDefinition } from '../../models';
 import { IndicatorEdition } from '../indicators.component';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 interface IndicatorValueEditForm {
   name: FormControl<string>;
@@ -206,24 +206,27 @@ export class IndicatorsEditComponent implements OnChanges {
   }
 
   close(): Observable<any> {
-    const validAction = 'yes';
+    const action = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Cancel ${this.indicatorEdition.existing ? 'edit' : 'create'} indicator`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: action, buttonStatus: 'danger' }
+          ]
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result === validAction) {
+        if (result === action) {
           this.onClose.emit(true);
         }
       });
       return dialogRef.onClose;
     } else {
       this.onClose.emit(true);
-      return of(validAction);
+      return of(action);
     }
   }
 

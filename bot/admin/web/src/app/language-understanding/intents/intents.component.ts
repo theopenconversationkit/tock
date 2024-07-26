@@ -26,7 +26,7 @@ import { NlpService } from '../../core-nlp/nlp.service';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { IntentDialogComponent } from '../intent-dialog/intent-dialog.component';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-intents',
@@ -111,15 +111,19 @@ export class IntentsComponent implements OnInit {
   }
 
   deleteIntent(intent: Intent): void {
-    const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+    const action = 'remove';
+    const dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
         title: `Remove the Intent ${intent.name}`,
         subtitle: 'Are you sure?',
-        action: 'Remove'
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
+      if (result === action) {
         this.nlp.removeIntent(this.state.currentApplication, intent).subscribe(
           (_) => {
             this.state.removeIntent(intent);
@@ -168,15 +172,19 @@ export class IntentsComponent implements OnInit {
 
   removeEntity(event: { intent: Intent; entity: EntityDefinition }): void {
     const entityName = event.entity.qualifiedName(this.state.user);
-    const dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+    const action = 'remove';
+    const dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
         title: `Remove the Entity ${entityName}`,
         subtitle: 'Are you sure?',
-        action: 'Remove'
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
+      if (result === action) {
         this.nlp.removeEntity(this.state.currentApplication, event.intent, event.entity).subscribe((deleted) => {
           this.state.currentApplication.intentById(event.intent._id).removeEntity(event.entity);
           if (deleted) {

@@ -22,7 +22,7 @@ import { ApplicationService } from '../../core-nlp/applications.service';
 import { UserRole } from '../../model/auth';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-applications',
@@ -54,15 +54,20 @@ export class ApplicationsComponent implements OnInit {
   }
 
   deleteApplication(application): void {
-    let dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+    const action = 'delete';
+    let dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: 'Delete the Application',
         subtitle: 'Are you sure?',
-        action: 'Delete'
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ],
+        modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'delete') {
+      if (result === action) {
         this.loading = true;
         this.applicationService.deleteApplication(application).subscribe((result) => {
           if (result) {

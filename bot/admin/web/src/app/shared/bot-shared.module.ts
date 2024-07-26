@@ -16,16 +16,8 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { BotMessageComponent } from './bot-message/bot-message.component';
-import { SentenceElementComponent } from './bot-message/sentence-element.component';
-import { BotMessageSentenceComponent } from './bot-message/bot-message-sentence';
-import { BotMessageChoiceComponent } from './bot-message/bot-message-choice.component';
-import { BotMessageLocationComponent } from './bot-message/bot-message-location';
-import { BotMessageAttachmentComponent } from './bot-message/bot-message-attachment';
 import { DateRangeCalendarComponent } from './date-range/date-range-calendar.component';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { BotSharedService } from './bot-shared.service';
-import { DisplayDialogComponent } from './bot-dialog/display-dialog.component';
 import { MomentModule } from 'ngx-moment';
 import { SelectBotComponent } from './select-bot/select-bot.component';
 import {
@@ -45,10 +37,10 @@ import {
   NbRadioModule,
   NbWindowModule,
   NbListModule,
-  NbToggleModule
+  NbToggleModule,
+  NbDatepickerModule
 } from '@nebular/theme';
 import { InfoButtonComponent } from './info-button/info-button.component';
-import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 import {
   AutocompleteInputComponent,
@@ -90,16 +82,18 @@ import {
 
 import { AutofocusDirective } from './directives';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AnalyticsService } from '../analytics/analytics.service';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { ScrollComponent } from '../scroll/scroll.component';
 
 @NgModule({
   imports: [
     CommonModule,
-    SharedModule,
+    FormsModule,
     ReactiveFormsModule,
     MomentModule,
+    NbDatepickerModule,
     NbCalendarRangeModule,
     NbCardModule,
     NbSelectModule,
@@ -121,17 +115,9 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     NbToggleModule
   ],
   declarations: [
-    BotMessageComponent,
-    SentenceElementComponent,
-    BotMessageSentenceComponent,
-    BotMessageChoiceComponent,
-    BotMessageLocationComponent,
-    BotMessageAttachmentComponent,
-    DisplayDialogComponent,
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,
-    ConfirmationDialogComponent,
     ErrorHelperComponent,
     PaginationComponent,
     NoDataFoundComponent,
@@ -167,11 +153,10 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
     AiSettingsEngineConfigParamInputComponent,
     SentencesGenerationOptionsComponent,
     SentencesGenerationListComponent,
-    SentencesGenerationComponent
+    SentencesGenerationComponent,
+    ScrollComponent
   ],
   exports: [
-    BotMessageComponent,
-    DisplayDialogComponent,
     SelectBotComponent,
     DateRangeCalendarComponent,
     InfoButtonComponent,

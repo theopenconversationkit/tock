@@ -21,12 +21,12 @@ import { StateService } from '../../core-nlp/state.service';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Dictionary, EntityDefinition, EntityType, PredefinedValue } from '../../model/nlp';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { JsonUtils } from '../../model/commons';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { NbToastrService } from '@nebular/theme';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Observable } from 'rxjs';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-entities',
@@ -85,15 +85,19 @@ export class EntitiesComponent implements OnInit {
   }
 
   deleteEntityType(entityType: EntityType) {
-    let dialogRef = this.dialog.openDialog(ConfirmDialogComponent, {
+    const action = 'remove';
+    let dialogRef = this.dialog.openDialog(ChoiceDialogComponent, {
       context: {
         title: `Remove the entity type ${entityType.name}`,
         subtitle: 'Are you sure? This can completely cleanup your model!',
-        action: 'Remove'
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
+      if (result === action) {
         this.nlp.removeEntityType(entityType).subscribe(
           (_) => {
             this.state.resetConfiguration();
