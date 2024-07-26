@@ -5,7 +5,7 @@ import { NbDialogRef } from '@nebular/theme';
 import { StoryDefinitionConfiguration } from '../../../bot/model/story';
 import { Intent, SearchQuery } from '../../../model/nlp';
 import { PaginatedQuery } from '../../../model/commons';
-import { NlpService } from '../../../nlp-service/nlp.service';
+import { NlpService } from '../../../core-nlp/nlp.service';
 
 @Component({
   selector: 'tock-intent-story-details',

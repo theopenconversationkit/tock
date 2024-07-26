@@ -27,7 +27,7 @@ import {
   TranslateSentencesQuery,
   UpdateSentencesQuery
 } from '../../../model/nlp';
-import { NlpService } from '../../../nlp-service/nlp.service';
+import { NlpService } from '../../../core-nlp/nlp.service';
 import { ChoiceDialogComponent, Pagination } from '..';
 import { Action, SentenceTrainingMode } from './models';
 import { SentenceTrainingDialogComponent } from './sentence-training-dialog/sentence-training-dialog.component';

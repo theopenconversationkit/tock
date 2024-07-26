@@ -22,7 +22,7 @@ import { IntentsFilter } from './intents-filters/intents-filters.component';
 import { StateService } from '../../core-nlp/state.service';
 import { UserRole } from '../../model/auth';
 import { EntityDefinition, Intent, IntentsCategory } from '../../model/nlp';
-import { NlpService } from '../../nlp-service/nlp.service';
+import { NlpService } from '../../core-nlp/nlp.service';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { IntentDialogComponent } from '../intent-dialog/intent-dialog.component';

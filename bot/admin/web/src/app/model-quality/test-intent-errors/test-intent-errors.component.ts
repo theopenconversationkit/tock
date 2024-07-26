@@ -5,7 +5,7 @@ import { QualityService } from '../quality.service';
 import { NbToastrService } from '@nebular/theme';
 import { Router } from '@angular/router';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { NlpService } from '../../nlp-service/nlp.service';
+import { NlpService } from '../../core-nlp/nlp.service';
 import { escapeRegex } from '../../model/commons';
 import { saveAs } from 'file-saver-es';
 import { UserRole } from '../../model/auth';

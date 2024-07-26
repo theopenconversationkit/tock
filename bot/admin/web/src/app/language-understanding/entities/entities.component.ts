@@ -18,7 +18,7 @@ import { saveAs } from 'file-saver-es';
 import { map } from 'rxjs/operators';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
-import { NlpService } from '../../nlp-service/nlp.service';
+import { NlpService } from '../../core-nlp/nlp.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { Dictionary, EntityDefinition, EntityType, PredefinedValue } from '../../model/nlp';
 import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';

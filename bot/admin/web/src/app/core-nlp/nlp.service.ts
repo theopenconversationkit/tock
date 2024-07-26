@@ -15,8 +15,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { RestService } from '../core-nlp/rest/rest.service';
-import { StateService } from '../core-nlp/state.service';
+import { RestService } from './rest/rest.service';
+import { StateService } from './state.service';
 import {
   Dictionary,
   EntityDefinition,
@@ -45,15 +45,9 @@ import { FileUploader } from 'ng2-file-upload';
   providedIn: 'root'
 })
 export class NlpService {
-  private resetConfigurationUnsuscriber: any;
-
   constructor(private rest: RestService, private state: StateService) {
     this.resetConfiguration();
-    this.resetConfigurationUnsuscriber = this.state.resetConfigurationEmitter.subscribe((_) => this.resetConfiguration());
-  }
-
-  ngOnDestroy(): void {
-    this.resetConfigurationUnsuscriber.unsubscribe();
+    this.state.resetConfigurationEmitter.subscribe((_) => this.resetConfiguration());
   }
 
   resetConfiguration() {

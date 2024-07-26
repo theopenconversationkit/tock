@@ -22,7 +22,7 @@ import { EntityStepSelection, IntentName, StoryStepMetric, StoryStep } from '../
 import { Intent, IntentsCategory, ParseQuery } from '../../../../model/nlp';
 import { StateService } from '../../../../core-nlp/state.service';
 import { IntentDialogComponent } from '../../../../language-understanding/intent-dialog/intent-dialog.component';
-import { NlpService } from '../../../../nlp-service/nlp.service';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { DialogService } from '../../../../core-nlp/dialog.service';
 import { CreateI18nLabelRequest, I18nLocalizedLabel } from '../../../model/i18n';
 import { BotService } from '../../../bot-service';

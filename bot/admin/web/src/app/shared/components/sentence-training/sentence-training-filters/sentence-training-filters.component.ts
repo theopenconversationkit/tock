@@ -6,7 +6,7 @@ import { SentenceTrainingMode } from './../models';
 import { Options } from '@angular-slider/ngx-slider';
 import { EntityDefinition, EntityType, Intent, IntentsCategory, SearchQuery, SentenceStatus, getRoles } from '../../../../model/nlp';
 import { StateService } from '../../../../core-nlp/state.service';
-import { NlpService } from '../../../../nlp-service/nlp.service';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { UserRole } from '../../../../model/auth';
 import { Router } from '@angular/router';
 

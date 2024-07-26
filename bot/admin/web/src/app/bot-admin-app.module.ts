@@ -39,7 +39,7 @@ import { BotService } from './bot/bot-service';
 import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
 import { ragIcon } from './theme/icons/rag';
 import { ragexcludeIcon } from './theme/icons/ragexclude';
-import { NlpService } from './nlp-service/nlp.service';
+import { NlpService } from './core-nlp/nlp.service';
 
 @NgModule({
   declarations: [BotAdminAppComponent],
