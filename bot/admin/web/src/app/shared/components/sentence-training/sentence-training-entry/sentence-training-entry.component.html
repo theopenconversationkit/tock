@@ -88,6 +88,14 @@
             [nbAutocomplete]="intentsAutocomplete"
             class="intent-input"
           />
+          <nb-icon
+            nbSuffix
+            icon="book-open-outline"
+            *ngIf="isIntentStorySearchable()"
+            (click)="displayIntentStoryDetails()"
+            nbTooltip="Show intent story details"
+            class="pointer"
+          ></nb-icon>
         </nb-form-field>
         <button
           nbButton

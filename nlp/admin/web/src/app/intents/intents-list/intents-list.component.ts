@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { StateService } from '../../core-nlp/state.service';
 import { EntityDefinition, Intent } from '../../model/nlp';
 import { UserRole } from '../../model/auth';
+import { NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'tock-intents-list',
@@ -25,7 +26,7 @@ export class IntentsListComponent implements OnInit, OnDestroy {
   @Output() onDownloadSentencesDump = new EventEmitter();
   @Output() onDeleteIntent = new EventEmitter();
 
-  constructor(public state: StateService) {}
+  constructor(public state: StateService, private nbDialogService: NbDialogService) {}
 
   ngOnInit(): void {}
 
@@ -76,4 +77,13 @@ export class IntentsListComponent implements OnInit, OnDestroy {
     let yiq = (r * 299 + g * 587 + b * 114) / 1000;
     return yiq >= 128 ? 'black' : 'white';
   }
+
+  // To be restored after bot/nlp merge
+  // displayIntentStoryDetails(intent: Intent) {
+  //   const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
+  //     context: {
+  //       intentId: intent._id
+  //     }
+  //   });
+  // }
 }

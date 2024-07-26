@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Subject } from 'rxjs';
 import { StateService } from '../../../../core-nlp/state.service';
-import { StoryDefinitionConfigurationSummary } from '../../../model/story';
+import { IntentName, StoryDefinitionConfigurationSummary } from '../../../model/story';
+import { NbDialogService } from '@nebular/theme';
+import { Intent } from '../../../../model/nlp';
+import { IntentStoryDetailsComponent } from '../../../../shared/components';
 
 @Component({
   selector: 'tock-stories-list',
@@ -19,7 +22,7 @@ export class StoriesListComponent implements OnInit {
 
   dateFormat = 'dd/MM/yyyy HH:mm';
 
-  constructor(public state: StateService) {}
+  constructor(public state: StateService, private nbDialogService: NbDialogService) {}
 
   ngOnInit(): void {}
 
@@ -33,5 +36,13 @@ export class StoriesListComponent implements OnInit {
 
   deleteStory(story) {
     this.onDeleteStory.emit(story);
+  }
+
+  displayIntentStoryDetails(intent: IntentName) {
+    const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
+      context: {
+        intentName: intent.name
+      }
+    });
   }
 }
