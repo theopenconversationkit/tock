@@ -19,8 +19,10 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
     VectorStoreUnknownException,
 )
-from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIUnknownObservabilityProviderException, GenAIUnknownObservabilityProviderSettingException
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
+    GenAIUnknownObservabilityProviderException,
+    GenAIUnknownObservabilityProviderSettingException,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -34,18 +36,28 @@ from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import 
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,
 )
+from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting import (
+    HuggingFaceTGILLMSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
-from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_provider import (
+    ObservabilityProvider,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
-    LangfuseCallbackHandlerFactory
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
+    LangfuseCallbackHandlerFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -53,15 +65,19 @@ from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory impor
     OpenAIEMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_callback_handler_factory,
     get_em_factory,
     get_llm_factory,
-    get_vector_store_factory, get_callback_handler_factory,
+    get_vector_store_factory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
     FakeLLMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.hugging_face_tgi_llm_factory import (
+    HuggingFaceTGILLMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory import (
     OpenAILLMFactory,
@@ -114,6 +130,28 @@ def test_get_azure_open_ai_llm_factory():
     )
     assert azure_open_ai.setting.provider == LLMProvider.AZURE_OPEN_AI_SERVICE
     assert isinstance(azure_open_ai, AzureOpenAILLMFactory)
+
+
+def test_get_hugging_face_tgi_llm_factory():
+    hugging_face_tgi = get_llm_factory(
+        setting=HuggingFaceTGILLMSetting(
+            **{
+                'provider': 'HuggingFaceTGI',
+                'repetition_penalty': 1.0,
+                'max_new_tokens': 256,
+                'api_base': 'https://doc.tock.ai/tock',
+                'api_key': {
+                    'type': 'Raw',
+                    'value': 'ab7***************************A1IV4B',
+                },
+                'temperature': 0.7,
+                'prompt': 'List 3 ice cream flavors.',
+                'streaming': False,
+            }
+        )
+    )
+    assert hugging_face_tgi.setting.provider == LLMProvider.HUGGING_FACE_TGI
+    assert isinstance(hugging_face_tgi, HuggingFaceTGILLMFactory)
 
 
 def test_get_fake_llm_factory():
@@ -224,7 +262,7 @@ def test_get_langfuse_observability_factory():
                     'value': 'ab7***************************A1IV4B',
                 },
                 'public_key': 'df41*********f',
-                'url': 'https://myServer:3000'
+                'url': 'https://myServer:3000',
             }
         )
     )

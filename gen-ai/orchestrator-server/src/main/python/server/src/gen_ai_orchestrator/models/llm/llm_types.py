@@ -24,11 +24,19 @@ from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import 
 from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
     FakeLLMSetting,
 )
+from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting import (
+    HuggingFaceTGILLMSetting,
+)
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
 
 LLMSetting = Annotated[
-    Union[OpenAILLMSetting, AzureOpenAILLMSetting, FakeLLMSetting],
+    Union[
+        OpenAILLMSetting,
+        AzureOpenAILLMSetting,
+        FakeLLMSetting,
+        HuggingFaceTGILLMSetting,
+    ],
     Body(discriminator='provider'),
 ]
