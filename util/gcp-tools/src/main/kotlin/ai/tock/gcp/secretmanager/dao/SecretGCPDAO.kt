@@ -18,11 +18,9 @@ package ai.tock.gcp.secretmanager.dao
 
 import ai.tock.gcp.EnvConfig
 import ai.tock.gcp.GCP_SECRET_VERSION
-import ai.tock.shared.name
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.api.gax.rpc.NotFoundException
 import com.google.cloud.secretmanager.v1.*
-import com.google.cloud.secretmanager.v1.Replication.UserManaged.Replica
 import com.google.protobuf.ByteString
 import mu.KLogger
 import mu.KotlinLogging
