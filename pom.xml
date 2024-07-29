@@ -117,7 +117,6 @@
         <module>nlp</module>
         <module>bot</module>
         <module>gen-ai</module>
-        <module>util/gcp-tools</module>
     </modules>
 
     <dependencies>

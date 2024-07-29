@@ -31,6 +31,7 @@
 
     <modules>
         <module>aws-tools</module>
+        <module>gcp-tools</module>
         <module>iadvize-client</module>
     </modules>
 </project>
