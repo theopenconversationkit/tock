@@ -31,7 +31,7 @@ import mu.KLogger
 import mu.KotlinLogging
 
 val secretStorageType: String = property("tock_gen_ai_orchestrator_secret_storage_type", Constants.SECRET_KEY_GCP) // TODO MASS Constants.SECRET_KEY_RAW
-val secretStoragePrefix: String = property("tock_gen_ai_orchestrator_secret_storage_prefix_name", "DEV-TOCK") // TODO MASS : DEV-TOCK
+val secretStoragePrefix: String = property("tock_gen_ai_orchestrator_secret_storage_prefix_name", "LOCAL-TOCK") // TODO MASS : DEV-TOCK
 
 /**
  * The security utilities class

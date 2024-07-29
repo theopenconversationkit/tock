@@ -19,7 +19,7 @@ package ai.tock.gcp.secretmanager.dao
 import ai.tock.gcp.EnvConfig
 import ai.tock.gcp.GCP_SECRET_VERSION
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.google.api.gax.rpc.NotFoundException
+import com.google.api.gax.rpc.AlreadyExistsException
 import com.google.cloud.secretmanager.v1.*
 import com.google.protobuf.ByteString
 import mu.KLogger
@@ -41,7 +41,7 @@ class SecretGCPDAO : SecretDAO {
         val response: AccessSecretVersionResponse = client.accessSecretVersion(secretVersionName)
         logger.debug { "GCP Secret Manager - The secret '$secretVersionName' has been fetched." }
 
-        return response.payload.toString()
+        return response.payload.data.toByteArray().decodeToString()
     }
 
 
@@ -65,33 +65,30 @@ class SecretGCPDAO : SecretDAO {
     }
 
     private fun createSecret(secretId: String) {
-        // Build the secret to create with manual replication
-        val secretToCreate: Secret = Secret.newBuilder()
-            .setReplication(
-                Replication.newBuilder()
-                    .setUserManaged(
-                        Replication.UserManaged.newBuilder()
-                            .addReplicas(
-                                Replication.UserManaged.Replica.newBuilder()
-                                    .setLocation(EnvConfig.gcpRegion)
-                                    .build()
-                            )
-                            .build()
-                    )
-                    .build()
-            )
-            .build()
-
         try {
-            // Try to access the secret to check if it exists
-            val secretName: SecretName = SecretName.of(EnvConfig.gcpProjectId, secretId)
-            client.getSecret(secretName)
-            logger.info { "Secret already exists: ${secretName.secret}" }
-        } catch (e: NotFoundException) {
-            // If the secret does not exist, create it
+            // Build the secret to create with manual replication
+            val secretToCreate: Secret = Secret.newBuilder()
+                .setReplication(
+                    Replication.newBuilder()
+                        .setUserManaged(
+                            Replication.UserManaged.newBuilder()
+                                .addReplicas(
+                                    Replication.UserManaged.Replica.newBuilder()
+                                        .setLocation(EnvConfig.gcpRegion)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+
             val projectName: ProjectName = ProjectName.of(EnvConfig.gcpProjectId)
             val createdSecret = client.createSecret(projectName, secretId, secretToCreate)
-            logger.info { "Created secret: ${createdSecret.name}" }
+            logger.info { "The secret ${createdSecret.name} is successfully created." }
+
+        } catch (e: AlreadyExistsException) {
+            logger.info { "The secret ${secretId} is already exists." }
         }
     }
 
