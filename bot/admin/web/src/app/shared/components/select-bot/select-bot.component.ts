@@ -15,10 +15,10 @@
  */
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { DialogService } from '../../core-nlp/dialog.service';
-import { StateService } from '../../core-nlp/state.service';
+import { BotConfigurationService } from '../../../core/bot-configuration.service';
+import { BotApplicationConfiguration } from '../../../core/model/configuration';
+import { DialogService } from '../../../core-nlp/dialog.service';
+import { StateService } from '../../../core-nlp/state.service';
 import { NbComponentSize } from '@nebular/theme';
 
 @Component({

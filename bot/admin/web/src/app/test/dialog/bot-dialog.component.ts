@@ -21,14 +21,13 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { BotDialogRequest, TestMessage, XRayTestPlan } from '../model/test';
 import { BotMessage, Sentence } from '../../shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
-import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
 import { PaginatedQuery, randomString } from '../../model/commons';
 import { Observable, of, Subject, take, takeUntil } from 'rxjs';
 
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 
 import { SearchQuery, SentenceStatus } from '../../model/nlp';
-import { ChatUiComponent } from '../../shared/components';
+import { ChatUiComponent, SelectBotEvent } from '../../shared/components';
 import { NlpService } from '../../core-nlp/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
 import { getDialogMessageUserAvatar } from '../../shared/utils';

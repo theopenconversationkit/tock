@@ -16,10 +16,8 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { DateRangeCalendarComponent } from './date-range/date-range-calendar.component';
 import { BotSharedService } from './bot-shared.service';
 import { MomentModule } from 'ngx-moment';
-import { SelectBotComponent } from './select-bot/select-bot.component';
 import {
   NbCalendarRangeModule,
   NbCardModule,
@@ -40,7 +38,6 @@ import {
   NbToggleModule,
   NbDatepickerModule
 } from '@nebular/theme';
-import { InfoButtonComponent } from './info-button/info-button.component';
 
 import {
   AutocompleteInputComponent,
@@ -77,7 +74,10 @@ import {
   AiSettingsEngineConfigParamInputComponent,
   SentencesGenerationComponent,
   SentencesGenerationListComponent,
-  SentencesGenerationOptionsComponent
+  SentencesGenerationOptionsComponent,
+  InfoButtonComponent,
+  SelectBotComponent,
+  DateRangeCalendarComponent
 } from './components';
 
 import { AutofocusDirective } from './directives';
