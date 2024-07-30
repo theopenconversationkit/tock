@@ -2,13 +2,21 @@
 title: GCP - Overall secret management design
 ---
 
-# GCP - Overall secret management design
+# GCP - Overall secret management design #1696
 
 - Proposal PR: https://github.com/theopenconversationkit/tock/pull/1697
 - Github Issue for this feature: https://github.com/theopenconversationkit/tock/issues/1696
 
 
 API version used : v1 of Google Secret Manager, reference version here.
+
+## Introduction
+
+We have already an integration of AWS Secret manager essentially used for :
+* Generative AI services dynamic secrets management, secrets vault are create dynamically for generative AI services (LLM, Embedding, Observability, VectorDB) 
+* MongoDB credentials : Add an implementation of `ai.tock.shared.security.mongo.MongoCredentialsProvider` ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) for GCP. Currently we only have the connexion string (thought environment variables), but credentials can be provided using ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) (see [MongoClient creation here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L178), [asyncMongoClient here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L197))
+* iAdvize Connector GraphQL credentials : currently we have an AWS Secret Manager implementation of [`ai.tock.shared.security.credentials.CredentialsProvider`](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/credentials/CredentialsProvider.kt#L19) this will need to be implemented also for GCP Secret Manager. 
+
 
 ## Architecture design
 
@@ -73,7 +81,11 @@ Reference about secret ressource ID pattern `projects/project-number/secrets/sec
 
 ## Access management - IAM roles and permissions
 
-Bot Admin / Studio, role `bot-admin` :
+### For Gen AI Secrets
+
+*It would be greate to use [IAM conditions](https://cloud.google.com/iam/docs/conditions-overview) to limit secret access only to secrets respecting the gen ai secret naming pattern.*
+
+Role `tock.gen-ai-secrets.sharer` (reader & writer) :
 * secretmanager.secrets.create
 * secretmanager.versions.add
 * secretmanager.versions.access
@@ -81,19 +93,50 @@ Bot Admin / Studio, role `bot-admin` :
 * secretmanager.secrets.update
 * secretmanager.secrets.delete
 
-Orchestrator role `gen-ai-orchestrator` :
+This role `tock.gen-ai-secrets.sharer`, should be applied to the following stack components :
+* Bot-Admin / Studio
+
+Role `tock.gen-ai-secrets.shareholder` (reader) :
 * secretmanager.versions.access
 * secretmanager.versions.get
+
+This role `tock.gen-ai-secrets.shareholder`, should be applied to the following stack components :
+* Gen AI Orchestrator
 
 Feature env cleaner role `feature-env-cleaner` :
 * secretmanager.*
 
 *This role can be used by CI / CD when removing a feature env if you have feature based environment. Should not be created in production dedicated GCP projects.*
 
+### For Tock MongoDB Secrets
 
-## Gen AI Orchestrator secret payload format
+Role `tock.mongodb-secret.shareholder` (reader) :
+* secretmanager.versions.access
+* secretmanager.versions.get
 
-Secret payload data have the following base format :
+This role `tock.mongodb-secret.shareholder`, should be applied to the following stack components :
+* Bot-Admin / studio
+* Bot API
+* NLP API
+
+*This secret isn't set though TOCK, should be set using the GCP console or infrastructure scripting.*
+
+### For iAdvize credentials secrets
+
+Role `tock.iadvize-secret.shareholder` (reader) :
+* secretmanager.versions.access
+* secretmanager.versions.get
+
+This role `tock.iadvize-secret.shareholder`, should be applied to the following stack components :
+* Bot API
+
+*This secret isn't set though TOCK, should be set using the GCP console or infrastructure scripting.*
+
+## Secret formats
+
+### Gen AI Orchestrator secret payload format
+
+Secret payload data for all generative AI related secret have the following base format :
 
 ```json
 {
@@ -101,7 +144,34 @@ Secret payload data have the following base format :
 }
 ```
 
-## Database storage format
+### MongoDB Secret format
+
+The mongo database secret format is the following :
+```json
+{
+  "dbClusterIdentifier": "",
+  "password": "********",
+  "engine": "mongo",
+  "port": 27017,
+  "host": "mydb.net",
+  "ssl": true,
+  "username": "myUser"
+}
+```
+
+### iAdvize Secret payload format
+
+The iAdvize secret payload data is the following one :
+```json
+{
+  "password":"****************",
+  "username":"myiAdvizeTechnicalMail@exemple.com"
+}
+```
+
+This is the iAdvize technical account you use for GraphQL calls.
+
+## Generative AI - database storage format
 
 Here is a exemple of how it should be stored in the database :
 ```json
@@ -146,15 +216,32 @@ POST /llm-providers/OpenAI/setting/status
 ```
 
 
-## Bot Admin - Environnement variable settings
+## Environnement variable settings for secrets
 
 This design introduce the new provider type `GcpSecretManager`.
+
+### Bot Admin / Studio
 
 |Environment variable name | Default | Allowed values | Description |
 |--- |--- |--- |--- |
 | `tock_gen_ai_orchestrator_secret_storage_type`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
 | `tock_gen_ai_orchestrator_secret_storage_prefix_name`| `DEV` | any string ? | See section "Environment isolation `SECRET_STORAGE_PREFIX` and feature based environements" of this document.  <br><br> ⚠️ Current default value need to be changed. |
+| `tock_mongodb_credentials_secret_id`| `projects/478160847739/secrets/PROD-TOCK-MONGODB` | GCP Secret ID Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. <== TODO |
 
+TODO is this spec OK for cross GCP project secret consumption ??
+
+### NLP API
+
+|Environment variable name | Default | Allowed values | Description |
+|--- |--- |--- |--- |
+| `tock_mongodb_credentials_secret_id`| `projects/478160847739/secrets/PROD-TOCK-MONGODB` | GCP Secret ID Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. <== TODO |
+
+### Bot API
+
+|Environment variable name | Default | Allowed values | Description |
+|--- |--- |--- |--- |
+| `tock_mongodb_credentials_secret_id`| `projects/478160847739/secrets/PROD-TOCK-MONGODB` | GCP Secret ID Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. <== TODO |
+| `gcp_iadvize_credentials_secret_id`| `projects/478160847739/secrets/PROD-TOCK-IADVIZE` | GCP Secret ID Path | Secret ID use for Mongo DB secret iAdvize GraphQL calls. Only needed if you use iAdvize, it can also be passed though environment variables `iadvize_username_authentication` and `iadvize_password_authentication`. | 
 
 ## Technical change that should be made
 
