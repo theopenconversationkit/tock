@@ -269,6 +269,7 @@ TODO is this spec OK for cross GCP project secret consumption ??
 ### Other changes
 * Introduction of a new util (`tock-utils`) module named `tock-gcp-tools`, this module will implement the same logic as the `tock-aws-tools`
 * Introduce GCP secret in the Gen Ai Orchestrator. OpenAPI contrat not defined in this design currently.
+* `iadvize_credentials_provider_type` becomes `tock_iadvize_credentials_provider` but it was already not used as it was handle by [the injector not relying on this variable](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/util/aws-tools/src/main/kotlin/ai/tock/aws/Ioc.kt#L32)
 * Secret name generation (normalization) should not be done at the DTO mapper level as it currently assume that we only use AWS Secret Manager :
   *  [BotRAGConfigurationDTO.kt#L60](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L60), [BotRAGConfigurationDTO.kt#L66](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L66)
   * BotObservabilityConfigurationDTO
