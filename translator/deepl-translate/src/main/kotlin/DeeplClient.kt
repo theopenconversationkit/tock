@@ -99,7 +99,7 @@ class OkHttpDeeplClient(
             .build()
 
         glossaryId?.let {
-            formBuilder.add("glossaryId", it)
+            formBuilder.add("glossary_id", it)
         }
 
         val request = Request.Builder()
