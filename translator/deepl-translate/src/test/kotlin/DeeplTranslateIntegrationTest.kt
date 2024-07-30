@@ -28,7 +28,7 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun simpleTest() {
-        val result = DeeplTranslatorEngine.translate(
+        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
             "Bonjour, je voudrais me rendre à New-York Mardi prochain",
             Locale.FRENCH,
             Locale.ENGLISH
@@ -39,7 +39,7 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun testWithEmoticonAndAntislash() {
-        val result = DeeplTranslatorEngine.translate(
+        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
             "Bonjour, je suis l'Agent virtuel SNCF Voyageurs! \uD83E\uDD16\n" +
                     "Je vous informe sur l'état du trafic en temps réel.\n" +
                     "Dites-moi par exemple \"Mon train 6111 est-il à l'heure ?\", \"Aller à Saint-Lazare\", \"Prochains départs Gare de Lyon\" ...",
@@ -58,7 +58,7 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun testWithParameters() {
-        val result = DeeplTranslatorEngine.translate(
+        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
             "Bonjour, je voudrais me rendre à {:city} {:date}",
             Locale.FRENCH,
             Locale.GERMAN
@@ -69,7 +69,7 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun testWithHTML() {
-        val result = DeeplTranslatorEngine.translate(
+        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
             "Bonjour, je voudrais me rendre à Paris <br><br/> demain soir",
             Locale.FRENCH,
             Locale.GERMAN

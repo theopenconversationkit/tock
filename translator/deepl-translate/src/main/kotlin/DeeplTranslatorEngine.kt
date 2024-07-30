@@ -16,24 +16,24 @@
 
 package ai.tock.translator.deepl
 
+import ai.tock.shared.mapProperty
 import ai.tock.shared.propertyOrNull
 import ai.tock.translator.TranslatorEngine
 import java.util.Locale
 import org.apache.commons.text.StringEscapeUtils
 
 internal class DeeplTranslatorEngine(client: DeeplClient) : TranslatorEngine {
-    private val supportedLanguagesProperty = propertyOrNull("tock_translator_deepl_target_languages")
-    private val supportedLanguages: Set<String>? = supportedLanguagesProperty?.split(",")?.map { it.trim() }?.toSet()
-
     private val deeplClient = client
-    private val glossaryId = propertyOrNull("tock_translator_deepl_glossary_id")
+
+    private val supportedLanguages: Set<String>? = propertyOrNull("tock_translator_deepl_target_languages")?.split(",")?.map { it.trim() }?.toSet()
+    private val glossaryMapIds = mapProperty("tock_translator_deepl_glossary_map_ids", emptyMap())
     override val supportAdminTranslation: Boolean = true
 
     override fun translate(text: String, source: Locale, target: Locale): String {
         var translatedTextHTML4 = ""
         // Allows to filter translation on a specific language
-        if (supportedLanguages?.contains(target.language) == true || supportedLanguages == null) {
-            val translatedText = deeplClient.translate(text, source.language, target.language, true, glossaryId)
+        if (supportedLanguages == null || supportedLanguages.contains(target.language)) {
+            val translatedText = deeplClient.translate(text, source.language, target.language, true, glossaryMapIds[target.language])
             translatedTextHTML4 = StringEscapeUtils.unescapeHtml4(translatedText)
         }
         return translatedTextHTML4
