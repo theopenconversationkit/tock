@@ -16,19 +16,21 @@
 
 package ai.tock.translator.deepl
 
-import org.junit.jupiter.api.Disabled
-import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 
 /**
  * All these tests are disabled because it uses Deepl pro api that can be expensive
  */
 class DeeplTranslateIntegrationTest {
+    private val deeplTranslatorEngine = DeeplTranslatorEngine(OkHttpDeeplClient())
+
     @Test
     @Disabled
     fun simpleTest() {
-        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
+        val result = deeplTranslatorEngine.translate(
             "Bonjour, je voudrais me rendre à New-York Mardi prochain",
             Locale.FRENCH,
             Locale.ENGLISH
@@ -39,7 +41,7 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun testWithEmoticonAndAntislash() {
-        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
+        val result = deeplTranslatorEngine.translate(
             "Bonjour, je suis l'Agent virtuel SNCF Voyageurs! \uD83E\uDD16\n" +
                     "Je vous informe sur l'état du trafic en temps réel.\n" +
                     "Dites-moi par exemple \"Mon train 6111 est-il à l'heure ?\", \"Aller à Saint-Lazare\", \"Prochains départs Gare de Lyon\" ...",
@@ -58,7 +60,7 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun testWithParameters() {
-        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
+        val result = deeplTranslatorEngine.translate(
             "Bonjour, je voudrais me rendre à {:city} {:date}",
             Locale.FRENCH,
             Locale.GERMAN
@@ -69,7 +71,7 @@ class DeeplTranslateIntegrationTest {
     @Test
     @Disabled
     fun testWithHTML() {
-        val result = DeeplTranslatorEngine(OkHttpDeeplClient()).translate(
+        val result = deeplTranslatorEngine.translate(
             "Bonjour, je voudrais me rendre à Paris <br><br/> demain soir",
             Locale.FRENCH,
             Locale.GERMAN

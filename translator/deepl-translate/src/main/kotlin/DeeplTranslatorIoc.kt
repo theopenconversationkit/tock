@@ -21,6 +21,11 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 
-fun deeplTranslatorModule(client: DeeplClient = OkHttpDeeplClient()) = Kodein.Module {
+/**
+ * The default Deepl translator module, for use in a Kodein injector.
+ */
+val deeplTranslatorModule = configureDeeplTranslatorModule()
+
+fun configureDeeplTranslatorModule(client: DeeplClient = OkHttpDeeplClient()) = Kodein.Module {
     bind<TranslatorEngine>(overrides = true) with provider { DeeplTranslatorEngine(client) }
 }
