@@ -21,11 +21,11 @@ import ai.tock.shared.jackson.mapper
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import com.fasterxml.jackson.module.kotlin.readValue
+import java.io.IOException
+import java.util.regex.Pattern
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.IOException
-import java.util.regex.Pattern
 
 internal data class TranslationResponse(
     val translations: List<Translation>
@@ -50,8 +50,12 @@ interface DeeplClient {
 class OkHttpDeeplClient(
     private val apiURL: String = property("tock_translator_deepl_api_url", "https://api.deepl.com/v2/translate"),
     private val apiKey: String? = propertyOrNull("tock_translator_deepl_api_key"),
+    okHttpCustomizer: OkHttpClient.Builder.() -> Unit = {}
 ) : DeeplClient {
-    private val client = OkHttpClient.Builder().apply(TockProxyAuthenticator::install).build()
+    private val client = OkHttpClient.Builder()
+        .apply(TockProxyAuthenticator::install)
+        .apply(okHttpCustomizer)
+        .build()
 
     private fun replaceSpecificPlaceholders(text: String): Pair<String, List<String>> {
         // Store original placeholders for later restoration
