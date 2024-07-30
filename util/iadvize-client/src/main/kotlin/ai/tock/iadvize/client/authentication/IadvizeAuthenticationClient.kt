@@ -18,7 +18,6 @@ package ai.tock.iadvize.client.authentication
 
 import ai.tock.iadvize.client.IadvizeApi
 import ai.tock.iadvize.client.PASSWORD
-import ai.tock.iadvize.client.authentication.credentials.EnvCredentialsProvider
 import ai.tock.iadvize.client.authenticationFailedError
 import ai.tock.iadvize.client.createApi
 import ai.tock.shared.injector

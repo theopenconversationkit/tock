@@ -29,6 +29,6 @@ import com.github.salomonbrys.kodein.singleton
 
 val awsToolsModule = Kodein.Module {
     bind<SecretDAO>() with singleton { SecretAWSDAO() }
-    bind<CredentialsProvider>(tag = "IAdvizeCredentialsAWS") with singleton { IAdvizeCredentialsAWSProvider() }
+    bind<CredentialsProvider>(tag = "AWS") with singleton { IAdvizeCredentialsAWSProvider() }
     bind<AWSSecretsManagerService>() with singleton { AWSSecretsManagerServiceImpl() }
 }
