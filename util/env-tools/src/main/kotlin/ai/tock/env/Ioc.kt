@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package ai.tock.gcp.service
+package ai.tock.env
 
-import ai.tock.gcp.gcpToolsModule
+import ai.tock.env.secretmanager.EnvSecretManagerService
+import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein.Module
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.singleton
 
 class IOCModulesService : BotAdditionalModulesService {
-    override fun customModules(): Set<Module> = setOf(gcpToolsModule)
+    override fun customModules(): Set<Module> = setOf(envModules)
+}
+
+val envModules = Module {
+    bind<SecretMangerService>(tag = SecretManagerProviderType.ENV.name) with singleton { EnvSecretManagerService() }
 }

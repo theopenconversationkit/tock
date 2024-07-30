@@ -74,36 +74,6 @@ class GCPSecretManagerClient:
         """
 
         try:
-            # Build the parent name from the project.
-            parent = f"projects/{application_settings.gcp_project_id}"
-            # Define the replication policy with a specific location
-            replication = {
-                "user_managed": {
-                    "replicas": [
-                        {
-                            "location": "europe-west9"
-                        }
-                    ]
-                }
-            }
-
-            # Create the parent secret.
-            # secret = self.client.create_secret(
-            #     request={
-            #         "parent": parent,
-            #         "secret_id": secret_id,
-            #         "secret": {"replication": replication},
-            #     }
-            # )
-            # 'projects/364419067793/secrets/ASSOUKTI'
-            # logging.info(f'secret:{secret.name}')
-            # Add the secret version.
-            # version = self.client.add_secret_version(
-            #     request={"parent": f'projects/{application_settings.gcp_project_id}/secrets/{secret_id}',
-            #              "payload": {"data": b"hello world!"}}
-            # )
-            # logging.info(f'version:{version.name}')
-
             # Build the resource name of the secret
             secret_name = f"projects/{application_settings.gcp_project_id}/secrets/{secret_id}/versions/latest"
 

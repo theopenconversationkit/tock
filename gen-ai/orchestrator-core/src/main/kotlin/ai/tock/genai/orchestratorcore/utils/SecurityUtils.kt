@@ -16,9 +16,6 @@
 
 package ai.tock.genai.orchestratorcore.utils
 
-import ai.tock.aws.model.AIProviderSecret
-import ai.tock.aws.secretmanager.provider.AWSSecretsManagerService
-import ai.tock.gcp.secretmanager.provider.GCPSecretManagerService
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.security.AwsSecretKey
 import ai.tock.genai.orchestratorcore.models.security.GcpSecretKey
@@ -27,11 +24,19 @@ import ai.tock.genai.orchestratorcore.models.security.SecretKey
 import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.provide
+import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.credentials.AIProviderSecret
 import mu.KLogger
 import mu.KotlinLogging
 
 val secretStorageType: String = property("tock_gen_ai_orchestrator_secret_storage_type", Constants.SECRET_KEY_GCP) // TODO MASS Constants.SECRET_KEY_RAW
 val secretStoragePrefix: String = property("tock_gen_ai_orchestrator_secret_storage_prefix_name", "LOCAL-TOCK") // TODO MASS : DEV-TOCK
+val genAICredentialsProvider: String = property(
+    "tock_gen_ai_credentials_provider",
+    SecretManagerProviderType.GCP_SECRET_MANAGER.name // TODO MASS: ENV
+)
+
 
 /**
  * The security utilities class
@@ -41,14 +46,11 @@ object SecurityUtils {
     private val logger: KLogger = KotlinLogging.logger {}
 
     /**
-     * The AWS Secrets Manager Service
+     * The Secrets Manager Service
      */
-    private val awsSecretsManagerClient: AWSSecretsManagerService get() = injector.provide()
-
-    /**
-     * The GCP Secret Manager Service
-     */
-    private val gcpSecretManagerClient: GCPSecretManagerService get() = injector.provide()
+    private val secretMangerService: SecretMangerService by lazy {
+        injector.provide(tag = genAICredentialsProvider)
+    }
 
     /**
      * Fetch the secret key value.
@@ -59,14 +61,22 @@ object SecurityUtils {
         try {
             return when (secret) {
                 is RawSecretKey -> secret.value
-                is AwsSecretKey -> awsSecretsManagerClient.getAIProviderSecret(secret.secretName).secret
-                is GcpSecretKey -> gcpSecretManagerClient.getAIProviderSecret(secret.secretName).secret
+                is AwsSecretKey -> getAIProviderSecret(SecretManagerProviderType.AWS_SECRET_MANAGER, secret.secretName)
+                is GcpSecretKey -> getAIProviderSecret(SecretManagerProviderType.GCP_SECRET_MANAGER, secret.secretName)
                 else -> throw IllegalArgumentException("Unsupported secret key type")
             }
         } catch (e: Exception) {
             logger.warn("The secret has not been recovered.", e)
             return ""
         }
+    }
+
+    private fun getAIProviderSecret(type: SecretManagerProviderType, secretName: String): String {
+        if (type != secretMangerService.type) {
+            throw IllegalArgumentException("The secret manager provider type '$type' is is not compatible with the service type ${secretMangerService.type}.")
+        }
+
+        return secretMangerService.getAIProviderSecret(secretName).secret
     }
 
     /**
@@ -80,14 +90,14 @@ object SecurityUtils {
             Constants.SECRET_KEY_AWS -> {
                 val secretName = generateAwsSecretName(namespace, botId, feature)
                 // Create or update the [AIProviderSecret] on AWS Secrets Manager
-                awsSecretsManagerClient.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
+                secretMangerService.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
                 // The return the Secret Key
                 AwsSecretKey(secretName)
             }
             Constants.SECRET_KEY_GCP -> {
                 val secretName = generateGcpSecretName(namespace, botId, feature)
                 // Create or update the [AIProviderSecret] on GCP Secret Manager
-                gcpSecretManagerClient.createOrUpdateAIProviderSecret(secretName, ai.tock.gcp.model.AIProviderSecret(secretValue))
+                secretMangerService.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
                 // The return the Secret Key
                 GcpSecretKey(secretName)
             }

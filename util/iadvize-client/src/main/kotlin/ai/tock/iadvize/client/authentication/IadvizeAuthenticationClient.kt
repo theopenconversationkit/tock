@@ -16,17 +16,27 @@
 
 package ai.tock.iadvize.client.authentication
 
-import ai.tock.iadvize.client.IadvizeApi
-import ai.tock.iadvize.client.PASSWORD
-import ai.tock.iadvize.client.authenticationFailedError
-import ai.tock.iadvize.client.createApi
+import ai.tock.iadvize.client.*
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import ai.tock.shared.security.credentials.CredentialsProvider
+import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerProviderType
 import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
+
+val iAdvizeCredentialsProvider: String = ai.tock.shared.property(
+    "tock_iadvize_credentials_provider",
+    SecretManagerProviderType.GCP_SECRET_MANAGER.name // TODO MASS: ENV
+)
+
+// tock_database_credentials_provider TODO MASS : pour la bdd
+
+val iAdvizeCredentialsSecretName: String = ai.tock.shared.property(
+    "tock_iadvize_credentials_secret_name",
+    "LOCAL-TOCK-iadvize-credentials"
+)
 
 /**
  * Authentication client.
@@ -39,16 +49,12 @@ class IadvizeAuthenticationClient {
         const val DELAY_SECONDS = 5
     }
 
-    private val credentialsProvider: CredentialsProvider by lazy { injector.provide() }
+    private val secretMangerService: SecretMangerService by lazy { injector.provide(tag = iAdvizeCredentialsProvider) }
 
     internal var iadvizeApi: IadvizeApi = createApi(logger)
 
-    private val username: String by lazy {
-        credentialsProvider.getCredentials().username
-    }
-
-    private val password: String by lazy {
-        credentialsProvider.getCredentials().password
+    private val credentials by lazy {
+        secretMangerService.getCredentials(iAdvizeCredentialsSecretName)
     }
 
     /**
@@ -70,7 +76,7 @@ class IadvizeAuthenticationClient {
      * Request a new access token.
      */
     private fun getToken(): Token {
-        return iadvizeApi.createToken(username, password, grantType = PASSWORD).execute().body()
+        return iadvizeApi.createToken(credentials.username, credentials.password, grantType = PASSWORD).execute().body()
             ?.let {
                 val value = it.accessToken ?: authenticationFailedError()
                 val time = it.expiresIn?.let { s -> LocalDateTime.now().plusSeconds(s.toLong() - DELAY_SECONDS) }

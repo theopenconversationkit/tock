@@ -16,19 +16,20 @@
 
 package ai.tock.gcp
 
-import ai.tock.gcp.secretmanager.dao.SecretDAO
-import ai.tock.gcp.secretmanager.dao.SecretGCPDAO
-import ai.tock.gcp.secretmanager.provider.GCPSecretManagerService
-import ai.tock.gcp.secretmanager.provider.GCPSecretManagerServiceImpl
-import ai.tock.gcp.secretmanager.provider.IAdvizeCredentialsGCPProvider
-import ai.tock.shared.security.credentials.CredentialsProvider
-import com.github.salomonbrys.kodein.Kodein
+import ai.tock.gcp.secretmanager.GcpSecretManagerService
+import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.service.BotAdditionalModulesService
+import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 
+class IOCModulesService : BotAdditionalModulesService {
+    override fun customModules(): Set<Module> = setOf(gcpModules)
+}
 
-val gcpToolsModule = Kodein.Module {
-    bind<SecretDAO>() with singleton { SecretGCPDAO() }
-    bind<GCPSecretManagerService>() with singleton { GCPSecretManagerServiceImpl() }
-    bind<CredentialsProvider>(tag = "GCP") with singleton { IAdvizeCredentialsGCPProvider() }
+val gcpModules = Module {
+    bind<SecretMangerService>(tag = SecretManagerProviderType.GCP_SECRET_MANAGER.name) with singleton {
+        GcpSecretManagerService()
+    }
 }

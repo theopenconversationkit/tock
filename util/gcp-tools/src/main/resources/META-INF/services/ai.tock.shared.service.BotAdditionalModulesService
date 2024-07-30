@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-ai.tock.gcp.service.IOCModulesService
+ai.tock.gcp.IOCModulesService

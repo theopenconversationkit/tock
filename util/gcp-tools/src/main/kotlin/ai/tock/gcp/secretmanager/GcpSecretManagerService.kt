@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
-package ai.tock.gcp.secretmanager.dao
+package ai.tock.gcp.secretmanager
 
 import ai.tock.gcp.EnvConfig
 import ai.tock.gcp.GCP_SECRET_VERSION
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.credentials.AIProviderSecret
+import ai.tock.shared.security.credentials.Credentials
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.api.gax.rpc.AlreadyExistsException
 import com.google.cloud.secretmanager.v1.*
 import com.google.protobuf.ByteString
+import kotlinx.serialization.json.Json
 import mu.KLogger
 import mu.KotlinLogging
 
-
 /**
- * Retrieve secret from GCP Secret Manager
+ * Implementation of the AWS Secret Manager Service
  */
-class SecretGCPDAO : SecretDAO {
+class GcpSecretManagerService: SecretMangerService {
+
+    override val type: SecretManagerProviderType
+        get() = SecretManagerProviderType.GCP_SECRET_MANAGER
 
     private val client: SecretManagerServiceClient = SecretManagerServiceClient.create()
     private val logger: KLogger = KotlinLogging.logger { }
 
     // Get an existing secret.
-    override fun getSecret(secretId: String): String  {
+    private fun getGcpSecret(secretId: String): String  {
         // Access the secret version.
         val secretVersionName: SecretVersionName = SecretVersionName.of(EnvConfig.gcpProjectId, secretId, GCP_SECRET_VERSION)
         val response: AccessSecretVersionResponse = client.accessSecretVersion(secretVersionName)
@@ -45,9 +52,9 @@ class SecretGCPDAO : SecretDAO {
     }
 
 
-    override fun createOrUpdateSecret(secretId: String, secretObject: Any): String {
+    private fun createOrUpdateGcpSecret(secretId: String, secretObject: Any) {
         // Create secret if it does not exist
-        createSecret(secretId)
+        createGcpSecret(secretId)
 
         val secretValue = jacksonObjectMapper().writeValueAsString(secretObject)
         // Create the secret payload.
@@ -58,13 +65,11 @@ class SecretGCPDAO : SecretDAO {
 
         // Add the secret version.
         val secretName: SecretName = SecretName.of(EnvConfig.gcpProjectId, secretId)
-        val version: SecretVersion = client.addSecretVersion(secretName, payload)
+        client.addSecretVersion(secretName, payload)
         logger.info { "A new secret value/version is pushed successfully for '$secretName'" }
-
-        return version.name
     }
 
-    private fun createSecret(secretId: String) {
+    private fun createGcpSecret(secretId: String) {
         try {
             // Build the secret to create with manual replication
             val secretToCreate: Secret = Secret.newBuilder()
@@ -92,4 +97,12 @@ class SecretGCPDAO : SecretDAO {
         }
     }
 
+    override fun getCredentials(secretName: String): Credentials =
+        Json.decodeFromString(getGcpSecret(secretName))
+
+    override fun getAIProviderSecret(secretName: String): AIProviderSecret =
+        Json.decodeFromString(getGcpSecret(secretName))
+
+    override fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret) =
+        createOrUpdateGcpSecret(secretName, secretValue)
 }

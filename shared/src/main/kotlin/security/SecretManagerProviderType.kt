@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-package ai.tock.iadvize.client
+package ai.tock.shared.security
 
-import ai.tock.shared.service.BotAdditionalModulesService
-import com.github.salomonbrys.kodein.Kodein.Module
-
-
-class IOCModulesService : BotAdditionalModulesService {
-
-    override fun defaultModules(): Set<Module> = setOf(iAdvizeClientModule)
-}

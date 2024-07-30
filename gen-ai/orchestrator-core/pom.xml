@@ -35,13 +35,11 @@
             <groupId>ai.tock</groupId>
             <artifactId>tock-aws-tools</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-gcp-tools</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

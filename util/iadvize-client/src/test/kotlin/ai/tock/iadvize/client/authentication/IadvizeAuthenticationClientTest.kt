@@ -20,7 +20,6 @@ package ai.tock.iadvize.client.authentication
 import ai.tock.iadvize.client.AuthenticationFailedError
 import ai.tock.iadvize.client.IadvizeApi
 import ai.tock.iadvize.client.authentication.models.AuthResponse
-import ai.tock.shared.security.credentials.CredentialsProvider
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
@@ -57,8 +56,8 @@ class IadvizeAuthenticationClientTest {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(
             Kodein {
-                import(Kodein.Module {
-                    bind<CredentialsProvider>() with provider { mockk(relaxed = true) }
+                import(Kodein.Module { // TODO MASS
+                    //bind<CredentialsProvider>() with provider { mockk(relaxed = true) }
                 })
             }
         )

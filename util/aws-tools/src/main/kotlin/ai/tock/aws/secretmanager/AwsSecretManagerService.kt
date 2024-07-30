@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package ai.tock.aws.secretmanager.dao
+package ai.tock.aws.secretmanager
 
 import ai.tock.aws.AWS_ASSUMED_ROLE_PROPERTY
 import ai.tock.aws.AWS_SECRET_VERSION
 import ai.tock.aws.EnvConfig
-import ai.tock.aws.utils.booleanProperty
-import ai.tock.aws.utils.property
+import ai.tock.shared.booleanProperty
+import ai.tock.shared.property
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.credentials.AIProviderSecret
+import ai.tock.shared.security.credentials.Credentials
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicSessionCredentials
 import com.amazonaws.services.secretsmanager.AWSSecretsManager
@@ -28,10 +32,10 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder
 import com.amazonaws.services.secretsmanager.model.*
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest
-import com.amazonaws.services.securitytoken.model.Credentials
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
+import kotlinx.serialization.json.Json
 import mu.KLogger
 import mu.KotlinLogging
 import java.util.concurrent.TimeUnit
@@ -40,23 +44,26 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 /**
- * Retrieve secret from AWS Secrets Manager
+ * Implementation of the AWS Secret Manager Service
  */
-class SecretAWSDAO : SecretDAO {
+class AwsSecretManagerService : SecretMangerService {
+    override val type: SecretManagerProviderType
+        get() = SecretManagerProviderType.AWS_SECRET_MANAGER
+
     private var stsClient = AWSSecurityTokenServiceClientBuilder.standard().build()
     private var secretsManagerClient: AWSSecretsManager
     private val logger: KLogger = KotlinLogging.logger { }
     private val lockOnSecretCache: Lock = ReentrantLock()
     private var secretsCache: Cache<String, String> = Caffeine.newBuilder()
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .maximumSize(100)
-            .build()
+        .expireAfterWrite(10, TimeUnit.MINUTES)
+        .maximumSize(100)
+        .build()
 
     init {
         secretsManagerClient = initSecretsManagerWithNewCredentials()
     }
 
-    override fun getSecret(secretId: String): String {
+    private fun getAWSSecret(secretId: String): String {
         // Lock secret cache resource to avoid concurrent credentials refreshing
         lockOnSecretCache.withLock {
             // Check if secret is stored in cache before calling AWS
@@ -67,8 +74,8 @@ class SecretAWSDAO : SecretDAO {
 
             // Retrieve secret from AWS Secrets Manager
             val getSecretValueRequest = GetSecretValueRequest()
-                    .withSecretId(secretId)
-                    .withVersionStage(property(AWS_SECRET_VERSION, "AWSCURRENT"))
+                .withSecretId(secretId)
+                .withVersionStage(property(AWS_SECRET_VERSION, "AWSCURRENT"))
             var response: GetSecretValueResult
             try {
                 response = secretsManagerClient.getSecretValue(getSecretValueRequest)
@@ -93,12 +100,12 @@ class SecretAWSDAO : SecretDAO {
      * Configure access to AWS Secrets Manager with temporary credentials
      */
     private fun initSecretsManagerWithNewCredentials(): AWSSecretsManager {
-        if (booleanProperty(AWS_ASSUMED_ROLE_PROPERTY)) {
+        if (booleanProperty(AWS_ASSUMED_ROLE_PROPERTY, false)) {
             getTemporaryCredentials().let {
                 val awsSessionCredentials =
-                        BasicSessionCredentials(it.accessKeyId, it.secretAccessKey, it.sessionToken)
+                    BasicSessionCredentials(it.accessKeyId, it.secretAccessKey, it.sessionToken)
                 return AWSSecretsManagerClientBuilder.standard()
-                        .withCredentials(AWSStaticCredentialsProvider(awsSessionCredentials)).build()
+                    .withCredentials(AWSStaticCredentialsProvider(awsSessionCredentials)).build()
             }
         } else {
             return AWSSecretsManagerClientBuilder.standard().build()
@@ -109,15 +116,15 @@ class SecretAWSDAO : SecretDAO {
     /**
      * Get temporary credentials from STS by assuming a predefined role
      */
-    private fun getTemporaryCredentials(): Credentials {
+    private fun getTemporaryCredentials(): com.amazonaws.services.securitytoken.model.Credentials {
         val request = AssumeRoleRequest()
-                .withRoleArn(EnvConfig.awsSecretManagerAssumedRole)
-                .withRoleSessionName(EnvConfig.awsAssumedRoleSessionName)
-                .withDurationSeconds(900)
+            .withRoleArn(EnvConfig.awsSecretManagerAssumedRole)
+            .withRoleSessionName(EnvConfig.awsAssumedRoleSessionName)
+            .withDurationSeconds(900)
         return stsClient.assumeRole(request).credentials
     }
 
-    override fun createOrUpdateSecret(secretName: String, secretObject: Any): String {
+    private fun createOrUpdateAWSSecret(secretName: String, secretObject: Any) {
         val secretValue = jacksonObjectMapper().writeValueAsString(secretObject)
 
         try {
@@ -125,9 +132,8 @@ class SecretAWSDAO : SecretDAO {
             val updateRequest = UpdateSecretRequest()
                 .withSecretId(secretName)
                 .withSecretString(secretValue)
-            val updateResult: UpdateSecretResult = secretsManagerClient.updateSecret(updateRequest)
+            secretsManagerClient.updateSecret(updateRequest)
             logger.info { "The secret '$secretName' already exists, so it has been updated with a new value." }
-            return updateResult.arn
         }catch (exc: ResourceNotFoundException){
             logger.info { "The secret '$secretName' does not yet exist." }
             // Create a new secret
@@ -135,11 +141,18 @@ class SecretAWSDAO : SecretDAO {
                 .withName(secretName)
                 .withSecretString(secretValue)
                 .withDescription("Created from Tock.")
-            val createResult: CreateSecretResult = secretsManagerClient.createSecret(createRequest)
+            secretsManagerClient.createSecret(createRequest)
             logger.info { "The secret '$secretName' has been created with the value." }
-            return createResult.arn
         }
 
     }
 
+    override fun getCredentials(secretName: String): Credentials =
+        Json.decodeFromString(getAWSSecret(secretName))
+
+    override fun getAIProviderSecret(secretName: String): AIProviderSecret =
+        Json.decodeFromString(getAWSSecret(secretName))
+
+    override fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret) =
+        createOrUpdateAWSSecret(secretName, secretValue)
 }

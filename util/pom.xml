@@ -13,6 +13,7 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
+  TODO MASS : retirer les propriété des projets fils
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -29,7 +30,14 @@
     <name>Tock Util</name>
     <description>Root project for utilities</description>
 
+    <properties>
+        <serialization>1.6.3</serialization>
+        <caffeine>3.1.8</caffeine>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <modules>
+        <module>env-tools</module>
         <module>aws-tools</module>
         <module>gcp-tools</module>
         <module>iadvize-client</module>

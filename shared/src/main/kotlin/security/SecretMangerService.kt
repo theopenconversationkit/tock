@@ -14,34 +14,42 @@
  * limitations under the License.
  */
 
-package ai.tock.aws.secretmanager.provider
+package ai.tock.shared.security
 
-import ai.tock.aws.model.AIProviderSecret
+import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.credentials.Credentials
 
 /**
- * The AWS Secrets Manager Service
+ * The Secret Manager Service
  */
-interface AWSSecretsManagerService {
+interface SecretMangerService {
+
+    val type : SecretManagerProviderType
+
     /**
-     * Get credentials from AWS Secret Manager
+     * Retrieve credentials
      * @param secretName the secret name
      * @return the [Credentials]
      */
     fun getCredentials(secretName: String): Credentials
 
     /**
-     * Get AI Provider Secret from AWS Secret Manager
+     * Retrieve AI Provider Secret
      * @param secretName the secret name
      * @return the [AIProviderSecret]
      */
     fun getAIProviderSecret(secretName: String): AIProviderSecret
 
     /**
-     * Create an AWS Secret if it doesn't exist. Else, update it
+     * Create an AI Provider Secret if it doesn't exist. Else, update it
      * @param secretName the secret name
      * @param secretValue the secret value to store
-     * @return the ARN of a created or updated AWS Secret.
      */
-    fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret): String
+    fun createOrUpdateAIProviderSecret(secretName: String, secretValue: AIProviderSecret)
+}
+
+enum class SecretManagerProviderType {
+    ENV,
+    AWS_SECRET_MANAGER,
+    GCP_SECRET_MANAGER
 }

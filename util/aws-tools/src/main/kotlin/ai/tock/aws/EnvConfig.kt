@@ -16,7 +16,8 @@
 
 package ai.tock.aws
 
-import ai.tock.aws.utils.property
+import ai.tock.shared.property
+
 
 const val AWS_SECRET_VERSION = "aws_secret_manager_secret_version"
 const val AWS_ASSUMED_ROLE_PROPERTY = "aws_secret_manager_assumed_role_arn"
@@ -27,6 +28,7 @@ object EnvConfig {
     /**
      * IAdvize credentials AWS secret ID.
      */
+    // TODO MASS : not used ?
     val awsIAdvizeCredentialsSecretId: String = AWS_IADVIZE_CREDENTIALS_SECRET_ID_PROPERTY.let { property(it, "please set $it") }
 
     /**
