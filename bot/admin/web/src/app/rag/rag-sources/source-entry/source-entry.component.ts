@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { Subject } from 'rxjs';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { getSourceMostRecentRunningIndexingSession } from '../commons/utils';
 import { IndexingSession, IndexingSessionTaskTypes, ProcessAdvancement, Source, SourceTypes } from '../models';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 export interface TaskDefinition {
   type: IndexingSessionTaskTypes;
@@ -85,32 +85,38 @@ export class SourceEntryComponent implements OnDestroy {
   }
 
   setSessionAsCurrent(session: IndexingSession): void {
-    const confirmLabel = 'Set as current';
-    const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+    const action = 'set as current';
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Set session "${session.id}" as current data source`,
         subtitle: 'Are you sure?',
-        action: confirmLabel
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result?.toLowerCase() === confirmLabel.toLowerCase()) {
+      if (result?.toLowerCase() === action.toLowerCase()) {
         this.onSetIndexingSessionAsCurrent.emit({ source: this.source, session });
       }
     });
   }
 
   deleteSession(session: IndexingSession): void {
-    const confirmLabel = 'Remove';
-    const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+    const action = 'Remove';
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Remove the session "${session.id}"`,
         subtitle: 'Are you sure?',
-        action: confirmLabel
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result?.toLowerCase() === confirmLabel.toLowerCase()) {
+      if (result?.toLowerCase() === action.toLowerCase()) {
         this.onDeleteIndexingSession.emit({ source: this.source, session });
       }
     });

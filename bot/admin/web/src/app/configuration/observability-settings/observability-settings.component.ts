@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { NbToastrService, NbWindowService } from '@nebular/theme';
@@ -23,7 +23,7 @@ interface ObservabilitySettingsForm {
   templateUrl: './observability-settings.component.html',
   styleUrls: ['./observability-settings.component.scss']
 })
-export class ObservabilitySettingsComponent implements OnInit {
+export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
   destroy$: Subject<unknown> = new Subject();
 
   loading: boolean = false;

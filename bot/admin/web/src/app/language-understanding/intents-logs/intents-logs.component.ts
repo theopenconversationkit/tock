@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { saveAs } from 'file-saver-es';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { DisplayIntentFullLogComponent } from './display-intents-full-log/display-intents-full-log.component';
 import { StateService } from '../../core-nlp/state.service';
-import { NlpService } from '../../nlp-tabs/nlp.service';
+import { NlpService } from '../../core-nlp/nlp.service';
 import { CoreConfig } from '../../core-nlp/core.config';
 import { Log, LogsQuery, PaginatedResult, Sentence } from '../../model/nlp';
 import { PaginatedQuery, SearchMark } from '../../model/commons';
@@ -41,7 +41,7 @@ interface IntentsLogsFilterForm {
   templateUrl: './intents-logs.component.html',
   styleUrls: ['./intents-logs.component.scss']
 })
-export class IntentsLogsComponent {
+export class IntentsLogsComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   loading: boolean = false;

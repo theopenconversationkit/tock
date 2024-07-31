@@ -17,13 +17,11 @@
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { AnalyticsTabsComponent } from './analytics-tabs.component';
 import { UsersComponent } from './users/users.component';
 import { AnalyticsService } from './analytics.service';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { BotModule } from '../bot/bot.module';
-import { NlpModule } from '../nlp-tabs/nlp.module';
 import { MomentModule } from 'ngx-moment';
 import { DialogsComponent } from './dialogs/dialogs.component';
 import {
@@ -44,9 +42,11 @@ import {
   NbUserModule,
   NbCalendarRangeModule,
   NbDialogModule,
-  NbRadioModule
+  NbRadioModule,
+  NbToggleModule,
+  NbIconModule
 } from '@nebular/theme';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartComponent } from './chart/chart.component';
 import { ChartDialogComponent } from './chart-dialog/chart-dialog.component';
 import { ActivityComponent } from './activity/activity.component';
@@ -70,13 +70,12 @@ export function importEcharts() {
   schemas: [NO_ERRORS_SCHEMA],
   imports: [
     CommonModule,
-    SharedModule,
+    FormsModule,
     AnalyticsRoutingModule,
     InfiniteScrollModule,
     MomentModule,
     BotSharedModule,
     BotModule,
-    NlpModule,
     NbRouteTabsetModule,
     NbCheckboxModule,
     NbCardModule,
@@ -96,6 +95,8 @@ export function importEcharts() {
     NbCalendarRangeModule,
     NbDialogModule.forRoot(),
     NbRadioModule,
+    NbToggleModule,
+    NbIconModule,
     NgxEchartsModule.forRoot({
       echarts: importEcharts
     }),

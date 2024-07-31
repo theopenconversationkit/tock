@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotService } from '../../bot-service';
 import { StoryDefinitionConfiguration } from '../../model/story';
 import { StateService } from '../../../core-nlp/state.service';
@@ -26,7 +26,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './story-runtime-settings.component.html',
   styleUrls: ['./story-runtime-settings.component.css']
 })
-export class StoryRuntimeSettingsComponent implements OnInit {
+export class StoryRuntimeSettingsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   disableStories: StoryDefinitionConfiguration[];

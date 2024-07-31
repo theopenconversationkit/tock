@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Subject, take } from 'rxjs';
 import { RuleType, StoryDefinitionConfiguration, StoryFeature } from '../../../model/story';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
@@ -11,7 +11,7 @@ import { BotService } from '../../../bot-service';
   templateUrl: './story-rules-table.component.html',
   styleUrls: ['./story-rules-table.component.scss']
 })
-export class StoryRulesTableComponent implements OnChanges {
+export class StoryRulesTableComponent implements OnChanges, OnDestroy {
   destroy = new Subject();
 
   ruleType = RuleType;

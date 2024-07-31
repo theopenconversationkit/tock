@@ -7,8 +7,7 @@ import { take } from 'rxjs/operators';
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { NlpService } from '../../../core-nlp/nlp.service';
 import { ChoiceDialogComponent, SentencesGenerationComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
 
@@ -290,24 +289,27 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   close(): Observable<any> {
-    const validAction = 'yes';
+    const action = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Cancel ${this.faq?.id ? 'edit' : 'create'} faq`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'no', buttonStatus: 'basic', ghost: true },
+            { actionName: action, buttonStatus: 'danger' }
+          ]
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result === validAction) {
+        if (result === action) {
           this.onClose.emit(true);
         }
       });
       return dialogRef.onClose;
     } else {
       this.onClose.emit(true);
-      return of(validAction);
+      return of(action);
     }
   }
 

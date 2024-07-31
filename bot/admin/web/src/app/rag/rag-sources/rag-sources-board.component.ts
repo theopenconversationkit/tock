@@ -3,15 +3,14 @@ import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { distinctUntilChanged, Subject, take, takeUntil } from 'rxjs';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { getSourceMostRecentRunningIndexingSession } from './commons/utils';
-
 import { IndexingSession, ProcessAdvancement, Source, SourceImportParams, SourceTypes } from './models';
 import { NewSourceComponent } from './new-source/new-source.component';
 import { SourceImportComponent } from './source-import/source-import.component';
 import { SourceManagementService } from './source-management.service';
 import { SourceNormalizationCsvComponent } from './source-normalization/csv/source-normalization-csv.component';
 import { SourceNormalizationJsonComponent } from './source-normalization/json/source-normalization-json.component';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-rag-sources-board',
@@ -125,16 +124,19 @@ export class RagSourcesBoardComponent implements OnInit, OnDestroy {
   }
 
   deleteSource(source: Source): void {
-    const actionLabel = 'Remove';
-    const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+    const action = 'remove';
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Remove the source '${source.name}'`,
         subtitle: 'Are you sure?',
-        action: actionLabel
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result.toLowerCase() === actionLabel.toLowerCase()) {
+      if (result.toLowerCase() === action.toLowerCase()) {
         this.sourcesService.deleteSource(source.id).subscribe((res) => {
           this.toastrService.success(`Source succesfully deleted`, 'Success', {
             duration: 5000,
@@ -183,16 +185,19 @@ export class RagSourcesBoardComponent implements OnInit, OnDestroy {
   }
 
   confirmCrawlSource(source: Source): void {
-    const actionLabel = 'Update';
-    const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+    const action = 'update';
+    const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
       context: {
         title: `Update the source '${source.name}'`,
         subtitle: 'Are you sure?',
-        action: actionLabel
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result?.toLowerCase() === actionLabel.toLowerCase()) {
+      if (result?.toLowerCase() === action.toLowerCase()) {
         this.postIndexingSession(source);
       }
     });

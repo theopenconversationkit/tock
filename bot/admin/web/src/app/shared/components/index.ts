@@ -33,3 +33,6 @@ export * from './ai-settings-engine-config-param-input/ai-settings-engine-config
 export * from './sentences-generation/sentences-generation-options/sentences-generation-options.component';
 export * from './sentences-generation/sentences-generation-list/sentences-generation-list.component';
 export * from './sentences-generation/sentences-generation.component';
+export * from './info-button/info-button.component';
+export * from './select-bot/select-bot.component';
+export * from './date-range/date-range-calendar.component';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { DialogsListComponent } from './dialogs-list/dialogs-list.component';
 
 @Component({
@@ -22,7 +22,7 @@ import { DialogsListComponent } from './dialogs-list/dialogs-list.component';
   templateUrl: './dialogs.component.html',
   styleUrls: ['./dialogs.component.css']
 })
-export class DialogsComponent {
+export class DialogsComponent implements AfterViewInit {
   @ViewChild('dialogsList') dialogsList: DialogsListComponent;
 
   count: string = '';

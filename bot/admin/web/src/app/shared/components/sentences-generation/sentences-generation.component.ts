@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NbDialogRef } from '@nebular/theme';
-import { CompletionRequest, CompletionResponse, GeneratedSentence, GeneratedSentenceError, SentencesGenerationOptions } from './models';
+import { CompletionRequest, CompletionResponse, GeneratedSentence, SentencesGenerationOptions } from './models';
 
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';

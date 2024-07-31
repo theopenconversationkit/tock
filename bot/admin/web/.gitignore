@@ -8,26 +8,6 @@
 # dependencies
 /node_modules
 
-# nlp admin folders symbolic links for windows
-/src/app/applications
-/src/app/archive
-/src/app/build
-/src/app/core-nlp
-/src/app/entities
-/src/app/inbox
-/src/app/intents
-/src/app/logs
-/src/app/model
-/src/app/nlp-tabs
-/src/app/quality-nlp
-/src/app/scroll
-/src/app/search
-/src/app/sentence-analysis
-/src/app/sentences-scroll
-/src/app/shared-nlp
-/src/app/test-nlp
-/src/app/try
-
 # IDEs and editors
 /.idea
 .project

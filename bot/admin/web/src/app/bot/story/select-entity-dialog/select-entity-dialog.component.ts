@@ -21,7 +21,7 @@ import { take } from 'rxjs';
 import { EntityType, IntentsCategory } from '../../../model/nlp';
 import { StateService } from '../../../core-nlp/state.service';
 import { IntentName } from '../../model/story';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../core-nlp/nlp.service';
 
 @Component({
   selector: 'tock-select-entity-dialog',

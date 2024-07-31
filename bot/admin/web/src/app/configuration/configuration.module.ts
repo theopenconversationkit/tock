@@ -16,7 +16,6 @@
 
 import { ApplicationsModule } from '../applications/applications.module';
 import { Injectable, NgModule } from '@angular/core';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { BotConfigurationsComponent } from './bot-configurations/bot-configurations.component';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { CommonModule } from '@angular/common';
@@ -39,10 +38,11 @@ import {
   NbFormFieldModule,
   NbRadioModule,
   NbCheckboxModule,
-  NbAlertModule
+  NbAlertModule,
+  NbToggleModule
 } from '@nebular/theme';
 import { NewBotComponent } from './bot-configurations/new-bot.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BotSharedService } from '../shared/bot-shared.service';
 import { ApplicationConfig } from '../applications/application.config';
 import { SelectBotConfigurationDialogComponent } from './bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
@@ -76,7 +76,7 @@ export class BotApplicationConfig implements ApplicationConfig {
   ],
   imports: [
     CommonModule,
-    SharedModule,
+    FormsModule,
     BotSharedModule,
     ReactiveFormsModule,
     BotConfigurationRoutingModule,
@@ -97,14 +97,14 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbFormFieldModule,
     NbRadioModule,
     NbCheckboxModule,
-    NbAlertModule
+    NbAlertModule,
+    NbToggleModule
   ],
   providers: [
     {
       provide: ApplicationConfig,
       useClass: BotApplicationConfig
     }
-  ],
-  bootstrap: []
+  ]
 })
 export class BotConfigurationModule {}

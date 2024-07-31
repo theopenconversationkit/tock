@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LogCount, LogCountQuery } from '../../model/nlp';
 import { StateService } from '../../core-nlp/state.service';
-import { QualityService } from '../../quality-nlp/quality.service';
+import { QualityService } from '../quality.service';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { Pagination } from '../../shared/components';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -16,7 +16,7 @@ interface FilterForm {
   templateUrl: './count-stats.component.html',
   styleUrls: ['./count-stats.component.scss']
 })
-export class CountStatsComponent implements OnInit {
+export class CountStatsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   dataSource: LogCount[] = [];

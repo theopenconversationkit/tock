@@ -17,14 +17,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { BotSharedModule } from '../shared/bot-shared.module';
 import { BotConfigurationModule } from '../configuration/configuration.module';
 import { MomentModule } from 'ngx-moment';
 import { CreateStoryComponent } from './story/create-story/create-story.component';
 import { BotTabsComponent } from './bot-tabs.component';
 import { SearchStoryComponent } from './story/search-story/search-story.component';
-import { NlpModule } from '../nlp-tabs/nlp.module';
 import { I18nComponent } from './i18n/i18n.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import { FeatureComponent } from './feature/feature.component';
@@ -43,6 +41,7 @@ import {
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
+  NbDatepickerModule,
   NbDialogModule,
   NbFormFieldModule,
   NbIconModule,
@@ -53,7 +52,9 @@ import {
   NbSelectModule,
   NbSpinnerModule,
   NbTagModule,
-  NbTooltipModule
+  NbToggleModule,
+  NbTooltipModule,
+  NbTreeGridModule
 } from '@nebular/theme';
 import { ApplicationFeatureComponent } from './feature/application-feature/application-feature.component';
 import { StoryRuleComponent } from './feature/story-rule/story-rule.component';
@@ -64,7 +65,7 @@ import { ApplicationFeaturesTableComponent } from './feature/application-feature
 
 import { StoriesListComponent } from './story/search-story/stories-list/stories-list.component';
 import { StoriesFilterComponent } from './story/search-story/stories-filter/stories-filter.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditStoryComponent } from './story/edit-story/edit-story.component';
 import { StoriesUploadComponent } from './story/search-story/stories-upload/stories-upload.component';
 import { BotRoutingModule } from './bot-routing.module';
@@ -76,18 +77,17 @@ import { I18nExportComponent } from './i18n/i18n-export/i18n-export.component';
 import { I18nImportComponent } from './i18n/i18n-import/i18n-import.component';
 import { I18nLabelComponent } from './i18n/i18n-label/i18n-label.component';
 import { DocumentsStoryComponent } from './story/documents-story/documents-story.component';
-
+import { CreateEntityDialogComponent } from './story/create-entity-dialog/create-entity-dialog.component';
 
 @NgModule({
   imports: [
-    ReactiveFormsModule,
     CommonModule,
-    SharedModule,
+    FormsModule,
+    ReactiveFormsModule,
     BotSharedModule,
     BotRoutingModule,
     InfiniteScrollModule,
     MomentModule,
-    NlpModule,
     FileUploadModule,
     BotConfigurationModule,
     ThemeModule,
@@ -109,7 +109,10 @@ import { DocumentsStoryComponent } from './story/documents-story/documents-story
     NbBadgeModule,
     NbListModule,
     NbTagModule,
-    NbAlertModule
+    NbAlertModule,
+    NbToggleModule,
+    NbTreeGridModule,
+    NbDatepickerModule
   ],
   declarations: [
     BotTabsComponent,
@@ -145,7 +148,8 @@ import { DocumentsStoryComponent } from './story/documents-story/documents-story
     StoriesFilterComponent,
     EditStoryComponent,
     StoriesUploadComponent,
-    I18nFiltersComponent
+    I18nFiltersComponent,
+    CreateEntityDialogComponent
   ],
   exports: []
 })

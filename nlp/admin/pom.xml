@@ -31,7 +31,6 @@
 
   <modules>
     <module>server</module>
-    <module>web</module>
   </modules>
 
 </project>

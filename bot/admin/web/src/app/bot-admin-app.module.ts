@@ -17,7 +17,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CoreModule } from './core-nlp/core.module';
-import { SharedModule } from './shared-nlp/shared.module';
 import { BotAdminAppComponent } from './bot-admin-app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BotCoreModule } from './core/bot-core.module';
@@ -40,6 +39,7 @@ import { BotService } from './bot/bot-service';
 import { BotAdminAppRoutingModule } from './bot-admin-app-routing.module';
 import { ragIcon } from './theme/icons/rag';
 import { ragexcludeIcon } from './theme/icons/ragexclude';
+import { NlpService } from './core-nlp/nlp.service';
 
 @NgModule({
   declarations: [BotAdminAppComponent],
@@ -48,8 +48,8 @@ import { ragexcludeIcon } from './theme/icons/ragexclude';
     BrowserAnimationsModule,
     HttpClientModule,
     CoreModule,
+
     BotCoreModule,
-    SharedModule,
     BotAdminAppRoutingModule,
 
     ThemeModule.forRoot(),
@@ -69,7 +69,8 @@ import { ragexcludeIcon } from './theme/icons/ragexclude';
       useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
       deps: [PlatformLocation]
     },
-    BotService
+    BotService,
+    NlpService
   ],
   bootstrap: [BotAdminAppComponent]
 })

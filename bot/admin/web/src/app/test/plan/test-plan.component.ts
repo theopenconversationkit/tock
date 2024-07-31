@@ -19,11 +19,12 @@ import { TestDialogReport, TestPlan, XRayPlanExecutionConfiguration } from '../m
 import { TestService } from '../test.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { DialogReport } from '../../shared/model/dialog-data';
+import { ActionReport, DialogReport } from '../../shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
-import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
 import { NbToastrService } from '@nebular/theme';
 import { APP_BASE_HREF } from '@angular/common';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
+import { SelectBotEvent } from '../../shared/components';
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -223,5 +224,13 @@ export class TestPlanComponent implements OnInit {
 
   hideExecutions(plan: TestPlan) {
     plan.displayExecutions = false;
+  }
+
+  getUserName(action: ActionReport): string {
+    return getDialogMessageUserQualifier(action.isBot());
+  }
+
+  getUserAvatar(action: ActionReport): string {
+    return getDialogMessageUserAvatar(action.isBot());
   }
 }

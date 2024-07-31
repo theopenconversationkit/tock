@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 
@@ -21,7 +21,7 @@ export interface StoriesFilters {
   templateUrl: './stories-filter.component.html',
   styleUrls: ['./stories-filter.component.scss']
 })
-export class StoriesFilterComponent implements OnInit {
+export class StoriesFilterComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   @Input() categories;

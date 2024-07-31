@@ -37,7 +37,6 @@ import { StepDialogComponent } from './action';
 import { AnswerController } from './controller';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { SelectBotConfigurationDialogComponent } from '../../configuration/bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
-import { ConfirmationDialogComponent } from '../../shared/confirmation-dialog/confirmation-dialog.component';
 import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
@@ -121,7 +120,6 @@ export class StoryComponent implements OnChanges {
         title: `Remove the story ${this.story.name}`,
         subtitle: 'Are you sure you want to delete this story?',
         actions: [
-          //@ts-ignore TODO remove the comment when the scenario and the indicator issues are merged
           { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
           { actionName: action, buttonStatus: 'danger' }
         ],
@@ -307,16 +305,22 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteCustomAnswers(answer: BotConfiguredAnswer) {
+    const action = 'delete';
     this.nbDialogService
-      .open(ConfirmationDialogComponent, {
+      .open(ChoiceDialogComponent, {
         closeOnEsc: true,
         context: {
-          title: `Delete <b>${answer.botConfiguration}</b>`,
-          confirmationQuestion: `Are you sure you want to delete the <b>${answer.botConfiguration}</b> custom answers?`
+          title: `Delete "${answer.botConfiguration}" custom answers`,
+          subtitle: `Are you sure you want to delete the "${answer.botConfiguration}" custom answers?`,
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: action, buttonStatus: 'danger' }
+          ],
+          modalStatus: 'danger'
         }
       })
-      .onClose.subscribe((confirmed) => {
-        if (confirmed) {
+      .onClose.subscribe((result) => {
+        if (result === action) {
           const foundIndex = this.story.configuredAnswers ? this.story.configuredAnswers.indexOf(answer) : -1;
           if (foundIndex >= 0) {
             this.story.configuredAnswers.splice(foundIndex, 1);
@@ -354,16 +358,22 @@ export class StoryComponent implements OnChanges {
   }
 
   deleteCustomSteps(steps: BotConfiguredSteps) {
+    const action = 'delete';
     this.nbDialogService
-      .open(ConfirmationDialogComponent, {
+      .open(ChoiceDialogComponent, {
         closeOnEsc: true,
         context: {
-          title: `Delete <b>${steps.botConfiguration}</b>`,
-          confirmationQuestion: `Are you sure you want to delete the <b>${steps.botConfiguration}</b> custom steps?`
+          title: `Delete "${steps.botConfiguration}" custom steps`,
+          subtitle: `Are you sure you want to delete the "${steps.botConfiguration}" custom steps?`,
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: action, buttonStatus: 'danger' }
+          ],
+          modalStatus: 'danger'
         }
       })
-      .onClose.subscribe((confirmed) => {
-        if (confirmed) {
+      .onClose.subscribe((result) => {
+        if (result === action) {
           const foundIndex = this.story.configuredSteps ? this.story.configuredSteps.indexOf(steps) : -1;
           if (foundIndex >= 0) {
             this.story.configuredSteps.splice(foundIndex, 1);
