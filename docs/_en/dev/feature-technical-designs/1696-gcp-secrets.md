@@ -19,6 +19,8 @@ We have already an integration of AWS Secret manager essentially used for :
 
 Each of these 3 differents secret usages can use different providers idependently, for instance you could provide your mongodb credential using environment variables and handle the generate ai related secrets using GCP Secret Manager.
 
+In this design we will as much as possible **refer to GCP Secrets using their secret name et not that full ressource name** that include the project-number (using `SECRET-NAME` instead of `projects/478160847739/secrets/SECRET-NAME`), we want to do this so that we can move ressources from a project to an other without having to do any kind of database data migration (changing project-number in some stored configuration will be difficult). Nevertheless applications needs to be aware of the GCP project number where the secrets are located, they will all rely on `tock_gcp_secret_project_number` environment variable to do so (see last section about environment variables for more details).
+
 ## Architecture design
 
 This is the overall architecture of the components interacting with secrets.
@@ -228,8 +230,6 @@ This design introduce the new provider type `GcpSecretManager`.
 | `tock_gen_ai_orchestrator_secret_storage_prefix_name`| `DEV` | any string ? | See section "Environment isolation `SECRET_STORAGE_PREFIX` and feature based environements" of this document.  <br><br> ⚠️ Current default value need to be changed. |
 | `tock_mongodb_credentials_secret_name`| `PROD-TOCK-MONGODB` | GCP Secret name Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. |
 | `tock_gcp_secret_project_number`| `478160847739` | GCP project number | The GCP project number where secrets are stored. |
-
-TODO is this spec OK for cross GCP project secret consumption ??
 
 ### NLP API
 
