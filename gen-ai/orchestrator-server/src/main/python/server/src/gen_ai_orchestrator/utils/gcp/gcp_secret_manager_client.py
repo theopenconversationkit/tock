@@ -15,10 +15,10 @@
 """API Client to consume GCP Secret Manager API"""
 
 import json
-import os
 import logging
 from typing import Optional, Type, TypeVar
 
+from google.api_core.exceptions import NotFound
 from google.cloud import secretmanager
 
 from gen_ai_orchestrator.configurations.environment.settings import application_settings
@@ -60,44 +60,26 @@ class GCPSecretManagerClient:
 
         return parse_secret_data(self.get_secret(secret_id), AIProviderSecret)
 
-    def get_secret(self, secret_id: str):
+    def get_secret(self, secret_id: str) -> str:
         """
         Retrieve individual secret by name, using the access_secret_version API.
         :param secret_id: The id of the secret to be fetched.
         """
 
-        try:
-            # Build the resource name of the secret
-            secret_name = f"projects/{application_settings.gcp_project_id}/secrets/{secret_id}/versions/latest"
+        # Build the resource name of the secret
+        secret_name = f"projects/{application_settings.gcp_project_id}/secrets/{secret_id}/versions/latest"
 
+        try:
             # Access the secret version.
             response = self.client.access_secret_version(name=secret_name)
             payload = response.payload.data.decode("UTF-8")
             logging.info(f'The requested secret {secret_name} has been successfully retrieved.')
             return payload
-        # TODO MASS : DefaultCredentialsError(GoogleAuthError)
-#        except ClientError as e:
-#            if e.response['Error']['Code'] == 'ResourceNotFoundException':
-#                logger.error(f'The requested secret {secret_name} was not found.')
-#                raise
-#            else:
-#                logger.error(f'Error retrieving {secret_name} secret.')
-#                raise
+        except NotFound as e:
+            logger.error(f'The requested secret {secret_name} was not found.')
+            raise
         except Exception as e:
             logger.error(f'An unknown error occurred: {str(e)}.')
-            # PermissionDenied("Permission 'secretmanager.versions.access' denied for resource 'projects/bx270-e99-secret-rec-543/secrets/hhh/versions/latest' (or it may not exist).")
-
-
-            # Avec: bx270-e99-secret-rec-543-e95f8a906655.json
-            # PermissionDenied("Permission 'secretmanager.secrets.create' denied for resource 'projects/bx270-e99-secret-rec-543' (or it may not exist).")
-
-            # Avec: bdi01-e99-secret-rec-584-4e3c2e3454fd.json
-            # 400 Constraint constraints/gcp.resourceLocations violated for [orgpolicy:projects/364419067793] attempting to create a secret in [global]. For more information, see https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations. [violations {
-            #   type: "constraints/gcp.resourceLocations"
-            #   subject: "orgpolicy:projects/364419067793"
-            #   description: "Constraint constraints/gcp.resourceLocations violated for [orgpolicy:projects/364419067793] attempting to create a secret in [global]. For more information, see https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations."
-            # }
-            # ]
             raise
 
 
