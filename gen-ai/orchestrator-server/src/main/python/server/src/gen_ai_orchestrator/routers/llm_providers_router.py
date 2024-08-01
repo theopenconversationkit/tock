@@ -33,6 +33,9 @@ from gen_ai_orchestrator.errors.handlers.fastapi.fastapi_handler import (
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting import (
+    HuggingFaceTGILLMSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
@@ -127,6 +130,16 @@ async def get_llm_provider_setting_by_id(
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
             temperature=0.7,
+            prompt='How to learn to ride a bike without wheels!',
+        )
+    elif provider_id == LLMProvider.HUGGING_FACE_TGI:
+        return HuggingFaceTGILLMSetting(
+            provider=LLMProvider.HUGGING_FACE_TGI,
+            api_key='123-abc-456-def',
+            repetition_penalty=1.0,
+            max_new_tokens=256,
+            temperature=0.7,
+            api_base='https://huggingface.co/docs/text-generation-inference/index',
             prompt='How to learn to ride a bike without wheels!',
         )
 

@@ -22,7 +22,9 @@ urllib3 = "^1.26"
 jinja2 = "^3.1.3"
 langfuse = "^2.33.0"
 httpx-auth-awssigv4 = "^0.1.4"
-
+langchain-huggingface = "^0.0.3"
+huggingface-hub = { git = "https://github.com/morgandiverrez/huggingface_hub.git", branch = "AsyncInferenceClient-get-var-env-proxies" }
+#TODO supprimé la ligne du dessus une fois le merge de cette PR fait
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.5.0"
