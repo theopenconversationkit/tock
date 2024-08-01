@@ -22,7 +22,7 @@ import ai.tock.shared.security.credentials.Credentials
 /**
  * The Secret Manager Service
  */
-interface SecretMangerService {
+interface SecretManagerService {
 
     val type : SecretManagerProviderType
 

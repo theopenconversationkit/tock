@@ -20,7 +20,7 @@ import ai.tock.iadvize.client.*
 import ai.tock.shared.injector
 import ai.tock.shared.provide
 import ai.tock.shared.security.SecretManagerProviderType
-import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.credentials.Credentials
 import mu.KotlinLogging
 import java.time.LocalDateTime
@@ -34,7 +34,7 @@ val iAdvizeCredentialsSecretName: String = property(
     name = "tock_iadvize_credentials_secret_name",
     defaultValue = "iadvize_credentials",
 )
-// TODO MASS: retirer le patch aws sur le connecteur iadvize, plus besoin de ça,
+
 /**
  * Authentication client.
  */
@@ -48,7 +48,7 @@ class IadvizeAuthenticationClient {
 
     internal var iadvizeApi: IadvizeApi = createApi(logger)
 
-    private val secretMangerService: SecretMangerService by lazy {
+    private val secretMangerService: SecretManagerService by lazy {
         injector.provide(tag = iAdvizeSecretManagerProvider)
     }
 

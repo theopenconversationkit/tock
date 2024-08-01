@@ -20,7 +20,7 @@ import ai.tock.genai.orchestratorcore.models.observability.*
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
 /**
- * The Large Language Model Setting Mapper
+ * The Observability Setting Mapper
  */
 object ObservabilitySettingMapper {
 
@@ -43,6 +43,9 @@ object ObservabilitySettingMapper {
 
     /**
      * Convert the Observability setting DTO to an Entity
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param dto the [ObservabilitySettingDTO]
      * @return [ObservabilitySetting]
      */
@@ -53,7 +56,6 @@ object ObservabilitySettingMapper {
                     val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, secretKey)
                     return LangfuseObservabilitySetting(secretKey, publicKey, url)
                 }
-
                 else ->
                     throw IllegalArgumentException("Unsupported Observability Setting")
             }

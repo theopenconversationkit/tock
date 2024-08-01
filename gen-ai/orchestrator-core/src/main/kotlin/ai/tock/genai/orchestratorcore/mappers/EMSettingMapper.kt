@@ -48,6 +48,9 @@ object EMSettingMapper {
 
     /**
      * Convert the Embedding setting DTO to an Entity
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param dto the [EMSettingDTO]
      * @return [EMSetting]
      */

@@ -24,7 +24,7 @@ import ai.tock.shared.injector
 import ai.tock.shared.property
 import ai.tock.shared.propertyOrNull
 import ai.tock.shared.provide
-import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.security.credentials.AIProviderSecret
 import mu.KLogger
@@ -48,7 +48,7 @@ object SecurityUtils {
     /**
      * The Secrets Manager Service
      */
-    private val secretMangerService: SecretMangerService by lazy {
+    private val secretMangerService: SecretManagerService by lazy {
         injector.provide(tag = genAISecretManagerProvider)
     }
 
@@ -61,8 +61,8 @@ object SecurityUtils {
         try {
             return when (secret) {
                 is RawSecretKey -> secret.value
-                is AwsSecretKey -> getAIProviderSecret(SecretManagerProviderType.AWS_SECRET_MANAGER, secret.secretName)
-                is GcpSecretKey -> getAIProviderSecret(SecretManagerProviderType.GCP_SECRET_MANAGER, secret.secretName)
+                is AwsSecretKey -> getAIProviderSecretValue(SecretManagerProviderType.AWS_SECRET_MANAGER, secret.secretName)
+                is GcpSecretKey -> getAIProviderSecretValue(SecretManagerProviderType.GCP_SECRET_MANAGER, secret.secretName)
                 else -> throw IllegalArgumentException("Unsupported secret key type")
             }
         } catch (e: Exception) {
@@ -72,7 +72,10 @@ object SecurityUtils {
         }
     }
 
-    private fun getAIProviderSecret(type: SecretManagerProviderType, secretName: String): String {
+    /**
+     * Get the [AIProviderSecret] value
+     */
+    private fun getAIProviderSecretValue(type: SecretManagerProviderType, secretName: String): String {
         if (genAISecretManagerProvider == null) {
             throw IllegalArgumentException("No Gen AI secret manager provider has been defined.")
         }
@@ -85,9 +88,11 @@ object SecurityUtils {
     }
 
     /**
-     * // TODO MASS commentaires
-     * Create a secret key. If secret storage type is Raw, so it creates [RawSecretKey],
-     * else if it is AwsSecretsManager then it creates [AwsSecretKey]
+     * Create a secret key depending on secret manager provider.
+     * If no provider has been defined, it creates [RawSecretKey].
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param secretValue the secret value
      * @return [SecretKey]
      */
@@ -112,8 +117,8 @@ object SecurityUtils {
 
     /**
      * Generate an AWS Secret Name
-     * @param namespace the bot namespace
-     * @param botId the bot id
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
      * @param feature the feature for which the secret will be created
      * @return the generate secret name
      */
@@ -122,8 +127,8 @@ object SecurityUtils {
 
     /**
      * Generate an GCP Secret Name
-     * @param namespace the bot namespace
-     * @param botId the bot id
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
      * @param feature the feature for which the secret will be created
      * @return the generate secret name
      */
@@ -163,6 +168,10 @@ object SecurityUtils {
         return normalized
     }
 
+    /**
+     * Name standardization
+     * @param input the input to be normalized
+     */
     private fun normalizeGcpSecretName(input: String): String {
         // Replace underscores and space with hyphens
         val normalized = input.trim().replace('/', '-').replace(' ', '-')

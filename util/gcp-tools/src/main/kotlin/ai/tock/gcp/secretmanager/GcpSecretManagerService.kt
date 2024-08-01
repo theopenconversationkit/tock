@@ -19,7 +19,7 @@ package ai.tock.gcp.secretmanager
 import ai.tock.gcp.EnvConfig
 import ai.tock.gcp.GCP_SECRET_VERSION
 import ai.tock.shared.security.SecretManagerProviderType
-import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.credentials.Credentials
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -33,7 +33,7 @@ import mu.KotlinLogging
 /**
  * Implementation of the AWS Secret Manager Service
  */
-class GcpSecretManagerService: SecretMangerService {
+class GcpSecretManagerService: SecretManagerService {
 
     override val type: SecretManagerProviderType
         get() = SecretManagerProviderType.GCP_SECRET_MANAGER

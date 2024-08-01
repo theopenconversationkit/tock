@@ -17,7 +17,7 @@
 package ai.tock.gcp
 
 import ai.tock.gcp.secretmanager.GcpSecretManagerService
-import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein.Module
@@ -29,7 +29,7 @@ class IOCModulesService : BotAdditionalModulesService {
 }
 
 val gcpModules = Module {
-    bind<SecretMangerService>(tag = SecretManagerProviderType.GCP_SECRET_MANAGER.name) with singleton {
+    bind<SecretManagerService>(tag = SecretManagerProviderType.GCP_SECRET_MANAGER.name) with singleton {
         GcpSecretManagerService()
     }
 }

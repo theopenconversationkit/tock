@@ -18,7 +18,7 @@ package ai.tock.env.secretmanager
 
 import ai.tock.shared.property
 import ai.tock.shared.security.SecretManagerProviderType
-import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.credentials.Credentials
 import kotlinx.serialization.json.Json
@@ -26,7 +26,7 @@ import kotlinx.serialization.json.Json
 /**
  * Implementation of the Secret Manager Service based on environment variables
  */
-class EnvSecretManagerService: SecretMangerService {
+class EnvSecretManagerService: SecretManagerService {
 
     override val type: SecretManagerProviderType
         get() = SecretManagerProviderType.ENV

@@ -17,7 +17,7 @@
 package ai.tock.aws
 
 import ai.tock.aws.secretmanager.AwsSecretManagerService
-import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.service.BotAdditionalModulesService
 import com.github.salomonbrys.kodein.Kodein.Module
@@ -29,7 +29,7 @@ class IOCModulesService : BotAdditionalModulesService {
 }
 
 val awsModules = Module {
-    bind<SecretMangerService>(tag = SecretManagerProviderType.AWS_SECRET_MANAGER.name) with singleton {
+    bind<SecretManagerService>(tag = SecretManagerProviderType.AWS_SECRET_MANAGER.name) with singleton {
         AwsSecretManagerService()
     }
 }

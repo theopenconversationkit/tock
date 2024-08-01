@@ -13,10 +13,7 @@
     <url>http://maven.apache.org</url>
 
     <properties>
-        <serialization>1.6.3</serialization>
         <aws-secretsmanager-caching>1.0.2</aws-secretsmanager-caching>
-        <caffeine>3.1.8</caffeine>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <build>

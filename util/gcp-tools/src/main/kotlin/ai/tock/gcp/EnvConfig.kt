@@ -18,8 +18,6 @@ package ai.tock.gcp
 
 import ai.tock.gcp.utils.property
 
-// TODO MASS : remplace project_id -> project_number
-
 const val GCP_PROJECT_ID = "tock_gcp_project_id"
 const val GCP_REGION = "tock_gcp_region"
 const val GCP_SECRET_VERSION = "latest"

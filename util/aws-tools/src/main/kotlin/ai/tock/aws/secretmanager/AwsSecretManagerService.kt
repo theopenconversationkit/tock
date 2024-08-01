@@ -22,7 +22,7 @@ import ai.tock.aws.EnvConfig
 import ai.tock.shared.booleanProperty
 import ai.tock.shared.property
 import ai.tock.shared.security.SecretManagerProviderType
-import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.credentials.Credentials
 import com.amazonaws.ClientConfiguration
@@ -47,7 +47,7 @@ import kotlin.concurrent.withLock
 /**
  * Implementation of the AWS Secret Manager Service
  */
-class AwsSecretManagerService : SecretMangerService {
+class AwsSecretManagerService : SecretManagerService {
     override val type: SecretManagerProviderType
         get() = SecretManagerProviderType.AWS_SECRET_MANAGER
 
