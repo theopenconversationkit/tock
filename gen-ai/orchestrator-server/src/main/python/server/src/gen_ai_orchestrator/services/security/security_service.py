@@ -37,17 +37,18 @@ def fetch_secret_key_value(secret_key: SecretKey) -> Optional[str]:
     Args:
         secret_key: The secret key
     """
+    secret_value = None
     if isinstance(secret_key, RawSecretKey):
-        return secret_key.value
+        secret_value = secret_key.value
     elif isinstance(secret_key, AwsSecretKey):
         # Get secret from AWS Secrets Manager
         aws_secret = AWSSecretsManagerClient().get_ai_provider_secret(secret_key.secret_name)
         if aws_secret is not None:
-            return aws_secret.secret
+            secret_value = aws_secret.secret
     elif isinstance(secret_key, GcpSecretKey):
         # Get secret from GCP Secret Manager
         gcp_secret = GCPSecretManagerClient().get_ai_provider_secret(secret_key.secret_name)
         if gcp_secret is not None:
-            return gcp_secret.secret
+            secret_value = gcp_secret.secret
 
-    return None
+    return secret_value

@@ -24,13 +24,11 @@ from google.cloud import secretmanager
 from gen_ai_orchestrator.configurations.environment.settings import application_settings
 from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
 from gen_ai_orchestrator.models.security.credentials import Credentials
-from gen_ai_orchestrator.utils.instance import singleton
 
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
 
-@singleton
 class GCPSecretManagerClient:
     """GCP Secret Manager Client."""
 
@@ -99,6 +97,6 @@ def parse_secret_data(secret_data, obj_type: Type[T]) -> Optional[T]:
     try:
         secret_dict = json.loads(secret_data)
         return obj_type(**secret_dict)
-    except json.JSONDecodeError as e:
+    except Exception as e:
         logger.error(f'Error parsing secret data: {str(e)}')
         return None
