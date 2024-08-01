@@ -29,5 +29,7 @@ class IOCModulesService : BotAdditionalModulesService {
 }
 
 val envModules = Module {
-    bind<SecretMangerService>(tag = SecretManagerProviderType.ENV.name) with singleton { EnvSecretManagerService() }
+    bind<SecretMangerService>(tag = SecretManagerProviderType.ENV.name) with singleton {
+        EnvSecretManagerService()
+    }
 }

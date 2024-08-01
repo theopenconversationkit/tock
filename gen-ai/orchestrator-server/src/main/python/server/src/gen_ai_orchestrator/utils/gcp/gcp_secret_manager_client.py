@@ -29,13 +29,6 @@ from gen_ai_orchestrator.utils.instance import singleton
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
-# Set the environment variable to point to the service account key
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = \
- '/home/Mohamed.Assoukti/Téléchargements/bx270-e99-secret-rec-543-e95f8a906655.json'
-#    '/home/Mohamed.Assoukti/Téléchargements/bdi01-e99-secret-rec-584-4e3c2e3454fd.json'
-
-
-
 
 @singleton
 class GCPSecretManagerClient:

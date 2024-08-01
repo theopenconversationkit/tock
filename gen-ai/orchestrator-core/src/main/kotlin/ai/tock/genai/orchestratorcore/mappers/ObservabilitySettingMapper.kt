@@ -16,7 +16,6 @@
 
 package ai.tock.genai.orchestratorcore.mappers
 
-import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.observability.*
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 
@@ -51,7 +50,7 @@ object ObservabilitySettingMapper {
         with(dto) {
             when (this) {
                 is LangfuseObservabilitySetting -> {
-                    val secretKey = SecurityUtils.getSecretKey(namespace, botId, feature, secretKey)
+                    val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, secretKey)
                     return LangfuseObservabilitySetting(secretKey, publicKey, url)
                 }
 

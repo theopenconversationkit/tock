@@ -53,7 +53,7 @@ object EMSettingMapper {
      */
     fun toEntity(namespace: String, botId: String, feature: String, dto: EMSettingDTO): EMSetting =
         with(dto){
-            val secretKey = SecurityUtils.getSecretKey(namespace, botId, feature, apiKey)
+            val secretKey = SecurityUtils.createSecretKey(namespace, botId, feature, apiKey)
             when(this){
                 is OpenAIEMSetting ->
                     OpenAIEMSetting(secretKey, model)

@@ -19,25 +19,22 @@ package ai.tock.iadvize.client.authentication
 import ai.tock.iadvize.client.*
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import ai.tock.shared.security.SecretMangerService
 import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.SecretMangerService
+import ai.tock.shared.security.credentials.Credentials
 import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
-
-val iAdvizeCredentialsProvider: String = ai.tock.shared.property(
-    "tock_iadvize_credentials_provider",
-    SecretManagerProviderType.GCP_SECRET_MANAGER.name // TODO MASS: ENV
+val iAdvizeSecretManagerProvider: String = property(
+    name = "tock_gen_ai_secret_manager_provider",
+    defaultValue = SecretManagerProviderType.ENV.name
 )
-
-// tock_database_credentials_provider TODO MASS : pour la bdd
-
-val iAdvizeCredentialsSecretName: String = ai.tock.shared.property(
-    "tock_iadvize_credentials_secret_name",
-    "LOCAL-TOCK-iadvize-credentials"
+val iAdvizeCredentialsSecretName: String = property(
+    name = "tock_iadvize_credentials_secret_name",
+    defaultValue = "iadvize_credentials",
 )
-
+// TODO MASS: retirer le patch aws sur le connecteur iadvize, plus besoin de ça,
 /**
  * Authentication client.
  */
@@ -49,11 +46,13 @@ class IadvizeAuthenticationClient {
         const val DELAY_SECONDS = 5
     }
 
-    private val secretMangerService: SecretMangerService by lazy { injector.provide(tag = iAdvizeCredentialsProvider) }
-
     internal var iadvizeApi: IadvizeApi = createApi(logger)
 
-    private val credentials by lazy {
+    private val secretMangerService: SecretMangerService by lazy {
+        injector.provide(tag = iAdvizeSecretManagerProvider)
+    }
+
+    private val credentials: Credentials by lazy {
         secretMangerService.getCredentials(iAdvizeCredentialsSecretName)
     }
 
@@ -62,9 +61,7 @@ class IadvizeAuthenticationClient {
      * if the access token is expired, a new one is requested and stored.
      */
     fun getAccessToken() : String {
-
         var t = token.get()
-
         if (t == null || (t.expireAt?.isBefore(LocalDateTime.now()) == true)) {
             t = getToken()
         }

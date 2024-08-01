@@ -25,6 +25,7 @@ import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.security.SecretMangerService
 import ai.tock.shared.security.credentials.AIProviderSecret
 import ai.tock.shared.security.credentials.Credentials
+import com.amazonaws.ClientConfiguration
 import com.amazonaws.auth.AWSStaticCredentialsProvider
 import com.amazonaws.auth.BasicSessionCredentials
 import com.amazonaws.services.secretsmanager.AWSSecretsManager
@@ -108,7 +109,12 @@ class AwsSecretManagerService : SecretMangerService {
                     .withCredentials(AWSStaticCredentialsProvider(awsSessionCredentials)).build()
             }
         } else {
-            return AWSSecretsManagerClientBuilder.standard().build()
+            val proxy = ClientConfiguration();
+            proxy.proxyHost = ""
+            proxy.proxyPort = 0;
+            return AWSSecretsManagerClientBuilder.standard().withClientConfiguration(proxy).build()
+            // return AWSSecretsManagerClientBuilder.standard().build()
+            // TODO MASS : rollback
         }
     }
 

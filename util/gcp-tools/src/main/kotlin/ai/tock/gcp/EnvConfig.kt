@@ -18,18 +18,13 @@ package ai.tock.gcp
 
 import ai.tock.gcp.utils.property
 
+// TODO MASS : remplace project_id -> project_number
+
 const val GCP_PROJECT_ID = "tock_gcp_project_id"
 const val GCP_REGION = "tock_gcp_region"
 const val GCP_SECRET_VERSION = "latest"
-const val GCP_IADVIZE_CREDENTIALS_SECRET_ID_PROPERTY = "tock_gcp_iadvize_credentials_secret_id"
 
 object EnvConfig {
-
     val gcpProjectId: String = property(GCP_PROJECT_ID)
     val gcpRegion: String = property(GCP_REGION)
-
-    /**
-     * IAdvize credentials GCP secret ID.
-     */
-    val gcpIAdvizeCredentialsSecretId: String = GCP_IADVIZE_CREDENTIALS_SECRET_ID_PROPERTY.let { property(it, "please set $it") }
 }
