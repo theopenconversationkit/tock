@@ -27,6 +27,7 @@ const val defaultDatabase = "admin"
 val databaseMongoDbSecretManagerProvider: String? = propertyOrNull(
     name = "tock_database_mongodb_secret_manager_provider"
 )
+// TODO MASS : Test tock_database_mongodb_secret_manager_provider in null, GCP, AWS (SecretManagerProviderType)
 val databaseMongoDbCredentialsSecretName: String = property(
     name = "tock_database_mongodb_credentials_secret_name",
     defaultValue = "database_mongodb_credentials",

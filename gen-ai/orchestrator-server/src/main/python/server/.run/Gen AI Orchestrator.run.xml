@@ -6,6 +6,10 @@
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="http_proxy" value="" />
+      <env name="https_proxy" value="" />
+      <env name="GOOGLE_APPLICATION_CREDENTIALS" value="$USER_HOME$/Téléchargements/bx270-e99-secret-rec-543-e95f8a906655.json" />
+      <env name="tock_gen_ai_orchestrator_gcp_project_id" value="bdi01-e99-secret-rec-584" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="SDK_NAME" value="Poetry (server)" />
