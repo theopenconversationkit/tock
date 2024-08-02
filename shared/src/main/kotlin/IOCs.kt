@@ -19,9 +19,12 @@ package ai.tock.shared
 import ai.tock.shared.cache.TockCache
 import ai.tock.shared.cache.mongo.MongoCache
 import ai.tock.shared.security.NoOpTockUserListener
+import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.mongo.DefaultMongoCredentialsProvider
+import ai.tock.shared.security.mongo.EnvMongoCredentialsProvider
 import ai.tock.shared.security.mongo.MongoCredentialsProvider
+import ai.tock.shared.security.mongo.databaseMongoDbSecretManagerProvider
 import ai.tock.shared.vertx.TockVertxProvider
 import ai.tock.shared.vertx.VertxProvider
 import ai.tock.shared.vertx.vertxExecutor
@@ -73,6 +76,12 @@ val sharedModule = Kodein.Module {
     bind<VertxProvider>() with provider { TockVertxProvider }
     bind<TockUserListener>() with provider { NoOpTockUserListener }
     bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
+
+    // Overrides the DefaultMongoCredentialsProvider to use the one based on env variables.
+    if(SecretManagerProviderType.ENV.name == databaseMongoDbSecretManagerProvider){
+        bind<MongoCredentialsProvider>(overrides = true) with provider { EnvMongoCredentialsProvider }
+    }
+
     try {
         bind<MongoClient>() with singleton { mongoClient }
     } catch (e: Exception) {
