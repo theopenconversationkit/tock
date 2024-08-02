@@ -16,14 +16,14 @@
 
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Application } from '../model/application';
 import { Observable } from 'rxjs';
 import { StateService } from '../core-nlp/state.service';
 import { ApplicationService } from '../core-nlp/applications.service';
 
 @Injectable()
-export class ApplicationsResolver implements Resolve<Application[]> {
+export class ApplicationsResolver  {
   constructor(private appService: ApplicationService, private state: StateService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application[]> {

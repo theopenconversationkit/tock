@@ -46,7 +46,7 @@ export class ApplicationUploadComponent implements OnInit {
 
   ngOnInit(): void {
     this.report = null;
-    this.uploader = new FileUploader({ removeAfterUpload: true });
+    this.uploader = new FileUploader({ url: undefined, removeAfterUpload: true });
     this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.uploading = false;
       this.report = ImportReport.fromJSON(JSON.parse(response));

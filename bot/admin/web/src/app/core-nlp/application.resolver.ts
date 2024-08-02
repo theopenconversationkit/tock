@@ -16,14 +16,14 @@
 
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Application } from '../model/application';
 import { ApplicationService } from './applications.service';
 import { CoreConfig } from './core.config';
 
 @Injectable()
-export class ApplicationResolver implements Resolve<Application> {
+export class ApplicationResolver  {
   constructor(private config: CoreConfig, private appService: ApplicationService, private router: Router) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application> {

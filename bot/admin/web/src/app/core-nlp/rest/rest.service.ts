@@ -154,7 +154,7 @@ export class RestService {
   }
 
   fileUploader(path: string): FileUploader {
-    const uploader = new FileUploader({ removeAfterUpload: true });
+    const uploader = new FileUploader({ url: undefined, removeAfterUpload: true });
     this.setFileUploaderOptions(uploader, path);
     return uploader;
   }

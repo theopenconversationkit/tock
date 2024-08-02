@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AnalyticsTabsComponent } from './analytics-tabs.component';
@@ -117,7 +116,6 @@ export function importEcharts() {
     DialogsListComponent
   ],
   exports: [],
-  providers: [AnalyticsService],
-  entryComponents: []
+  providers: [AnalyticsService]
 })
 export class BotAnalyticsModule {}

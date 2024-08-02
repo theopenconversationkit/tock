@@ -50,7 +50,7 @@ export class EntitiesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.uploader = new FileUploader({ autoUpload: true, removeAfterUpload: true });
+    this.uploader = new FileUploader({ url: undefined, autoUpload: true, removeAfterUpload: true });
     this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       const d = Dictionary.fromJSON(JSON.parse(response));
       this.selectedDictionary = d;

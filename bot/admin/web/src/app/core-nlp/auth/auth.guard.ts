@@ -15,7 +15,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 import { StateService } from '../state.service';
@@ -23,7 +23,7 @@ import { UserRole } from '../../model/auth';
 import { CoreConfig } from '../core.config';
 
 @Injectable()
-export class AuthGuard implements CanActivate, CanActivateChild {
+export class AuthGuard  {
   private autologin = environment.autologin;
   private rolesMap: Map<UserRole, string[]>;
 
