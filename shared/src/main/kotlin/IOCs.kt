@@ -19,21 +19,13 @@ package ai.tock.shared
 import ai.tock.shared.cache.TockCache
 import ai.tock.shared.cache.mongo.MongoCache
 import ai.tock.shared.security.NoOpTockUserListener
-import ai.tock.shared.security.SecretManagerProviderType
 import ai.tock.shared.security.TockUserListener
 import ai.tock.shared.security.mongo.DefaultMongoCredentialsProvider
-import ai.tock.shared.security.mongo.EnvMongoCredentialsProvider
 import ai.tock.shared.security.mongo.MongoCredentialsProvider
-import ai.tock.shared.security.mongo.databaseMongoDbSecretManagerProvider
 import ai.tock.shared.vertx.TockVertxProvider
 import ai.tock.shared.vertx.VertxProvider
 import ai.tock.shared.vertx.vertxExecutor
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import com.github.salomonbrys.kodein.providerOrNull
-import com.github.salomonbrys.kodein.singleton
+import com.github.salomonbrys.kodein.*
 import com.mongodb.client.MongoClient
 import mu.KotlinLogging
 
@@ -76,11 +68,8 @@ val sharedModule = Kodein.Module {
     bind<VertxProvider>() with provider { TockVertxProvider }
     bind<TockUserListener>() with provider { NoOpTockUserListener }
     bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
-
-    // Overrides the DefaultMongoCredentialsProvider to use the one based on env variables.
-    if(SecretManagerProviderType.ENV.name == databaseMongoDbSecretManagerProvider){
-        bind<MongoCredentialsProvider>(overrides = true) with provider { EnvMongoCredentialsProvider }
-    }
+    // TODO MASS : test the use of AWS-Tools instead of tock-mongodb-credentials-provider external module
+    // TODO MASS : Do not add sub module to Tock
 
     try {
         bind<MongoClient>() with singleton { mongoClient }
