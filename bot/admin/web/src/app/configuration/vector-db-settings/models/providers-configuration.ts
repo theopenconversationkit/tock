@@ -34,22 +34,6 @@ export const ProvidersConfigurations: ProvidersConfiguration[] = [
       { key: 'username', label: 'User name', type: 'obfuscated', defaultValue: 'admin' },
       { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'admin' },
       {
-        key: 'indexName',
-        label: 'Index name',
-        type: 'text',
-        readonly: true,
-        computedDefaultValue: (parameters) => {
-          let normalized = `ns-${parameters.namespace}-bot-${parameters.botId}`.toLowerCase();
-          normalized = normalized.replace('_', '-').replace(' ', '-');
-          const invalidCharacters = [' ', ',', ':', '"', '*', '+', '/', '\\', '|', '?', '#', '>', '<'];
-          invalidCharacters.forEach((invalid) => {
-            normalized = normalized.replace(invalid, '');
-          });
-
-          return normalized;
-        }
-      },
-      {
         key: 'k',
         label: 'k-nearest neighbors',
         type: 'number',
