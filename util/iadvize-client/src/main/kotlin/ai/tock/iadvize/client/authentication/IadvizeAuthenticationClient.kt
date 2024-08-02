@@ -27,7 +27,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
 val iAdvizeSecretManagerProvider: String = property(
-    name = "tock_gen_ai_secret_manager_provider",
+    name = "tock_iadvize_secret_manager_provider",
     defaultValue = SecretManagerProviderType.ENV.name
 )
 val iAdvizeCredentialsSecretName: String = property(
