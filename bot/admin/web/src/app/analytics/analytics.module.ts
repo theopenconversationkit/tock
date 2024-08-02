@@ -51,7 +51,6 @@ import { ChartComponent } from './chart/chart.component';
 import { ChartDialogComponent } from './chart-dialog/chart-dialog.component';
 import { ActivityComponent } from './activity/activity.component';
 import { BehaviorComponent } from './behavior/behavior.component';
-import { GoogleChartsModule } from 'angular-google-charts';
 import { FlowComponent } from './flow/flow.component';
 import { CytoComponent } from './flow/cyto.component';
 import { PreferencesComponent } from './preferences/preferences.component';
@@ -89,7 +88,6 @@ export function importEcharts() {
     NbDatepickerModule,
     NbListModule,
     NbAccordionModule,
-    GoogleChartsModule,
     NbContextMenuModule,
     NbMenuModule.forRoot(),
     NbCalendarRangeModule,
