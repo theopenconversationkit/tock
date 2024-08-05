@@ -28,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 internal class WebConnectorCallback(
     applicationId: String,
     val locale: Locale,
-    private val context: RoutingContext,
+    private val context: RoutingContext?,
     private val actions: MutableList<Action> = CopyOnWriteArrayList(),
     private val metadata: MutableMap<String, String> = mutableMapOf(),
     private val webMapper: ObjectMapper,
@@ -51,8 +51,8 @@ internal class WebConnectorCallback(
 
     fun sendResponse() {
         WebRequestInfosByEvent.invalidate(eventId)
-        context.response()
-            .putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            .end(webMapper.writeValueAsString(createResponse(actions)))
+        context?.response()
+            ?.putHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+            ?.end(webMapper.writeValueAsString(createResponse(actions)))
     }
 }
