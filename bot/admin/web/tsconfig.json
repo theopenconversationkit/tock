@@ -13,14 +13,10 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2022",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "lib": [
-      "es2020",
-      "dom"
-    ],
-    "useDefineForClassFields": false
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2020", "dom"],
+    "useDefineForClassFields": false,
+    "skipLibCheck": true // Temporary workaround for https://github.com/akveo/nebular/issues/3258
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
