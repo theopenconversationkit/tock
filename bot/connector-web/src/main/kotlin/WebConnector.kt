@@ -31,10 +31,15 @@ import ai.tock.bot.connector.web.send.PostbackButton
 import ai.tock.bot.connector.web.send.UrlButton
 import ai.tock.bot.connector.web.send.WebCard
 import ai.tock.bot.connector.web.send.WebCarousel
+import ai.tock.bot.definition.IntentAware
+import ai.tock.bot.definition.StoryHandlerDefinition
+import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
 import ai.tock.bot.engine.ConnectorController
 import ai.tock.bot.engine.action.Action
+import ai.tock.bot.engine.action.ActionNotificationType
+import ai.tock.bot.engine.action.SendChoice
 import ai.tock.bot.engine.event.Event
 import ai.tock.bot.engine.event.MetadataEvent
 import ai.tock.bot.engine.user.PlayerId
@@ -52,6 +57,7 @@ import ai.tock.bot.orchestration.shared.SecondaryBotEligibilityResponse
 import ai.tock.shared.Dice
 import ai.tock.shared.Executor
 import ai.tock.shared.booleanProperty
+import ai.tock.shared.defaultLocale
 import ai.tock.shared.injector
 import ai.tock.shared.jackson.mapper
 import ai.tock.shared.listProperty
@@ -71,6 +77,7 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CorsHandler
 import java.time.Duration
+import java.util.Locale
 import java.util.UUID
 import mu.KotlinLogging
 
@@ -262,31 +269,71 @@ class WebConnector internal constructor(
             val event = request.toEvent(applicationId)
             val requestInfos = WebRequestInfos(context.request())
             WebRequestInfosByEvent.put(event.id.toString(), requestInfos)
-            val callback = WebConnectorCallback(
-                applicationId = applicationId,
-                locale = request.locale,
-                context = context,
-                webMapper = webMapper,
-                eventId = event.id.toString(),
-                messageProcessor = messageProcessor,
-            )
-            if (sseEnabled) {
-                // Uniquely identify each response, so they can be reconciliated between SSE and POST
-                callback.addMetadata(MetadataEvent.responseId(UUID.randomUUID(), applicationId))
-            }
-            controller.handle(
-                event,
-                ConnectorData(
-                    callback = callback,
-                    metadata = extraHeadersAsMetadata(requestInfos)
-                )
-            )
+            handleEvent(applicationId, request.locale, event, controller, context, extraHeadersAsMetadata(requestInfos))
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
             context.fail(t)
         } finally {
             BotRepository.requestTimer.end(timerData)
         }
+    }
+
+    private fun handleEvent(
+        applicationId: String,
+        locale: Locale,
+        event: Event,
+        controller: ConnectorController,
+        context: RoutingContext?,
+        headersMetadata: Map<String, String>,
+    ) {
+        val callback = WebConnectorCallback(
+            applicationId = applicationId,
+            locale = locale,
+            context = context,
+            webMapper = webMapper,
+            eventId = event.id.toString(),
+            messageProcessor = messageProcessor,
+        )
+        if (sseEnabled) {
+            // Uniquely identify each response, so they can be reconciliated between SSE and POST
+            callback.addMetadata(MetadataEvent.responseId(UUID.randomUUID(), applicationId))
+        }
+        controller.handle(
+            event,
+            ConnectorData(
+                callback = callback,
+                metadata = headersMetadata
+            )
+        )
+    }
+
+    override fun notify(
+        controller: ConnectorController,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>?,
+        parameters: Map<String, String>,
+        notificationType: ActionNotificationType?,
+        errorListener: (Throwable) -> Unit
+    ) {
+        if (!sseEnabled) {
+            throw UnsupportedOperationException("Web Connector only supports notifications when SSE is enabled")
+        }
+        handleEvent(
+            applicationId = applicationId,
+            locale = defaultLocale,
+            event = SendChoice(
+                recipientId,
+                applicationId,
+                PlayerId(applicationId, bot),
+                intent.wrappedIntent().name,
+                step,
+                parameters
+            ),
+            controller = controller,
+            context = null,
+            headersMetadata = emptyMap(),
+        )
     }
 
     /**
