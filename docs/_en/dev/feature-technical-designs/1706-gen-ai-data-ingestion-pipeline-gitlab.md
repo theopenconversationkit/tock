@@ -4,7 +4,7 @@ title: Gen AI Data Ingestion pipeline (gitlab) design
 
 # Gen AI Data Ingestion pipeline (gitlab) design #1706
 
-- Proposal PR: [https://github.com/theopenconversationkit/tock/pull/TODO](https://github.com/theopenconversationkit/tock/pull/TODO)
+- Proposal PR: [https://github.com/theopenconversationkit/tock/pull/1713](https://github.com/theopenconversationkit/tock/pull/1713)
 - Github Issue for this feature: [#1706](https://github.com/theopenconversationkit/tock/issues/1706)
 
 
