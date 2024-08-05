@@ -1,7 +1,7 @@
 <nb-card class="mb-2">
-  <nb-card-body class="d-flex flew-wrap gap-1 align-items-center">
+  <nb-card-body class="d-flex flex-wrap gap-1 align-items-center">
     <ng-container *ngIf="!ratingFilter">
-      <div class="flex-grow-1 min-width-10 d-flex gap-1 align-items-center">
+      <div class="flex-grow-1 min-width-15 w-100 d-flex gap-1 align-items-center">
         <input
           nbInput
           fullWidth
@@ -17,75 +17,93 @@
         </nb-checkbox>
       </div>
 
-      <nb-select
-        fullWidth
-        placeholder="Connector type"
-        [(ngModel)]="filter.connectorType"
-        (selectedChange)="refresh()"
-      >
-        <nb-option
-          *ngFor="let c of connectorTypes"
-          [value]="c"
-          >{{ c.id }}</nb-option
+      <div class="d-flex gap-1">
+        <nb-select
+          fullWidth
+          placeholder="Connector type"
+          class="min-width-15"
+          [(ngModel)]="filter.connectorType"
+          (selectedChange)="refresh()"
         >
-      </nb-select>
+          <nb-option
+            *ngFor="let c of connectorTypes"
+            [value]="c"
+            >{{ c.id }}</nb-option
+          >
+        </nb-select>
 
-      <nb-select
-        fullWidth
-        placeholder="Intent"
-        [(ngModel)]="filter.intentName"
-        (selectedChange)="refresh()"
-      >
-        <nb-option value="">All</nb-option>
-        <nb-option
-          *ngFor="let intent of state.currentApplication.intents"
-          [value]="intent.name"
+        <nb-select
+          fullWidth
+          placeholder="Intent"
+          class="min-width-15"
+          [(ngModel)]="filter.intentName"
+          (selectedChange)="refresh()"
         >
-          {{ intent.name }}
-        </nb-option>
-        <nb-option value="unknown">Unknown</nb-option>
-      </nb-select>
+          <nb-option value="">All</nb-option>
+          <nb-option
+            *ngFor="let intent of state.currentApplication.intents"
+            [value]="intent.name"
+          >
+            {{ intent.name }}
+          </nb-option>
+          <nb-option value="unknown">Unknown</nb-option>
+        </nb-select>
+      </div>
     </ng-container>
 
     <ng-container *ngIf="ratingFilter">
-      <nb-select
-        fullWidth
-        placeholder="Configuration"
-        [(ngModel)]="filter.configuration"
-        (selectedChange)="refresh()"
-      >
-        <nb-option value="">All</nb-option>
-        <nb-option
-          *ngFor="let config of configurationNameList"
-          [value]="config"
+      <div class="d-flex gap-1">
+        <nb-select
+          fullWidth
+          placeholder="Configuration"
+          [(ngModel)]="filter.configuration"
+          (selectedChange)="refresh()"
+          class="min-width-15"
         >
-          {{ config }}
-        </nb-option>
-      </nb-select>
+          <nb-option value="">All</nb-option>
+          <nb-option
+            *ngFor="let config of configurationNameList"
+            [value]="config"
+          >
+            {{ config }}
+          </nb-option>
+        </nb-select>
 
-      <nb-select
-        fullWidth
-        multiple
-        placeholder="Intents"
-        [(ngModel)]="filter.intentsToHide"
-        (selectedChange)="refresh()"
-      >
-        <nb-option>Clear selection</nb-option>
-        <nb-option
-          *ngFor="let intent of intents"
-          [value]="intent"
+        <nb-select
+          fullWidth
+          multiple
+          placeholder="Intents"
+          [(ngModel)]="filter.intentsToHide"
+          (selectedChange)="refresh()"
+          class="min-width-15"
         >
-          {{ intent }}
-        </nb-option>
-      </nb-select>
+          <nb-option>Clear selection</nb-option>
+          <nb-option
+            *ngFor="let intent of intents"
+            [value]="intent"
+          >
+            {{ intent }}
+          </nb-option>
+        </nb-select>
+      </div>
     </ng-container>
 
-    <nb-toggle
-      class="nb-toggle-reset-label-margin text-nowrap"
+    <nb-checkbox
+      *ngIf="!ratingFilter"
+      nbTooltip="Display only dialogs containing Rag responses"
+      class="text-nowrap"
+      [(ngModel)]="filter.isGenAiRagDialog"
+      (change)="waitAndRefresh()"
+      >Rag responses only
+    </nb-checkbox>
+
+    <nb-checkbox
+      nbTooltip="Display dialogues held from the studio test view"
+      class="text-nowrap"
       [(ngModel)]="filter.displayTests"
       (change)="waitAndRefresh()"
-      >Display tests</nb-toggle
-    >
+      >Display tests
+    </nb-checkbox>
   </nb-card-body>
 </nb-card>
 
@@ -111,27 +129,35 @@
       <nb-card>
         <nb-card-body class="p-1 pt-2">
           <tock-chat-ui>
-            <tock-chat-ui-message
-              *ngFor="let action of dialog.actions"
-              [message]="action.message"
-              [date]="action.date"
-              [reply]="action.isBot()"
-              [replay]="true"
-              [sender]="getUserName(action)"
-              [avatar]="getUserAvatar(action)"
-            >
-            </tock-chat-ui-message>
+            <ng-container *ngFor="let action of dialog.actions">
+              <tock-chat-ui-message
+                [message]="action.message"
+                [date]="action.date"
+                [reply]="action.isBot()"
+                [replay]="true"
+                [sender]="getUserName(action)"
+                [avatar]="getUserAvatar(action)"
+              >
+                <div
+                  *ngIf="$any(action).metadata.isGenAiRagAnswer"
+                  class="mt-3 text-right"
+                >
+                  <button
+                    nbButton
+                    size="tiny"
+                    status="warning"
+                    type="button"
+                    (click)="createFaq(action, dialog.actions)"
+                  >
+                    <nb-icon icon="message-square-outline"></nb-icon>
+                    Create a FAQ with this question/answer pair
+                  </button>
+                </div>
+              </tock-chat-ui-message>
+            </ng-container>
           </tock-chat-ui>
         </nb-card-body>
       </nb-card>
-
-      <!-- <tock-display-dialog
-          [dialog]="dialog"
-          [intentsToHide]="filter.intentsToHide"
-        >
-          <div *ngIf="dialog.actions.length === 0">No dialog</div>
-        </tock-display-dialog> -->
-      <p></p>
     </div>
   </div>
 </div>

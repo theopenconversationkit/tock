@@ -137,7 +137,7 @@ export abstract class BotMessage {
 }
 
 export class Attachment extends BotMessage {
-  constructor(public delay: number, public url: String, public type: AttachmentType) {
+  constructor(public override delay: number, public url: string, public type: AttachmentType) {
     super(EventType.attachment, delay);
   }
 
@@ -145,7 +145,7 @@ export class Attachment extends BotMessage {
     return this.type == AttachmentType.image;
   }
 
-  static fromJSON(json?: any): Attachment {
+  static override fromJSON(json?: any): Attachment {
     const value = Object.create(Attachment.prototype);
 
     const result = Object.assign(value, json, {
@@ -156,17 +156,17 @@ export class Attachment extends BotMessage {
     return result;
   }
 
-  static fromJSONArray(json?: Array<any>): Attachment[] {
+  static override fromJSONArray(json?: Array<any>): Attachment[] {
     return json ? json.map(Attachment.fromJSON) : [];
   }
 }
 
 export class Choice extends BotMessage {
-  constructor(public delay: number, public intentName: String, public parameters: Map<String, String>) {
+  constructor(public override delay: number, public intentName: String, public parameters: Map<String, String>) {
     super(EventType.choice, delay);
   }
 
-  static fromJSON(json?: any): Choice {
+  static override fromJSON(json?: any): Choice {
     const value = Object.create(Choice.prototype);
 
     const result = Object.assign(value, json, {
@@ -177,17 +177,17 @@ export class Choice extends BotMessage {
     return result;
   }
 
-  static fromJSONArray(json?: Array<any>): Choice[] {
+  static override fromJSONArray(json?: Array<any>): Choice[] {
     return json ? json.map(Choice.fromJSON) : [];
   }
 }
 
 export class Location extends BotMessage {
-  constructor(public delay: number, public location?: UserLocation) {
+  constructor(public override delay: number, public location?: UserLocation) {
     super(EventType.location, delay);
   }
 
-  static fromJSON(json?: any): Location {
+  static override fromJSON(json?: any): Location {
     const value = Object.create(Location.prototype);
 
     const result = Object.assign(value, json, {
@@ -198,7 +198,7 @@ export class Location extends BotMessage {
     return result;
   }
 
-  static fromJSONArray(json?: Array<any>): Location[] {
+  static override fromJSONArray(json?: Array<any>): Location[] {
     return json ? json.map(Location.fromJSON) : [];
   }
 }
@@ -216,11 +216,16 @@ export class UserLocation {
 }
 
 export class Sentence extends BotMessage {
-  constructor(public delay: number, public messages: SentenceElement[], public text?: string, public userInterface?: UserInterfaceType) {
+  constructor(
+    public override delay: number,
+    public messages: SentenceElement[],
+    public text?: string,
+    public userInterface?: UserInterfaceType
+  ) {
     super(EventType.sentence, delay);
   }
 
-  static fromJSON(json?: any): Sentence {
+  static override fromJSON(json?: any): Sentence {
     const value = Object.create(Sentence.prototype);
 
     const result = Object.assign(value, json, {
@@ -231,7 +236,7 @@ export class Sentence extends BotMessage {
     return result;
   }
 
-  static fromJSONArray(json?: Array<any>): Sentence[] {
+  static override fromJSONArray(json?: Array<any>): Sentence[] {
     return json ? json.map(Sentence.fromJSON) : [];
   }
 }
@@ -243,11 +248,11 @@ export interface Footnote {
 }
 
 export class SentenceWithFootnotes extends BotMessage {
-  constructor(public delay: number, public footnotes: Footnote[], public text?: string, public userInterface?: UserInterfaceType) {
+  constructor(public override delay: number, public footnotes: Footnote[], public text?: string, public userInterface?: UserInterfaceType) {
     super(EventType.sentenceWithFootnotes, delay);
   }
 
-  static fromJSON(json?: any): SentenceWithFootnotes {
+  static override fromJSON(json?: any): SentenceWithFootnotes {
     const value = Object.create(SentenceWithFootnotes.prototype);
 
     const result = Object.assign(value, json, {
@@ -258,17 +263,17 @@ export class SentenceWithFootnotes extends BotMessage {
     return result;
   }
 
-  static fromJSONArray(json?: Array<any>): SentenceWithFootnotes[] {
+  static override fromJSONArray(json?: Array<any>): SentenceWithFootnotes[] {
     return json ? json.map(SentenceWithFootnotes.fromJSON) : [];
   }
 }
 
 export class Debug extends BotMessage {
-  constructor(public delay: number, public data: any, public text?: string, public userInterface?: UserInterfaceType) {
+  constructor(public override delay: number, public data: any, public text?: string, public userInterface?: UserInterfaceType) {
     super(EventType.debug, delay);
   }
 
-  static fromJSON(json?: any): BotMessage {
+  static override fromJSON(json?: any): BotMessage {
     const value = Object.create(Debug.prototype);
 
     const result = Object.assign(value, json, {
@@ -279,7 +284,7 @@ export class Debug extends BotMessage {
     return result;
   }
 
-  static fromJSONArray(json?: Array<any>): BotMessage[] {
+  static override fromJSONArray(json?: Array<any>): BotMessage[] {
     return json ? json.map(Debug.fromJSON) : [];
   }
 }

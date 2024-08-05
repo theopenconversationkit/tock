@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EntityTestError, TestErrorQuery } from '../../model/nlp';
 import { StateService } from '../../core-nlp/state.service';
-import { QualityService } from '../../quality-nlp/quality.service';
+import { QualityService } from '../quality.service';
 import { NbToastrService } from '@nebular/theme';
 import { Router } from '@angular/router';
 import { DialogService } from '../../core-nlp/dialog.service';
-import { NlpService } from '../../nlp-tabs/nlp.service';
+import { NlpService } from '../../core-nlp/nlp.service';
 import { escapeRegex } from '../../model/commons';
 import { saveAs } from 'file-saver-es';
 import { UserRole } from '../../model/auth';
@@ -17,7 +17,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './test-entity-errors.component.html',
   styleUrls: ['./test-entity-errors.component.scss']
 })
-export class TestEntityErrorsComponent implements OnInit {
+export class TestEntityErrorsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   dataSource: EntityTestError[] = [];
@@ -83,12 +83,7 @@ export class TestEntityErrorsComponent implements OnInit {
 
   change(error: EntityTestError) {
     this.qualityService.deleteEntityError(error).subscribe((e) => {
-      this.router.navigate(['/nlp/search'], {
-        queryParams: {
-          text: '^' + escapeRegex(error.sentence.text) + '$',
-          status: 'model'
-        }
-      });
+      this.router.navigate(['/language-understanding/search'], { state: { searchIntent: '^' + escapeRegex(error.sentence.text) + '$' } });
     });
   }
 

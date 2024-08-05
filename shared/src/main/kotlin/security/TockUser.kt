@@ -30,9 +30,19 @@ import io.vertx.ext.auth.impl.UserImpl
 data class TockUser(
     val user: UserLogin,
     val namespace: String,
-    val roles: Set<String>,
+    var roles: Set<String>,
     val registered: Boolean = false
 ) : UserImpl() {
+
+    init{
+        this.roles = roles.map { role ->
+            when (role) {
+                TockUserRole.faqBotUser.name -> TockUserRole.botUser.name
+                TockUserRole.faqNlpUser.name -> TockUserRole.nlpUser.name
+                else -> role
+            }
+        }.toSet()
+    }
 
     override fun isAuthorized(authority: String, handler: Handler<AsyncResult<Boolean>>): User {
         handler.handle(Future.succeededFuture(roles.contains(authority)))

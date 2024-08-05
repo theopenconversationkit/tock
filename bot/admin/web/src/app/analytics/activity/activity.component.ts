@@ -20,14 +20,14 @@ import { StateService } from 'src/app/core-nlp/state.service';
 import { BotConfigurationService } from 'src/app/core/bot-configuration.service';
 import { BotApplicationConfiguration, ConnectorType } from 'src/app/core/model/configuration';
 
-import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
 import { AnalyticsService } from '../analytics.service';
 import { ChartData } from '../chart/ChartData';
 import { DialogFlowRequest } from '../flow/flow';
 import { UserAnalyticsPreferences } from '../preferences/UserAnalyticsPreferences';
 import { UserAnalyticsQueryResult } from '../users/users';
 import { UserFilter } from '../users/users.component';
-import {toISOStringWithoutOffset} from "../../shared/utils";
+import { toISOStringWithoutOffset } from '../../shared/utils';
+import { SelectBotEvent } from '../../shared/components';
 
 @Component({
   selector: 'tock-activity',

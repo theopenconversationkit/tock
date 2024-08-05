@@ -20,11 +20,11 @@ import { ConnectorType } from '../../core/model/configuration';
 
 export class DialogReportQuery extends PaginatedQuery {
   constructor(
-    public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
+    public override namespace: string,
+    public override applicationName: string,
+    public override language: string,
+    public override start: number,
+    public override size: number,
     public exactMatch: boolean,
     public playerId?: PlayerId,
     public dialogId?: string,
@@ -34,8 +34,8 @@ export class DialogReportQuery extends PaginatedQuery {
     public displayTests?: boolean,
     public ratings?: number[],
     public applicationId?: string,
-
-    public intentsToHide? : string[]
+    public intentsToHide?: string[],
+    public isGenAiRagDialog?: boolean
   ) {
     super(namespace, applicationName, language, start, size);
   }

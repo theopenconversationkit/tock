@@ -16,6 +16,7 @@
 
 package ai.tock.bot.admin.service
 
+import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.genai.orchestratorclient.responses.ErrorInfo
 import ai.tock.genai.orchestratorclient.responses.ErrorResponse
@@ -43,6 +44,7 @@ class RAGValidationServiceTest {
             Kodein.Module {
                 bind<LLMProviderService>() with singleton { llmProviderService }
                 bind<EMProviderService>() with singleton { emProviderService }
+                bind<BotObservabilityConfigurationDAO>() with singleton { botObservabilityConfigurationDAO }
             }.also {
                 tockInternalInjector.inject(Kodein {
                     import(it)
@@ -52,6 +54,7 @@ class RAGValidationServiceTest {
 
         private val llmProviderService: LLMProviderService = mockk(relaxed = false)
         private val emProviderService: EMProviderService = mockk(relaxed = false)
+        private val botObservabilityConfigurationDAO: BotObservabilityConfigurationDAO = mockk(relaxed = true)
     }
 
     private val openAILLMSetting = OpenAILLMSetting(

@@ -15,7 +15,7 @@ import { FaqManagementEditComponent } from './faq-management-edit/faq-management
 import { FaqManagementSettingsComponent } from './faq-management-settings/faq-management-settings.component';
 import { Pagination } from '../../shared/components';
 
-export type FaqDefinitionExtended = FaqDefinition & { _initUtterance?: string };
+export type FaqDefinitionExtended = FaqDefinition & { _initQuestion?: string };
 
 @Component({
   selector: 'tock-faq-management',
@@ -44,7 +44,8 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     list: false
   };
 
-  initUtterance: string;
+  initQuestion: string;
+  initAnswer: string;
 
   constructor(
     private botConfiguration: BotConfigurationService,
@@ -53,7 +54,8 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     private toastrService: NbToastrService,
     private router: Router
   ) {
-    this.initUtterance = this.router.getCurrentNavigation().extras?.state?.question;
+    this.initQuestion = this.router.getCurrentNavigation().extras?.state?.question;
+    this.initAnswer = this.router.getCurrentNavigation().extras?.state?.answer;
   }
 
   ngOnInit(): void {
@@ -64,17 +66,23 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
         this.search();
         this.closeSidePanel();
 
-        if (this.initUtterance) {
-          let initUtterance = this.initUtterance;
-          this.initUtterance = undefined;
-          this.addFaq(initUtterance);
+        let initQuestion;
+        if (this.initQuestion) {
+          initQuestion = this.initQuestion;
+          this.initQuestion = undefined;
+        }
+
+        let initAnswer;
+        if (this.initAnswer) {
+          initAnswer = this.initAnswer;
+          this.initAnswer = undefined;
+        }
+
+        if (initQuestion || initAnswer) {
+          this.addFaq(initQuestion, initAnswer);
         }
       }
     });
-  }
-
-  get isAuthorized(): boolean {
-    return this.stateService.hasRole(UserRole.faqBotUser);
   }
 
   pagination: Pagination = {
@@ -201,22 +209,22 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  addFaq(initUtterance?: string) {
+  addFaq(initQuestion?: string, initAnswer?: string) {
     this.faqEdit = {
       id: undefined,
       intentId: undefined,
-      title: initUtterance ? initUtterance : '',
+      title: initQuestion || '',
       description: '',
       utterances: [],
       tags: [],
-      answer: '',
+      answer: initAnswer || '',
       enabled: true,
       applicationName: this.stateService.currentApplication.name,
       language: this.stateService.currentLocale
     };
 
-    if (initUtterance) {
-      this.faqEdit._initUtterance = initUtterance;
+    if (initQuestion) {
+      this.faqEdit._initQuestion = initQuestion;
     }
 
     this.isSidePanelOpen.edit = true;

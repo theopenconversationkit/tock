@@ -58,5 +58,7 @@ data class DialogReportQuery(
      */
     val applicationId : String? = null,
 
-    val intentsToHide : Set<String> =  emptySet()
+    val intentsToHide : Set<String> =  emptySet(),
+
+    val isGenAiRagDialog: Boolean? = null
 )

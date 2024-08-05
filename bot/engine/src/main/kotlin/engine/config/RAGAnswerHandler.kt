@@ -24,6 +24,7 @@ import ai.tock.bot.definition.RAGStoryDefinition
 import ai.tock.bot.definition.StoryDefinition
 import ai.tock.bot.engine.BotBus
 import ai.tock.bot.engine.BotRepository
+import ai.tock.bot.engine.action.ActionMetadata
 import ai.tock.bot.engine.action.Footnote
 import ai.tock.bot.engine.action.SendSentence
 import ai.tock.bot.engine.action.SendSentenceWithFootnotes
@@ -35,6 +36,7 @@ import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
+import ai.tock.genai.orchestratorcore.mappers.ObservabilitySettingMapper
 import ai.tock.genai.orchestratorcore.utils.OpenSearchUtils
 import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
@@ -79,7 +81,8 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 it.identifier, it.title, it.url,
                                 if(action.metadata.sourceWithContent) it.content else null
                             )
-                        }.toMutableList()
+                        }.toMutableList(),
+                        metadata = ActionMetadata(isGenAiRagAnswer = true)
                     )
                 )
             } else {
@@ -176,6 +179,7 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                                 Term(term = mapOf("metadata.index_session_id.keyword" to ragConfiguration.indexSessionId!!))
                             )
                         ),
+                        observabilitySetting = botDefinition.observabilityConfiguration?.setting
                     ), debug = action.metadata.debugEnabled || ragDebugEnabled
                 )
 

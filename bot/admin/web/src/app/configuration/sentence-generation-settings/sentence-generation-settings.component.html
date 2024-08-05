@@ -14,9 +14,7 @@
   ~ limitations under the License.
   -->
 
-<div class="mt-3"></div>
-
-<tock-sticky-menu offset="50">
+<tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap">
     <h1 class="flex-grow-1">Sentence generation settings</h1>
 
@@ -133,9 +131,9 @@
         [showError]="isSubmitted"
       >
         <tock-slider
-          min="1"
-          max="20"
-          step="1"
+          [min]="1"
+          [max]="20"
+          [step]="1"
           formControlName="nbSentences"
         ></tock-slider>
       </tock-form-control>

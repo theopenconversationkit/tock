@@ -6,11 +6,11 @@ import { NbToastrService } from '@nebular/theme';
 
 import { BotService } from '../../../bot/bot-service';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../../bot/model/story';
 import { StateService } from '../../../core-nlp/state.service';
 import { Settings } from '../../models';
 import { FaqService } from '../../services/faq.service';
+import { ChoiceDialogComponent } from '../../../shared/components';
 
 interface SettingsForm {
   satisfactionEnabled: FormControl<boolean>;
@@ -118,24 +118,27 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
   }
 
   close(): Observable<any> {
-    const validAction = 'yes';
+    const action = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+      const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
         context: {
           title: `Cancel edit settings`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+            { actionName: action, buttonStatus: 'danger' }
+          ]
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result === validAction) {
+        if (result === action) {
           this.onClose.emit(true);
         }
       });
       return dialogRef.onClose;
     } else {
       this.onClose.emit(true);
-      return of(validAction);
+      return of(action);
     }
   }
 
@@ -144,16 +147,19 @@ export class FaqManagementSettingsComponent implements OnInit, OnDestroy {
 
     if (this.canSave) {
       if (!this.satisfactionEnabled.value) {
-        const validAction = 'yes';
-        const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+        const action = 'yes';
+        const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
           context: {
             title: `Disable satisfaction`,
             subtitle: 'This will disable the satisfaction question for all FAQs. Do you confirm ?',
-            action: validAction
+            actions: [
+              { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+              { actionName: action, buttonStatus: 'danger' }
+            ]
           }
         });
         dialogRef.onClose.subscribe((result) => {
-          if (result === validAction) {
+          if (result === action) {
             this.saveSettings(this.form.value as Settings);
           }
         });

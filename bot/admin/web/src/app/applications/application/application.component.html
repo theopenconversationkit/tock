@@ -1,0 +1,261 @@
+<!--
+  ~ Copyright (C) 2017/2021 e-voyageurs technologies
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<div class="d-flex flex-wrap mb-2">
+  <h1 class="flex-grow-1">
+    <span *ngIf="applications.length !== 0"
+      >Application
+      <span *ngIf="application?.name?.length !== 0">"{{ application.name }}"</span>
+    </span>
+  </h1>
+
+  <section class="grid-actions gap-1">
+    <button
+      nbButton
+      outline
+      status="primary"
+      *ngIf="applications.length !== 0"
+      (click)="cancel()"
+      nbTooltip="Cancel"
+    >
+      <nb-icon icon="close-outline"></nb-icon>
+      CANCEL
+    </button>
+
+    <button
+      nbButton
+      status="warning"
+      (click)="saveApplication()"
+      [nbTooltip]="newApplication ? 'Create New Application' : 'Update Application'"
+    >
+      <ng-container *ngIf="newApplication">
+        <nb-icon icon="plus-outline"></nb-icon>
+        CREATE
+      </ng-container>
+      <ng-container *ngIf="!newApplication">
+        <nb-icon icon="save-outline"></nb-icon>
+        UPDATE
+      </ng-container>
+    </button>
+  </section>
+</div>
+
+<nb-card>
+  <nb-card-body *ngIf="application">
+    <div class="row mb-4">
+      <div class="col">
+        <label
+          for="appLabel"
+          class="label required"
+        >
+          <abbr title="Required">*</abbr>
+          <span *ngIf="newApplication">New </span>
+          Application Label
+        </label>
+
+        <input
+          nbInput
+          fullWidth
+          id="appLabel"
+          type="text"
+          placeholder="New Application Label"
+          [(ngModel)]="application.label"
+          (keyup)="format()"
+          (keyup.enter)="saveApplication()"
+          nbTooltip="Displayed label"
+          #appLabel
+          required
+          autocomplete="off"
+        />
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col">
+        <label
+          for="appName"
+          class="label required"
+        >
+          <abbr title="Required">*</abbr>
+          <span *ngIf="newApplication">New </span>
+          Application Name
+        </label>
+
+        <input
+          nbInput
+          fullWidth
+          id="appName"
+          type="text"
+          placeholder="New Application Name"
+          [(ngModel)]="application.name"
+          (keyup)="format()"
+          (keyup.enter)="saveApplication()"
+          nbTooltip="Technical name (without special chars)"
+          #appName
+          required
+          autocomplete="off"
+        />
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-6 col-lg-3">
+        <label
+          for="treshold"
+          class="label d-block"
+        >
+          Unknown intent threshold
+        </label>
+
+        <input
+          nbInput
+          fullWidth
+          type="number"
+          id="treshold"
+          placeholder="Unknown intent threshold"
+          [(ngModel)]="application.unknownIntentThreshold"
+          min="0"
+          max="1"
+          nbTooltip="Number between 0 and 1 - if the probability of the intent is below the threshold, unknown intent is returned"
+        />
+      </div>
+
+      <div class="col-6 col-lg-9 d-flex gap-1 align-items-center flex-wrap">
+        <nb-checkbox
+          class="separator"
+          [(ngModel)]="application.normalizeText"
+          nbTooltip="If selected, this option uses normalized text models - for intent only models"
+        >
+          Normalized text models
+        </nb-checkbox>
+        <nb-checkbox
+          *ngIf="!application.normalizeText"
+          class="separator"
+          [(ngModel)]="application.mergeEngineTypes"
+          nbTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER"
+        >
+          Use entity models
+        </nb-checkbox>
+        <nb-checkbox
+          class="separator"
+          *ngIf="!application.normalizeText && !application.mergeEngineTypes"
+          [(ngModel)]="application.useEntityModels"
+          nbTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation"
+        >
+          Entity disambiguation only
+        </nb-checkbox>
+        <nb-checkbox
+          *ngIf="!application.normalizeText"
+          class="separator"
+          [(ngModel)]="application.supportSubEntities"
+          nbTooltip="If selected, you can use subentities in your nlp models"
+          >Allow subentities
+        </nb-checkbox>
+      </div>
+    </div>
+
+    <div
+      *ngIf="state.locales"
+      class="row mb-4"
+    >
+      <div class="col-6 col-lg-3">
+        <label
+          for="locales"
+          class="label required d-block"
+        >
+          <abbr title="Required">*</abbr>
+          Locales
+        </label>
+
+        <nb-select
+          fullWidth
+          status="primary"
+          (selectedChange)="addLocale()"
+          [(ngModel)]="newLocale"
+          placeholder="Add new locale"
+          id="locales"
+        >
+          <nb-option
+            *ngFor="let locale of state.locales"
+            [value]="locale.first"
+            >{{ locale.second }}
+          </nb-option>
+        </nb-select>
+      </div>
+
+      <div
+        class="col-6 col-lg-9 d-flex flex-wrap align-items-center"
+        *ngIf="application.supportedLocales.length !== 0"
+      >
+        <span
+          class="tag"
+          *ngFor="let locale of application.supportedLocales"
+        >
+          {{ state.localeName(locale) }}
+          <nb-icon
+            icon="close-circle-outline"
+            class="ml-1 pointer"
+            nbTooltip="Delete locale"
+            (click)="removeLocale(locale)"
+          ></nb-icon>
+        </span>
+      </div>
+    </div>
+
+    <div
+      *ngIf="state.locales"
+      class="row mb-4"
+    >
+      <div class="col-6 col-lg-3">
+        <label
+          for="locales"
+          class="label required d-block"
+        >
+          <abbr title="Required">*</abbr>
+          NLU engine
+        </label>
+
+        <nb-radio-group
+          id="engines"
+          name="engines-group"
+          class="d-flex"
+          [(ngModel)]="nlpEngineType"
+          (valueChange)="changeNlpEngine($event)"
+        >
+          <nb-radio
+            *ngFor="let engine of state.supportedNlpEngines"
+            [value]="engine.name"
+          >
+            {{ engine.name }}
+          </nb-radio>
+        </nb-radio-group>
+      </div>
+    </div>
+
+    <div
+      *ngIf="!newApplication && state.locales"
+      class="row mb-4"
+    >
+      <div class="col">
+        <label class="label d-block"> Advanced options </label>
+        <tock-application-advanced-options
+          [application]="application"
+          [nlpEngineTypeChange]="nlpEngineTypeChange"
+        >
+        </tock-application-advanced-options>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

@@ -25,15 +25,17 @@ import org.litote.kmongo.Id
  * The label persisted in database.
  */
 data class I18nLabel(
-    val _id: Id<I18nLabel>,
-    val namespace: String = defaultNamespace,
-    val category: String,
-    val i18n: LinkedHashSet<I18nLocalizedLabel>,
-    val defaultLabel: String? = null,
-    val defaultLocale: Locale = findDefaultLabelLocale(defaultLabel, i18n),
-    val defaultI18n: Set<I18nLocalizedLabel> = emptySet(),
-    val version: Int = 0
-) {
+    override val _id: Id<I18nLabel>,
+    override val namespace: String = defaultNamespace,
+    override val category: String,
+    override val i18n: LinkedHashSet<I18nLocalizedLabel>,
+    override val defaultLabel: String? = null,
+    override val defaultLocale: Locale = findDefaultLabelLocale(defaultLabel, i18n),
+    override val defaultI18n: Set<I18nLocalizedLabel> = emptySet(),
+    override val version: Int = 0
+) : I18nLabelContract {
+    override fun withDefaultLabel(defaultLabel: String?) = copy(defaultLabel = defaultLabel)
+    override fun withUpdatedI18n(i18n: LinkedHashSet<I18nLocalizedLabel>, version: Int?) = copy(i18n = i18n, version = version ?: 0)
 
     companion object {
         fun findDefaultLabelLocale(defaultLabel: String?, i18n: MutableSet<I18nLocalizedLabel>): Locale =

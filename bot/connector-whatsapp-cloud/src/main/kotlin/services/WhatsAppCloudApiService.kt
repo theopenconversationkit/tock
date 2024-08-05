@@ -42,7 +42,6 @@ import ai.tock.shared.cache.getOrCache
 import ai.tock.shared.error
 import ai.tock.shared.injector
 import ai.tock.shared.provide
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -55,12 +54,15 @@ import retrofit2.Response
 import java.time.Instant
 import java.util.Date
 import java.util.UUID
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 
 class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
 
     private val logger = KotlinLogging.logger {}
     private val payloadWhatsApp: PayloadWhatsAppCloudDAO = PayloadWhatsAppCloudMongoDAO
-    private val executor:Executor = injector.provide()
+    private val executor: Executor = injector.provide()
+    private val executorService = Executors.newCachedThreadPool()
 
     fun sendMessage(phoneNumberId: String, token: String, messageRequest: WhatsAppCloudSendBotMessage) {
         try {
@@ -153,10 +155,10 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         messageRequest: WhatsAppCloudSendBotTemplateMessage
     ) {
         val updatedComponents = messageRequest.template.components.map { component ->
-            if (component is Component.Carousel) {
-                updateCarouselPayloads(component)
-            } else {
-                component
+            when (component) {
+                is Component.Carousel -> updateCarouselPayloads(component)
+                is Component.Button -> updateTemplateButton(component)
+                else -> component
             }
         }
 
@@ -173,28 +175,11 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
         return payloadParameter.copy(type = payloadParameter.type, payload = newPayload, text = payloadParameter.text)
     }
 
-    fun updateCarouselPayloads(carousel: Component.Carousel): Component.Carousel {
+    private fun updateCarouselPayloads(carousel: Component.Carousel): Component.Carousel {
         val updatedCards = carousel.cards.map { card ->
             val updatedComponents = card.components.map { component ->
                 if (component is Component.Button) {
-                    val updatedParameters = component.parameters.map { param ->
-                        if ((param.payload?.length ?: 0) > 128) {
-                            val newPayload = UUID.randomUUID().toString()
-                            executor.executeBlocking {
-                                payloadWhatsApp.save(
-                                    PayloadWhatsAppCloud(
-                                        newPayload,
-                                        param.payload!!,
-                                        Date.from(Instant.now())
-                                    )
-                                )
-                            }
-                            updatePayloadParameter(param, newPayload)
-                        } else {
-                            param
-                        }
-                    }
-                    component.copy(parameters = updatedParameters)
+                    updateTemplateButton(component)
                 } else {
                     component
                 }
@@ -331,11 +316,24 @@ class WhatsAppCloudApiService(private val apiClient: WhatsAppCloudApiClient) {
             .filterIsInstance<Component.Header>()
             .flatMap { it.parameters }
             .filterIsInstance<HeaderParameter.Image>()
-            .forEach { imageHeader ->
-                imageHeader.image.id?.let { imageId ->
-                    val newImageId = sendMedia(client, phoneNumberId, token, imageId, FileType.PNG.type).id
-                    imageHeader.image.id = newImageId
-                }
+            .filter { it.image.id != null }
+            .map {
+                it to executorService.submit(Callable {
+                    sendMedia(
+                        client,
+                        phoneNumberId,
+                        token,
+                        it.image.id!!,
+                        FileType.PNG.type
+                    )
+                })
+            }
+            //exit from sequence
+            .toList()
+            .forEach {
+                val imageHeader = it.first
+                val newImageId = it.second.get().id
+                imageHeader.image.id = newImageId
             }
     }
 

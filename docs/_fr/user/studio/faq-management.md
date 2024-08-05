@@ -7,7 +7,7 @@ title: FAQ Management
 Le menu _FAQ Management_ permet de créer, modifier et enrichir les modèles conversationnels avec des questions de type _Foire Aux Questions_ (Questions/Réponses avec simple texte).
 Il est destiné à un public métier non familier avec les concepts conversationnels (intentions, entités...).
 
-> Pour accéder à cette page il faut bénéficier du rôle _faqBotUser_ ( plus de détails sur les rôles dans [securité](../../../admin/securite.md#rôles) ).
+> Pour accéder à cette page il faut bénéficier du rôle _botUser_ ( plus de détails sur les rôles dans [securité](../../../admin/securite.md#rôles) ).
 
 ## Liste des FAQ
 
@@ -17,23 +17,23 @@ Cette page liste l'ensemble des FAQ existantes (avec pagination)
 
 Pour chaque FAQ vous pouvez retrouver les éléments suivants :
 
-* Son nom
-* Le nombre de questions associées
-* Un exemple de question
-* Un extrait de la réponse retournée
-* Un ensemble de tags
+- Son nom
+- Le nombre de questions associées
+- Un exemple de question
+- Un extrait de la réponse retournée
+- Un ensemble de tags
 
 Les actions suivantes sont disponibles pour chaque FAQ :
 
-* Enable/Disable : permet de désactiver une FAQ. Une fois désactivée, le bot n'enverra plus la réponse associée mais la réponse par défaut _unknown_
-* _Edit_ : permet de modifier les éléments de la FAQ (nom, description, tags, questions, réponse)
-* _Download_ : permet de télécharger la description de la FAQ au format JSON
-* _Delete_ : permet de supprimer la FAQ. A noter que l'intention sous-jacente sera elle aussi supprimée. Les questions seront toutefois remisées dans l'Inbox.
+- Enable/Disable : permet de désactiver une FAQ. Une fois désactivée, le bot n'enverra plus la réponse associée mais la réponse par défaut _unknown_
+- _Edit_ : permet de modifier les éléments de la FAQ (nom, description, tags, questions, réponse)
+- _Download_ : permet de télécharger la description de la FAQ au format JSON
+- _Delete_ : permet de supprimer la FAQ. A noter que l'intention sous-jacente sera elle aussi supprimée. Les questions seront toutefois remisées dans l'Inbox.
 
 ## Création d'une nouvelle FAQ
 
 Vous pouvez créer de nouvelles questions de FAQ en cliquant sur le bouton _+ New FAQ_.
-Cela ouvre un panneau composé de 3 onglets. 
+Cela ouvre un panneau composé de 3 onglets.
 
 > Une Story _Simple_ est automatiquement créée à la création d'une FAQ et lui est associée.
 
@@ -43,9 +43,9 @@ Cela ouvre un panneau composé de 3 onglets.
 
 Vous pouvez dans cet onglet :
 
-* Définir le nom de la FAQ
-* Donner une description pour expliquer à quoi elle répond
-* Ajouter des tags afin de pouvoir regrouper des FAQ par thématique
+- Définir le nom de la FAQ
+- Donner une description pour expliquer à quoi elle répond
+- Ajouter des tags afin de pouvoir regrouper des FAQ par thématique
 
 > Le nom de la faq est utilisé pour générer l'intention sous-jacente qui y sera associée
 
@@ -89,4 +89,4 @@ Choisir une Story dans la liste déroulante _Select story_.
 
 Rendez-vous dans [_Guides utilisateur_](../../guides) pour la suite du manuel utilisateur.
 
-> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../../dev/modes). 
+> Vous pouvez aussi passer directement au chapitre suivant : [Développement](../../../dev/modes).

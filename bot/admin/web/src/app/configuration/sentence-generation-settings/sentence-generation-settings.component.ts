@@ -110,7 +110,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
     let requiredConfiguration: EnginesConfiguration = EngineConfigurations.find((c) => c.key === provider);
 
     if (requiredConfiguration) {
-      // Purge existing controls that may contain values incompatible with a new control with the same name
+      // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
       const existingGroupKeys = Object.keys(this.form.controls['llmSetting'].controls);
       existingGroupKeys.forEach((key) => {
         this.form.controls['llmSetting'].removeControl(key);

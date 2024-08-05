@@ -1,15 +1,15 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { ActionReport, DialogReport } from '../../../shared/model/dialog-data';
+import { ActionReport, Debug, DialogReport, SentenceWithFootnotes } from '../../../shared/model/dialog-data';
 import { ConnectorType } from '../../../core/model/configuration';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogReportQuery } from '../dialogs';
 import { AnalyticsService } from '../../analytics.service';
 import { BotConfigurationService } from '../../../core/bot-configuration.service';
-import { ActivatedRoute, UrlSegment } from '@angular/router';
+import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { BotSharedService } from '../../../shared/bot-shared.service';
 import { PaginatedQuery, SearchMark } from '../../../model/commons';
 import { BehaviorSubject, Observable, Subject, filter, mergeMap, take, takeUntil } from 'rxjs';
-import { PaginatedResult } from '../../../model/nlp';
+import { PaginatedResult, Sentence } from '../../../model/nlp';
 import { saveAs } from 'file-saver-es';
 import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../shared/utils';
 
@@ -23,8 +23,8 @@ export class DialogFilter {
     public connectorType?: ConnectorType,
     public ratings?: number[],
     public configuration?: string,
-
-    public intentsToHide?: string[]
+    public intentsToHide?: string[],
+    public isGenAiRagDialog?: boolean
   ) {}
 }
 
@@ -63,11 +63,12 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   dialogReportQuery: DialogReportQuery;
 
   constructor(
-    private state: StateService,
+    public state: StateService,
     private analytics: AnalyticsService,
     private botConfiguration: BotConfigurationService,
     private route: ActivatedRoute,
-    public botSharedService: BotSharedService
+    public botSharedService: BotSharedService,
+    private router: Router
   ) {
     this.state = state;
 
@@ -143,7 +144,8 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
       this.filter.displayTests,
       this.ratingFilter,
       this.filter.configuration,
-      this.filter.intentsToHide
+      this.filter.intentsToHide,
+      this.filter.isGenAiRagDialog
     );
 
     return this.route.queryParams.pipe(
@@ -217,6 +219,29 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
 
   getUserAvatar(action: ActionReport): string {
     return getDialogMessageUserAvatar(action.isBot());
+  }
+
+  createFaq(action: ActionReport, actionsStack: ActionReport[]) {
+    const actionIndex = actionsStack.findIndex((act) => act === action);
+    if (actionIndex > 0) {
+      const answerSentence = action.message as unknown as SentenceWithFootnotes;
+      const answer = answerSentence.text;
+
+      let question;
+      const questionAction = actionsStack[actionIndex - 1];
+
+      if (questionAction.message.isDebug()) {
+        const actionDebug = questionAction.message as unknown as Debug;
+        question = actionDebug.data.condense_question || actionDebug.data.user_question;
+      } else if (!questionAction.isBot()) {
+        const questionSentence = questionAction.message as unknown as Sentence;
+        question = questionSentence.text;
+      }
+
+      if (question && answer) {
+        this.router.navigate(['faq/management'], { state: { question, answer } });
+      }
+    }
   }
 
   ngOnDestroy(): void {

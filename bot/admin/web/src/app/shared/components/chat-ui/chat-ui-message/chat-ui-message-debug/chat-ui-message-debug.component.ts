@@ -8,13 +8,9 @@ import { DebugViewerDialogComponent } from '../../../debug-viewer-dialog/debug-v
   templateUrl: './chat-ui-message-debug.component.html',
   styleUrls: ['./chat-ui-message-debug.component.scss']
 })
-export class ChatUiMessageDebugComponent implements OnInit {
+export class ChatUiMessageDebugComponent {
   @Input() message: Debug;
   constructor(private nbDialogService: NbDialogService) {}
-
-  ngOnInit(): void {
-    console.log(this.message);
-  }
 
   showDebug() {
     this.nbDialogService.open(DebugViewerDialogComponent, {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModelBuild } from '../../model/application';
 import { StateService } from '../../core-nlp/state.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
@@ -12,7 +12,7 @@ import { Pagination } from '../../shared/components';
   templateUrl: './model-builds.component.html',
   styleUrls: ['./model-builds.component.scss']
 })
-export class ModelBuildsComponent implements OnInit {
+export class ModelBuildsComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   dataSource: ModelBuild[] = [];
@@ -33,7 +33,7 @@ export class ModelBuildsComponent implements OnInit {
     this.search();
   }
 
-  duration(d: number): string {
+  duration(d: string): string {
     const duration = moment.duration(d, 's');
     return (
       this.formatDuration(duration.get('hours')) +

@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<div class="d-flex flex-wrap align-items-center mt-3">
+<div class="d-flex flex-wrap align-items-center">
   <h1 class="flex-grow-1">Test entity errors</h1>
 
   <button
@@ -140,13 +140,11 @@
       <tbody>
         <tr *ngFor="let row of dataSource; index as i">
           <td>
-            <!-- Should be replaced with <tock-sentence-training-sentence> after merge of https://github.com/theopenconversationkit/tock/pull/1573 -->
-            <tock-highlight
-              fontSize="smaller"
+            <tock-sentence-training-sentence
               [sentence]="row.originalSentence"
               [readOnly]="true"
-              [displayActions]="false"
-            ></tock-highlight>
+              fontsize="small"
+            ></tock-sentence-training-sentence>
           </td>
 
           <td
@@ -157,13 +155,11 @@
           </td>
 
           <td>
-            <!-- Should be replaced with <tock-sentence-training-sentence> after merge of https://github.com/theopenconversationkit/tock/pull/1573 -->
-            <tock-highlight
-              fontSize="smaller"
+            <tock-sentence-training-sentence
               [sentence]="row.sentence"
               [readOnly]="true"
-              [displayActions]="false"
-            ></tock-highlight>
+              fontsize="small"
+            ></tock-sentence-training-sentence>
           </td>
 
           <td class="text-center">

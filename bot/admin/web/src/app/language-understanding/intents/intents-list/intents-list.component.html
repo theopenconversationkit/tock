@@ -1,0 +1,186 @@
+<div
+  *ngIf="intents.length"
+  class="table-list table-list-header"
+>
+  <div class="table-list-entry">Intent</div>
+  <div class="table-list-entry bordered text-center">Entities</div>
+  <div class="table-list-entry bordered text-center">Shared Intents</div>
+  <div class="table-list-entry bordered text-center">Mandatory States</div>
+  <div class="table-list-entry bordered text-center">Story</div>
+  <div class="table-list-entry text-center">Actions</div>
+</div>
+<div
+  class="table-list"
+  *ngFor="let intent of intents"
+>
+  <div class="table-list-entry">
+    <div class="font-weight-bold pl-2">
+      <span nbTooltip="{{ intent.qualifiedName() }}">
+        {{ state.isOtherNamespaceIntent(intent) ? intent.qualifiedName() : intent.intentLabel() }}
+      </span>
+      <span
+        class="ml-2 valign-middle"
+        *ngIf="state.intentExistsInOtherApplication(intent.name)"
+        nbTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
+      >
+        <nb-icon icon="share-outline"></nb-icon>
+      </span>
+    </div>
+    <span class="text-muted">{{ intent.description }}</span>
+  </div>
+
+  <div class="table-list-entry bordered text-center">
+    <span
+      class="tag"
+      *ngFor="let e of intent.entities"
+      [style.background-color]="e.entityColor"
+      [style.color]="getContrastYIQ(e.entityColor)"
+    >
+      <div
+        class="ellipsis"
+        nbTooltip="{{ e.qualifiedName(state.user) }}"
+      >
+        {{ e.qualifiedName(state.user) }}
+      </div>
+      <button
+        *ngIf="!state.intentExistsInOtherApplication(intent.name) && !state.isOtherNamespaceIntent(intent)"
+        nbButton
+        ghost
+        size="tiny"
+        shape="round"
+        (click)="removeEntity(intent, e)"
+        nbTooltip="Delete entity"
+        [style.color]="getContrastYIQ(e.entityColor)"
+      >
+        <nb-icon icon="close-outline"></nb-icon>
+      </button>
+    </span>
+  </div>
+
+  <div class="table-list-entry bordered text-center">
+    <ng-container *ngIf="!state.isOtherNamespaceIntent(intent)">
+      <span
+        class="tag"
+        *ngFor="let intentId of intent.sharedIntents"
+      >
+        <div
+          class="ellipsis"
+          nbTooltip="{{ state.findIntentById(intentId)?.name }}"
+        >
+          {{ state.findIntentById(intentId)?.name }}
+        </div>
+        <button
+          *ngIf="!state.intentExistsInOtherApplication(intent.name)"
+          nbButton
+          ghost
+          size="tiny"
+          shape="round"
+          (click)="removeSharedIntent(intent, intentId)"
+          nbTooltip="Remove shared intent"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </span>
+    </ng-container>
+
+    <button
+      *ngIf="!state.isOtherNamespaceIntent(intent)"
+      nbButton
+      ghost
+      shape="round"
+      size="small"
+      nbTooltip="Add shared intent"
+      (click)="displayAddSharedIntentDialog(intent)"
+    >
+      <nb-icon icon="plus-circle-outline"></nb-icon>
+    </button>
+  </div>
+
+  <div class="table-list-entry bordered text-center">
+    <ng-container *ngIf="!state.isOtherNamespaceIntent(intent)">
+      <span
+        class="tag"
+        *ngFor="let s of intent.mandatoryStates"
+      >
+        <div
+          class="ellipsis"
+          nbTooltip="{{ s }}"
+        >
+          {{ s }}
+        </div>
+        <button
+          *ngIf="!state.intentExistsInOtherApplication(intent.name)"
+          nbButton
+          ghost
+          size="tiny"
+          shape="round"
+          (click)="removeState(intent, s)"
+          nbTooltip="Delete State"
+        >
+          <nb-icon icon="close-outline"></nb-icon>
+        </button>
+      </span>
+    </ng-container>
+
+    <button
+      *ngIf="!state.intentExistsInOtherApplication(intent.name) && !state.isOtherNamespaceIntent(intent)"
+      nbButton
+      ghost
+      shape="round"
+      size="small"
+      nbTooltip="Add state"
+      (click)="addState(intent)"
+    >
+      <nb-icon icon="plus-circle-outline"></nb-icon>
+    </button>
+  </div>
+
+  <div class="table-list-entry bordered text-center">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      (click)="displayIntentStoryDetails(intent)"
+      nbTooltip="Show intent story details"
+    >
+      <nb-icon icon="book-open-outline"></nb-icon>
+    </button>
+  </div>
+
+  <div class="table-list-entry text-center">
+    <div
+      class="d-flex justify-content-center"
+      *ngIf="!state.isOtherNamespaceIntent(intent)"
+    >
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Edit the intent"
+        (click)="updateIntent(intent)"
+      >
+        <nb-icon icon="edit-outline"></nb-icon>
+      </button>
+      <button
+        *ngIf="state.hasRole(UserRole.admin)"
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Download a sentences dump"
+        (click)="downloadSentencesDump(intent)"
+      >
+        <nb-icon icon="download-outline"></nb-icon>
+      </button>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        status="danger"
+        nbTooltip="Delete the intent"
+        (click)="deleteIntent(intent)"
+      >
+        <nb-icon icon="trash-2-outline"></nb-icon>
+      </button>
+    </div>
+  </div>
+</div>

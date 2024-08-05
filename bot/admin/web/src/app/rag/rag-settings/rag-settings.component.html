@@ -14,9 +14,7 @@
   ~ limitations under the License.
   -->
 
-<div class="mt-3"></div>
-
-<tock-sticky-menu offset="50">
+<tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap">
     <h1 class="flex-grow-1">Rag settings</h1>
 
@@ -218,8 +216,8 @@
             type="text"
             [value]="getCurrentStoryLabel"
             [nbAutocomplete]="storiesautocomplete"
-            (input)="filterStoriesList($event.target.value)"
-            (change)="onStoryChange($event.target.value)"
+            (input)="filterStoriesList($any($event.target).value)"
+            (change)="onStoryChange($any($event.target).value)"
             (focus)="storyInputFocus()"
             (blur)="storyInputBlur($event)"
           />

@@ -183,7 +183,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     this.filteredStories$ = of(this.availableStories);
   }
 
-  storyInputBlur(e: InputEvent): void {
+  storyInputBlur(e: FocusEvent): void {
     setTimeout(() => {
       // timeout needed to avoid reseting input and filtered stories when clicking on autocomplete suggestions (which fires blur event)
       const target: HTMLInputElement = e.target as HTMLInputElement;
@@ -197,7 +197,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
 
     if (requiredConfiguration) {
-      // Purge existing controls that may contain values incompatible with a new control with the same name
+      // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
       const existingGroupKeys = Object.keys(this.form.controls[group].controls);
       existingGroupKeys.forEach((key) => {
         this.form.controls[group].removeControl(key);

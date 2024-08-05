@@ -1,4 +1,4 @@
-<div class="d-flex flex-wrap mt-3">
+<div class="d-flex flex-wrap">
   <h1 class="flex-grow-1">Documents</h1>
 
   <section class="d-flex flex-wrap align-items-center">
@@ -154,17 +154,17 @@
       <div class="table-list-entry bordered text-center">
         <div
           class="truncate"
-          [nbTooltip]="getAnswerWithThisMediaFile(file)?.mediaMessage?.title?.defaultLabel"
+          [nbTooltip]="$any(getAnswerWithThisMediaFile(file)?.mediaMessage)?.title?.defaultLabel"
         >
-          {{ getAnswerWithThisMediaFile(file)?.mediaMessage?.title?.defaultLabel }}
+          {{ $any(getAnswerWithThisMediaFile(file)?.mediaMessage)?.title?.defaultLabel }}
         </div>
 
         <div
           class="truncate"
-          [nbTooltip]="getAnswerWithThisMediaFile(file)?.mediaMessage?.subTitle?.defaultLabel"
+          [nbTooltip]="$any(getAnswerWithThisMediaFile(file)?.mediaMessage)?.subTitle?.defaultLabel"
         >
           <small>
-            {{ getAnswerWithThisMediaFile(file)?.mediaMessage?.subTitle?.defaultLabel }}
+            {{ $any(getAnswerWithThisMediaFile(file)?.mediaMessage)?.subTitle?.defaultLabel }}
           </small>
         </div>
       </div>
@@ -174,10 +174,10 @@
 
         <ng-container *ngIf="!file.externalUrl">
           <container-element [ngSwitch]="file.type">
-            <some-element *ngSwitchCase="attachmentType.image">Image</some-element>
-            <some-element *ngSwitchCase="attachmentType.audio">Audio file</some-element>
-            <some-element *ngSwitchCase="attachmentType.video">Video file</some-element>
-            <some-element *ngSwitchDefault>Other</some-element>
+            <span *ngSwitchCase="attachmentType.image">Image</span>
+            <span *ngSwitchCase="attachmentType.audio">Audio file</span>
+            <span *ngSwitchCase="attachmentType.video">Video file</span>
+            <span *ngSwitchDefault>Other</span>
           </container-element>
           ({{ file.suffix }})
         </ng-container>

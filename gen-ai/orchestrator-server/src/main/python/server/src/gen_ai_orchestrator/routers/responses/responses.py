@@ -25,6 +25,7 @@ from gen_ai_orchestrator.models.errors.errors_models import (
 )
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.rag.rag_models import Source, TextWithFootnotes
+from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
 
 
 class ErrorResponse(BaseModel):
@@ -54,7 +55,7 @@ class ProviderSettingStatusResponse(BaseModel):
     """The response model of the provider setting status"""
 
     valid: bool = Field(
-        description='It indicates the AI Provider setting validity.',
+        description='It indicates the setting validity.',
         examples=[True],
         default=False,
     )
@@ -66,6 +67,14 @@ class LLMProviderResponse(BaseModel):
 
     provider: LLMProvider = Field(
         description='The LLM Provider ID', default=[LLMProvider.OPEN_AI]
+    )
+
+
+class ObservabilityProviderResponse(BaseModel):
+    """The response model of the Observability provider"""
+
+    provider: ObservabilityProvider = Field(
+        description='The Observability Provider ID', default=[ObservabilityProvider.LANGFUSE]
     )
 
 

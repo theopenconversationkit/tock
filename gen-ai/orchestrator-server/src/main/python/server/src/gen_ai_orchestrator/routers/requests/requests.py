@@ -15,11 +15,14 @@
 """Module for Request Models"""
 
 from typing import Any
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
+from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
 from gen_ai_orchestrator.models.vector_stores.vector_stores_types import (
@@ -31,6 +34,10 @@ class LLMProviderSettingStatusQuery(BaseModel):
     """The query for the LLM Provider Setting Status"""
 
     setting: LLMSetting = Field(description='The LLM Provider setting to be checked.')
+    observability_setting: Optional[ObservabilitySetting] = Field(
+        description='The observability settings',
+        default=None
+    )
 
 
 class EMProviderSettingStatusQuery(BaseModel):
@@ -39,6 +46,12 @@ class EMProviderSettingStatusQuery(BaseModel):
     setting: EMSetting = Field(
         description='The Embedding Model Provider setting to be checked.'
     )
+
+
+class ObservabilityProviderSettingStatusQuery(BaseModel):
+    """The query for the Observability Provider Setting Status"""
+
+    setting: ObservabilitySetting = Field(description='The Observability Provider setting to be checked.')
 
 
 class QAQuery(BaseModel):
@@ -56,6 +69,10 @@ class QAQuery(BaseModel):
     question_answering_prompt_inputs: Any = Field(
         description='Key-value inputs for the llm prompt when used as a template. Please note that the '
         'chat_history field must not be specified here, it will be override by the history field',
+    )
+    observability_setting: Optional[ObservabilitySetting] = Field(
+        description='The observability settings.',
+        default=None
     )
 
     model_config = {
@@ -163,6 +180,7 @@ Answer in {locale}:""",
                         ],
                         'k': 4,
                     },
+                    'observability_setting' : None
                 }
             ]
         }
@@ -177,4 +195,8 @@ class SentenceGenerationQuery(BaseModel):
     )
     prompt: PromptTemplate = Field(
         description='Prompt, used to create prompt with inputs and jinja template '
+    )
+    observability_setting: Optional[ObservabilitySetting] = Field(
+        description='The observability settings.',
+        default=None
     )

@@ -21,17 +21,56 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { BotDialogRequest, TestMessage, XRayTestPlan } from '../model/test';
 import { BotMessage, Sentence } from '../../shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
-import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
 import { PaginatedQuery, randomString } from '../../model/commons';
 import { Observable, of, Subject, take, takeUntil } from 'rxjs';
-import { SentenceFilter } from '../../sentences-scroll/sentences-scroll.component';
+
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 
-import { SearchQuery } from '../../model/nlp';
-import { ChatUiComponent } from '../../shared/components';
-import { NlpService } from '../../nlp-tabs/nlp.service';
+import { SearchQuery, SentenceStatus } from '../../model/nlp';
+import { ChatUiComponent, SelectBotEvent } from '../../shared/components';
+import { NlpService } from '../../core-nlp/nlp.service';
 import { NlpStatsDisplayComponent } from './nlp-stats-display/nlp-stats-display.component';
 import { getDialogMessageUserAvatar } from '../../shared/utils';
+
+export class SentenceFilter {
+  constructor(
+    public search?: string,
+    public intentId?: string,
+    public status?: SentenceStatus[],
+    public entityType?: string,
+    public entityRolesToInclude: string[] = [],
+    public entityRolesToExclude: string[] = [],
+    public modifiedAfter?: Date,
+    public modifiedBefore?: Date,
+    public onlyToReview: boolean = false,
+    public searchSubEntities: boolean = false,
+    public user?: string,
+    public allButUser?: string,
+    public maxIntentProbability: number = 100,
+    public minIntentProbability: number = 0,
+    public configuration?: string
+  ) {}
+
+  clone(): SentenceFilter {
+    return new SentenceFilter(
+      this.search,
+      this.intentId,
+      this.status,
+      this.entityType,
+      this.entityRolesToInclude,
+      this.entityRolesToInclude,
+      this.modifiedAfter,
+      this.modifiedBefore,
+      this.onlyToReview,
+      this.searchSubEntities,
+      this.user,
+      this.allButUser,
+      this.maxIntentProbability,
+      this.minIntentProbability,
+      this.configuration
+    );
+  }
+}
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -99,7 +138,14 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.rest.errorEmitter.pipe(takeUntil(this.destroy)).subscribe((e) => (this.loading = false));
-    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => this.clear());
+
+    this.state.configurationChange.pipe(takeUntil(this.destroy)).subscribe((_) => {
+      this.loading = true;
+      this.clear();
+      this.fillTestPlanFilter();
+      this.getRecentSentences();
+    });
+
     this.fillTestPlanFilter();
     this.getRecentSentences();
 
@@ -270,6 +316,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe((res) => {
         this.recentSentences = res.rows.map((r) => r.text);
+        this.loading = false;
       });
   }
 

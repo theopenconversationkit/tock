@@ -77,6 +77,39 @@ object SecurityUtils {
      * @return the generate secret name
      */
     fun generateAwsSecretName(namespace: String, botId: String, feature: String): String
-        = "$secretStoragePrefix/$namespace/$botId/$feature"
+        = normalizeAwsSecretName("$secretStoragePrefix/$namespace/$botId/$feature")
+
+    /**
+     * Name standardization
+     * @param input the input to be normalized
+     */
+    private fun normalizeAwsSecretName(input: String): String {
+        // Define allowed characters
+        val allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/_+=.@-"
+
+        // Replace underscores and space with hyphens
+        var normalized = input.replace('_', '-').replace(' ', '-')
+
+        // Filter the input string to only include allowed characters
+        normalized = normalized.filter { it in allowedChars }
+
+        // Ensure the length constraints
+        if (normalized.length > 512) {
+            normalized = normalized.substring(0, 512)
+        }
+
+        // Remove ending hyphen followed by six characters if it exists
+        val hyphenSixPattern = Regex("-.{6}$")
+        if (normalized.length > 7 && hyphenSixPattern.containsMatchIn(normalized)) {
+            normalized = normalized.substring(0, normalized.length - 7)
+        }
+
+        // Ensure at least one character
+        if (normalized.isEmpty()) {
+            throw IllegalArgumentException("Normalized AWS secret name must be at least one character long.")
+        }
+
+        return normalized
+    }
 
 }

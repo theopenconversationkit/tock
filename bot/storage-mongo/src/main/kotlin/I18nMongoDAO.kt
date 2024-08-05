@@ -33,6 +33,7 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.watch
 import ai.tock.translator.I18nDAO
 import ai.tock.translator.I18nLabel
+import ai.tock.translator.I18nLabelContract
 import ai.tock.translator.I18nLabelFilter
 import ai.tock.translator.I18nLabelStat
 import ai.tock.translator.I18nLabelStat_
@@ -46,6 +47,9 @@ import ai.tock.translator.I18nLabel_.Companion._id
 import ai.tock.translator.I18nLocalizedLabel
 import com.mongodb.client.model.Filters.regex
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.UpdateOptions
+import java.time.Instant
+import java.util.concurrent.TimeUnit
 import mu.KotlinLogging
 import org.bson.BsonString
 import org.bson.Document
@@ -70,13 +74,11 @@ import org.litote.kmongo.or
 import org.litote.kmongo.projection
 import org.litote.kmongo.reactivestreams.getCollection
 import org.litote.kmongo.regex
-import org.litote.kmongo.save
 import org.litote.kmongo.setValue
 import org.litote.kmongo.toId
+import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
 import org.litote.kmongo.withDocumentClass
-import java.time.Instant
-import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -112,8 +114,8 @@ internal object I18nMongoDAO : I18nDAO {
     private fun sortLocalizedLabels(list: MutableSet<I18nLocalizedLabel>): LinkedHashSet<I18nLocalizedLabel> =
         LinkedHashSet(list.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }, { it.connectorId })))
 
-    private fun sortLocalizedLabels(label: I18nLabel): I18nLabel =
-        label.copy(i18n = sortLocalizedLabels(label.i18n), version = label.version + 1)
+    private fun sortLocalizedLabels(label: I18nLabelContract): I18nLabelContract =
+        label.withUpdatedI18n(sortLocalizedLabels(label.i18n), version = label.version?.apply(Int::inc))
 
     override fun listenI18n(listener: (Id<I18nLabel>) -> Unit) {
         asyncCol.watch {
@@ -155,20 +157,20 @@ internal object I18nMongoDAO : I18nDAO {
         return col.findOneById(id)
     }
 
-    override fun save(label: I18nLabel) {
+    override fun save(label: I18nLabelContract) {
         val sortedLabel = sortLocalizedLabels(label)
         //update default label
         val defaultLabel = sortedLabel.run {
-            copy(defaultLabel = i18n.firstOrNull { it.locale == defaultLocale }?.label ?: defaultLabel)
+            withDefaultLabel(i18n.firstOrNull { it.locale == defaultLocale }?.label ?: defaultLabel)
         }
-        col.save(defaultLabel)
+        col.updateOneById(defaultLabel._id, defaultLabel, options = UpdateOptions().upsert(true), updateOnlyNotNullProperties = true)
     }
 
-    override fun save(i18n: List<I18nLabel>) {
+    override fun save(i18n: List<I18nLabelContract>) {
         i18n.forEach { save(it) }
     }
 
-    override fun saveIfNotExist(i18n: List<I18nLabel>) {
+    override fun saveIfNotExist(i18n: List<I18nLabelContract>) {
         val existingIds = sortLabels(col.find().toList()).map { it._id }.toSet()
         save(i18n.filterNot { existingIds.contains(it._id) })
     }

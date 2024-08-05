@@ -149,7 +149,7 @@ internal class KeycloakOAuth2Provider(
 
     private fun parseUserRoles(customRoles: String): Set<String> =
             parseCustomRoles(customRoles)
-                    .flatMap { TockUserRole.values()?.map { r -> TockUserRole.toRole(r.toString()) } ?: emptyList() }
+                    .flatMap { TockUserRole.entries.map { r -> TockUserRole.toRole(r.toString()) } }
                     .filterNotNull()
                     .map { it.name }
                     .toSet()

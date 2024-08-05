@@ -21,7 +21,7 @@
   <parent>
     <groupId>ai.tock</groupId>
     <artifactId>tock-bot-admin</artifactId>
-    <version>24.3.2-SNAPSHOT</version>
+    <version>24.3.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>tock-bot-admin-web</artifactId>
@@ -32,16 +32,6 @@
   <properties>
     <project.build.frontend.directory>${project.build.directory}/frontend</project.build.frontend.directory>
   </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>ai.tock</groupId>
-      <artifactId>tock-nlp-admin-web</artifactId>
-      <version>${project.version}</version>
-      <type>zip</type>
-      <classifier>sources</classifier>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>

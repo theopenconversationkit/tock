@@ -6,8 +6,9 @@ import { SentenceTrainingMode } from './../models';
 import { Options } from '@angular-slider/ngx-slider';
 import { EntityDefinition, EntityType, Intent, IntentsCategory, SearchQuery, SentenceStatus, getRoles } from '../../../../model/nlp';
 import { StateService } from '../../../../core-nlp/state.service';
-import { NlpService } from '../../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { UserRole } from '../../../../model/auth';
+import { Router } from '@angular/router';
 
 interface SentenceTrainingFilterForm {
   search: FormControl<string>;
@@ -88,7 +89,17 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
 
   translateTargetLocale: string;
 
-  constructor(public state: StateService, private nlp: NlpService) {}
+  constructor(public state: StateService, private nlp: NlpService, private router: Router) {
+    const search = this.router.getCurrentNavigation().extras?.state?.searchIntent;
+    if (search) {
+      this.form.patchValue({
+        search: search
+      });
+      setTimeout(() => {
+        this.submitFiltersChange();
+      }, 500);
+    }
+  }
 
   form = new FormGroup<SentenceTrainingFilterForm>({
     search: new FormControl(),
@@ -215,7 +226,7 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
     this.setIntentsListFilter(which);
   }
 
-  onBlurIntentsInput(which: string, event: KeyboardEvent): void {
+  onBlurIntentsInput(which: string, event: KeyboardEvent | Event): void {
     if (which === 'filter') {
       if (!this.getFormControl('intent').value) (event.target as HTMLInputElement).value = '';
       else {

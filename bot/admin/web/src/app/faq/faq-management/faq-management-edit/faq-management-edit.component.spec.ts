@@ -21,7 +21,7 @@ import {
 import { of } from 'rxjs';
 
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../core-nlp/nlp.service';
 import { StateService } from '../../../core-nlp/state.service';
 import { TestSharedModule } from '../../../shared/test-shared.module';
 import { FaqManagementEditComponent, FaqTabs } from './faq-management-edit.component';
@@ -230,7 +230,7 @@ describe('FaqManagementEditComponent', () => {
         enabled: true,
         applicationName: 'app',
         language: 'fr',
-        _initUtterance: 'test'
+        _initQuestion: 'test'
       };
       component.ngOnChanges({ faq: new SimpleChange(null, faq, true) });
       fixture.detectChanges();
@@ -446,7 +446,7 @@ describe('FaqManagementEditComponent', () => {
     expect(component.utterances.value).toHaveSize(2);
     expect(component.utterances.value).toEqual(['question 1', 'question 2']);
 
-    component.utteranceEditionValue = 'test';
+    component.editedUtteranceValue = 'test';
     component.validateEditUtterance(Array.from(component.utterances.controls.values())[1] as FormControl);
     expect(component.utterances.value).toHaveSize(2);
     expect(component.utterances.value).toEqual(['question 1', 'test']);

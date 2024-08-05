@@ -19,14 +19,15 @@ import { Observable, Subject, lastValueFrom, of, takeUntil } from 'rxjs';
 import { Intent, IntentsCategory, nameFromQualifiedName, SentenceStatus } from '../../../../model/nlp';
 import { SentenceReviewRequestComponent } from '../sentence-review-request/sentence-review-request.component';
 import { Action, SentenceTrainingMode } from '../models';
-import { IntentDialogComponent } from '../../../../sentence-analysis/intent-dialog/intent-dialog.component';
-import { ConfirmDialogComponent } from '../../../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { IntentDialogComponent } from '../../../../language-understanding/intent-dialog/intent-dialog.component';
 import { UserRole } from '../../../../model/auth';
-import { NlpService } from '../../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { Router } from '@angular/router';
 import { truncate } from '../../../../model/commons';
 import { getSentenceId } from '../commons/utils';
 import { copyToClipboard } from '../../../utils';
+import { IntentStoryDetailsComponent } from '../../intent-story-details/intent-story-details.component';
+import { ChoiceDialogComponent } from '../../choice-dialog/choice-dialog.component';
 
 @Component({
   selector: 'tock-sentence-training-entry',
@@ -189,6 +190,18 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
     this.resetIntentsListFilter();
   }
 
+  isIntentStorySearchable() {
+    return this.sentence.classification.intentId !== Intent.unknown && this.sentence.classification.intentId !== Intent.ragExcluded;
+  }
+
+  displayIntentStoryDetails() {
+    const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
+      context: {
+        intentId: this.sentence.classification.intentId
+      }
+    });
+  }
+
   resetIntentsListFilter(): void {
     this.filteredIntentGroups = of(this.intentGroups);
   }
@@ -273,15 +286,19 @@ export class SentenceTrainingEntryComponent implements OnInit, DoCheck, OnDestro
       this.toastrService.warning(`Intent ${name} already exists`);
     } else {
       if (this.state.intentExistsInOtherApplication(name)) {
-        const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+        const action = 'confirm';
+        const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
           context: {
             title: 'This intent is already used in an other application',
             subtitle: 'If you confirm the name, the intent will be shared between the two applications.',
-            action: 'Confirm'
+            actions: [
+              { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+              { actionName: action, buttonStatus: 'danger' }
+            ]
           }
         });
         dialogRef.onClose.subscribe((result) => {
-          if (result === 'confirm') {
+          if (result === action) {
             this.saveIntent(sentence, name, label, description, category);
           }
         });

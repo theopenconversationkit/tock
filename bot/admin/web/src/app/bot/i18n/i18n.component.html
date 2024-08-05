@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<div class="d-flex flex-wrap mt-3">
+<div class="d-flex flex-wrap">
   <h1 class="flex-grow-1">Answers</h1>
 
   <section class="d-flex flex-wrap align-items-center">
@@ -52,7 +52,7 @@
 ></tock-no-data-found>
 
 <tock-sticky-menu
-  offset="300"
+  [offset]="300"
   *ngIf="!loading && filteredI18n.length"
 >
   <div class="d-flex justify-content-between align-items-center">

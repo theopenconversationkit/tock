@@ -23,7 +23,7 @@ export class SentenceTrainingCreateEntityComponent {
 
   getContrastYIQ = getContrastYIQ;
 
-  constructor(public dialogRef: NbDialogRef<SentenceTrainingCreateEntityComponent>, private state: StateService) {
+  constructor(public dialogRef: NbDialogRef<SentenceTrainingCreateEntityComponent>, public state: StateService) {
     this.state.entityTypesSortedByName().subscribe(
       (entities) =>
         (this.entityTypes = entities.sort((a, b) => {

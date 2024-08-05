@@ -56,7 +56,8 @@ class I18nLabelValue constructor(
             label._id.toString(),
             label.namespace,
             label.category,
-            label.defaultLabel ?: ""
+            label.defaultLabel ?: "",
+            defaultI18n = label.defaultI18n,
         )
 
     /**
@@ -72,7 +73,13 @@ class I18nLabelValue constructor(
      * Returns the value with the given namespace.
      */
     fun withNamespace(newNamespace: String): I18nLabelValue =
-        I18nLabelValue(key.replaceBefore("_", newNamespace), newNamespace, category, defaultLabel, args)
+        I18nLabelValue(key.replaceBefore("_", newNamespace), newNamespace, category, defaultLabel, args, defaultI18n)
+
+    /**
+     * Returns the value with the given args.
+     */
+    fun withArgs(newArgs: List<Any?>): I18nLabelValue =
+        I18nLabelValue(key, namespace, category, defaultLabel, newArgs, defaultI18n)
 
     override fun toString(): String {
         return defaultLabel.toString()

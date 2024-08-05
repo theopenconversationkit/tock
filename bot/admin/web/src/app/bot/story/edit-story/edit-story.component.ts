@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, take, takeUntil } from 'rxjs';
 import { BotService } from '../../bot-service';
@@ -9,7 +9,7 @@ import { StoryDefinitionConfiguration } from '../../model/story';
   templateUrl: './edit-story.component.html',
   styleUrls: ['./edit-story.component.scss']
 })
-export class EditStoryComponent implements OnInit {
+export class EditStoryComponent implements OnInit, OnDestroy {
   destroy = new Subject();
 
   story: StoryDefinitionConfiguration;

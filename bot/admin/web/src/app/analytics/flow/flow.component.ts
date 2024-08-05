@@ -17,7 +17,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotService } from '../../bot/bot-service';
 import { AnalyticsService } from '../analytics.service';
-import { NlpService } from '../../nlp-tabs/nlp.service';
 import { StateService } from '../../core-nlp/state.service';
 import {
   ApplicationDialogFlow,
@@ -30,12 +29,13 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { entityColor } from '../../model/nlp';
 import { KeyValue } from '@angular/common';
 import { NodeTransition, NodeTypeFilter, NodeTypeFilters, StoryNode } from './node';
-import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
 import { AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep } from '../../bot/model/story';
 import { Subscription } from 'rxjs';
 import { NbToastrService } from '@nebular/theme';
 import { ChartData } from '../chart/ChartData';
-import {toISOStringWithoutOffset} from "../../shared/utils";
+import { toISOStringWithoutOffset } from '../../shared/utils';
+import { ChartType } from 'angular-google-charts';
+import { SelectBotEvent } from '../../shared/components';
 
 @Component({
   selector: 'tock-flow',
@@ -125,7 +125,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   maxNodeCount: number = 1;
   minimalTransitionPercentage: number = 10;
 
-  selectedStory: StoryDefinitionConfiguration;
+  selectedStory: StoryNode;
   direction: number;
 
   storiesById: Map<string, StoryDefinitionConfiguration> = new Map();
@@ -160,6 +160,8 @@ export class FlowComponent implements OnInit, OnDestroy {
   flowData: ChartData;
   loading: boolean = false;
 
+  SankeyChartType: ChartType = ChartType.Sankey;
+
   private subscription: Subscription;
 
   statsEntity(): boolean {
@@ -179,8 +181,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private nlp: NlpService,
-    private state: StateService,
+    public state: StateService,
     private analytics: AnalyticsService,
     private bot: BotService,
     private botConfiguration: BotConfigurationService,
@@ -199,7 +200,7 @@ export class FlowComponent implements OnInit, OnDestroy {
     });
   }
 
-  private reload(forceReload?: boolean) {
+  reload(forceReload?: boolean) {
     console.debug('Loading flow...');
     this.loading = true;
     if (this.selectedConfigurationName || this.allowSelectAllConfigs) {
@@ -678,7 +679,7 @@ export class FlowComponent implements OnInit, OnDestroy {
         count += tr.count;
       });
       let startNodeName = this.getStoryName(keyValues);
-      let destNodeName = this.allNodes[keyValues[1]].storyName;
+      let destNodeName = this.allNodes[keyValues[1]]?.storyName;
       if (startNodeName !== destNodeName) {
         const mapKey = `${startNodeName}#${destNodeName}`;
         let result = trByNodeNamesIndex.get(mapKey);
@@ -709,7 +710,7 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   getStoryName(keyValues) {
     if (keyValues[0] != '-1') {
-      return this.allNodes[keyValues[0]].storyName;
+      return this.allNodes[keyValues[0]]?.storyName;
     } else {
       return 'Startup';
     }
