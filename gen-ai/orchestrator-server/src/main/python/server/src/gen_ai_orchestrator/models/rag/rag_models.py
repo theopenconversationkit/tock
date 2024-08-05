@@ -117,7 +117,7 @@ class RagDocument(BaseModel):
 
 
 class QADebugData(BaseModel):
-    """A RAG debug data"""
+    """A QA debug data"""
 
     user_question: Optional[str] = Field(
         description="The user's initial question.",

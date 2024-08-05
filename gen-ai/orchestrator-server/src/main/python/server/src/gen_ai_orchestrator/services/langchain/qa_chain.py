@@ -13,7 +13,7 @@
 #   limitations under the License.
 #
 """
-Module for the RAG Chain
+Module for the QA Chain
 It uses LangChain to perform a Conversational Retrieval Chain
 """
 
