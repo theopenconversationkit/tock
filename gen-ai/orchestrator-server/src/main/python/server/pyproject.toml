@@ -11,7 +11,6 @@ python = "^3.9"
 uvicorn = "^0.25.0"
 pydantic-settings="^2.1.0"
 fastapi = "^0.109.2"
-langchain-community = { git = "https://github.com/morgandiverrez/langchain.git", branch = "score-threshold-flashrank", subdirectory = "libs/community" }
 langchain-openai = "^0.1.17"
 tiktoken = "^0.7.0"
 opensearch-py = "^2.4.2"
@@ -24,6 +23,8 @@ flashrank = "^0.2.6"
 faiss-cpu = "^1.8.0.post1"
 langfuse = "^2.33.0"
 httpx-auth-awssigv4 = "^0.1.4"
+langchain = "^0.2.11"
+langchain-community = "^0.2.10"
 
 
 [tool.poetry.group.dev.dependencies]
