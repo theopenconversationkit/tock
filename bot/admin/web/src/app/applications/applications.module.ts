@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { CommonModule } from '@angular/common';
 import { Injectable, NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ApplicationsComponent } from './applications/applications.component';
 import { ApplicationsResolver } from './applications.resolver';
 import { ApplicationComponent } from './application/application.component';
@@ -46,7 +45,6 @@ import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { NamespacesComponent } from './namespace/namespaces.component';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ApplicationConfig } from './application.config';
-import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { CreateNamespaceComponent } from './namespace/create-namespace/create-namespace.component';
 import { ApplicationsRoutingModule } from './applications-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -84,7 +82,6 @@ export class NlpApplicationConfig implements ApplicationConfig {
     NbInputModule,
     NgJsonEditorModule,
     NbDialogModule.forRoot(),
-    NgbPaginationModule,
     FormsModule,
     ReactiveFormsModule
   ],

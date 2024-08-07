@@ -22,7 +22,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BotCoreModule } from './core/bot-core.module';
 import { HttpClientModule } from '@angular/common/http';
 import { ThemeModule } from './theme/theme.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {
   NbDatepickerModule,
   NbDialogModule,
@@ -60,8 +59,7 @@ import { NlpService } from './core-nlp/nlp.service';
     NbDialogModule.forRoot(),
     NbWindowModule.forRoot(),
     NbToastrModule.forRoot(),
-    NbThemeModule.forRoot({ name: 'default' }),
-    NgbModule
+    NbThemeModule.forRoot({ name: 'default' })
   ],
   providers: [
     {

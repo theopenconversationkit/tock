@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AnalyticsTabsComponent } from './analytics-tabs.component';
@@ -51,7 +50,6 @@ import { ChartComponent } from './chart/chart.component';
 import { ChartDialogComponent } from './chart-dialog/chart-dialog.component';
 import { ActivityComponent } from './activity/activity.component';
 import { BehaviorComponent } from './behavior/behavior.component';
-import { GoogleChartsModule } from 'angular-google-charts';
 import { FlowComponent } from './flow/flow.component';
 import { CytoComponent } from './flow/cyto.component';
 import { PreferencesComponent } from './preferences/preferences.component';
@@ -89,7 +87,6 @@ export function importEcharts() {
     NbDatepickerModule,
     NbListModule,
     NbAccordionModule,
-    GoogleChartsModule,
     NbContextMenuModule,
     NbMenuModule.forRoot(),
     NbCalendarRangeModule,
@@ -119,7 +116,6 @@ export function importEcharts() {
     DialogsListComponent
   ],
   exports: [],
-  providers: [AnalyticsService],
-  entryComponents: []
+  providers: [AnalyticsService]
 })
 export class BotAnalyticsModule {}

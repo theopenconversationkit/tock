@@ -8,6 +8,7 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { FaqManagementComponent } from './faq-management.component';
+import { Location } from '@angular/common';
 
 class BotConfigurationServiceMock {
   configurations = of([
@@ -69,11 +70,9 @@ describe('FaqManagementComponent', () => {
         { provide: StateService, useClass: StateServiceMock },
         { provide: NbToastrService, useValue: {} },
         {
-          provide: Router,
+          provide: Location,
           useValue: {
-            getCurrentNavigation: () => ({
-              extras: null
-            })
+            getState: () => null
           }
         }
       ],

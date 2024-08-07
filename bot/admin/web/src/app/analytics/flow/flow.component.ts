@@ -34,7 +34,7 @@ import { Subscription } from 'rxjs';
 import { NbToastrService } from '@nebular/theme';
 import { ChartData } from '../chart/ChartData';
 import { toISOStringWithoutOffset } from '../../shared/utils';
-import { ChartType } from 'angular-google-charts';
+// import { ChartType } from 'angular-google-charts';
 import { SelectBotEvent } from '../../shared/components';
 
 @Component({
@@ -160,7 +160,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   flowData: ChartData;
   loading: boolean = false;
 
-  SankeyChartType: ChartType = ChartType.Sankey;
+  // SankeyChartType: ChartType = ChartType.Sankey;
 
   private subscription: Subscription;
 

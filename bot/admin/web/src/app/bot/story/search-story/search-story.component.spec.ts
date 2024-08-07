@@ -21,7 +21,7 @@ import { TestSharedModule } from '../../../shared/test-shared.module';
 import { BotService } from '../../bot-service';
 import { AnswerConfigurationType, IntentName, StoryDefinitionConfigurationSummary } from '../../model/story';
 import { SearchStoryComponent } from './search-story.component';
-import { deepCopy } from '../../../shared/utils';
+import { Location } from '@angular/common';
 
 const stories = [
   new StoryDefinitionConfigurationSummary(
@@ -85,10 +85,10 @@ describe('SearchStoryComponent', () => {
           useValue: { configurations: of([{}]) }
         },
         {
-          provide: Router,
+          provide: Location,
           useValue: {
-            getCurrentNavigation: () => {
-              return { extras: { state: { category: 'test' } } };
+            getState: () => {
+              return { category: 'test' };
             }
           }
         },

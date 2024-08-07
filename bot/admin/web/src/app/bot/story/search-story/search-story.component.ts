@@ -16,6 +16,7 @@
 
 import { saveAs } from 'file-saver-es';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { BotService } from '../../bot-service';
 import { StateService } from '../../../core-nlp/state.service';
 import { StoryDefinitionConfigurationSummary, StorySearchQuery } from '../../model/story';
@@ -61,10 +62,11 @@ export class SearchStoryComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private toastrService: NbToastrService,
     private router: Router,
+    private location: Location,
     private botConfiguration: BotConfigurationService,
     private nbDialogService: NbDialogService
   ) {
-    const cat = this.router.getCurrentNavigation().extras?.state?.category;
+    const cat = (this.location.getState() as any)?.category;
     if (cat) this.expandedCategory = cat;
   }
 

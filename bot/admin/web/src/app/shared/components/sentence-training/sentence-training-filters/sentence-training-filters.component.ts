@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Location } from '@angular/common';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable, Subject, of } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
@@ -8,7 +9,6 @@ import { EntityDefinition, EntityType, Intent, IntentsCategory, SearchQuery, Sen
 import { StateService } from '../../../../core-nlp/state.service';
 import { NlpService } from '../../../../core-nlp/nlp.service';
 import { UserRole } from '../../../../model/auth';
-import { Router } from '@angular/router';
 
 interface SentenceTrainingFilterForm {
   search: FormControl<string>;
@@ -89,8 +89,8 @@ export class SentenceTrainingFiltersComponent implements OnInit, OnDestroy {
 
   translateTargetLocale: string;
 
-  constructor(public state: StateService, private nlp: NlpService, private router: Router) {
-    const search = this.router.getCurrentNavigation().extras?.state?.searchIntent;
+  constructor(public state: StateService, private nlp: NlpService, private location: Location) {
+    const search = (this.location.getState() as any)?.searchIntent;
     if (search) {
       this.form.patchValue({
         search: search

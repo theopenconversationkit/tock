@@ -68,7 +68,7 @@ export class MediaDialogComponent implements OnInit {
 
     this.media.actions.forEach((a) => (a.titleLabel = a.title.defaultLocalizedLabelForLocale(this.stateService.currentLocale).label));
 
-    this.uploader = new FileUploader({ removeAfterUpload: true, autoUpload: true });
+    this.uploader = new FileUploader({ url: undefined, removeAfterUpload: true, autoUpload: true });
     this.uploader.onCompleteItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.media.file = MediaFile.fromJSON(JSON.parse(response));
     };

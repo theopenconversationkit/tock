@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Location } from '@angular/common';
 import { NbToastrService } from '@nebular/theme';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 
@@ -8,7 +8,6 @@ import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { UserRole } from '../../model/auth';
 import { PaginatedQuery } from '../../model/commons';
 import { FaqDefinition, FaqFilter, FaqSearchQuery, PaginatedFaqResult } from '../models';
 import { FaqManagementEditComponent } from './faq-management-edit/faq-management-edit.component';
@@ -52,10 +51,10 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     private rest: RestService,
     private stateService: StateService,
     private toastrService: NbToastrService,
-    private router: Router
+    private location: Location
   ) {
-    this.initQuestion = this.router.getCurrentNavigation().extras?.state?.question;
-    this.initAnswer = this.router.getCurrentNavigation().extras?.state?.answer;
+    this.initQuestion = (this.location.getState() as any)?.question;
+    this.initAnswer = (this.location.getState() as any)?.answer;
   }
 
   ngOnInit(): void {
