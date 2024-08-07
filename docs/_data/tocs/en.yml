@@ -35,6 +35,10 @@ content:
         url: 'en/dev/i18n'
       - title: 'API documentation'
         url: 'en/api'
+      - title: 'Feature technical designs'
+        children:
+          - title: '#1706 Gen AI data ingestion workflow / pipeline (gitlab based)'
+            url: 'en/dev/feature-technical-designs/1706-gen-ai-data-ingestion-pipeline-gitlab'
   - title: 'About'
     children:
       - title: 'Why Tock'
