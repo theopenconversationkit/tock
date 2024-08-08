@@ -43,6 +43,7 @@ import ai.tock.bot.definition.StoryStep
 import ai.tock.bot.engine.action.ActionNotificationType
 import ai.tock.bot.engine.config.BotObservabilityConfigurationMonitor
 import ai.tock.bot.engine.config.BotRAGConfigurationMonitor
+import ai.tock.bot.engine.config.BotVectorStoreConfigurationMonitor
 import ai.tock.bot.engine.config.StoryConfigurationMonitor
 import ai.tock.bot.engine.monitoring.RequestTimer
 import ai.tock.bot.engine.nlp.BuiltInKeywordListener
@@ -561,6 +562,7 @@ object BotRepository {
                 StoryConfigurationMonitor.monitor(bot)
                 BotRAGConfigurationMonitor.monitor(bot)
                 BotObservabilityConfigurationMonitor.monitor(bot)
+                BotVectorStoreConfigurationMonitor.monitor(bot)
                 // register connector controller map
                 connectorControllerMap[this] = controller
                 applicationIdBotApplicationConfigurationMap[toKey()] = this
@@ -581,6 +583,7 @@ object BotRepository {
                 StoryConfigurationMonitor.unmonitor(controller.bot)
                 BotRAGConfigurationMonitor.unmonitor(controller.bot)
                 BotObservabilityConfigurationMonitor.unmonitor(controller.bot)
+                BotVectorStoreConfigurationMonitor.unmonitor(controller.bot)
                 TockConnectorController.unregister(controller)
             }
         }

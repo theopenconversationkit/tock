@@ -19,7 +19,7 @@ from typing import Optional, List
 
 from pydantic import AnyUrl, BaseModel, Field, HttpUrl
 
-from gen_ai_orchestrator.models.vector_stores.vector_stores_types import DocumentSearchParams
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import DocumentSearchParams
 
 
 class Footnote(BaseModel):

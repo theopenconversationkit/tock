@@ -18,6 +18,7 @@ package ai.tock.bot.definition
 
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.Intent.Companion.keyword
 import ai.tock.bot.definition.Intent.Companion.ragexcluded
@@ -124,12 +125,17 @@ interface BotDefinition : I18nKeyProvider {
     var ragConfiguration: BotRAGConfiguration?
 
     /**
+     * Vector Store configuration
+     */
+    var vectorStoreConfiguration: BotVectorStoreConfiguration?
+
+    /**
      * Observability configuration
      */
     var observabilityConfiguration: BotObservabilityConfiguration?
 
     /**
-     * The list of each stories.
+     * The list of each story.
      */
     val stories: List<StoryDefinition>
 

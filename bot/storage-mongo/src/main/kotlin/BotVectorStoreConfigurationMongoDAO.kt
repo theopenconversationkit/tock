@@ -16,8 +16,8 @@
 
 package ai.tock.bot.mongo
 
-import ai.tock.bot.admin.bot.observability.BotObservabilityConfiguration
-import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import ai.tock.bot.mongo.MongoBotConfiguration.database
 import ai.tock.shared.ensureUniqueIndex
@@ -25,14 +25,14 @@ import ai.tock.shared.watch
 import org.litote.kmongo.*
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 
-internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigurationDAO {
+internal object BotVectorStoreConfigurationMongoDAO : BotVectorStoreConfigurationDAO {
 
-    private const val COLLECTION_NAME = "bot_observability_configuration"
-    internal val col = database.getCollection<BotObservabilityConfiguration>(COLLECTION_NAME)
-    private val asyncCol = asyncDatabase.getCollectionOfName<BotObservabilityConfiguration>(COLLECTION_NAME)
+    private const val COLLECTION_NAME = "bot_vector_store_configuration"
+    internal val col = database.getCollection<BotVectorStoreConfiguration>(COLLECTION_NAME)
+    private val asyncCol = asyncDatabase.getCollectionOfName<BotVectorStoreConfiguration>(COLLECTION_NAME)
 
     init {
-        col.ensureUniqueIndex(BotObservabilityConfiguration::namespace, BotObservabilityConfiguration::botId)
+        col.ensureUniqueIndex(BotVectorStoreConfiguration::namespace, BotVectorStoreConfiguration::botId)
     }
 
     override fun listenChanges(listener: () -> Unit) {
@@ -42,10 +42,10 @@ internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigur
     override fun findByNamespaceAndBotId(
         namespace: String,
         botId: String
-    ): BotObservabilityConfiguration? {
+    ): BotVectorStoreConfiguration? {
         return col.findOne(
-            BotObservabilityConfiguration::namespace eq namespace,
-            BotObservabilityConfiguration::botId eq botId
+            BotVectorStoreConfiguration::namespace eq namespace,
+            BotVectorStoreConfiguration::botId eq botId
         )
     }
 
@@ -53,20 +53,20 @@ internal object BotObservabilityConfigurationMongoDAO : BotObservabilityConfigur
         namespace: String,
         botId: String,
         enabled: Boolean
-    ): BotObservabilityConfiguration? {
+    ): BotVectorStoreConfiguration? {
         return col.findOne(
-            BotObservabilityConfiguration::namespace eq namespace,
-            BotObservabilityConfiguration::botId eq botId,
-            BotObservabilityConfiguration::enabled eq enabled
+            BotVectorStoreConfiguration::namespace eq namespace,
+            BotVectorStoreConfiguration::botId eq botId,
+            BotVectorStoreConfiguration::enabled eq enabled
         )
     }
 
-    override fun save(conf: BotObservabilityConfiguration): BotObservabilityConfiguration {
+    override fun save(conf: BotVectorStoreConfiguration): BotVectorStoreConfiguration {
         col.save(conf)
         return conf
     }
 
-    override fun delete(id: Id<BotObservabilityConfiguration>) {
+    override fun delete(id: Id<BotVectorStoreConfiguration>) {
         col.deleteOneById(id)
     }
 

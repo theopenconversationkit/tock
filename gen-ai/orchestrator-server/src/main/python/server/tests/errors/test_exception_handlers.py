@@ -24,7 +24,6 @@ from openai import (
 from opensearchpy import (
     AuthenticationException as OpenSearchAuthenticationException,
 )
-from opensearchpy import ConnectionError as OpenSearchConnectionError
 from opensearchpy import ImproperlyConfigured as OpenSearchImproperlyConfigured
 from opensearchpy import NotFoundError as OpenSearchNotFoundError
 from opensearchpy import TransportError as OpenSearchTransportError
@@ -41,7 +40,7 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIAuthenticationException,
     GenAIConnectionErrorException,
 )
-from gen_ai_orchestrator.errors.exceptions.opensearch.opensearch_exceptions import (
+from gen_ai_orchestrator.errors.exceptions.vector_store.opensearch_exceptions import (
     GenAIOpenSearchIndexNotFoundException,
     GenAIOpenSearchResourceNotFoundException,
     GenAIOpenSearchSettingException,

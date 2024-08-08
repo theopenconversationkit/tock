@@ -26,5 +26,7 @@ interface BotRAGConfigurationDAO {
 
     fun findByNamespaceAndBotId(namespace: String, botId: String): BotRAGConfiguration?
 
+    fun findByNamespaceAndBotIdAndEnabled(namespace: String, botId: String, enabled: Boolean): BotRAGConfiguration?
+
     fun delete(id: Id<BotRAGConfiguration>)
 }

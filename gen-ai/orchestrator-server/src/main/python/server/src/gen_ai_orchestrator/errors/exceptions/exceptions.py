@@ -78,13 +78,6 @@ class GenAIUnknownProviderSettingException(GenAIOrchestratorException):
         super().__init__(ErrorCode.GEN_AI_UNKNOWN_PROVIDER_SETTING, info)
 
 
-class VectorStoreUnknownException(GenAIOrchestratorException):
-    """Unknown Vector Store Provider"""
-
-    def __init__(self):
-        super().__init__(ErrorCode.VECTOR_STORE_UNKNOWN)
-
-
 class GenAIGuardCheckException(GenAIOrchestratorException):
     """A Guard check failed"""
 

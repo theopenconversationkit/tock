@@ -34,6 +34,7 @@ from gen_ai_orchestrator.routers.completion_router import completion_router
 from gen_ai_orchestrator.routers.llm_providers_router import llm_providers_router
 from gen_ai_orchestrator.routers.observability_providers_router import observability_providers_router
 from gen_ai_orchestrator.routers.rag_router import rag_router
+from gen_ai_orchestrator.routers.vector_store_providers_router import vector_store_providers_router
 
 # configure logging
 setup_logging()
@@ -52,6 +53,7 @@ logger.info('Generative AI Orchestrator - Add routers')
 app.include_router(application_check_router)
 app.include_router(llm_providers_router)
 app.include_router(em_providers_router)
+app.include_router(vector_store_providers_router)
 app.include_router(observability_providers_router)
 app.include_router(rag_router)
 app.include_router(completion_router)

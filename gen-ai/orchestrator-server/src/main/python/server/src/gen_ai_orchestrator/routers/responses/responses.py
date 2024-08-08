@@ -23,6 +23,7 @@ from gen_ai_orchestrator.models.errors.errors_models import ErrorCode, ErrorInfo
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
 from gen_ai_orchestrator.models.rag.rag_models import TextWithFootnotes
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
 
 
 class ErrorResponse(BaseModel):
@@ -64,6 +65,14 @@ class LLMProviderResponse(BaseModel):
 
     provider: LLMProvider = Field(
         description='The LLM Provider ID', default=[LLMProvider.OPEN_AI]
+    )
+
+
+class VectorStoreProviderResponse(BaseModel):
+    """The response model of the Vector Store provider"""
+
+    provider: VectorStoreProvider = Field(
+        description='The Vector Store Provider ID', default=[VectorStoreProvider.OPEN_SEARCH]
     )
 
 

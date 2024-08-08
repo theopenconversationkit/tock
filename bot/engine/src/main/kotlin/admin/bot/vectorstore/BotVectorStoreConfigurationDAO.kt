@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.rag
+package ai.tock.bot.admin.bot.vectorstore
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import org.litote.kmongo.Id
 
-data class BotRAGConfiguration(
-    val _id: Id<BotRAGConfiguration>,
-    val namespace: String,
-    val botId: String,
-    val enabled: Boolean,
-    val llmSetting: LLMSetting,
-    val emSetting: EMSetting,
-    val indexSessionId: String? = null,
-    val noAnswerSentence: String,
-    val noAnswerStoryId: String? = null,
-)
+interface BotVectorStoreConfigurationDAO {
 
-fun BotRAGConfiguration?.isEnabled(): Boolean = this?.enabled ?: false
+    fun listenChanges(listener: () -> Unit)
+
+    fun save(conf: BotVectorStoreConfiguration): BotVectorStoreConfiguration
+
+    fun findByNamespaceAndBotId(namespace: String, botId: String): BotVectorStoreConfiguration?
+
+    fun findByNamespaceAndBotIdAndEnabled(namespace: String, botId: String, enabled: Boolean): BotVectorStoreConfiguration?
+
+    fun delete(id: Id<BotVectorStoreConfiguration>)
+}

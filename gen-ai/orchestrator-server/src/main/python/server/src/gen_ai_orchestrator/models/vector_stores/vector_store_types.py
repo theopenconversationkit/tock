@@ -12,17 +12,19 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""VectorStoreProvider Enumeration."""
+"""Module defining generic type alias"""
 
-from enum import Enum, unique
+from typing import Annotated, Union
 
+from fastapi import Body
 
-@unique
-class VectorStoreProvider(str, Enum):
-    """Enumeration to list Vector Store Provider types"""
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_params import OpenSearchParams
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
 
-    OPEN_SEARCH = 'OpenSearch'
+DocumentSearchParams = Annotated[
+    Union[OpenSearchParams], Body(discriminator='provider')
+]
 
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_
+VectorStoreSetting = Annotated[
+    Union[OpenSearchVectorStoreSetting], Body(discriminator='provider')
+]

@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.admin.bot.rag
+package ai.tock.genai.orchestratorclient.services
 
-import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
-import org.litote.kmongo.Id
+import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusQuery
+import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 
-data class BotRAGConfiguration(
-    val _id: Id<BotRAGConfiguration>,
-    val namespace: String,
-    val botId: String,
-    val enabled: Boolean,
-    val llmSetting: LLMSetting,
-    val emSetting: EMSetting,
-    val indexSessionId: String? = null,
-    val noAnswerSentence: String,
-    val noAnswerStoryId: String? = null,
-)
-
-fun BotRAGConfiguration?.isEnabled(): Boolean = this?.enabled ?: false
+interface VectorStoreProviderService {
+    fun checkSetting(query: VectorStoreProviderSettingStatusQuery): ProviderSettingStatusResponse?
+}

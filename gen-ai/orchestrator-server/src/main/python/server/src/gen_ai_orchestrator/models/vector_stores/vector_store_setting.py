@@ -12,16 +12,20 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Module defining generic type alias"""
+"""Model for creating BaseVectorStoreSetting."""
+from typing import Optional
 
-from typing import Annotated, Union
+from pydantic import BaseModel, Field
 
-from fastapi import Body
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
 
-from gen_ai_orchestrator.models.vector_stores.open_search.open_search_params import (
-    OpenSearchParams,
-)
 
-DocumentSearchParams = Annotated[
-    Union[OpenSearchParams], Body(discriminator='provider')
-]
+class BaseVectorStoreSetting(BaseModel):
+    """A base class for Vector Store Setting."""
+
+    provider: VectorStoreProvider = Field(description='The Vector Store Provider.')
+    vector_size: int = Field(
+        description='The size of the embedding vector.', examples=[1536], default=1536,
+        ge=1
+    )
+

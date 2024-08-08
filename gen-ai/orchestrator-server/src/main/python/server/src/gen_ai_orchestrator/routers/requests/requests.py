@@ -21,11 +21,10 @@ from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
 from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
-from gen_ai_orchestrator.models.vector_stores.vector_stores_types import DocumentSearchParams
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting, DocumentSearchParams
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
@@ -52,6 +51,15 @@ class ObservabilityProviderSettingStatusQuery(BaseModel):
     setting: ObservabilitySetting = Field(description='The Observability Provider setting to be checked.')
 
 
+class VectorStoreProviderSettingStatusQuery(BaseModel):
+    """The query for the Vector Store Provider Setting Status"""
+
+    setting: VectorStoreSetting = Field(description='The Vector Store Provider setting to be checked.')
+    index_name: str = Field(
+        description='Index name corresponding to a document collection in the vector database.'
+    )
+
+
 class RagQuery(BaseModel):
     """The RAG query model"""
 
@@ -76,10 +84,14 @@ class RagQuery(BaseModel):
         description="Embedding model setting, used to calculate the user's question vector."
     )
     document_index_name: str = Field(
-        description='Index name corresponding to a document collection in the vector database.',
+        description='Index name corresponding to a document collection in the vector database.'
     )
     document_search_params: DocumentSearchParams = Field(
-        description='The document search parameters. Ex: number of documents, metadata filter',
+        description='The document search parameters. Ex: number of documents, metadata filter'
+    )
+    vector_store_setting: Optional[VectorStoreSetting] = Field(
+        description='The vector store settings.',
+        default=None
     )
     observability_setting: Optional[ObservabilitySetting] = Field(
         description='The observability settings.',
@@ -129,19 +141,18 @@ Answer in {locale}:""",
                         },
                         'model': 'text-embedding-ada-002',
                     },
-                    'document_index_name': 'my-index-name',
-                    'document_search_params': {
+                    'observability_setting': None,
+                    'vector_store_setting': {
                         'provider': 'OpenSearch',
-                        'filter': [
-                            {
-                                'term': {
-                                    'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
-                                }
-                            }
-                        ],
-                        'k': 4,
+                        'k': 3,
+                        'host': 'localhost',
+                        'port': 9200,
+                        'username': 'admin',
+                        'password': {
+                            'type': 'Raw',
+                            'value': 'admin',
+                        }
                     },
-                    'observability_setting' : None
                 }
             ]
         }

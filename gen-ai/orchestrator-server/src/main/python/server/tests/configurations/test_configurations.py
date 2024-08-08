@@ -86,3 +86,4 @@ def test_fetch_default_open_search_credentials(mock_get_credentials, mock_boto3_
     assert not mock_get_credentials.called
     assert username == 'default_user'
     assert password == 'default_pwd'
+

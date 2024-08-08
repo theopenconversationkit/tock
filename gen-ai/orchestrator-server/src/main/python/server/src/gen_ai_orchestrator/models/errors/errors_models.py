@@ -18,7 +18,7 @@ from enum import Enum, unique
 from typing import Dict, Optional
 
 from pydantic import BaseModel, Field
-from pydantic.json_schema import GetJsonSchemaHandler, JsonSchemaValue
+from pydantic.json_schema import GetJsonSchemaHandler
 from pydantic_core import core_schema
 
 from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
@@ -47,7 +47,8 @@ class ErrorCode(Enum):
     AI_PROVIDER_API_CONTEXT_LENGTH_EXCEEDED_BAD_REQUEST = 2007
 
     # Vector Store Errors
-    VECTOR_STORE_UNKNOWN = 3000
+    VECTOR_STORE_UNKNOWN_PROVIDER = 3000
+    VECTOR_STORE_UNKNOWN_PROVIDER_SETTING = 3001
 
     # OpenSearch Errors
     OPEN_SEARCH_SETTINGS_ERROR = 4000
@@ -166,7 +167,7 @@ class ErrorMessages:
             detail='Reduce the length of the prompt message.',
         ),
         # Vector Store Errors
-        ErrorCode.VECTOR_STORE_UNKNOWN: ErrorMessage(message='Unknown vector store.'),
+        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER: ErrorMessage(message='Unknown vector store.'),
         # OpenSearch Errors
         ErrorCode.OPEN_SEARCH_SETTINGS_ERROR: ErrorMessage(
             message='The OpenSearch is improperly configured.',
