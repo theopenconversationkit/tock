@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package ai.tock.iadvize.client
+package ai.tock.gcp.utils
 
-import ai.tock.shared.service.BotAdditionalModulesService
-import com.github.salomonbrys.kodein.Kodein.Module
+/**
+ * Get system or environment variable value.
+ *
+ * @param name the variable name
+ * @param defaultValue the default value
+ */
+fun property(name: String, defaultValue: String = ""): String = System.getProperty(name) ?: System.getenv(name) ?: defaultValue
 
-
-class IOCModulesService : BotAdditionalModulesService {
-
-    override fun defaultModules(): Set<Module> = setOf(iAdvizeClientModule)
-}
+fun booleanProperty(name: String, defaultValue: Boolean = false): Boolean = property(name, defaultValue.toString()).toBoolean()

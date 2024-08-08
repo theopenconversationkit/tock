@@ -13,12 +13,15 @@
 #   limitations under the License.
 #
 import unittest
-from unittest.mock import patch
-
+from gen_ai_orchestrator.configurations.environment.settings import application_settings
 from gen_ai_orchestrator.models.security.ai_provider_secret import AIProviderSecret
 from gen_ai_orchestrator.models.security.aws_secret_key.aws_secret_key import AwsSecretKey
+from gen_ai_orchestrator.models.security.credentials import Credentials
+from gen_ai_orchestrator.models.security.gcp_secret_key.gcp_secret_key import GcpSecretKey
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
 from gen_ai_orchestrator.services.security.security_service import fetch_secret_key_value
+from gen_ai_orchestrator.utils.gcp.gcp_secret_manager_client import GCPSecretManagerClient
+from unittest.mock import patch
 
 
 class TestSecurityService(unittest.TestCase):
@@ -59,7 +62,7 @@ class TestSecurityService(unittest.TestCase):
 
         # Check test results
         mock_boto3_client.assert_called_once_with(service_name='secretsmanager')
-        mock_get_ai_provider_secret.assert_called_once_with(secret_name=aws_secret_name)
+        mock_get_ai_provider_secret.assert_called_once_with(aws_secret_name)
         self.assertEqual(value, my_secret_api_key.secret)
 
     @patch('boto3.client')
@@ -78,5 +81,65 @@ class TestSecurityService(unittest.TestCase):
 
         # Check test results
         mock_boto3_client.assert_called_once_with(service_name='secretsmanager')
-        mock_get_ai_provider_secret.assert_called_once_with(secret_name=aws_secret_name)
+        mock_get_ai_provider_secret.assert_called_once_with(aws_secret_name)
         self.assertIsNone(value)
+
+    @patch('google.cloud.secretmanager.SecretManagerServiceClient')
+    def test_fetch_gcp_secret_key_value(self, mock_gcp_secret_manager_client):
+        # Test data
+        gcp_secret_name = "my_secret_key"
+        gcp_secret = AIProviderSecret(secret="my_secret_key_value")
+        secret_value = f'{{"secret":"{gcp_secret.secret}"}}'
+
+        # Configure the mocks to return specific values
+        mock_gcp_secret_manager_client.return_value.access_secret_version.return_value.payload.data = bytes(
+            secret_value, 'utf8')
+
+        # Call the function to fetch aws secret key
+        value = fetch_secret_key_value(GcpSecretKey(secret_name=gcp_secret_name))
+
+        # Check test results
+        mock_gcp_secret_manager_client.assert_called_once_with()
+        mock_gcp_secret_manager_client.return_value.access_secret_version.assert_called_once_with(
+            name=f'projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest')
+        self.assertEqual(gcp_secret.secret, value)
+
+    @patch('google.cloud.secretmanager.SecretManagerServiceClient')
+    def test_fetch_bad_gcp_secret_key_value(self, mock_gcp_secret_manager_client):
+        # Test data
+        gcp_secret_name = "my_secret_key"
+        gcp_secret = AIProviderSecret(secret="my_secret_key_value")
+        secret_value = f'{{"bad-secret-attribute":"{gcp_secret.secret}"}}'
+
+        # Configure the mocks to return specific values
+        mock_gcp_secret_manager_client.return_value.access_secret_version.return_value.payload.data = bytes(
+            secret_value, 'utf8')
+
+        # Call the function to fetch aws secret key
+        value = fetch_secret_key_value(GcpSecretKey(secret_name=gcp_secret_name))
+
+        # Check test results
+        mock_gcp_secret_manager_client.assert_called_once_with()
+        mock_gcp_secret_manager_client.return_value.access_secret_version.assert_called_once_with(
+            name=f'projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest')
+        self.assertIsNone(value)
+
+    @patch('google.cloud.secretmanager.SecretManagerServiceClient')
+    def test_fetch_gcp_credentials_value(self, mock_gcp_secret_manager_client):
+        # Test data
+        gcp_secret_name = "my_secret_key"
+        gcp_secret = Credentials(username="my_username", password="my_password")
+        secret_value = f'{{"username":"{gcp_secret.username}", "password":"{gcp_secret.password}"}}'
+
+        # Configure the mocks to return specific values
+        mock_gcp_secret_manager_client.return_value.access_secret_version.return_value.payload.data = bytes(
+            secret_value, 'utf8')
+
+        # Call the function to fetch aws secret key
+        value = GCPSecretManagerClient().get_credentials(gcp_secret_name)
+
+        # Check test results
+        mock_gcp_secret_manager_client.assert_called_once_with()
+        mock_gcp_secret_manager_client.return_value.access_secret_version.assert_called_once_with(
+            name=f'projects/{application_settings.gcp_project_id}/secrets/{gcp_secret_name}/versions/latest')
+        self.assertEqual(gcp_secret, value)

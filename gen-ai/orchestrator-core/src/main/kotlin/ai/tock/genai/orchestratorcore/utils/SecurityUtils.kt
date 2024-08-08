@@ -16,68 +16,124 @@
 
 package ai.tock.genai.orchestratorcore.utils
 
-import ai.tock.aws.model.AIProviderSecret
-import ai.tock.aws.secretmanager.provider.AWSSecretsManagerService
-import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.security.AwsSecretKey
+import ai.tock.genai.orchestratorcore.models.security.GcpSecretKey
 import ai.tock.genai.orchestratorcore.models.security.RawSecretKey
 import ai.tock.genai.orchestratorcore.models.security.SecretKey
 import ai.tock.shared.injector
 import ai.tock.shared.property
+import ai.tock.shared.propertyOrNull
 import ai.tock.shared.provide
+import ai.tock.shared.security.SecretManagerService
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.credentials.AIProviderSecret
+import mu.KLogger
+import mu.KotlinLogging
 
-val secretStorageType: String = property("tock_gen_ai_orchestrator_secret_storage_type", Constants.SECRET_KEY_RAW)
-val secretStoragePrefix: String = property("tock_gen_ai_orchestrator_secret_storage_prefix_name", "/DEV")
+val genAISecretManagerProvider: String? = propertyOrNull(
+    name = "tock_gen_ai_secret_manager_provider"
+)
+val genAISecretPrefix: String = property(
+    name = "tock_gen_ai_secret_prefix",
+    defaultValue = "LOCAL/TOCK"
+)
 
 /**
  * The security utilities class
  */
 object SecurityUtils {
 
-    /**
-     * The AWS Secrets Manager Service
-     */
-    private val awsSecretsManagerClient: AWSSecretsManagerService get() = injector.provide()
+    private val logger: KLogger = KotlinLogging.logger {}
 
     /**
-     * Fetch the secret key value. Raw Value or Aws Secret Value
+     * The Secrets Manager Service
+     */
+    private val secretMangerService: SecretManagerService by lazy {
+        injector.provide(tag = genAISecretManagerProvider)
+    }
+
+    /**
+     * Fetch the secret key value.
      * @param secret the secret key
      * @return the secret value as String
      */
-    fun fetchSecretKeyValue(secret: SecretKey): String =
-        when(secret){
-            is RawSecretKey -> secret.value
-            is AwsSecretKey -> awsSecretsManagerClient.getAIProviderSecret(secret.secretName).secret
-            else -> throw IllegalArgumentException("Unsupported secret key type")
+    fun fetchSecretKeyValue(secret: SecretKey): String {
+        try {
+            return when (secret) {
+                is RawSecretKey -> secret.value
+                is AwsSecretKey -> getAIProviderSecretValue(SecretManagerProviderType.AWS_SECRET_MANAGER, secret.secretName)
+                is GcpSecretKey -> getAIProviderSecretValue(SecretManagerProviderType.GCP_SECRET_MANAGER, secret.secretName)
+                else -> throw IllegalArgumentException("Unsupported secret key type")
+            }
+        } catch (e: Exception) {
+            logger.warn("The secret has not been recovered.", e)
+            // If this fails, return an empty string as the secret value, so as not to block processing.
+            return ""
         }
+    }
 
     /**
-     * Create a secret key. If secret storage type is Raw, so it creates [RawSecretKey], else if it is AwsSecretsManager then it creates [AwsSecretKey]
+     * Get the [AIProviderSecret] value
+     */
+    private fun getAIProviderSecretValue(type: SecretManagerProviderType, secretName: String): String {
+        if (genAISecretManagerProvider == null) {
+            throw IllegalArgumentException("No Gen AI secret manager provider has been defined.")
+        }
+        if (type != secretMangerService.type) {
+            throw IllegalArgumentException("The secret manager provider type '$type' is not compatible with " +
+                    "the service type ${secretMangerService.type}.")
+        }
+
+        return secretMangerService.getAIProviderSecret(secretName).secret
+    }
+
+    /**
+     * Create a secret key depending on secret manager provider.
+     * If no provider has been defined, it creates [RawSecretKey].
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param secretValue the secret value
-     * @param secretName the secret name
      * @return [SecretKey]
      */
-    fun getSecretKey(secretValue: String, secretName: String): SecretKey =
-        when(secretStorageType){
-            Constants.SECRET_KEY_RAW -> RawSecretKey(secretValue)
-            Constants.SECRET_KEY_AWS -> {
+    fun createSecretKey(namespace: String, botId: String, feature: String, secretValue: String): SecretKey =
+        when(genAISecretManagerProvider){
+            SecretManagerProviderType.AWS_SECRET_MANAGER.name -> {
+                val secretName = generateAwsSecretName(namespace, botId, feature)
                 // Create or update the [AIProviderSecret] on AWS Secrets Manager
-                awsSecretsManagerClient.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
+                secretMangerService.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
                 // The return the Secret Key
                 AwsSecretKey(secretName)
             }
-            else -> throw IllegalArgumentException("Unsupported secret key type")
+            SecretManagerProviderType.GCP_SECRET_MANAGER.name -> {
+                val secretName = generateGcpSecretName(namespace, botId, feature)
+                // Create or update the [AIProviderSecret] on GCP Secret Manager
+                secretMangerService.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
+                // The return the Secret Key
+                GcpSecretKey(secretName)
+            }
+            else -> RawSecretKey(secretValue)
         }
 
     /**
      * Generate an AWS Secret Name
-     * @param namespace the bot namespace
-     * @param botId the bot id
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
      * @param feature the feature for which the secret will be created
      * @return the generate secret name
      */
-    fun generateAwsSecretName(namespace: String, botId: String, feature: String): String
-        = normalizeAwsSecretName("$secretStoragePrefix/$namespace/$botId/$feature")
+    private fun generateAwsSecretName(namespace: String, botId: String, feature: String): String
+        = normalizeAwsSecretName("/$genAISecretPrefix/$namespace/$botId/$feature")
+
+    /**
+     * Generate an GCP Secret Name
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature for which the secret will be created
+     * @return the generate secret name
+     */
+    private fun generateGcpSecretName(namespace: String, botId: String, feature: String): String
+            = normalizeGcpSecretName("$genAISecretPrefix/$namespace/$botId/$feature")
 
     /**
      * Name standardization
@@ -110,6 +166,27 @@ object SecurityUtils {
         }
 
         return normalized
+    }
+
+    /**
+     * Name standardization
+     * @param input the input to be normalized
+     */
+    private fun normalizeGcpSecretName(input: String): String {
+        // Replace underscores and space with hyphens
+        val normalized = input.trim().replace('/', '-').replace(' ', '-')
+
+        // Filter authorised characters: letters, numbers, hyphens and underscores
+        val filteredInput = normalized.filter { it.isLetterOrDigit() || it == '-' || it == '_' }
+
+        // Limit length to 255 characters
+        val normalizedName = if (filteredInput.length > 255) {
+            filteredInput.substring(0, 255)
+        } else {
+            filteredInput
+        }
+
+        return normalizedName
     }
 
 }

@@ -16,19 +16,14 @@
 
 package ai.tock.aws
 
-import ai.tock.aws.utils.property
+import ai.tock.shared.property
+
 
 const val AWS_SECRET_VERSION = "aws_secret_manager_secret_version"
 const val AWS_ASSUMED_ROLE_PROPERTY = "aws_secret_manager_assumed_role_arn"
 const val AWS_ASSUMED_ROLE_SESSION_NAME_PROPERTY =  "aws_secret_manager_assumed_role_session_name"
-const val AWS_IADVIZE_CREDENTIALS_SECRET_ID_PROPERTY = "aws_iadvize_credentials_secret_id"
 
 object EnvConfig {
-    /**
-     * IAdvize credentials AWS secret ID.
-     */
-    val awsIAdvizeCredentialsSecretId: String = AWS_IADVIZE_CREDENTIALS_SECRET_ID_PROPERTY.let { property(it, "please set $it") }
-
     /**
      * AWS role name used, assumed when getting / reading secrets.
      */
@@ -38,5 +33,4 @@ object EnvConfig {
      * AWS session name used, assumed when getting / reading secrets.
      */
     val awsAssumedRoleSessionName: String = AWS_ASSUMED_ROLE_SESSION_NAME_PROPERTY.let { property(it, "please set $it") }
-
 }

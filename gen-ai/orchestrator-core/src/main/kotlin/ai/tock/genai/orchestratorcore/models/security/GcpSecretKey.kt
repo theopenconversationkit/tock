@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2022 e-voyageurs technologies
+ * Copyright (C) 2017/2021 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package ai.tock.aws.secretmanager.dao
+package ai.tock.genai.orchestratorcore.models.security
 
 /**
- * Retrieve secret from a secured source
+ * The GCP Secret Key
  */
-interface SecretDAO {
-    fun getSecret(secretId: String): String
-
-    /**
-     * Create an AWS Secret if it doesn't exist. Else, update it
-     * @param secretName the secret name
-     * @param secretObject the secret object to store
-     * @return the ARN of a created or updated AWS Secret.
-     */
-    fun createOrUpdateSecret(secretName: String, secretObject: Any): String
-}
+data class GcpSecretKey(
+    val secretName: String,
+) : SecretKey(SecretKeyType.GcpSecretManager)

@@ -25,12 +25,7 @@ import ai.tock.shared.security.mongo.MongoCredentialsProvider
 import ai.tock.shared.vertx.TockVertxProvider
 import ai.tock.shared.vertx.VertxProvider
 import ai.tock.shared.vertx.vertxExecutor
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import com.github.salomonbrys.kodein.providerOrNull
-import com.github.salomonbrys.kodein.singleton
+import com.github.salomonbrys.kodein.*
 import com.mongodb.client.MongoClient
 import mu.KotlinLogging
 
@@ -73,6 +68,9 @@ val sharedModule = Kodein.Module {
     bind<VertxProvider>() with provider { TockVertxProvider }
     bind<TockUserListener>() with provider { NoOpTockUserListener }
     bind<MongoCredentialsProvider>() with provider { DefaultMongoCredentialsProvider }
+    // TODO MASS : test the use of AWS-Tools instead of tock-mongodb-credentials-provider external module
+    // TODO MASS : Do not add sub module to Tock
+
     try {
         bind<MongoClient>() with singleton { mongoClient }
     } catch (e: Exception) {

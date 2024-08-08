@@ -16,13 +16,30 @@
 
 package ai.tock.iadvize.client
 
-import ai.tock.iadvize.client.authentication.credentials.EnvCredentialsProvider
-import ai.tock.shared.security.credentials.CredentialsProvider
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.singleton
-
-
-val iAdvizeClientModule = Kodein.Module {
-    bind<CredentialsProvider>() with singleton { EnvCredentialsProvider() }
-}
+//import ai.tock.shared.security.SecretMangerService
+//import ai.tock.shared.security.credentials.CredentialsProvider
+//import com.github.salomonbrys.kodein.*
+//
+//val implementationType: String = ai.tock.shared.property(
+//    "tock_cloud_provider",
+//    "GCP"
+//)
+//
+//val iAdvizeClientModule = Kodein.Module {
+//    bind<SecretMangerService>(tag = "ENV") with singleton { SecretMangerService() }
+//
+//    // Main factory which chooses the implementation according to the environment variable
+//    bind<CredentialsProvider>() with provider {
+//        when (implementationType) {
+//            "ENV" -> instance<CredentialsProvider>("ENV")
+//            "AWS" -> instance<CredentialsProvider>("AWS")
+//            "GCP" -> instance<CredentialsProvider>("GCP")
+//            else -> throw IllegalArgumentException("Unknown implementation type: $implementationType")
+//        }
+//
+//
+////        tock_database_credentials_provider
+////        tock_iadvize_credentials_provider
+////        tock_gen-ai_credentials_provider
+//    }
+//}

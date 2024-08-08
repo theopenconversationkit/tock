@@ -21,11 +21,12 @@ from fastapi import Body
 from gen_ai_orchestrator.models.security.aws_secret_key.aws_secret_key import (
     AwsSecretKey,
 )
+from gen_ai_orchestrator.models.security.gcp_secret_key.gcp_secret_key import GcpSecretKey
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
 
 SecretKey = Annotated[
-    Union[RawSecretKey, AwsSecretKey],
+    Union[RawSecretKey, AwsSecretKey, GcpSecretKey],
     Body(discriminator='type'),
 ]

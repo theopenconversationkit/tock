@@ -20,7 +20,8 @@ package ai.tock.iadvize.client.authentication
 import ai.tock.iadvize.client.AuthenticationFailedError
 import ai.tock.iadvize.client.IadvizeApi
 import ai.tock.iadvize.client.authentication.models.AuthResponse
-import ai.tock.shared.security.credentials.CredentialsProvider
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.SecretManagerService
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
-import java.rmi.Naming.bind
 import java.time.LocalDateTime
 import java.time.Month
 
@@ -58,7 +58,9 @@ class IadvizeAuthenticationClientTest {
         tockInternalInjector.inject(
             Kodein {
                 import(Kodein.Module {
-                    bind<CredentialsProvider>() with provider { mockk(relaxed = true) }
+                    bind<SecretManagerService>(tag = SecretManagerProviderType.ENV.name) with provider {
+                        mockk(relaxed = true)
+                    }
                 })
             }
         )

@@ -23,3 +23,4 @@ class SecretKeyType(str, Enum):
 
     RAW = 'Raw'
     AWS_SECRETS_MANAGER = 'AwsSecretsManager'
+    GCP_SECRET_MANAGER = 'GcpSecretManager'

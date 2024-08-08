@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017/2021 e-voyageurs technologies
+ * Copyright (C) 2017/2022 e-voyageurs technologies
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package ai.tock.aws.model
+package ai.tock.gcp
 
-import kotlinx.serialization.Serializable
+import ai.tock.gcp.utils.property
 
-@Serializable
-data class AIProviderSecret(val secret: String)
+const val GCP_PROJECT_ID = "tock_gcp_project_id"
+const val GCP_REGION = "tock_gcp_region"
+const val GCP_SECRET_VERSION = "latest"
+
+object EnvConfig {
+    val gcpProjectId: String = property(GCP_PROJECT_ID)
+    val gcpRegion: String = property(GCP_REGION)
+}

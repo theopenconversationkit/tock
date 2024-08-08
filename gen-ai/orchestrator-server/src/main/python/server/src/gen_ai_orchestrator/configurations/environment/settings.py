@@ -96,6 +96,8 @@ class _Settings(BaseSettings):
     observability_proxy_server: Optional[ProxyServerType] = None
     observability_proxy_server_authorization_header_name: Optional[str] = None
 
+    gcp_project_id: Optional[str] = None
+
 
 application_settings = _Settings()
 is_prod_environment = _Environment.PROD == application_settings.application_environment

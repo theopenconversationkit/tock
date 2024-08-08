@@ -18,5 +18,6 @@ package ai.tock.genai.orchestratorcore.models.security
 
 enum class SecretKeyType {
     Raw,
-    AwsSecretsManager
+    AwsSecretsManager,
+    GcpSecretManager,
 }

@@ -96,6 +96,6 @@ def parse_secret_data(secret_data, obj_type: Type[T]) -> Optional[T]:
     try:
         secret_dict = json.loads(secret_data)
         return obj_type(**secret_dict)
-    except json.JSONDecodeError as e:
+    except Exception as e:
         logger.error(f'Error parsing secret data: {str(e)}')
         return None

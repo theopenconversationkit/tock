@@ -28,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = RawSecretKey::class, name = Constants.SECRET_KEY_RAW),
-    JsonSubTypes.Type(value = AwsSecretKey::class, name = Constants.SECRET_KEY_AWS)
+    JsonSubTypes.Type(value = AwsSecretKey::class, name = Constants.SECRET_KEY_AWS),
+    JsonSubTypes.Type(value = GcpSecretKey::class, name = Constants.SECRET_KEY_GCP)
 )
 abstract class SecretKey(
     val type: SecretKeyType,
