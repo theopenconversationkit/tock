@@ -82,7 +82,6 @@ export class FlowComponent implements OnInit, OnDestroy {
   storiesById: Map<string, StoryDefinitionConfiguration> = new Map();
   nodesById: Map<string, StoryNode> = new Map();
 
-  selectedEdge: NodeTransition;
   selectedNode: StoryNode;
   allNodes: StoryNode[];
   allTransitions: Map<string, NodeTransition>;
@@ -229,7 +228,6 @@ export class FlowComponent implements OnInit, OnDestroy {
   reset() {
     this.selectedStory = null;
     this.selectedNode = null;
-    this.selectedEdge = null;
     this.direction = null;
     this.update();
   }
@@ -678,7 +676,7 @@ export class FlowComponent implements OnInit, OnDestroy {
           //8 add startup if useful
           if (addStartup) {
             graph.nodes.push({
-              data: { id: -1, name: 'Startup', weight: 1, colorCode: 'cornflowerblue', shapeType: 'vee' }
+              data: { id: -1, name: 'Startup', weight: 40, colorCode: 'cornflowerblue', shapeType: 'vee' }
             });
           }
 
@@ -946,17 +944,10 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   unselect() {
     this.selectedNode = null;
-    this.selectedEdge = null;
   }
 
   nodeChange(id: string) {
     this.selectedNode = this.allNodes[id];
-    this.selectedEdge = null;
-  }
-
-  edgeChange(key: string) {
-    this.selectedEdge = this.allTransitions.get(key);
-    this.selectedNode = null;
   }
 
   displayCount(count: number): string {

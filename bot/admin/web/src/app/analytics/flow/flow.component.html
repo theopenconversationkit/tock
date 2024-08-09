@@ -496,17 +496,6 @@
 
 <nb-card>
   <nb-card-body class="p-0 position-relative">
-    <div *ngIf="graphData && layout?.type !== 'Echarts'">
-      <tock-cytoscape
-        [elements]="graphData"
-        [layout]="layout"
-        (selectedNode)="nodeChange($event)"
-        (selectedEdge)="edgeChange($event)"
-        (unselect)="unselect()"
-        class="canvas"
-      ></tock-cytoscape>
-    </div>
-
     <div *ngIf="sankeyData && layout?.name === 'Sankey'">
       <div
         echarts
@@ -547,14 +536,6 @@
         [displayCount]="statsMode"
         (closeStory)="unselect()"
       ></tock-story>
-    </div>
-
-    <div
-      *ngIf="graphData && selectedEdge"
-      [@inOutRightAnimation]
-      class="right-panel p-3"
-    >
-      Count: <b>{{ selectedEdge.count }}</b>
     </div>
   </nb-card-body>
 </nb-card>
