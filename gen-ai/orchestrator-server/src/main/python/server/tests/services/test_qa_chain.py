@@ -48,16 +48,7 @@ async def test_qa_chain(
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RagQuery
     query_dict = {
-        'history': [
-            {'text': 'Hello, how can I do this?', 'type': 'HUMAN'},
-            {
-                'text': 'you can do this with the following method ....',
-                'type': 'AI',
-            },
-        ],
-        'question_answering_prompt_inputs': {
-            'question': 'How to get started playing guitar ?',
-        },
+        'user_query': 'How to get started playing guitar ?',
         'embedding_question_em_setting': {
             'provider': 'OpenAI',
             'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
@@ -112,9 +103,7 @@ async def test_qa_chain(
     )
 
     # Assert qa chain is ainvoke()d with the expected settings from query
-    mocked_chain.ainvoke.assert_called_once_with(
-        **query.question_answering_prompt_inputs
-    )
+    mocked_chain.ainvoke.assert_called_once_with(query.user_query)
 
     # Assert the response is build using the expected settings
     mocked_qa_response.assert_called_once_with(

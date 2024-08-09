@@ -42,7 +42,7 @@ class Source(BaseModel):
         this means that the sources are parts of the same document.
         """
         return (
-            isinstance(other, Footnote)
+            isinstance(other, Source)
             and self.title == other.title
             and self.url == other.url
             and self.content == other.content
@@ -117,7 +117,7 @@ class RagDocument(BaseModel):
 
 
 class QADebugData(BaseModel):
-    """A QA debug data"""
+    """A QA debug data. This class is not currently used in the QA chain as Langfuse is now supported."""
 
     user_question: Optional[str] = Field(
         description="The user's initial question.",

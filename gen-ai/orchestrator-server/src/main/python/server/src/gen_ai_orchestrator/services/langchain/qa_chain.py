@@ -19,7 +19,6 @@ It uses LangChain to perform a Conversational Retrieval Chain
 
 import logging
 import time
-from operator import itemgetter
 
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import Runnable
@@ -62,9 +61,7 @@ async def execute_qa_chain(query: QAQuery) -> QAResponse:
 
     conversational_qa_chain = create_qa_chain(query)
 
-    response = await conversational_qa_chain.ainvoke(
-        **query.question_answering_prompt_inputs
-    )
+    response = await conversational_qa_chain.ainvoke(query.user_query)
 
     qa_duration = '{:.2f}'.format(time.time() - start_time)
     logger.info('QA chain - End of execution. (Duration : %s seconds)', qa_duration)
@@ -92,7 +89,7 @@ def build_chain(retriever: BaseRetriever) -> Runnable:
     Returns:
         The QA chain.
     """
-    return itemgetter('question') | retriever
+    return retriever
 
 
 def create_qa_chain(query: QAQuery) -> Runnable:
