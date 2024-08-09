@@ -14,115 +14,15 @@
  * limitations under the License.
  */
 
-.flow {
-  margin-top: 20px;
+.canvas {
+  height: 70vh;
 }
 
-tock-cytoscape {
-  height: 100vh;
-  float: left;
-  width: 100%;
-  position: relative;
-}
-
-.select {
-  display: inline-flex;
-  margin-left: 10px;
-}
-
-.select-story {
-  min-width: 200px;
-}
-
-.select-type {
-  min-width: 150px;
-}
-
-.checkbox {
-  margin-left: 10px;
-}
-
-.cytoscape {
-  height: 90%;
-  width: 75%;
-  float: left;
-  overflow: auto;
-  overflow-y: hidden;
-}
-
-.selected-node {
-  height: 90%;
-  width: 25%;
-  float: right;
-  overflow: auto;
-  overflow-x: hidden;
-  margin-top: 10px;
-}
-
-.selected-edge {
-  height: 90%;
-  width: 25%;
-  float: right;
-  overflow: auto;
-  overflow-x: hidden;
-  margin-top: 10px;
-}
-
-.description {
-  padding-right: 100px;
-}
-
-.mode-selection {
-  margin-top: -3px;
-  margin-left: 10px;
-}
-
-.story-btn {
-  float: right;
-  margin-top: 10px;
-}
-
-.story-type {
-  margin-right: 10px;
-  font-size: 18px;
-}
-
-.statsMode-badge {
-  width: 100px;
-  text-align: center;
-  margin-right: 0.5em;
-  border-radius: 25px;
-  padding: 8px;
-  margin-left: 10px;
-  font-size: small;
-}
-
-.statsMode-true {
-  background-color: #00d68f;
-}
-
-.statsMode-false {
-  background-color: lightblue;
-}
-
-.flow-option-group {
-  margin: 0;
-}
-
-.flow-option-group-name {
-  font-style: italic;
-  display: inline-block;
-  min-width: 150px;
-}
-
-.flow-option-label {
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.flow-stat {
-  font-size: small;
-  font-style: italic;
-  display: inline-block;
-  padding: 0 20px;
+.right-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40%;
+  min-width: 20em;
+  box-shadow: -2px 2px 5px #00000030;
 }
