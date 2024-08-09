@@ -43,7 +43,8 @@ import {
   NbDialogModule,
   NbRadioModule,
   NbToggleModule,
-  NbIconModule
+  NbIconModule,
+  NbFormFieldModule
 } from '@nebular/theme';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChartComponent } from './chart/chart.component';
@@ -60,20 +61,18 @@ import { SatisfactionDetailsComponent } from './satisfaction/satisfaction-detail
 import { AnalyticsRoutingModule } from './analytics-routing.module';
 import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.component';
 
-export function importEcharts() {
-  return import('echarts');
-}
-
 @NgModule({
   schemas: [NO_ERRORS_SCHEMA],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     AnalyticsRoutingModule,
     InfiniteScrollModule,
     MomentModule,
     BotSharedModule,
     BotModule,
+    NbFormFieldModule,
     NbRouteTabsetModule,
     NbCheckboxModule,
     NbCardModule,
@@ -95,9 +94,8 @@ export function importEcharts() {
     NbToggleModule,
     NbIconModule,
     NgxEchartsModule.forRoot({
-      echarts: importEcharts
-    }),
-    ReactiveFormsModule
+      echarts: () => import('echarts')
+    })
   ],
   declarations: [
     AnalyticsTabsComponent,

@@ -23,8 +23,11 @@ declare var cytoscape: any;
   template: '<div id="cy"></div>',
   styles: [
     `
+      :host {
+        display: block;
+      }
       #cy {
-        height: 75%;
+        height: 100%;
         width: 100%;
         position: relative;
         left: 0;
@@ -41,6 +44,7 @@ export class CytoComponent implements OnChanges, OnDestroy {
 
   @Output() selectedNode: EventEmitter<string> = new EventEmitter<string>();
   @Output() selectedEdge: EventEmitter<string> = new EventEmitter<string>();
+  @Output() unselect: EventEmitter<void> = new EventEmitter<void>();
 
   private cy;
 
@@ -123,6 +127,7 @@ export class CytoComponent implements OnChanges, OnDestroy {
       let cy_container = this.renderer.selectRootElement('#cy');
       let nodeSelector = this.selectedNode;
       let edgeSelector = this.selectedEdge;
+      let unSelector = this.unselect;
       let cy = cytoscape({
         container: cy_container,
         layout: this.layout,
@@ -153,11 +158,14 @@ export class CytoComponent implements OnChanges, OnDestroy {
       cy.on('tap', function (e) {
         if (e.target === cy) {
           cy.elements().removeClass('faded');
+          unSelector.emit();
         }
       });
+
       if (this.cy) {
         this.cy.destroy();
       }
+
       this.cy = cy;
     });
   }

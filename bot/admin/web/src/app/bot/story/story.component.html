@@ -21,7 +21,7 @@
     (collapsedChange)="toggleStoryPanel($event)"
   >
     <nb-accordion-item-header>
-      <div class="story-accordion-header">
+      <div class="story-accordion-header d-flex flex-wrap">
         <div>
           <span *ngIf="!storyNode">
             <nb-icon
@@ -64,6 +64,7 @@
             </div>
           </span>
         </div>
+
         <div>
           <tock-answer
             *ngIf="!storyNode && story._id && !story.isBuiltIn()"
@@ -72,6 +73,7 @@
             [fullDisplay]="false"
             [wide]="true"
           ></tock-answer>
+
           <button
             *ngIf="!story.isBuiltIn()"
             nbButton
