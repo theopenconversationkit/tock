@@ -32,17 +32,24 @@ import { NodeTransition, NodeTypeFilter, NodeTypeFilters, StoryNode } from './no
 import { AnswerConfigurationType, StoryDefinitionConfiguration, StorySearchQuery, StoryStep } from '../../bot/model/story';
 import { Subject, takeUntil } from 'rxjs';
 import { NbCalendarRange, NbDateService, NbDatepickerDirective, NbToastrService } from '@nebular/theme';
-import { darkenIfTooLight, toISOStringWithoutOffset } from '../../shared/utils';
+import { darkenIfTooLight, toISOStringWithoutOffset, truncateString } from '../../shared/utils';
 import { SelectBotEvent } from '../../shared/components';
 import { EChartsOption } from 'echarts';
 import { timeRanges } from './time-ranges';
 import { layouts } from './layouts';
 import { animate, style, transition, trigger } from '@angular/animations';
 
+type Graph = {
+  edges: any[];
+  nodes: any[];
+};
+
+type TransitionsMap = Map<string, NodeTransition>;
+
 @Component({
   selector: 'tock-flow',
   templateUrl: './flow.component.html',
-  styleUrls: ['./flow.component.css'],
+  styleUrls: ['./flow.component.scss'],
   animations: [
     trigger('inOutRightAnimation', [
       transition(':enter', [style({ right: -500, opacity: 0 }), animate('0.3s ease-out', style({ right: 0, opacity: 1 }))]),
@@ -84,8 +91,7 @@ export class FlowComponent implements OnInit, OnDestroy {
 
   selectedNode: StoryNode;
   allNodes: StoryNode[];
-  allTransitions: Map<string, NodeTransition>;
-  graphData;
+  allTransitionsSize: number;
 
   selectedConnectorId: string;
   selectedConfigurationName: string;
@@ -104,8 +110,6 @@ export class FlowComponent implements OnInit, OnDestroy {
   displayDebug: boolean = false;
   showAllConfigurations: boolean = false;
 
-  endDate: Date;
-
   @ViewChild(NbDatepickerDirective) dateRangeInputDirectiveRef;
 
   advanced: boolean = false;
@@ -113,6 +117,7 @@ export class FlowComponent implements OnInit, OnDestroy {
   sankeyData: EChartsOption;
   forceData: EChartsOption;
   circularData: EChartsOption;
+
   loading: boolean = false;
 
   constructor(
@@ -122,15 +127,12 @@ export class FlowComponent implements OnInit, OnDestroy {
     private botConfiguration: BotConfigurationService,
     private toastrService: NbToastrService,
     private dateService: NbDateService<Date>
-  ) {
-    this.range = {
-      start: this.dateService.addDay(this.dateService.today(), -7),
-      end: this.dateService.today()
-    };
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.botConfiguration.configurations.subscribe((conf) => {
+    this.initTimeRange();
+
+    this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((conf) => {
       if (conf?.length) {
         const retainedConfs = conf
           .filter((c) => c.targetConfigurationId == null)
@@ -141,32 +143,6 @@ export class FlowComponent implements OnInit, OnDestroy {
         this.reload();
       }
     });
-
-    this.state.configurationChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.selectedConfigurationName = null;
-      this.selectedConnectorId = null;
-      this.reload();
-    });
-  }
-
-  getTimeRangeBttnStatus(range) {
-    if (this.range.end && this.range.start) {
-      const span = (this.range.end.getTime() - this.range.start.getTime()) / 1000 / 60 / 60 / 24;
-      const now = new Date();
-
-      if (span < 1 && range.duration <= 1) {
-        if (range.offset) {
-          const offsetDate = this.dateService.addDay(now, range.offset);
-          if (this.range.start.toDateString() === offsetDate.toDateString()) return 'basic';
-        } else {
-          if (this.range.start.toDateString() === now.toDateString()) return 'basic';
-        }
-      } else if (Math.floor(span) === range.duration) {
-        if ((this.range.end.toDateString(), now.toDateString())) return 'basic';
-      }
-    }
-
-    return 'info';
   }
 
   reload(forceReload?: boolean) {
@@ -238,79 +214,13 @@ export class FlowComponent implements OnInit, OnDestroy {
   }
 
   updateCount() {
+    this.forceData = undefined;
+    this.circularData = undefined;
+    this.sankeyData = undefined;
+
     setTimeout((_) => {
       this.buildGraph(this.statsMode ? this.userFlow : this.staticFlow);
     });
-  }
-
-  swapAdvanced(): void {
-    this.advanced = !this.advanced;
-  }
-
-  statsEntity(): boolean {
-    return this.statsMode && this.entity;
-  }
-
-  statsStep(): boolean {
-    return this.statsMode && this.step;
-  }
-
-  statsIntent(): boolean {
-    return this.statsMode && this.intent;
-  }
-
-  valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
-    return a.value.localeCompare(b.value);
-  };
-
-  datesChanged(dates: [Date, Date]) {
-    this.range.start = dates[0];
-    this.range.end = dates[1];
-    this.state.dateRange = {
-      start: dates[0],
-      end: dates[1],
-      rangeInDays: this.state.dateRange.rangeInDays
-    };
-    this.reload();
-  }
-
-  normalizeTimeRange() {
-    this.range.start = this.dateService.setHours(this.range.start, 0);
-    this.range.start = this.dateService.setMinutes(this.range.start, 0);
-    this.range.start = this.dateService.setSeconds(this.range.start, 0);
-
-    this.range.end = this.dateService.setHours(this.range.end, 23);
-    this.range.end = this.dateService.setMinutes(this.range.end, 59);
-    this.range.end = this.dateService.setSeconds(this.range.end, 59);
-  }
-
-  setTimeRange(timeSpan): void {
-    this.range.start = this.dateService.addDay(this.dateService.today(), -timeSpan.duration);
-
-    this.range.end = this.dateService.addDay(this.dateService.today(), +timeSpan.offset || 0);
-
-    this.normalizeTimeRange();
-
-    this.dateRangeInputDirectiveRef.writeValue(this.range);
-
-    this.state.dateRange = {
-      start: this.range.start,
-      end: this.range.end,
-      rangeInDays: this.state.dateRange.rangeInDays
-    };
-    this.reload();
-  }
-
-  datePickerChange(event: NbCalendarRange<Date>): void {
-    if (event.end) {
-      this.normalizeTimeRange();
-      this.state.dateRange = {
-        start: this.range.start,
-        end: this.range.end,
-        rangeInDays: this.state.dateRange.rangeInDays
-      };
-      this.reload();
-    }
   }
 
   private buildStaticFlowFromStories() {
@@ -370,7 +280,7 @@ export class FlowComponent implements OnInit, OnDestroy {
     if (flow) {
       const displayOnlyNext: boolean = this.direction === -1;
       const displayOnlyPrev: boolean = this.direction === 1;
-      const graph = {
+      const graph: Graph = {
         nodes: [],
         edges: []
       };
@@ -520,7 +430,8 @@ export class FlowComponent implements OnInit, OnDestroy {
       } else {
         //4 create transitions
         const countTransitionByStartId = [];
-        const transitionsByKey = new Map<string, NodeTransition>();
+        const transitionsByKey: TransitionsMap = new Map();
+
         flow.transitions.forEach((t) => {
           const prev = nodesByStateId.get(t.previousStateId);
           const next = nodesByStateId.get(t.nextStateId);
@@ -600,29 +511,32 @@ export class FlowComponent implements OnInit, OnDestroy {
           if (include) {
             addStartup = false;
             tmpFinalStates[s.index] = s;
+
             const theScore = this.statsMode ? Math.round(((s.count - theMinCount) * 100.0) / (theMaxCount - theMinCount)) : 0;
+
             const theNodeName =
-              s.nodeName() +
               (this.displayNodeType
                 ? s.storyType == AnswerConfigurationType.builtin
-                  ? ' 🔧'
+                  ? ' 🔧 '
                   : s.storyType == undefined
-                  ? ' ?'
-                  : ' 💬'
+                  ? ' ? '
+                  : ' 💬 '
                 : '') +
-              (this.displayNodeCount ? ' (x' + this.displayCount(s.count) + ')' : '') +
+              (this.displayNodeCount ? ' (x' + this.displayCount(s.count) + ') ' : '') +
               (!this.statsMode &&
               this.displayDisabled &&
               this.allStories.find((aStory) => aStory._id == s.storyDefinitionId).isDisabled(this.selectedConnectorId)
-                ? ' 🚫'
-                : '');
+                ? ' 🚫 '
+                : '') +
+              s.nodeName();
+
             graph.nodes.push({
               data: {
                 id: s.index,
                 name: theNodeName,
                 weight: theScore ? theScore : 0,
                 colorCode: entityColor(s.storyDefinitionId),
-                shapeType: s.dynamic ? 'ellipse' : 'roundrectangle'
+                shapeType: s.dynamic ? 'circle' : 'roundRect'
               }
             });
           }
@@ -676,7 +590,7 @@ export class FlowComponent implements OnInit, OnDestroy {
           //8 add startup if useful
           if (addStartup) {
             graph.nodes.push({
-              data: { id: -1, name: 'Startup', weight: 40, colorCode: 'cornflowerblue', shapeType: 'vee' }
+              data: { id: -1, name: 'Startup', weight: 40, colorCode: 'cornflowerblue', shapeType: 'triangle' }
             });
           }
 
@@ -685,48 +599,30 @@ export class FlowComponent implements OnInit, OnDestroy {
           this.storiesById = storiesById;
           this.nodesById = nodesByStoryKey.size > 0 ? nodesByStoryKey : nodesByStateId;
           this.allNodes = finalNodes.filter((n): n is StoryNode => n !== null);
-          this.allTransitions = finalTransitions;
-          this.graphData = graph;
+          this.allTransitionsSize = finalTransitions.size;
 
           // create flow diagram(sankey)
-          this.createForceGraph();
-          this.createSankeyDiagram();
-          this.createCircularGraph();
-
-          if (this.echartInstance) {
-            setTimeout(() => {
-              this.echartInstance.resize();
-            }, 100);
-          }
+          this.createForceGraph(graph, finalTransitions);
+          this.createSankeyDiagram(finalTransitions);
+          this.createCircularGraph(graph, finalTransitions);
         }
       }
     }
   }
 
-  getEchartsSymbolShape(shapeType) {
-    switch (shapeType) {
-      case 'ellipse':
-        return 'circle';
-      case 'roundrectangle':
-        return 'roundRect';
-      case 'vee':
-        return 'arrow';
-    }
-  }
-
-  getEchartsGraphNodes() {
-    return this.graphData.nodes.map((node) => {
+  getEchartsGraphNodes(graph: Graph) {
+    return graph.nodes.map((node) => {
       return {
         id: node.data.id.toString(),
-        name: node.data.name,
-        symbol: this.getEchartsSymbolShape(node.data.shapeType),
+        name: truncateString(node.data.name, 30, true, false),
+        fullName: node.data.name,
+        symbol: node.data.shapeType,
         symbolSize: Math.max(Math.min(node.data.weight, 50), 10),
         itemStyle: {
           color: node.data.colorCode
         },
         label: {
           color: 'white',
-          shadowColor: 'red',
           textBorderColor: darkenIfTooLight(node.data.colorCode),
           textBorderWidth: 2
         }
@@ -734,8 +630,13 @@ export class FlowComponent implements OnInit, OnDestroy {
     });
   }
 
-  getEchartsGraphEdges() {
-    return this.graphData.edges.map((edge) => {
+  getEchartsGraphEdges(graph: Graph) {
+    const maxStrength = Math.max(...graph.edges.map((o) => o.data.strength));
+    const maxLineWidth = 5;
+
+    return graph.edges.map((edge) => {
+      const lineWidth = Math.round(Math.max(Math.min((edge.data.strength / maxStrength) * maxLineWidth, maxLineWidth), 1));
+
       return {
         source: edge.data.source.toString(),
         target: edge.data.target.toString(),
@@ -749,36 +650,58 @@ export class FlowComponent implements OnInit, OnDestroy {
           fontSize: 10
         },
         lineStyle: {
-          color: this.graphData.nodes.find((n) => n.data.id.toString() === edge.data.source.toString()).data.colorCode
+          width: lineWidth,
+          color: graph.nodes.find((n) => n.data.id.toString() === edge.data.source.toString()).data.colorCode
         }
       };
     });
   }
 
-  echartsTooltipFormatter(params) {
-    if (params.data.name) {
+  echartsTooltipFormatter(params: any, transitions?: TransitionsMap): string {
+    if (params.data.fullName) {
       if (params.data.id === '-1') return 'Startup';
       const nodeIndex = params.data.id;
       const node = this.allNodes.find((n) => n.index.toString() === nodeIndex);
       const plural = node.count > 1 ? 's' : '';
-      return `Story <strong>${params.data.name}</strong> <br />was triggered <strong>${node.count} time${plural}</strong>`;
+      return `Story <strong>${params.data.fullName}</strong> <br />was triggered <strong>${node.count} time${plural}</strong>`;
     }
+
     if (params.data.source) {
       const key = params.data.source + '_' + params.data.target + '_0';
-      const transition = this.allTransitions.get(key);
-      return `Count: ${transition.count}`;
+      const transition = transitions.get(key);
+
+      const sourceNodeIndex = params.data.source;
+      let sourceNodeStoryName;
+      if (sourceNodeIndex === '-1') {
+        sourceNodeStoryName = 'Startup';
+      } else {
+        const sourceNode = this.allNodes.find((n) => n.index.toString() === sourceNodeIndex);
+        sourceNodeStoryName = sourceNode.storyName;
+      }
+
+      const targetNodeIndex = params.data.target;
+      const targetNode = this.allNodes.find((n) => n.index.toString() === targetNodeIndex);
+      const targetNodeStoryName = targetNode.storyName;
+
+      let tip = `From: <strong>${sourceNodeStoryName}</strong><br>To: <strong>${targetNodeStoryName}</strong>`;
+
+      if (this.statsMode) {
+        tip = tip + `<br>Count: <strong>${transition.count}</strong>`;
+      }
+
+      return tip;
     }
     return undefined;
   }
 
-  createForceGraph() {
-    const nodes = this.getEchartsGraphNodes();
-    const links = this.getEchartsGraphEdges();
+  createForceGraph(graph: Graph, transitions: TransitionsMap): void {
+    const nodes = this.getEchartsGraphNodes(graph);
+    const links = this.getEchartsGraphEdges(graph);
 
     this.forceData = {
       tooltip: {
         formatter: (params) => {
-          return this.echartsTooltipFormatter(params);
+          return this.echartsTooltipFormatter(params, transitions);
         }
       },
       series: {
@@ -786,13 +709,14 @@ export class FlowComponent implements OnInit, OnDestroy {
         layout: 'force',
         force: {
           initLayout: 'circular',
-          layoutAnimation: false,
+          layoutAnimation: true,
           repulsion: 1000,
           gravity: 0,
           edgeLength: 100,
           friction: 1
         },
         roam: true,
+        center: ['50%', '50%'],
         zoom: 1,
         scaleLimit: {
           min: 0.2,
@@ -818,14 +742,14 @@ export class FlowComponent implements OnInit, OnDestroy {
     };
   }
 
-  createCircularGraph() {
-    const nodes = this.getEchartsGraphNodes();
-    const links = this.getEchartsGraphEdges();
+  createCircularGraph(graph: Graph, transitions: TransitionsMap): void {
+    const nodes = this.getEchartsGraphNodes(graph);
+    const links = this.getEchartsGraphEdges(graph);
 
     this.circularData = {
       tooltip: {
         formatter: (params) => {
-          return this.echartsTooltipFormatter(params);
+          return this.echartsTooltipFormatter(params, transitions);
         }
       },
       series: {
@@ -860,30 +784,24 @@ export class FlowComponent implements OnInit, OnDestroy {
     };
   }
 
-  echartInstance;
-
-  onChartInit(event) {
-    this.echartInstance = event;
-  }
-
-  onEchartsGraphClick(params) {
+  onEchartsGraphClick(params): void {
     params.event.event.stopPropagation();
     if (params.data.name) {
       if (params.data.id !== '-1') {
         const nodeIndex = params.data.id;
-        this.nodeChange(params.data.id);
+        this.selectNode(params.data.id);
         return;
       }
     }
     this.unselect();
   }
 
-  createSankeyDiagram() {
+  createSankeyDiagram(transitions: TransitionsMap) {
     let allNodes = [];
     let links = [];
 
     const trByNodeNamesIndex = new Map<string, number>();
-    this.allTransitions.forEach((transition, key) => {
+    transitions.forEach((transition, key) => {
       const keyValues = key.split('_');
       let count = 0;
       transition.transitions.forEach((tr) => {
@@ -920,21 +838,139 @@ export class FlowComponent implements OnInit, OnDestroy {
     });
 
     this.sankeyData = {
+      tooltip: {
+        formatter: (params) => {
+          if (params.data.fullName) {
+            if (params.data.fullName === 'Startup') return 'Startup';
+            return `Story <strong>${params.data.fullName}</strong>`;
+          }
+
+          if (params.data.source) {
+            return `From: <strong>${params.data.source}</strong><br>To: <strong>${params.data.target}</strong><br>Count: <strong>${params.data.value}</strong>`;
+          }
+          return undefined;
+        }
+      },
       series: {
         type: 'sankey',
         animation: false,
         emphasis: {
           focus: 'adjacency'
         },
+
         data: allNodes.map((node) => {
-          return { name: node };
+          return { name: truncateString(node, 30, true, false), fullName: node };
         }),
         links: links
       }
     };
   }
 
-  getStoryName(keyValues) {
+  swapAdvanced(): void {
+    this.advanced = !this.advanced;
+  }
+
+  statsEntity(): boolean {
+    return this.statsMode && this.entity;
+  }
+
+  statsStep(): boolean {
+    return this.statsMode && this.step;
+  }
+
+  statsIntent(): boolean {
+    return this.statsMode && this.intent;
+  }
+
+  valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
+    return a.value.localeCompare(b.value);
+  };
+
+  datesChanged(dates: [Date, Date]) {
+    this.range.start = dates[0];
+    this.range.end = dates[1];
+    this.state.dateRange = {
+      start: dates[0],
+      end: dates[1],
+      rangeInDays: this.state.dateRange.rangeInDays
+    };
+    this.reload();
+  }
+
+  normalizeTimeRange() {
+    this.range.start = this.dateService.setHours(this.range.start, 0);
+    this.range.start = this.dateService.setMinutes(this.range.start, 0);
+    this.range.start = this.dateService.setSeconds(this.range.start, 0);
+
+    this.range.end = this.dateService.setHours(this.range.end, 23);
+    this.range.end = this.dateService.setMinutes(this.range.end, 59);
+    this.range.end = this.dateService.setSeconds(this.range.end, 59);
+  }
+
+  setTimeRange(timeSpan): void {
+    this.range.start = this.dateService.addDay(this.dateService.today(), -timeSpan.duration);
+
+    this.range.end = this.dateService.addDay(this.dateService.today(), +timeSpan.offset || 0);
+
+    this.normalizeTimeRange();
+
+    this.dateRangeInputDirectiveRef.writeValue(this.range);
+
+    this.state.dateRange = {
+      start: this.range.start,
+      end: this.range.end,
+      rangeInDays: this.state.dateRange.rangeInDays
+    };
+    this.reload();
+  }
+
+  datePickerChange(event: NbCalendarRange<Date>): void {
+    if (event.end) {
+      this.normalizeTimeRange();
+      this.state.dateRange = {
+        start: this.range.start,
+        end: this.range.end,
+        rangeInDays: this.state.dateRange.rangeInDays
+      };
+      this.reload();
+    }
+  }
+
+  getTimeRangeBttnStatus(range) {
+    if (this.range.end && this.range.start) {
+      const spanInDays = (this.range.end.getTime() - this.range.start.getTime()) / 1000 / 60 / 60 / 24;
+      const now = new Date();
+
+      if (spanInDays < 1 && range.duration <= 1) {
+        if (range.offset) {
+          const offsetDate = this.dateService.addDay(now, range.offset);
+          if (this.range.start.toDateString() === offsetDate.toDateString()) return 'basic';
+        } else {
+          if (this.range.start.toDateString() === now.toDateString()) return 'basic';
+        }
+      } else if (Math.floor(spanInDays) === range.duration) {
+        if (this.range.end.toDateString() === now.toDateString()) return 'basic';
+      }
+    }
+
+    return 'info';
+  }
+
+  initTimeRange() {
+    this.range = {
+      start: this.dateService.addDay(this.dateService.today(), -6),
+      end: this.dateService.today()
+    };
+
+    if (this.state.dateRange.start) {
+      this.range = {
+        start: this.state.dateRange.start,
+        end: this.state.dateRange.end
+      };
+    }
+  }
+
+  getStoryName(keyValues: string[]): string {
     if (keyValues[0] != '-1') {
       return this.allNodes[keyValues[0]]?.storyName;
     } else {
@@ -942,11 +978,11 @@ export class FlowComponent implements OnInit, OnDestroy {
     }
   }
 
-  unselect() {
+  unselect(): void {
     this.selectedNode = null;
   }
 
-  nodeChange(id: string) {
+  selectNode(id: string) {
     this.selectedNode = this.allNodes[id];
   }
 

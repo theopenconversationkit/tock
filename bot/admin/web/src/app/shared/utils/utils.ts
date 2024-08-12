@@ -127,7 +127,7 @@ export function getContrastYIQ(hexcolor: string, blackOutput?: string, whiteOutp
 }
 
 /**
- * Darken the given hexcolor if it is too light to be readbale
+ * Darken the given hexcolor if it is too light to be readable
  * @param {string} hexcolor a color in hexadecimal format
  * @returns {string} a darken version of hexcolor or unchanged hexcolor
  */
@@ -152,6 +152,8 @@ export function darkenIfTooLight(hexcolor: string): string {
  * @returns {string} the modified color in hexadecimal format
  */
 export function shadeColor(hexcolor: string, amount: number) {
+  hexcolor = hexcolor.replace('#', '');
+
   let R = parseInt(hexcolor.substring(0, 2), 16);
   let G = parseInt(hexcolor.substring(2, 4), 16);
   let B = parseInt(hexcolor.substring(4, 6), 16);

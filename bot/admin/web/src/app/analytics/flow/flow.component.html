@@ -487,7 +487,7 @@
         >
           <span *ngIf="nodesById || storiesById"> Total Stories: {{ statsMode ? nodesById.size : storiesById.size }} | </span>
           <span *ngIf="nodesById || storiesById"> Filtered Stories: {{ allNodes.length }} | </span>
-          <span *ngIf="allTransitions"> Filtered Transitions: {{ allTransitions.size }} </span>
+          <span *ngIf="allTransitionsSize"> Filtered Transitions: {{ allTransitionsSize }} </span>
         </div>
       </div>
     </div>
@@ -496,14 +496,6 @@
 
 <nb-card>
   <nb-card-body class="p-0 position-relative">
-    <div *ngIf="sankeyData && layout?.name === 'Sankey'">
-      <div
-        echarts
-        [options]="sankeyData"
-        class="canvas"
-      ></div>
-    </div>
-
     <div *ngIf="forceData && layout?.name === 'Force-based'">
       <div
         echarts
@@ -511,7 +503,6 @@
         class="canvas"
         (chartClick)="onEchartsGraphClick($event)"
         (click)="unselect()"
-        (chartInit)="onChartInit($event)"
       ></div>
     </div>
 
@@ -525,10 +516,25 @@
       ></div>
     </div>
 
+    <div *ngIf="sankeyData && layout?.name === 'Sankey'">
+      <div
+        class="text-center text-warning p-5"
+        *ngIf="!statsMode"
+      >
+        Sankey layout is not suitable for static mode
+      </div>
+      <div
+        echarts
+        [options]="sankeyData"
+        class="canvas"
+        *ngIf="statsMode"
+      ></div>
+    </div>
+
     <div
-      *ngIf="graphData && selectedNode"
+      *ngIf="selectedNode"
       [@inOutRightAnimation]
-      class="right-panel"
+      class="right-panel scrollable"
     >
       <tock-story
         [storyNode]="selectedNode"

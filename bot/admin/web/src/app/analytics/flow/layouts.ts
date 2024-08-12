@@ -1,14 +1,11 @@
 export const layouts = [
   {
-    name: 'Force-based',
-    type: 'Echarts'
+    name: 'Force-based'
   },
   {
-    name: 'Circular',
-    type: 'Echarts'
+    name: 'Circular'
   },
   {
-    name: 'Sankey',
-    type: 'Echarts'
+    name: 'Sankey'
   }
 ];

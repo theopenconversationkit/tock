@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+$max-height: 70vh;
+
 .canvas {
-  height: 70vh;
+  height: $max-height;
 }
 
 .right-panel {
@@ -24,5 +26,34 @@
   right: 0;
   width: 40%;
   min-width: 20em;
+
+  max-height: $max-height;
+  overflow: auto;
+
   box-shadow: -2px 2px 5px #00000030;
+}
+
+// ScrollBars
+:host .scrollable::-webkit-scrollbar {
+  width: 0.625rem;
+  height: 0.3125rem;
+}
+
+:host .scrollable::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 0.15625rem;
+}
+
+.nb-theme-default :host .scrollable::-webkit-scrollbar-thumb {
+  background: #e4e9f2;
+}
+.nb-theme-default :host .scrollable::-webkit-scrollbar-track {
+  background: #f7f9fc;
+}
+
+.nb-theme-dark :host .scrollable::-webkit-scrollbar-thumb {
+  background: #101426;
+}
+.nb-theme-dark :host .scrollable::-webkit-scrollbar-track {
+  background: #192038;
 }
