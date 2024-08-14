@@ -19,10 +19,15 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
     VectorStoreUnknownException,
 )
-from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIUnknownObservabilityProviderException, GenAIUnknownObservabilityProviderSettingException
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
+    GenAIUnknownObservabilityProviderException,
+    GenAIUnknownObservabilityProviderSettingException,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
+    BloomzEMSetting,
 )
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
@@ -38,24 +43,35 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
-from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_provider import (
+    ObservabilityProvider,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
-    LangfuseCallbackHandlerFactory
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
+    LangfuseCallbackHandlerFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.em.bloomz_em_factory import (
+    BloomzEMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory import (
     OpenAIEMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_callback_handler_factory,
     get_em_factory,
     get_llm_factory,
-    get_vector_store_factory, get_callback_handler_factory,
+    get_vector_store_factory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
@@ -178,6 +194,20 @@ def test_get_azure_open_ai_em_factory():
     assert isinstance(azure_open_ai, AzureOpenAIEMFactory)
 
 
+def test_get_bloomz_em_factory():
+    bloomz = get_em_factory(
+        setting=BloomzEMSetting(
+            **{
+                'provider': 'Bloomz',
+                'api_base': 'https://exemple.apibase',
+                'pooling': 'last',
+            }
+        )
+    )
+    assert bloomz.setting.provider == EMProvider.BLOOMZ
+    assert isinstance(bloomz, BloomzEMFactory)
+
+
 def test_get_open_search_vector_store_factory():
     em_factory = get_em_factory(
         setting=OpenAIEMSetting(
@@ -224,7 +254,7 @@ def test_get_langfuse_observability_factory():
                     'value': 'ab7***************************A1IV4B',
                 },
                 'public_key': 'df41*********f',
-                'url': 'https://myServer:3000'
+                'url': 'https://myServer:3000',
             }
         )
     )

@@ -12,19 +12,24 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""EMProvider Enumeration."""
+"""Model for creating BloomzGuardrailSetting."""
 
-from enum import Enum, unique
+from typing import Literal
+
+from pydantic import Field
+
+from gen_ai_orchestrator.models.guardrail.guardrail_provider import (
+    GuardrailProvider,
+)
+from gen_ai_orchestrator.models.guardrail.guardrail_setting import (
+    BaseGuardrailSetting,
+)
 
 
-@unique
-class EMProvider(str, Enum):
-    """Enumeration to list Embedding Provider type"""
+class BloomzGuardrailSetting(BaseGuardrailSetting):
+    """A class for Bloomz Guardrail Model Setting."""
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    BLOOMZ = 'Bloomz'
-
-    @classmethod
-    def has_value(cls, value) -> bool:
-        return value in cls._value2member_map_
+    provider: Literal[GuardrailProvider.BloomZ] = Field(
+        description='The guardrail model provider.'
+    )
+    api_base: str = Field(description='The API base URL.')

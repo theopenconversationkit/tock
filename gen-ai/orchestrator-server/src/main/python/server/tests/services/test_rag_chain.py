@@ -12,13 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
 from langchain_core.messages import AIMessage, HumanMessage
+from requests.exceptions import HTTPError
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
+)
+from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
+    BloomzGuardrailSetting,
 )
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
@@ -28,12 +33,15 @@ from gen_ai_orchestrator.services.langchain import rag_chain
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
     RetrieverJsonCallbackHandler,
 )
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    get_guardrail_factory,
+)
 from gen_ai_orchestrator.services.langchain.rag_chain import (
+    check_guardrail_output,
     execute_qa_chain,
     get_condense_question,
     get_llm_prompts,
 )
-
 
 # 'Mock an item where it is used, not where it came from.'
 # (https://www.toptal.com/python/an-introduction-to-mocking-in-python)
@@ -43,7 +51,12 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 # @patch('llm_orchestrator.services.langchain.factories.langchain_factory.get_llm_factory')
 # --> But where it is used (in the execute_qa_chain method of the llm_orchestrator.services.langchain.rag_chain
 # module that imports get_llm_factory):
-@patch('gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory')
+
+
+@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+@patch(
+    'gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory'
+)
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_llm_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_em_factory')
 @patch('gen_ai_orchestrator.services.langchain.rag_chain.get_vector_store_factory')
@@ -70,7 +83,8 @@ async def test_rag_chain(
     mocked_get_vector_store_factory,
     mocked_get_em_factory,
     mocked_get_llm_factory,
-    mocked_get_callback_handler_factory
+    mocked_get_callback_handler_factory,
+    mocked_parse,
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RagQuery
@@ -124,11 +138,16 @@ Answer in {locale}:""",
             'provider': 'Langfuse',
             'url': 'http://localhost:3000',
             'secret_key': {
-              'type': 'Raw',
-              'value': 'sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f'
+                'type': 'Raw',
+                'value': 'sk-lf-93c4f78f-4096-416b-a6e3-ceabe45abe8f',
             },
-            'public_key': 'pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c'
-        }
+            'public_key': 'pk-lf-5e374dc6-e194-4b37-9c07-b77e68ef7d2c',
+        },
+        'guardrail_setting': {
+            'provider': 'BloomzGuardrail',
+            'api_base': 'http://test-guard.com',
+            'max_score': 0.5,
+        },
     }
     query = RagQuery(**query_dict)
 
@@ -140,8 +159,15 @@ Answer in {locale}:""",
     mocked_chain = mocked_chain_builder.return_value
     mocked_callback = mocked_callback_init.return_value
     mocked_langfuse_callback = observability_factory_instance.get_callback_handler()
-    mocked_chain.ainvoke = AsyncMock(return_value={'answer': 'an answer from llm', 'source_documents': []})
+    mocked_chain.ainvoke = AsyncMock(
+        return_value={'answer': 'an answer from llm', 'source_documents': []}
+    )
     mocked_rag_answer = mocked_chain.ainvoke.return_value
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.content = {'reponse': []}
+    mocked_parse.return_value = mocked_response
 
     # Call function
     await execute_qa_chain(query, debug=True)
@@ -161,6 +187,7 @@ Answer in {locale}:""",
     mocked_get_callback_handler_factory.assert_called_once_with(
         setting=query.observability_setting
     )
+
     # Assert LangChain qa chain is created using the expected settings from query
     mocked_chain_builder.assert_called_once_with(
         llm=llm_factory_instance.get_language_model(),
@@ -196,6 +223,91 @@ Answer in {locale}:""",
         ),
         debug=mocked_rag_debug_data(query, mocked_rag_answer, mocked_callback, 1),
     )
+
+
+@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+def test_guardrail_parse_succeed_with_toxicities_encountered(
+    mocked_guardrail_response,
+):
+    guardrail = get_guardrail_factory(
+        BloomzGuardrailSetting(
+            provider='BloomzGuardrail', max_score=0.5, api_base='http://test-guard.com'
+        )
+    ).get_parser()
+    rag_response = {'answer': 'This is a sample text.'}
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.json.return_value = {
+        'response': [
+            [
+                {'label': 'racism', 'score': 0.1},
+                {'label': 'insult', 'score': 0.2},
+                {'label': 'threat', 'score': 0.7},
+                {'label': 'hate speech', 'score': 0.95},
+            ]
+        ]
+    }
+
+    mocked_guardrail_response.return_value = mocked_response
+    guardrail_output = guardrail.parse(rag_response['answer'])
+
+    mocked_guardrail_response.assert_called_once_with(
+        'http://test-guard.com/guardrail', json={'text': [rag_response['answer']]}
+    )
+    assert guardrail_output == {
+        'content': 'This is a sample text.',
+        'output_toxicity': True,
+        'output_toxicity_reason': ['threat', 'hate speech'],
+    }
+
+
+@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+def test_guardrail_parse_fail(mocked_guardrail_response):
+    guardrail = get_guardrail_factory(
+        BloomzGuardrailSetting(
+            provider='BloomzGuardrail', max_score=0.5, api_base='http://test-guard.com'
+        )
+    ).get_parser()
+    rag_response = {'answer': 'This is a sample text.'}
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 500
+    mocked_guardrail_response.return_value = mocked_response
+
+    with pytest.raises(
+        HTTPError,
+        match=f"Error {mocked_response.status_code}. Bloomz guardrail didn't respond as expected.",
+    ):
+        guardrail.parse(rag_response['answer'])
+
+    mocked_guardrail_response.assert_called_once_with(
+        'http://test-guard.com/guardrail', json={'text': [rag_response['answer']]}
+    )
+
+
+def test_check_guardrail_output_find_toxicities():
+    guardrail_output = {
+        'content': 'This is a sample text.',
+        'output_toxicity': True,
+        'output_toxicity_reason': ['threat', 'hate speech'],
+    }
+
+    with pytest.raises(HTTPException) as exc_found:
+        check_guardrail_output(guardrail_output)
+
+    assert exc_found.value.status_code == 451
+    assert 'Toxicity detected' in exc_found.value.detail
+
+
+def test_check_guardrail_output_is_ok():
+    guardrail_output = {
+        'content': 'This is a sample text.',
+        'output_toxicity': False,
+        'output_toxicity_reason': [],
+    }
+
+    assert check_guardrail_output(guardrail_output) is True
 
 
 def test_find_input_variables():

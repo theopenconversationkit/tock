@@ -12,19 +12,21 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""EMProvider Enumeration."""
+"""Model for creating BaseGuardrailSetting."""
 
-from enum import Enum, unique
+from typing import Optional
+
+from pydantic import BaseModel, Field
+
+from gen_ai_orchestrator.models.guardrail.guardrail_provider import (
+    GuardrailProvider,
+)
 
 
-@unique
-class EMProvider(str, Enum):
-    """Enumeration to list Embedding Provider type"""
+class BaseGuardrailSetting(BaseModel):
+    """A base class for Guardrail Model Setting."""
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    BLOOMZ = 'Bloomz'
-
-    @classmethod
-    def has_value(cls, value) -> bool:
-        return value in cls._value2member_map_
+    provider: GuardrailProvider = Field(description='The guardrail provider.')
+    max_score: Optional[float] = Field(
+        description='The maximum acceptable toxicity score.', default=0.3
+    )

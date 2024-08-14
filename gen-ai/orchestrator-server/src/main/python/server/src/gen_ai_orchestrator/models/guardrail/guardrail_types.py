@@ -12,19 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""EMProvider Enumeration."""
+"""Module defining generic type alias"""
 
-from enum import Enum, unique
+from typing import Annotated, Union
 
+from fastapi import Body
 
-@unique
-class EMProvider(str, Enum):
-    """Enumeration to list Embedding Provider type"""
+from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
+    BloomzGuardrailSetting,
+)
 
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    BLOOMZ = 'Bloomz'
-
-    @classmethod
-    def has_value(cls, value) -> bool:
-        return value in cls._value2member_map_
+GuardrailSetting = Annotated[
+    Union[BloomzGuardrailSetting], Body(discriminator='provider')
+]

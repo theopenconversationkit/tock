@@ -14,6 +14,8 @@
 #
 """Model for creating BaseEMSetting."""
 
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
@@ -29,7 +31,8 @@ class BaseEMSetting(BaseModel):
     provider: EMProvider = Field(
         description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
     )
-    api_key: SecretKey = Field(
+    api_key: Optional[SecretKey] = Field(
         description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
-        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')]
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')],
+        default=None,
     )
