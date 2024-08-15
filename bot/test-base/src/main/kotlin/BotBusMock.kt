@@ -361,6 +361,10 @@ open class BotBusMock(
         context.snapshots.add(Snapshot(dialog))
     }
 
+    override fun changeUserLocale(locale: Locale) {
+        userPreferences.locale = locale
+    }
+
     /**
      * Returns the non persistent current value.
      */

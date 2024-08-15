@@ -29,7 +29,7 @@ import { ChoiceDialogComponent } from '../../../../shared/components';
   templateUrl: './application-features-table.component.html',
   styleUrls: ['./application-features-table.component.scss']
 })
-export class ApplicationFeaturesTableComponent implements OnInit {
+export class ApplicationFeaturesTableComponent {
   @Input() type: 'tock' | 'application';
 
   @Input() features: Feature[] = [];
@@ -42,8 +42,6 @@ export class ApplicationFeaturesTableComponent implements OnInit {
     private configurationService: BotConfigurationService,
     private nbDialogService: NbDialogService
   ) {}
-
-  ngOnInit(): void {}
 
   newFeature(): void {
     this.nbDialogService

@@ -15,16 +15,16 @@
  */
 
 import { Component, Inject, OnInit } from '@angular/core';
-import { TestPlan, XRayPlanExecutionConfiguration } from '../model/test';
+import { TestDialogReport, TestPlan, XRayPlanExecutionConfiguration } from '../model/test';
 import { TestService } from '../test.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { DialogReport } from '../../shared/model/dialog-data';
+import { ActionReport, DialogReport } from '../../shared/model/dialog-data';
 import { BotSharedService } from '../../shared/bot-shared.service';
-import { SelectBotEvent } from '../../shared/select-bot/select-bot.component';
 import { NbToastrService } from '@nebular/theme';
-import { AnalyticsService } from '../../analytics/analytics.service';
 import { APP_BASE_HREF } from '@angular/common';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../shared/utils';
+import { SelectBotEvent } from '../../shared/components';
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -187,7 +187,7 @@ export class TestPlanComponent implements OnInit {
     this.testPlanId = plan._id;
   }
 
-  removeDialog(plan: TestPlan, dialog: DialogReport) {
+  removeDialog(plan: TestPlan, dialog: TestDialogReport) {
     this.test.removeDialogFromTestPlan(plan._id, dialog.id).subscribe((_) => {
       plan.dialogs = plan.dialogs.filter((d) => d.id !== dialog.id);
       this.toastrService.show(`Dialog removed`, 'Removal', { duration: 2000 });
@@ -224,5 +224,13 @@ export class TestPlanComponent implements OnInit {
 
   hideExecutions(plan: TestPlan) {
     plan.displayExecutions = false;
+  }
+
+  getUserName(action: ActionReport): string {
+    return getDialogMessageUserQualifier(action.isBot());
+  }
+
+  getUserAvatar(action: ActionReport): string {
+    return getDialogMessageUserAvatar(action.isBot());
   }
 }

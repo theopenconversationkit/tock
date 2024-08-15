@@ -16,7 +16,6 @@
 
 import { ApplicationsModule } from '../applications/applications.module';
 import { Injectable, NgModule } from '@angular/core';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { BotConfigurationsComponent } from './bot-configurations/bot-configurations.component';
 import { ConfigurationTabsComponent } from './configuration-tabs.component';
 import { CommonModule } from '@angular/common';
@@ -38,16 +37,20 @@ import {
   NbStepperModule,
   NbFormFieldModule,
   NbRadioModule,
-  NbCheckboxModule
+  NbCheckboxModule,
+  NbAlertModule,
+  NbToggleModule
 } from '@nebular/theme';
 import { NewBotComponent } from './bot-configurations/new-bot.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BotSharedService } from '../shared/bot-shared.service';
 import { ApplicationConfig } from '../applications/application.config';
 import { SelectBotConfigurationDialogComponent } from './bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
 import { BotConfigurationRoutingModule } from './configuration-routing.module';
-import {SynchronizationComponent} from "./synchronization/synchronization.component";
+import { SynchronizationComponent } from './synchronization/synchronization.component';
 import { SentenceGenerationSettingsComponent } from './sentence-generation-settings/sentence-generation-settings.component';
+import { ObservabilitySettingsComponent } from './observability-settings/observability-settings.component';
+import { ObservabilityProviderConfigParamInputComponent } from './observability-settings/observability-provider-config-param-input/observability-provider-config-param-input.component';
 
 @Injectable()
 export class BotApplicationConfig implements ApplicationConfig {
@@ -67,11 +70,13 @@ export class BotApplicationConfig implements ApplicationConfig {
     NewBotComponent,
     SelectBotConfigurationDialogComponent,
     SynchronizationComponent,
-    SentenceGenerationSettingsComponent
+    SentenceGenerationSettingsComponent,
+    ObservabilitySettingsComponent,
+    ObservabilityProviderConfigParamInputComponent
   ],
   imports: [
     CommonModule,
-    SharedModule,
+    FormsModule,
     BotSharedModule,
     ReactiveFormsModule,
     BotConfigurationRoutingModule,
@@ -91,14 +96,15 @@ export class BotApplicationConfig implements ApplicationConfig {
     NbStepperModule,
     NbFormFieldModule,
     NbRadioModule,
-    NbCheckboxModule
+    NbCheckboxModule,
+    NbAlertModule,
+    NbToggleModule
   ],
   providers: [
     {
       provide: ApplicationConfig,
       useClass: BotApplicationConfig
     }
-  ],
-  bootstrap: []
+  ]
 })
 export class BotConfigurationModule {}

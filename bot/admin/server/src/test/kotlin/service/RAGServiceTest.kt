@@ -19,6 +19,7 @@ package ai.tock.bot.admin.service
 import ai.tock.bot.admin.AbstractTest
 import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.answer.AnswerConfigurationType
+import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
@@ -37,9 +38,11 @@ import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSettingDTO
 import ai.tock.nlp.core.Intent
 import ai.tock.shared.tockInternalInjector
 import ai.tock.shared.withoutNamespace
+import ai.tock.translator.I18nDAO
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 import io.mockk.*
 import org.junit.jupiter.api.AfterEach
@@ -66,13 +69,13 @@ class RAGServiceTest : AbstractTest() {
             namespace = NAMESPACE,
             botId = BOT_ID,
             enabled = false,
-            llmSetting = OpenAILLMSettingDTO (
+            llmSetting = OpenAILLMSettingDTO(
                 apiKey = "apikey",
                 model = MODEL,
                 prompt = PROMPT,
                 temperature = TEMPERATURE
             ),
-            emSetting = AzureOpenAIEMSettingDTO (
+            emSetting = AzureOpenAIEMSettingDTO(
                 apiKey = "apiKey",
                 apiVersion = "apiVersion",
                 deploymentName = "deployment",
@@ -83,7 +86,8 @@ class RAGServiceTest : AbstractTest() {
 
         private val DEFAULT_BOT_CONFIG = aApplication.copy(namespace = NAMESPACE, botId = BOT_ID)
 
-        private fun getRAGConfigurationDTO(enabled: Boolean, indexSessionId: String? = null) = DEFAULT_RAG_CONFIG.copy(enabled = enabled, indexSessionId = indexSessionId)
+        private fun getRAGConfigurationDTO(enabled: Boolean, indexSessionId: String? = null) =
+            DEFAULT_RAG_CONFIG.copy(enabled = enabled, indexSessionId = indexSessionId)
 
         init {
             tockInternalInjector = KodeinInjector()
@@ -92,6 +96,8 @@ class RAGServiceTest : AbstractTest() {
                 bind<StoryDefinitionConfigurationDAO>() with singleton { storyDao }
                 bind<LLMProviderService>() with singleton { llmProviderService }
                 bind<EMProviderService>() with singleton { emProviderService }
+                bind<I18nDAO>() with singleton { i18nDAO }
+                bind<BotObservabilityConfigurationDAO>() with provider { botObservabilityConfigurationDAO }
 
             }.also {
                 tockInternalInjector.inject(Kodein {
@@ -106,6 +112,9 @@ class RAGServiceTest : AbstractTest() {
 
         private val llmProviderService: LLMProviderService = mockk(relaxed = false)
         private val emProviderService: EMProviderService = mockk(relaxed = false)
+
+        private val i18nDAO: I18nDAO = mockk(relaxed = true)
+        private val botObservabilityConfigurationDAO: BotObservabilityConfigurationDAO = mockk(relaxed = true)
 
         private val slot = slot<BotRAGConfiguration>()
         private val storySlot = slot<StoryDefinitionConfiguration>()
@@ -137,7 +146,10 @@ class RAGServiceTest : AbstractTest() {
 
         val captureRagAndStoryToSave: TRunnable = {
             every { storyDao.save(capture(storySlot)) } returns Unit
-            every { ragDao.save(capture(slot)) } returns getRAGConfigurationDTO(true, INDEX_SESSION_ID).toBotRAGConfiguration()
+            every { ragDao.save(capture(slot)) } returns getRAGConfigurationDTO(
+                true,
+                INDEX_SESSION_ID
+            ).toBotRAGConfiguration()
         }
 
         val callServiceSave: TFunction<SaveFnEntry?, Unit> = {
@@ -147,7 +159,16 @@ class RAGServiceTest : AbstractTest() {
 
         val daoSaveByFnIsCalledOnce: TRunnable = {
             verify(exactly = 1) { storyDao.save(any()) }
-            verify(exactly = 1) { ragDao.save(eq(getRAGConfigurationDTO(true, INDEX_SESSION_ID).toBotRAGConfiguration())) }
+            verify(exactly = 1) {
+                ragDao.save(
+                    eq(
+                        getRAGConfigurationDTO(
+                            true,
+                            INDEX_SESSION_ID
+                        ).toBotRAGConfiguration()
+                    )
+                )
+            }
         }
 
         val findCurrentUnknownFnNotCalled: TRunnable = {
@@ -171,11 +192,11 @@ class RAGServiceTest : AbstractTest() {
 
 
         TestCase<SaveFnEntry, Unit>("Save valid RAG Configuration that does not exist yet").given(
-                "An application name and a valid request",
-                entry
-            ).and(
-                "Rag Config not exist with request name or label and the given application name", ragNotYetExists
-            ).and("The rag config in database is captured", captureRagAndStoryToSave)
+            "An application name and a valid request",
+            entry
+        ).and(
+            "Rag Config not exist with request name or label and the given application name", ragNotYetExists
+        ).and("The rag config in database is captured", captureRagAndStoryToSave)
             .and("The LLM and EM setting are valid", checkLlmAndEmSetting)
             .`when`("RagService's save method is called", callServiceSave)
             .then("The dao's saveEnableRagRequest must be called exactly once", daoSaveByFnIsCalledOnce)
@@ -255,7 +276,8 @@ class RAGServiceTest : AbstractTest() {
                 """
                 - no story is saved
                 - rag configuration is saved
-            """.trimIndent(), checks)
+            """.trimIndent(), checks
+            )
             .run()
 
     }
@@ -340,7 +362,8 @@ class RAGServiceTest : AbstractTest() {
                 - unknown story is saved
                 - unknown story is disabled
                 - rag configuration is saved
-            """.trimIndent(), checks)
+            """.trimIndent(), checks
+            )
             .run()
     }
 
@@ -423,7 +446,8 @@ class RAGServiceTest : AbstractTest() {
                 - unknown story is saved
                 - unknown story is enabled
                 - rag configuration is saved
-            """.trimIndent(), checks)
+            """.trimIndent(), checks
+            )
             .run()
     }
 

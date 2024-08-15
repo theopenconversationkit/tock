@@ -21,8 +21,8 @@ import { Observable, of, take } from 'rxjs';
 import { EntityStepSelection, IntentName, StoryStepMetric, StoryStep } from '../../../model/story';
 import { Intent, IntentsCategory, ParseQuery } from '../../../../model/nlp';
 import { StateService } from '../../../../core-nlp/state.service';
-import { IntentDialogComponent } from '../../../../sentence-analysis/intent-dialog/intent-dialog.component';
-import { NlpService } from '../../../../nlp-tabs/nlp.service';
+import { IntentDialogComponent } from '../../../../language-understanding/intent-dialog/intent-dialog.component';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { DialogService } from '../../../../core-nlp/dialog.service';
 import { CreateI18nLabelRequest, I18nLocalizedLabel } from '../../../model/i18n';
 import { BotService } from '../../../bot-service';
@@ -316,7 +316,7 @@ export class StepComponent implements OnInit {
 
   intentsAutocompleteValues: Observable<any[]>;
 
-  private updateIntentsAutocompleteValues(event?: any): void {
+  updateIntentsAutocompleteValues(event?: any): void {
     let res: IntentsCategory[];
     if (event?.target?.value?.trim().length) {
       res = this.currentIntentCategories

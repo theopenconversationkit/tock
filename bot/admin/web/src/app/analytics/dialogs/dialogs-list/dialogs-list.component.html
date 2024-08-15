@@ -139,7 +139,7 @@
                 [avatar]="getUserAvatar(action)"
               >
                 <div
-                  *ngIf="action.metadata.isGenAiRagAnswer"
+                  *ngIf="$any(action).metadata.isGenAiRagAnswer"
                   class="mt-3 text-right"
                 >
                   <button
@@ -158,14 +158,6 @@
           </tock-chat-ui>
         </nb-card-body>
       </nb-card>
-
-      <!-- <tock-display-dialog
-          [dialog]="dialog"
-          [intentsToHide]="filter.intentsToHide"
-        >
-          <div *ngIf="dialog.actions.length === 0">No dialog</div>
-        </tock-display-dialog> -->
-      <p></p>
     </div>
   </div>
 </div>

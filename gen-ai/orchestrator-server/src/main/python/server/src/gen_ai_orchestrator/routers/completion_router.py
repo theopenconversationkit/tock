@@ -56,7 +56,7 @@ async def generate_sentences(query: SentenceGenerationQuery):
         The list of generated sentences.
 
     Raises:
-        GenAIPromptTemplateException if the prompt template is incorrect
+        GenAIPromptTemplateException: if the prompt template is incorrect
     """
 
     logger.info('Generate sentences from %s', query.prompt.inputs)

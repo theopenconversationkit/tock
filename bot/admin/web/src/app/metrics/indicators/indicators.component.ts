@@ -6,11 +6,11 @@ import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { normalizedCamelCase } from '../../shared/utils';
 import { IndicatorDefinition } from '../models';
 import { IndicatorsEditComponent } from './indicators-edit/indicators-edit.component';
 import { IndicatorsFilter } from './indicators-filters/indicators-filters.component';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 export interface IndicatorEdition {
   existing: boolean;
@@ -225,16 +225,19 @@ export class IndicatorsComponent implements OnInit, OnDestroy {
   }
 
   confirmDeleteIndicator(indicator: IndicatorDefinition): void {
-    const deleteAction = 'delete';
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+    const action = 'delete';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
         title: 'Delete an indicator',
         subtitle: `Are you sure you want to delete the indicator "${indicator.label}" ?`,
-        action: deleteAction
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ]
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === deleteAction) {
+      if (result === action) {
         this.deleteIndicator(indicator);
       }
     });

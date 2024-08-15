@@ -114,7 +114,7 @@ export class BotConfigurationService implements OnDestroy {
 
   findValidPath(connectorType: ConnectorType): string {
     const bots = this.bots.getValue();
-    const baseTargetPath = `/io/${this.state.user.organization}/${this.state.currentApplication.name.replace(/\s/g, '_')}/${
+    const baseTargetPath = `/io/${this.state.user.organization.toLowerCase().replace(/\s/g, '')}/${this.state.currentApplication.name.replace(/\s/g, '_')}/${
       connectorType.id
     }`;
     let targetPath = baseTargetPath;

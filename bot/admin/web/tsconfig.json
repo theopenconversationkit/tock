@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    // "noImplicitOverride": true,
+    "noImplicitOverride": true,
     "importHelpers": true,
     "sourceMap": true,
     "declaration": false,
@@ -12,14 +12,16 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2020",
+    "target": "ES2022",
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2020", "dom"]
+    "lib": ["es2020", "dom"],
+    "useDefineForClassFields": false,
+    "skipLibCheck": true // Temporary workaround for https://github.com/akveo/nebular/issues/3258
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
-    // "strictTemplates": true
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   }
 }

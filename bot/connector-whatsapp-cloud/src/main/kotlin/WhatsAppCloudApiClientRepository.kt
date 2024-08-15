@@ -26,7 +26,6 @@ private val cloudApiClientCache = ConcurrentHashMap<String, WhatsAppCloudApiClie
 
 internal fun createCloudApiClient(connectorConfiguration: ConnectorConfiguration): WhatsAppCloudApiClient =
     WhatsAppCloudApiClient(
-        connectorConfiguration.parameters.getValue(SECRET),
         connectorConfiguration.parameters.getValue(TOKEN),
         connectorConfiguration.parameters.getValue(WHATSAPP_PHONE_NUMBER_ID),
     )

@@ -4,9 +4,11 @@
 >
   <div class="table-list-entry">Story</div>
   <div class="table-list-entry bordered text-center">Main intent</div>
+  <div class="table-list-entry bordered text-center">Infos</div>
   <div class="table-list-entry bordered text-center">Last edited</div>
   <div class="table-list-entry text-center">Actions</div>
 </div>
+
 <div
   class="table-list"
   *ngFor="let story of stories"
@@ -44,6 +46,18 @@
     [nbTooltip]="story.intent.getIntentLabel(state)"
   >
     {{ story.intent.getIntentLabel(state) }}
+  </div>
+
+  <div class="table-list-entry bordered text-center">
+    <button
+      nbButton
+      ghost
+      shape="round"
+      (click)="displayIntentStoryDetails(story.intent)"
+      nbTooltip="Show intent story details"
+    >
+      <nb-icon icon="book-open-outline"></nb-icon>
+    </button>
   </div>
 
   <div class="table-list-entry bordered text-center">

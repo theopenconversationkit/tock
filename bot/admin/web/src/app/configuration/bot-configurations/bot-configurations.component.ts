@@ -17,11 +17,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { BotApplicationConfiguration, BotConfiguration, ConnectorType, UserInterfaceType } from '../../core/model/configuration';
-import { ConfirmDialogComponent } from '../../shared-nlp/confirm-dialog/confirm-dialog.component';
 import { StateService } from '../../core-nlp/state.service';
 import { NbToastrService } from '@nebular/theme';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { Subject, takeUntil } from 'rxjs';
+import { ChoiceDialogComponent } from '../../shared/components';
 
 @Component({
   selector: 'tock-bot-configurations',
@@ -35,7 +35,7 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
   displayTestConfigurations = false;
 
   constructor(
-    private state: StateService,
+    public state: StateService,
     private botConfiguration: BotConfigurationService,
     private dialogService: DialogService,
     private toastrService: NbToastrService
@@ -133,15 +133,20 @@ export class BotConfigurationsComponent implements OnInit, OnDestroy {
   }
 
   remove(conf: BotApplicationConfiguration): void {
-    const dialogRef = this.dialogService.openDialog(ConfirmDialogComponent, {
+    const action = 'remove';
+    const dialogRef = this.dialogService.openDialog(ChoiceDialogComponent, {
       context: {
-        title: `Delete the configuration`,
+        title: `Delete the configuration "${conf.name}"`,
         subtitle: 'Are you sure?',
-        action: 'Remove'
+        actions: [
+          { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
+          { actionName: action, buttonStatus: 'danger' }
+        ],
+        modalStatus: 'danger'
       }
     });
     dialogRef.onClose.subscribe((result) => {
-      if (result === 'remove') {
+      if (result === action) {
         this.botConfiguration.deleteConfiguration(conf).subscribe((_) => {
           this.botConfiguration.updateConfigurations();
           this.toastrService.show(`Configuration deleted`, 'Delete', {

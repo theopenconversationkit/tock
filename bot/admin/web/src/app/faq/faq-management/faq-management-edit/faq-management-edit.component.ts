@@ -7,8 +7,7 @@ import { take } from 'rxjs/operators';
 import { StateService } from '../../../core-nlp/state.service';
 import { PaginatedQuery } from '../../../model/commons';
 import { Intent, SearchQuery, SentenceStatus } from '../../../model/nlp';
-import { NlpService } from '../../../nlp-tabs/nlp.service';
-import { ConfirmDialogComponent } from '../../../shared-nlp/confirm-dialog/confirm-dialog.component';
+import { NlpService } from '../../../core-nlp/nlp.service';
 import { ChoiceDialogComponent, SentencesGenerationComponent } from '../../../shared/components';
 import { FaqDefinitionExtended } from '../faq-management.component';
 
@@ -263,25 +262,23 @@ export class FaqManagementEditComponent implements OnChanges {
     );
   }
 
-  utteranceEditionValue: string;
+  editedUtterance: AbstractControl<any, any>;
+  editedUtteranceValue: string;
   editUtterance(utterance: string): void {
-    this.utterances.controls.forEach((c) => {
-      delete c['_edit'];
-    });
     const ctrl = this.utterances.controls.find((u) => u.value == utterance);
-    this.utteranceEditionValue = ctrl.value;
-    ctrl['_edit'] = true;
+    this.editedUtterance = ctrl;
+    this.editedUtteranceValue = ctrl.value;
   }
 
-  validateEditUtterance(utterance: FormControl): void {
-    utterance.setValue(this.utteranceEditionValue);
-    this.cancelEditUtterance(utterance);
+  validateEditUtterance(utterance: AbstractControl<any, any>): void {
+    utterance.setValue(this.editedUtteranceValue);
+    this.cancelEditUtterance();
     this.form.markAsDirty();
     this.form.markAsTouched();
   }
 
-  cancelEditUtterance(utterance: FormControl): void {
-    delete utterance['_edit'];
+  cancelEditUtterance(): void {
+    this.editedUtterance = undefined;
   }
 
   removeUtterance(utterance: string): void {
@@ -292,24 +289,27 @@ export class FaqManagementEditComponent implements OnChanges {
   }
 
   close(): Observable<any> {
-    const validAction = 'yes';
+    const action = 'yes';
     if (this.form.dirty) {
-      const dialogRef = this.nbDialogService.open(ConfirmDialogComponent, {
+      const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `Cancel ${this.faq?.id ? 'edit' : 'create'} faq`,
           subtitle: 'Are you sure you want to cancel ? Changes will not be saved.',
-          action: validAction
+          actions: [
+            { actionName: 'no', buttonStatus: 'basic', ghost: true },
+            { actionName: action, buttonStatus: 'danger' }
+          ]
         }
       });
       dialogRef.onClose.subscribe((result) => {
-        if (result === validAction) {
+        if (result === action) {
           this.onClose.emit(true);
         }
       });
       return dialogRef.onClose;
     } else {
       this.onClose.emit(true);
-      return of(validAction);
+      return of(action);
     }
   }
 

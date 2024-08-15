@@ -15,7 +15,6 @@
  */
 
 import { NgModule } from '@angular/core';
-import { SharedModule } from '../shared-nlp/shared.module';
 import { TestTabsComponent } from './test-tabs.component';
 import { BotDialogComponent } from './dialog/bot-dialog.component';
 import { CommonModule } from '@angular/common';
@@ -34,18 +33,19 @@ import {
   NbInputModule,
   NbSpinnerModule,
   NbAutocompleteModule,
-  NbIconModule
+  NbIconModule,
+  NbToggleModule
 } from '@nebular/theme';
-import { ReactiveFormsModule } from '@angular/forms';
-import { NlpService } from '../nlp-tabs/nlp.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NlpService } from '../core-nlp/nlp.service';
 import { NlpStatsDisplayComponent } from './dialog/nlp-stats-display/nlp-stats-display.component';
 import { BotTestRoutingModule } from './test-routing.module';
 
 @NgModule({
   imports: [
-    BotTestRoutingModule,
     CommonModule,
-    SharedModule,
+    FormsModule,
+    BotTestRoutingModule,
     BotTestRoutingModule,
     BotSharedModule,
     MomentModule,
@@ -61,7 +61,8 @@ import { BotTestRoutingModule } from './test-routing.module';
     NbSpinnerModule,
     NbAutocompleteModule,
     NbCardModule,
-    NbIconModule
+    NbIconModule,
+    NbToggleModule
   ],
   declarations: [TestTabsComponent, BotDialogComponent, TestPlanComponent, NlpStatsDisplayComponent],
   exports: [],

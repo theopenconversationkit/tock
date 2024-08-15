@@ -20,7 +20,7 @@
 
     <groupId>ai.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>24.3.4-SNAPSHOT</version>
+    <version>24.3.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
@@ -983,6 +983,7 @@
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <stagingProgressTimeoutMinutes>20</stagingProgressTimeoutMinutes>
                         </configuration>
                     </plugin>
                 </plugins>

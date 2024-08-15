@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { I18nLabel, I18nLabelStateQuery, I18nLocalizedLabel, userInterfaces } from '../model/i18n';
 import { BotService } from '../bot-service';
 import { StateService } from '../../core-nlp/state.service';
@@ -32,7 +32,7 @@ import { DOCUMENT } from '@angular/common';
   templateUrl: './i18n.component.html',
   styleUrls: ['./i18n.component.css']
 })
-export class I18nComponent implements OnInit {
+export class I18nComponent implements OnInit, OnDestroy {
   private readonly destroy$: Subject<boolean> = new Subject();
 
   loading: boolean = false;

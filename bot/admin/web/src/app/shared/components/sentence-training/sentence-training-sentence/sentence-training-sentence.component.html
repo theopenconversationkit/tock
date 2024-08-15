@@ -1,5 +1,8 @@
 <div [ngClass]="{ 'px-3': !readOnly }">
-  <div class="tokens-container-wrapper">
+  <div
+    class="tokens-container-wrapper"
+    [ngClass]="{ fontSmall: fontsize === 'small' }"
+  >
     <div
       class="tokens-container"
       #tokensContainer

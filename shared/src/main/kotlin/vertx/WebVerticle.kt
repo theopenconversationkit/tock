@@ -29,6 +29,7 @@ import ai.tock.shared.longProperty
 import ai.tock.shared.property
 import ai.tock.shared.security.TockUser
 import ai.tock.shared.security.TockUserRole
+import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.security.auth.CASAuthProvider
 import ai.tock.shared.security.auth.GithubOAuthProvider
 import ai.tock.shared.security.auth.OAuth2Provider

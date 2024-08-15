@@ -4,7 +4,7 @@ import { NbFontIconPackParams, NbFontIcon, NbIcon, NbIconLibraries } from '@nebu
 
 @Injectable()
 export class CustomNbIconLibraries extends NbIconLibraries {
-  protected createFontIcon(name: string, content: NbIcon | string, params: NbFontIconPackParams): NbFontIcon {
+  protected override createFontIcon(name: string, content: NbIcon | string, params: NbFontIconPackParams): NbFontIcon {
     if (content instanceof NbFontIcon) {
       return content;
     }

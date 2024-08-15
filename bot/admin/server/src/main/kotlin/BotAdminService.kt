@@ -28,48 +28,15 @@ import ai.tock.bot.admin.answer.SimpleAnswerConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.BotConfiguration
+import ai.tock.bot.admin.bot.BotVersion
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
-import ai.tock.bot.admin.bot.BotVersion
-import ai.tock.bot.admin.dialog.ApplicationDialogFlowData
-import ai.tock.bot.admin.dialog.DialogReportDAO
-import ai.tock.bot.admin.dialog.DialogReportQueryResult
-import ai.tock.bot.admin.dialog.RatingReportQueryResult
-import ai.tock.bot.admin.dialog.DialogReport
+import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
-import ai.tock.bot.admin.model.BotAnswerConfiguration
-import ai.tock.bot.admin.model.BotBuiltinAnswerConfiguration
-import ai.tock.bot.admin.model.BotConfiguredAnswer
-import ai.tock.bot.admin.model.BotConfiguredSteps
-import ai.tock.bot.admin.model.BotScriptAnswerConfiguration
-import ai.tock.bot.admin.model.BotSimpleAnswerConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfiguration
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationMandatoryEntity
-import ai.tock.bot.admin.model.BotStoryDefinitionConfigurationStep
-import ai.tock.bot.admin.model.CreateI18nLabelRequest
-import ai.tock.bot.admin.model.CreateStoryRequest
-import ai.tock.bot.admin.model.DialogFlowRequest
-import ai.tock.bot.admin.model.DialogsSearchQuery
-import ai.tock.bot.admin.model.Feature
-import ai.tock.bot.admin.model.StorySearchRequest
-import ai.tock.bot.admin.model.SummaryStorySearchRequest
-import ai.tock.bot.admin.model.UserSearchQuery
-import ai.tock.bot.admin.model.UserSearchQueryResult
-import ai.tock.bot.admin.story.StoryDefinitionConfiguration
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationByBotStep
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationStep
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryExtended
-import ai.tock.bot.admin.story.StoryDefinitionConfigurationSummaryMinimumMetrics
-import ai.tock.bot.admin.story.dump.ScriptAnswerVersionedConfigurationDump
-import ai.tock.bot.admin.story.dump.StoriesImportMode
-import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDump
-import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpController
-import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationDumpImport
-import ai.tock.bot.admin.story.dump.StoryDefinitionConfigurationFeatureDump
+import ai.tock.bot.admin.model.*
+import ai.tock.bot.admin.story.*
+import ai.tock.bot.admin.story.dump.*
 import ai.tock.bot.admin.user.UserReportDAO
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.definition.IntentWithoutNamespace
@@ -83,33 +50,19 @@ import ai.tock.nlp.admin.AdminService
 import ai.tock.nlp.core.Intent
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.service.applicationDAO
-import ai.tock.nlp.front.shared.config.ApplicationDefinition
-import ai.tock.nlp.front.shared.config.Classification
-import ai.tock.nlp.front.shared.config.ClassifiedSentence
+import ai.tock.nlp.front.shared.config.*
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import ai.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
-import ai.tock.nlp.front.shared.config.EntityDefinition
-import ai.tock.nlp.front.shared.config.EntityTypeDefinition
-import ai.tock.nlp.front.shared.config.IntentDefinition
-import ai.tock.nlp.front.shared.config.SentencesQuery
-import ai.tock.shared.Dice
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.injector
-import ai.tock.shared.provide
+import ai.tock.shared.*
 import ai.tock.shared.security.UserLogin
 import ai.tock.shared.vertx.WebVerticle.Companion.badRequest
-import ai.tock.shared.withoutNamespace
-import ai.tock.translator.I18nDAO
-import ai.tock.translator.I18nKeyProvider
-import ai.tock.translator.I18nLabel
-import ai.tock.translator.I18nLabelValue
-import ai.tock.translator.Translator
+import ai.tock.translator.*
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
-import java.util.Locale
+import java.util.*
 
 object BotAdminService {
 
@@ -339,10 +292,6 @@ object BotAdminService {
                 )
             )
         }
-    }
-
-    fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
-        return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
     }
 
     fun searchStories(request: StorySearchRequest): List<StoryDefinitionConfigurationSummaryExtended> =

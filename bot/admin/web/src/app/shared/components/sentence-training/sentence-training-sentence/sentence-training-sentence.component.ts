@@ -24,7 +24,7 @@ import { Token } from './token-view/token.model';
 import { Subject, takeUntil } from 'rxjs';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { SentenceTrainingCreateEntityComponent } from './sentence-training-create-entity/sentence-training-create-entity.component';
-import { NlpService } from '../../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { SentenceTrainingService } from '../sentence-training.service';
 
 interface ClassifiedEntityWithIndexes {
@@ -50,6 +50,7 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
   @Input() sentence: Sentence;
   @Input() prefix: string = 's';
   @Input() readOnly: boolean = false;
+  @Input() fontsize: string = '';
 
   @ViewChild('tokensContainer') tokensContainer: ElementRef;
 
@@ -60,7 +61,7 @@ export class SentenceTrainingSentenceComponent implements OnInit, OnDestroy {
   getContrastYIQ = getContrastYIQ;
 
   constructor(
-    private state: StateService,
+    public state: StateService,
     private sentenceTrainingService: SentenceTrainingService,
     private cd: ChangeDetectorRef,
     private self: ElementRef,

@@ -5,7 +5,7 @@ import { NbDialogService } from '@nebular/theme';
 import { of } from 'rxjs';
 import { DialogService } from '../../../../core-nlp/dialog.service';
 import { StateService } from '../../../../core-nlp/state.service';
-import { NlpService } from '../../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { TestSharedModule } from '../../../../shared/test-shared.module';
 import { BotService } from '../../../bot-service';
 import { AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryStep } from '../../../model/story';

@@ -13,7 +13,7 @@
               <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
             </td>
           </tr>
-          <tr *ngFor="let entry of e.texts | mapToIterable">
+          <tr *ngFor="let entry of e.texts | keyvalue">
             <td>
               <span class="text">{{ entry.value }}</span>
               <span class="text-category">({{ entry.key }})</span>
@@ -42,7 +42,7 @@
     <div *ngFor="let l of element.locations">
       <tock-chat-ui-message-location [location]="l"></tock-chat-ui-message-location>
     </div>
-    <div *ngFor="let entry of element.texts | mapToIterable">
+    <div *ngFor="let entry of element.texts | keyvalue">
       <span
         *ngIf="reply"
         [innerHTML]="linkifyHtml(entry.value)"

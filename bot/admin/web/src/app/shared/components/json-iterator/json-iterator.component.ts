@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy } from '@angular/core';
 import { isPrimitive } from '../../utils';
 import { JsonIteratorService } from './json-iterator.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -8,10 +8,10 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './json-iterator.component.html',
   styleUrls: ['./json-iterator.component.scss']
 })
-export class JsonIteratorComponent {
+export class JsonIteratorComponent implements OnDestroy {
   destroy = new Subject();
 
-  @Input() data: any;
+  @Input() data: { [key: string]: any };
   @Input() isRoot: boolean = true;
   @Input() parentKey: string;
 

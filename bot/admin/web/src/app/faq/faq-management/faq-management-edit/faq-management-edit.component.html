@@ -28,7 +28,7 @@
           tabTitle="info"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && (title.errors || description.errors || intentNameExistInApp)"
+          [badgeDot]="isSubmitted && !!(title.errors || description.errors || intentNameExistInApp)"
           [active]="currentTab === faqTabs.INFO"
         >
         </nb-tab>
@@ -36,7 +36,7 @@
           tabTitle="question"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && utterances.errors"
+          [badgeDot]="isSubmitted && !!utterances.errors"
           [active]="currentTab === faqTabs.QUESTION"
         >
         </nb-tab>
@@ -44,7 +44,7 @@
           tabTitle="answer"
           badgePosition="top right"
           badgeStatus="danger"
-          [badgeDot]="isSubmitted && answer.errors"
+          [badgeDot]="isSubmitted && !!answer.errors"
           [active]="currentTab === faqTabs.ANSWER"
         >
         </nb-tab>
@@ -222,26 +222,26 @@
             >
               <div
                 class="flex-grow-1"
-                *ngIf="!utterance._edit"
+                *ngIf="utterance !== editedUtterance"
               >
                 {{ utterance.value }}
               </div>
               <div
                 class="flex-grow-1 mr-3"
-                *ngIf="utterance._edit"
+                *ngIf="utterance === editedUtterance"
               >
                 <textarea
                   nbInput
                   fullWidth
                   fieldSize="small"
-                  [(ngModel)]="utteranceEditionValue"
+                  [(ngModel)]="editedUtteranceValue"
                   [ngModelOptions]="{ standalone: true }"
                   (keyup.enter)="validateEditUtterance(utterance)"
                 ></textarea>
               </div>
 
               <button
-                *ngIf="!utterance._edit"
+                *ngIf="utterance !== editedUtterance"
                 type="button"
                 nbButton
                 nbTooltip="Edit"
@@ -253,7 +253,7 @@
                 <nb-icon icon="edit-outline"></nb-icon>
               </button>
               <button
-                *ngIf="utterance._edit"
+                *ngIf="utterance === editedUtterance"
                 type="button"
                 nbButton
                 nbTooltip="Validate changes"
@@ -266,7 +266,7 @@
               </button>
 
               <button
-                *ngIf="!utterance._edit"
+                *ngIf="utterance !== editedUtterance"
                 type="button"
                 nbButton
                 nbTooltip="Delete"
@@ -280,14 +280,14 @@
               </button>
 
               <button
-                *ngIf="utterance._edit"
+                *ngIf="utterance === editedUtterance"
                 type="button"
                 nbButton
                 nbTooltip="Cancel changes"
                 ghost
                 shape="round"
                 size="small"
-                (click)="cancelEditUtterance(utterance)"
+                (click)="cancelEditUtterance()"
               >
                 <nb-icon icon="close-outline"></nb-icon>
               </button>

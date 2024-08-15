@@ -21,7 +21,7 @@ import { take } from 'rxjs';
 import { AnswerConfigurationType, IntentName, SimpleAnswerConfiguration, StoryStep } from '../../../model/story';
 import { StateService } from '../../../../core-nlp/state.service';
 import { SelectEntityDialogComponent } from './../../select-entity-dialog/select-entity-dialog.component';
-import { NlpService } from '../../../../nlp-tabs/nlp.service';
+import { NlpService } from '../../../../core-nlp/nlp.service';
 import { CreateI18nLabelRequest } from '../../../model/i18n';
 import { BotService } from '../../../bot-service';
 import { RestService } from '../../../../core-nlp/rest/rest.service';
