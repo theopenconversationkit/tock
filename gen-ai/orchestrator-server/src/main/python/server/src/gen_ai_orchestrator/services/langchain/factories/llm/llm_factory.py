@@ -19,11 +19,13 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from langchain.base_language import BaseLanguageModel
+from langchain.callbacks.base import BaseCallbackHandler as LangchainBaseCallbackHandler
+from langchain_core.rate_limiters import BaseRateLimiter, InMemoryRateLimiter
 from langchain_core.runnables import RunnableConfig
 from langchain_core.runnables.utils import Input, Output
-from langchain.callbacks.base import BaseCallbackHandler as LangchainBaseCallbackHandler
 from pydantic import BaseModel
 
+from gen_ai_orchestrator.configurations.environment.settings import application_settings
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 
 logger = logging.getLogger(__name__)
@@ -76,3 +78,13 @@ class LangChainLLMFactory(ABC, BaseModel):
             The output of the runnable.
         """
         return await self.get_language_model().ainvoke(_input, config)
+
+
+rate_limiter = InMemoryRateLimiter(
+    # We can only make a request once every 10 seconds!!
+    requests_per_second=0.1,
+    # Wake up every 100 ms to check whether allowed to make a request,
+    check_every_n_seconds=0.1,
+    # Controls the maximum burst size.
+    max_bucket_size=10,
+)
