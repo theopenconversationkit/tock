@@ -130,11 +130,7 @@ def _send_to_langfuse(dataset: pd.DataFrame, dataset_name: str):
     records = loads(str(records))
 
     # Initializes the Langfuse client
-    client = Langfuse(
-        secret_key='sk-lf-932d07e6-aa12-4f57-8c3e-b0597f304fdf',
-        public_key='pk-lf-7d0c02e6-74ae-412c-9065-da0e297e4d3a',
-        host='http://localhost:3000',
-    )
+    client = Langfuse()
 
     logging.info('Creating dataset %s on Langfuse...', dataset_name)
 
