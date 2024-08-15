@@ -205,12 +205,12 @@ To configure the default vector store, you can use the following environment var
 
 ### generate_dataset.py
 
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
 
 ```
 Usage:
-    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
-    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
 
 Arguments:
     input_excel path to the input excel file
@@ -220,22 +220,22 @@ Options:
     --sheet=<n>                     Sheet numbers to be parsed. Indices are 0-indexed.
     --csv-output=<path>             Output path of csv file to be generated.
     --langsmith-dataset-name=<name> Name of the dataset to be saved on langsmith.
+    --langfuse-dataset-name=<name> Name of the dataset to be saved on langfuse.
     --locale=<locale>               Locale to be included in de dataset. [default: French]
     --no-answer=<na>                Label of no_answer to be included in the dataset. [default: NO_RAG_SENTENCE]
     -h --help                       Show this screen
     --version                       Show version
     -v                              Verbose output for debugging (without this option, script will be silent but for errors)
-
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
 ```
 
 ### rag_testing_tool.py
 
-Retrieval-Augmented Generation (RAG) endpoint settings testing tool based on LangSmith's SDK: runs a specific RAG Settings configuration against a reference dataset.
+Retrieval-Augmented Generation (RAG) endpoint settings testing tool based on LangSmith's or LangFuse's SDK: runs a specific RAG Settings configuration against a reference dataset.
 
 ```
 Usage:
-    rag_testing_tool.py [-v] <rag_query> <dataset_name> <test_name> [<delay>]
+    rag_testing_tool.py [-v] <rag_query> <dataset_provider> <dataset_name> <test_name> [<delay>]
     rag_testing_tool.py -h | --help
     rag_testing_tool.py --version
 
@@ -245,6 +245,7 @@ Arguments:
                     provider, indexation session's unique id, and 'k', i.e. nb
                     of retrieved docs (question and chat history are ignored,
                     as they will come from the dataset)
+    dataset_provider the dataset provider (langsmith or langfuse)
     dataset_name    the reference dataset name
     test_name       name of the test run
 
@@ -256,7 +257,7 @@ Options:
                 be silent but for errors)
 ```
 
-Build a RAG (Lang)chain from the RAG Query and runs it against the provided LangSmith dataset. The chain is created anew for each entry of the dataset, and if a delay is provided each chain creation will be delayed accordingly.
+Build a RAG (Lang)chain from the RAG Query and runs it against the provided LangSmith or LangSmith dataset. The chain is created anew for each entry of the dataset, and if a delay is provided each chain creation will be delayed accordingly.
 ### export_run_results.py
 
 Export a LangSmith dataset run results, in csv format.
@@ -270,6 +271,30 @@ Usage:
 Arguments:
     dataset_id      dataset id
     session_ids     list of session ids
+
+Options:
+    -h --help   Show this screen
+    --version   Show version
+    -v          Verbose output for debugging
+
+The exported CSV file will have these columns :
+'Reference input'|'Reference output'|'Response 1'|'Sources 1'|...|'Response N'|'Sources N'
+NB: There will be as many responses as run sessions
+```
+
+### export_run_results_langfuse.py
+
+Export a LangFuse dataset run results, in csv format.
+
+```
+Usage:
+    export_run_results_langfuse.py [-v] <dataset_name> <runs_names>...
+    export_run_results_langfuse.py -h | --help
+    export_run_results_langfuse.py --version
+
+Arguments:
+    dataset_name      dataset id
+    runs_names     list of session ids
 
 Options:
     -h --help   Show this screen
