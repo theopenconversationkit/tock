@@ -181,12 +181,12 @@ To configure the OpenSearch vector store, you can use the following environment 
 
 ### generate_dataset.py
 
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
 
 ```
 Usage:
-    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
-    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] <input_excel> --range=<s> [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
+    generate_dataset.py [-v] <input_excel> --sheet=<n>... [--csv-output=<path>] [ --langsmith-dataset-name=<name> ] [ --langfuse-dataset-name=<name> ] [--locale=<locale>] [--no-answer=<na>]
 
 Arguments:
     input_excel path to the input excel file
@@ -196,13 +196,13 @@ Options:
     --sheet=<n>                     Sheet numbers to be parsed. Indices are 0-indexed.
     --csv-output=<path>             Output path of csv file to be generated.
     --langsmith-dataset-name=<name> Name of the dataset to be saved on langsmith.
+    --langfuse-dataset-name=<name> Name of the dataset to be saved on langfuse.
     --locale=<locale>               Locale to be included in de dataset. [default: French]
     --no-answer=<na>                Label of no_answer to be included in the dataset. [default: NO_RAG_SENTENCE]
     -h --help                       Show this screen
     --version                       Show version
     -v                              Verbose output for debugging (without this option, script will be silent but for errors)
-
-Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, or both.
+Generates a testing dataset based on an input file. The input file should have the correct format (see generate_datset_input.xlsx for sample). The generated dataset can be saved on filesystem, using the --csv-output option, on langsmith, using the --langsmith-dataset-name option, on langfuse using the --langfuse-dataset-name option, or both.
 ```
 
 ### rag_testing_tool.py
