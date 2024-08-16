@@ -33,15 +33,14 @@
         *ngIf="e.namespace() === state.currentApplication.namespace"
         class="pointer ml-1"
         nbTooltip="Edit entity"
-        icon="edit-outline"
+        icon="pencil"
       ></nb-icon>
-
       <nb-icon
         *ngIf="e.namespace() === state.currentApplication.namespace"
         class="pointer ml-1"
         nbTooltip="delete entity type"
         status="danger"
-        icon="trash-2-outline"
+        icon="trash"
         (click)="deleteEntityType(e)"
       ></nb-icon>
     </div>
@@ -59,7 +58,7 @@
           (click)="unSelectEntityType()"
           nbTooltip="Unselect entity"
         >
-          <nb-icon icon="close-outline"></nb-icon>
+          <nb-icon icon="x-lg"></nb-icon>
         </button>
       </nb-card-header>
 
@@ -117,7 +116,7 @@
                   (click)="downloadDictionary()"
                   nbTooltip="Download Dictionary"
                 >
-                  <nb-icon icon="download-outline"></nb-icon>
+                  <nb-icon icon="download"></nb-icon>
                   Download Dictionary
                 </button>
                 <button
@@ -127,7 +126,7 @@
                   (click)="showUploadDictionaryButton = false"
                   nbTooltip="Upload Dictionary"
                 >
-                  <nb-icon icon="upload-outline"></nb-icon>
+                  <nb-icon icon="upload"></nb-icon>
                   Upload Dictionary
                 </button>
                 <input
@@ -168,11 +167,12 @@
                     *ngFor="let label of predefinedValue.labels.get(state.currentLocale)"
                   >
                     {{ label }}
+
                     <nb-icon
-                      icon="close-circle-outline"
                       (click)="deleteLabel(predefinedValue, label)"
                       class="pointer ml-1"
                       nbTooltip="Delete label"
+                      icon="x-circle"
                     ></nb-icon>
                   </div>
                 </td>
@@ -194,7 +194,7 @@
                       (click)="createLabel(predefinedValue, addLabelInput.value)"
                       [disabled]="!addLabelInput.value?.trim().length"
                     >
-                      <nb-icon icon="plus-outline"></nb-icon>
+                      <nb-icon icon="plus-lg"></nb-icon>
                     </button>
                   </nb-form-field>
 
@@ -205,7 +205,7 @@
                     status="danger"
                     nbTooltip="Delete predefined value"
                   >
-                    <nb-icon icon="trash-2-outline"></nb-icon>
+                    <nb-icon icon="trash"></nb-icon>
                   </button>
                 </td>
               </tr>
@@ -235,7 +235,7 @@
               >
                 <nb-icon
                   nbSuffix
-                  icon="plus-outline"
+                  icon="plus"
                 ></nb-icon>
               </button>
             </nb-form-field>

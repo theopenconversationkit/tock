@@ -17,7 +17,7 @@
       (click)="refresh()"
       class="ml-2"
     >
-      <nb-icon icon="refresh-outline"></nb-icon>
+      <nb-icon icon="arrow-clockwise"></nb-icon>
     </button>
 
     <button
@@ -28,7 +28,7 @@
       (click)="exportDialogs()"
       class="ml-2"
     >
-      <nb-icon icon="download-outline"></nb-icon>
+      <nb-icon icon="download"></nb-icon>
     </button>
   </div>
 </div>
@@ -39,7 +39,7 @@
       <h5 class="heading1 text-basic">
         <nb-icon
           *ngFor="let _ of getStarArray()"
-          icon="star-outline"
+          icon="star"
         ></nb-icon>
       </h5>
       <span class="text text-hint caption">{{ satisfactionStat.nbUsersRated }} users</span>
@@ -63,7 +63,7 @@
         <h5 class="heading1 text-basic">
           <nb-icon
             *ngFor="let _ of [].constructor(index)"
-            icon="star-outline"
+            icon="star"
           ></nb-icon>
         </h5>
         <span class="text text-hint caption">{{ getNbUsersByNote(index) }} users</span>

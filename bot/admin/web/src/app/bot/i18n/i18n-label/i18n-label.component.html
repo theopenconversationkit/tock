@@ -51,7 +51,7 @@
           [disabled]="!deleteLabelAllowed"
           (click)="deleteLabel()"
         >
-          <nb-icon icon="trash-2-outline"></nb-icon>
+          <nb-icon icon="trash"></nb-icon>
         </button>
       </div>
     </nb-card-header>
@@ -77,12 +77,12 @@
               <div>
                 <nb-icon
                   *ngIf="l.interfaceType === 0"
-                  icon="message-square"
+                  icon="chat-right-text-fill"
                   nbTooltip="Answer in Text Channels"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="l.interfaceType === 1"
-                  icon="phone-call"
+                  icon="telephone-fill"
                   nbTooltip="Answer in Voice Channels"
                 ></nb-icon>
               </div>
@@ -129,7 +129,7 @@
                 (click)="addNewAlternative(l)"
                 [disabled]="!isSupportedLocale(l)"
               >
-                <nb-icon icon="plus-outline"></nb-icon>
+                <nb-icon icon="plus-lg"></nb-icon>
               </button>
 
               <!-- Delete label -->
@@ -140,7 +140,7 @@
                 status="danger"
                 ghost
               >
-                <nb-icon icon="trash-2-outline"></nb-icon>
+                <nb-icon icon="trash"></nb-icon>
               </button>
 
               <!-- Validate label -->
@@ -171,11 +171,11 @@
               <div>
                 <nb-icon
                   *ngIf="l.interfaceType === 0"
-                  icon="message-square"
+                  icon="chat-right-text-fill"
                 ></nb-icon>
                 <nb-icon
                   *ngIf="l.interfaceType === 1"
-                  icon="phone-call"
+                  icon="telephone-fill"
                 ></nb-icon>
               </div>
 
@@ -209,7 +209,7 @@
                 status="danger"
                 (click)="removeAlternative(l, index)"
               >
-                <nb-icon icon="minus-outline"></nb-icon>
+                <nb-icon icon="dash-lg"></nb-icon>
               </button>
             </div>
           </div>

@@ -27,17 +27,26 @@
             <nb-icon
               *ngIf="story.isBuiltIn()"
               nbTooltip="Built-in Story"
-              icon="cube"
+              icon="box"
+              class="align-middle"
             ></nb-icon>
             <nb-icon
-              *ngIf="story.isSimpleAnswer()"
+              *ngIf="story.isSimpleNonFaqAnswer()"
               nbTooltip="Message Story"
-              icon="message-square-outline"
+              icon="chat-left"
+              class="align-middle"
+            ></nb-icon>
+            <nb-icon
+              *ngIf="story.isSimpleFaqAnswer()"
+              class="align-middle"
+              nbTooltip="Message Faq Story"
+              icon="chat-left-text"
             ></nb-icon>
             <nb-icon
               *ngIf="story.isScriptAnswer()"
               nbTooltip="Script Story"
               icon="code"
+              class="align-middle"
             ></nb-icon>
             <span
               *ngIf="!storyNode"
@@ -82,7 +91,7 @@
             nbTooltip="Edit story"
             (click)="$event.stopPropagation(); editStory()"
           >
-            <nb-icon icon="edit-outline"></nb-icon>
+            <nb-icon icon="pencil"></nb-icon>
           </button>
           <button
             *ngIf="!story.isBuiltIn()"
@@ -92,7 +101,7 @@
             nbTooltip="Edit Mandatory Entities"
             (click)="$event.stopPropagation(); editEntities()"
           >
-            <nb-icon icon="attach-outline"></nb-icon>
+            <nb-icon icon="paperclip"></nb-icon>
           </button>
           <button
             *ngIf="!story.isBuiltIn()"
@@ -102,7 +111,7 @@
             nbTooltip="Edit Actions"
             (click)="$event.stopPropagation(); editSteps()"
           >
-            <nb-icon icon="browser-outline"></nb-icon>
+            <nb-icon icon="bar-chart-steps"></nb-icon>
           </button>
           <button
             *ngIf="story._id"
@@ -112,7 +121,7 @@
             nbTooltip="Export Story"
             (click)="$event.stopPropagation(); download(story)"
           >
-            <nb-icon icon="download-outline"></nb-icon>
+            <nb-icon icon="download"></nb-icon>
           </button>
           <button
             *ngIf="story._id"
@@ -122,7 +131,7 @@
             nbTooltip="Delete"
             (click)="$event.stopPropagation(); deleteStory()"
           >
-            <nb-icon icon="trash-2-outline"></nb-icon>
+            <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
       </div>
@@ -189,7 +198,7 @@
                 nbTooltip="Edit"
                 (click)="editEntities()"
               >
-                <nb-icon icon="edit-outline"></nb-icon>
+                <nb-icon icon="pencil"></nb-icon>
               </button>
             </nb-card-header>
             <nb-list>
@@ -228,7 +237,7 @@
                 nbTooltip="Customise answer by bot application configuration"
                 (click)="customiseMainAnswer()"
               >
-                <nb-icon icon="copy-outline"></nb-icon>
+                <nb-icon icon="link-45deg"></nb-icon>
               </button>
             </nb-card-header>
             <nb-card-body class="section-card-body">
@@ -251,7 +260,7 @@
             <nb-card-body class="section-card-body">
               <nb-card *ngFor="let configuredAnswer of story.configuredAnswers">
                 <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
-                  <span><nb-icon icon="settings-2-outline"></nb-icon> {{ configuredAnswer.botConfiguration }}</span>
+                  <span><nb-icon icon="gear"></nb-icon> {{ configuredAnswer.botConfiguration }}</span>
                   <button
                     nbButton
                     ghost
@@ -260,7 +269,7 @@
                     status="danger"
                     (click)="deleteCustomAnswers(configuredAnswer)"
                   >
-                    <nb-icon icon="trash-2-outline"></nb-icon>
+                    <nb-icon icon="trash"></nb-icon>
                   </button>
                 </nb-card-header>
                 <nb-card-body>
@@ -295,7 +304,7 @@
                   nbTooltip="Customise actions by bot application configuration"
                   (click)="addCustomSteps()"
                 >
-                  <nb-icon icon="copy-outline"></nb-icon>
+                  <nb-icon icon="link-45deg"></nb-icon>
                 </button>
               </div>
             </nb-card-header>
@@ -317,7 +326,7 @@
             <nb-card-body class="section-card-body">
               <nb-card *ngFor="let configuredSteps of story.configuredSteps">
                 <nb-card-header class="d-flex justify-content-between align-items-start flex-wrap">
-                  <span><nb-icon icon="settings-2-outline"></nb-icon> {{ configuredSteps.botConfiguration }}</span>
+                  <span><nb-icon icon="gear"></nb-icon> {{ configuredSteps.botConfiguration }}</span>
                   <button
                     nbButton
                     ghost
@@ -326,7 +335,7 @@
                     nbTooltip="Delete"
                     (click)="deleteCustomSteps(configuredSteps)"
                   >
-                    <nb-icon icon="trash-2-outline"></nb-icon>
+                    <nb-icon icon="trash"></nb-icon>
                   </button>
                 </nb-card-header>
                 <nb-card-body>

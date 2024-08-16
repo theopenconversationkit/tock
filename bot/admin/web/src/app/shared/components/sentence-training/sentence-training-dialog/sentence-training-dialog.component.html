@@ -1,7 +1,7 @@
 <nb-card class="mb-0">
   <nb-card-header>
     <div class="d-flex justify-content-between align-items-start">
-      Conversation featuring this sentence
+      Dialog featuring this sentence
       <button
         type="button"
         nbButton
@@ -10,7 +10,7 @@
         nbTooltip="Close"
         (click)="close()"
       >
-        <nb-icon icon="close-outline"></nb-icon>
+        <nb-icon icon="x-lg"></nb-icon>
       </button>
     </div>
   </nb-card-header>
@@ -21,7 +21,7 @@
       *ngIf="dialogs?.length > 1"
     >
       <nb-select
-        placeholder="Conversation #{{ displayedDialogIndex + 1 }}"
+        placeholder="Dialog #{{ displayedDialogIndex + 1 }}"
         status="basic"
         size="small"
         fullWidth
@@ -31,7 +31,7 @@
           [value]="null"
           (click)="displayDialog(index)"
         >
-          Conversation #{{ index + 1 }}
+          Dialog #{{ index + 1 }}
         </nb-option>
       </nb-select>
     </div>
@@ -40,7 +40,7 @@
       *ngIf="!displayedDialog"
       class="p-3 text-center text-danger"
     >
-      No conversations with this phrase were found.
+      No dialog with this phrase were found.
     </div>
 
     <tock-chat-ui

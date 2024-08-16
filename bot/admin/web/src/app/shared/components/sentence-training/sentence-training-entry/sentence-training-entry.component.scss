@@ -60,17 +60,3 @@
 .review {
   white-space: pre-wrap;
 }
-
-.fast-select {
-  background-color: var(--select-outline-basic-background-color);
-  border-color: var(--select-outline-basic-border-color);
-  color: var(--select-outline-basic-text-color);
-  border-style: var(--select-outline-border-style);
-  border-width: var(--select-outline-border-width);
-
-  font-size: var(--select-medium-text-font-size);
-  font-weight: var(--select-medium-text-font-weight);
-  line-height: var(--select-medium-text-line-height);
-  border-radius: var(--select-rectangle-border-radius);
-  padding: 0.5em;
-}

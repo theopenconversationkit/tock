@@ -78,6 +78,14 @@ export abstract class AnswerContainer {
     return this.currentType === AnswerConfigurationType.simple;
   }
 
+  isSimpleFaqAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.simple && this.category === 'faq';
+  }
+
+  isSimpleNonFaqAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.simple && this.category != 'faq';
+  }
+
   isMessageAnswer(): boolean {
     return this.currentType === AnswerConfigurationType.message;
   }
@@ -151,6 +159,14 @@ export class StoryDefinitionConfigurationSummary {
 
   isSimpleAnswer(): boolean {
     return this.currentType === AnswerConfigurationType.simple;
+  }
+
+  isSimpleFaqAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.simple && this.category === 'faq';
+  }
+
+  isSimpleNonFaqAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.simple && this.category != 'faq';
   }
 
   isMessageAnswer(): boolean {

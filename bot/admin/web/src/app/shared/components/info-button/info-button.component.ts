@@ -40,7 +40,7 @@ export class InfoButtonComponent implements OnInit {
   /**
    * the button icon
    */
-  icon = 'info';
+  icon = 'info-circle';
 
   ngOnInit(): void {
     if (!this.message || this.message.trim().length < 1) {

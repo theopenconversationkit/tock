@@ -24,7 +24,7 @@
       nbTooltip="Close"
       (click)="cancel()"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
   <nb-card-body>
@@ -33,7 +33,7 @@
       outline="info"
     >
       <nb-icon
-        icon="info-outline"
+        icon="info-circle"
         status="info"
       ></nb-icon>
       At least one of Title, Subtitle or File is required.
@@ -101,7 +101,7 @@
           size="medium"
           nbTooltip="Remove"
         >
-          <nb-icon icon="trash-2-outline"></nb-icon>
+          <nb-icon icon="trash"></nb-icon>
         </button>
       </p>
       <p *ngIf="!media.file">
@@ -180,7 +180,7 @@
               nbTooltip="Move upward"
               (click)="upward(action)"
             >
-              <nb-icon icon="arrow-upward-outline"></nb-icon>
+              <nb-icon icon="arrow-up"></nb-icon>
             </button>
             <button
               *ngIf="canDownward(action)"
@@ -192,7 +192,7 @@
               nbTooltip="Move downward"
               (click)="downward(action)"
             >
-              <nb-icon icon="arrow-downward-outline"></nb-icon>
+              <nb-icon icon="arrow-down"></nb-icon>
             </button>
           </div>
           <tock-form-control
@@ -236,7 +236,7 @@
             nbTooltip="Remove"
             (click)="removeAction(action)"
           >
-            <nb-icon icon="trash-2-outline"></nb-icon>
+            <nb-icon icon="trash"></nb-icon>
           </button>
         </div>
       </div>
@@ -248,7 +248,7 @@
           (click)="addAction()"
           size="small"
         >
-          <nb-icon icon="plus-circle-outline"></nb-icon>
+          <nb-icon icon="plus-circle"></nb-icon>
           Add Action
         </button>
       </div>

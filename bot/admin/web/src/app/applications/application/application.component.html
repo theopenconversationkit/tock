@@ -30,7 +30,7 @@
       (click)="cancel()"
       nbTooltip="Cancel"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
       CANCEL
     </button>
 
@@ -41,11 +41,11 @@
       [nbTooltip]="newApplication ? 'Create New Application' : 'Update Application'"
     >
       <ng-container *ngIf="newApplication">
-        <nb-icon icon="plus-outline"></nb-icon>
+        <nb-icon icon="plus-lg"></nb-icon>
         CREATE
       </ng-container>
       <ng-container *ngIf="!newApplication">
-        <nb-icon icon="save-outline"></nb-icon>
+        <nb-icon icon="floppy"></nb-icon>
         UPDATE
       </ng-container>
     </button>
@@ -179,20 +179,27 @@
           Locales
         </label>
 
-        <nb-select
-          fullWidth
-          status="primary"
-          (selectedChange)="addLocale()"
-          [(ngModel)]="newLocale"
-          placeholder="Add new locale"
-          id="locales"
-        >
-          <nb-option
-            *ngFor="let locale of state.locales"
-            [value]="locale.first"
-            >{{ locale.second }}
-          </nb-option>
-        </nb-select>
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="globe"
+          ></nb-icon>
+
+          <nb-select
+            fullWidth
+            status="primary"
+            (selectedChange)="addLocale()"
+            [(ngModel)]="newLocale"
+            placeholder="Add new locale"
+            id="locales"
+          >
+            <nb-option
+              *ngFor="let locale of state.locales"
+              [value]="locale.first"
+              >{{ locale.second }}
+            </nb-option>
+          </nb-select>
+        </nb-form-field>
       </div>
 
       <div
@@ -205,7 +212,7 @@
         >
           {{ state.localeName(locale) }}
           <nb-icon
-            icon="close-circle-outline"
+            icon="x-circle"
             class="ml-1 pointer"
             nbTooltip="Delete locale"
             (click)="removeLocale(locale)"

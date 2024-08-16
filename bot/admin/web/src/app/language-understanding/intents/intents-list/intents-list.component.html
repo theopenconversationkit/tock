@@ -19,11 +19,11 @@
         {{ state.isOtherNamespaceIntent(intent) ? intent.qualifiedName() : intent.intentLabel() }}
       </span>
       <span
-        class="ml-2 valign-middle"
+        class="ml-2 align-middle"
         *ngIf="state.intentExistsInOtherApplication(intent.name)"
         nbTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
       >
-        <nb-icon icon="share-outline"></nb-icon>
+        <nb-icon icon="share"></nb-icon>
       </span>
     </div>
     <span class="text-muted">{{ intent.description }}</span>
@@ -52,7 +52,7 @@
         nbTooltip="Delete entity"
         [style.color]="getContrastYIQ(e.entityColor)"
       >
-        <nb-icon icon="close-outline"></nb-icon>
+        <nb-icon icon="x-lg"></nb-icon>
       </button>
     </span>
   </div>
@@ -78,7 +78,7 @@
           (click)="removeSharedIntent(intent, intentId)"
           nbTooltip="Remove shared intent"
         >
-          <nb-icon icon="close-outline"></nb-icon>
+          <nb-icon icon="x-lg"></nb-icon>
         </button>
       </span>
     </ng-container>
@@ -92,7 +92,7 @@
       nbTooltip="Add shared intent"
       (click)="displayAddSharedIntentDialog(intent)"
     >
-      <nb-icon icon="plus-circle-outline"></nb-icon>
+      <nb-icon icon="plus-circle"></nb-icon>
     </button>
   </div>
 
@@ -117,7 +117,7 @@
           (click)="removeState(intent, s)"
           nbTooltip="Delete State"
         >
-          <nb-icon icon="close-outline"></nb-icon>
+          <nb-icon icon="x-lg"></nb-icon>
         </button>
       </span>
     </ng-container>
@@ -131,7 +131,7 @@
       nbTooltip="Add state"
       (click)="addState(intent)"
     >
-      <nb-icon icon="plus-circle-outline"></nb-icon>
+      <nb-icon icon="plus-circle"></nb-icon>
     </button>
   </div>
 
@@ -143,7 +143,7 @@
       (click)="displayIntentStoryDetails(intent)"
       nbTooltip="Show intent story details"
     >
-      <nb-icon icon="book-open-outline"></nb-icon>
+      <nb-icon icon="book"></nb-icon>
     </button>
   </div>
 
@@ -159,7 +159,7 @@
         nbTooltip="Edit the intent"
         (click)="updateIntent(intent)"
       >
-        <nb-icon icon="edit-outline"></nb-icon>
+        <nb-icon icon="pencil"></nb-icon>
       </button>
       <button
         *ngIf="state.hasRole(UserRole.admin)"
@@ -169,7 +169,7 @@
         nbTooltip="Download a sentences dump"
         (click)="downloadSentencesDump(intent)"
       >
-        <nb-icon icon="download-outline"></nb-icon>
+        <nb-icon icon="download"></nb-icon>
       </button>
       <button
         nbButton
@@ -179,7 +179,7 @@
         nbTooltip="Delete the intent"
         (click)="deleteIntent(intent)"
       >
-        <nb-icon icon="trash-2-outline"></nb-icon>
+        <nb-icon icon="trash"></nb-icon>
       </button>
     </div>
   </div>

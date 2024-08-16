@@ -80,6 +80,7 @@ import { DialogsListComponent } from './dialogs/dialogs-list/dialogs-list.compon
     NbButtonModule,
     NbInputModule,
     NbSelectModule,
+    NbFormFieldModule,
     NbCalendarModule,
     NbUserModule,
     NbDatepickerModule,

@@ -222,12 +222,12 @@
             <nb-select-label *ngIf="selectedStory">
               <nb-icon
                 *ngIf="selectedStory.isBuiltIn()"
-                icon="cube"
+                icon="box"
                 class="align-middle mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="selectedStory.isSimpleAnswer()"
-                icon="message-square-outline"
+                icon="chat-left"
                 class="align-middle mr-1"
               ></nb-icon>
               <nb-icon
@@ -249,13 +249,13 @@
               <nb-icon
                 *ngIf="entry.value.isBuiltIn()"
                 nbTooltip="BuiltIn"
-                icon="cube"
+                icon="box"
                 class="mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="entry.value.isSimpleAnswer()"
                 nbTooltip="Message"
-                icon="message-square-outline"
+                icon="chat-left"
                 class="mr-1"
               ></nb-icon>
               <nb-icon
@@ -280,12 +280,12 @@
             <nb-select-label *ngIf="selectedStory">
               <nb-icon
                 *ngIf="selectedStory.isBuiltIn()"
-                icon="cube"
+                icon="box"
                 class="align-middle mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="selectedStory.isSimpleAnswer()"
-                icon="message-square-outline"
+                icon="chat-left"
                 class="align-middle mr-1"
               ></nb-icon>
               <nb-icon
@@ -295,7 +295,7 @@
               ></nb-icon>
               <nb-icon
                 *ngIf="selectedStory.storyType === undefined"
-                icon="question-mark-circle-outline"
+                icon="question-circle"
                 class="align-middle mr-1"
               ></nb-icon>
               <span class="story-label">{{ selectedStory.storyName }}</span>
@@ -312,13 +312,13 @@
               <nb-icon
                 *ngIf="entry.value.isBuiltIn()"
                 nbTooltip="BuiltIn"
-                icon="cube"
+                icon="box"
                 class="mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="entry.value.isSimpleAnswer()"
                 nbTooltip="Message"
-                icon="message-square-outline"
+                icon="chat-left"
                 class="mr-1"
               ></nb-icon>
               <nb-icon
@@ -330,7 +330,7 @@
               <nb-icon
                 *ngIf="entry.value.storyType === undefined"
                 nbTooltip="Unknown Type"
-                icon="question-mark-circle-outline"
+                icon="question-circle"
                 class="mr-1"
               ></nb-icon>
               {{ entry.value.storyName }}

@@ -24,11 +24,11 @@
 
     <nb-icon
       *ngIf="entityType"
-      icon="trash-2-outline"
       status="danger"
       class="ml-1 pointer"
       nbTooltip="Remove sub entity type"
       (click)="remove()"
+      icon="trash"
     ></nb-icon>
   </div>
 
@@ -50,7 +50,7 @@
   *ngFor="let e of subEntities()"
 >
   <nb-icon
-    icon="corner-down-right-outline"
+    icon="arrow-return-right"
     class="mt-1 mx-2"
   ></nb-icon>
 

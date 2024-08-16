@@ -25,7 +25,8 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets", "src/img"],
-            "styles": ["src/app/theme/styles/styles.scss", "src/styles.css", "src/jsoneditor.css"],
+            "styles": ["src/app/theme/styles/styles.scss", "src/styles.css", "src/jsoneditor.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"],
             "scripts": []
           },
           "configurations": {

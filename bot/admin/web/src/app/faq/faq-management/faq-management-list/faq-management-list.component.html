@@ -11,10 +11,10 @@
         {{ faq.title }}
         <span
           *ngIf="state.intentIdExistsInOtherApplication(faq.intentId)"
-          class="valign-middle text-primary"
+          class="align-middle text-primary"
           nbTooltip="This faq uses an intent that is shared by at least one other application. Any change to the intent will also affect other applications that use that intent."
         >
-          <nb-icon icon="share-outline"></nb-icon>
+          <nb-icon icon="share"></nb-icon>
         </span>
       </div>
 
@@ -41,7 +41,7 @@
               nbTooltip="Copy question"
               (click)="copyString(faq.utterances[0])"
             >
-              <nb-icon icon="copy-outline"></nb-icon>
+              <nb-icon icon="copy"></nb-icon>
             </button>
           </div>
         </div>
@@ -86,7 +86,7 @@
           (click)="editFaq(faq)"
           data-testid="edit"
         >
-          <nb-icon icon="edit-outline"></nb-icon>
+          <nb-icon icon="pencil"></nb-icon>
         </button>
         <button
           nbButton
@@ -97,7 +97,7 @@
           (click)="download(faq)"
           data-testid="download"
         >
-          <nb-icon icon="download-outline"></nb-icon>
+          <nb-icon icon="download"></nb-icon>
         </button>
         <button
           nbButton
@@ -108,7 +108,7 @@
           (click)="delete(faq)"
           data-testid="delete"
         >
-          <nb-icon icon="trash-2-outline"></nb-icon>
+          <nb-icon icon="trash"></nb-icon>
         </button>
       </div>
     </div>

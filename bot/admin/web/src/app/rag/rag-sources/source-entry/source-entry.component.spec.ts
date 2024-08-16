@@ -76,7 +76,7 @@ describe('SourceEntryComponent', () => {
       {
         type: 'crawling',
         label: 'Source exploration',
-        icon: 'compass-outline'
+        icon: 'compass'
       },
       {
         type: 'fetching',
