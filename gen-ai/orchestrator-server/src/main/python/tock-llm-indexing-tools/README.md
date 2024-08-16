@@ -207,11 +207,11 @@ Generates a testing dataset based on an input file. The input file should have t
 
 ### rag_testing_tool.py
 
-Retrieval-Augmented Generation (RAG) endpoint settings testing tool based on LangSmith's SDK: runs a specific RAG Settings configuration against a reference dataset.
+Retrieval-Augmented Generation (RAG) endpoint settings testing tool based on LangSmith's or LangFuse's SDK: runs a specific RAG Settings configuration against a reference dataset.
 
 ```
 Usage:
-    rag_testing_tool.py [-v] <rag_query> <dataset_name> <test_name> [<delay>]
+    rag_testing_tool.py [-v] <rag_query> <dataset_provider> <dataset_name> <test_name> [<delay>]
     rag_testing_tool.py -h | --help
     rag_testing_tool.py --version
 
@@ -221,6 +221,7 @@ Arguments:
                     provider, indexation session's unique id, and 'k', i.e. nb
                     of retrieved docs (question and chat history are ignored,
                     as they will come from the dataset)
+    dataset_provider the dataset provider (langsmith or langfuse)
     dataset_name    the reference dataset name
     test_name       name of the test run
 
@@ -232,7 +233,7 @@ Options:
                 be silent but for errors)
 ```
 
-Build a RAG (Lang)chain from the RAG Query and runs it against the provided LangSmith dataset. The chain is created anew for each entry of the dataset, and if a delay is provided each chain creation will be delayed accordingly.
+Build a RAG (Lang)chain from the RAG Query and runs it against the provided LangSmith or LangSmith dataset. The chain is created anew for each entry of the dataset, and if a delay is provided each chain creation will be delayed accordingly.
 ### export_run_results.py
 
 Export a LangSmith dataset run results, in csv format.

@@ -13,11 +13,11 @@
 #   limitations under the License.
 #
 """Retrieval-Augmented Generation (RAG) endpoint settings testing tool based
-on LangSmith's SDK: runs a specific RAG Settings configuration against a
+on LangSmith's or LangFuse's SDK: runs a specific RAG Settings configuration against a
 reference dataset.
 
 Usage:
-    rag_testing_tool.py [-v] <rag_query> <dataset_name> <test_name> [<delay>]
+    rag_testing_tool.py [-v] <rag_query> <dataset_provider> <dataset_name> <test_name> [<delay>]
     rag_testing_tool.py -h | --help
     rag_testing_tool.py --version
 
@@ -27,6 +27,7 @@ Arguments:
                     provider, indexation session's unique id, and 'k', i.e. nb
                     of retrieved docs (question and chat history are ignored,
                     as they will come from the dataset)
+    dataset_provider the dataset provider (langsmith or langfuse)
     dataset_name    the reference dataset name
     test_name       name of the test run
 
@@ -38,7 +39,7 @@ Options:
                 be silent but for errors)
 
 Build a RAG (Lang)chain from the RAG Query and runs it against the provided
-LangSmith dataset. The chain is created anew for each entry of the dataset, and
+LangSmith or LangFuse dataset. The chain is created anew for each entry of the dataset, and
 if a delay is provided, each chain creation will be delayed accordingly.
 """
 import json
@@ -53,6 +54,7 @@ from uuid import uuid4
 from docopt import docopt
 from dotenv import load_dotenv
 from langsmith import Client
+from langfuse import Langfuse
 
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.langchain.rag_chain import create_rag_chain
@@ -66,6 +68,7 @@ def test_rag(args):
 
         args (dict):    A dictionary containing command-line arguments.
                         Expecting keys: '<rag_query>'
+                                        '<dataset_provider>'
                                         '<dataset_name>'
                                         '<test_name>'
                                         '<delay>'
@@ -88,11 +91,8 @@ def test_rag(args):
             'chat_history': lambda x: x['chat_history'] if 'chat_history' in x else [],
         } | create_rag_chain(RagQuery(**rag_query))
 
-    client = Client()
     search_params = rag_query['document_search_params']
-    index_session_id = search_params['filter'][0]['term'][
-        'metadata.index_session_id.keyword'
-    ]
+    index_session_id = search_params['filter'][0]['term']['metadata.index_session_id.keyword']
     k = search_params['k']
 
     # This is LangSmith's default concurrency level
@@ -101,17 +101,25 @@ def test_rag(args):
     # one at a time
     if args['<delay>']:
         concurrency_level = 1
-
-    client.run_on_dataset(
-        dataset_name=args['<dataset_name>'],
-        llm_or_chain_factory=_construct_chain,
-        project_name=args['<test_name>'] + '-' + str(uuid4())[:8],
-        project_metadata={
-            'index_session_id': index_session_id,
-            'k': k,
-        },
-        concurrency_level=concurrency_level,
-    )
+    if args['<dataset_provider>'].lower() == "langsmith":
+        client = Client()
+        client.run_on_dataset(
+            dataset_name=args['<dataset_name>'],
+            llm_or_chain_factory=_construct_chain,
+            project_name=args['<test_name>'] + '-' + str(uuid4())[:8],
+            project_metadata={
+                'index_session_id': index_session_id,
+                'k': k,
+            },
+            concurrency_level=concurrency_level,
+        )
+    elif args['<dataset_provider>'].lower() == "langfuse":
+        client = Langfuse()
+        dataset = client.get_dataset(args["<dataset_name>"])
+        for item in dataset.items:
+            handler = item.get_langchain_handler(run_name=args['<test_name>'] + '-' + str(uuid4())[:8])
+            _construct_chain().run(item.input, callbacks=[handler])
+        client.flush()
 
     duration = datetime.now() - start_time
     hours, remainder = divmod(duration.seconds, 3600)
@@ -133,22 +141,45 @@ if __name__ == '__main__':
     )
 
     load_dotenv()
+    if cli_args['<dataset_provider>'].lower() == "langsmith":
+        # Check env (LangSmith)
+        langchain_endpoint = os.getenv('LANGCHAIN_ENDPOINT')
+        if not langchain_endpoint:
+            logging.error(
+                'Cannot proceed: LANGCHAIN_ENDPOINT env variable is not defined (define it in a .env file)'
+            )
+            sys.exit(1)
 
-    # Check env (LangSmith)
-    langchain_endpoint = os.getenv('LANGCHAIN_ENDPOINT')
-    if not langchain_endpoint:
+        langchain_apikey = os.getenv('LANGCHAIN_API_KEY')
+        if not langchain_apikey:
+            logging.error(
+                'Cannot proceed: LANGCHAIN_API_KEY env variable is not defined (define it in a .env file)'
+            )
+            sys.exit(1)
+    elif cli_args['<dataset_provider>'].lower() == "langfuse":
+        langfuse_secret_key = os.getenv('LANGFUSE_SECRET_KEY')
+        if not langfuse_secret_key:
+            logging.error(
+                'Cannot proceed: LANGFUSE_SECRET_KEY env variable is not defined (define it in a .env file)'
+            )
+            sys.exit(1)
+        langchain_host = os.getenv('LANGFUSE_HOST')
+        if not langchain_host:
+            logging.error(
+                'Cannot proceed: LANGFUSE_HOST env variable is not defined (define it in a .env file)'
+            )
+            sys.exit(1)
+        langfuse_public_key = os.getenv('LANGFUSE_PUBLIC_KEY')
+        if not langfuse_public_key:
+            logging.error(
+                'Cannot proceed: LANGFUSE_PUBLIC_KEY env variable is not defined (define it in a .env file)'
+            )
+            sys.exit(1)
+    else:
         logging.error(
-            'Cannot proceed: LANGCHAIN_ENDPOINT env variable is not defined (define it in a .env file)'
+            'Cannot proceed: dataset_provider is not valid, only langfuse or langsmith'
         )
         sys.exit(1)
-
-    langchain_apikey = os.getenv('LANGCHAIN_API_KEY')
-    if not langchain_apikey:
-        logging.error(
-            'Cannot proceed: LANGCHAIN_API_KEY env variable is not defined (define it in a .env file)'
-        )
-        sys.exit(1)
-
     # Check args:
     # - RAGQuery JSON file
     rag_query_file_path = Path(cli_args['<rag_query>'])
