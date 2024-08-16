@@ -44,6 +44,7 @@ from typing import List
 
 import pandas as pd
 from docopt import docopt
+from dotenv import load_dotenv
 from langfuse import Langfuse
 from langsmith import Client
 
@@ -158,6 +159,7 @@ def _send_to_langfuse(dataset: pd.DataFrame, dataset_name: str):
         }
         for r in records
     ]
+    client.flush()
 
     # Creates examples in the dataset on Langfuse
     for input, output in zip(inputs, outputs):
@@ -169,7 +171,7 @@ def _send_to_langfuse(dataset: pd.DataFrame, dataset_name: str):
 
 if __name__ == '__main__':
     cli_args = docopt(__doc__, version='Dataset generator 0.1.0')
-
+    load_dotenv()
     # Set logging level
     log_format = '%(levelname)s:%(module)s:%(message)s'
     logging.basicConfig(
