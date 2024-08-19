@@ -20,20 +20,26 @@
       class="p-3"
       *ngIf="dialogs?.length > 1"
     >
-      <nb-select
-        placeholder="Dialog #{{ displayedDialogIndex + 1 }}"
-        status="basic"
-        size="small"
-        fullWidth
-      >
-        <nb-option
-          *ngFor="let dialog of dialogs; let index = index"
-          [value]="null"
-          (click)="displayDialog(index)"
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="wechat"
+        ></nb-icon>
+        <nb-select
+          placeholder="Dialog #{{ displayedDialogIndex + 1 }}"
+          status="basic"
+          size="small"
+          fullWidth
         >
-          Dialog #{{ index + 1 }}
-        </nb-option>
-      </nb-select>
+          <nb-option
+            *ngFor="let dialog of dialogs; let index = index"
+            [value]="null"
+            (click)="displayDialog(index)"
+          >
+            Dialog #{{ index + 1 }}
+          </nb-option>
+        </nb-select>
+      </nb-form-field>
     </div>
 
     <div

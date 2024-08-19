@@ -139,15 +139,21 @@
               placeholder="New User"
             />
           </nb-form-field>
+
           <nb-checkbox
             [(checked)]="newOwner"
             class="checkbox"
+            nbTooltip="Set the new user as owner of the namespace (allowed to add and remove users)"
             >Owner</nb-checkbox
           >
+
           <button
             nbButton
+            status="primary"
+            size="medium"
             (click)="addUserNamespace()"
           >
+            <nb-icon icon="plus"></nb-icon>
             Add
           </button>
         </div>
@@ -192,12 +198,22 @@
           </nb-select>
         </p>
       </nb-card-body>
-      <nb-card-footer>
+      <nb-card-footer class="text-right">
+        <button
+          nbButton
+          ghost
+          status="basic"
+          (click)="closeEdition()"
+        >
+          <nb-icon icon="x-lg"></nb-icon>
+          Close
+        </button>
         <button
           nbButton
           status="primary"
           (click)="saveNamespaceConfiguration()"
         >
+          <nb-icon icon="floppy"></nb-icon>
           Save
         </button>
       </nb-card-footer>

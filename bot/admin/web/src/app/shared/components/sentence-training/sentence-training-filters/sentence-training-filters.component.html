@@ -546,19 +546,25 @@
           <div class="my-2 tools-columns">
             Translate selected sentences
 
-            <nb-select
-              placeholder="Target Language"
-              fullWidth
-              size="small"
-              nbTooltip="Select the language in which to translate the sentences"
-              [(ngModel)]="translateTargetLocale"
-            >
-              <nb-option
-                *ngFor="let l of state.otherThanCurrentLocales()"
-                [value]="l"
-                >{{ state.localeName(l) }}
-              </nb-option>
-            </nb-select>
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="globe2"
+              ></nb-icon>
+              <nb-select
+                placeholder="Target Language"
+                fullWidth
+                size="small"
+                nbTooltip="Select the language in which to translate the sentences"
+                [(ngModel)]="translateTargetLocale"
+              >
+                <nb-option
+                  *ngFor="let l of state.otherThanCurrentLocales()"
+                  [value]="l"
+                  >{{ state.localeName(l) }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
 
             <button
               nbButton

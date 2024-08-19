@@ -22,14 +22,18 @@
   >
     {{ entity.qualifiedName(state.user) }}
 
-    <nb-icon
+    <button
       *ngIf="entityType"
+      nbButton
+      size="tiny"
+      shape="round"
       status="danger"
-      class="ml-1 pointer"
+      class="ml-1"
       nbTooltip="Remove sub entity type"
       (click)="remove()"
-      icon="trash"
-    ></nb-icon>
+    >
+      <nb-icon icon="trash"></nb-icon>
+    </button>
   </div>
 
   <div

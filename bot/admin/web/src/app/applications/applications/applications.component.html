@@ -103,6 +103,18 @@
         nbButton
         ghost
         shape="round"
+        status="info"
+        routerLink="edit/{{ app._id }}"
+        nbTooltip="Edit application"
+      >
+        <nb-icon icon="pencil"></nb-icon>
+      </button>
+
+      <button
+        *ngIf="isAdmin()"
+        nbButton
+        ghost
+        shape="round"
         (click)="downloadDump(app)"
         nbTooltip="Download an application dump"
       >
@@ -117,17 +129,6 @@
         nbTooltip="Download a sentences dump"
       >
         <nb-icon icon="download"></nb-icon>
-      </button>
-
-      <button
-        *ngIf="isAdmin()"
-        nbButton
-        ghost
-        shape="round"
-        routerLink="edit/{{ app._id }}"
-        nbTooltip="Edit application"
-      >
-        <nb-icon icon="pencil"></nb-icon>
       </button>
 
       <button

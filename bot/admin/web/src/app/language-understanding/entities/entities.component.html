@@ -29,20 +29,29 @@
       (click)="selectEntityType(e)"
     >
       {{ e.nameWithoutNamespace(state.currentApplication.namespace) }}
-      <nb-icon
+
+      <button
         *ngIf="e.namespace() === state.currentApplication.namespace"
-        class="pointer ml-1"
+        nbButton
+        size="tiny"
+        shape="round"
         nbTooltip="Edit entity"
-        icon="pencil"
-      ></nb-icon>
-      <nb-icon
+        class="ml-1"
+      >
+        <nb-icon icon="pencil"></nb-icon>
+      </button>
+
+      <button
         *ngIf="e.namespace() === state.currentApplication.namespace"
-        class="pointer ml-1"
-        nbTooltip="delete entity type"
+        nbButton
+        size="tiny"
+        shape="round"
         status="danger"
-        icon="trash"
+        nbTooltip="delete entity type"
         (click)="deleteEntityType(e)"
-      ></nb-icon>
+      >
+        <nb-icon icon="trash"></nb-icon>
+      </button>
     </div>
 
     <nb-card
@@ -168,12 +177,18 @@
                   >
                     {{ label }}
 
-                    <nb-icon
+                    <button
+                      nbButton
+                      size="tiny"
+                      status="danger"
+                      shape="round"
+                      ghost
                       (click)="deleteLabel(predefinedValue, label)"
-                      class="pointer ml-1"
+                      class="ml-1"
                       nbTooltip="Delete label"
-                      icon="x-circle"
-                    ></nb-icon>
+                    >
+                      <nb-icon icon="x-circle"></nb-icon>
+                    </button>
                   </div>
                 </td>
                 <td class="d-flex gap-1">
