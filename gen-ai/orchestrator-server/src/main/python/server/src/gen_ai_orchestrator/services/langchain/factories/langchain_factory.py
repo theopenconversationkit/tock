@@ -37,7 +37,7 @@ from gen_ai_orchestrator.errors.exceptions.observability.observability_exception
 from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
     BloomzCompressorSetting,
 )
-from gen_ai_orchestrator.models.contextual_compressor.setting import (
+from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
     BaseCompressorSetting,
 )
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (

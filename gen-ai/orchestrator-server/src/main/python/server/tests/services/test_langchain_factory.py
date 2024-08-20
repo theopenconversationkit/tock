@@ -23,6 +23,9 @@ from gen_ai_orchestrator.errors.exceptions.observability.observability_exception
     GenAIUnknownObservabilityProviderException,
     GenAIUnknownObservabilityProviderSettingException,
 )
+from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
+    ContextualCompressorProvider,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -32,6 +35,9 @@ from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
     OpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.guardrail.guardrail_provider import (
+    GuardrailProvider,
 )
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
@@ -58,6 +64,10 @@ from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.bloomz_compressor_factory import (
+    BloomzCompressorFactory,
+    BloomzCompressorSetting,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
 )
@@ -67,9 +77,15 @@ from gen_ai_orchestrator.services.langchain.factories.em.bloomz_em_factory impor
 from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory import (
     OpenAIEMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.guardrail.bloomz_guardrail_factory import (
+    BloomzGuardrailFactory,
+    BloomzGuardrailSetting,
+)
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_callback_handler_factory,
+    get_compressor_factory,
     get_em_factory,
+    get_guardrail_factory,
     get_llm_factory,
     get_vector_store_factory,
 )
@@ -260,3 +276,29 @@ def test_get_langfuse_observability_factory():
     )
     assert langfuse_factory.setting.provider == ObservabilityProvider.LANGFUSE
     assert isinstance(langfuse_factory, LangfuseCallbackHandlerFactory)
+
+
+def test_get_bloomz_guardrail_factory():
+    guardrail = get_guardrail_factory(
+        setting=BloomzGuardrailSetting(
+            provider='BloomzGuardrail', api_base='http://guardrail.com', max_score=0.6
+        )
+    )
+
+    assert guardrail.setting.provider == GuardrailProvider.BloomZ
+    assert isinstance(guardrail, BloomzGuardrailFactory)
+
+
+def test_get_bloomz_compressor_factory():
+    compressor = get_compressor_factory(
+        setting=BloomzCompressorSetting(
+            provider='BloomzRerank',
+            min_score=0.5,
+            endpoint='http://compressor.com',
+            max_documents=25,
+            label='label',
+        )
+    )
+
+    assert compressor.setting.provider == ContextualCompressorProvider.BloomZ
+    assert isinstance(compressor, BloomzCompressorFactory)

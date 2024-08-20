@@ -19,7 +19,7 @@ from langchain.retrievers.document_compressors.base import (
 )
 from pydantic import BaseModel
 
-from gen_ai_orchestrator.models.contextual_compressor.setting import (
+from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
     BaseCompressorSetting,
 )
 

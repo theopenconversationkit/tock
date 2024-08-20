@@ -41,7 +41,7 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
 )
-from gen_ai_orchestrator.models.contextual_compressor.setting import (
+from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
     BaseCompressorSetting,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
@@ -190,7 +190,6 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
         search_kwargs=query.document_search_params.to_dict()
     )
     if query.compressor_setting:
-        print('\n\n\nCompressor setting OK\n\n\n')
         retriever = add_compressor(retriever, query.compressor_setting)
 
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')

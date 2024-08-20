@@ -16,10 +16,10 @@ from typing import Literal, Optional
 
 from pydantic import Field
 
-from gen_ai_orchestrator.models.contextual_compressor.provider import (
+from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
     ContextualCompressorProvider,
 )
-from gen_ai_orchestrator.models.contextual_compressor.setting import (
+from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
     BaseCompressorSetting,
 )
 

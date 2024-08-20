@@ -14,7 +14,7 @@
 #
 from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.models.contextual_compressor.provider import (
+from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import (
     ContextualCompressorProvider,
 )
 

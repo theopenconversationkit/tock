@@ -18,7 +18,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
-from gen_ai_orchestrator.models.contextual_compressor.types import (
+from gen_ai_orchestrator.models.contextual_compressor.compressor_types import (
     CompressorSetting,
 )
 from gen_ai_orchestrator.models.em.em_types import EMSetting
