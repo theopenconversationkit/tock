@@ -16,29 +16,28 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotTemplateMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotMessageType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.*
+import ai.tock.bot.engine.config.UploadedFilesService.attachmentType
+import ai.tock.bot.engine.message.Attachment
 import ai.tock.bot.engine.message.GenericMessage
 
-data class WhatsAppCloudBotTemplateMessage(
+data class WhatsAppCloudBotImageMessage (
         override val messagingProduct: String,
-        val template: WhatsAppCloudBotTemplate,
+        val image: WhatsAppCloudBotImage,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val userId: String? = null,
-) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.template, userId) {
+) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.image, userId) {
     override fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage =
-            WhatsAppCloudSendBotTemplateMessage(
+            WhatsAppCloudSendBotImageMessage(
                     messagingProduct,
-                    template,
+                    image,
                     recipientType,
                     recipientId
             )
 
-    override fun toGenericMessage(): GenericMessage? =
+    override fun toGenericMessage(): GenericMessage =
             GenericMessage(
-                    texts = mapOf(GenericMessage.TEXT_PARAM to "template"),
+                    texts = mapOf(GenericMessage.TEXT_PARAM to "image"),
+                    attachments = listOf(Attachment(image.id, attachmentType(image.id)))
             )
 }

@@ -16,11 +16,6 @@
 
 package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractive
-
-data class WhatsAppCloudSendBotInteractiveMessage(
-        override val messagingProduct: String,
-        val interactive: WhatsAppCloudBotInteractive,
-        override val recipientType: WhatsAppCloudBotRecipientType,
-        override val to: String,
-) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.interactive)
+enum class WhatsAppCloudBotMessageType {
+    text, reaction, image, audio , video, location, contacts, interactive, template
+}

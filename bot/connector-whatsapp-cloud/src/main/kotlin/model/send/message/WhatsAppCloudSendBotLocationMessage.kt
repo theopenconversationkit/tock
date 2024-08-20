@@ -23,4 +23,4 @@ data class WhatsAppCloudSendBotLocationMessage(
         val location: WhatsAppCloudBotLocation,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val to: String,
-) : WhatsAppCloudSendBotMessage(WhatsAppCoudBotMessageType.location)
+) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.location)

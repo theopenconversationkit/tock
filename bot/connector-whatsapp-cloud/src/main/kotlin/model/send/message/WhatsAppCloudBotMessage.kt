@@ -20,10 +20,7 @@ import ai.tock.bot.connector.ConnectorMessage
 import ai.tock.bot.connector.ConnectorType
 import ai.tock.bot.connector.whatsapp.cloud.UserHashedIdCache
 import ai.tock.bot.connector.whatsapp.cloud.WhatsAppCloudConnectorMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotInteractiveMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotLocationMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTemplateMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotTextMessage
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.*
 import ai.tock.bot.connector.whatsapp.cloud.whatsAppCloudConnectorType
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -41,9 +38,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = WhatsAppCloudBotInteractiveMessage::class, name = "interactive"),
     JsonSubTypes.Type(value = WhatsAppCloudBotLocationMessage::class, name = "location"),
     JsonSubTypes.Type(value = WhatsAppCloudBotTemplateMessage::class, name = "template"),
-)
+    JsonSubTypes.Type(value = WhatsAppCloudBotImageMessage::class, name = "image")
+    )
 
-abstract class WhatsAppCloudBotMessage ( val type: WhatsAppCoudBotMessageType, @JsonIgnore internal open val userId: String?) :
+abstract class WhatsAppCloudBotMessage (val type: WhatsAppCloudBotMessageType, @JsonIgnore internal open val userId: String?) :
     ConnectorMessage, WhatsAppCloudConnectorMessage() {
 
     @get:JsonIgnore
