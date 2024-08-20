@@ -325,10 +325,10 @@ fun <T : Bus<T>> T.whatsAppCloudBodyTemplate(
 )
 
 fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
-    typeParameter: CharSequence?,
+    typeParameter: ParameterType,
     textButton: CharSequence?
 ): TextParameter = TextParameter(
-    type = ParameterType.valueOf((typeParameter).toString()),
+    type = typeParameter,
     text = translate(textButton).toString(),
 )
 
