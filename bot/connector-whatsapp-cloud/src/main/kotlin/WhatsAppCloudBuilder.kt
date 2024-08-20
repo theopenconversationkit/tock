@@ -324,11 +324,20 @@ fun <T : Bus<T>> T.whatsAppCloudBodyTemplate(
     parameters = parameters
 )
 
+@Deprecated("use whatsAppCloudTextParameterTemplate(typeParameter: ParameterType,textButton: CharSequence?) instead")
 fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
     typeParameter: CharSequence?,
     textButton: CharSequence?
 ): TextParameter = TextParameter(
-    type = ParameterType.valueOf(translate(typeParameter).toString()),
+    type = ParameterType.valueOf((typeParameter).toString()),
+    text = translate(textButton).toString(),
+)
+
+fun <T : Bus<T>> T.whatsAppCloudTextParameterTemplate(
+    typeParameter: ParameterType,
+    textButton: CharSequence?
+): TextParameter = TextParameter(
+    type = typeParameter,
     text = translate(textButton).toString(),
 )
 
