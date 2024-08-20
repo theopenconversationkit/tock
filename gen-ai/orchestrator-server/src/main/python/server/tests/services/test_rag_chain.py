@@ -12,10 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+import os
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException
+from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
 from requests.exceptions import HTTPError
 
@@ -29,6 +31,9 @@ from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
+from gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank import (
+    BloomzRerank,
+)
 from gen_ai_orchestrator.services.langchain import rag_chain
 from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_handler import (
     RetrieverJsonCallbackHandler,
@@ -53,7 +58,10 @@ from gen_ai_orchestrator.services.langchain.rag_chain import (
 # module that imports get_llm_factory):
 
 
-@patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
+@patch(
+    'gen_ai_orchestrator.services.langchain.rag_chain.ContextualCompressionRetriever'
+)
+@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
 @patch(
     'gen_ai_orchestrator.services.langchain.factories.langchain_factory.get_callback_handler_factory'
 )
@@ -84,7 +92,8 @@ async def test_rag_chain(
     mocked_get_em_factory,
     mocked_get_llm_factory,
     mocked_get_callback_handler_factory,
-    mocked_parse,
+    mocked_guardrail_parse,
+    mocked_compressor_builder,
 ):
     """Test the full execute_qa_chain method by mocking all external calls."""
     # Build a test RagQuery
@@ -148,6 +157,11 @@ Answer in {locale}:""",
             'api_base': 'http://test-guard.com',
             'max_score': 0.5,
         },
+        'compressor_setting': {
+            'provider': 'BloomzRerank',
+            'min_score': 0.7,
+            'endpoint': 'http://test-rerank.com',
+        },
     }
     query = RagQuery(**query_dict)
 
@@ -166,8 +180,9 @@ Answer in {locale}:""",
 
     mocked_response = MagicMock()
     mocked_response.status_code = 200
-    mocked_response.content = {'reponse': []}
-    mocked_parse.return_value = mocked_response
+    mocked_response.content = {'response': []}
+
+    mocked_guardrail_parse.return_value = mocked_response
 
     # Call function
     await execute_qa_chain(query, debug=True)
@@ -191,9 +206,9 @@ Answer in {locale}:""",
     # Assert LangChain qa chain is created using the expected settings from query
     mocked_chain_builder.assert_called_once_with(
         llm=llm_factory_instance.get_language_model(),
-        retriever=vector_store_factory_instance.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
-        ),
+        retriever=mocked_compressor_builder.return_value,  # vector_store_factory_instance.get_vector_store().as_retriever(
+        # search_kwargs=query.document_search_params.to_dict()
+        # ),
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
@@ -224,6 +239,12 @@ Answer in {locale}:""",
         debug=mocked_rag_debug_data(query, mocked_rag_answer, mocked_callback, 1),
     )
 
+    mocked_guardrail_parse.assert_called_once_with(
+        os.path.join(query.guardrail_setting.api_base, 'guardrail'),
+        json={'text': [mocked_rag_answer['answer']]},
+    )
+    mocked_compressor_builder.assert_called_once()
+
 
 @patch('gen_ai_orchestrator.services.guardrail.bloomz_guardrail.requests.post')
 def test_guardrail_parse_succeed_with_toxicities_encountered(
@@ -253,7 +274,8 @@ def test_guardrail_parse_succeed_with_toxicities_encountered(
     guardrail_output = guardrail.parse(rag_response['answer'])
 
     mocked_guardrail_response.assert_called_once_with(
-        'http://test-guard.com/guardrail', json={'text': [rag_response['answer']]}
+        os.path.join(guardrail.endpoint, 'guardrail'),
+        json={'text': [rag_response['answer']]},
     )
     assert guardrail_output == {
         'content': 'This is a sample text.',
@@ -282,8 +304,86 @@ def test_guardrail_parse_fail(mocked_guardrail_response):
         guardrail.parse(rag_response['answer'])
 
     mocked_guardrail_response.assert_called_once_with(
-        'http://test-guard.com/guardrail', json={'text': [rag_response['answer']]}
+        os.path.join(guardrail.endpoint, 'guardrail'),
+        json={'text': [rag_response['answer']]},
     )
+
+
+@patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
+def test_compress_documents(mocked_rerank):
+    bloomz_reranker = BloomzRerank(label='entailement')
+    documents = [
+        Document(
+            page_content='Page content 1',
+            metadata={
+                'source': 'doc1.pdf',
+                'file_path': 'doc1.pdf',
+                'page': 57,
+                'total_pages': 104,
+                'Producer': 'GPL Ghostscript 9.05',
+                'CreationDate': "D:20230828165103+02'00'",
+                'ModDate': "D:20230828165103+02'00'",
+                'Title': 'DGRC 2023 - ABEI',
+                'Creator': 'PDFCreator Version 1.6.2',
+                'Author': 'F9261',
+                'Keywords': '',
+                'Subject': '',
+            },
+        ),
+        Document(
+            page_content='Contenu du document 8',
+            metadata={
+                'source': 'incident - v5.pdf',
+                'file_path': 'incident - v5.pdf',
+                'page': 19,
+                'total_pages': 23,
+                'Author': 'F0421',
+                'CreationDate': "D:20231212161411+01'00'",
+                'ModDate': "D:20231212161411+01'00'",
+                'Producer': 'Microsoft: Print To PDF',
+                'Title': "Microsoft Word - P1 - DÃ©partement des Risques - DÃ©claration d'un incident - v5.doc",
+            },
+        ),
+    ]
+
+    mocked_response = MagicMock()
+    mocked_response.status_code = 200
+    mocked_response.json.return_value = {
+        'response': [
+            [
+                {'label': 'entailement', 'score': 0.1},
+                {'label': 'neutral', 'score': 0.2},
+                {'label': 'contradiction', 'score': 0.7},
+            ],
+            [
+                {'label': 'entailement', 'score': 0.8},
+                {'label': 'neutral', 'score': 0.2},
+                {'label': 'contradiction', 'score': 0.7},
+            ],
+        ]
+    }
+    mocked_rerank.return_value = mocked_response
+
+    result = bloomz_reranker.compress_documents(documents=documents, query='Some query')
+
+    mocked_rerank.assert_called_once()
+    assert result == [
+        Document(
+            page_content='Contenu du document 8',
+            metadata={
+                'source': 'incident - v5.pdf',
+                'file_path': 'incident - v5.pdf',
+                'page': 19,
+                'total_pages': 23,
+                'Author': 'F0421',
+                'CreationDate': "D:20231212161411+01'00'",
+                'ModDate': "D:20231212161411+01'00'",
+                'Producer': 'Microsoft: Print To PDF',
+                'Title': "Microsoft Word - P1 - DÃ©partement des Risques - DÃ©claration d'un incident - v5.doc",
+                'retriever_score': 0.8,
+            },
+        )
+    ]
 
 
 def test_check_guardrail_output_find_toxicities():

@@ -34,6 +34,12 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
     GenAIUnknownObservabilityProviderSettingException,
 )
+from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
+    BloomzCompressorSetting,
+)
+from gen_ai_orchestrator.models.contextual_compressor.setting import (
+    BaseCompressorSetting,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -80,6 +86,12 @@ from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback
 )
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
     LangfuseCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.bloomz_compressor_factory import (
+    BloomzCompressorFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.compressor_factory import (
+    CompressorFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
@@ -255,5 +267,15 @@ def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
     if isinstance(setting, BloomzGuardrailSetting):
         logger.debug('Guardrail Factory - BloomzGuardrailFactory')
         return BloomzGuardrailFactory(setting=setting)
+    else:
+        raise GenAIUnknownProviderSettingException()
+
+
+def get_compressor_factory(setting: BaseCompressorSetting) -> CompressorFactory:
+    print('get compressor factory OK')
+    logger.info('Get Contextual Compressor Factory for the given setting')
+    if isinstance(setting, BloomzCompressorSetting):
+        logger.debug('Contextual Compressor Factory - BloomzCompressorFactory')
+        return BloomzCompressorFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()

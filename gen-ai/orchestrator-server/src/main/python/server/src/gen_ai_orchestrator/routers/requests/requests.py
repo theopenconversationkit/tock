@@ -18,6 +18,9 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
+from gen_ai_orchestrator.models.contextual_compressor.types import (
+    CompressorSetting,
+)
 from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.guardrail.guardrail_types import (
     GuardrailSetting,
@@ -96,6 +99,10 @@ class RagQuery(BaseModel):
     guardrail_setting: Optional[GuardrailSetting] = Field(
         description='Guardrail settings, to classify LLM output toxicity.', default=None
     )
+    compressor_setting: Optional[CompressorSetting] = Field(
+        description='Compressor settings, to rerank relevant documents returned by retriever.',
+        default=None,
+    )
 
     model_config = {
         'json_schema_extra': {
@@ -156,6 +163,11 @@ Answer in {locale}:""",
                     'guardrail_setting': {
                         'provider': 'BloomzGuardrail',
                         'api_base': 'https://*********',
+                    },
+                    'compressor_setting': {
+                        'provider': 'BloomzRerank',
+                        'min_score': 0.7,
+                        'endpoint': 'https://*********',
                     },
                 }
             ]

@@ -63,7 +63,6 @@ class BloomzGuardrailOutputParser(BaseCumulativeTransformOutputParser[dict]):
         response = requests.post(
             urljoin(self.endpoint, '/guardrail'), json={'text': [text]}
         )
-
         if response.status_code != 200:
             raise HTTPError(
                 f"Error {response.status_code}. Bloomz guardrail didn't respond as expected."
