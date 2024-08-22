@@ -23,7 +23,9 @@ import time
 from logging import ERROR, WARNING
 from typing import List, Optional
 
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.conversational_retrieval.base import (
+    ConversationalRetrievalChain,
+)
 from langchain.memory import ChatMessageHistory
 from langchain_core.prompts import PromptTemplate
 
@@ -37,7 +39,9 @@ from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler
     opensearch_exception_handler,
 )
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
 from gen_ai_orchestrator.models.rag.rag_models import (
     ChatMessageType,
     Footnote,
@@ -55,9 +59,10 @@ from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_ha
     RetrieverJsonCallbackHandler,
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    create_observability_callback_handler,
     get_em_factory,
     get_llm_factory,
-    get_vector_store_factory, create_observability_callback_handler,
+    get_vector_store_factory,
 )
 
 logger = logging.getLogger(__name__)
@@ -111,7 +116,9 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         callback_handlers.append(
             create_observability_callback_handler(
                 observability_setting=query.observability_setting,
-                trace_name=ObservabilityTrace.RAG))
+                trace_name=ObservabilityTrace.RAG,
+            )
+        )
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
@@ -145,7 +152,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
             query, response, records_callback_handler, rag_duration
         )
         if debug
-        else None
+        else None,
     )
 
 
