@@ -166,25 +166,3 @@ class SentenceGenerationQuery(BaseModel):
     observability_setting: Optional[ObservabilitySetting] = Field(
         description='The observability settings.', default=None
     )
-
-
-"""class GeminiRequest(BaseModel):
-    question: str = Field(
-        description='The question you want to ask to Gemini',
-        examples=['What is shown in this image ?'],
-    )
-    model: str = Field(
-        description='The model you want to use', examples=['gemini-1.5-pro-001']
-    )
-    project_id: str = Field(description='Your project ID', examples=['your-project-ID'])
-    location: str = Field(
-        description='The Google Cloud location where your resources will be used',
-        default='europe-west4',
-    )
-    # files: list[UploadFile] = Field(description='The files you want to question Gemini about')
-    generation_config: Optional[GenerationConfig] = Field(
-        description="Special configurations for the model's generation",
-        default=None,
-        examples=[{'temperature': 0.5, 'max_output_tokens': 5000}],
-    )
-"""

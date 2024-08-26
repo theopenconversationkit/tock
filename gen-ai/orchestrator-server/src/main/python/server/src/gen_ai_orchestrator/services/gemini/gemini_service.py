@@ -17,7 +17,7 @@ import io
 from typing import Union
 
 from fastapi import UploadFile
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_google_vertexai.chat_models import ChatVertexAI
 from pdf2image import convert_from_bytes
 
@@ -29,7 +29,22 @@ async def send_images(
     project_id: str,
     location: str,
     temperature: int,
-):
+) -> AIMessage:
+    """
+    Processes a list of image files or a single PDF file, prepares the images, and sends them
+    along with a question to an AI service for analysis.
+
+    Parameters:
+    - files (Union[list[UploadFile], UploadFile]): A list of image files or a single PDF file to be processed.
+    - question (str): The question to be asked to the AI, relying on the provided images.
+    - model (str): The name of the AI model to be used for the request.
+    - project_id (str): The project ID related to the AI service request.
+    - location (str): The location context for the AI service request.
+    - temperature (int): A parameter controlling the randomness of the AI model's response.
+
+    Returns:
+    - AIMessage: The response from the AI model after processing the images and the question.
+    """
     if type(files) == list:  # We are using /gemini/images endpoint
         images_list = await prepare_images(files=files)
 
@@ -38,7 +53,8 @@ async def send_images(
 
     prompt = f"""
         You are specialized in image analysis !
-        Rely on the image(s) and answer the following question in the same language it is written :
+        Look and search in all the images before answering the question.
+        Answer the following question in the same language it is written :
         {question}
         """
 
@@ -63,12 +79,22 @@ async def send_images(
         stop=None,
     )
 
-    ai_message = llm.invoke([message])
-
-    return ai_message.content
+    return llm.invoke([message])
 
 
-async def prepare_images(files: list[UploadFile]):
+async def prepare_images(files: list[UploadFile]) -> list:
+    """
+    Reads a list of image files, encodes them in Base64 format, and returns them as a list.
+
+    This function processes a list of uploaded image files by reading their content asynchronously,
+    encoding each image into a Base64 string, and storing the encoded images in a list.
+
+    Parameters:
+    - files (list[UploadFile]): A list of image files to be read and encoded.
+
+    Returns:
+    - list: A list of Base64-encoded strings representing the content of the image files.
+    """
     images_list = []
     for file in files:
         image_data = await file.read()
@@ -78,7 +104,19 @@ async def prepare_images(files: list[UploadFile]):
     return images_list
 
 
-async def prepare_images_from_pdf(file: UploadFile):
+async def prepare_images_from_pdf(file: UploadFile) -> list:
+    """
+    Converts a PDF file into a list of images, encodes each image in Base64 format, and returns them.
+
+    This function takes a single PDF file, converts each page of the PDF into an image,
+    encodes each image into a Base64 string, and stores the encoded images in a list.
+
+    Parameters:
+    - file (UploadFile): A PDF file to be converted into images and encoded.
+
+    Returns:
+    - list: A list of Base64-encoded strings, each representing an image of a page from the PDF file.
+    """
     images_list = []
     pdf_content = await file.read()
     images = convert_from_bytes(pdf_file=pdf_content)
