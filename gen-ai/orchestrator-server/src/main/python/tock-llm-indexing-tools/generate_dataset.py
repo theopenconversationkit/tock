@@ -146,12 +146,11 @@ def _send_to_langfuse(dataset: pd.DataFrame, dataset_name: str):
             'question': r['question'],
             'locale': r['locale'],
             'no_answer': r['no_answer'],
-            'metadata': {
-                'topic': r['topic'],
-            },
         }
         for r in records
     ]
+    metadatas = [{'topic': r['topic']} for r in records]
+
     outputs = [
         {
             'answer': r['answer'],
@@ -159,13 +158,15 @@ def _send_to_langfuse(dataset: pd.DataFrame, dataset_name: str):
         }
         for r in records
     ]
-    client.flush()
 
     # Creates examples in the dataset on Langfuse
-    for input, output in zip(inputs, outputs):
+    for input, metadata, output in zip(inputs, metadatas, outputs):
         logging.info('import data')
         client.create_dataset_item(
-            dataset_name=dataset_name, input=input, expected_output=output
+            dataset_name=dataset_name,
+            input=input,
+            expected_output=output,
+            metadata=metadata,
         )
 
 
