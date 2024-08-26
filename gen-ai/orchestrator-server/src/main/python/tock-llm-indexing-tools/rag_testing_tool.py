@@ -116,9 +116,16 @@ def test_rag(args):
     elif args['<dataset_provider>'].lower() == "langfuse":
         client = Langfuse()
         dataset = client.get_dataset(args["<dataset_name>"])
+        run_name_dataset = args['<test_name>'] + '-' + str(uuid4())[:8]
         for item in dataset.items:
-            handler = item.get_langchain_handler(run_name=args['<test_name>'] + '-' + str(uuid4())[:8])
-            _construct_chain().run(item.input, callbacks=[handler])
+            callback_handlers = []
+            handler = item.get_langchain_handler(run_name=run_name_dataset, run_metadata={
+                'index_session_id': index_session_id,
+                'k': k,
+            })
+            callback_handlers.append(
+                handler)
+            _construct_chain().invoke(item.input, config={'callbacks': callback_handlers})
         client.flush()
 
     duration = datetime.now() - start_time
