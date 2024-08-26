@@ -53,11 +53,10 @@ from uuid import uuid4
 
 from docopt import docopt
 from dotenv import load_dotenv
-from langsmith import Client
-from langfuse import Langfuse
-
 from gen_ai_orchestrator.routers.requests.requests import RagQuery
 from gen_ai_orchestrator.services.langchain.rag_chain import create_rag_chain
+from langfuse import Langfuse
+from langsmith import Client
 
 
 def test_rag(args):
@@ -92,7 +91,9 @@ def test_rag(args):
         } | create_rag_chain(RagQuery(**rag_query))
 
     search_params = rag_query['document_search_params']
-    index_session_id = search_params['filter'][0]['term']['metadata.index_session_id.keyword']
+    index_session_id = search_params['filter'][0]['term'][
+        'metadata.index_session_id.keyword'
+    ]
     k = search_params['k']
 
     # This is LangSmith's default concurrency level
@@ -101,7 +102,7 @@ def test_rag(args):
     # one at a time
     if args['<delay>']:
         concurrency_level = 1
-    if args['<dataset_provider>'].lower() == "langsmith":
+    if args['<dataset_provider>'].lower() == 'langsmith':
         client = Client()
         client.run_on_dataset(
             dataset_name=args['<dataset_name>'],
@@ -113,19 +114,23 @@ def test_rag(args):
             },
             concurrency_level=concurrency_level,
         )
-    elif args['<dataset_provider>'].lower() == "langfuse":
+    elif args['<dataset_provider>'].lower() == 'langfuse':
         client = Langfuse()
-        dataset = client.get_dataset(args["<dataset_name>"])
+        dataset = client.get_dataset(args['<dataset_name>'])
         run_name_dataset = args['<test_name>'] + '-' + str(uuid4())[:8]
         for item in dataset.items:
             callback_handlers = []
-            handler = item.get_langchain_handler(run_name=run_name_dataset, run_metadata={
-                'index_session_id': index_session_id,
-                'k': k,
-            })
-            callback_handlers.append(
-                handler)
-            _construct_chain().invoke(item.input, config={'callbacks': callback_handlers})
+            handler = item.get_langchain_handler(
+                run_name=run_name_dataset,
+                run_metadata={
+                    'index_session_id': index_session_id,
+                    'k': k,
+                },
+            )
+            callback_handlers.append(handler)
+            _construct_chain().invoke(
+                item.input, config={'callbacks': callback_handlers}
+            )
         client.flush()
 
     duration = datetime.now() - start_time
@@ -148,7 +153,7 @@ if __name__ == '__main__':
     )
 
     load_dotenv()
-    if cli_args['<dataset_provider>'].lower() == "langsmith":
+    if cli_args['<dataset_provider>'].lower() == 'langsmith':
         # Check env (LangSmith)
         langchain_endpoint = os.getenv('LANGCHAIN_ENDPOINT')
         if not langchain_endpoint:
@@ -163,7 +168,7 @@ if __name__ == '__main__':
                 'Cannot proceed: LANGCHAIN_API_KEY env variable is not defined (define it in a .env file)'
             )
             sys.exit(1)
-    elif cli_args['<dataset_provider>'].lower() == "langfuse":
+    elif cli_args['<dataset_provider>'].lower() == 'langfuse':
         langfuse_secret_key = os.getenv('LANGFUSE_SECRET_KEY')
         if not langfuse_secret_key:
             logging.error(
