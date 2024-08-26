@@ -4,7 +4,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FaqDefinitionExtended } from '../faq-management.component';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
-import { copyToClipboard } from '../../../shared/utils';
+import { copyToClipboard, getExportFileName } from '../../../shared/utils';
 import { NbToastrService } from '@nebular/theme';
 import { ChoiceDialogComponent } from '../../../shared/components';
 
@@ -74,7 +74,15 @@ export class FaqManagementListComponent {
       type: 'application/json'
     });
 
-    saveAs(jsonBlob, `${this.state.currentApplication.name}_${this.state.currentLocale}_faq_${faq.title}.json`);
+    const exportFileName = getExportFileName(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      'Faq',
+      'json',
+      faq.title
+    );
+
+    saveAs(jsonBlob, exportFileName);
   }
 
   copyString(str: string) {

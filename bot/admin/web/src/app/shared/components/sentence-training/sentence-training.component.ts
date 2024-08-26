@@ -37,6 +37,7 @@ import { saveAs } from 'file-saver-es';
 import { SentenceTrainingService } from './sentence-training.service';
 import { getSentenceId } from './commons/utils';
 import { DOCUMENT } from '@angular/common';
+import { getExportFileName } from '../../utils';
 
 export type SentenceExtended = Sentence & { _showDialog?: boolean; _showStatsDetails?: boolean; _intentBeforeClassification?: string };
 
@@ -415,7 +416,13 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
         this.state.hasRole(UserRole.technicalAdmin)
       )
       .subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_sentences.json');
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'sentences',
+          'json'
+        );
+        saveAs(blob, exportFileName);
         this.toastrService.success('Dump provided', 'Sentences dump');
       });
   }

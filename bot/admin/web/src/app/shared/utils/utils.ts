@@ -57,15 +57,6 @@ export function readFileAsText(file: File): Promise<any> {
   });
 }
 
-export function exportJsonDump(obj: Object, fileName: string): void {
-  saveAs(
-    new Blob([JSON.stringify(obj)], {
-      type: 'application/json'
-    }),
-    fileName + '.json'
-  );
-}
-
 /**
  * Makes a deep copy of the object. (types and circular dependencies are not preserved).
  * @param {Object} obj Object to copy

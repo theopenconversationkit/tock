@@ -11,6 +11,7 @@ import { saveAs } from 'file-saver-es';
 import { UserRole } from '../../model/auth';
 import { Pagination } from '../../shared/components';
 import { Subject, takeUntil } from 'rxjs';
+import { getExportFileName } from '../../shared/utils';
 
 @Component({
   selector: 'tock-test-entity-errors',
@@ -92,7 +93,13 @@ export class TestEntityErrorsComponent implements OnInit, OnDestroy {
       this.qualityService
         .searchEntityErrorsBlob(TestErrorQuery.create(this.state, 0, 100000, this.intent === '' ? undefined : this.intent))
         .subscribe((blob) => {
-          saveAs(blob, this.state.currentApplication.name + '_entity_errors.json');
+          const exportFileName = getExportFileName(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            'Entity-errors',
+            'json'
+          );
+          saveAs(blob, exportFileName);
           this.dialog.notify(`Dump provided`, 'Dump');
         });
     }, 1);

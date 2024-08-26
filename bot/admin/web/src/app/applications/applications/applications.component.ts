@@ -23,6 +23,7 @@ import { UserRole } from '../../model/auth';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { getExportFileName } from '../../shared/utils';
 
 @Component({
   selector: 'tock-applications',
@@ -90,14 +91,16 @@ export class ApplicationsComponent implements OnInit {
 
   downloadDump(app: Application): void {
     this.applicationService.getApplicationDump(app).subscribe((blob) => {
-      saveAs(blob, app.name + '_app.json');
+      const exportFileName = getExportFileName(this.state.currentApplication.namespace, app.name, 'application-dump', 'json');
+      saveAs(blob, exportFileName);
       this.toastrService.show(`Application dump provided`, 'Dump', { duration: 2000 });
     });
   }
 
   downloadSentencesDump(app: Application): void {
     this.applicationService.getSentencesDump(app, this.state.hasRole(UserRole.technicalAdmin)).subscribe((blob) => {
-      saveAs(blob, app.name + '_sentences.json');
+      const exportFileName = getExportFileName(this.state.currentApplication.namespace, app.name, 'application-sentences', 'json');
+      saveAs(blob, exportFileName);
       this.toastrService.show(`Sentences dump provided`, 'Dump', { duration: 2000 });
     });
   }

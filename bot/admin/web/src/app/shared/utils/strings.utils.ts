@@ -78,3 +78,19 @@ export const toISOStringWithoutOffset = (date: Date) => {
     pad(date.getSeconds())
   );
 };
+
+export function getExportFileName(namespace: string, botName: string, type: string, extension: string, typeOption?: string): string {
+  let fileName = [normalizedCamelCase(namespace), normalizedCamelCase(botName), normalizedCamelCase(type)];
+
+  if (typeOption?.length) {
+    fileName.push(normalizedCamelCase(typeOption));
+  }
+
+  const currentdate = new Date();
+
+  fileName.push([currentdate.getDate(), currentdate.getMonth() + 1, currentdate.getFullYear()].join('-'));
+
+  fileName.push([currentdate.getHours(), currentdate.getMinutes(), currentdate.getSeconds()].join('-'));
+
+  return [fileName.join('_'), extension].join('.');
+}
