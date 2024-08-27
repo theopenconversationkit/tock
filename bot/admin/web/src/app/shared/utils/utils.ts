@@ -104,6 +104,13 @@ export function includesArray(data: any[], arr: any[]): boolean {
   return data.some((e) => Array.isArray(e) && e.every((o, i) => Object.is(arr[i], o)));
 }
 
+/**
+ * Return dark or light color depending on input color.
+ * @param {string} hexcolor a color in hexa
+ * @param {string} blackOutput the dark color to return to be readable in front of hexcolor
+ * @param {string} whiteOutput the light color to return to be readable in front of hexcolor
+ * @returns {blackOutput | whiteOutput} the dark or light color depending on the heaxcolor given
+ */
 export function getContrastYIQ(hexcolor: string, blackOutput?: string, whiteOutput?: string): string {
   if (!hexcolor) return '';
   blackOutput = blackOutput || 'black';
@@ -117,6 +124,49 @@ export function getContrastYIQ(hexcolor: string, blackOutput?: string, whiteOutp
   let yiq = (r * 299 + g * 587 + b * 114) / 1000;
 
   return yiq >= 140 ? blackOutput : whiteOutput;
+}
+
+/**
+ * Darken the given hexcolor if it is too light to be readable
+ * @param {string} hexcolor a color in hexadecimal format
+ * @returns {string} a darken version of hexcolor or unchanged hexcolor
+ */
+export function darkenIfTooLight(hexcolor: string): string {
+  if (!hexcolor) return '';
+  hexcolor = hexcolor.replace('#', '');
+
+  let r = parseInt(hexcolor.substring(0, 2), 16);
+  let g = parseInt(hexcolor.substring(2, 4), 16);
+  if (isNaN(g)) return hexcolor;
+  let b = parseInt(hexcolor.substring(4, 6), 16);
+
+  let yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+  return yiq > 180 ? shadeColor(hexcolor, -80) : '#' + hexcolor;
+}
+
+/**
+ * Change the given hexcolor intensity by the given amount
+ * @param {string} hexcolor a color in hexadecimal format
+ * @param {string} amount the positive or negative amount to add to each color component
+ * @returns {string} the modified color in hexadecimal format
+ */
+export function shadeColor(hexcolor: string, amount: number) {
+  hexcolor = hexcolor.replace('#', '');
+
+  let R = parseInt(hexcolor.substring(0, 2), 16);
+  let G = parseInt(hexcolor.substring(2, 4), 16);
+  let B = parseInt(hexcolor.substring(4, 6), 16);
+
+  R = Math.round(Math.min(R + amount, 255));
+  G = Math.round(Math.min(G + amount, 255));
+  B = Math.round(Math.min(B + amount, 255));
+
+  const RR = R.toString(16).length == 1 ? '0' + R.toString(16) : R.toString(16);
+  const GG = G.toString(16).length == 1 ? '0' + G.toString(16) : G.toString(16);
+  const BB = B.toString(16).length == 1 ? '0' + B.toString(16) : B.toString(16);
+
+  return '#' + RR + GG + BB;
 }
 
 export async function copyToClipboard(text: string): Promise<void> {

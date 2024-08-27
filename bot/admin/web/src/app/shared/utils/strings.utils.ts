@@ -78,3 +78,20 @@ export const toISOStringWithoutOffset = (date: Date) => {
     pad(date.getSeconds())
   );
 };
+
+/**
+ * To use when css ellipsis is not an option. Truncate given string to maxlen if necessary
+ * @param {string} str string to proceed
+ * @param {number} maxlen the length limit
+ * @param {boolean} useWordBoundary if true, avoid cuting inside words
+ * @param {boolean} htmlEllipsis to use or not the HTML entity code for ellipsis
+ * @returns {string} the proceeded string
+ */
+export function truncateString(str, maxlen, useWordBoundary, htmlEllipsis = true) {
+  if (str.length <= maxlen) {
+    return str;
+  }
+  const ellipsis = htmlEllipsis ? '&hellip;' : '...';
+  const subString = str.slice(0, maxlen - 1); // the original check
+  return (useWordBoundary ? subString.slice(0, subString.lastIndexOf(' ')) : subString) + ellipsis;
+}

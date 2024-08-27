@@ -13,89 +13,169 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<nb-accordion
-  class="flow"
-  [nbSpinner]="loading"
-  nbSpinnerStatus="primary"
->
-  <nb-accordion-item #accordion>
-    <nb-accordion-item-header>
-      Bot Flow
-      <span
-        *ngIf="statsMode"
-        class="status status-header statsMode-badge statsMode-true"
-        nbTooltip="Dynamic mode (user flow)"
-        >Dynamic</span
-      >
-      <span
-        *ngIf="!statsMode"
-        class="status status-header statsMode-badge statsMode-false"
-        nbTooltip="Static mode (available stories)"
-        >Static</span
-      >
-      <nb-icon
-        *ngIf="accordion.collapsed"
-        nbTooltip="Show options"
-        icon="chevron-down"
-      ></nb-icon>
-      <nb-icon
-        *ngIf="!accordion.collapsed"
-        nbTooltip="Hide options"
-        icon="chevron-up"
-      ></nb-icon>
-    </nb-accordion-item-header>
-    <nb-accordion-item-body>
-      <div class="flow-option-group">
-        <span class="flow-option-group-name">Mode:</span>
-        <nb-checkbox
-          nbTooltip="Show available stories (static mode)"
-          class="mode-selection"
-          [(ngModel)]="statsMode"
-          (change)="changeMode()"
-          >Available stories</nb-checkbox
-        >
-        <span
-          class="flow-option-label"
-          nbTooltip="Show effective user trafic (dynamic mode)"
-          >User flow on</span
-        >
-        <tock-date-range-calendar
-          [disabled]="!statsMode"
-          [rangeInDays]="7"
-          (datesChanged)="datesChanged($event)"
-        ></tock-date-range-calendar>
+
+<h1>Stories flow</h1>
+
+<nb-card class="mb-0">
+  <nb-card-body [nbSpinner]="loading">
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      <div class="flex-grow-1">
+        <div class="row">
+          <div class="col-3">
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="calendar-outline"
+              ></nb-icon>
+              <input
+                #dateRangeInput
+                nbInput
+                fieldSize="small"
+                placeholder="Pick date range"
+                [nbDatepicker]="dateRangePicker"
+                [(ngModel)]="range"
+                readonly
+              />
+            </nb-form-field>
+          </div>
+          <div class="col-9">
+            <div class="flex-grow-1 d-flex justify-content-between">
+              <ng-container *ngFor="let range of timeRanges">
+                <button
+                  nbButton
+                  size="small"
+                  ghost
+                  [status]="getTimeRangeBttnStatus(range)"
+                  nbTooltip="Display flow for {{ range.tooltipLabel }}"
+                  (click)="setTimeRange(range)"
+                  class="px-2"
+                >
+                  {{ range.label }}
+                </button>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+        <nb-rangepicker
+          #dateRangePicker
+          [(range)]="range"
+          (rangeChange)="datePickerChange($event)"
+        ></nb-rangepicker>
+
+        <div class="row mt-2">
+          <div class="col-3">
+            <nb-form-field nbTooltip="Select a display layout">
+              <nb-icon
+                nbPrefix
+                icon="activity-outline"
+              ></nb-icon>
+              <nb-select
+                size="small"
+                placeholder="Display layout"
+                fullWidth
+                [(ngModel)]="layout"
+                (ngModelChange)="unselect()"
+              >
+                <nb-option
+                  *ngFor="let lyout of layouts"
+                  [value]="lyout"
+                  >{{ lyout.name }}</nb-option
+                >
+              </nb-select>
+            </nb-form-field>
+          </div>
+
+          <div class="col-9 d-flex align-items-center pt-0">
+            <small class="text-muted text-nowrap my-0 mr-2">Mode :</small>
+            <nb-radio-group
+              class="d-flex"
+              name="mode"
+              [(ngModel)]="statsMode"
+              (ngModelChange)="changeMode()"
+            >
+              <nb-radio
+                class="text-nowrap smallHeight"
+                [value]="true"
+                nbTooltip="Show users flow (dynamic mode)"
+                >Users flow</nb-radio
+              >
+              <nb-radio
+                class="text-nowrap smallHeight"
+                [value]="false"
+                nbTooltip="Show available stories (static mode)"
+                >Static mode</nb-radio
+              >
+            </nb-radio-group>
+          </div>
+        </div>
       </div>
 
-      <br />
+      <div class="ml-3">
+        <nb-icon
+          *ngIf="!advanced"
+          icon="chevron-down-outline"
+          (click)="swapAdvanced()"
+          class="pointer"
+          nbTooltip="Display advanced options"
+        ></nb-icon>
+        <nb-icon
+          *ngIf="advanced"
+          icon="chevron-up-outline"
+          (click)="swapAdvanced()"
+          class="pointer"
+          nbTooltip="Hide advanced options"
+        ></nb-icon>
+      </div>
+    </div>
 
-      <div class="flow-option-group">
-        <span class="flow-option-group-name">{{ statsMode ? 'Scope:' : 'Scope / Filters:' }}</span>
-        <nb-checkbox
-          [(ngModel)]="allowSelectAllConfigs"
-          class="checkbox"
-          (change)="changeAllowSelectAllConfigs()"
-          nbTooltip="Allow selecting All Configurations at once (possible performance impact)"
-          >Allow <em>All</em></nb-checkbox
+    <!-- ADVANCED -->
+    <div
+      class="mt-2"
+      *ngIf="advanced"
+      [@inOutHeightAnimation]
+    >
+      <div class="row mt-1">
+        <div
+          *ngIf="statsMode"
+          class="col-6 mb-3 pt-1 d-flex align-items-center"
+          nbTooltip="Filter by Minimum Traffic through Node"
         >
-        <tock-select-bot
-          [allowNoConfigurationSelection]="false"
-          noConnectorLabel="All Connectors"
-          [allowNoSelection]="allowSelectAllConfigs"
-          noConfigurationLabel="All Configurations"
-          (selectionChange)="selectedConfigurationChanged($event)"
-          class="select"
+          <small class="text-muted text-nowrap mb-0 mr-2">Min. Node Traffic:</small>
+          <input
+            type="range"
+            min="0"
+            [max]="maxNodeCount"
+            [(ngModel)]="minimalNodeCount"
+            (change)="updateCount()"
+            class="w-100"
+          />
+        </div>
+
+        <div
+          *ngIf="statsMode"
+          class="col-6 mb-3 pt-1 d-flex align-items-center"
+          nbTooltip="Filter by Minimum Percentage of Transitions"
         >
-        </tock-select-bot>
-        <span class="select">
+          <small class="text-muted text-nowrap mb-0 mr-2">Min. Transition %:</small>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            [(ngModel)]="minimalTransitionPercentage"
+            (change)="updateCount()"
+            class="w-100"
+          />
+        </div>
+
+        <div class="col-3 mb-2">
           <nb-select
-            placeholder="Story Type"
-            status="primary"
+            fullWidth
+            size="small"
+            placeholder="Story type filter"
+            nbTooltip="Filter by Story Type"
             [(ngModel)]="selectedTypeFilter"
             (selectedChange)="update()"
-            nbTooltip="Filter by Story Type"
-            class="select-type"
           >
-            <nb-select-label>{{ selectedTypeFilter.name }}</nb-select-label>
             <nb-option
               *ngFor="let typeFilter of typeFilters"
               [value]="typeFilter"
@@ -107,375 +187,361 @@
               >
             </nb-option>
           </nb-select>
-        </span>
-        <span class="select">
+        </div>
+
+        <div class="col-6 mb-2">
+          <tock-select-bot
+            [allowNoConfigurationSelection]="false"
+            noConnectorLabel="All Connectors"
+            noConfigurationLabel="All Configurations"
+            (selectionChange)="selectedConfigurationChanged($event)"
+            [disabled]="showAllConfigurations"
+          >
+          </tock-select-bot>
+        </div>
+
+        <div class="col-3 mb-2 pt-1">
+          <nb-checkbox
+            [(ngModel)]="showAllConfigurations"
+            (change)="changeShowAllConfigurations()"
+            nbTooltip="Display all configurations at once (possible performance impact)"
+            >Display all configurations</nb-checkbox
+          >
+        </div>
+
+        <div class="col-3 mb-2">
           <nb-select
             *ngIf="!statsMode"
+            size="small"
+            fullWidth
+            placeholder="Story Focus"
+            nbTooltip="Focus on a particular story"
             [(selected)]="selectedStory"
             (selectedChange)="update()"
-            nbTooltip="Story Focus"
-            placeholder="Story Focus"
-            status="primary"
-            class="select-story"
           >
-            <nb-select-label>
-              <span *ngIf="selectedStory">
-                <nb-icon
-                  *ngIf="selectedStory.isBuiltIn()"
-                  class="story-type"
-                  icon="cube"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="selectedStory.isSimpleAnswer()"
-                  class="story-type"
-                  icon="message-square-outline"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="selectedStory.isScriptAnswer()"
-                  class="story-type"
-                  icon="code"
-                ></nb-icon>
-                <span class="story-label">{{ selectedStory.storyName }}</span>
-              </span>
+            <nb-select-label *ngIf="selectedStory">
+              <nb-icon
+                *ngIf="selectedStory.isBuiltIn()"
+                icon="cube"
+                class="align-middle mr-1"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="selectedStory.isSimpleAnswer()"
+                icon="message-square-outline"
+                class="align-middle mr-1"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="selectedStory.isScriptAnswer()"
+                icon="code"
+                class="align-middle mr-1"
+              ></nb-icon>
+              {{ selectedStory.storyName }}
             </nb-select-label>
+
             <nb-option [value]="undefined">All</nb-option>
+
             <nb-option
               *ngFor="let entry of storiesById | keyvalue"
               [value]="entry.value"
               [disabled]="!selectedTypeFilter.filter(entry.value)"
+              class="align-items-center"
             >
               <nb-icon
                 *ngIf="entry.value.isBuiltIn()"
-                class="story-type"
                 nbTooltip="BuiltIn"
                 icon="cube"
+                class="mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="entry.value.isSimpleAnswer()"
-                class="story-type"
                 nbTooltip="Message"
                 icon="message-square-outline"
+                class="mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="entry.value.isScriptAnswer()"
-                class="story-type"
                 nbTooltip="Script"
                 icon="code"
+                class="mr-1"
               ></nb-icon>
               {{ entry.value.name }}
             </nb-option>
           </nb-select>
+
           <nb-select
             *ngIf="statsMode"
+            size="small"
+            fullWidth
+            placeholder="Story Focus"
+            nbTooltip="Focus on a particular story"
             [(ngModel)]="selectedStory"
             (selectedChange)="update()"
-            placeholder="Story Focus"
-            status="primary"
-            class="select-story"
           >
-            <nb-select-label>
-              <span *ngIf="selectedStory">
-                <nb-icon
-                  *ngIf="selectedStory.isBuiltIn()"
-                  class="story-type"
-                  icon="cube"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="selectedStory.isSimpleAnswer()"
-                  class="story-type"
-                  icon="message-square-outline"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="selectedStory.isScriptAnswer()"
-                  class="story-type"
-                  icon="code"
-                ></nb-icon>
-                <nb-icon
-                  *ngIf="selectedStory.storyType === undefined"
-                  class="story-type"
-                  icon="question-mark-circle-outline"
-                ></nb-icon>
-                <span class="story-label">{{ selectedStory.storyName }}</span>
-              </span>
+            <nb-select-label *ngIf="selectedStory">
+              <nb-icon
+                *ngIf="selectedStory.isBuiltIn()"
+                icon="cube"
+                class="align-middle mr-1"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="selectedStory.isSimpleAnswer()"
+                icon="message-square-outline"
+                class="align-middle mr-1"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="selectedStory.isScriptAnswer()"
+                icon="code"
+                class="align-middle mr-1"
+              ></nb-icon>
+              <nb-icon
+                *ngIf="selectedStory.storyType === undefined"
+                icon="question-mark-circle-outline"
+                class="align-middle mr-1"
+              ></nb-icon>
+              <span class="story-label">{{ selectedStory.storyName }}</span>
             </nb-select-label>
+
             <nb-option [value]="undefined">All</nb-option>
+
             <nb-option
               *ngFor="let entry of nodesById | keyvalue"
               [value]="entry.value"
               [disabled]="!selectedTypeFilter.filter(entry.value)"
+              class="align-items-center"
             >
               <nb-icon
                 *ngIf="entry.value.isBuiltIn()"
-                class="story-type"
                 nbTooltip="BuiltIn"
                 icon="cube"
+                class="mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="entry.value.isSimpleAnswer()"
-                class="story-type"
                 nbTooltip="Message"
                 icon="message-square-outline"
+                class="mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="entry.value.isScriptAnswer()"
-                class="story-type"
                 nbTooltip="Script"
                 icon="code"
+                class="mr-1"
               ></nb-icon>
               <nb-icon
                 *ngIf="entry.value.storyType === undefined"
-                class="story-type"
                 nbTooltip="Unknown Type"
                 icon="question-mark-circle-outline"
+                class="mr-1"
               ></nb-icon>
               {{ entry.value.storyName }}
             </nb-option>
           </nb-select>
-        </span>
-        <span
+        </div>
+
+        <div
+          class="col-3 mb-2"
           *ngIf="selectedStory"
-          class="select"
         >
           <nb-select
-            placeholder="Direction"
-            status="primary"
+            size="small"
+            fullWidth
+            placeholder="Direction : Both"
+            nbTooltip="Choose direction"
             [(ngModel)]="direction"
             (selectedChange)="update()"
           >
-            <nb-option [value]="undefined">Both</nb-option>
-            <nb-option [value]="-1">Outcoming</nb-option>
-            <nb-option [value]="1">Incoming</nb-option>
+            <nb-option [value]="undefined">Direction : Both</nb-option>
+            <nb-option [value]="-1">Direction : Outcoming</nb-option>
+            <nb-option [value]="1">Direction : Incoming</nb-option>
           </nb-select>
-        </span>
-        &nbsp;&nbsp;
-        <span *ngIf="statsMode">
+        </div>
+
+        <div
+          class="col-3 mb-2 pt-1"
+          *ngIf="statsMode"
+        >
           <nb-checkbox
             [(ngModel)]="entity"
             (change)="update()"
-            class="checkbox"
             nbTooltip="View more Nodes by Entity values"
             >Entity</nb-checkbox
           >
+        </div>
+
+        <div
+          class="col-3 mb-2 pt-1"
+          *ngIf="statsMode"
+        >
           <nb-checkbox
             [(ngModel)]="step"
             (change)="update()"
-            class="checkbox"
             nbTooltip="View more Nodes by Step"
             >Step</nb-checkbox
           >
+        </div>
+
+        <div
+          class="col-3 mb-2 pt-1"
+          *ngIf="statsMode"
+        >
           <nb-checkbox
             [(ngModel)]="intent"
             (change)="update()"
-            class="checkbox"
             nbTooltip="View more Nodes by Intent"
             >Intent</nb-checkbox
           >
-        </span>
-        <span *ngIf="!statsMode">
+        </div>
+
+        <div
+          class="col-3 mb-2 pt-1"
+          *ngIf="!statsMode"
+        >
           <nb-checkbox
             [(ngModel)]="displayDisabled"
             (change)="update()"
-            class="checkbox"
             nbTooltip="Include Stories Disabled by Rules"
-            >Disabled</nb-checkbox
+            >Show disabled stories</nb-checkbox
           >
-        </span>
-      </div>
+        </div>
 
-      <div
-        class="flow-option-group"
-        *ngIf="statsMode"
-      >
-        <span class="flow-option-group-name">Filters:</span>
-        <span>
-          <span
-            class="flow-option-label"
-            nbTooltip="Filter by Minimum Traffic through Node"
-            >Min. Node Traffic:
-          </span>
-          <input
-            type="range"
-            min="0"
-            [max]="maxNodeCount"
-            [(ngModel)]="minimalNodeCount"
-            (change)="updateCount()"
-          />
-        </span>
-        <span>
-          <span
-            class="flow-option-label"
-            nbTooltip="Filter by Minimum Percentage of Transitions"
-            >Min. Transition %:
-          </span>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            [(ngModel)]="minimalTransitionPercentage"
-            (change)="updateCount()"
-          />
-        </span>
-        <span>
+        <div
+          class="col-3 mb-2 pt-1"
+          *ngIf="statsMode"
+        >
           <nb-checkbox
             [(ngModel)]="displayTests"
             (change)="reload()"
-            class="checkbox"
             nbTooltip="Include Test Flow"
-            >Tests</nb-checkbox
+            >Display tests</nb-checkbox
           >
-        </span>
-        <span>
+        </div>
+
+        <div
+          class="col-3 mb-2 pt-1"
+          *ngIf="statsMode"
+        >
           <nb-checkbox
             [(ngModel)]="mergeOldStories"
             (change)="update()"
-            class="checkbox"
             nbTooltip="Merge Old Stats to Latest Stories when possible"
-            >Merge to Latest Stories</nb-checkbox
+            >Merge to latest stories</nb-checkbox
           >
-        </span>
-      </div>
+        </div>
 
-      <div class="flow-option-group">
-        <span class="flow-option-group-name">Presentation:</span>
-        <span class="select">
-          <nb-select
-            [(ngModel)]="selectedLayout"
-            (selectedChange)="changeLayout()"
-            placeholder="Layout"
-            status="primary"
-            style="width: 10rem"
-          >
-            <nb-option
-              *ngFor="let l of layouts"
-              [value]="l.name"
-              >{{ l.name }}</nb-option
-            >
-          </nb-select>
-        </span>
-        <span *ngIf="statsMode">
+        <div
+          class="col-3 mb-2 pt-1"
+          *ngIf="statsMode"
+        >
           <nb-checkbox
             [(ngModel)]="recursive"
             (change)="update()"
-            class="checkbox"
             nbTooltip="Display Recursive Transitions from each Node to itself"
-            >Recursive Transitions</nb-checkbox
+            >Display recursive transitions</nb-checkbox
           >
-        </span>
-        <nb-checkbox
-          [(ngModel)]="displayNodeType"
-          (change)="updateCount()"
-          class="checkbox"
-          nbTooltip="Display Story Type icon on each Node"
-          >Story Types</nb-checkbox
-        >
-        <nb-checkbox
+        </div>
+
+        <div class="col-3 mb-2 pt-1">
+          <nb-checkbox
+            [(ngModel)]="displayNodeType"
+            (change)="updateCount()"
+            nbTooltip="Display Story Type icon on each Node"
+            >Display story type</nb-checkbox
+          >
+        </div>
+
+        <div
+          class="col-3 mb-2 pt-1"
           *ngIf="statsMode"
-          [(ngModel)]="displayNodeCount"
-          (change)="updateCount()"
-          class="checkbox"
-          nbTooltip="Display Story trafic on each Node"
-          >Story Counts</nb-checkbox
         >
-        <nb-checkbox
+          <nb-checkbox
+            [(ngModel)]="displayNodeCount"
+            (change)="updateCount()"
+            nbTooltip="Display Story trafic on each Node"
+            >Display stories traffic</nb-checkbox
+          >
+        </div>
+
+        <div
+          class="col-3 mb-2 pt-1"
           *ngIf="!statsMode"
-          [(ngModel)]="intent"
-          (change)="updateCount()"
-          class="checkbox"
-          nbTooltip="Display Story Main Intent on each Node"
-          >Main Intents</nb-checkbox
         >
-        <nb-checkbox
-          [(ngModel)]="displayDebug"
-          class="checkbox"
-          nbTooltip="Display Debug stats"
-          >Debug</nb-checkbox
+          <nb-checkbox
+            [(ngModel)]="intent"
+            (change)="updateCount()"
+            nbTooltip="Display Story Main Intent on each Node"
+            >Display main intents</nb-checkbox
+          >
+        </div>
+
+        <div class="col-3 mb-2 pt-1">
+          <nb-checkbox
+            [(ngModel)]="displayDebug"
+            nbTooltip="Display Debug stats"
+            >Display debug stats</nb-checkbox
+          >
+        </div>
+
+        <div
+          class="col-6 mb-2 pt-1"
+          *ngIf="displayDebug"
         >
-        <span *ngIf="displayDebug">
-          <span
-            class="flow-stat"
-            *ngIf="nodesById || storiesById"
-          >
-            Total Stories: {{ statsMode ? nodesById.size : storiesById.size }}
-          </span>
-          <span
-            class="flow-stat"
-            *ngIf="nodesById || storiesById"
-          >
-            Filtered Stories: {{ allNodes.length }}
-          </span>
-          <span
-            class="flow-stat"
-            *ngIf="allTransitions"
-          >
-            Filtered Transitions: {{ allTransitions.size }}
-          </span>
-        </span>
+          <span *ngIf="nodesById || storiesById"> Total Stories: {{ statsMode ? nodesById.size : storiesById.size }} | </span>
+          <span *ngIf="nodesById || storiesById"> Filtered Stories: {{ allNodes.length }} | </span>
+          <span *ngIf="allTransitionsSize"> Filtered Transitions: {{ allTransitionsSize }} </span>
+        </div>
       </div>
-    </nb-accordion-item-body>
-  </nb-accordion-item>
-</nb-accordion>
+    </div>
+  </nb-card-body>
+</nb-card>
 
-<div *ngIf="selectedLayout !== 'Sankey'">
-  <div
-    *ngIf="graphData"
-    class="cytoscape"
-  >
-    <tock-cytoscape
-      [elements]="graphData"
-      [layout]="layout"
-      (selectedNode)="nodeChange($event)"
-      (selectedEdge)="edgeChange($event)"
-    ></tock-cytoscape>
-  </div>
+<nb-card>
+  <nb-card-body class="p-0 position-relative">
+    <div *ngIf="forceData && layout?.name === 'Force-based'">
+      <div
+        echarts
+        [options]="forceData"
+        class="canvas"
+        (chartClick)="onEchartsGraphClick($event)"
+        (click)="unselect()"
+      ></div>
+    </div>
 
-  <div
-    *ngIf="graphData && selectedNode"
-    class="selected-node"
-  >
-    <tock-story
-      [storyNode]="selectedNode"
-      [botId]="state.currentApplication.name"
-      [displayCount]="statsMode"
-    ></tock-story>
-  </div>
+    <div *ngIf="circularData && layout?.name === 'Circular'">
+      <div
+        echarts
+        [options]="circularData"
+        class="canvas"
+        (chartClick)="onEchartsGraphClick($event)"
+        (click)="unselect()"
+      ></div>
+    </div>
 
-  <div
-    *ngIf="graphData && selectedEdge"
-    class="selected-edge"
-  >
-    <ul>
-      <li>
-        Count: <b>{{ selectedEdge.count }}</b>
-      </li>
-    </ul>
-  </div>
-
-  <div
-    *ngIf="graphData && !selectedNode && !selectedEdge"
-    class="story-btn"
-  >
-    <button
-      nbButton
-      status="primary"
-      routerLink="/build/story-create"
-    >
-      Add a New Story
-    </button>
-  </div>
-</div>
-<div *ngIf="selectedLayout === 'Sankey'">
-  <nb-card>
-    <nb-card-body>
-      <!-- <google-chart
-        *ngIf="flowData !== null"
-        [type]="SankeyChartType"
-        [data]="$any(flowData.data)"
-        [columns]="flowData.columnNames"
-        [options]="flowData.options"
-        [dynamicResize]="true"
-        style="width: 100%; height: 50vh"
+    <div *ngIf="sankeyData && layout?.name === 'Sankey'">
+      <div
+        class="text-center text-warning p-5"
+        *ngIf="!statsMode"
       >
-      </google-chart> -->
-    </nb-card-body>
-  </nb-card>
-</div>
+        Sankey layout is not suitable for static mode
+      </div>
+      <div
+        echarts
+        [options]="sankeyData"
+        class="canvas"
+        *ngIf="statsMode"
+      ></div>
+    </div>
+
+    <div
+      *ngIf="selectedNode"
+      [@inOutRightAnimation]
+      class="right-panel scrollable"
+    >
+      <tock-story
+        [storyNode]="selectedNode"
+        [botId]="state.currentApplication.name"
+        [displayCount]="statsMode"
+        (closeStory)="unselect()"
+      ></tock-story>
+    </div>
+  </nb-card-body>
+</nb-card>
