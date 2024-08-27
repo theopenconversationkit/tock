@@ -25,7 +25,7 @@
             <nb-form-field>
               <nb-icon
                 nbPrefix
-                icon="calendar-outline"
+                icon="calendar"
               ></nb-icon>
               <input
                 #dateRangeInput
@@ -67,7 +67,7 @@
             <nb-form-field nbTooltip="Select a display layout">
               <nb-icon
                 nbPrefix
-                icon="activity-outline"
+                icon="activity"
               ></nb-icon>
               <nb-select
                 size="small"
@@ -114,6 +114,7 @@
         <nb-icon
           *ngIf="!advanced"
           icon="chevron-down-outline"
+          pack="nebular-essentials"
           (click)="swapAdvanced()"
           class="pointer"
           nbTooltip="Display advanced options"
@@ -121,6 +122,7 @@
         <nb-icon
           *ngIf="advanced"
           icon="chevron-up-outline"
+          pack="nebular-essentials"
           (click)="swapAdvanced()"
           class="pointer"
           nbTooltip="Hide advanced options"
@@ -210,132 +212,137 @@
         </div>
 
         <div class="col-3 mb-2">
-          <nb-select
-            *ngIf="!statsMode"
-            size="small"
-            fullWidth
-            placeholder="Story Focus"
-            nbTooltip="Focus on a particular story"
-            [(selected)]="selectedStory"
-            (selectedChange)="update()"
-          >
-            <nb-select-label *ngIf="selectedStory">
-              <nb-icon
-                *ngIf="selectedStory.isBuiltIn()"
-                icon="box"
-                class="align-middle mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="selectedStory.isSimpleAnswer()"
-                icon="chat-left"
-                class="align-middle mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="selectedStory.isScriptAnswer()"
-                icon="code"
-                class="align-middle mr-1"
-              ></nb-icon>
-              {{ selectedStory.storyName }}
-            </nb-select-label>
-
-            <nb-option [value]="undefined">All</nb-option>
-
-            <nb-option
-              *ngFor="let entry of storiesById | keyvalue"
-              [value]="entry.value"
-              [disabled]="!selectedTypeFilter.filter(entry.value)"
-              class="align-items-center"
+          <nb-form-field>
+            <nb-icon
+              nbPrefix
+              icon="chat-left"
+            ></nb-icon>
+            <nb-select
+              *ngIf="!statsMode"
+              size="small"
+              fullWidth
+              placeholder="Story Focus"
+              nbTooltip="Focus on a particular story"
+              [(selected)]="selectedStory"
+              (selectedChange)="update()"
             >
-              <nb-icon
-                *ngIf="entry.value.isBuiltIn()"
-                nbTooltip="BuiltIn"
-                icon="box"
-                class="mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="entry.value.isSimpleAnswer()"
-                nbTooltip="Message"
-                icon="chat-left"
-                class="mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="entry.value.isScriptAnswer()"
-                nbTooltip="Script"
-                icon="code"
-                class="mr-1"
-              ></nb-icon>
-              {{ entry.value.name }}
-            </nb-option>
-          </nb-select>
+              <nb-select-label *ngIf="selectedStory">
+                <nb-icon
+                  *ngIf="selectedStory.isBuiltIn()"
+                  icon="box"
+                  class="align-middle mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="selectedStory.isSimpleAnswer()"
+                  icon="chat-left"
+                  class="align-middle mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="selectedStory.isScriptAnswer()"
+                  icon="code"
+                  class="align-middle mr-1"
+                ></nb-icon>
+                {{ selectedStory.storyName }}
+              </nb-select-label>
 
-          <nb-select
-            *ngIf="statsMode"
-            size="small"
-            fullWidth
-            placeholder="Story Focus"
-            nbTooltip="Focus on a particular story"
-            [(ngModel)]="selectedStory"
-            (selectedChange)="update()"
-          >
-            <nb-select-label *ngIf="selectedStory">
-              <nb-icon
-                *ngIf="selectedStory.isBuiltIn()"
-                icon="box"
-                class="align-middle mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="selectedStory.isSimpleAnswer()"
-                icon="chat-left"
-                class="align-middle mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="selectedStory.isScriptAnswer()"
-                icon="code"
-                class="align-middle mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="selectedStory.storyType === undefined"
-                icon="question-circle"
-                class="align-middle mr-1"
-              ></nb-icon>
-              <span class="story-label">{{ selectedStory.storyName }}</span>
-            </nb-select-label>
+              <nb-option [value]="undefined">All</nb-option>
 
-            <nb-option [value]="undefined">All</nb-option>
-
-            <nb-option
-              *ngFor="let entry of nodesById | keyvalue"
-              [value]="entry.value"
-              [disabled]="!selectedTypeFilter.filter(entry.value)"
-              class="align-items-center"
+              <nb-option
+                *ngFor="let entry of storiesById | keyvalue"
+                [value]="entry.value"
+                [disabled]="!selectedTypeFilter.filter(entry.value)"
+                class="align-items-center"
+              >
+                <nb-icon
+                  *ngIf="entry.value.isBuiltIn()"
+                  nbTooltip="BuiltIn"
+                  icon="box"
+                  class="mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="entry.value.isSimpleAnswer()"
+                  nbTooltip="Message"
+                  icon="chat-left"
+                  class="mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="entry.value.isScriptAnswer()"
+                  nbTooltip="Script"
+                  icon="code"
+                  class="mr-1"
+                ></nb-icon>
+                {{ entry.value.name }}
+              </nb-option>
+            </nb-select>
+            <nb-select
+              *ngIf="statsMode"
+              size="small"
+              fullWidth
+              placeholder="Story Focus"
+              nbTooltip="Focus on a particular story"
+              [(ngModel)]="selectedStory"
+              (selectedChange)="update()"
             >
-              <nb-icon
-                *ngIf="entry.value.isBuiltIn()"
-                nbTooltip="BuiltIn"
-                icon="box"
-                class="mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="entry.value.isSimpleAnswer()"
-                nbTooltip="Message"
-                icon="chat-left"
-                class="mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="entry.value.isScriptAnswer()"
-                nbTooltip="Script"
-                icon="code"
-                class="mr-1"
-              ></nb-icon>
-              <nb-icon
-                *ngIf="entry.value.storyType === undefined"
-                nbTooltip="Unknown Type"
-                icon="question-circle"
-                class="mr-1"
-              ></nb-icon>
-              {{ entry.value.storyName }}
-            </nb-option>
-          </nb-select>
+              <nb-select-label *ngIf="selectedStory">
+                <nb-icon
+                  *ngIf="selectedStory.isBuiltIn()"
+                  icon="box"
+                  class="align-middle mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="selectedStory.isSimpleAnswer()"
+                  icon="chat-left"
+                  class="align-middle mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="selectedStory.isScriptAnswer()"
+                  icon="code"
+                  class="align-middle mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="selectedStory.storyType === undefined"
+                  icon="question-circle"
+                  class="align-middle mr-1"
+                ></nb-icon>
+                <span class="story-label">{{ selectedStory.storyName }}</span>
+              </nb-select-label>
+
+              <nb-option [value]="undefined">All</nb-option>
+
+              <nb-option
+                *ngFor="let entry of nodesById | keyvalue"
+                [value]="entry.value"
+                [disabled]="!selectedTypeFilter.filter(entry.value)"
+                class="align-items-center"
+              >
+                <nb-icon
+                  *ngIf="entry.value.isBuiltIn()"
+                  nbTooltip="BuiltIn"
+                  icon="box"
+                  class="mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="entry.value.isSimpleAnswer()"
+                  nbTooltip="Message"
+                  icon="chat-left"
+                  class="mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="entry.value.isScriptAnswer()"
+                  nbTooltip="Script"
+                  icon="code"
+                  class="mr-1"
+                ></nb-icon>
+                <nb-icon
+                  *ngIf="entry.value.storyType === undefined"
+                  nbTooltip="Unknown Type"
+                  icon="question-circle"
+                  class="mr-1"
+                ></nb-icon>
+                {{ entry.value.storyName }}
+              </nb-option>
+            </nb-select>
+          </nb-form-field>
         </div>
 
         <div
