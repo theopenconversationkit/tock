@@ -464,6 +464,10 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
         }
 
+        blockingDelete("/configuration/bots/:botId/rag", admin) { context  ->
+            RAGService.deleteRag(context.organization, context.path("botId"))
+        }
+
         blockingJsonPost("/configuration/bots/:botId/observability", admin) { context, configuration: BotObservabilityConfigurationDTO  ->
             if (context.organization == configuration.namespace) {
                 BotObservabilityConfigurationDTO(ObservabilityService.saveObservability(configuration))

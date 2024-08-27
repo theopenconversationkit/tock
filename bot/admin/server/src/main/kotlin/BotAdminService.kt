@@ -1131,6 +1131,11 @@ object BotAdminService {
         ).forEach { story ->
             storyDefinitionDAO.delete(story)
         }
+
+        // delete the RAG configuration
+        ragConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            ragConfigurationDAO.delete(it._id)
+        }
     }
 
     fun changeSupportedLocales(newApp: ApplicationDefinition) {
