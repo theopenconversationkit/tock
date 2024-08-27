@@ -78,6 +78,13 @@ nb-route-tabset .tab-link {
   padding-top: 0;
 }
 
+nb-radio.smallHeight {
+  label {
+    padding-top: 0.1rem !important;
+    padding-bottom: 0.1rem !important;
+  }
+}
+
 // Makes the disabled ghost button more discreet. By default, the background color makes it more visible than the non-deactivated buttons.
 .nb-theme-default [nbButton].appearance-ghost.status-basic[disabled],
 .nb-theme-default .appearance-ghost.status-basic[disabled][nbButtonToggle],
@@ -100,21 +107,6 @@ nb-route-tabset .tab-link {
 .cdk-overlay-pane {
   nb-option-list {
     min-width: 15rem;
-  }
-}
-
-nb-chat.minimalInterface {
-  box-shadow: none;
-  border-radius: unset;
-  > .header {
-    display: none;
-  }
-}
-
-nb-chat-message.currentsentence {
-  .text {
-    background-color: var(--success) !important;
-    color: white !important;
   }
 }
 

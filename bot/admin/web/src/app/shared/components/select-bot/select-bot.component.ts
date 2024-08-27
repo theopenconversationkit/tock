@@ -57,6 +57,9 @@ export class SelectBotComponent implements OnInit {
   @Input()
   size: NbComponentSize = 'small';
 
+  @Input()
+  disabled: boolean = false;
+
   configurations: BotApplicationConfiguration[];
 
   botNames: string[];

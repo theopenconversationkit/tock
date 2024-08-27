@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.send.media
+package ai.tock.bot.connector.whatsapp.cloud.model.send.message
 
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudBotRecipientType
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCloudSendBotMessage
-import ai.tock.bot.connector.whatsapp.cloud.model.send.message.WhatsAppCoudBotMessageType
+import ai.tock.bot.connector.whatsapp.cloud.model.send.message.content.WhatsAppCloudBotImage
 
 data class WhatsAppCloudSendBotImageMessage(
-        override val messagingProduct: String,
-        override val to: String?,
-        override val recipientType: WhatsAppCloudBotRecipientType?
-) : WhatsAppCloudSendBotMessage(WhatsAppCoudBotMessageType.image) {
-
-}
+    override val messagingProduct: String,
+    val image: WhatsAppCloudBotImage,
+    override val recipientType: WhatsAppCloudBotRecipientType,
+    override val to: String,
+) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.image)

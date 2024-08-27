@@ -23,4 +23,4 @@ data class WhatsAppCloudSendBotTemplateMessage(
         val template: WhatsAppCloudBotTemplate,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val to: String,
-) : WhatsAppCloudSendBotMessage(WhatsAppCoudBotMessageType.template)
+) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.template)

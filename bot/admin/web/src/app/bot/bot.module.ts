@@ -151,7 +151,7 @@ import { CreateEntityDialogComponent } from './story/create-entity-dialog/create
     I18nFiltersComponent,
     CreateEntityDialogComponent
   ],
-  exports: []
+  exports: [StoryComponent]
 })
 export class BotModule {
   constructor() {}

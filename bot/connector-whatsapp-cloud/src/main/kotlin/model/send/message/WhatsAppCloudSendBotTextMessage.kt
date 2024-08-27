@@ -26,4 +26,4 @@ data class WhatsAppCloudSendBotTextMessage (
         override val to: String,
         @get:JsonProperty("preview_url")
         val previewUrl: Boolean = false,
-) : WhatsAppCloudSendBotMessage(WhatsAppCoudBotMessageType.text)
+) : WhatsAppCloudSendBotMessage(WhatsAppCloudBotMessageType.text)

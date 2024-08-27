@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package ai.tock.bot.connector.whatsapp.cloud.model.send.message
+package ai.tock.bot.connector.whatsapp.cloud.model.send.message.content
 
-enum class WhatsAppCoudBotMessageType {
-    text, reaction, image, audio , video, location, contacts, interactive, template
-}
+data class WhatsAppCloudBotImage(
+        var id: String,
+        val link: String?,
+        val caption: String?
+)
