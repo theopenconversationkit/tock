@@ -52,8 +52,7 @@ export function normalizedCamelCase(str: string): string {
     .toLowerCase()
     .replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => {
       return chr.toUpperCase();
-    })
-    .replace(/[^A-Za-z0-9]*/g, '');
+    });
 }
 
 export function isUrl(str: string): boolean {
