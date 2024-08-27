@@ -28,12 +28,12 @@
             }"
           >
             <nb-icon
-              icon="file-text-outline"
               *ngIf="source.source_type === sourceTypes.file"
+              icon="file-text"
             ></nb-icon>
             <nb-icon
-              icon="link-2-outline"
               *ngIf="source.source_type === sourceTypes.remote"
+              icon="link"
             ></nb-icon>
           </div>
 
@@ -59,7 +59,7 @@
               (click)="editSource($event)"
               *ngIf="!hasIndexingSessionRunning()"
             >
-              <nb-icon icon="edit-outline"></nb-icon>
+              <nb-icon icon="pencil"></nb-icon>
             </button>
 
             <button
@@ -72,7 +72,7 @@
               (click)="deleteSource($event)"
               *ngIf="!hasIndexingSessionRunning()"
             >
-              <nb-icon icon="trash-2-outline"></nb-icon>
+              <nb-icon icon="trash"></nb-icon>
             </button>
 
             <nb-toggle
@@ -95,7 +95,8 @@
               (click)="updateSource($event)"
               *ngIf="!hasIndexingSessionRunning()"
             >
-              <nb-icon icon="sync-outline"></nb-icon> Update source
+              <nb-icon icon="arrow-repeat"></nb-icon>
+              Update source
             </button>
           </div>
         </div>
@@ -113,8 +114,8 @@
                 *ngIf="isStepComplete(task.type)"
               >
                 <nb-icon
+                  icon="check-circle"
                   class="success"
-                  icon="checkmark-circle-2-outline"
                 ></nb-icon>
               </div>
               <div class="icon-wrapper">
@@ -123,7 +124,7 @@
                   *ngIf="!isStepRunning(task.type)"
                 ></nb-icon>
                 <nb-icon
-                  icon="sync-outline"
+                  icon="arrow-repeat"
                   *ngIf="isStepRunning(task.type)"
                 ></nb-icon>
               </div>
@@ -189,10 +190,10 @@
 
         <div>
           <nb-icon
-            icon="checkmark-outline"
+            *ngIf="isCurrentIndexingSession(session) && isSessionComplete(session)"
             status="success"
             class="m-2"
-            *ngIf="isCurrentIndexingSession(session) && isSessionComplete(session)"
+            icon="check-lg"
           ></nb-icon>
 
           <div
@@ -206,7 +207,7 @@
               nbTooltip="Set as current session"
               (click)="setSessionAsCurrent(session)"
             >
-              <nb-icon icon="checkmark-circle-outline"></nb-icon>
+              <nb-icon icon="check2-circle"></nb-icon>
             </button>
 
             <button
@@ -217,7 +218,7 @@
               nbTooltip="Delete session"
               (click)="deleteSession(session)"
             >
-              <nb-icon icon="trash-2-outline"></nb-icon>
+              <nb-icon icon="trash"></nb-icon>
             </button>
           </div>
         </div>

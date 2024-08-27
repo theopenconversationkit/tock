@@ -25,25 +25,17 @@
       [disabled]="!configurations?.length"
       (click)="addSource()"
     >
-      <nb-icon icon="plus-outline"></nb-icon>
+      <nb-icon icon="plus-lg"></nb-icon>
       NEW SOURCE
     </button>
   </div>
 </div>
 
 <section>
-  <nb-alert
+  <tock-no-data-found
     *ngIf="configurations?.length === 0"
-    class="alert-config flex-row align-items-center"
-    accent="warning"
-  >
-    <nb-icon
-      class="mr-1"
-      icon="alert-triangle-outline"
-      status="warning"
-    ></nb-icon>
-    No bot configuration detected
-  </nb-alert>
+    title="No bot configuration detected"
+  ></tock-no-data-found>
 
   <div *ngIf="configurations?.length && sources?.length">
     <tock-no-data-found

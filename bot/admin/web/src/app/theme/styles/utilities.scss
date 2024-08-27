@@ -43,9 +43,6 @@
   color: #8f959b;
 }
 
-.valign-middle {
-  vertical-align: middle;
-}
 .pointer {
   cursor: pointer;
 }
@@ -206,6 +203,22 @@ nb-menu {
   min-width: 90vw;
 }
 
+.max-width-15em {
+  max-width: 15em !important;
+}
+
 .list-group-item {
   background-color: unset;
+}
+
+[nbButton].size-small nb-icon {
+  font-size: 0.95rem;
+}
+
+[nbButton].size-medium nb-icon {
+  font-size: 1rem;
+}
+
+[nbButton].size-large nb-icon {
+  font-size: 1.4rem;
 }

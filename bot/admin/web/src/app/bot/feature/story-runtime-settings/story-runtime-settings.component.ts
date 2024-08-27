@@ -20,6 +20,7 @@ import { StoryDefinitionConfiguration } from '../../model/story';
 import { StateService } from '../../../core-nlp/state.service';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { getStoryIcon } from '../../../shared/utils';
 
 @Component({
   selector: 'tock-story-runtime-settings',
@@ -36,6 +37,8 @@ export class StoryRuntimeSettingsComponent implements OnInit, OnDestroy {
   taggedStoriesCount: number = 0;
 
   loading: boolean;
+
+  getStoryIcon = getStoryIcon;
 
   constructor(private state: StateService, private botService: BotService, private router: Router) {}
 
@@ -70,18 +73,6 @@ export class StoryRuntimeSettingsComponent implements OnInit, OnDestroy {
 
         this.loading = false;
       });
-    }
-  }
-
-  getStoryIcon(story: StoryDefinitionConfiguration) {
-    if (story.isBuiltIn()) {
-      return 'cube';
-    }
-    if (story.isSimpleAnswer()) {
-      return 'message-square-outline';
-    }
-    if (story.isScriptAnswer()) {
-      return 'code';
     }
   }
 

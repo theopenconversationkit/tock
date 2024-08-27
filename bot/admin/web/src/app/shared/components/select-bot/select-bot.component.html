@@ -21,61 +21,71 @@
   [ngClass]="{ 'd-flex': displayConnectorChoice && currentBotName !== 'None' }"
 >
   <span
-    class="select-configuration w-50"
+    class="select-configuration w-50 lineHeight-1"
     *ngIf="botNames && (allowNoSelection || botNames.length > 1)"
   >
-    <nb-select
-      (selectedChange)="changeBotName()"
-      [size]="size"
-      placeholder="Select a configuration"
-      [(ngModel)]="currentBotName"
-      class="select-width"
-      fullWidth
-      nbTooltip="Select a configuration"
-      [disabled]="disabled"
-    >
-      <nb-option
-        *ngIf="allowNoSelection"
-        value="None"
-        >{{ noConfigurationLabel }}</nb-option
+    <nb-form-field nbTooltip="Select configuration">
+      <nb-icon
+        nbPrefix
+        icon="link-45deg"
+      ></nb-icon>
+      <nb-select
+        (selectedChange)="changeBotName()"
+        [size]="size"
+        placeholder="Select a configuration"
+        [(ngModel)]="currentBotName"
+        class="select-width"
+        fullWidth
+        [disabled]="disabled"
       >
-      <nb-option
-        *ngFor="let n of botNames"
-        [value]="n"
-        >{{ n }}</nb-option
-      >
-    </nb-select>
+        <nb-option
+          *ngIf="allowNoSelection"
+          value="None"
+          >{{ noConfigurationLabel }}</nb-option
+        >
+        <nb-option
+          *ngFor="let n of botNames"
+          [value]="n"
+          >{{ n }}</nb-option
+        >
+      </nb-select>
+    </nb-form-field>
   </span>
   <span
     *ngIf="displayConnectorChoice && currentBotName !== 'None'"
-    class="select-configuration w-50"
+    class="select-configuration w-50 lineHeight-1"
   >
-    <nb-select
-      (selectedChange)="changeConnectorType()"
-      [size]="size"
-      placeholder="Select a connector"
-      [(ngModel)]="currentConfiguration"
-      class="select-width"
-      fullWidth
-      nbTooltip="Select a connector"
-      [disabled]="disabled"
-    >
-      <nb-option
-        *ngIf="allowNoConfigurationSelection"
-        value=""
-        >{{ noConnectorLabel }}</nb-option
+    <nb-form-field nbTooltip="Select connector">
+      <nb-icon
+        nbPrefix
+        icon="plug"
+      ></nb-icon>
+      <nb-select
+        (selectedChange)="changeConnectorType()"
+        [size]="size"
+        placeholder="Select a connector"
+        [(ngModel)]="currentConfiguration"
+        class="select-width"
+        fullWidth
+        [disabled]="disabled"
       >
-      <nb-option
-        *ngFor="let c of currentConfigurations"
-        [value]="c"
-      >
-        <img
-          src="{{ c.connectorType.iconUrl() }}"
-          class="connector-icon"
-        />
-        {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option
-      >
-    </nb-select>
+        <nb-option
+          *ngIf="allowNoConfigurationSelection"
+          value=""
+          >{{ noConnectorLabel }}</nb-option
+        >
+        <nb-option
+          *ngFor="let c of currentConfigurations"
+          [value]="c"
+        >
+          <img
+            src="{{ c.connectorType.iconUrl() }}"
+            class="connector-icon"
+          />
+          {{ c.connectorType.label() }} ( {{ c.applicationId }})</nb-option
+        >
+      </nb-select>
+    </nb-form-field>
   </span>
   <ng-content></ng-content>
 </div>

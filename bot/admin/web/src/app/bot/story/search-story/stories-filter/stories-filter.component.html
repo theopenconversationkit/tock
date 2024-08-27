@@ -7,7 +7,7 @@
       <nb-form-field>
         <nb-icon
           nbPrefix
-          icon="search-outline"
+          icon="search"
         ></nb-icon>
         <input
           nbInput
@@ -26,24 +26,31 @@
           (click)="clearSearch()"
           data-testid="clear-button"
         >
-          <nb-icon icon="close-outline"></nb-icon>
+          <nb-icon icon="x-lg"></nb-icon>
         </button>
       </nb-form-field>
 
-      <nb-select
-        multiple
-        placeholder="Categories"
-        fullWidth
-        optionsListClass="option-list--break-word"
-        formControlName="categories"
-      >
-        <nb-option
-          *ngFor="let tag of categories"
-          value="{{ tag }}"
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="grid"
+        ></nb-icon>
+
+        <nb-select
+          multiple
+          placeholder="Categories"
+          fullWidth
+          optionsListClass="option-list--break-word"
+          formControlName="categories"
         >
-          <span class="initial-capitalize">{{ tag }}</span>
-        </nb-option>
-      </nb-select>
+          <nb-option
+            *ngFor="let tag of categories"
+            value="{{ tag }}"
+          >
+            <span class="initial-capitalize">{{ tag }}</span>
+          </nb-option>
+        </nb-select>
+      </nb-form-field>
 
       <nb-checkbox
         [checked]="configuredStoriesOnly.value"
@@ -66,7 +73,7 @@
         nbTooltip="Export Stories"
         (click)="download()"
       >
-        <nb-icon icon="download-outline"></nb-icon>
+        <nb-icon icon="download"></nb-icon>
       </button>
       <button
         nbButton
@@ -75,7 +82,7 @@
         nbTooltip="Import Stories"
         (click)="prepareUpload()"
       >
-        <nb-icon icon="upload-outline"></nb-icon>
+        <nb-icon icon="upload"></nb-icon>
       </button>
     </form>
   </nb-card-body>

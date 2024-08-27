@@ -6,8 +6,8 @@
 >
   <div class="d-flex align-items-center gap-1">
     <nb-icon
-      icon="alert-triangle-outline"
       status="warning"
+      icon="exclamation-triangle"
     ></nb-icon>
     Please note that data will be transmitted to an external partner. Be careful not to send sentences containing "sensitive" information.
   </div>
@@ -51,10 +51,10 @@
         <label for="temperature"
           >Temperature
           <nb-icon
-            icon="info-outline"
             nbTooltip="Controls the randomness: a temperature close to 0 leads to a more deterministic and repetitive generation by the model. A temperature close to 1 makes the model more creative within the limits imposed by the prompt."
-          ></nb-icon
-        ></label>
+            icon="info-circle"
+          ></nb-icon>
+        </label>
         <div class="d-flex flex-column">
           <input
             formControlName="llmTemperature"

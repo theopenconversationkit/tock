@@ -20,12 +20,12 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { CommonModule } from '@angular/common';
 import { RestModule } from '../rest/rest.module';
-import { NbCardModule, NbCheckboxModule } from '@nebular/theme';
+import { NbButtonModule, NbCardModule, NbCheckboxModule } from '@nebular/theme';
 import { AuthRoutingModule } from './auth-routing.module';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, RestModule, AuthRoutingModule, NbCardModule, NbCheckboxModule],
+  imports: [CommonModule, FormsModule, RestModule, AuthRoutingModule, NbCardModule, NbCheckboxModule, NbButtonModule],
   declarations: [LoginComponent],
   providers: [AuthService, AuthGuard]
 })

@@ -5,7 +5,7 @@
         <nb-form-field class="flex-grow-1">
           <nb-icon
             nbPrefix
-            icon="search-outline"
+            icon="search"
           ></nb-icon>
           <input
             nbInput
@@ -27,7 +27,7 @@
             type="button"
             (click)="resetControl(getFormControl('search'))"
           >
-            <nb-icon icon="close-outline"></nb-icon>
+            <nb-icon icon="x-lg"></nb-icon>
           </button>
         </nb-form-field>
 
@@ -37,17 +37,19 @@
         >
           <nb-icon
             *ngIf="!advanced"
-            icon="chevron-down-outline"
             (click)="swapAdvanced()"
             class="pointer"
             nbTooltip="Display advanced search options"
+            icon="chevron-down-outline"
+            pack="nebular-essentials"
           ></nb-icon>
           <nb-icon
             *ngIf="advanced"
-            icon="chevron-up-outline"
             (click)="swapAdvanced()"
             class="pointer"
             nbTooltip="Hide advanced search options"
+            icon="chevron-up-outline"
+            pack="nebular-essentials"
           ></nb-icon>
         </div>
       </div>
@@ -103,7 +105,7 @@
             <nb-form-field>
               <nb-icon
                 nbPrefix
-                icon="compass-outline"
+                icon="compass"
               ></nb-icon>
               <input
                 #intentInput
@@ -129,7 +131,7 @@
                 *ngIf="getFormControl('intent').value"
                 (click)="resetControl(getFormControl('intent'), intentInput)"
               >
-                <nb-icon icon="close-outline"></nb-icon>
+                <nb-icon icon="x-lg"></nb-icon>
               </button>
             </nb-form-field>
 
@@ -157,9 +159,6 @@
               >
                 {{ unknownIntent.label }}
               </nb-option>
-              <!-- <nb-option [value]="ragExcludedIntent">
-                {{ ragExcludedIntent.label }}
-              </nb-option> -->
             </nb-autocomplete>
           </div>
 
@@ -167,7 +166,7 @@
             <nb-form-field>
               <nb-icon
                 nbPrefix
-                icon="attach-outline"
+                icon="paperclip"
               ></nb-icon>
               <nb-select
                 *ngIf="entityTypes"
@@ -201,9 +200,9 @@
               <nb-option
                 [disabled]="!getFormControl('entityRolesToInclude').value?.length"
                 [value]="null"
-                ><span class="d-flex align-items-center"
-                  ><nb-icon
-                    icon="close-outline"
+                ><span class="d-flex align-items-center">
+                  <nb-icon
+                    icon="x"
                     class="mr-1"
                   ></nb-icon>
                   Clear selection</span
@@ -231,9 +230,9 @@
               <nb-option
                 [disabled]="!getFormControl('entityRolesToExclude').value?.length"
                 [value]="null"
-                ><span class="d-flex align-items-center"
-                  ><nb-icon
-                    icon="close-outline"
+                ><span class="d-flex align-items-center">
+                  <nb-icon
+                    icon="x"
                     class="mr-1"
                   ></nb-icon>
                   Clear selection</span
@@ -252,7 +251,7 @@
             <nb-form-field nbTooltip="Filter sentences modified before the given date">
               <nb-icon
                 nbPrefix
-                icon="calendar-outline"
+                icon="calendar-minus"
               ></nb-icon>
               <input
                 nbInput
@@ -271,7 +270,7 @@
                 *ngIf="getFormControl('modifiedBefore').value"
                 (click)="resetControl(getFormControl('modifiedBefore'))"
               >
-                <nb-icon icon="close-outline"></nb-icon>
+                <nb-icon icon="x-lg"></nb-icon>
               </button>
             </nb-form-field>
             <nb-datepicker #modifiedBeforePicker></nb-datepicker>
@@ -281,7 +280,7 @@
             <nb-form-field nbTooltip="Filter sentences modified after the given date">
               <nb-icon
                 nbPrefix
-                icon="calendar-outline"
+                icon="calendar-plus"
               ></nb-icon>
               <input
                 nbInput
@@ -300,7 +299,7 @@
                 *ngIf="getFormControl('modifiedAfter').value"
                 (click)="resetControl(getFormControl('modifiedAfter'))"
               >
-                <nb-icon icon="close-outline"></nb-icon>
+                <nb-icon icon="x-lg"></nb-icon>
               </button>
             </nb-form-field>
             <nb-datepicker #modifiedAfterPicker></nb-datepicker>
@@ -313,7 +312,7 @@
             <nb-form-field>
               <nb-icon
                 nbPrefix
-                icon="person-outline"
+                icon="person-add"
               ></nb-icon>
               <nb-select
                 size="small"
@@ -340,7 +339,7 @@
             <nb-form-field>
               <nb-icon
                 nbPrefix
-                icon="person-remove-outline"
+                icon="person-dash"
               ></nb-icon>
               <nb-select
                 size="small"
@@ -367,7 +366,7 @@
             <nb-form-field>
               <nb-icon
                 nbPrefix
-                icon="link-outline"
+                icon="link-45deg"
               ></nb-icon>
               <nb-select
                 size="small"
@@ -414,10 +413,12 @@
           <nb-icon
             *ngIf="!advancedTools"
             icon="chevron-down-outline"
+            pack="nebular-essentials"
           ></nb-icon>
           <nb-icon
             *ngIf="advancedTools"
             icon="chevron-up-outline"
+            pack="nebular-essentials"
           ></nb-icon>
           Advanced tools
         </div>
@@ -429,7 +430,7 @@
               <nb-form-field class="flex-grow-1">
                 <nb-icon
                   nbPrefix
-                  icon="compass-outline"
+                  icon="compass"
                 ></nb-icon>
                 <input
                   nbInput
@@ -493,7 +494,7 @@
               <nb-form-field class="w-50">
                 <nb-icon
                   nbPrefix
-                  icon="attach-outline"
+                  icon="paperclip"
                 ></nb-icon>
 
                 <nb-select
@@ -513,7 +514,7 @@
               <nb-form-field class="w-50">
                 <nb-icon
                   nbPrefix
-                  icon="attach-outline"
+                  icon="paperclip"
                 ></nb-icon>
                 <nb-select
                   size="small"
@@ -545,19 +546,25 @@
           <div class="my-2 tools-columns">
             Translate selected sentences
 
-            <nb-select
-              placeholder="Target Language"
-              fullWidth
-              size="small"
-              nbTooltip="Select the language in which to translate the sentences"
-              [(ngModel)]="translateTargetLocale"
-            >
-              <nb-option
-                *ngFor="let l of state.otherThanCurrentLocales()"
-                [value]="l"
-                >{{ state.localeName(l) }}
-              </nb-option>
-            </nb-select>
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="globe2"
+              ></nb-icon>
+              <nb-select
+                placeholder="Target Language"
+                fullWidth
+                size="small"
+                nbTooltip="Select the language in which to translate the sentences"
+                [(ngModel)]="translateTargetLocale"
+              >
+                <nb-option
+                  *ngFor="let l of state.otherThanCurrentLocales()"
+                  [value]="l"
+                  >{{ state.localeName(l) }}
+                </nb-option>
+              </nb-select>
+            </nb-form-field>
 
             <button
               nbButton

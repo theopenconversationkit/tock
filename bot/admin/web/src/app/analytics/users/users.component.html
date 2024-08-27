@@ -32,21 +32,27 @@
     (click)="reload()"
     class="ml-2"
   >
-    <nb-icon icon="refresh-outline"></nb-icon>
+    <nb-icon icon="arrow-clockwise"></nb-icon>
   </button>
 </div>
 
 <nb-card class="mb-3">
   <nb-card-body class="d-flex gap-1 align-items-end justify-content-between">
     <div class="w-50">
-      <input
-        nbInput
-        fullWidth
-        fieldSize="small"
-        placeholder="Data collected after"
-        [nbDatepicker]="from_date"
-        [(ngModel)]="filter.from"
-      />
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="calendar-plus"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="small"
+          placeholder="Data collected after"
+          [nbDatepicker]="from_date"
+          [(ngModel)]="filter.from"
+        />
+      </nb-form-field>
       <nb-datepicker
         (dateChange)="changeAfter()"
         #from_date
@@ -54,14 +60,20 @@
     </div>
 
     <div class="w-50">
-      <input
-        nbInput
-        fullWidth
-        fieldSize="small"
-        placeholder="Data collected before"
-        [nbDatepicker]="to_date"
-        [(ngModel)]="filter.to"
-      />
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="calendar-minus"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          fieldSize="small"
+          placeholder="Data collected before"
+          [nbDatepicker]="to_date"
+          [(ngModel)]="filter.to"
+        />
+      </nb-form-field>
       <nb-datepicker
         (dateChange)="changeBefore()"
         #to_date
@@ -201,7 +213,7 @@
           ghost="true"
           nbTooltip="Add dialog to Test Plan"
         >
-          <nb-icon icon="plus-circle-outline"></nb-icon>
+          <nb-icon icon="plus-circle"></nb-icon>
         </button>
       </nb-card-body>
     </nb-card>

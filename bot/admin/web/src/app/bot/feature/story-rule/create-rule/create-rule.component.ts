@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BotService } from '../../../bot-service';
 import { StateService } from '../../../../core-nlp/state.service';
 import { Observable, of, take } from 'rxjs';
+import { getStoryIcon } from '../../../../shared/utils';
 
 enum mainOrTarget {
   mainStory = 'mainStory',
@@ -36,6 +37,8 @@ export class CreateRuleComponent implements OnInit {
   filteredStories$: Observable<StoryDefinitionConfiguration[]>;
 
   isSubmitted: boolean = false;
+
+  getStoryIcon = getStoryIcon;
 
   @Input() type: RuleType;
 
@@ -154,17 +157,5 @@ export class CreateRuleComponent implements OnInit {
 
   cancel(): void {
     this.nbDialogRef.close({});
-  }
-
-  getStoryIcon(story: StoryDefinitionConfiguration): string {
-    if (story.isBuiltIn()) {
-      return 'cube';
-    }
-    if (story.isSimpleAnswer()) {
-      return 'message-square-outline';
-    }
-    if (story.isScriptAnswer()) {
-      return 'code';
-    }
   }
 }

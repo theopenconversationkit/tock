@@ -34,13 +34,13 @@ export class SourceEntryComponent implements OnDestroy {
 
   constructor(private nbDialogService: NbDialogService) {}
 
-  initTaskDefinition = { type: IndexingSessionTaskTypes.initialization, label: 'Initialization', icon: 'clock-outline' };
+  initTaskDefinition = { type: IndexingSessionTaskTypes.initialization, label: 'Initialization', icon: 'clock' };
 
   tasksDefinitions = [
-    { type: IndexingSessionTaskTypes.crawling, label: 'Source exploration', icon: 'compass-outline' },
-    { type: IndexingSessionTaskTypes.fetching, label: 'Data extraction', icon: 'code-download-outline' },
-    { type: IndexingSessionTaskTypes.chunking, label: 'Text processing', icon: 'scissors-outline' },
-    { type: IndexingSessionTaskTypes.embeddings, label: 'Word embedding', icon: 'menu-arrow-outline' }
+    { type: IndexingSessionTaskTypes.crawling, label: 'Source exploration', icon: 'compass' },
+    { type: IndexingSessionTaskTypes.fetching, label: 'Data extraction', icon: 'code' },
+    { type: IndexingSessionTaskTypes.chunking, label: 'Text processing', icon: 'scissors' },
+    { type: IndexingSessionTaskTypes.embeddings, label: 'Word embedding', icon: 'code-square' }
   ];
 
   getRunningIndexingSessionTasks(): TaskDefinition[] {

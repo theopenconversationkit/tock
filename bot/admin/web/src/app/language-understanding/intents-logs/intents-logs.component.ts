@@ -178,12 +178,8 @@ export class IntentsLogsComponent implements OnInit, OnDestroy {
     return sentence instanceof Sentence;
   }
 
-  answerToSentence(sentence: Sentence) {
-    this.router.navigate([this.config.answerToSentenceUrl], {
-      queryParams: {
-        text: sentence.getText()
-      }
-    });
+  redirectToFaqManagement(sentence: Sentence): void {
+    this.router.navigate(['faq/management'], { state: { question: sentence.text } });
   }
 
   displayFullLog(log: Log): void {

@@ -6,7 +6,7 @@
   *ngIf="isRoot && !isPrimitive(data)"
   (click)="expandAll()"
 >
-  <nb-icon icon="list-outline"></nb-icon>
+  <nb-icon icon="arrows-expand"></nb-icon>
 </button>
 
 <div *ngIf="isRoot && isPrimitive(data)">
@@ -20,16 +20,15 @@
   [ngClass]="{ isPrimitive: isPrimitive(data), ellipsis: !isPrimitive(data), pointer: !isPrimitive(data) }"
 >
   <nb-icon
-    icon="arrow-right"
-    class="valign-middle"
+    icon="caret-right-fill"
+    class="align-middle"
     *ngIf="!isDeployed && !isPrimitive(data)"
   ></nb-icon>
   <nb-icon
-    icon="arrow-down"
-    class="valign-middle"
+    icon="caret-down-fill"
+    class="align-middle"
     *ngIf="isDeployed && !isPrimitive(data)"
   ></nb-icon>
-
   <strong> {{ parentKey }} : </strong>
 
   <pre

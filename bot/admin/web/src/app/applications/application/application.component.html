@@ -24,28 +24,28 @@
   <section class="grid-actions gap-1">
     <button
       nbButton
-      outline
+      ghost
       status="primary"
       *ngIf="applications.length !== 0"
       (click)="cancel()"
       nbTooltip="Cancel"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
       CANCEL
     </button>
 
     <button
       nbButton
-      status="warning"
+      status="primary"
       (click)="saveApplication()"
       [nbTooltip]="newApplication ? 'Create New Application' : 'Update Application'"
     >
       <ng-container *ngIf="newApplication">
-        <nb-icon icon="plus-outline"></nb-icon>
+        <nb-icon icon="plus-lg"></nb-icon>
         CREATE
       </ng-container>
       <ng-container *ngIf="!newApplication">
-        <nb-icon icon="save-outline"></nb-icon>
+        <nb-icon icon="floppy"></nb-icon>
         UPDATE
       </ng-container>
     </button>
@@ -179,24 +179,30 @@
           Locales
         </label>
 
-        <nb-select
-          fullWidth
-          status="primary"
-          (selectedChange)="addLocale()"
-          [(ngModel)]="newLocale"
-          placeholder="Add new locale"
-          id="locales"
-        >
-          <nb-option
-            *ngFor="let locale of state.locales"
-            [value]="locale.first"
-            >{{ locale.second }}
-          </nb-option>
-        </nb-select>
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="globe2"
+          ></nb-icon>
+
+          <nb-select
+            fullWidth
+            (selectedChange)="addLocale()"
+            [(ngModel)]="newLocale"
+            placeholder="Add new locale"
+            id="locales"
+          >
+            <nb-option
+              *ngFor="let locale of state.locales"
+              [value]="locale.first"
+              >{{ locale.second }}
+            </nb-option>
+          </nb-select>
+        </nb-form-field>
       </div>
 
       <div
-        class="col-6 col-lg-9 d-flex flex-wrap align-items-center"
+        class="col-6 col-lg-9 d-flex flex-wrap align-items-center pt-4"
         *ngIf="application.supportedLocales.length !== 0"
       >
         <span
@@ -204,12 +210,17 @@
           *ngFor="let locale of application.supportedLocales"
         >
           {{ state.localeName(locale) }}
-          <nb-icon
-            icon="close-circle-outline"
-            class="ml-1 pointer"
+          <button
+            nbButton
+            ghost
+            size="tiny"
+            status="danger"
+            class="ml-1"
             nbTooltip="Delete locale"
             (click)="removeLocale(locale)"
-          ></nb-icon>
+          >
+            <nb-icon icon="trash"></nb-icon>
+          </button>
         </span>
       </div>
     </div>

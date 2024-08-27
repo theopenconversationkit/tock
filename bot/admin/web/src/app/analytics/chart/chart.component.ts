@@ -423,7 +423,7 @@ export class ChartComponent implements OnChanges {
   }
 
   chartIcon(): string {
-    return this.mainChart.type == 'PieChart' ? 'pie-chart-outline' : 'bar-chart-outline';
+    return this.mainChart.type == 'PieChart' ? 'pie-chart' : 'bar-chart';
   }
 
   onFlipAction() {

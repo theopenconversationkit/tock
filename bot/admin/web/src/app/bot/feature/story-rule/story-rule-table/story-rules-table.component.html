@@ -12,7 +12,7 @@
       >
         <nb-icon
           nbPrefix
-          icon="search-outline"
+          icon="search"
         ></nb-icon>
         <input
           nbInput
@@ -29,7 +29,7 @@
           (click)="resetSearch()"
           *ngIf="searchFilterString?.length"
         >
-          <nb-icon icon="close-outline"></nb-icon>
+          <nb-icon icon="x-lg"></nb-icon>
         </button>
       </nb-form-field>
 
@@ -41,7 +41,7 @@
         (click)="newRule()"
         class="new-rule-button"
       >
-        <nb-icon icon="plus-outline"></nb-icon>
+        <nb-icon icon="plus-lg"></nb-icon>
         New {{ type }} rule
       </button>
     </div>
@@ -92,7 +92,7 @@
             <span [nbTooltip]="feature.story.name">
               <nb-icon
                 [icon]="getStoryIcon(feature.story)"
-                class="valign-middle"
+                class="align-middle"
               ></nb-icon>
               {{ feature.story.name }}
             </span>
@@ -109,7 +109,7 @@
               >
                 <nb-icon
                   [icon]="getStoryIcon(feature.switchToStory)"
-                  class="valign-middle"
+                  class="align-middle"
                 ></nb-icon>
                 {{ feature.switchToStory.name }}
               </span>
@@ -123,7 +123,7 @@
               >
                 <nb-icon
                   [icon]="getStoryIcon(feature.endWithStory)"
-                  class="valign-middle"
+                  class="align-middle"
                 ></nb-icon>
                 {{ feature.endWithStory.name }}
               </span>
@@ -169,7 +169,7 @@
               nbTooltip="Delete rule"
               (click)="askDeleteFeature(feature)"
             >
-              <nb-icon icon="trash-2-outline"></nb-icon>
+              <nb-icon icon="trash"></nb-icon>
             </button>
           </td>
         </tr>

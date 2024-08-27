@@ -22,18 +22,10 @@
   [nbSpinner]="loading"
 ></div>
 
-<nb-alert
+<tock-no-data-found
   *ngIf="configurations?.length === 0"
-  class="alert-config flex-row align-items-center mt-3"
-  accent="warning"
->
-  <nb-icon
-    class="mr-1"
-    icon="alert-triangle-outline"
-    status="warning"
-  ></nb-icon>
-  No bot configuration detected
-</nb-alert>
+  title="No bot configuration detected"
+></tock-no-data-found>
 
 <tock-stories-filter
   *ngIf="!loading && configurations?.length"
@@ -44,7 +36,7 @@
 ></tock-stories-filter>
 
 <tock-no-data-found
-  *ngIf="!loading && !stories?.length"
+  *ngIf="!loading && configurations?.length && !stories?.length"
   title="No Story found"
 ></tock-no-data-found>
 

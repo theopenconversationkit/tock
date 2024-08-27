@@ -16,6 +16,8 @@
 
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap');
 
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
 // themes - our custom or/and out of the box themes
 @import 'themes';
 
@@ -50,7 +52,7 @@ $table-color: inherit;
 @import 'bootstrap/scss/list-group';
 
 @import './layout';
-@import './overrides';
+// @import './overrides';
 
 // install the framework and custom global styles
 @include nb-install() {
@@ -59,7 +61,7 @@ $table-color: inherit;
 
   @include ngx-layout();
 
-  @include nb-overrides();
+  // @include nb-overrides();
 }
 
 @import './utilities';

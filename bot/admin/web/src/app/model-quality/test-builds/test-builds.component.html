@@ -23,37 +23,49 @@
   <nb-card-body class="d-flex gap-1 align-items-center">
     <div class="w-50">
       <label class="label mr-2">Filter by intent</label>
-      <nb-select
-        fullWidth
-        placeholder="Filter by intent"
-        [(ngModel)]="intent"
-        (selectedChange)="search(null)"
-      >
-        <nb-option value="">All intents</nb-option>
-        <nb-option-group
-          *ngFor="let category of state.currentIntentsCategories | async"
-          [title]="category.category"
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="compass"
+        ></nb-icon>
+        <nb-select
+          fullWidth
+          placeholder="Filter by intent"
+          [(ngModel)]="intent"
+          (selectedChange)="search(null)"
         >
-          <nb-option
-            *ngFor="let intent of category.intents"
-            [value]="intent.qualifiedName()"
+          <nb-option value="">All intents</nb-option>
+          <nb-option-group
+            *ngFor="let category of state.currentIntentsCategories | async"
+            [title]="category.category"
           >
-            {{ intent.intentLabel() }}
-          </nb-option>
-        </nb-option-group>
-        <nb-option value="unknown">Unknown</nb-option>
-      </nb-select>
+            <nb-option
+              *ngFor="let intent of category.intents"
+              [value]="intent.qualifiedName()"
+            >
+              {{ intent.intentLabel() }}
+            </nb-option>
+          </nb-option-group>
+          <nb-option value="unknown">Unknown</nb-option>
+        </nb-select>
+      </nb-form-field>
     </div>
 
     <div class="w-50">
       <label class="label mr-2">Data collected after</label>
-      <input
-        nbInput
-        fullWidth
-        placeholder="Data collected after"
-        [nbDatepicker]="dateTimePicker"
-        [(ngModel)]="modifiedAfter"
-      />
+      <nb-form-field>
+        <nb-icon
+          nbPrefix
+          icon="calendar"
+        ></nb-icon>
+        <input
+          nbInput
+          fullWidth
+          placeholder="Data collected after"
+          [nbDatepicker]="dateTimePicker"
+          [(ngModel)]="modifiedAfter"
+        />
+      </nb-form-field>
       <nb-datepicker
         #dateTimePicker
         (dateChange)="search($event)"

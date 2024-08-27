@@ -235,17 +235,17 @@ export class ActivityComponent implements OnInit {
 
   getBigIcon(before, current) {
     if (current == before) {
-      return 'minus-outline';
+      return 'dash-lg';
     } else {
-      return this.metricIncreased(before, current) ? 'diagonal-arrow-right-up-outline' : 'diagonal-arrow-right-down-outline';
+      return this.metricIncreased(before, current) ? 'arrow-up-right' : 'arrow-down-right';
     }
   }
 
   getSmallIcon(before, current) {
     if (current == before) {
-      return 'minus-outline';
+      return 'dash';
     } else {
-      return this.metricIncreased(before, current) ? 'arrow-upward-outline' : 'arrow-downward-outline';
+      return this.metricIncreased(before, current) ? 'arrow-up-short' : 'arrow-down-short';
     }
   }
 

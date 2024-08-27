@@ -2,13 +2,19 @@
   <nb-card-body class="d-flex flex-wrap gap-1 align-items-center">
     <ng-container *ngIf="!ratingFilter">
       <div class="flex-grow-1 min-width-15 w-100 d-flex gap-1 align-items-center">
-        <input
-          nbInput
-          fullWidth
-          placeholder="Search user text"
-          [(ngModel)]="filter.text"
-          (keyup.enter)="refresh()"
-        />
+        <nb-form-field class="flex-grow-1">
+          <nb-icon
+            nbPrefix
+            icon="search"
+          ></nb-icon>
+          <input
+            nbInput
+            fullWidth
+            placeholder="Search user text"
+            [(ngModel)]="filter.text"
+            (keyup.enter)="refresh()"
+          />
+        </nb-form-field>
 
         <nb-checkbox
           class="text-nowrap"
@@ -18,73 +24,97 @@
       </div>
 
       <div class="d-flex gap-1">
-        <nb-select
-          fullWidth
-          placeholder="Connector type"
-          class="min-width-15"
-          [(ngModel)]="filter.connectorType"
-          (selectedChange)="refresh()"
-        >
-          <nb-option
-            *ngFor="let c of connectorTypes"
-            [value]="c"
-            >{{ c.id }}</nb-option
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="plug"
+          ></nb-icon>
+          <nb-select
+            fullWidth
+            placeholder="Connector type"
+            class="min-width-15"
+            [(ngModel)]="filter.connectorType"
+            (selectedChange)="refresh()"
           >
-        </nb-select>
+            <nb-option
+              *ngFor="let c of connectorTypes"
+              [value]="c"
+              >{{ c.id }}</nb-option
+            >
+          </nb-select>
+        </nb-form-field>
 
-        <nb-select
-          fullWidth
-          placeholder="Intent"
-          class="min-width-15"
-          [(ngModel)]="filter.intentName"
-          (selectedChange)="refresh()"
-        >
-          <nb-option value="">All</nb-option>
-          <nb-option
-            *ngFor="let intent of state.currentApplication.intents"
-            [value]="intent.name"
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="compass"
+          ></nb-icon>
+          <nb-select
+            fullWidth
+            placeholder="Intent"
+            class="min-width-15"
+            [(ngModel)]="filter.intentName"
+            (selectedChange)="refresh()"
           >
-            {{ intent.name }}
-          </nb-option>
-          <nb-option value="unknown">Unknown</nb-option>
-        </nb-select>
+            <nb-option value="">All</nb-option>
+            <nb-option
+              *ngFor="let intent of state.currentApplication.intents"
+              [value]="intent.name"
+            >
+              {{ intent.name }}
+            </nb-option>
+            <nb-option value="unknown">Unknown</nb-option>
+          </nb-select>
+        </nb-form-field>
       </div>
     </ng-container>
 
     <ng-container *ngIf="ratingFilter">
       <div class="d-flex gap-1">
-        <nb-select
-          fullWidth
-          placeholder="Configuration"
-          [(ngModel)]="filter.configuration"
-          (selectedChange)="refresh()"
-          class="min-width-15"
-        >
-          <nb-option value="">All</nb-option>
-          <nb-option
-            *ngFor="let config of configurationNameList"
-            [value]="config"
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="link-45deg"
+          ></nb-icon>
+          <nb-select
+            fullWidth
+            placeholder="Configuration"
+            [(ngModel)]="filter.configuration"
+            (selectedChange)="refresh()"
+            class="min-width-15"
           >
-            {{ config }}
-          </nb-option>
-        </nb-select>
+            <nb-option value="">All</nb-option>
+            <nb-option
+              *ngFor="let config of configurationNameList"
+              [value]="config"
+            >
+              {{ config }}
+            </nb-option>
+          </nb-select>
+        </nb-form-field>
 
-        <nb-select
-          fullWidth
-          multiple
-          placeholder="Intents"
-          [(ngModel)]="filter.intentsToHide"
-          (selectedChange)="refresh()"
-          class="min-width-15"
-        >
-          <nb-option>Clear selection</nb-option>
-          <nb-option
-            *ngFor="let intent of intents"
-            [value]="intent"
+        <nb-form-field>
+          <nb-icon
+            nbPrefix
+            icon="compass"
+          ></nb-icon>
+          <nb-select
+            fullWidth
+            multiple
+            placeholder="Intents"
+            [(ngModel)]="filter.intentsToHide"
+            (selectedChange)="refresh()"
+            class="min-width-15"
           >
-            {{ intent }}
-          </nb-option>
-        </nb-select>
+            <nb-option>Clear selection</nb-option>
+            <nb-option
+              *ngFor="let intent of intents"
+              [value]="intent"
+            >
+              {{ intent }}
+            </nb-option>
+          </nb-select>
+        </nb-form-field>
       </div>
     </ng-container>
 
@@ -115,7 +145,7 @@
       ghost
       (click)="refresh()"
     >
-      <nb-icon icon="refresh-outline"></nb-icon>
+      <nb-icon icon="arrow-clockwise"></nb-icon>
     </button>
   </h1>
 
@@ -149,7 +179,7 @@
                     type="button"
                     (click)="createFaq(action, dialog.actions)"
                   >
-                    <nb-icon icon="message-square-outline"></nb-icon>
+                    <nb-icon icon="chat-left-text"></nb-icon>
                     Create a FAQ with this question/answer pair
                   </button>
                 </div>

@@ -258,11 +258,19 @@
   <nb-card-footer style="text-align: right">
     <button
       nbButton
-      outline
-      status="primary"
+      ghost
+      [status]="configuration._id ? 'danger' : 'basic'"
       size="small"
       (click)="remove()"
     >
+      <nb-icon
+        *ngIf="configuration._id"
+        icon="trash"
+      ></nb-icon>
+      <nb-icon
+        *ngIf="!configuration._id"
+        icon="x-lg"
+      ></nb-icon>
       {{ configuration._id ? 'Delete' : 'Cancel' }}
     </button>
     <button
@@ -272,6 +280,7 @@
       size="small"
       style="margin-left: 20px"
     >
+      <nb-icon icon="floppy"></nb-icon>
       {{ configuration._id ? 'Update' : 'Create' }}
     </button>
   </nb-card-footer>
