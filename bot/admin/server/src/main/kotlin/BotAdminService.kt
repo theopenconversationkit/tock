@@ -1141,7 +1141,7 @@ object BotAdminService {
             ragConfigurationDAO.delete(it._id)
         }
 
-        // delete the RAG configuration
+        // delete the Observability configuration
         observabilityConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
             observabilityConfigurationDAO.delete(it._id)
         }
