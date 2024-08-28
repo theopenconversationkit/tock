@@ -465,7 +465,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingDelete("/configuration/bots/:botId/rag", admin) { context  ->
-            RAGService.deleteRag(context.organization, context.path("botId"))
+            RAGService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost("/configuration/bots/:botId/observability", admin) { context, configuration: BotObservabilityConfigurationDTO  ->
@@ -481,6 +481,10 @@ open class BotAdminVerticle : AdminVerticle() {
                 ?.let {
                     BotObservabilityConfigurationDTO(it)
                 }
+        }
+
+        blockingDelete("/configuration/bots/:botId/observability", admin) { context  ->
+            ObservabilityService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost(
@@ -1109,6 +1113,13 @@ open class BotAdminVerticle : AdminVerticle() {
                 ?.let {
                     BotSentenceGenerationInfoDTO(it)
                 } ?: BotSentenceGenerationInfoDTO()
+        }
+
+        blockingDelete(
+            "/configuration/bots/:botId/sentence-generation/configuration",
+            admin
+        ) { context ->
+            SentenceGenerationService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonGet("/configuration") {

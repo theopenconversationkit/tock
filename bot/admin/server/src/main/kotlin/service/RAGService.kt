@@ -56,7 +56,7 @@ object RAGService {
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
-    fun deleteRag(namespace: String, botId: String) {
+    fun deleteConfig(namespace: String, botId: String) {
         val ragConfig = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
             ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: $namespace, botId: $botId]")
         logger.info { "Deleting the RAG Configuration [namespace: $namespace, botId: $botId]" }

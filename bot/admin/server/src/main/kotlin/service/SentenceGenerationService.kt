@@ -37,9 +37,23 @@ object SentenceGenerationService {
 
     /**
      * Get the LLM Sentence Generation configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
      */
     fun getSentenceGenerationConfiguration(namespace: String, botId: String): BotSentenceGenerationConfiguration? {
         return sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+    }
+
+    /**
+     * Deleting the Observability Configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
+     */
+    fun deleteConfig(namespace: String, botId: String) {
+        val sentenceGenerationConfiguration = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+            ?: WebVerticle.badRequest("No Observability configuration is defined yet [namespace: $namespace, botId: $botId]")
+        logger.info { "Deleting the Observability Configuration [namespace: $namespace, botId: $botId]" }
+        return sentenceGenerationConfigurationDAO.delete(sentenceGenerationConfiguration._id)
     }
 
     /**
