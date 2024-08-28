@@ -255,7 +255,7 @@ export class IntentsComponent implements OnInit {
         const exportFileName = getExportFileName(
           this.state.currentApplication.namespace,
           this.state.currentApplication.name,
-          'Sentence',
+          'Sentences',
           'json',
           intent.name
         );
