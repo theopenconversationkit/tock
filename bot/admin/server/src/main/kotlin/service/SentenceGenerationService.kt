@@ -51,7 +51,7 @@ object SentenceGenerationService {
      */
     fun deleteConfig(namespace: String, botId: String) {
         val sentenceGenerationConfiguration = sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
-            ?: WebVerticle.badRequest("No Observability configuration is defined yet [namespace: $namespace, botId: $botId]")
+            ?: WebVerticle.badRequest("No LLM Sentence Generation configuration is defined yet [namespace: $namespace, botId: $botId]")
         logger.info { "Deleting the LLM Sentence Generation Configuration [namespace: $namespace, botId: $botId]" }
         return sentenceGenerationConfigurationDAO.delete(sentenceGenerationConfiguration._id)
     }
