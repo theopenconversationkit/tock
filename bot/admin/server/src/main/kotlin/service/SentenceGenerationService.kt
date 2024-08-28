@@ -45,7 +45,7 @@ object SentenceGenerationService {
     }
 
     /**
-     * Deleting the Observability Configuration
+     * Deleting the LLM Sentence Generation Configuration
      * @param namespace: the namespace
      * @param botId: the bot ID
      */
