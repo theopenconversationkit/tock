@@ -11,7 +11,7 @@ title: Gen AI - Observability Settings
 ## Configuration
 Pour permettre à Tock de se connecter à un outil d'observabilité, un écran de configuration a été mis en place : 
 
-![schéma Tock](../../../../img/gen-ai/gen-ai-feature-observability.png "Ecran de configuration de l'outil d'observation de l'IA")
+![LLM Observability](../../../../img/gen-ai/gen-ai-feature-observability.png "Ecran de configuration de l'outil d'observation de l'IA")
 
 ## Utilisation
 
