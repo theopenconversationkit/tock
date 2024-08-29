@@ -35,7 +35,7 @@ class BloomzCompressorSetting(BaseCompressorSetting):
     endpoint: str = Field(description='Bloomz scoring endpoint.')
     max_documents: Optional[int] = Field(
         description='Maximum number of documents to return to avoid exceeding max tokens for text generation.',
-        default=50,
+        default=BloomzRerank.__fields__['max_documents'].default),
     )
     label: Optional[str] = Field(
         description='Label to use for reranking.', default='entailment'
