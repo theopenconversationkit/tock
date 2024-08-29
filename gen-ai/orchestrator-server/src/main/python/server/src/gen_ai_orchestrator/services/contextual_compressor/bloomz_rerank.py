@@ -34,7 +34,7 @@ class BloomzRerank(BaseDocumentCompressor):
 
     min_score: float = 0.5
     """Minimum score to use for reranking."""
-    endpoint: str = 'http://bloomz-3b-nli.kapla.dev.gcp.arkea.com'
+    endpoint: str
     """Model to use for reranking."""
     max_documents: int = 50
     """Maximum number of documents to return to avoid exceeding max tokens for text generation."""
