@@ -30,7 +30,8 @@ class BloomzCompressorSetting(BaseCompressorSetting):
         examples=[ContextualCompressorProvider.BloomZ],
         default=ContextualCompressorProvider.BloomZ.value
     )
-    min_score: float = Field(description='Minimum retailment score.')
+    min_score: Optional[float] = Field(description='Minimum retailment score.',
+    default=BloomzRerank.__fields__['min_score'].default)
     endpoint: str = Field(description='Bloomz scoring endpoint.')
     max_documents: Optional[int] = Field(
         description='Maximum number of documents to return to avoid exceeding max tokens for text generation.',
