@@ -264,6 +264,12 @@ def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
     GuardrailFactory
         An instance of a GuardrailFactory that matches the given setting.
     """
+    Retrieves the appropriate GuardrailFactory instance based on the provided setting.
+        Args:
+        setting : The Guardrail Setting
+    Returns:
+        The Guardrail Factory, or raise an exception otherwise
+    """
     logger.info('Get Guardrail Factory for the given setting')
     if isinstance(setting, BloomzGuardrailSetting):
         logger.debug('Guardrail Factory - BloomzGuardrailFactory')
