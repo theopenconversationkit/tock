@@ -1,7 +1,7 @@
 
 # Gen AI
 
-Découvrir l'IA Générative sur Tock:
+Découvrez l'IA générative sur Tock :
 
 - [Le menu _Gen AI / RAG Settings_](features/gen-ai-feature-rag.md)
 - [Le menu _Gen AI / RAG Exclusions_](features/gen-ai-feature-rag-exclusion.md)
