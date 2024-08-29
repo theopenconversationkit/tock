@@ -19,6 +19,7 @@ It manages the creation of :
     - EM Factory
     - Vector Store Factory
     - Guardrail Factory
+    - Compressor Factory 
 """
 
 import logging
