@@ -279,7 +279,13 @@ def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
 
 
 def get_compressor_factory(setting: BaseCompressorSetting) -> CompressorFactory:
-    print('get compressor factory OK')
+    """
+    Creates a  Compressor Factory according to the compressor provider
+    Args:
+        setting: The  compressor setting
+    Returns:
+        The  Compressor Factory, or raise an exception otherwise
+    """
     logger.info('Get Contextual Compressor Factory for the given setting')
     if isinstance(setting, BloomzCompressorSetting):
         logger.debug('Contextual Compressor Factory - BloomzCompressorFactory')
