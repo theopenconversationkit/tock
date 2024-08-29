@@ -30,6 +30,7 @@ class BloomzGuardrailSetting(BaseGuardrailSetting):
     """A class for Bloomz Guardrail Model Setting."""
 
     provider: Literal[GuardrailProvider.BLOOMZ] = Field(
-        description='The guardrail model provider.'
+        description='The guardrail model provider.',
+        examples=[GuardrailProvider.BLOOMZ],
     )
     api_base: str = Field(description='The API base URL.')
