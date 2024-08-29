@@ -131,7 +131,7 @@ async def get_em_provider_setting_by_id(
     elif provider_id == EMProvider.BLOOMZ:
         return BloomzEMSetting(
             provider=EMProvider.BLOOMZ,
-            api_base='https://bloomz-3b-retriever-v2.l00001208-e99-354.rec.cl1.arkea.com/docs',
+            api_base='https://doc.tock.ai/tock',
             pooling='last',
         )
 
