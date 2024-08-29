@@ -21,5 +21,6 @@ from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import
 
 class BaseCompressorSetting(BaseModel):
     provider: ContextualCompressorProvider = Field(
-        description='The contextual compressor provider.'
+        description='The contextual compressor provider.',
+        examples=[ContextualCompressorProvider.BLOOMZ],
     )
