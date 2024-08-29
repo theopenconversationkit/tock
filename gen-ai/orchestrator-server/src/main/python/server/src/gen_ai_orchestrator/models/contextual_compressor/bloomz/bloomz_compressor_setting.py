@@ -26,7 +26,9 @@ from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import 
 
 class BloomzCompressorSetting(BaseCompressorSetting):
     provider: Literal[ContextualCompressorProvider.BloomZ] = Field(
-        description='The contextual compressor provider.'
+        description='The contextual compressor provider.',
+        examples=[ContextualCompressorProvider.BloomZ],
+        default=ContextualCompressorProvider.BloomZ.value
     )
     min_score: float = Field(description='Minimum retailment score.')
     endpoint: str = Field(description='Bloomz scoring endpoint.')
