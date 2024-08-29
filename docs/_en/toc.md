@@ -37,6 +37,8 @@ title: Table of Contents
     * [Internationalization (_i18n_)](../dev/i18n)
     * [Tock APIs](../dev/api)
     * [Code samples](../dev/exemples-code)
+    * _Feature technical designs_
+        * [#1706 Gen AI data ingestion workflow / pipeline (gitlab based)](../dev/feature-technical-designs/1706-gen-ai-data-ingestion-pipeline-gitlab)
 
 * About Tock :
     * [Why Tock](../about/why)
