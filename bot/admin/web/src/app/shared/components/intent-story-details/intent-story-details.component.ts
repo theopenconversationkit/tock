@@ -65,7 +65,9 @@ export class IntentStoryDetailsComponent implements OnInit {
     );
 
     this.nlpService.searchSentences(searchQuery).subscribe((res: any) => {
-      this.sentences = res.sentences;
+      this.sentences = res.sentences.sort((a, b) => {
+        return b.classification?.usageCount - a.classification?.usageCount;
+      });
     });
   }
   cancel(): void {

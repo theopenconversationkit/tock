@@ -37,7 +37,7 @@ export class StoriesListComponent {
   }
 
   displayIntentStoryDetails(intent: IntentName) {
-    const modal = this.nbDialogService.open(IntentStoryDetailsComponent, {
+    this.nbDialogService.open(IntentStoryDetailsComponent, {
       context: {
         intentName: intent.name
       }

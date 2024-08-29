@@ -5,8 +5,8 @@ import { FaqDefinitionExtended } from '../faq-management.component';
 import { StateService } from '../../../core-nlp/state.service';
 import { DialogService } from '../../../core-nlp/dialog.service';
 import { copyToClipboard } from '../../../shared/utils';
-import { NbToastrService } from '@nebular/theme';
-import { ChoiceDialogComponent } from '../../../shared/components';
+import { NbDialogService, NbToastrService } from '@nebular/theme';
+import { ChoiceDialogComponent, IntentStoryDetailsComponent } from '../../../shared/components';
 
 @Component({
   selector: 'tock-faq-management-list',
@@ -21,7 +21,12 @@ export class FaqManagementListComponent {
   @Output() onDelete = new EventEmitter<FaqDefinitionExtended>();
   @Output() onEnable = new EventEmitter<FaqDefinitionExtended>();
 
-  constructor(public state: StateService, private dialogService: DialogService, private toastrService: NbToastrService) {}
+  constructor(
+    public state: StateService,
+    private dialogService: DialogService,
+    private toastrService: NbToastrService,
+    private nbDialogService: NbDialogService
+  ) {}
 
   toggleEnabled(faq: FaqDefinitionExtended) {
     let action = 'Enable';
@@ -80,5 +85,13 @@ export class FaqManagementListComponent {
   copyString(str: string) {
     copyToClipboard(str);
     this.toastrService.success(`String copied to clipboard`, 'Clipboard');
+  }
+
+  displayStoryDetails(faq: FaqDefinitionExtended): void {
+    this.nbDialogService.open(IntentStoryDetailsComponent, {
+      context: {
+        intentId: faq.intentId
+      }
+    });
   }
 }
