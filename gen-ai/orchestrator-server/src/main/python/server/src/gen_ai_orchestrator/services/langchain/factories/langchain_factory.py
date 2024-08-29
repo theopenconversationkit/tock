@@ -18,6 +18,8 @@ It manages the creation of :
     - LLM Factory
     - EM Factory
     - Vector Store Factory
+    - Guardrail Factory
+    - Compressor Factory
 """
 
 import logging
@@ -30,34 +32,73 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
     VectorStoreUnknownException,
 )
-from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIUnknownObservabilityProviderSettingException
+from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import (
+    GenAIUnknownObservabilityProviderSettingException,
+)
+from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
+    BloomzCompressorSetting,
+)
+from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
+    BaseCompressorSetting,
+)
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
+from gen_ai_orchestrator.models.em.bloomz.bloomz_em_setting import (
+    BloomzEMSetting,
+)
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
+from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
+    OpenAIEMSetting,
+)
+from gen_ai_orchestrator.models.guardrail.bloomz.bloomz_guardrail_setting import (
+    BloomzGuardrailSetting,
+)
+from gen_ai_orchestrator.models.guardrail.guardrail_setting import (
+    BaseGuardrailSetting,
+)
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import FakeLLMSetting
+from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
+    FakeLLMSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
-from gen_ai_orchestrator.models.observability.observability_setting import BaseObservabilitySetting
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_setting import (
+    BaseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import \
-    LangChainCallbackHandlerFactory
-from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
-    LangfuseCallbackHandlerFactory
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import (
+    LangChainCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import (
+    LangfuseCallbackHandlerFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.bloomz_compressor_factory import (
+    BloomzCompressorFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.contextual_compressor.compressor_factory import (
+    CompressorFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
     AzureOpenAIEMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.em.bloomz_em_factory import (
+    BloomzEMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
     LangChainEMFactory,
@@ -65,10 +106,18 @@ from gen_ai_orchestrator.services.langchain.factories.em.em_factory import (
 from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory import (
     OpenAIEMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.guardrail.bloomz_guardrail_factory import (
+    BloomzGuardrailFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.guardrail.guardrail_factory import (
+    GuardrailFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import FakeLLMFactory
+from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
+    FakeLLMFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
 )
@@ -126,14 +175,17 @@ def get_em_factory(setting: BaseEMSetting) -> LangChainEMFactory:
     elif isinstance(setting, AzureOpenAIEMSetting):
         logger.debug('EM Factory - AzureOpenAIEMFactory')
         return AzureOpenAIEMFactory(setting=setting)
+    elif isinstance(setting, BloomzEMSetting):
+        logger.debug('EM Factory - BloomzEMFactory')
+        return BloomzEMFactory(setting=setting)
     else:
         raise GenAIUnknownProviderSettingException()
 
 
 def get_vector_store_factory(
-        vector_store_provider: VectorStoreProvider,
-        embedding_function: Embeddings,
-        index_name: str,
+    vector_store_provider: VectorStoreProvider,
+    embedding_function: Embeddings,
+    index_name: str,
 ) -> LangChainVectorStoreFactory:
     """
     Creates an LangChain Vector Store Factory according to the vector store provider
@@ -156,7 +208,9 @@ def get_vector_store_factory(
         raise VectorStoreUnknownException()
 
 
-def get_callback_handler_factory(setting: BaseObservabilitySetting) -> LangChainCallbackHandlerFactory:
+def get_callback_handler_factory(
+    setting: BaseObservabilitySetting,
+) -> LangChainCallbackHandlerFactory:
     """
     Creates a Langchain Callback Handler Factory according to the given setting
     Args:
@@ -175,8 +229,9 @@ def get_callback_handler_factory(setting: BaseObservabilitySetting) -> LangChain
 
 
 def create_observability_callback_handler(
-        observability_setting: Optional[ObservabilitySetting],
-        trace_name: ObservabilityTrace) -> Optional[LangfuseCallbackHandler]:
+    observability_setting: Optional[ObservabilitySetting],
+    trace_name: ObservabilityTrace,
+) -> Optional[LangfuseCallbackHandler]:
     """
     Create the Observability Callback Handler
 
@@ -188,7 +243,40 @@ def create_observability_callback_handler(
         The Observability Callback Handler
     """
     if observability_setting is not None:
-        return get_callback_handler_factory(setting=observability_setting).get_callback_handler(
-            trace_name=trace_name.value)
+        return get_callback_handler_factory(
+            setting=observability_setting
+        ).get_callback_handler(trace_name=trace_name.value)
 
     return None
+
+
+def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
+    """
+    Retrieves the appropriate GuardrailFactory instance based on the provided setting.
+        Args:
+        setting : The Guardrail Setting
+    Returns:
+        The Guardrail Factory, or raise an exception otherwise
+    """
+    logger.info('Get Guardrail Factory for the given setting')
+    if isinstance(setting, BloomzGuardrailSetting):
+        logger.debug('Guardrail Factory - BloomzGuardrailFactory')
+        return BloomzGuardrailFactory(setting=setting)
+    else:
+        raise GenAIUnknownProviderSettingException()
+
+
+def get_compressor_factory(setting: BaseCompressorSetting) -> CompressorFactory:
+    """
+    Creates a  Compressor Factory according to the compressor provider
+    Args:
+        setting: The  compressor setting
+    Returns:
+        The  Compressor Factory, or raise an exception otherwise
+    """
+    logger.info('Get Contextual Compressor Factory for the given setting')
+    if isinstance(setting, BloomzCompressorSetting):
+        logger.debug('Contextual Compressor Factory - BloomzCompressorFactory')
+        return BloomzCompressorFactory(setting=setting)
+    else:
+        raise GenAIUnknownProviderSettingException()

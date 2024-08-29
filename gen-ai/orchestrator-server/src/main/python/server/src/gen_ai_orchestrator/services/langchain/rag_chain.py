@@ -23,9 +23,14 @@ import time
 from logging import ERROR, WARNING
 from typing import List, Optional
 
-from langchain.chains import ConversationalRetrievalChain
+from fastapi import HTTPException
+from langchain.chains.conversational_retrieval.base import (
+    ConversationalRetrievalChain,
+)
 from langchain.memory import ChatMessageHistory
+from langchain.retrievers import ContextualCompressionRetriever
 from langchain_core.prompts import PromptTemplate
+from langchain_core.vectorstores import VectorStoreRetriever
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
@@ -36,8 +41,13 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
 )
+from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
+    BaseCompressorSetting,
+)
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
-from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
 from gen_ai_orchestrator.models.rag.rag_models import (
     ChatMessageType,
     Footnote,
@@ -55,9 +65,12 @@ from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_ha
     RetrieverJsonCallbackHandler,
 )
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    create_observability_callback_handler,
+    get_compressor_factory,
     get_em_factory,
+    get_guardrail_factory,
     get_llm_factory,
-    get_vector_store_factory, create_observability_callback_handler,
+    get_vector_store_factory,
 )
 
 logger = logging.getLogger(__name__)
@@ -111,7 +124,9 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         callback_handlers.append(
             create_observability_callback_handler(
                 observability_setting=query.observability_setting,
-                trace_name=ObservabilityTrace.RAG))
+                trace_name=ObservabilityTrace.RAG,
+            )
+        )
 
     response = await conversational_retrieval_chain.ainvoke(
         input=inputs,
@@ -120,6 +135,12 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
 
     # RAG Guard
     __rag_guard(inputs, response)
+
+    # Guardrail
+    if query.guardrail_setting:
+        guardrail = get_guardrail_factory(setting=query.guardrail_setting).get_parser()
+        guardrail_output = guardrail.parse(response['answer'])
+        check_guardrail_output(guardrail_output)
 
     # Calculation of RAG processing time
     rag_duration = '{:.2f}'.format(time.time() - start_time)
@@ -145,7 +166,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
             query, response, records_callback_handler, rag_duration
         )
         if debug
-        else None
+        else None,
     )
 
 
@@ -165,13 +186,17 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
         embedding_function=em_factory.get_embedding_model(),
         index_name=query.document_index_name,
     )
+    retriever = vector_store_factory.get_vector_store().as_retriever(
+        search_kwargs=query.document_search_params.to_dict()
+    )
+    if query.compressor_setting:
+        retriever = add_compressor(retriever, query.compressor_setting)
 
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
+
     return ConversationalRetrievalChain.from_llm(
         llm=llm_factory.get_language_model(),
-        retriever=vector_store_factory.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
-        ),
+        retriever=retriever,
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
@@ -311,4 +336,38 @@ def get_rag_debug_data(
         document_search_params=query.document_search_params,
         answer=response['answer'],
         duration=rag_duration,
+    )
+
+
+def check_guardrail_output(guardrail_output: dict) -> bool:
+    """Checks if the guardrail detected toxicities.
+    Args:
+        guardrail_output: The guardrail output dictionnary
+    Returns:
+        Returns True if nothing is detected, raises an exception otherwise.
+    """
+    if guardrail_output['output_toxicity']:
+        raise HTTPException(
+            status_code=451,
+            detail=f"Toxicity detected in LLM output ({','.join(guardrail_output['output_toxicity_reason'])})",
+        )
+    return True
+
+
+def add_compressor(
+    retriever: VectorStoreRetriever, compressor_settings: BaseCompressorSetting
+) -> ContextualCompressionRetriever:
+    """
+    Adds a compressor to the retriever.
+    Args:
+        retriever : the Base retriever
+        compressor_settings : the compressor settings
+    Returns:
+        New retriever with compressing feature.
+    """
+    compressor = get_compressor_factory(setting=compressor_settings).get_compressor()
+
+    return ContextualCompressionRetriever(
+        base_retriever=retriever,
+        base_compressor=compressor,
     )

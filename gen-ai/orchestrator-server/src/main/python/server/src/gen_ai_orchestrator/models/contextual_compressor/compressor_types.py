@@ -1,4 +1,4 @@
-#   Copyright (C) 2023-2024 Credit Mutuel Arkea
+#   Copyright (C) 2024 Credit Mutuel Arkea
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -12,19 +12,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""EMProvider Enumeration."""
+from typing import Annotated, Union
 
-from enum import Enum, unique
+from fastapi import Body
 
+from gen_ai_orchestrator.models.contextual_compressor.bloomz.bloomz_compressor_setting import (
+    BloomzCompressorSetting,
+)
 
-@unique
-class EMProvider(str, Enum):
-    """Enumeration to list Embedding Provider type"""
-
-    OPEN_AI = 'OpenAI'
-    AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
-    BLOOMZ = 'Bloomz'
-
-    @classmethod
-    def has_value(cls, value) -> bool:
-        return value in cls._value2member_map_
+CompressorSetting = Annotated[
+    Union[BloomzCompressorSetting], Body(discriminator='provider')
+]

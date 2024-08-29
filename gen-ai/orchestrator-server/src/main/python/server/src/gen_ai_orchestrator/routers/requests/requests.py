@@ -14,18 +14,29 @@
 #
 """Module for Request Models"""
 
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
+from gen_ai_orchestrator.models.contextual_compressor.compressor_types import (
+    CompressorSetting,
+)
 from gen_ai_orchestrator.models.em.em_types import EMSetting
+from gen_ai_orchestrator.models.guardrail.guardrail_types import (
+    GuardrailSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
-from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.models.prompt.prompt_template import PromptTemplate
 from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
-from gen_ai_orchestrator.models.vector_stores.vector_stores_types import DocumentSearchParams
+from gen_ai_orchestrator.models.vector_stores.vector_stores_types import (
+    DocumentSearchParams,
+)
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
@@ -33,8 +44,7 @@ class LLMProviderSettingStatusQuery(BaseModel):
 
     setting: LLMSetting = Field(description='The LLM Provider setting to be checked.')
     observability_setting: Optional[ObservabilitySetting] = Field(
-        description='The observability settings',
-        default=None
+        description='The observability settings', default=None
     )
 
 
@@ -49,7 +59,9 @@ class EMProviderSettingStatusQuery(BaseModel):
 class ObservabilityProviderSettingStatusQuery(BaseModel):
     """The query for the Observability Provider Setting Status"""
 
-    setting: ObservabilitySetting = Field(description='The Observability Provider setting to be checked.')
+    setting: ObservabilitySetting = Field(
+        description='The Observability Provider setting to be checked.'
+    )
 
 
 class RagQuery(BaseModel):
@@ -82,8 +94,14 @@ class RagQuery(BaseModel):
         description='The document search parameters. Ex: number of documents, metadata filter',
     )
     observability_setting: Optional[ObservabilitySetting] = Field(
-        description='The observability settings.',
-        default=None
+        description='The observability settings.', default=None
+    )
+    guardrail_setting: Optional[GuardrailSetting] = Field(
+        description='Guardrail settings, to classify LLM output toxicity.', default=None
+    )
+    compressor_setting: Optional[CompressorSetting] = Field(
+        description='Compressor settings, to rerank relevant documents returned by retriever.',
+        default=None,
     )
 
     model_config = {
@@ -141,7 +159,16 @@ Answer in {locale}:""",
                         ],
                         'k': 4,
                     },
-                    'observability_setting' : None
+                    'observability_setting': None,
+                    'guardrail_setting': {
+                        'provider': 'BloomzGuardrail',
+                        'api_base': 'https://*********',
+                    },
+                    'compressor_setting': {
+                        'provider': 'BloomzRerank',
+                        'min_score': 0.7,
+                        'endpoint': 'https://*********',
+                    },
                 }
             ]
         }
@@ -158,6 +185,5 @@ class SentenceGenerationQuery(BaseModel):
         description='Prompt, used to create prompt with inputs and jinja template '
     )
     observability_setting: Optional[ObservabilitySetting] = Field(
-        description='The observability settings.',
-        default=None
+        description='The observability settings.', default=None
     )
