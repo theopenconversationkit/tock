@@ -30,6 +30,7 @@ async def test_send_images(mocked_image_list, mocked_pdf_image_list, mocked_llm)
     project_id = 'My project ID'
     location = 'The location I want'
     temperature = 0.7
+    observability_setting = 'My observability setting'
 
     mocked_image_list.return_value = []
     mocked_pdf_image_list.return_value = []
@@ -43,6 +44,7 @@ async def test_send_images(mocked_image_list, mocked_pdf_image_list, mocked_llm)
         project_id=project_id,
         location=location,
         temperature=temperature,
+        observability_setting=observability_setting,
     )
 
     mocked_pdf_image_list.assert_called_once_with(pdf_file)
@@ -56,6 +58,7 @@ async def test_send_images(mocked_image_list, mocked_pdf_image_list, mocked_llm)
         project_id=project_id,
         location=location,
         temperature=temperature,
+        observability_setting=observability_setting,
     )
 
     mocked_image_list.assert_called_once_with(images_list)

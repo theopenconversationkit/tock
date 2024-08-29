@@ -21,6 +21,16 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_google_vertexai.chat_models import ChatVertexAI
 from pdf2image import convert_from_bytes
 
+from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
+    LangfuseObservabilitySetting,
+)
+from gen_ai_orchestrator.models.observability.observability_trace import (
+    ObservabilityTrace,
+)
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
+    create_observability_callback_handler,
+)
+
 
 async def send_images(
     files: Union[list[UploadFile], UploadFile],
@@ -29,6 +39,7 @@ async def send_images(
     project_id: str,
     location: str,
     temperature: int,
+    observability_setting,
 ) -> AIMessage:
     """
     Processes a list of image files or a single PDF file, prepares the images, and sends them
@@ -79,7 +90,16 @@ async def send_images(
         stop=None,
     )
 
-    return llm.invoke([message])
+    callback_handlers = []
+    if observability_setting is not None:
+        callback_handlers.append(
+            create_observability_callback_handler(
+                observability_setting=observability_setting,
+                trace_name=ObservabilityTrace.RAG,
+            )
+        )
+
+    return llm.invoke(input=[message], config={'callbacks': callback_handlers})
 
 
 async def prepare_images(files: list[UploadFile]) -> list:

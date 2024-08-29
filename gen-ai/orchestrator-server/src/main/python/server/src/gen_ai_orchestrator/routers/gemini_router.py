@@ -15,8 +15,13 @@
 """Gemini Router Module"""
 
 
-from fastapi import APIRouter, Form, HTTPException, UploadFile
+import json
 
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+
+from gen_ai_orchestrator.models.observability.observability_type import (
+    ObservabilitySetting,
+)
 from gen_ai_orchestrator.services.gemini.gemini_service import send_images
 
 gemini_router = APIRouter(prefix='/gemini', tags=['Gemini Question Answering'])
@@ -30,6 +35,7 @@ async def ask_gemini_with_images(
     project_id: str = Form(),
     location: str = Form(),
     temperature: float = Form(None),
+    observability_setting: str = Form(None),
 ) -> str:
     """
     Handles a POST request to submit images and a question to the Gemini service.
@@ -60,6 +66,10 @@ async def ask_gemini_with_images(
                 detail='Invalid file format. Please upload a JPEG or PNG image',
             )
 
+    if observability_setting is not None:
+        json_setting = json.loads(observability_setting)
+        final_observability_setting = ObservabilitySetting(**json_setting)
+
     gemini_response = await send_images(
         files=files,
         question=question,
@@ -67,6 +77,7 @@ async def ask_gemini_with_images(
         project_id=project_id,
         location=location,
         temperature=temperature,
+        observability_setting=final_observability_setting,
     )
 
     return gemini_response.content
@@ -74,12 +85,13 @@ async def ask_gemini_with_images(
 
 @gemini_router.post('/pdf-files')
 async def ask_gemini_with_pdf_converted_in_images(
-    file: UploadFile,
+    file: UploadFile = File(),
     question: str = Form(),
     model: str = Form(),
     project_id: str = Form(),
     location: str = Form(),
     temperature: float = Form(None),
+    observability_setting: str = Form(None),
 ) -> str:
     """
     Handles a POST request to submit a PDF file and a question to the Gemini service.
@@ -108,6 +120,10 @@ async def ask_gemini_with_pdf_converted_in_images(
             detail='Invalid file format. Please upload a PDF file.',
         )
 
+    if observability_setting is not None:
+        json_setting = json.loads(observability_setting)
+        final_observability_setting = ObservabilitySetting(**json_setting)
+
     gemini_response = await send_images(
         files=file,
         question=question,
@@ -115,6 +131,7 @@ async def ask_gemini_with_pdf_converted_in_images(
         project_id=project_id,
         location=location,
         temperature=temperature,
+        observability_setting=final_observability_setting,
     )
 
     return gemini_response.content
