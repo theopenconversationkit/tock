@@ -350,6 +350,12 @@ def check_guardrail_output(guardrail_output: dict) -> bool:
     -------
     Returns True if nothing is detected, raises an exception otherwise.
     """
+    Checks if the guardrail detected toxicities.
+    Args:
+        guardrail_output: The guardrail output dictionnary
+    Returns:
+        Returns True if nothing is detected, raises an exception otherwise.   
+    """
     if guardrail_output['output_toxicity']:
         raise HTTPException(
             status_code=451,
