@@ -29,7 +29,7 @@ title: Table des matières
         - [Le menu _Settings_](../user/studio/configuration)
         - [Le menu _FAQ Training_](../user/studio/faq-training)
         - [Le menu _FAQ Management_](../user/studio/faq-management)
-        - [Le menu _Gen AI_](../user/studio/gen-ai)
+        - [Le menu _Gen AI_](../user/studio/gen-ai/gen-ai)
     - [Guides](../user/guides) :
         - [Construire un modèle conversationnel](../user/guides/build-model)
         - [Créer un bot multicanal (connecteurs)](../user/guides/canaux)
