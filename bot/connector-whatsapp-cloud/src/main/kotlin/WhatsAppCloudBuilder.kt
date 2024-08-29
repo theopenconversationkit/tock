@@ -164,6 +164,7 @@ fun I18nTranslator.whatsAppCloudListMessage(
 ): WhatsAppCloudBotInteractiveMessage =
     whatsAppCloudListMessage(text, button, replies.toList())
 
+
 fun I18nTranslator.whatsAppCloudListMessage(
     text: CharSequence,
     button: CharSequence,
@@ -174,6 +175,7 @@ fun I18nTranslator.whatsAppCloudListMessage(
             WhatsAppBotRow(
                 id = it.payload,
                 title = it.title,
+                description = it.description
             )
         })
     )
@@ -263,6 +265,17 @@ fun <T : Bus<T>> T.whatsAppCloudQuickReply(
         SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
     }
 
+fun <T : Bus<T>> T.whatsAppCloudQuickReply(
+    title: CharSequence,
+    subTitle: CharSequence? = null,
+    targetIntent: IntentAware,
+    step: String? = null,
+    parameters: Map<String, String> = mapOf()
+): QuickReply =
+    whatsAppCloudQuickReply(title,subTitle, targetIntent, step, parameters) { intent, s, params ->
+        SendChoice.encodeChoiceId(intent, s, params, null, null, sourceAppId = null)
+    }
+
 private fun I18nTranslator.whatsAppCloudQuickReply(
     title: CharSequence,
     targetIntent: IntentAware,
@@ -272,6 +285,19 @@ private fun I18nTranslator.whatsAppCloudQuickReply(
 ): QuickReply = QuickReply(
     translate(title).toString(),
     payloadEncoder.invoke(targetIntent, step, parameters)
+)
+
+private fun I18nTranslator.whatsAppCloudQuickReply(
+    title: CharSequence,
+    subTitle: CharSequence? = null,
+    targetIntent: IntentAware,
+    step: String? = null,
+    parameters: Map<String, String>,
+    payloadEncoder: (IntentAware, String?, Map<String, String>) -> String
+): QuickReply = QuickReply(
+    translate(title).toString(),
+    payloadEncoder.invoke(targetIntent, step, parameters),
+    translate(subTitle).toString()
 )
 
 fun I18nTranslator.whatsAppCloudNlpQuickReply(

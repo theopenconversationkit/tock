@@ -107,7 +107,7 @@ data class WhatsAppCloudBotActionSection(
 data class WhatsAppBotRow(
     val id: String,
     val title: String,
-    val description: String? = null,
+    val description: CharSequence? = null,
 ) {
     fun toChoice() : Choice =
         SendChoice.decodeChoiceId(id)
