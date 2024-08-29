@@ -380,6 +380,13 @@ def add_compressor(
     -------
     New retriever with compressing feature.
     """
+    Adds a compressor to the retriever.
+    Args:
+        retriever : the Base retriever
+        compressor_settings : the compressor settings
+    Returns:
+        New retriever with compressing feature.
+    """
     compressor = get_compressor_factory(setting=compressor_settings).get_compressor()
 
     return ContextualCompressionRetriever(
