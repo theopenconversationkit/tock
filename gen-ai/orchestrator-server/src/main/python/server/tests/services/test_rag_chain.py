@@ -311,7 +311,7 @@ def test_guardrail_parse_fail(mocked_guardrail_response):
 
 @patch('gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank.requests.post')
 def test_compress_documents(mocked_rerank):
-    bloomz_reranker = BloomzRerank(label='entailement')
+    bloomz_reranker = BloomzRerank(label='entailement', endpoint='http://example.com')
     documents = [
         Document(
             page_content='Page content 1',

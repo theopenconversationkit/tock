@@ -341,20 +341,10 @@ def get_rag_debug_data(
 
 def check_guardrail_output(guardrail_output: dict) -> bool:
     """Checks if the guardrail detected toxicities.
-
-    Parameters
-    ----------
-    guardrail_output: dict
-
-    Returns
-    -------
-    Returns True if nothing is detected, raises an exception otherwise.
-    """
-    Checks if the guardrail detected toxicities.
     Args:
         guardrail_output: The guardrail output dictionnary
     Returns:
-        Returns True if nothing is detected, raises an exception otherwise.   
+        Returns True if nothing is detected, raises an exception otherwise.
     """
     if guardrail_output['output_toxicity']:
         raise HTTPException(
@@ -367,18 +357,6 @@ def check_guardrail_output(guardrail_output: dict) -> bool:
 def add_compressor(
     retriever: VectorStoreRetriever, compressor_settings: BaseCompressorSetting
 ) -> ContextualCompressionRetriever:
-    """Adds a compressor to the retriever.
-
-    Parameters
-    ----------
-    retriever : VectorStoreRetriever
-        Base retriever.
-    compressor_settings : BaseCompressorSetting
-        Compressor settings.
-
-    Returns
-    -------
-    New retriever with compressing feature.
     """
     Adds a compressor to the retriever.
     Args:

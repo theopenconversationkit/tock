@@ -26,8 +26,10 @@ from gen_ai_orchestrator.models.guardrail.guardrail_provider import (
 class BaseGuardrailSetting(BaseModel):
     """A base class for Guardrail Model Setting."""
 
-    provider: GuardrailProvider = Field(description='The guardrail provider.'),
-    examples=[GuardrailProvider.BLOOMZ]
+    provider: GuardrailProvider = Field(
+        description='The guardrail provider.',
+        examples=[GuardrailProvider.BLOOMZ],
+    )
     max_score: Optional[float] = Field(
         description='The maximum acceptable toxicity score.', default=0.3
     )

@@ -22,20 +22,25 @@ from gen_ai_orchestrator.models.contextual_compressor.compressor_provider import
 from gen_ai_orchestrator.models.contextual_compressor.compressor_setting import (
     BaseCompressorSetting,
 )
+from gen_ai_orchestrator.services.contextual_compressor.bloomz_rerank import (
+    BloomzRerank,
+)
 
 
 class BloomzCompressorSetting(BaseCompressorSetting):
-    provider: Literal[ContextualCompressorProvider.BloomZ] = Field(
+    provider: Literal[ContextualCompressorProvider.BLOOMZ] = Field(
         description='The contextual compressor provider.',
-        examples=[ContextualCompressorProvider.BloomZ],
-        default=ContextualCompressorProvider.BloomZ.value
+        examples=[ContextualCompressorProvider.BLOOMZ],
+        default=ContextualCompressorProvider.BLOOMZ.value,
     )
-    min_score: Optional[float] = Field(description='Minimum retailment score.',
-    default=BloomzRerank.__fields__['min_score'].default)
+    min_score: Optional[float] = Field(
+        description='Minimum retailment score.',
+        default=BloomzRerank.__fields__['min_score'].default,
+    )
     endpoint: str = Field(description='Bloomz scoring endpoint.')
     max_documents: Optional[int] = Field(
         description='Maximum number of documents to return to avoid exceeding max tokens for text generation.',
-        default=BloomzRerank.__fields__['max_documents'].default),
+        default=BloomzRerank.__fields__['max_documents'].default,
     )
     label: Optional[str] = Field(
         description='Label to use for reranking.', default='entailment'

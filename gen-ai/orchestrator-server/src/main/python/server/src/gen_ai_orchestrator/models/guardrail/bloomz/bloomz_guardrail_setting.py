@@ -29,7 +29,7 @@ from gen_ai_orchestrator.models.guardrail.guardrail_setting import (
 class BloomzGuardrailSetting(BaseGuardrailSetting):
     """A class for Bloomz Guardrail Model Setting."""
 
-    provider: Literal[GuardrailProvider.BloomZ] = Field(
+    provider: Literal[GuardrailProvider.BLOOMZ] = Field(
         description='The guardrail model provider.'
     )
     api_base: str = Field(description='The API base URL.')

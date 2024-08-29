@@ -31,7 +31,6 @@ class BloomzCompressorFactory(CompressorFactory):
     setting: BloomzCompressorSetting
 
     def get_compressor(self) -> BaseDocumentCompressor:
-        print('get compressor OK')
         return BloomzRerank(
             min_score=self.setting.min_score,
             endpoint=self.setting.endpoint,

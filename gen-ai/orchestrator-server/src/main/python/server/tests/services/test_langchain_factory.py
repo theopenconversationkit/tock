@@ -285,7 +285,7 @@ def test_get_bloomz_guardrail_factory():
         )
     )
 
-    assert guardrail.setting.provider == GuardrailProvider.BloomZ
+    assert guardrail.setting.provider == GuardrailProvider.BLOOMZ
     assert isinstance(guardrail, BloomzGuardrailFactory)
 
 
@@ -300,5 +300,5 @@ def test_get_bloomz_compressor_factory():
         )
     )
 
-    assert compressor.setting.provider == ContextualCompressorProvider.BloomZ
+    assert compressor.setting.provider == ContextualCompressorProvider.BLOOMZ
     assert isinstance(compressor, BloomzCompressorFactory)

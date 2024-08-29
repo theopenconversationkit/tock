@@ -19,7 +19,7 @@ It manages the creation of :
     - EM Factory
     - Vector Store Factory
     - Guardrail Factory
-    - Compressor Factory 
+    - Compressor Factory
 """
 
 import logging
@@ -251,18 +251,6 @@ def create_observability_callback_handler(
 
 
 def get_guardrail_factory(setting: BaseGuardrailSetting) -> GuardrailFactory:
-    """
-    Retrieves the appropriate GuardrailFactory instance based on the provided setting.
-
-    Parameters
-    ----------
-    setting : BaseGuardrailSetting
-        An instance of a setting class that specifies the configuration for the GuardrailFactory.
-
-    Returns
-    -------
-    GuardrailFactory
-        An instance of a GuardrailFactory that matches the given setting.
     """
     Retrieves the appropriate GuardrailFactory instance based on the provided setting.
         Args:
