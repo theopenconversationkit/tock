@@ -17,7 +17,7 @@ from enum import Enum, unique
 
 @unique
 class ContextualCompressorProvider(str, Enum):
-    BloomZ = 'BloomzRerank'
+    BLOOMZ = 'BloomzRerank'
 
     @classmethod
     def has_value(cls, value) -> bool:
