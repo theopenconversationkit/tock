@@ -21,7 +21,7 @@ from enum import Enum, unique
 class GuardrailProvider(str, Enum):
     """Enumeration to list Guardrail Provider type"""
 
-    BloomZ = 'BloomzGuardrail'
+    BLOOMZ = 'BloomzGuardrail'
 
     @classmethod
     def has_value(cls, value) -> bool:
