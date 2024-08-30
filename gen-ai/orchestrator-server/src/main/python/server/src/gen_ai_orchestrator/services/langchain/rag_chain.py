@@ -134,8 +134,8 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
                     lambda doc: Footnote(
                         identifier=f'{doc.metadata["id"]}',
                         title=doc.metadata['title'],
-                        url=doc.metadata['url'],
-                        content=doc.metadata['original_text'],
+                        url=doc.source,
+                        content=get_source_content(doc),
                     ),
                     response['source_documents'],
                 )
@@ -147,6 +147,14 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         if debug
         else None
     )
+
+def get_source_content(doc):
+    """Find and delete the title followed by two line breaks"""
+    title_prefix = f"{doc.metadata['title']}\n\n"
+    if doc.page_content.startswith(title_prefix):
+        return doc.page_content[len(title_prefix):]
+    else:
+        return doc.page_content
 
 
 def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
