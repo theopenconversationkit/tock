@@ -134,7 +134,7 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
                     lambda doc: Footnote(
                         identifier=f'{doc.metadata["id"]}',
                         title=doc.metadata['title'],
-                        url=doc.source,
+                        url=doc.metadata['source'],
                         content=get_source_content(doc),
                     ),
                     response['source_documents'],
@@ -271,7 +271,7 @@ def get_rag_documents(handler: RetrieverJsonCallbackHandler) -> List[RagDocument
     return [
         # Get first 100 char of content
         RagDocument(
-            content=doc['page_content'][0:100] + '...',
+            content=doc['page_content'][0:len(doc['metadata']['title'])+100] + '...',
             metadata=RagDocumentMetadata(**doc['metadata']),
         )
         for doc in on_chain_start_records[0]['inputs']['input_documents']
