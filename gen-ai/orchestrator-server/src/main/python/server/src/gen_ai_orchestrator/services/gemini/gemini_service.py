@@ -52,6 +52,7 @@ async def send_images(
     - project_id (str): The project ID related to the AI service request.
     - location (str): The location context for the AI service request.
     - temperature (int): A parameter controlling the randomness of the AI model's response.
+    - observability_setting (str, optional): A JSON string representing observability settings for the request.
 
     Returns:
     - AIMessage: The response from the AI model after processing the images and the question.

@@ -32,6 +32,7 @@ from gen_ai_orchestrator.models.rag.rag_models import ChatMessage
 from gen_ai_orchestrator.models.vector_stores.vector_stores_types import (
     DocumentSearchParams,
 )
+from gen_ai_orchestrator.models.vision.vision_types import VisionSetting
 
 
 class LLMProviderSettingStatusQuery(BaseModel):
