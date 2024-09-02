@@ -274,7 +274,7 @@ This design introduce the new provider type `GcpSecretManager`.
   * BotSentenceGenerationDTO
   * .... vector DB settings ...
 
-## List of existing environement variables that were renamed, may introduce breaking change if used
+### List of existing environement variables that were renamed, may introduce breaking change if used
 
 * `tock_iadvize_credentials_provider` replaced by `tock_iadvize_secret_manager_provider`
 * `aws_iadvize_credentials_secret_id` replaced by `tock_iadvize_credentials_secret_name`
