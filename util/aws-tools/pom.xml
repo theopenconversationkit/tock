@@ -20,7 +20,6 @@
     </properties>
 
     <build>
-        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
