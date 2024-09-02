@@ -13,7 +13,7 @@ API version used : v1 of Google Secret Manager, reference version here.
 ## Introduction
 
 We have already an integration of AWS Secret manager essentially used for :
-* **Generative AI services** dynamic secrets management, secrets vault are create dynamically for generative AI services (LLM, Embedding, Observability, VectorDB) 
+* **Generative AI services** dynamic secrets management, secrets vault are created dynamically for generative AI services (LLM, Embedding, Observability, VectorDB) 
 * **MongoDB credentials** : Add an implementation of `ai.tock.shared.security.mongo.MongoCredentialsProvider` ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) for GCP. Currently we only have the connexion string (thought environment variables), but credentials can be provided using ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) (see [MongoClient creation here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L178), [asyncMongoClient here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L197))
 * **iAdvize Connector GraphQL credentials** : currently we have an AWS Secret Manager implementation of [`ai.tock.shared.security.credentials.CredentialsProvider`](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/credentials/CredentialsProvider.kt#L19) this will need to be implemented also for GCP Secret Manager. 
 
