@@ -75,7 +75,7 @@ Exemple for bot named `my_bot` with namespace `my_namespace` under the GCP with 
     * Secret Name : PROD-TOCK-**my_namespace**-**my_bot**-GenAI-RAG-questionAnswering
     * Secret ressource (full) name : projects/**478160847739**/secrets/PROD-TOCK-**my_namespace**-**my_bot**-GenAI-RAG-questionAnswering
  * Generate sentence LLM secret key will be stored on GCP under the following :
-    * Secret Name : PROD-TOCK-**my_namespace**-**my_bot**-GenAI-RAG-questionAnswering
+    * Secret Name : PROD-TOCK-**my_namespace**-**my_bot**-GenAI-COMPLETION-sentenceGeneration
     * Secret ressource (full) name : projects/**478160847739**/secrets/PROD-TOCK-**my_namespace**-**my_bot**-GenAI-COMPLETION-sentenceGeneration
 
 
