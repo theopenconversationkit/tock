@@ -44,6 +44,7 @@ under index_name index (index_name shall follow OpenSearch naming restrictions).
 A unique indexing session id is produced and printed to the console (will be
 the last line printed if the '-v' option is used).
 """
+import csv
 import json
 import logging
 import sys
@@ -75,6 +76,8 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_vector_store_factory,
 )
 
+# Define the size of the csv field -> Set to maximum to process large csvs
+csv.field_size_limit(sys.maxsize)
 
 def index_documents(args):
     """
@@ -208,7 +211,7 @@ def embed_and_store_docs(
     for i in range(0, len(documents), bulk_size):
         logging.debug(f'i={i}, splitted_docs={len(documents)}')
         opensearch_db.add_documents(
-            documents=documents[i : i + 500], bulk_size=bulk_size
+            documents=documents[i : i + bulk_size], bulk_size=bulk_size
         )
 
 
