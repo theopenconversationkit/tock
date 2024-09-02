@@ -1,9 +1,10 @@
-"""Export a LangFuse dataset run results.
+"""
+Export a LangFuse dataset run results.
 
 Usage:
-    export_run_results.py [-v] <dataset_name> <runs_names>...
-    export_run_results.py -h | --help
-    export_run_results.py --version
+    export_run_results_langfuse.py [-v] <dataset_name> <runs_names>...
+    export_run_results_langfuse.py -h | --help
+    export_run_results_langfuse.py --version
 
 Arguments:
     dataset_name      dataset id
@@ -86,7 +87,7 @@ def append_runs(dataset_item, _runs_names):
 
     # Init csv line
     csv_line = [
-        dataset_item.metadata["topic"],
+        dataset_item.metadata["topic"] if dataset_item.metadata else "",
         dataset_item.input["question"],
         dataset_item.expected_output["answer"]
     ]
@@ -95,7 +96,7 @@ def append_runs(dataset_item, _runs_names):
     for _run_name in _runs_names:
         dataset_run = client.get_dataset_run(dataset_name=dataset_name, dataset_run_name=_run_name)
         trace = fetch_trace_by_item_and_dataset_run(dataset_run.dataset_run_items, dataset_item)
-        if trace is None:
+        if trace is None or trace.output is None or not isinstance(trace.output, dict):
             csv_line.append('')
             csv_line.append('')
         else:

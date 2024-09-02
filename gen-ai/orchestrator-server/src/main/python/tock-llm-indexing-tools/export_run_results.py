@@ -26,6 +26,7 @@ import time
 
 import requests
 from docopt import docopt
+from dotenv import load_dotenv
 
 
 def first_true(iterable, predicate=None):
@@ -215,7 +216,7 @@ def append_example_runs(dataset_example, _session_ids):
     # Complete csv line with example run result
     for _id in _session_ids:
         run = first_true(example_runs_content['runs'], predicate=lambda x: x['session_id'] == _id)
-        if run is None:
+        if run is None or run["outputs"] is None:
             csv_line.append('')
             csv_line.append('')
         elif run["error"]:
@@ -232,7 +233,7 @@ def append_example_runs(dataset_example, _session_ids):
 
 if __name__ == '__main__':
     start_time = time.time()
-
+    load_dotenv()
     cli_args = docopt(__doc__, version='Webscraper 0.1.0')
     # Set logging level
     log_format = '%(levelname)s:%(module)s:%(message)s'

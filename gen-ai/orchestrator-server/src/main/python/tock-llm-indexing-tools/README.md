@@ -257,3 +257,27 @@ The exported CSV file will have these columns :
 'Reference input'|'Reference output'|'Response 1'|'Sources 1'|...|'Response N'|'Sources N'
 NB: There will be as many responses as run sessions
 ```
+
+### export_run_results_langfuse.py
+
+Export a LangFuse dataset run results, in csv format.
+
+```
+Usage:
+    export_run_results_langfuse.py [-v] <dataset_name> <runs_names>...
+    export_run_results_langfuse.py -h | --help
+    export_run_results_langfuse.py --version
+
+Arguments:
+    dataset_name      dataset id
+    runs_names     list of session ids
+
+Options:
+    -h --help   Show this screen
+    --version   Show version
+    -v          Verbose output for debugging
+
+The exported CSV file will have these columns :
+'Reference input'|'Reference output'|'Response 1'|'Sources 1'|...|'Response N'|'Sources N'
+NB: There will be as many responses as run sessions
+```
