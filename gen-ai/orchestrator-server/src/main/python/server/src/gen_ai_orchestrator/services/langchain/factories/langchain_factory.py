@@ -50,6 +50,9 @@ from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.llm.vertexai.vertexai_llm_setting import (
+    VertexAILLMSetting,
+)
 from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import (
     LangfuseObservabilitySetting,
 )
@@ -65,10 +68,6 @@ from gen_ai_orchestrator.models.observability.observability_type import (
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
     VectorStoreProvider,
 )
-from gen_ai_orchestrator.models.vision.gemini.gemini_vision_setting import (
-    GeminiVisionSetting,
-)
-from gen_ai_orchestrator.models.vision.vision_setting import BaseVisionSetting
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.callback_handlers_factory import (
     LangChainCallbackHandlerFactory,
 )
@@ -96,14 +95,14 @@ from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
 from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory import (
     OpenAILLMFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.llm.vertexai_llm_factory import (
+    VertexAILLMFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.open_search_factory import (
     OpenSearchFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
-)
-from gen_ai_orchestrator.services.langchain.factories.vision.gemini_vision_factory import (
-    GeminiVisionFactory,
 )
 
 logger = logging.getLogger(__name__)
@@ -126,6 +125,9 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
     elif isinstance(setting, AzureOpenAILLMSetting):
         logger.debug('LLM Factory - AzureOpenAILLMFactory')
         return AzureOpenAILLMFactory(setting=setting)
+    elif isinstance(setting, VertexAILLMSetting):
+        logger.debug('LLM Factory - VertexAILLMFactory')
+        return VertexAILLMFactory(setting=setting)
     elif isinstance(setting, FakeLLMSetting):
         logger.debug('LLM Factory - FakeLLMFactory')
         return FakeLLMFactory(setting=setting)
@@ -220,22 +222,3 @@ def create_observability_callback_handler(
         ).get_callback_handler(trace_name=trace_name.value)
 
     return None
-
-
-def get_vision_factory(setting: BaseVisionSetting):
-    """
-    Creates a Vision Factory according to the given setting
-
-    Args:
-        setting: The Vision Setting
-
-    Returns:
-        The Vision Factory, or raise an exception otherwise
-    """
-
-    logger.info('Get Vision Factory for the given setting')
-    if isinstance(setting, GeminiVisionSetting):
-        logger.debug('Vision Factory - GeminiVisionFactory')
-        return GeminiVisionFactory(setting=setting)
-    else:
-        raise GenAIUnknownProviderSettingException()

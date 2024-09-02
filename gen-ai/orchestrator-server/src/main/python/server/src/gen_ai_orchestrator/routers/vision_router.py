@@ -20,13 +20,12 @@ import json
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from pydantic import TypeAdapter
 
+from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,
 )
-from gen_ai_orchestrator.models.vision.vision_types import VisionSetting
-from gen_ai_orchestrator.services.gemini.gemini_service import send_images
 from gen_ai_orchestrator.services.vision.vision_service import (
-    send_images_to_model,
+    ask_model_with_files,
 )
 
 vision_router = APIRouter(prefix='/vision', tags=['Question Answering on documents'])
@@ -35,61 +34,27 @@ vision_router = APIRouter(prefix='/vision', tags=['Question Answering on documen
 @vision_router.post('/images')
 async def ask_model_with_pdf(
     files: list[UploadFile],
-    question: str = Form(),
-    temperature: float = Form(),
-    vision_setting: str = Form(),
+    llm_setting: str = Form(),
     observability_setting: str = Form(None),
 ):
     for file in files:
-        if file.content_type not in ['image/jpeg', 'image/png']:
+        if file.content_type not in [
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'application/pdf',
+        ]:
             raise HTTPException(
                 status_code=400,
-                detail='Invalid file format. Please upload a JPEG or PNG image',
+                detail='Invalid file format. Please upload a JPEG/PNG images or PDF files.',
             )
 
-    vision_setting = TypeAdapter(VisionSetting).validate_python(
-        json.loads(vision_setting)
+    llm_setting: LLMSetting = TypeAdapter(LLMSetting).validate_python(
+        json.loads(llm_setting)
     )
     if observability_setting:
         observability_setting = TypeAdapter(ObservabilitySetting).validate_python(
             json.loads(observability_setting)
         )
 
-    return await send_images_to_model(
-        files=files,
-        question=question,
-        temperature=temperature,
-        vision_setting=vision_setting,
-        observability_setting=observability_setting,
-    )
-
-
-@vision_router.post('/pdf-files')
-async def ask_model_with_pdf(
-    file: UploadFile,
-    question: str = Form(),
-    temperature: float = Form(),
-    vision_setting: str = Form(),
-    observability_setting: str = Form(None),
-):
-    if file.content_type != 'application/pdf':
-        raise HTTPException(
-            status_code=400,
-            detail='Invalid file format. Please upload a PDF file.',
-        )
-
-    vision_setting = TypeAdapter(VisionSetting).validate_python(
-        json.loads(vision_setting)
-    )
-    if observability_setting:
-        observability_setting = TypeAdapter(ObservabilitySetting).validate_python(
-            json.loads(observability_setting)
-        )
-
-    return await send_images_to_model(
-        files=file,
-        question=question,
-        temperature=temperature,
-        vision_setting=vision_setting,
-        observability_setting=observability_setting,
-    )
+    return await ask_model_with_files(files, llm_setting, observability_setting)

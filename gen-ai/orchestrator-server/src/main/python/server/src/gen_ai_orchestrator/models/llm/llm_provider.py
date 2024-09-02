@@ -23,6 +23,7 @@ class LLMProvider(str, Enum):
 
     OPEN_AI = 'OpenAI'
     AZURE_OPEN_AI_SERVICE = 'AzureOpenAIService'
+    VERTEX_AI = 'VertexAI'
     FAKE_LLM = 'FakeLLM'
 
     @classmethod
