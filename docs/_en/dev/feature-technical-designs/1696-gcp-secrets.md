@@ -172,7 +172,7 @@ This is the iAdvize technical account you use for GraphQL calls.
 
 ## Generative AI - database storage format
 
-Here is a exemple of how it should be stored in the database :
+Here is an exemple of how it should be stored in the database :
 ```json
 {
     "_id": "665ef9bdfdc4c53ead71d0e9",
