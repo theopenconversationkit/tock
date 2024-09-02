@@ -25,6 +25,7 @@ from typing import List, Optional
 
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ChatMessageHistory
+from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
@@ -148,8 +149,15 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         else None
     )
 
-def get_source_content(doc):
-    """Find and delete the title followed by two line breaks"""
+def get_source_content(doc: Document) -> str:
+    """
+    Find and delete the title followed by two line breaks
+
+    The concatenation model used  is {title}\n\n{content_page}.
+    It is also used in chain_rag.py on the orchestrator server, when fetching sources.
+    The aim is to remove the ‘title’ prefix from the document content when sending the sources.
+
+    """
     title_prefix = f"{doc.metadata['title']}\n\n"
     if doc.page_content.startswith(title_prefix):
         return doc.page_content[len(title_prefix):]

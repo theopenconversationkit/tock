@@ -166,7 +166,12 @@ def generate_ids_for_each_chunks(
 def add_title_to_text(
     splitted_docs: Iterable[Document],
 ) -> Iterable[Document]:
-    """Add 'title' from metadata to Document's page_content for better semantic search."""
+    """
+    Add 'title' from metadata to Document's page_content for better semantic search.
+
+    The concatenation model used when indexing data is {title}\n\n{content_page}.
+    The aim is to remove the ‘title’ prefix from the document content when sending the sources.
+    """
     for doc in splitted_docs:
         # Add title to page_content
         if 'title' in doc.metadata:
