@@ -25,6 +25,7 @@ from typing import List, Optional
 
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ChatMessageHistory
+from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
@@ -134,8 +135,8 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
                     lambda doc: Footnote(
                         identifier=f'{doc.metadata["id"]}',
                         title=doc.metadata['title'],
-                        url=doc.metadata['url'],
-                        content=doc.page_content,
+                        url=doc.metadata['source'],
+                        content=get_source_content(doc),
                     ),
                     response['source_documents'],
                 )
@@ -147,6 +148,21 @@ async def execute_qa_chain(query: RagQuery, debug: bool) -> RagResponse:
         if debug
         else None
     )
+
+def get_source_content(doc: Document) -> str:
+    """
+    Find and delete the title followed by two line breaks
+
+    The concatenation model used  is {title}\n\n{content_page}.
+    It is also used in chain_rag.py on the orchestrator server, when fetching sources.
+    The aim is to remove the ‘title’ prefix from the document content when sending the sources.
+
+    """
+    title_prefix = f"{doc.metadata['title']}\n\n"
+    if doc.page_content.startswith(title_prefix):
+        return doc.page_content[len(title_prefix):]
+    else:
+        return doc.page_content
 
 
 def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
@@ -263,7 +279,7 @@ def get_rag_documents(handler: RetrieverJsonCallbackHandler) -> List[RagDocument
     return [
         # Get first 100 char of content
         RagDocument(
-            content=doc['page_content'][0:100] + '...',
+            content=doc['page_content'][0:len(doc['metadata']['title'])+100] + '...',
             metadata=RagDocumentMetadata(**doc['metadata']),
         )
         for doc in on_chain_start_records[0]['inputs']['input_documents']

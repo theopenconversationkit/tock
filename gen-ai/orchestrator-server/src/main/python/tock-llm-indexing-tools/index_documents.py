@@ -56,7 +56,7 @@ import pandas as pd
 from docopt import docopt
 from langchain.embeddings.base import Embeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import CSVLoader
+from langchain_community.document_loaders.dataframe import DataFrameLoader
 from langchain_core.documents import Document
 
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
@@ -100,13 +100,10 @@ def index_documents(args):
     )
 
     logging.debug(f"Read input CSV file {args['<input_csv>']}")
-    csv_loader = CSVLoader(
-        file_path=args['<input_csv>'],
-        source_column='url',
-        metadata_columns=('title', 'url'),
-        csv_args={'delimiter': '|', 'quotechar': '"'},
-    )
-    docs = csv_loader.load()
+    df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', names=['title', 'source', 'text'])
+    loader = DataFrameLoader(df, page_content_column='text')
+    docs = loader.load()
+
     for doc in docs:
         doc.metadata['index_session_id'] = session_uuid
         doc.metadata['index_datetime'] = formatted_datetime
@@ -120,6 +117,8 @@ def index_documents(args):
     splitted_docs = text_splitter.split_documents(docs)
     # Add chunk id ('n/N') metadata to each chunk
     splitted_docs = generate_ids_for_each_chunks(splitted_docs=splitted_docs)
+    # Add title to text (for better semantic search)
+    splitted_docs = add_title_to_text(splitted_docs=splitted_docs)
 
     logging.debug(f"Get embeddings model from {args['<embeddings_cfg>']} config file")
     with open(args['<embeddings_cfg>'], 'r') as file:
@@ -161,6 +160,23 @@ def generate_ids_for_each_chunks(
     )
     for i, doc in enumerate(splitted_docs):
         doc.metadata['chunk'] = df_metadata.loc[i, 'chunk']
+    return splitted_docs
+
+
+def add_title_to_text(
+    splitted_docs: Iterable[Document],
+) -> Iterable[Document]:
+    """
+    Add 'title' from metadata to Document's page_content for better semantic search.
+
+    The concatenation model used when indexing data is {title}\n\n{content_page}.
+    The aim is to add the ‘title’ prefix from the document content when sending to embedding.
+    """
+    for doc in splitted_docs:
+        # Add title to page_content
+        if 'title' in doc.metadata:
+            title = doc.metadata['title']
+            doc.page_content = f'{title}\n\n{doc.page_content}'
     return splitted_docs
 
 
