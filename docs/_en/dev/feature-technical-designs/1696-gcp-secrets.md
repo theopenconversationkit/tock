@@ -42,7 +42,7 @@ GCP, Ressource ID pattern :
 
 You should isolate your critical environment in a separate GCP project (and kube cluster). Nevertheless sometime you may have only 1 GCP project for non production, if you have multiple non-production TOCK environment that needs to live under the same GCP project (for instance feature based environment for testing purposes) you will need to prefix your GCP secrets names.
 
-The `SECRET_STORAGE_PREFIX` part of the naming is here for that, we recommand using those naming, but your are free to configuration different prefix using **tock_gen_ai_orchestrator_secret_storage_prefix_name** environment variable (the value of this environment variable should respect GCP constraints or be normalizedfollowing the same rules as namespace normalization ?).
+The `SECRET_STORAGE_PREFIX` part of the naming is here for that, we recommand using those naming, but your are free to configuration different prefix using **tock_gen_ai_secret_prefix** environment variable (the value of this environment variable should respect GCP constraints or be normalizedfollowing the same rules as namespace normalization ?).
 
 | `SECRET_STORAGE_PREFIX` value | Description |
 | --- | --- |
@@ -235,7 +235,7 @@ This design introduce the new provider type `GcpSecretManager`.
 
 |Environment variable name | Default | Allowed values | Description |
 |--- |--- |--- |--- |
-| `tock_database_credentials_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
+| `tock_database_mongodb_secret_manager_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
 | `tock_mongodb_credentials_secret_name`| `PROD-TOCK-MONGODB` | GCP Secret name Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. |
 | `tock_gcp_project_id`| `my-gcp-project-id` | GCP project ID | The GCP project ID where secrets are stored. |
 
@@ -243,8 +243,8 @@ This design introduce the new provider type `GcpSecretManager`.
 
 |Environment variable name | Default | Allowed values | Description |
 |--- |--- |--- |--- |
-| `tock_database_credentials_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
-| `tock_iadvize_credentials_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store iAdvize secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
+| `tock_database_mongodb_secret_manager_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
+| `tock_iadvize_secret_manager_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store iAdvize secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
 | `tock_gen-ai_credentials_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store generative AI secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
 | `tock_mongodb_credentials_secret_name`| `PROD-TOCK-MONGODB` | GCP Secret name Path | Secret name use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. |
 | `tock_gcp_project_id`| `my-gcp-project-id` | GCP project ID | The GCP project ID where secrets are stored. |
@@ -261,15 +261,22 @@ This design introduce the new provider type `GcpSecretManager`.
 
 ### Breaking changes
 
-* Default value of `tock_gen_ai_orchestrator_secret_storage_prefix_name` currently `/dev` shouldn't use slashes as it's not allow according to GCP Secret Names constraints. It will be changed to `dev` but it might break all running project that doesn't defined it.
+* Default value of `tock_gen_ai_secret_prefix` currently `/dev` shouldn't use slashes as it's not allow according to GCP Secret Names constraints. It will be changed to `dev` but it might break all running project that doesn't defined it.
 
 
 ### Other changes
 * Introduction of a new util (`tock-utils`) module named `tock-gcp-tools`, this module will implement the same logic as the `tock-aws-tools`
 * Introduce GCP secret in the Gen Ai Orchestrator. OpenAPI contrat not defined in this design currently.
-* `iadvize_credentials_provider_type` becomes `tock_iadvize_credentials_provider` but it was already not used as it was handle by [the injector not relying on this variable](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/util/aws-tools/src/main/kotlin/ai/tock/aws/Ioc.kt#L32)
+* `iadvize_credentials_provider_type` becomes `tock_iadvize_secret_manager_provider` but it was already not used as it was handle by [the injector not relying on this variable](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/util/aws-tools/src/main/kotlin/ai/tock/aws/Ioc.kt#L32)
 * Secret name generation (normalization) should not be done at the DTO mapper level as it currently assume that we only use AWS Secret Manager :
   *  [BotRAGConfigurationDTO.kt#L60](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L60), [BotRAGConfigurationDTO.kt#L66](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L66)
   * BotObservabilityConfigurationDTO
   * BotSentenceGenerationDTO
   * .... vector DB settings ...
+
+## List of existing environement variables that were renamed, may introduce breaking change if used
+
+* `tock_iadvize_credentials_provider` replaced by `tock_iadvize_secret_manager_provider`
+* `aws_iadvize_credentials_secret_id` replaced by `tock_iadvize_credentials_secret_name`
+* `tock_gen_ai_orchestrator_secret_storage_type` replaced by `tock_gen_ai_secret_manager_provider`
+* `tock_gen_ai_orchestrator_secret_storage_prefix_name` replaced by `tock_gen_ai_secret_prefix`
