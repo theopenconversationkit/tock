@@ -28,6 +28,7 @@ from langchain.memory import ChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 
+from gen_ai_orchestrator.configurations.environment.settings import application_settings
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIGuardCheckException,
 )
@@ -37,6 +38,8 @@ from gen_ai_orchestrator.errors.handlers.openai.openai_exception_handler import 
 from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import (
     opensearch_exception_handler,
 )
+from gen_ai_orchestrator.models.compressors.flashrank_rerank.flashrank_rerank_params import \
+    FlashrankRerankCompressorParams
 from gen_ai_orchestrator.models.errors.errors_models import ErrorInfo
 from gen_ai_orchestrator.models.observability.observability_trace import ObservabilityTrace
 from gen_ai_orchestrator.models.rag.rag_models import (
@@ -58,8 +61,12 @@ from gen_ai_orchestrator.services.langchain.callbacks.retriever_json_callback_ha
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_llm_factory,
-    get_vector_store_factory, create_observability_callback_handler,
+    get_vector_store_factory,
+    get_compressor_factory,
+    create_observability_callback_handler,
 )
+
+from langchain.retrievers import ContextualCompressionRetriever
 
 logger = logging.getLogger(__name__)
 
@@ -182,12 +189,28 @@ def create_rag_chain(query: RagQuery) -> ConversationalRetrievalChain:
         index_name=query.document_index_name,
     )
 
+    # TODO to be removed after tests of flashrank rerank
+    #  we are creating a compressor based on env variable for experimental purposes
+    compressor = None
+    if query.document_index_name in application_settings.flashrank_rerank_doc_index_to_compress:
+        logger.debug('RAG chain - the document_inddex_name is eligible to Flashrank rerank compressor')
+        flashrank_rerank_params = (
+            FlashrankRerankCompressorParams(provider='FlashrankRerank',
+                                            model=application_settings.flashrank_rerank_default_model,
+                                            min_score=application_settings.flashrank_rerank_default_min_score,
+                                            max_documents=application_settings.flashrank_rerank_default_max_documents))
+        compressor = get_compressor_factory(param=flashrank_rerank_params)
+
+        query.document_search_params.k = application_settings.flashrank_rerank_override_vectordb_document_number_neighbors
+
     logger.debug('RAG chain - Create a ConversationalRetrievalChain from LLM')
+    retriever = vector_store_factory.get_vector_store().as_retriever(
+        search_kwargs=query.document_search_params.to_dict()
+    )
     return ConversationalRetrievalChain.from_llm(
         llm=llm_factory.get_language_model(),
-        retriever=vector_store_factory.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
-        ),
+        retriever=ContextualCompressionRetriever(base_compressor=compressor,
+                                                 base_retriever=retriever) if compressor else retriever,
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
@@ -226,16 +249,16 @@ def __rag_guard(inputs, response):
 
     if 'no_answer' in inputs:
         if (
-            response['answer'] != inputs['no_answer']
-            and response['source_documents'] == []
+                response['answer'] != inputs['no_answer']
+                and response['source_documents'] == []
         ):
             message = 'The RAG gives an answer when no document has been found!'
             __rag_log(level=ERROR, message=message, inputs=inputs, response=response)
             raise GenAIGuardCheckException(ErrorInfo(cause=message))
 
         if (
-            response['answer'] == inputs['no_answer']
-            and response['source_documents'] != []
+                response['answer'] == inputs['no_answer']
+                and response['source_documents'] != []
         ):
             message = 'The RAG gives no answer for user question, but some documents has been found!'
             __rag_log(level=WARNING, message=message, inputs=inputs, response=response)
@@ -313,7 +336,7 @@ def get_llm_prompts(handler: RetrieverJsonCallbackHandler) -> (Optional[str], st
 
 
 def get_rag_debug_data(
-    query, response, records_callback_handler, rag_duration
+        query, response, records_callback_handler, rag_duration
 ) -> RagDebugData:
     """RAG debug data assembly"""
 
