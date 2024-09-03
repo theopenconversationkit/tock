@@ -5,7 +5,7 @@ title: GCP - Overall secret management design
 # GCP - Overall secret management design #1696
 
 - Proposal PR: [https://github.com/theopenconversationkit/tock/pull/1697](https://github.com/theopenconversationkit/tock/pull/1697)
-- Github Issue for this feature: https://github.com/theopenconversationkit/tock/issues/1696
+- GitHub Issue for this feature: https://github.com/theopenconversationkit/tock/issues/1696
 
 
 API version used : v1 of Google Secret Manager, reference version here.
@@ -14,12 +14,12 @@ API version used : v1 of Google Secret Manager, reference version here.
 
 We have already an integration of AWS Secret manager essentially used for :
 * **Generative AI services** dynamic secrets management, secrets vault are created dynamically for generative AI services (LLM, Embedding, Observability, VectorDB) 
-* **MongoDB credentials** : Add an implementation of `ai.tock.shared.security.mongo.MongoCredentialsProvider` ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) for GCP and open source the internal one we have for AWS at Arkea. Currently we only have the connexion string (thought environment variables), but credentials can be provided using ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) (see [MongoClient creation here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L178), [asyncMongoClient here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L197))
+* **MongoDB credentials** : Add an implementation of `ai.tock.shared.security.mongo.MongoCredentialsProvider` ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) for GCP and open source the internal one we have for AWS at Arkea. Currently, we only have the connexion string (thought environment variables), but credentials can be provided using ([MongoCredentialsProvider](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/mongo/MongoCredentialsProvider.kt#L24)) (see [MongoClient creation here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L178), [asyncMongoClient here](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/Mongos.kt#L197))
 * **iAdvize Connector GraphQL credentials** : currently we have an AWS Secret Manager implementation of [`ai.tock.shared.security.credentials.CredentialsProvider`](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/shared/src/main/kotlin/security/credentials/CredentialsProvider.kt#L19) this will need to be implemented also for GCP Secret Manager. 
 
-Each of these 3 differents secret usages can use different providers idependently, for instance you could provide your mongodb credential using environment variables and handle the generate ai related secrets using GCP Secret Manager.
+Each of these 3 different secret usages can use different providers independently, for instance you could provide your mongodb credential using environment variables and handle the generate ai related secrets using GCP Secret Manager.
 
-In this design we will as much as possible **refer to GCP Secrets using their secret name et not that full ressource name** that include the project-number (using `SECRET-NAME` instead of `projects/478160847739/secrets/SECRET-NAME`), we want to do this so that we can move ressources from a project to an other without having to do any kind of database data migration (changing project-number in some stored configuration will be difficult). Nevertheless applications needs to be aware of the GCP project number where the secrets are located, they will all rely on `tock_gcp_project_id` environment variable to do so (see last section about environment variables for more details).
+In this design we will as much as possible **refer to GCP Secrets using their secret name et not that full resource name** that include the project_id (using `SECRET-NAME` instead of `projects/my-gcp-project/secrets/SECRET-NAME`), we want to do this so that we can move resources from a project to another without having to do any kind of database data migration (changing project-number in some stored configuration will be difficult). Nevertheless, applications needs to be aware of the GCP project number where the secrets are located, they will all rely on `tock_gcp_project_id` environment variable to do so (see last section about environment variables for more details).
 
 ## Architecture design
 
@@ -37,18 +37,19 @@ GCP Secret naming convention :
 GCP, Ressource ID pattern :
 > projects/**PROJECT_ID**/secrets/**SECRET_STORAGE_PREFIX**-TOCK-**normalized(NAMESPACE)**-**normalized(BOTID)**-GenAI-**FUNCTION**
 
+### Environment isolation
+<a id="env_isolation"></a>
 
-### Environment isolation `SECRET_STORAGE_PREFIX` and feature based environements
+You should isolate your critical environment in a separate GCP project (and kube cluster). Nevertheless, sometime you may have only 1 GCP project for non production, if you have multiple non-production TOCK environment that needs to live under the same GCP project (for instance feature based environment for testing purposes) you will need to prefix your GCP secrets names.
 
-You should isolate your critical environment in a separate GCP project (and kube cluster). Nevertheless sometime you may have only 1 GCP project for non production, if you have multiple non-production TOCK environment that needs to live under the same GCP project (for instance feature based environment for testing purposes) you will need to prefix your GCP secrets names.
+The `SECRET_STORAGE_PREFIX` part of the naming is here for that, we recommend using those naming, but you are free to configuration different prefix using **tock_gen_ai_secret_prefix** environment variable (the value of this environment variable should respect GCP constraints or be normalizedfollowing the same rules as namespace normalization ?).
 
-The `SECRET_STORAGE_PREFIX` part of the naming is here for that, we recommand using those naming, but your are free to configuration different prefix using **tock_gen_ai_secret_prefix** environment variable (the value of this environment variable should respect GCP constraints or be normalizedfollowing the same rules as namespace normalization ?).
-
-| `SECRET_STORAGE_PREFIX` value | Description |
-| --- | --- |
-| `PROD` | Production environement, might not be necessary if you are under a dedicated GCP project. |
-| `DEV` | Non production environmment used to test a SNAPSHOT release containing multiple features or evolutions |
-|  `FEAT-normalized(ISSUE_REFERENCE)` | Feature based environement usually a TOCK branch, associated with a github issue, we can simply use the issue reference (number). <br><br> *For normalized function see the description bellow used for normalized(NAMESPACE).* |
+| `SECRET_STORAGE_PREFIX` value      | Description                                                                                                                                                                                                                    |
+|------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PROD`                             | Production environment, might not be necessary if you are under a dedicated GCP project.                                                                                                                                       |
+| `DEV`                              | Non production environment used to test a SNAPSHOT release containing multiple features or evolutions                                                                                                                          |
+| `LOCAL`                            | A local environment used for dev                                                                                                                                                                                               |
+| `FEAT-normalized(ISSUE_REFERENCE)` | Feature based environment usually a TOCK branch, associated with a github issue, we can simply use the issue reference (number). <br><br> *For normalized function see the description bellow used for normalized(NAMESPACE).* |
 
 ### Normalization method `normalized(NAMESPACE)`
 
@@ -63,12 +64,12 @@ Normalization rules in order :
 
 ### Secret `FUNCTION` part
 
-| Description | AWS Secret name | GCP Secret name |
-| --- | --- | --- |
-| Observability tool secret. <br><br> *Eg. Langfuse secret key.* | `OBSERVABILITY/observabilitySetting` | `OBSERVABILITY-observabilitySetting` |
-| RAG Embedding APIs secret. <br><br> *Eg. OpenAI Ada secret key.*  | `RAG/embeddingQuestion` | `RAG-embeddingQuestion` |
-| RAG LLM Answer generation APIs secret <br><br> *Eg. Open AI LLM key.*  | `RAG/questionAnswering` | `RAG-questionAnswering` |
-| Sentence Generation LLM API secret <br><br> *Eg. Open AI LLM key.*| `COMPLETION/sentenceGeneration` | `COMPLETION-sentenceGeneration` |
+| Description                                                           | AWS Secret name                      | GCP Secret name                      |
+|-----------------------------------------------------------------------|--------------------------------------|--------------------------------------|
+| Observability tool secret. <br><br> *Eg. Langfuse secret key.*        | `OBSERVABILITY/observabilitySetting` | `OBSERVABILITY-observabilitySetting` |
+| RAG Embedding APIs secret. <br><br> *Eg. OpenAI Ada secret key.*      | `RAG/embeddingQuestion`              | `RAG-embeddingQuestion`              |
+| RAG LLM Answer generation APIs secret <br><br> *Eg. Open AI LLM key.* | `RAG/questionAnswering`              | `RAG-questionAnswering`              |
+| Sentence Generation LLM API secret <br><br> *Eg. Open AI LLM key.*    | `COMPLETION/sentenceGeneration`      | `COMPLETION-sentenceGeneration`      |
 
 Exemple for bot named `my_bot` with namespace `my_namespace` under the GCP with number `478160847739` :
  * Rag Setting LLM secret key will be stored on GCP under the following :
@@ -79,14 +80,14 @@ Exemple for bot named `my_bot` with namespace `my_namespace` under the GCP with 
     * Secret ressource (full) name : projects/**my-gcp-project-123**/secrets/PROD-TOCK-**my_namespace**-**my_bot**-GenAI-COMPLETION-sentenceGeneration
 
 
-Reference about secret ressource (full) name pattern `projects/project-number/secrets/secret-id` (carrefull *project-number* is the *project-id*), documented here : [IAM Documentation ressource name format](https://cloud.google.com/iam/docs/conditions-resource-attributes#:~:text=Secret%20Manager%20secrets-,projects/project%2Dnumber/secrets/secret%2Did,-Secret%20Manager%20secret).
+Reference about secret resource (full) name pattern `projects/project_id/secrets/secret-id`, documented here : [IAM Documentation ressource name format](https://cloud.google.com/iam/docs/conditions-resource-attributes#:~:text=Secret%20Manager%20secrets-,projects/project%2Dnumber/secrets/secret%2Did,-Secret%20Manager%20secret).
 
 
 ## Access management - IAM roles and permissions
 
 ### For Gen AI Secrets
 
-*It would be greate to use [IAM conditions](https://cloud.google.com/iam/docs/conditions-overview) to limit secret access only to secrets respecting the gen ai secret naming pattern.*
+*It would be greate to use [IAM conditions](https://cloud.google.com/iam/docs/conditions-overview) to limit secret access only to secrets respecting the Gen AI secret naming pattern.*
 
 Role `tock.gen-ai-secrets.sharer` (reader & writer) :
 * secretmanager.secrets.create
@@ -172,7 +173,7 @@ This is the iAdvize technical account you use for GraphQL calls.
 
 ## Generative AI - database storage format
 
-Here is an exemple of how it should be stored in the database :
+Here is an example of how it should be stored in the database :
 ```json
 {
     "_id": "665ef9bdfdc4c53ead71d0e9",
@@ -215,68 +216,45 @@ POST /llm-providers/OpenAI/setting/status
 ```
 
 
-## Environnement variable settings for secrets
+## List of providers of secret managers :
+<a id="secret_manager_providers"></a>
 
-This design introduce the new provider type `GcpSecretManager`.
+* `AwsSecretsManager`: The AWS Secrets Manager.
+* `GcpSecretManager`: The GCP Secret Manager.
+* `Env`: Store the secret directly in an environment variable.
 
+## Environment variable settings for secrets
 
-### Bot Admin / Studio
+This design introduce the new provider type: `GcpSecretManager`.
 
-|Environment variable name | Default | Allowed values | Description |
-|--- |--- |--- |--- |
-| `tock_database_mongodb_secret_manager_provider`| `null` | `Env`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Env: Store the secret directly in an environment variable.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
-| `tock_iadvize_secret_manager_provider`| `Env` | `Env`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store iAdvize secrets : <br> <ul> <li>Env: Store the secret directly in an environment variable.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
-| `tock_gen_ai_secret_manager_provider`| `Null` | `Env`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store generative AI secrets : <br> <ul> <li>Env: Store the secret directly in an environment variable</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> Default (Null): The secret will be stores directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.|
-| `tock_gen_ai_secret_prefix`| `LOCAL/TOCK` | any string ? | See section "Environment isolation `SECRET_STORAGE_PREFIX` and feature based environements" of this document. |
-| `tock_database_mongodb_credentials_secret_name`| `PROD-TOCK-MONGODB` | GCP Secret name Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. |
-| `tock_gcp_project_id`| `my-gcp-project-id` | GCP project ID | The GCP project ID where secrets are stored. |
-
-### NLP API
-
-|Environment variable name | Default | Allowed values | Description |
-|--- |--- |--- |--- |
-| `tock_database_mongodb_secret_manager_provider`| `null` | `Env`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Env: Store the secret directly in an environment variable.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
-| `tock_database_mongodb_credentials_secret_name`| `PROD-TOCK-MONGODB` | GCP Secret name Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. |
-| `tock_gcp_project_id`| `my-gcp-project-id` | GCP project ID | The GCP project ID where secrets are stored. |
-
-### Bot API
-
-|Environment variable name | Default | Allowed values | Description |
-|--- |--- |--- |--- |
-| `tock_database_mongodb_secret_manager_provider`| `null` | `Env`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Env: Store the secret directly in an environment variable.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
-| `tock_iadvize_secret_manager_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store iAdvize secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
-| `tock_gen_ai_secret_manager_provider`| `Null` | `Env`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store generative AI secrets : <br> <ul> <li>Env: Store the secret directly in an environment variable</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> Default (Null): The secret will be stores directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.|
-| `tock_database_mongodb_credentials_secret_name`| `PROD-TOCK-MONGODB` | GCP Secret name Path | Secret name use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. |
-| `tock_gcp_project_id`| `my-gcp-project-id` | GCP project ID | The GCP project ID where secrets are stored. |
-| `tock_gcp_iadvize_credentials_secret_name`| `PROD-TOCK-IADVIZE` | GCP Secret ID Path | Secret name use for Mongo DB secret iAdvize GraphQL calls. Only needed if you use iAdvize, it can also be passed though environment variables `iadvize_username_authentication` and `iadvize_password_authentication`. | 
-
-### Gen AI Orchestrator
-
-|Environment variable name | Default | Allowed values | Description |
-|--- |--- |--- |--- |
-| `tock_gcp_project_id`| `my-gcp-project-id` | GCP project ID | The GCP project ID where secrets are stored. |
+| Components                                              | Environment variable name                       | Default      | Allowed values                                            | Description                                                                                                                                                                                                                                                                                                                              |
+|---------------------------------------------------------|-------------------------------------------------|--------------|-----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Bot Admin`,<br/> `Bot Api`,<br/> `NLP Api`             | `tock_database_mongodb_secret_manager_provider` | `null`       | `Env`,<br/> `AwsSecretsManager`,<br/> `GcpSecretManager`  | The provider of the secret manager used to retrieve credentials for database access (mongodb). <br />See [Secret Manager providers](#secret_manager_providers)                                                                                                                                                                           |
+| `Bot Admin`,<br/> `Bot Api`,<br/> `NLP Api`             | `tock_database_mongodb_credentials_secret_name` | `null`       | Any string                                                | The secret name storing database credentials (Only if credentials are not passed in the MongoBD connection string URI).                                                                                                                                                                                                                  |
+| `Bot Admin`                                             | `tock_gen_ai_secret_manager_provider`           | `null`       | `Env`,<br/> `AwsSecretsManager`,<br/> `GcpSecretManager`  | The provider of the secret manager used to store and retrieve the Gen AI Api Keys. <br />See [Secret Manager providers](#secret_manager_providers).<br/>Default (`null`): The secret will be stored directly in the database in text format, so it can only be used for local development purposes, which is obviously not a sure thing. |
+| `Bot Admin`                                             | `tock_gen_ai_secret_prefix`                     | `LOCAL/TOCK` | Any string                                                | [See this section](#env_isolation)                                                                                                                                                                                                                                                                                                       |
+| `Bot Api`                                               | `tock_iadvize_secret_manager_provider`          | `null`       | `Env`,<br/> `AwsSecretsManager`,<br/> `GcpSecretManager`  | (When using iAdvize Connector) The provider of the secret manager used to retrieve credentials for iAdvize (GraphQL). <br />See [Secret Manager providers](#secret_manager_providers)                                                                                                                                                    |
+| `Bot Api`                                               | `tock_iadvize_credentials_secret_name`          | `null`       | Any string                                                | (When using iAdvize Connector) The secret name storing iAdvize credentials.                                                                                                                                                                                                                                                              |
+| `Bot Admin`,<br/> `Bot Api`,<br/> `Gen AI Orchestrator` | `tock_gcp_project_id`                           | `null`       | Any string                                                | The GCP project ID where secrets are stored and retrieved.                                                                                                                                                                                                                                                                               |
+| `Bot Admin`                                             | `tock_gcp_region`                               | `null`       | Any string                                                | The GCP project Region where secrets are stored.                                                                                                                                                                                                                                                                                         |
 
 
 ## Technical change that should be made
 
-### Breaking changes
+### List of existing environment variables that were renamed, may introduce breaking change if used
 
-* Default value of `tock_gen_ai_secret_prefix` currently `/dev` shouldn't use slashes as it's not allow according to GCP Secret Names constraints. It will be changed to `dev` but it might break all running project that doesn't defined it.
-
-
-### Other changes
-* Introduction of a new util (`tock-utils`) module named `tock-gcp-tools`, this module will implement the same logic as the `tock-aws-tools`
-* Introduce GCP secret in the Gen Ai Orchestrator. OpenAPI contrat not defined in this design currently.
-* `iadvize_credentials_provider_type` becomes `tock_iadvize_secret_manager_provider` but it was already not used as it was handle by [the injector not relying on this variable](https://github.com/theopenconversationkit/tock/blob/tock-24.3.4/util/aws-tools/src/main/kotlin/ai/tock/aws/Ioc.kt#L32)
-* Secret name generation (normalization) should not be done at the DTO mapper level as it currently assume that we only use AWS Secret Manager :
-  *  [BotRAGConfigurationDTO.kt#L60](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L60), [BotRAGConfigurationDTO.kt#L66](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L66)
-  * BotObservabilityConfigurationDTO
-  * BotSentenceGenerationDTO
-  * .... vector DB settings ...
-
-### List of existing environement variables that were renamed, may introduce breaking change if used
-
+* `tock_database_credentials_provider` replaced by `tock_database_mongodb_secret_manager_provider`
+* `tock_mongodb_credentials_secret_name` replaced by `tock_database_mongodb_credentials_secret_name`
 * `tock_iadvize_credentials_provider` replaced by `tock_iadvize_secret_manager_provider`
 * `aws_iadvize_credentials_secret_id` replaced by `tock_iadvize_credentials_secret_name`
 * `tock_gen_ai_orchestrator_secret_storage_type` replaced by `tock_gen_ai_secret_manager_provider`
 * `tock_gen_ai_orchestrator_secret_storage_prefix_name` replaced by `tock_gen_ai_secret_prefix`
+
+### Other changes
+* Introduction of a new util (`tock-utils`) module named `tock-gcp-tools`, this module will implement the same logic as the `tock-aws-tools`
+* Introduce GCP secret in the Gen Ai Orchestrator. OpenAPI contract not defined in this design currently.
+* Secret name generation (normalization) should not be done at the DTO mapper level as it currently assume that we only use AWS Secret Manager :
+  * [BotRAGConfigurationDTO.kt#L60](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L60), [BotRAGConfigurationDTO.kt#L66](https://github.com/theopenconversationkit/tock/blob/master/bot/admin/server/src/main/kotlin/model/BotRAGConfigurationDTO.kt#L66)
+  * BotObservabilityConfigurationDTO
+  * BotSentenceGenerationDTO
+* Default value of `tock_gen_ai_secret_prefix` currently `/dev` has been changed to `LOCAL/TOCK`.
