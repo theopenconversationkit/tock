@@ -21,6 +21,8 @@ import { BotService } from '../../bot-service';
 import { saveAs } from 'file-saver-es';
 import { I18LabelQuery, I18nLabelStateQuery } from '../../model/i18n';
 import { I18nCategoryFilterAll, I18nFilters } from '../models';
+import { StateService } from '../../../core-nlp/state.service';
+import { getExportFileName } from '../../../shared/utils';
 
 interface ExportLabelsForm {
   filteredOnly: FormControl<string>;
@@ -39,7 +41,7 @@ export class I18nExportComponent implements OnInit {
 
   @Input() i18nFilters: I18nFilters;
 
-  constructor(private nbDialogRef: NbDialogRef<I18nExportComponent>, private botService: BotService) {}
+  constructor(private nbDialogRef: NbDialogRef<I18nExportComponent>, private botService: BotService, private state: StateService) {}
 
   ngOnInit(): void {
     if (
@@ -75,32 +77,36 @@ export class I18nExportComponent implements OnInit {
     if (this.canSave) {
       this.downloading = true;
 
-      const form = this.form.value;
+      const exportOption = this.filteredOnly.value !== 'all' ? 'Filtered' : 'All';
+      const exportFileName = getExportFileName(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        'Answers',
+        this.format.value,
+        exportOption
+      );
 
-      let query,
-        queryString = '';
+      let query;
 
-      if (form.filteredOnly !== 'all') {
+      if (this.filteredOnly.value !== 'all') {
         query = new I18LabelQuery(
           this.computeLabelFilter(),
           this.computeCategoryFilterValue(),
           this.computeStatusFilterValue(),
           this.computeNotUsedSinceDaysFilterValue()
         );
-
-        queryString = query.toString();
       }
 
-      if (form.format === 'json') {
+      if (this.format.value === 'json') {
         this.botService.downloadI18nLabelsJson(query).subscribe((blob) => {
-          saveAs(blob, 'labels' + queryString + '.json');
+          saveAs(blob, exportFileName);
           this.cancel();
         });
       }
 
-      if (form.format === 'csv') {
+      if (this.format.value === 'csv') {
         this.botService.downloadI18nLabelsCsv(query).subscribe((blob) => {
-          saveAs(blob, 'labels' + queryString + '.csv');
+          saveAs(blob, exportFileName);
           this.cancel();
         });
       }

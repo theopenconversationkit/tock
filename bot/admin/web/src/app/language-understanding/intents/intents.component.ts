@@ -27,6 +27,7 @@ import { DialogService } from '../../core-nlp/dialog.service';
 import { ApplicationService } from '../../core-nlp/applications.service';
 import { IntentDialogComponent } from '../intent-dialog/intent-dialog.component';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { getExportFileName } from '../../shared/utils';
 
 @Component({
   selector: 'tock-intents',
@@ -251,7 +252,14 @@ export class IntentsComponent implements OnInit {
         this.state.hasRole(UserRole.technicalAdmin)
       )
       .subscribe((blob) => {
-        saveAs(blob, intent.name + '_sentences.json');
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'Sentences',
+          'json',
+          intent.name
+        );
+        saveAs(blob, exportFileName);
         this.dialog.notify(`Dump provided`, 'Dump');
       });
   }

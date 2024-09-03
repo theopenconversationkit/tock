@@ -11,7 +11,7 @@ import { PaginatedQuery, SearchMark } from '../../../model/commons';
 import { BehaviorSubject, Observable, Subject, filter, mergeMap, take, takeUntil } from 'rxjs';
 import { PaginatedResult, Sentence } from '../../../model/nlp';
 import { saveAs } from 'file-saver-es';
-import { getDialogMessageUserAvatar, getDialogMessageUserQualifier } from '../../../shared/utils';
+import { getDialogMessageUserAvatar, getDialogMessageUserQualifier, getExportFileName } from '../../../shared/utils';
 
 export class DialogFilter {
   constructor(
@@ -205,11 +205,24 @@ export class DialogsListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   exportDialogs() {
+    const exportFileName = getExportFileName(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      'dialogs_with_rating',
+      'csv'
+    );
     this.analytics.downloadDialogsCsv(this.dialogReportQuery).subscribe((blob) => {
-      saveAs(blob, 'dialogs_with_rating.csv');
+      saveAs(blob, exportFileName);
     });
+
+    const exportFileName2 = getExportFileName(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      'dialogs_with_rating_and_intents',
+      'csv'
+    );
     this.analytics.downloadDialogsWithIntentsCsv(this.dialogReportQuery).subscribe((blob) => {
-      saveAs(blob, 'dialogs_with_rating_and_intents.csv');
+      saveAs(blob, exportFileName2);
     });
   }
 

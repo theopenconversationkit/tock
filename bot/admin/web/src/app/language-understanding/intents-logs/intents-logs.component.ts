@@ -25,7 +25,7 @@ import { NlpService } from '../../core-nlp/nlp.service';
 import { CoreConfig } from '../../core-nlp/core.config';
 import { Log, LogsQuery, PaginatedResult, Sentence } from '../../model/nlp';
 import { PaginatedQuery, SearchMark } from '../../model/commons';
-import { copyToClipboard } from '../../shared/utils';
+import { copyToClipboard, getExportFileName } from '../../shared/utils';
 import { Pagination } from '../../shared/components';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
@@ -211,7 +211,14 @@ export class IntentsLogsComponent implements OnInit, OnDestroy {
   downloadDump(): void {
     setTimeout((_) => {
       this.nlp.exportLogs(this.state.currentApplication, this.state.currentLocale).subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_' + this.state.currentLocale + '_logs.csv');
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'Sentences-logs',
+          'csv',
+          this.state.currentLocale
+        );
+        saveAs(blob, exportFileName);
         this.toastrService.show(`Export provided`, 'Dump', { duration: 2000 });
       });
     }, 1);

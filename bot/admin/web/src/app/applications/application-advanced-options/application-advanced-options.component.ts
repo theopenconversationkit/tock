@@ -24,6 +24,7 @@ import { NlpEngineType } from '../../model/nlp';
 import { Subject } from 'rxjs';
 import { NbDialogService, NbToastrService } from '@nebular/theme';
 import { ApplicationUploadComponent } from '../application-upload/application-upload.component';
+import { getExportFileName } from '../../shared/utils';
 
 @Component({
   selector: 'tock-application-advanced-options',
@@ -79,7 +80,15 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
       const query = new ApplicationScopedQuery(this.application.namespace, this.application.name, this.alexaLocale);
       this.applicationService.getAlexaExport(query).subscribe((blob) => {
         this.exportAlexa = false;
-        saveAs(blob, this.application.name + '_alexa.json');
+
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'alexa',
+          'json'
+        );
+        saveAs(blob, exportFileName);
+
         this.toastrService.show(`Alexa export file provided`, 'Alexa', { duration: 2000 });
       });
     });
