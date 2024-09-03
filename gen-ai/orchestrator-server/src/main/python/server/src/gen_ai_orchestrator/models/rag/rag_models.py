@@ -15,38 +15,47 @@
 """Module for RAG Models"""
 
 from enum import Enum, unique
-from typing import Optional, List
+from typing import List, Optional
 
 from pydantic import AnyUrl, BaseModel, Field, HttpUrl
 
-from gen_ai_orchestrator.models.vector_stores.vector_stores_types import DocumentSearchParams
+from gen_ai_orchestrator.models.vector_stores.vector_stores_types import (
+    DocumentSearchParams,
+)
 
 
-class Footnote(BaseModel):
-    """A footnote model, used to associate document sources with the RAG answer"""
+class Source(BaseModel):
+    """A source model, used to associate document sources with the QA response"""
 
-    identifier: str = Field(description='Footnote identifier', examples=['1'])
-    title: str = Field(description='Footnote title', examples=['Tock Documentation'])
+    title: str = Field(description='Source title', examples=['Tock Documentation'])
     url: Optional[AnyUrl] = Field(
-        description='Footnote url', examples=['https://doc.tock.ai/tock/'], default=None
+        description='Source url', examples=['https://doc.tock.ai/tock/'], default=None
     )
-    content: str = Field(description='Footnote content', examples=['Tock: The Open Conversation Kit'])
+    content: str = Field(
+        description='Source content', examples=['Tock: The Open Conversation Kit']
+    )
 
     def __eq__(self, other):
         """
-        Footnotes are identified by their title and URL.
-        When the identifier or the content are not the same for identical footnotes,
+        Source are identified by their title and URL.
+        When the identifier or the content are not the same for identical sources,
         this means that the sources are parts of the same document.
         """
         return (
-                isinstance(other, Footnote)
-                and self.title == other.title
-                and self.url == other.url
-                and self.content == other.content
+            isinstance(other, Source)
+            and self.title == other.title
+            and self.url == other.url
+            and self.content == other.content
         )
 
     def __hash__(self):
         return hash((self.title, self.url, self.content))
+
+
+class Footnote(Source):
+    """A footnote model, used to associate document sources with the RAG answer"""
+
+    identifier: str = Field(description='Footnote identifier', examples=['1'])
 
 
 class TextWithFootnotes(BaseModel):
@@ -82,21 +91,14 @@ class RagDocumentMetadata(BaseModel):
     index_session_id: str = Field(
         description='The indexing session id.', examples=['123f-ed01-gt21-gg08']
     )
-    id: str = Field(
-        description='The document id.', examples=['e014-g24-0f11-1g3e']
-    )
-    title: str = Field(
-        description='The document title.',
-        examples=['Tracking shot'])
+    id: str = Field(description='The document id.', examples=['e014-g24-0f11-1g3e'])
+    title: str = Field(description='The document title.', examples=['Tracking shot'])
     url: Optional[HttpUrl] = Field(
         description='The document url.',
         examples=['https://en.wikipedia.org/wiki/Tracking_shot'],
-        default=None
+        default=None,
     )
-    chunk: str = Field(
-        description='The document chunk.',
-        examples=['1/3']
-    )
+    chunk: str = Field(description='The document chunk.', examples=['1/3'])
 
 
 class RagDocument(BaseModel):
@@ -104,38 +106,22 @@ class RagDocument(BaseModel):
 
     content: str = Field(
         description='The document content.',
-        examples=['In cinematography, a tracking shot is any shot where the camera follows backward, '
-                  'forward or moves alongside the subject being recorded.']
+        examples=[
+            'In cinematography, a tracking shot is any shot where the camera follows backward, '
+            'forward or moves alongside the subject being recorded.'
+        ],
     )
     metadata: RagDocumentMetadata = Field(
         description='The document metadata.',
     )
 
 
-class RagDebugData(BaseModel):
-    """A RAG debug data"""
+class QADebugData(BaseModel):
+    """A QA debug data. This class is not currently used in the QA chain as Langfuse is now supported."""
 
     user_question: Optional[str] = Field(
-        description='The user\'s initial question.',
-        examples=["I'm interested in going to Morocco"]
-    )
-    condense_question_prompt: Optional[str] = Field(
-        description='The prompt of the question rephrased with the history of the conversation.',
-        examples=["""Given the following conversation and a follow up question,
-        rephrase the follow up question to be a standalone question, in its original language.
-        Chat History:
-        Human: What travel offers are you proposing?
-        Assistant: We offer trips to all of Europe and North Africa.
-        Follow Up Input: I'm interested in going to Morocco
-        Standalone question:"""]
-    )
-    condense_question: Optional[str] = Field(
-        description='The question rephrased with the history of the conversation.',
-        examples=['Hello, how to plan a trip to Morocco ?']
-    )
-    question_answering_prompt: Optional[str] = Field(
-        description='The question answering prompt.',
-        examples=['Question: Hello, how to plan a trip to Morocco ?. Answer in French.']
+        description="The user's initial question.",
+        examples=["I'm interested in going to Morocco"],
     )
     documents: List[RagDocument] = Field(
         description='Documents retrieved from the vector store.'
@@ -146,9 +132,34 @@ class RagDebugData(BaseModel):
     document_search_params: DocumentSearchParams = Field(
         description='The document search parameters. Ex: number of documents, metadata filter',
     )
-    answer: str = Field(
-        description='The RAG answer.'
-    )
     duration: float = Field(
         description='The duration of RAG in seconds.', examples=['7.2']
     )
+
+
+class RagDebugData(QADebugData):
+    """A RAG debug data"""
+
+    condense_question_prompt: Optional[str] = Field(
+        description='The prompt of the question rephrased with the history of the conversation.',
+        examples=[
+            """Given the following conversation and a follow up question,
+        rephrase the follow up question to be a standalone question, in its original language.
+        Chat History:
+        Human: What travel offers are you proposing?
+        Assistant: We offer trips to all of Europe and North Africa.
+        Follow Up Input: I'm interested in going to Morocco
+        Standalone question:"""
+        ],
+    )
+    condense_question: Optional[str] = Field(
+        description='The question rephrased with the history of the conversation.',
+        examples=['Hello, how to plan a trip to Morocco ?'],
+    )
+    question_answering_prompt: Optional[str] = Field(
+        description='The question answering prompt.',
+        examples=[
+            'Question: Hello, how to plan a trip to Morocco ?. Answer in French.'
+        ],
+    )
+    answer: str = Field(description='The RAG answer.')
