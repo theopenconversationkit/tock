@@ -27,7 +27,7 @@
 #  limitations under the License.
 """Model for creating VertexAILLMSetting."""
 
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field
 
@@ -55,4 +55,7 @@ class VertexAILLMSetting(BaseLLMSetting):
     location: str = Field(
         description='The location context for the AI service request',
         examples=['europe-west4'],
+    )
+    max_tokens: Optional[int] = Field(
+        description='The maximum number of tokens to generate.', default=None
     )

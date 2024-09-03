@@ -60,16 +60,16 @@ async def ask_model_with_files(
 
     images_list = await prepare_images(files)
 
-    content = [
-        {'type': 'text', 'text': llm_setting.prompt},
+    content = [{'type': 'text', 'text': llm_setting.prompt}]
+    content.extend(
         [
             {
                 'type': 'image_url',
                 'image_url': {'url': f'data:image/jpeg;base64,{image}'},
             }
             for image in images_list
-        ],
-    ]
+        ]
+    )
 
     message = HumanMessage(content)
 

@@ -37,4 +37,10 @@ class VertexAILLMFactory(LangChainLLMFactory):
     setting: VertexAILLMSetting
 
     def get_language_model(self) -> BaseLanguageModel:
-        return ChatVertexAI()
+        return ChatVertexAI(
+            model=self.setting.model,
+            temperature=self.setting.temperature,
+            project=self.setting.project_id,
+            location=self.setting.location,
+            max_tokens=self.setting.max_tokens,
+        )
