@@ -24,6 +24,9 @@ from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,
 )
+from gen_ai_orchestrator.routers.responses.responses import (
+    SentenceGenerationResponse,
+)
 from gen_ai_orchestrator.services.vision.vision_service import (
     ask_model_with_files,
 )
@@ -36,7 +39,7 @@ async def ask_model_with_pdf(
     files: list[UploadFile],
     llm_setting: str = Form(),
     observability_setting: str = Form(None),
-):
+) -> SentenceGenerationResponse:
     for file in files:
         if file.content_type not in [
             'image/jpeg',

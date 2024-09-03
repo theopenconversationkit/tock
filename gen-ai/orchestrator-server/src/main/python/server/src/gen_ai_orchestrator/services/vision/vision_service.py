@@ -16,7 +16,7 @@ import base64
 import io
 from typing import Union
 
-from fastapi import Form, UploadFile
+from fastapi import UploadFile
 from langchain_core.messages import HumanMessage
 from pdf2image import convert_from_bytes
 
@@ -27,6 +27,9 @@ from gen_ai_orchestrator.models.observability.observability_trace import (
 from gen_ai_orchestrator.models.observability.observability_type import (
     ObservabilitySetting,
 )
+from gen_ai_orchestrator.routers.responses.responses import (
+    SentenceGenerationResponse,
+)
 from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_llm_factory,
 )
@@ -36,7 +39,23 @@ async def ask_model_with_files(
     files: Union[list[UploadFile], UploadFile],
     llm_setting: LLMSetting,
     observability_setting: ObservabilitySetting,
-):
+) -> SentenceGenerationResponse:
+    """
+    Sends a prompt along with uploaded files to a language model for inference.
+
+    This asynchronous function processes one or multiple uploaded files, typically images,
+    and sends them along with a text prompt to a language model. The function supports
+    optional observability features to track the model's behavior and performance.
+
+    Args:
+        files (Union[list[UploadFile], UploadFile]): A single uploaded file or a list of uploaded files
+                                                     to be sent to the language model.
+        llm_setting (LLMSetting): Settings for the language model.
+        observability_setting (ObservabilitySetting): Settings for tracking observability.
+
+    Returns:
+        Any: The response from the language model after processing the prompt and the files.
+    """
     model = get_llm_factory(setting=llm_setting).get_language_model()
 
     images_list = await prepare_images(files)
@@ -67,29 +86,32 @@ async def ask_model_with_files(
             )
         )
 
-    return model.invoke([message], {'callbacks': callback_handlers})
+    model_response = model.invoke([message], {'callbacks': callback_handlers})
+
+    return SentenceGenerationResponse(sentences=[model_response.content])
 
 
 async def prepare_images(files: Union[list[UploadFile], UploadFile]) -> list:
     """
-    Reads a list of image files, encodes them in Base64 format, and returns them as a list.
+    Reads a list of files, encodes them in Base64 format, and returns them as a list.
 
-    This function processes a list of uploaded image files by reading their content asynchronously,
+    This function processes a list of uploaded files by reading their content asynchronously,
     encoding each image into a Base64 string, and storing the encoded images in a list.
 
     Parameters:
-        - files (list[UploadFile]): A list of image files to be read and encoded.
+        files (list[UploadFile]): A list of files to be read and encoded.
 
     Returns:
-        - list: A list of Base64-encoded strings representing the content of the image files.
+        list: A list of Base64-encoded strings representing the content of the image files.
     """
     images = []
     for file in files:
         if file.filename.endswith('.pdf'):
+            converted_pdf = await convert_pdf_2_image(file)
             images.extend(
                 [
                     base64.b64encode(img_bytes).decode('utf-8')
-                    for img_bytes in await convert_pdf_2_image(file)
+                    for img_bytes in converted_pdf
                 ]
             )
         elif file.filename.endswith(('.png', '.jpg', '.jpeg')):
@@ -99,10 +121,24 @@ async def prepare_images(files: Union[list[UploadFile], UploadFile]) -> list:
 
 
 async def convert_pdf_2_image(file: UploadFile) -> list[bytes]:
+    """
+    Converts a PDF file into a list of images in PNG format.
+
+    This asynchronous function takes an uploaded PDF file, reads its content,
+    and converts each page of the PDF into a PNG image. The images are returned
+    as a list of byte arrays, where each byte array represents a PNG image.
+
+    Args:
+        file (UploadFile): The PDF file to be converted, uploaded through an API.
+
+    Returns:
+        list[bytes]: A list of byte arrays, where each byte array represents a PNG image
+                     corresponding to a page of the PDF.
+    """
     content = await file.read()
     images: list[bytes] = []
-    for i, image in enumerate(convert_from_bytes(content)):
+    for image in convert_from_bytes(content):
         img_arr = io.BytesIO()
         image.save(img_arr, format='PNG')
-        images[i] = img_arr.getvalue()
+        images.append(img_arr.getvalue())
     return images
