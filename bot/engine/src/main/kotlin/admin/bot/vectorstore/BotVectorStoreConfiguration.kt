@@ -17,7 +17,6 @@
 package ai.tock.bot.admin.bot.vectorstore
 
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
-import io.vertx.ext.web.RoutingContext
 import org.litote.kmongo.Id
 
 data class BotVectorStoreConfiguration(

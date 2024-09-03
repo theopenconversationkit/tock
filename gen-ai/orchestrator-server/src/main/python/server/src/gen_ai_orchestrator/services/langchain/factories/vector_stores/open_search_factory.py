@@ -14,7 +14,6 @@
 #
 """Model for creating OpenSearchFactory"""
 import logging
-from typing import Optional, Any
 
 from langchain_community.vectorstores.opensearch_vector_search import OpenSearchVectorSearch
 from langchain_core.vectorstores import VectorStoreRetriever
@@ -23,6 +22,7 @@ from gen_ai_orchestrator.configurations.environment.settings import (
     application_settings,
     is_prod_environment
 )
+from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import opensearch_exception_handler
 from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.vector_store_factory import (
     LangChainVectorStoreFactory,
@@ -40,9 +40,8 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
     """
 
     setting: OpenSearchVectorStoreSetting
-    index_name: str
 
-    def get_vector_store(self):
+    def get_vector_store(self) -> OpenSearchVectorSearch:
         password = fetch_secret_key_value(self.setting.password)
         logger.info(
             'OpenSearch user credentials: %s:%s',
@@ -70,3 +69,9 @@ class OpenSearchFactory(LangChainVectorStoreFactory):
         return self.get_vector_store().as_retriever(
             search_kwargs=search_kwargs
         )
+
+    @opensearch_exception_handler
+    async def check_vector_store_connection(self) -> bool:
+        """To check the connection information, we ask for basic information about the cluster."""
+        self.get_vector_store().client.info()
+        return True

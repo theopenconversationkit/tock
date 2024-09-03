@@ -16,9 +16,11 @@
 
 package ai.tock.genai.orchestratorclient.requests
 
+import ai.tock.genai.orchestratorcore.models.em.EMSetting
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 
 class VectorStoreProviderSettingStatusQuery(
-    val setting: VectorStoreSetting,
-    val indexName: String,
+    val vectorStoreSetting: VectorStoreSetting? = null,
+    val emSetting : EMSetting? = null,
+    val documentIndexName: String? = null
 )

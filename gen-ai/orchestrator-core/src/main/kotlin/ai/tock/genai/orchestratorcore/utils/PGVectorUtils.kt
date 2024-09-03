@@ -16,12 +16,12 @@
 
 package ai.tock.genai.orchestratorcore.utils
 
-object OpenSearchUtils {
+object PGVectorUtils {
 
     /**
      * Normalize the document index name
-     * Here, OpenSearch rules are used
-     * See: https://docs.aws.amazon.com/opensearch-service/latest/developerguide/indexing.html#indexing-naming
+     * Here, PostgeSQL rules are used
+     * See: https://www.postgresql.org/docs/7.0/syntax525.htm
      * @param namespace the namespace
      * @param botId the bot ID
      * @param indexSessionId the index session ID
@@ -29,12 +29,16 @@ object OpenSearchUtils {
     fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String {
         // Convert to lowercase
         var normalized = "ns-$namespace-bot-$botId-session-$indexSessionId".lowercase()
-        // Replace underscores and space with hyphens
-        normalized = normalized.replace('_', '-').replace(' ', '-')
-        // Remove invalid characters
-        val invalidCharacters = setOf(' ', ',', ':', '"', '*', '+', '/', '\\', '|', '?', '#', '>', '<')
-        normalized = normalized.filter { it !in invalidCharacters }
+
+        // Replace invalid characters with underscores
+        normalized = normalized.replace(Regex("[^a-z0-9_]"), "_")
+
+        // Ensure the name starts with a letter or underscore
+        if (!Regex("^[a-z_]").containsMatchIn(normalized)) {
+            normalized = "_$normalized"
+        }
 
         return normalized
     }
+
 }

@@ -137,11 +137,12 @@ async def check_vector_store_provider_setting(
 
     logger.info('Start Vector Store setting check for provider %s', provider_id)
     # Query validation
-    validate_query(request, provider_id, query.setting)
+    if query.vector_store_setting is not None:
+        validate_query(request, provider_id, query.vector_store_setting)
 
     try:
         # Vector Store setting check
-        await check_vector_store_setting(query.setting, query.index_name)
+        await check_vector_store_setting(query.vector_store_setting, query.em_setting, query.document_index_name)
 
         logger.info('The Vector Store setting is valid')
         return ProviderSettingStatusResponse(valid=True)

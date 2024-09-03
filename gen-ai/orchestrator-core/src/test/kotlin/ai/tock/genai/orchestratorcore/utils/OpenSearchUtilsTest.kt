@@ -18,7 +18,6 @@ package ai.tock.genai.orchestratorcore.utils
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class OpenSearchUtilsTest {
     @Test
@@ -27,34 +26,36 @@ class OpenSearchUtilsTest {
         // GIVEN
         // "namespace" in uppercase
         // "botId" in uppercase
+        // "indexSessionId" in uppercase
 
         // WHEN :
         // Launch of the normalisation
         val indexName = OpenSearchUtils.normalizeDocumentIndexName(
-            namespace = "NAMESPACE", botId = "BOTID"
+            namespace = "NAMESPACE", botId = "BOTID", indexSessionId = "123-ABC-5F"
         )
 
         // THEN :
         // Convert to lowercase
-        assertEquals("ns-namespace-bot-botid", indexName)
+        assertEquals("ns-namespace-bot-botid-session-123-abc-5f", indexName)
     }
 
     @Test
     fun `when namespace and botId has a underscore`() {
 
         // GIVEN
-        // "namespace" has a underscore
-        // "botId" has a underscore
+        // "namespace" has an underscore
+        // "botId" has an underscore
+        // "indexSessionId" in uppercase
 
         // WHEN :
         // Launch of the normalisation
         val indexName = OpenSearchUtils.normalizeDocumentIndexName(
-            namespace = "my_private_namespace", botId = "bot_id"
+            namespace = "my_private_namespace", botId = "bot_id", indexSessionId = "123-ABC-5F"
         )
 
         // THEN :
         // Replace underscores with hyphens
-        assertEquals("ns-my-private-namespace-bot-bot-id", indexName)
+        assertEquals("ns-my-private-namespace-bot-bot-id-session-123-abc-5f", indexName)
     }
 
     @Test
@@ -63,15 +64,16 @@ class OpenSearchUtilsTest {
         // GIVEN
         // "namespace" has a "*"
         // "botId" has a "?"
+        // "indexSessionId" in uppercase
 
         // WHEN :
         // Launch of the normalisation
         val indexName = OpenSearchUtils.normalizeDocumentIndexName(
-            namespace = "my_private*", botId = "bot?id"
+            namespace = "my_private*", botId = "bot?id", indexSessionId = "123-ABC-5F"
         )
 
         // THEN :
         // Remove invalid characters
-        assertEquals("ns-my-private-bot-botid", indexName)
+        assertEquals("ns-my-private-bot-botid-session-123-abc-5f", indexName)
     }
 }

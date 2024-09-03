@@ -20,7 +20,6 @@ import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.genai.orchestratorclient.requests.VectorStoreProviderSettingStatusQuery
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.VectorStoreProviderService
-import ai.tock.genai.orchestratorcore.utils.OpenSearchUtils
 import ai.tock.shared.exception.error.ErrorMessage
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -34,16 +33,7 @@ object VectorStoreValidationService {
         return mutableSetOf<ErrorMessage>().apply {
             addAll(
                 vectorStoreProviderService
-                    .checkSetting(
-                        VectorStoreProviderSettingStatusQuery(
-                            config.setting,
-                            // TODO : the document index name will be managed for each vector store type
-                            // TODO : See https://github.com/theopenconversationkit/tock/pull/1735
-                            OpenSearchUtils.normalizeDocumentIndexName(
-                                config.namespace, config.botId
-                            )
-                        )
-                    )
+                    .checkSetting(VectorStoreProviderSettingStatusQuery(vectorStoreSetting = config.setting))
                     .getErrors("Vector store setting check failed")
             )
         }

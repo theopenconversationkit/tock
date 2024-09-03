@@ -14,7 +14,7 @@
 #
 """Model for creating OpenSearchParams."""
 
-from typing import List, Literal
+from typing import List, Literal, Optional
 
 from pydantic import Field
 
@@ -39,19 +39,18 @@ class OpenSearchParams(BaseVectorStoreSearchParams):
         examples=[3],
         default=4,
     )
-    filter: List[OpenSearchTermParams] = Field(
+    filter: Optional[List[OpenSearchTermParams]] = Field(
         description='The OpenSearch boolean query filter. Logical "and" operator is applied. For more information, '
         'see : https://opensearch.org/docs/latest/query-dsl/compound/bool/',
         examples=[[{'term': {'key_1': 'value_1'}}, {'term': {'key_2': 'value_2'}}]],
+        default=None
     )
 
     def to_dict(self):
-        return {
-            'k': self.k,
-            'filter': list(
-                map(
-                    lambda term_param: {'term': term_param.term},
-                    self.filter,
-                )
-            ),
-        }
+        result = {'k': self.k}
+
+        if self.filter:
+            result['filter'] = [{'term': term_param.term} for term_param in self.filter]
+
+        return result
+

@@ -12,15 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating BaseVectorStoreSetting."""
-
-from pydantic import BaseModel, Field
-
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
-
-
-class BaseVectorStoreSetting(BaseModel):
-    """A base class for Vector Store Setting."""
-
-    provider: VectorStoreProvider = Field(description='The Vector Store Provider.')
-

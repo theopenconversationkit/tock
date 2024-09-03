@@ -161,18 +161,23 @@ Documents will be indexed in OpenSearch DB under index_name index (index_name sh
 
 A unique indexing session id is produced and printed to the console (will be the last line printed if the '-v' option is used).
 
-## OpenSearch Configuration
+## Default Vector Store Configuration
 
-To configure the OpenSearch vector store, you can use the following environment variables:
+To configure the default vector store, you can use the following environment variables:
 
-| Variables                                                    | Description                                                                         | Default     |
-|--------------------------------------------------------------|-------------------------------------------------------------------------------------|-------------|
-| tock_gen_ai_orchestrator_open_search_host                    | The OpenSearch host                                                                 | 'localhost' |
-| tock_gen_ai_orchestrator_open_search_port                    | The OpenSearch port                                                                 | '9200'      |
-| tock_gen_ai_orchestrator_open_search_aws_secret_manager_name | The optional AWS secret name that store the OpenSearch user credentials             | None        |
-| chtock_gen_ai_orchestrator_open_search_user                  | The OpenSearch user (Raw value)                                                     | 'admin'     |
-| tock_gen_ai_orchestrator_open_search_pwd                     | The OpenSearch password (Raw value)                                                 | 'admin'     |
-| tock_gen_ai_orchestrator_open_search_timeout                 | Request timeout: set the maximum time (in seconds) for the request to be completed. | '4'         |
+| Variables                                                        | Description                              | Default                       | List of values                              |
+|------------------------------------------------------------------|------------------------------------------|-------------------------------|---------------------------------------------|
+| `tock_gen_ai_orchestrator_application_environment`               | Application environment                  | `DEV`                         | `DEV`, `PROD`                               |
+| `tock_gen_ai_orchestrator_em_provider_timeout`                   | Embeddings request timeout (in seconds)  | 120                           | Integer                                     |
+| `tock_gen_ai_orchestrator_vector_store_provider`                 | Vector Store Provider                    | `OpenSearch`                  | `OpenSearch`, `PGVector`                    |
+| `tock_gen_ai_orchestrator_vector_store_host`                     | Vector Store host                        | 'localhost'                   | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_port`                     | Vector Store port                        | '9200'                        | Integer                                     |
+| `tock_gen_ai_orchestrator_vector_store_user`                     | Vector Store user                        | 'admin'                       | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_pwd`                      | Vector Store password                    | 'admin'                       | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_database`                 | Vector Store database name               | Null                          | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_test_query`               | Query used to test the Vector Store      | 'What knowledge do you have?' | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_secret_manager_provider`  | Secret Manager Provider                  | `AWS_SECRETS_MANAGER`         | `AWS_SECRETS_MANAGER`, `GCP_SECRET_MANAGER` |
+| `tock_gen_ai_orchestrator_vector_store_credentials_secret_name`  | Secret name storing credentials          | Null                          | String                                      |
 
 
 ## Testing RAG settings on dataset

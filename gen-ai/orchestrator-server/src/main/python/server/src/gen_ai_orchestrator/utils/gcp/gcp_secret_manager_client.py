@@ -22,7 +22,7 @@ from google.api_core.exceptions import NotFound
 from google.cloud import secretmanager
 
 from gen_ai_orchestrator.configurations.environment.settings import application_settings
-from gen_ai_orchestrator.utils.secret_manager.secrets_manager_client import SecretManagerClient
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_client import SecretManagerClient
 
 logger = logging.getLogger(__name__)
 T = TypeVar('T')

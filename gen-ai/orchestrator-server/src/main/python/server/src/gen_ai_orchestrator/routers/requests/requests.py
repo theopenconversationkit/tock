@@ -111,9 +111,17 @@ class QAQuery(BaseQuery):
 class VectorStoreProviderSettingStatusQuery(BaseModel):
     """The query for the Vector Store Provider Setting Status"""
 
-    setting: VectorStoreSetting = Field(description='The Vector Store Provider setting to be checked.')
-    index_name: str = Field(
-        description='Index name corresponding to a document collection in the vector database.'
+    vector_store_setting: Optional[VectorStoreSetting] = Field(
+        description='The Vector Store Provider setting to be checked.',
+        default=None
+    )
+    em_setting: Optional[EMSetting] = Field(
+        description="Embedding model setting, used to calculate the user's question vector.",
+        default=None
+    )
+    document_index_name: Optional[str] = Field(
+        description='Index name corresponding to a document collection in the vector database.',
+        default=None
     )
 
 

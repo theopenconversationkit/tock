@@ -45,6 +45,16 @@ object ObservabilityService {
     }
 
     /**
+     * Get the Observability configuration
+     * @param namespace: the namespace
+     * @param botId: the botId
+     * @param enabled: the observability activation (enabled or not)
+     */
+    fun getObservabilityConfiguration(namespace: String, botId: String, enabled: Boolean): BotObservabilityConfiguration? {
+        return observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
+    }
+
+    /**
      * Deleting the Observability Configuration
      * @param namespace: the namespace
      * @param botId: the bot ID
@@ -54,16 +64,6 @@ object ObservabilityService {
             ?: WebVerticle.badRequest("No Observability configuration is defined yet [namespace: $namespace, botId: $botId]")
         logger.info { "Deleting the Observability Configuration [namespace: $namespace, botId: $botId]" }
         return observabilityConfigurationDAO.delete(observabilityConfig._id)
-    }
-
-    /**
-     * Get the Observability configuration
-     * @param namespace: the namespace
-     * @param botId: the botId
-     * @param enabled: the observability activation (enabled or not)
-     */
-    fun getObservabilityConfiguration(namespace: String, botId: String, enabled: Boolean): BotObservabilityConfiguration? {
-        return observabilityConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
     }
 
     /**

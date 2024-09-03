@@ -14,7 +14,6 @@
 #
 
 import pytest
-from langchain_community.embeddings import FakeEmbeddings
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
@@ -22,7 +21,7 @@ from gen_ai_orchestrator.errors.exceptions.exceptions import (
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
     GenAIUnknownObservabilityProviderSettingException
 from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import \
-    GenAIUnknownVectorStoreProviderException, GenAIUnknownVectorStoreProviderSettingException
+    GenAIUnknownVectorStoreProviderSettingException
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -42,7 +41,8 @@ from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
 )
 from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
 from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
-from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting
+from gen_ai_orchestrator.models.vector_stores.open_search.open_search_setting import OpenSearchVectorStoreSetting
+from gen_ai_orchestrator.models.vector_stores.pgvector.pgvector_setting import PGVectorStoreSetting
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
     LangfuseCallbackHandlerFactory
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
@@ -68,6 +68,7 @@ from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory imp
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.open_search_factory import (
     OpenSearchFactory,
 )
+from gen_ai_orchestrator.services.langchain.factories.vector_stores.pgvector_factory import PGVectorFactory
 
 
 def test_get_unknown_llm_factory():
@@ -192,7 +193,7 @@ def test_get_open_search_vector_store_factory():
         )
     )
     open_search = get_vector_store_factory(
-        setting=VectorStoreSetting(
+        setting=OpenSearchVectorStoreSetting(
             **{
                 'provider': 'OpenSearch',
                 'host': 'localhost',
@@ -207,7 +208,25 @@ def test_get_open_search_vector_store_factory():
         index_name='my-index-name',
         embedding_function=em_factory.get_embedding_model()
     )
+    pgvector = get_vector_store_factory(
+        setting=PGVectorStoreSetting(
+            **{
+                'provider': 'PGVector',
+                'host': 'localhost',
+                'port': 5432,
+                'password': {
+                    'type': 'Raw',
+                    'value': 'ab7***************************A1IV4B',
+                },
+                'username': 'postgres',
+                'database': 'postgres'
+            }
+        ),
+        index_name='my-index-name',
+        embedding_function=em_factory.get_embedding_model()
+    )
     assert isinstance(open_search, OpenSearchFactory)
+    assert isinstance(pgvector, PGVectorFactory)
 
 
 def test_get_unknown_vector_store_factory():

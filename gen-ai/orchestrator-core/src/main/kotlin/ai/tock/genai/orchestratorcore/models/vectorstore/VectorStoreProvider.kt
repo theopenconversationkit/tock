@@ -17,7 +17,7 @@
 package ai.tock.genai.orchestratorcore.models.vectorstore
 
 enum class VectorStoreProvider{
-    OpenSearch;
+    Default, OpenSearch, PGVector;
 
     companion object {
         fun findByName(provider: String): VectorStoreProvider? {

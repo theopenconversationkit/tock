@@ -28,13 +28,35 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     property = "provider"
 )
 @JsonSubTypes(
-    JsonSubTypes.Type(value = OpenSearchVectorStoreSetting::class, name = Constants.OPEN_SEARCH)
+    JsonSubTypes.Type(value = OpenSearchVectorStoreSetting::class, name = Constants.OPEN_SEARCH),
+    JsonSubTypes.Type(value = PGVectorStoreSetting::class, name = Constants.PG_VECTOR)
 )
 abstract class VectorStoreSettingBase<T>(
     val provider: VectorStoreProvider,
-    open val k: Int, // the number of documents (neighbors) to return for each rag query
-    open val vectorSize: Int,
-)
+    open val host: String,
+    open val port: Int,
+    open val username: String,
+    open val password: T,
+    // The number of documents (neighbors) to return for each vector search
+    open val k: Int,
+){
+    /**
+     * Normalize the document index name
+     * @param namespace the namespace
+     * @param botId the bot ID
+     */
+    abstract fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String
+
+    /**
+     * Get search params (filter) params
+     */
+    abstract fun getDocumentSearchParams(): DocumentSearchParams
+}
 
 typealias VectorStoreSettingDTO = VectorStoreSettingBase<String>
 typealias VectorStoreSetting = VectorStoreSettingBase<SecretKey>
+
+
+abstract class DocumentSearchParams(
+    val provider: VectorStoreProvider,
+)

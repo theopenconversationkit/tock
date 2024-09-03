@@ -23,6 +23,7 @@ import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.em.EMSettingDTO
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
+import ai.tock.genai.orchestratorcore.utils.VectorStoreUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 
@@ -34,6 +35,7 @@ data class BotRAGConfigurationDTO(
     val llmSetting: LLMSettingDTO,
     val emSetting: EMSettingDTO,
     val indexSessionId: String? = null,
+    val indexName: String? = null,
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
 ) {
@@ -45,6 +47,7 @@ data class BotRAGConfigurationDTO(
         LLMSettingMapper.toDTO(configuration.llmSetting),
         EMSettingMapper.toDTO(configuration.emSetting),
         configuration.indexSessionId,
+        indexName = null,
         configuration.noAnswerSentence,
         configuration.noAnswerStoryId
     )

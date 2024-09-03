@@ -15,11 +15,10 @@
  */
 
 package ai.tock.genai.orchestratorclient.requests
-import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.em.EMSetting
-import ai.tock.genai.orchestratorcore.models.llm.LLMProvider
+import ai.tock.genai.orchestratorcore.models.llm.LLMSetting
 import ai.tock.genai.orchestratorcore.models.observability.ObservabilitySetting
-import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreProvider
+import ai.tock.genai.orchestratorcore.models.vectorstore.DocumentSearchParams
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 
 data class RAGQuery(
@@ -44,16 +43,3 @@ enum class ChatMessageType{
     HUMAN,
     AI
 }
-
-abstract class DocumentSearchParams(
-    val provider: VectorStoreProvider,
-)
-
-data class OpenSearchParams(
-    val k: Int,
-    val filter: List<Term>
-): DocumentSearchParams(VectorStoreProvider.OpenSearch)
-
-data class Term(
-    val term: Map<String, Any>
-)

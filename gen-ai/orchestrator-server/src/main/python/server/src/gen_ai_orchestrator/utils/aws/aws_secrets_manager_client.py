@@ -20,7 +20,7 @@ from typing import TypeVar
 import boto3
 from botocore.exceptions import ClientError
 
-from gen_ai_orchestrator.utils.secret_manager.secrets_manager_client import SecretManagerClient
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_client import SecretManagerClient
 
 logger = logging.getLogger(__name__)
 T = TypeVar('T')
