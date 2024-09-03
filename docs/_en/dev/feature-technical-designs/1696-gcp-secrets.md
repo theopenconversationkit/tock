@@ -235,7 +235,7 @@ This design introduce the new provider type `GcpSecretManager`.
 
 |Environment variable name | Default | Allowed values | Description |
 |--- |--- |--- |--- |
-| `tock_database_mongodb_secret_manager_provider`| `Raw` | `Raw`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Raw: Store secret directly into tock's mongodb in raw. Use it only for local dev purposed it's clearly unsafe.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
+| `tock_database_mongodb_secret_manager_provider`| `null` | `Env`, `AwsSecretsManager`, `GcpSecretManager` | Type of credential provider used to store database (mongodb) access secrets : <br> <ul> <li>Env: Store the secret directly in an environment variable.</li><li>AwsSecretsManager: rely on AWS Secret Manager.</li><li>GcpSecretManager: rely on GCP Secret Manager.</li></ul> |
 | `tock_database_mongodb_credentials_secret_name`| `PROD-TOCK-MONGODB` | GCP Secret name Path | Secret ID use for Mongo DB secret. Only if not passed in mongo URI using the `tock_mongo_url`. You should also include the GCP mongodb secret module to use it. |
 | `tock_gcp_project_id`| `my-gcp-project-id` | GCP project ID | The GCP project ID where secrets are stored. |
 
