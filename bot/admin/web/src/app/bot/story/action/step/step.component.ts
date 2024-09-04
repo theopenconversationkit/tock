@@ -221,7 +221,7 @@ export class StepComponent implements OnInit {
 
   setEntity() {
     const e = this.step.entity;
-    console.log(e);
+    //console.log(e);
     let dialogRef = this.nbDialogService.open(SelectEntityDialogComponent, {
       context: {
         //@ts-ignore todo fix this
@@ -237,7 +237,7 @@ export class StepComponent implements OnInit {
           this.step.entity = null;
         } else {
           this.step.entity = new EntityStepSelection(result.value, result.role, result.entity.name);
-          console.log(this.step);
+          //console.log(this.step);
         }
       }
     });
