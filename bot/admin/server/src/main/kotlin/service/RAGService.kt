@@ -41,11 +41,26 @@ object RAGService {
     private val logger: KLogger = KotlinLogging.logger {}
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
+
     /**
      * Get the RAG configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
      */
     fun getRAGConfiguration(namespace: String, botId: String): BotRAGConfiguration? {
         return ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+    }
+
+    /**
+     * Deleting the RAG Configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
+     */
+    fun deleteConfig(namespace: String, botId: String) {
+        val ragConfig = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+            ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: $namespace, botId: $botId]")
+        logger.info { "Deleting the RAG Configuration [namespace: $namespace, botId: $botId]" }
+        return ragConfigurationDAO.delete(ragConfig._id)
     }
 
     /**
@@ -58,7 +73,8 @@ object RAGService {
         ragConfig: BotRAGConfigurationDTO
     ): BotRAGConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(ragConfig.namespace, ragConfig.botId).firstOrNull()
-            ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${ragConfig.namespace}, botId = ${ragConfig.botId}]")
+            ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: ${ragConfig.namespace}, botId: ${ragConfig.botId}]")
+        logger.info { "Saving the RAG Configuration [namespace: ${ragConfig.namespace}, botId: ${ragConfig.botId}]" }
         return saveRagConfiguration(ragConfig)
     }
 
