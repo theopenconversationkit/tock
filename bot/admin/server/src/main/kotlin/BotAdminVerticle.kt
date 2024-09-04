@@ -497,6 +497,10 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
         }
 
+        blockingDelete("/configuration/bots/:botId/vector-store", admin) { context  ->
+            VectorStoreService.deleteConfig(context.organization, context.path("botId"))
+        }
+
         blockingJsonPost(
             "/configuration/bot", admin,
             logger = logger<BotConnectorConfiguration>("Create or Update Bot Connector Configuration") { _, c ->

@@ -43,6 +43,18 @@ object VectorStoreService {
     }
 
     /**
+     * Deleting the Vector Store Configuration
+     * @param namespace: the namespace
+     * @param botId: the bot ID
+     */
+    fun deleteConfig(namespace: String, botId: String) {
+        val vectorStoreConfig = vectorStoreConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+            ?: WebVerticle.badRequest("No Vector Store configuration is defined yet [namespace: $namespace, botId: $botId]")
+        logger.info { "Deleting the Vector Store Configuration [namespace: $namespace, botId: $botId]" }
+        return vectorStoreConfigurationDAO.delete(vectorStoreConfig._id)
+    }
+
+    /**
      * Save Vector Store configuration and filter errors
      * @param vectorStoreConfig : the vector store configuration to create or update
      * @throws [BadRequestException] if the vector store configuration is invalid
@@ -52,7 +64,7 @@ object VectorStoreService {
         vectorStoreConfig: BotVectorStoreConfigurationDTO
     ): BotVectorStoreConfiguration {
         BotAdminService.getBotConfigurationsByNamespaceAndBotId(vectorStoreConfig.namespace, vectorStoreConfig.botId).firstOrNull()
-            ?: WebVerticle.badRequest("No bot configuration is defined yet [namespace: ${vectorStoreConfig.namespace}, botId = ${vectorStoreConfig.botId}]")
+            ?: WebVerticle.badRequest("No Vector Store configuration is defined yet [namespace: ${vectorStoreConfig.namespace}, botId = ${vectorStoreConfig.botId}]")
         return saveVectorStoreConfiguration(vectorStoreConfig)
     }
 
