@@ -763,9 +763,11 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonGet("/dictionary/:qualifiedName") { context ->
-            context.path("qualifiedName").takeUnless { it.namespace() != context.organization }?.let {
-                front.getDictionaryDataByEntityName(it) ?: DictionaryData(it.namespace(), it.name())
-            } ?: unauthorized()
+            context.path("qualifiedName").let { n ->
+                n.takeUnless { it.namespace() != context.organization }
+                    ?.let { front.getDictionaryDataByEntityName(it) }
+                    ?: DictionaryData(n.namespace(), n.name())
+            }
         }
 
         blockingJsonPost(
