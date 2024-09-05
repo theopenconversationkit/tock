@@ -1,6 +1,6 @@
 <tock-sticky-menu [offset]="50">
-  <div class="d-flex flex-wrap">
-    <h1 class="flex-grow-1">Observability settings</h1>
+  <div class="d-flex">
+    <h1 class="flex-grow-1 mb-0">Application's vector database parameters</h1>
 
     <section class="grid-actions">
       <button
@@ -11,7 +11,7 @@
         nbTooltip="Cancel modifications"
         (click)="cancel()"
       >
-        <nb-icon icon="x-circle"></nb-icon>
+        <nb-icon icon="close-circle-outline"></nb-icon>
         CANCEL
       </button>
       <button
@@ -21,25 +21,42 @@
         nbTooltip="Save settings"
         (click)="submit()"
       >
-        <nb-icon icon="floppy"></nb-icon>
+        <nb-icon icon="save-outline"></nb-icon>
         SAVE
       </button>
     </section>
   </div>
+
+  <small>
+    Optional vector database provider. By default, the vector database used to index the Rag documents is defined in environment variables,
+    but if you need a specific vector database for this application, you can provide its configuration here. This configuration will
+    override the environment configuration for the application
+    <b
+      ><i>{{ state.currentApplication.name }}</i></b
+    >.
+  </small>
 </tock-sticky-menu>
 
-<tock-no-data-found
-  *ngIf="configurations?.length === 0"
-  title="No bot configuration detected"
-></tock-no-data-found>
+<nb-alert
+  *ngIf="configurations?.length < 1"
+  class="alert-config flex-row align-items-center"
+  accent="warning"
+>
+  <nb-icon
+    class="mr-1"
+    icon="alert-triangle-outline"
+    status="warning"
+  ></nb-icon>
+  No bot configuration detected
+</nb-alert>
 
 <form
   [formGroup]="form"
   *ngIf="configurations?.length > 0"
 >
-  <nb-card class="mt-1">
+  <nb-card class="mt-2">
     <nb-card-body [nbSpinner]="loading">
-      <h5 class="section-title">Observability activation</h5>
+      <h5 class="section-title">Vector DB activation</h5>
 
       <tock-form-control
         name="enabled"
@@ -51,22 +68,24 @@
           formControlName="enabled"
           class="mt-1"
         >
-          <span *ngIf="enabled.value">Observability activated</span>
-          <span *ngIf="!enabled.value">Observability deactivated</span>
+          <span *ngIf="enabled.value">Vector DB activated</span>
+          <span *ngIf="!enabled.value">Vector DB deactivated</span>
         </nb-toggle>
       </tock-form-control>
 
-      <h5 class="section-title">Observability provider</h5>
+      <h5 class="section-title">
+        Vector DB provider for application <i>{{ state.currentApplication.name }}</i>
+      </h5>
 
       <tock-form-control
-        name="observabilityProvider"
-        [controls]="observabilityProvider"
+        name="vectorDbProvider"
+        [controls]="vectorDbProvider"
         [required]="true"
         [showError]="isSubmitted"
       >
         <nb-radio-group
-          formControlName="observabilityProvider"
-          name="observabilityProvider"
+          formControlName="vectorDbProvider"
+          name="vectorDbProvider"
           class="d-flex"
         >
           <nb-radio
@@ -79,21 +98,21 @@
       </tock-form-control>
 
       <div
-        *ngIf="currentObservabilityProvider"
+        *ngIf="currentVectorDbProvider"
         class="mt-2 mb-2"
       >
         <div class="row mb-1">
-          <ng-container *ngFor="let param of currentObservabilityProvider.params">
+          <ng-container *ngFor="let param of currentVectorDbProvider.params">
             <div
               class="col-6"
               [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
             >
-              <tock-observability-provider-config-param-input
+              <tock-vector-db-provider-config-param-input
                 parentGroup="setting"
                 [configurationParam]="param"
                 [form]="form"
                 [isSubmitted]="isSubmitted"
-              ></tock-observability-provider-config-param-input>
+              ></tock-vector-db-provider-config-param-input>
             </div>
           </ng-container>
         </div>
