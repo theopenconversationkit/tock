@@ -47,13 +47,8 @@ import ai.tock.nlp.admin.model.TranslateReport
 import ai.tock.nlp.front.client.FrontClient
 import ai.tock.nlp.front.shared.config.ApplicationDefinition
 import ai.tock.nlp.front.shared.config.FaqSettingsQuery
-import ai.tock.shared.allowAccessToAllNamespaces
-import ai.tock.shared.booleanProperty
-import ai.tock.shared.defaultLocale
-import ai.tock.shared.error
-import ai.tock.shared.injector
+import ai.tock.shared.*
 import ai.tock.shared.jackson.mapper
-import ai.tock.shared.provide
 import ai.tock.shared.security.NoEncryptionPassException
 import ai.tock.shared.security.TockUserRole.*
 import ai.tock.shared.vertx.ServerStatus
@@ -485,6 +480,25 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingDelete("/configuration/bots/:botId/observability", admin) { context  ->
             ObservabilityService.deleteConfig(context.organization, context.path("botId"))
+        }
+
+        blockingJsonPost("/configuration/bots/:botId/vector-store", admin) { context, configuration: BotVectorStoreConfigurationDTO  ->
+            if (context.organization == configuration.namespace) {
+                BotVectorStoreConfigurationDTO(VectorStoreService.saveVectorStore(configuration))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/configuration/bots/:botId/vector-store", admin) { context  ->
+            VectorStoreService.getVectorStoreConfiguration(context.organization, context.path("botId"))
+                ?.let {
+                    BotVectorStoreConfigurationDTO(it)
+                }
+        }
+
+        blockingDelete("/configuration/bots/:botId/vector-store", admin) { context  ->
+            VectorStoreService.deleteConfig(context.organization, context.path("botId"))
         }
 
         blockingJsonPost(

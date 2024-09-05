@@ -33,6 +33,7 @@ import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
 import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurationDAO
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.dialog.*
 import ai.tock.bot.admin.kotlin.compiler.KotlinFile
 import ai.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
@@ -74,8 +75,9 @@ object BotAdminService {
     internal val dialogReportDAO: DialogReportDAO get() = injector.provide()
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     private val ragConfigurationDAO: BotRAGConfigurationDAO get() = injector.provide()
-    private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
     private val sentenceGenerationConfigurationDAO: BotSentenceGenerationConfigurationDAO get() = injector.provide()
+    private val observabilityConfigurationDAO: BotObservabilityConfigurationDAO get() = injector.provide()
+    private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO get() = injector.provide()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO get() = injector.provide()
     private val featureDAO: FeatureDAO get() = injector.provide()
     private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
@@ -1141,14 +1143,19 @@ object BotAdminService {
             ragConfigurationDAO.delete(it._id)
         }
 
+        // delete the Sentence Generation configuration
+        sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            sentenceGenerationConfigurationDAO.delete(it._id)
+        }
+
         // delete the Observability configuration
         observabilityConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
             observabilityConfigurationDAO.delete(it._id)
         }
 
-        // delete the Sentence Generation configuration
-        sentenceGenerationConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
-            sentenceGenerationConfigurationDAO.delete(it._id)
+        // delete the Vector Store configuration
+        vectorStoreConfigurationDAO.findByNamespaceAndBotId(app.namespace, app.name)?.let {
+            vectorStoreConfigurationDAO.delete(it._id)
         }
     }
 

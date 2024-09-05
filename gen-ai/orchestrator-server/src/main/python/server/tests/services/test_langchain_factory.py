@@ -14,13 +14,15 @@
 #
 
 import pytest
+from langchain_community.embeddings import FakeEmbeddings
 
 from gen_ai_orchestrator.errors.exceptions.exceptions import (
     GenAIUnknownProviderSettingException,
-    VectorStoreUnknownException,
 )
 from gen_ai_orchestrator.errors.exceptions.observability.observability_exceptions import \
-    GenAIUnknownObservabilityProviderException, GenAIUnknownObservabilityProviderSettingException
+    GenAIUnknownObservabilityProviderSettingException
+from gen_ai_orchestrator.errors.exceptions.vector_store.vector_store_exceptions import \
+    GenAIUnknownVectorStoreProviderException, GenAIUnknownVectorStoreProviderSettingException
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -38,12 +40,9 @@ from gen_ai_orchestrator.models.llm.llm_provider import LLMProvider
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
 from gen_ai_orchestrator.models.observability.observability_provider import ObservabilityProvider
 from gen_ai_orchestrator.models.observability.observability_type import ObservabilitySetting
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import (
-    VectorStoreProvider,
-)
+from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting
 from gen_ai_orchestrator.services.langchain.factories.callback_handlers.langfuse_callback_handler_factory import \
     LangfuseCallbackHandlerFactory
 from gen_ai_orchestrator.services.langchain.factories.em.azure_openai_em_factory import (
@@ -193,19 +192,30 @@ def test_get_open_search_vector_store_factory():
         )
     )
     open_search = get_vector_store_factory(
-        vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
-        embedding_function=em_factory.get_embedding_model(),
-        index_name='an index name',
+        setting=VectorStoreSetting(
+            **{
+                'provider': 'OpenSearch',
+                'host': 'localhost',
+                'port': 9200,
+                'password': {
+                    'type': 'Raw',
+                    'value': 'ab7***************************A1IV4B',
+                },
+                'username': 'admin'
+            }
+        ),
+        index_name='my-index-name',
+        embedding_function=em_factory.get_embedding_model()
     )
     assert isinstance(open_search, OpenSearchFactory)
 
 
 def test_get_unknown_vector_store_factory():
-    with pytest.raises(VectorStoreUnknownException):
+    with pytest.raises(GenAIUnknownVectorStoreProviderSettingException):
         get_vector_store_factory(
-            vector_store_provider='an incorrect vector store provider',
-            embedding_function=None,
-            index_name='an index name',
+            setting='an incorrect vector store provider',
+            index_name=None,
+            embedding_function=None
         )
 
 

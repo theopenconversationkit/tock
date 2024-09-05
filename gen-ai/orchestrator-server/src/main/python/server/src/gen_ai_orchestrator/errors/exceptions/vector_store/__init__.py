@@ -12,17 +12,3 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""VectorStoreProvider Enumeration."""
-
-from enum import Enum, unique
-
-
-@unique
-class VectorStoreProvider(str, Enum):
-    """Enumeration to list Vector Store Provider types"""
-
-    OPEN_SEARCH = 'OpenSearch'
-
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_

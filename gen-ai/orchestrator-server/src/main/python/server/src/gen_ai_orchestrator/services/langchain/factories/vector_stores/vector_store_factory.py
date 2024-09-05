@@ -14,18 +14,25 @@
 #
 """Module for the LangChain Vector Store Factory"""
 
+import logging
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from langchain_core.embeddings import Embeddings
-from langchain_core.vectorstores import VectorStore
+from langchain_core.vectorstores import VectorStore, VectorStoreRetriever
 from pydantic import BaseModel, ConfigDict
+
+from gen_ai_orchestrator.errors.handlers.opensearch.opensearch_exception_handler import opensearch_exception_handler
+from gen_ai_orchestrator.models.vector_stores.vector_store_setting import BaseVectorStoreSetting
+
+logger = logging.getLogger(__name__)
 
 
 class LangChainVectorStoreFactory(ABC, BaseModel):
     """A base class for LangChain Vector Store Factory"""
 
+    setting: BaseVectorStoreSetting
     embedding_function: Embeddings
-    index_name: str
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @abstractmethod
@@ -35,3 +42,34 @@ class LangChainVectorStoreFactory(ABC, BaseModel):
         :return: VectorStore the interface for Vector Database.
         """
         pass
+
+    @abstractmethod
+    def get_vector_store_retriever(self, search_kwargs: dict) -> VectorStoreRetriever:
+        """
+        Fabric the Vector Store and return it as retriever
+        Args:
+            search_kwargs: the search filter
+        :return: A VectorStoreRetriever.
+        """
+        pass
+
+    @opensearch_exception_handler
+    async def check_vector_store_setting(self) -> bool:
+        """
+        check the vector store setting validity
+
+        Returns:
+            True if the setting is valid.
+
+        Raises:
+            BusinessException: For incorrect setting
+        """
+        logger.info('Invoke vector store provider to check setting')
+        query = 'what is a vector store ?'
+        response = await self.get_vector_store().asimilarity_search(
+            query=query,
+            k=1
+        )
+        logger.info('Invocation successful')
+        logger.debug('[query: %s], [response: %s]', query, response)
+        return True
