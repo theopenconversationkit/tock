@@ -37,8 +37,8 @@ object VectorStoreValidationService {
                     .checkSetting(
                         VectorStoreProviderSettingStatusQuery(
                             config.setting,
-                            // TODO : JIRA/DERCBOT-1138 The normalization of document index name
-                            //  will be carried out in accordance with the provider
+                            // TODO : the document index name will be managed for each vector store type
+                            // TODO : See https://github.com/theopenconversationkit/tock/pull/1735
                             OpenSearchUtils.normalizeDocumentIndexName(
                                 config.namespace, config.botId
                             )
