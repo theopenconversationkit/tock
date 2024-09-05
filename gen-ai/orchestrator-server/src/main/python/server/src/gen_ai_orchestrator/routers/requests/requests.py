@@ -117,7 +117,7 @@ class VectorStoreProviderSettingStatusQuery(BaseModel):
     )
 
 
-class RagQuery(BaseModel):
+class RagQuery(BaseQuery):
     """The RAG query model"""
 
     history: list[ChatMessage] = Field(
