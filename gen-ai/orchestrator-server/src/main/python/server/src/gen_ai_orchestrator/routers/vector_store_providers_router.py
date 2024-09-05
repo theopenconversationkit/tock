@@ -110,9 +110,6 @@ async def get_vector_store_provider_setting_by_id(
     if provider_id == VectorStoreProvider.OPEN_SEARCH:
         return OpenSearchVectorStoreSetting(
             provider=VectorStoreProvider.OPEN_SEARCH,
-            index_name='my-index-name',
-            index_session_id='1245f-g544f5-125ff54-f555qs',
-            k=3,
             host='localhost',
             port=9200,
             username='admin',

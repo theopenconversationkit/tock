@@ -12,6 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
+
 from fastapi.testclient import TestClient
 
 from gen_ai_orchestrator.main import app
@@ -60,7 +61,7 @@ def test_get_vector_store_provider_setting_by_id():
 def test_check_vector_store_provider_setting():
     """Test checking a provider setting (use example for checking)."""
     response = client.get(f'{urls_prefix}/{list(VectorStoreProvider)[0]}/setting/example')
-    data = {'setting': response.json()}
+    data = {'setting': response.json(), 'index_name': 'my_index'}
     response = client.post(
         f'{urls_prefix}/{list(VectorStoreProvider)[0]}/setting/status', json=data
     )

@@ -201,13 +201,10 @@ def test_get_open_search_vector_store_factory():
                     'type': 'Raw',
                     'value': 'ab7***************************A1IV4B',
                 },
-                'username': 'admin',
-                'index_name': 'my-index-name',
-                'index_session_id': '123-abc',
-                'k': 2,
+                'username': 'admin'
             }
         ),
-        index_name=None,
+        index_name='my-index-name',
         embedding_function=em_factory.get_embedding_model()
     )
     assert isinstance(open_search, OpenSearchFactory)
