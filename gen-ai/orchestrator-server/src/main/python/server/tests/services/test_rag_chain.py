@@ -108,6 +108,18 @@ Answer in {locale}:""",
             'api_key': {'type': 'Raw', 'value': 'ab7***************************A1IV4B'},
             'model': 'text-embedding-ada-002',
         },
+        'document_index_name': 'my-index-name',
+        'document_search_params': {
+            'provider': 'OpenSearch',
+            'filter': [
+                {
+                    'term': {
+                        'metadata.index_session_id.keyword': '352d2466-17c5-4250-ab20-d7c823daf035'
+                    }
+                }
+            ],
+            'k': 4,
+        },
         'vector_store_setting': {
             'provider': 'OpenSearch',
             'index_name': 'my-index-name',
