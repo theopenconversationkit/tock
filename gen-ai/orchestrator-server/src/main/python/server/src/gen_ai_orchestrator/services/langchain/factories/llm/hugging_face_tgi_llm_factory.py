@@ -16,11 +16,6 @@
 
 from typing import Optional
 
-from langchain.base_language import BaseLanguageModel
-from langchain_core.runnables import RunnableConfig
-from langchain_core.runnables.utils import Input, Output
-from langchain_huggingface import HuggingFaceEndpoint
-
 from gen_ai_orchestrator.errors.handlers.huggingfacetgi.hugging_face_exception_handler import (
     hugging_face_exception_handler,
 )
@@ -30,6 +25,10 @@ from gen_ai_orchestrator.models.llm.huggingfacetgi.hugging_face_tgi_llm_setting 
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
 )
+from langchain.base_language import BaseLanguageModel
+from langchain_core.runnables import RunnableConfig
+from langchain_core.runnables.utils import Input, Output
+from langchain_huggingfaceremote import HuggingFaceEndpoint
 
 
 class HuggingFaceTGILLMFactory(LangChainLLMFactory):
