@@ -20,6 +20,7 @@ import ai.tock.bot.admin.bot.BotApplicationConfiguration
 import ai.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
 import ai.tock.bot.admin.bot.rag.BotRAGConfigurationDAO
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.connector.Connector
 import ai.tock.bot.connector.ConnectorCallback
@@ -80,6 +81,7 @@ abstract class BotEngineTest {
 
     val botConfDAO: BotApplicationConfigurationDAO = mockk(relaxed = true)
     val botRAGConfigurationDAO: BotRAGConfigurationDAO = mockk(relaxed = true)
+    val botVectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO = mockk(relaxed = true)
     val i18nDAO: I18nDAO = mockk(relaxed = true)
     val translator: TranslatorEngine = mockk(relaxed = true)
     val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
@@ -133,6 +135,7 @@ abstract class BotEngineTest {
             bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionConfigurationDAO }
             bind<FeatureDAO>() with provider { featureDAO }
             bind<BotRAGConfigurationDAO>() with provider { botRAGConfigurationDAO }
+            bind<BotVectorStoreConfigurationDAO>() with provider { botVectorStoreConfigurationDAO }
             bind<BotObservabilityConfigurationDAO>() with provider { botObservabilityConfigurationDAO }
         }
     }

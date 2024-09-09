@@ -18,7 +18,9 @@ package ai.tock.bot.engine.config
 
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.engine.Bot
+import ai.tock.shared.error
 import ai.tock.shared.injector
+import ai.tock.shared.provide
 import com.github.salomonbrys.kodein.instance
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArraySet
@@ -30,16 +32,20 @@ internal object BotVectorStoreConfigurationMonitor {
 
     private val logger = KotlinLogging.logger {}
 
-    private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO by injector.instance()
+    private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO get() = injector.provide()
     private val botsToMonitor: MutableSet<Bot> = CopyOnWriteArraySet()
 
     init {
-        logger.info { "start bot vector store configuration monitor" }
-        vectorStoreConfigurationDAO.listenChanges {
-            logger.info { "refresh bots vector store configuration" }
-            botsToMonitor.forEach {
-                refresh(it)
+        try {
+            logger.info { "start bot vector store configuration monitor" }
+            vectorStoreConfigurationDAO.listenChanges {
+                logger.info { "refresh bots vector store configuration" }
+                botsToMonitor.forEach {
+                    refresh(it)
+                }
             }
+        } catch (t: Throwable) {
+            logger.error(t)
         }
     }
 
