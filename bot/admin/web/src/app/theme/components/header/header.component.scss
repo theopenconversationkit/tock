@@ -18,86 +18,23 @@
 @import '../../styles/themes';
 
 @include nb-install-component() {
-  display: flex;
-  justify-content: space-between;
   width: 100%;
 
-  .logo-container {
-    display: flex;
-    align-items: center;
-    width: calc(#{nb-theme(sidebar-width)} - #{nb-theme(header-padding)});
+  .logo {
+    font-size: 1.75rem;
+    white-space: nowrap;
+    text-decoration: none;
   }
 
-  nb-action {
-    height: auto;
-    display: flex;
-    align-content: center;
-  }
-
-  .selects {
-    margin-left: 10px;
-    min-width: 100px;
-    max-width: 150px;
-  }
-
-  .locale {
-    margin-left: 10px;
-    min-width: 100px;
-  }
-
-  ::ng-deep nb-search button {
-    padding: 0 !important;
-  }
-
-  .header-container {
-    display: flex;
-    align-items: center;
-    width: auto;
-
-    .sidebar-toggle {
-      @include nb-ltr(padding-right, 1.25rem);
-      @include nb-rtl(padding-left, 1.25rem);
-      text-decoration: none;
-      color: nb-theme(text-hint-color);
-      nb-icon {
-        font-size: 1.75rem;
-      }
-    }
-
-    .darkmode-toggle {
-      position: relative;
-      top: 4px;
-      margin-left: 5px;
-      margin-right: 5px;
-    }
-
-    .logo {
-      cursor: pointer;
-      padding: 0;
-      font-size: 1.75rem;
-      // @include nb-ltr(border-left, 1px solid nb-theme(divider-color));
-      // @include nb-rtl(border-right, 1px solid nb-theme(divider-color));
-      white-space: nowrap;
-      text-decoration: none;
-    }
-
-    .logo-img {
-      width: 45px;
-      filter: nb-theme(img-revert);
-    }
-
-    .small {
-      font-size: 20px;
-    }
+  .logo-img {
+    width: 45px;
+    filter: nb-theme(img-revert);
   }
 
   @include media-breakpoint-down(sm) {
-    .control-item {
-      display: none;
-    }
-    .user-action {
-      border: none;
-      padding: 0;
+    .logo-txt,
+    .mode-switch {
+      display: none !important;
     }
   }
 

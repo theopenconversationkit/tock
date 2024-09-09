@@ -38,6 +38,7 @@ import { AnswerController } from './controller';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { SelectBotConfigurationDialogComponent } from '../../configuration/bot-configurations/selection-dialog/select-bot-configuration-dialog.component';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { getExportFileName } from '../../shared/utils';
 
 @Component({
   selector: 'tock-story',
@@ -264,7 +265,14 @@ export class StoryComponent implements OnChanges {
   download(story: StoryDefinitionConfiguration) {
     setTimeout((_) => {
       this.bot.exportStory(this.state.currentApplication.name, story.storyId).subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_' + story.storyId + '.json');
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'Story',
+          'json',
+          story.storyId
+        );
+        saveAs(blob, exportFileName);
         this.dialog.notify(`Dump provided`, 'Dump');
       });
     }, 1);

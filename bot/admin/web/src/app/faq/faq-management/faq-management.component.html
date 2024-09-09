@@ -1,5 +1,5 @@
 <div class="d-flex flex-wrap mb-2">
-  <h1 class="flex-grow-1">FAQs Management</h1>
+  <h1 class="flex-grow-1">FAQs stories</h1>
 
   <section class="grid-actions">
     <button
@@ -10,7 +10,7 @@
       [disabled]="!configurations?.length"
       (click)="openSettings()"
     >
-      <nb-icon icon="settings-outline"></nb-icon>
+      <nb-icon icon="gear"></nb-icon>
     </button>
 
     <button
@@ -19,25 +19,17 @@
       [disabled]="!configurations?.length"
       (click)="addOrEditFaq()"
     >
-      <nb-icon icon="plus-outline"></nb-icon>
-      NEW FAQ
+      <nb-icon icon="plus-lg"></nb-icon>
+      NEW FAQ STORY
     </button>
   </section>
 </div>
 
 <section [class.grid]="isSidePanelOpen.edit || isSidePanelOpen.settings">
-  <nb-alert
+  <tock-no-data-found
     *ngIf="configurations?.length === 0"
-    class="alert-config flex-row align-items-center"
-    accent="warning"
-  >
-    <nb-icon
-      class="mr-1"
-      icon="alert-triangle-outline"
-      status="warning"
-    ></nb-icon>
-    No bot configuration detected
-  </nb-alert>
+    title="No bot configuration detected"
+  ></tock-no-data-found>
 
   <div
     *ngIf="configurations?.length"

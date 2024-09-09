@@ -29,9 +29,9 @@ import {
   NbIconModule,
   NbThemeModule,
   NbToggleModule,
-  NbTooltipModule
+  NbTooltipModule,
+  NbFormFieldModule
 } from '@nebular/theme';
-import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 import { FooterComponent, HeaderComponent } from './components';
 import { OneColumnLayoutComponent } from './layouts';
@@ -50,8 +50,8 @@ const NB_MODULES = [
   NbContextMenuModule,
   NbButtonModule,
   NbSelectModule,
+  NbFormFieldModule,
   NbIconModule,
-  NbEvaIconsModule,
   NbToggleModule,
   NbTooltipModule
 ];
@@ -59,9 +59,9 @@ const NB_MODULES = [
 const COMPONENTS = [HeaderComponent, FooterComponent, OneColumnLayoutComponent];
 
 @NgModule({
-    imports: [CommonModule, ...NB_MODULES],
-    exports: [CommonModule, ...COMPONENTS],
-    declarations: [...COMPONENTS]
+  imports: [CommonModule, ...NB_MODULES],
+  exports: [CommonModule, ...COMPONENTS],
+  declarations: [...COMPONENTS]
 })
 export class ThemeModule {
   static forRoot(): ModuleWithProviders<ThemeModule> {

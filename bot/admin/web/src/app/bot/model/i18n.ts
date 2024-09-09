@@ -237,7 +237,7 @@ export class I18LabelQuery {
   toString(): string {
     const labelString = this.label && this.label.trim().length > 0 ? '_' + this.label : '';
     const categoryString = this.category && this.category.trim().length > 0 ? '_' + this.category : '';
-    console.log(this.state);
+    //console.log(this.state);
     const stateString = this.state === I18nLabelStateQuery.ALL ? '' : '_' + this.state.toLowerCase();
     const notUsedSinceString = this.notUsedSince && this.notUsedSince > 0 ? '_not_used_since_' + this.notUsedSince + '_days' : '';
     return labelString + categoryString + stateString + notUsedSinceString;

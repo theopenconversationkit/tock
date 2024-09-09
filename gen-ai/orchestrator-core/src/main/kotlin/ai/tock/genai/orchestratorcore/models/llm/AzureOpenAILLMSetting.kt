@@ -16,8 +16,6 @@
 
 package ai.tock.genai.orchestratorcore.models.llm
 
-import ai.tock.genai.orchestratorcore.models.security.SecretKey
-
 data class AzureOpenAILLMSetting<T>(
     override val apiKey: T,
     override val temperature: String,

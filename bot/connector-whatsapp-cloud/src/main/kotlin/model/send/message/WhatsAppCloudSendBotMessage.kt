@@ -30,9 +30,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(value = WhatsAppCloudSendBotInteractiveMessage::class, name = "interactive"),
         JsonSubTypes.Type(value = WhatsAppCloudSendBotLocationMessage::class, name = "location"),
         JsonSubTypes.Type(value = WhatsAppCloudSendBotTemplateMessage::class, name = "template"),
-        )
+        JsonSubTypes.Type(value = WhatsAppCloudSendBotImageMessage::class, name = "image"),
+    )
 
-abstract class WhatsAppCloudSendBotMessage(val type: WhatsAppCoudBotMessageType) {
+abstract class WhatsAppCloudSendBotMessage(val type: WhatsAppCloudBotMessageType) {
 
     @get:JsonProperty("messaging_product")
     abstract val messagingProduct:String

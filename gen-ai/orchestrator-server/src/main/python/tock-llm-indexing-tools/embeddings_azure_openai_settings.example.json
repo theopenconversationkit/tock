@@ -1,0 +1,10 @@
+{
+    "provider": "AzureOpenAIService",
+    "api_key": {
+        "type": "Raw",
+        "value": "aebb4b**************7b25e3371"
+    },
+    "deployment_name": "my-deploiement-name-model-xxx",
+    "api_base": "https://my-private-endpoint.azure-api.net",
+    "api_version":  "2024-03-01-preview"
+}

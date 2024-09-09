@@ -1,5 +1,3 @@
-import { ActionReport } from '../model/dialog-data';
-
 export const dialogMessageUserIdentities = {
   client: { qualifier: 'Human', avatar: 'assets/images/scenario-client.svg' },
   bot: { qualifier: 'Bot', avatar: 'assets/images/scenario-bot.svg' }

@@ -8,7 +8,7 @@
       (click)="addOrEditIndicator()"
       *ngIf="configurations?.length"
     >
-      <nb-icon icon="plus-outline"></nb-icon>
+      <nb-icon icon="plus-lg"></nb-icon>
       NEW INDICATOR
     </button>
   </section>
@@ -18,18 +18,10 @@
   [class.grid]="isSidePanelOpen.edit"
   class="mt-1"
 >
-  <nb-alert
+  <tock-no-data-found
     *ngIf="configurations?.length === 0"
-    class="alert-config flex-row align-items-center"
-    accent="warning"
-  >
-    <nb-icon
-      class="mr-1"
-      icon="alert-triangle-outline"
-      status="warning"
-    ></nb-icon>
-    No bot configuration detected
-  </nb-alert>
+    title="No bot configuration detected"
+  ></tock-no-data-found>
 
   <div
     class="main"
@@ -88,21 +80,23 @@
                 nbButton
                 ghost
                 shape="round"
+                status="info"
                 nbTooltip="Edit"
                 class="mb-2"
                 (click)="addOrEditIndicator(indicator)"
               >
-                <nb-icon icon="edit-outline"></nb-icon>
+                <nb-icon icon="pencil"></nb-icon>
               </button>
               <button
                 nbButton
                 ghost
                 shape="round"
+                status="danger"
                 nbTooltip="Delete"
                 class="mb-2"
                 (click)="confirmDeleteIndicator(indicator)"
               >
-                <nb-icon icon="trash-2-outline"></nb-icon>
+                <nb-icon icon="trash"></nb-icon>
               </button>
             </div>
           </div>

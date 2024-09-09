@@ -1,0 +1,8 @@
+{
+  "provider": "OpenAI",
+  "api_key": {
+    "type": "Raw",
+    "value": "b5*************7b22b9e7b7f65"
+  },
+  "model": "gpt-4"
+}

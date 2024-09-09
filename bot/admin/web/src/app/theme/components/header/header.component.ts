@@ -42,6 +42,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   namespaces: UserNamespace[];
 
+  currentApplicationName: string;
+
   constructor(
     private sidebarService: NbSidebarService,
     private menuService: NbMenuService,
@@ -68,6 +70,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy)).subscribe((confs) => {
       this.grabNamespaces();
+
+      this.currentApplicationName = '';
+      setTimeout(() => {
+        this.currentApplicationName = this.state?.currentApplication?.name;
+      });
     });
   }
 

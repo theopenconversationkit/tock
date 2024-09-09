@@ -26,7 +26,7 @@ data class WhatsAppCloudBotTextMessage (
         val text: TextContent,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val userId: String? = null,
-) : WhatsAppCloudBotMessage(WhatsAppCoudBotMessageType.text, userId) {
+) : WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.text, userId) {
     override fun toSendBotMessage(recipientId: String): WhatsAppCloudSendBotMessage =
             WhatsAppCloudSendBotTextMessage(
                     messagingProduct,

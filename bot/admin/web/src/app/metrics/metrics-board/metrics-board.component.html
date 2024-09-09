@@ -1,17 +1,9 @@
 <h1>Custom metrics</h1>
 
-<nb-alert
+<tock-no-data-found
   *ngIf="configurations?.length === 0"
-  class="alert-config flex-row align-items-center"
-  accent="warning"
->
-  <nb-icon
-    class="mr-1"
-    icon="alert-triangle-outline"
-    status="warning"
-  ></nb-icon>
-  No bot configuration detected
-</nb-alert>
+  title="No bot configuration detected"
+></tock-no-data-found>
 
 <nb-card
   [nbSpinner]="loading"
@@ -21,7 +13,7 @@
     <nb-form-field>
       <nb-icon
         nbPrefix
-        icon="calendar-outline"
+        icon="calendar-range"
       ></nb-icon>
       <input
         #dateRangeInput
@@ -204,20 +196,28 @@
             class="col-6 text-right"
             *ngIf="indicatorsDimensions.length"
           >
-            <nb-select
+            <nb-form-field
               *ngIf="indicators"
-              nbTooltip="Select a dimension to display"
-              placeholder="Select a dimension"
-              size="small"
-              (selectedChange)="dimensionSelected($event)"
-              [(ngModel)]="currentDimension"
+              class="d-inline-flex"
             >
-              <nb-option
-                *ngFor="let dimension of indicatorsDimensions"
-                [value]="dimension"
-                >{{ dimension }}</nb-option
+              <nb-icon
+                nbPrefix
+                icon="sign-merge-left"
+              ></nb-icon>
+              <nb-select
+                nbTooltip="Select an indicators dimension to display"
+                placeholder="Select a dimension"
+                size="small"
+                (selectedChange)="dimensionSelected($event)"
+                [(ngModel)]="currentDimension"
               >
-            </nb-select>
+                <nb-option
+                  *ngFor="let dimension of indicatorsDimensions"
+                  [value]="dimension"
+                  >{{ dimension }}</nb-option
+                >
+              </nb-select>
+            </nb-form-field>
           </div>
         </div>
 
@@ -275,7 +275,7 @@
         nbTooltip="Cancel"
         (click)="closeHelpModal()"
       >
-        <nb-icon icon="close-outline"></nb-icon>
+        <nb-icon icon="x-lg"></nb-icon>
       </button>
     </nb-card-header>
     <nb-card-body>

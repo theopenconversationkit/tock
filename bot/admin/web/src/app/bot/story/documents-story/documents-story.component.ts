@@ -8,6 +8,7 @@ import { MediaDialogComponent } from '../media/media-dialog.component';
 import { DialogService } from 'src/app/core-nlp/dialog.service';
 import { AttachmentType } from '../../../core/model/configuration';
 import { FormControl, FormGroup } from '@angular/forms';
+import { getStoryIcon } from '../../../shared/utils';
 
 interface DocumentsFilterForm {
   searchString: FormControl<string>;
@@ -59,6 +60,8 @@ export class DocumentsStoryComponent implements OnInit, OnDestroy {
       type: 'link'
     }
   ];
+
+  getStoryIcon = getStoryIcon;
 
   constructor(public state: StateService, private bot: BotService, public rest: RestService, private dialog: DialogService) {}
 
@@ -222,18 +225,6 @@ export class DocumentsStoryComponent implements OnInit, OnDestroy {
     this.bot.saveStory(this.selectedStory).subscribe((res) => {
       this.load();
     });
-  }
-
-  getStoryIcon(story: StoryDefinitionConfiguration): string {
-    if (story.isBuiltIn()) {
-      return 'cube';
-    }
-    if (story.isSimpleAnswer()) {
-      return 'message-square-outline';
-    }
-    if (story.isScriptAnswer()) {
-      return 'code';
-    }
   }
 
   getStoryType(story: StoryDefinitionConfiguration): string {

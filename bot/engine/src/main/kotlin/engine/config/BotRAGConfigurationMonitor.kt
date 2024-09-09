@@ -55,6 +55,10 @@ internal object BotRAGConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         logger.debug { "Refreshing bot RAG configuration ${bot.botDefinition.botId} (${bot.configuration.applicationId}-${bot.configuration._id})..." }
-        bot.botDefinition.ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
+        bot.botDefinition.ragConfiguration = ragConfigurationDAO.findByNamespaceAndBotIdAndEnabled(
+            bot.botDefinition.namespace,
+            bot.botDefinition.botId,
+            enabled = true
+        )
     }
 }

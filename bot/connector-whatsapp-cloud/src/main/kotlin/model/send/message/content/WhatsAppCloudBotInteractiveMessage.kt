@@ -25,7 +25,7 @@ data class WhatsAppCloudBotInteractiveMessage (
         val interactive: WhatsAppCloudBotInteractive,
         override val recipientType: WhatsAppCloudBotRecipientType,
         override val userId: String? = null,
-): WhatsAppCloudBotMessage(WhatsAppCoudBotMessageType.interactive, userId) {
+): WhatsAppCloudBotMessage(WhatsAppCloudBotMessageType.interactive, userId) {
     override fun toGenericMessage(): GenericMessage? {
         val texts = mapOf(GenericMessage.TEXT_PARAM to (interactive.body?.text ?: ""))
         return GenericMessage(

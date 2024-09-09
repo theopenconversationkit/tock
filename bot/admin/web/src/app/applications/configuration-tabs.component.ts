@@ -26,35 +26,7 @@ import { ApplicationsResolver } from './applications.resolver';
   styleUrls: ['./configuration-tabs.component.css', './tabs.component.scss']
 })
 export class ConfigurationTabsComponent implements OnInit {
-  tabs = [
-    {
-      title: 'Applications',
-      route: 'nlu',
-      icon: 'browser-outline',
-      resolve: {
-        applications: ApplicationsResolver
-      }
-    },
-    {
-      title: 'Namespaces',
-      route: 'namespaces',
-      icon: 'folder-outline'
-    },
-    {
-      title: 'Log',
-      route: 'users/logs',
-      icon: 'eye-outline'
-    }
-  ];
-
-  configurationTabLinks;
-
-  constructor(private router: Router, private state: StateService) {
-    if (!state.hasRole(UserRole.technicalAdmin)) {
-      this.tabs = this.tabs.filter((t) => t.route !== 'users/logs');
-    }
-    this.configurationTabLinks = this.tabs;
-  }
+  constructor(private router: Router) {}
 
   ngOnInit() {
     if (this.router.routerState.snapshot.url.endsWith('/configuration')) {

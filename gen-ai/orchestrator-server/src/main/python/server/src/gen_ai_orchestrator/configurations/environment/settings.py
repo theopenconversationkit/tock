@@ -26,6 +26,7 @@ from path import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from gen_ai_orchestrator.models.security.proxy_server_type import ProxyServerType
+from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
 from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
 from gen_ai_orchestrator.utils.strings import obfuscate
 
@@ -73,6 +74,11 @@ class _Settings(BaseSettings):
     llm_provider_max_retries: int = 0
     em_provider_timeout: int = 4
 
+    """Request timeout: set the maximum time (in seconds) for the request to be completed."""
+    vector_store_timeout: int = 4
+    vector_store_provider: Optional[VectorStoreProvider] = VectorStoreProvider.OPEN_SEARCH.value
+
+    """OpenSearch Vector Store Setting"""
     open_search_host: str = 'localhost'
     open_search_port: str = '9200'
     open_search_aws_secret_manager_name: Optional[str] = None
@@ -99,10 +105,14 @@ class _Settings(BaseSettings):
 
 application_settings = _Settings()
 is_prod_environment = _Environment.PROD == application_settings.application_environment
-open_search_username, open_search_password = fetch_open_search_credentials()
 
-logger.info(
-    'OpenSearch user credentials: %s:%s',
-    open_search_username,
-    obfuscate(open_search_password),
-)
+if VectorStoreProvider.OPEN_SEARCH == application_settings.vector_store_provider:
+    open_search_username, open_search_password = fetch_open_search_credentials()
+
+    logger.info(
+        'OpenSearch user credentials: %s:%s',
+        open_search_username,
+        obfuscate(open_search_password),
+    )
+else:
+    open_search_username, open_search_password = None, None

@@ -22,15 +22,15 @@
     <nb-icon
       [nbTooltip]="message"
       [icon]="icon"
-      (mouseenter)="icon = 'info-outline'"
-      (mouseleave)="icon = 'info'"
+      (mouseenter)="icon = 'info-circle-fill'"
+      (mouseleave)="icon = 'info-circle'"
       status="info"
     ></nb-icon>
   </a>
   <nb-icon
     *ngIf="!url || url.length < 1"
     [nbTooltip]="message"
-    icon="info"
     status="info"
+    icon="info-circle"
   ></nb-icon>
 </span>

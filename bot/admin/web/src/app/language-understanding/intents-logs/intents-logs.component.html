@@ -16,7 +16,7 @@
 
 <div class="d-flex flex-wrap">
   <h1 class="flex-grow-1">
-    Logs
+    Sentences logs
     <span
       *ngIf="pagination.total"
       class="font-weight-normal"
@@ -33,7 +33,7 @@
       (click)="loadData()"
       class="ml-2"
     >
-      <nb-icon icon="refresh-outline"></nb-icon>
+      <nb-icon icon="arrow-clockwise"></nb-icon>
     </button>
 
     <button
@@ -44,7 +44,7 @@
       (click)="downloadDump()"
       *ngIf="pagination.total"
     >
-      <nb-icon icon="download-outline"></nb-icon>
+      <nb-icon icon="download"></nb-icon>
     </button>
   </section>
 </div>
@@ -66,7 +66,7 @@
           <nb-form-field class="flex-grow-1">
             <nb-icon
               nbPrefix
-              icon="search-outline"
+              icon="search"
             ></nb-icon>
             <input
               nbInput
@@ -85,7 +85,7 @@
               (click)="resetSearch()"
               *ngIf="searchString.value?.trim().length"
             >
-              <nb-icon icon="close-outline"></nb-icon>
+              <nb-icon icon="x-lg"></nb-icon>
             </button>
           </nb-form-field>
 
@@ -130,9 +130,9 @@
           <h4 *ngIf="d.error">
             {{ d.textRequest() }}
             <nb-icon
-              icon="alert-triangle-outline"
               nbTooltip="error"
               class="text-danger"
+              icon="exclamation-triangle"
             ></nb-icon>
           </h4>
           <tock-sentence-training-sentence
@@ -162,17 +162,17 @@
               (click)="displayFullLog(d)"
               nbTooltip="View Full Log"
             >
-              <nb-icon icon="eye-outline"></nb-icon>
+              <nb-icon icon="eye"></nb-icon>
             </button>
 
             <button
               nbButton
               ghost
-              nbTooltip="Create a story based on this sentence"
+              nbTooltip="Create a faq based on this sentence"
               *ngIf="isRootSentence(d.sentence) && config.answerToSentenceUrl"
-              (click)="answerToSentence(d.sentence)"
+              (click)="redirectToFaqManagement(d.sentence)"
             >
-              <nb-icon icon="message-square-outline"></nb-icon>
+              <nb-icon icon="chat-left-text"></nb-icon>
             </button>
 
             <button
@@ -181,16 +181,16 @@
               nbTooltip="Copy sentence"
               (click)="copySentence(d.sentence)"
             >
-              <nb-icon icon="copy-outline"></nb-icon>
+              <nb-icon icon="copy"></nb-icon>
             </button>
 
             <button
               nbButton
               ghost
-              nbTooltip="Show conversation"
+              nbTooltip="Show dialog"
               (click)="showDetails(d.sentence)"
             >
-              <nb-icon icon="message-circle-outline"></nb-icon>
+              <nb-icon icon="chat-dots"></nb-icon>
             </button>
           </div>
         </nb-card-body>

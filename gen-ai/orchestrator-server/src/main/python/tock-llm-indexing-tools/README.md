@@ -49,7 +49,7 @@ Turns a Smart Tribune CSV export file into a ready-to-index CSV file (one 'title
 
 
 | Title      | URL                | Text                  |
-| ------------ | -------------------- | ----------------------- |
+|------------|--------------------|-----------------------|
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
 
@@ -84,7 +84,7 @@ Import data from smart tribune API and return a ready-to-index CSV file (one 'ti
 
 
 | Title      | URL                | Text                  |
-| ------------ | -------------------- | ----------------------- |
+|------------|--------------------|-----------------------|
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
 
@@ -115,7 +115,7 @@ Recursively browse web URLs (follow links from these base URLs), then scrape lin
 
 
 | Title      | URL                | Text                  |
-| ------------ | -------------------- | ----------------------- |
+|------------|--------------------|-----------------------|
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
 
@@ -145,13 +145,13 @@ Options:
 
 Index a ready-to-index CSV file contents into an OpenSearch vector database.
 
-CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to chunks_size, and embedded using configuration described in embeddings_cfg (it uses the embeddings constructor from the orchestrator module, so JSON file shall follow corresponding format).
+CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to chunks_size, and embedded using configuration described in embeddings_cfg (it uses the embeddings constructor from the orchestrator module, so JSON file shall follow corresponding format - See [Embedding Settings](../server/src/gen_ai_orchestrator/models/em/em_types.py)).
 
 Documents will be indexed in OpenSearch DB under index_name index (index_name shall follow OpenSearch naming restrictions) with the following metadata:
 
 
 | Metadata tag     | Description                                                      |
-| ------------------ | ------------------------------------------------------------------ |
+|------------------|------------------------------------------------------------------|
 | index_session_id | a uuid for the indexing session (running this script)            |
 | index_datetime   | the date of the indexing session                                 |
 | id               | a uuid for each document (one per line in the input file)        |
@@ -160,6 +160,20 @@ Documents will be indexed in OpenSearch DB under index_name index (index_name sh
 | url              | the 'url' column from original input CSV                         |
 
 A unique indexing session id is produced and printed to the console (will be the last line printed if the '-v' option is used).
+
+## OpenSearch Configuration
+
+To configure the OpenSearch vector store, you can use the following environment variables:
+
+| Variables                                                    | Description                                                                         | Default     |
+|--------------------------------------------------------------|-------------------------------------------------------------------------------------|-------------|
+| tock_gen_ai_orchestrator_open_search_host                    | The OpenSearch host                                                                 | 'localhost' |
+| tock_gen_ai_orchestrator_open_search_port                    | The OpenSearch port                                                                 | '9200'      |
+| tock_gen_ai_orchestrator_open_search_aws_secret_manager_name | The optional AWS secret name that store the OpenSearch user credentials             | None        |
+| chtock_gen_ai_orchestrator_open_search_user                  | The OpenSearch user (Raw value)                                                     | 'admin'     |
+| tock_gen_ai_orchestrator_open_search_pwd                     | The OpenSearch password (Raw value)                                                 | 'admin'     |
+| tock_gen_ai_orchestrator_open_search_timeout                 | Request timeout: set the maximum time (in seconds) for the request to be completed. | '4'         |
+
 
 ## Testing RAG settings on dataset
 

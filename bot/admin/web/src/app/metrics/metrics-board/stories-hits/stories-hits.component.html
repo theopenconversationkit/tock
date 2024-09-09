@@ -8,7 +8,7 @@
       nbTooltip="Cancel"
       (click)="cancel()"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
 
@@ -19,13 +19,16 @@
         (click)="sortBy(SortingCriteria.name)"
       >
         Story name
+
         <nb-icon
-          icon="chevron-down-outline"
           *ngIf="sortCriteria === SortingCriteria.name && sortDirection"
+          icon="chevron-down-outline"
+          pack="nebular-essentials"
         ></nb-icon>
         <nb-icon
-          icon="chevron-up-outline"
           *ngIf="sortCriteria === SortingCriteria.name && !sortDirection"
+          icon="chevron-up-outline"
+          pack="nebular-essentials"
         ></nb-icon>
       </div>
 
@@ -35,12 +38,14 @@
       >
         Hits
         <nb-icon
-          icon="chevron-down-outline"
           *ngIf="sortCriteria === SortingCriteria.count && sortDirection"
+          icon="chevron-down-outline"
+          pack="nebular-essentials"
         ></nb-icon>
         <nb-icon
-          icon="chevron-up-outline"
           *ngIf="sortCriteria === SortingCriteria.count && !sortDirection"
+          icon="chevron-up-outline"
+          pack="nebular-essentials"
         ></nb-icon>
       </div>
     </div>

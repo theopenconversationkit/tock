@@ -12,7 +12,7 @@
       nbTooltip="Close"
       (click)="cancel()"
     >
-      <nb-icon icon="close-outline"></nb-icon>
+      <nb-icon icon="x-lg"></nb-icon>
     </button>
   </nb-card-header>
 
@@ -27,20 +27,26 @@
             [showError]="isSubmitted"
             [required]="true"
           >
-            <input
-              nbInput
-              id="mainStory"
-              fullWidth
-              type="text"
-              placeholder="Story"
-              [value]="getCurrentStoryLabel(mainOrTarget.mainStory)"
-              autocomplete="off"
-              [nbAutocomplete]="storyAutocomplete"
-              (input)="filterStoriesList($any($event.target).value)"
-              (change)="onStoryChange(mainOrTarget.mainStory, $any($event.target).value)"
-              (focus)="storyInputFocus()"
-              (blur)="storyInputBlur(mainOrTarget.mainStory, $event)"
-            />
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="chat-left"
+              ></nb-icon>
+              <input
+                nbInput
+                id="mainStory"
+                fullWidth
+                type="text"
+                placeholder="Story"
+                [value]="getCurrentStoryLabel(mainOrTarget.mainStory)"
+                autocomplete="off"
+                [nbAutocomplete]="storyAutocomplete"
+                (input)="filterStoriesList($any($event.target).value)"
+                (change)="onStoryChange(mainOrTarget.mainStory, $any($event.target).value)"
+                (focus)="storyInputFocus()"
+                (blur)="storyInputBlur(mainOrTarget.mainStory, $event)"
+              />
+            </nb-form-field>
 
             <nb-autocomplete
               #storyAutocomplete
@@ -71,20 +77,26 @@
             [showError]="isSubmitted"
             [required]="true"
           >
-            <input
-              nbInput
-              id="targetStory"
-              fullWidth
-              type="text"
-              placeholder="{{ type }} story"
-              [value]="getCurrentStoryLabel(mainOrTarget.targetStory)"
-              autocomplete="off"
-              [nbAutocomplete]="targetAutocomplete"
-              (input)="filterStoriesList($any($event.target).value)"
-              (change)="onStoryChange(mainOrTarget.targetStory, $any($event.target).value)"
-              (focus)="storyInputFocus()"
-              (blur)="storyInputBlur(mainOrTarget.targetStory, $event)"
-            />
+            <nb-form-field>
+              <nb-icon
+                nbPrefix
+                icon="chat-left"
+              ></nb-icon>
+              <input
+                nbInput
+                id="targetStory"
+                fullWidth
+                type="text"
+                placeholder="{{ type }} story"
+                [value]="getCurrentStoryLabel(mainOrTarget.targetStory)"
+                autocomplete="off"
+                [nbAutocomplete]="targetAutocomplete"
+                (input)="filterStoriesList($any($event.target).value)"
+                (change)="onStoryChange(mainOrTarget.targetStory, $any($event.target).value)"
+                (focus)="storyInputFocus()"
+                (blur)="storyInputBlur(mainOrTarget.targetStory, $event)"
+              />
+            </nb-form-field>
 
             <nb-autocomplete
               #targetAutocomplete
@@ -136,6 +148,7 @@
       type="button"
       (click)="cancel()"
     >
+      <nb-icon icon="x-lg"></nb-icon>
       Cancel
     </button>
     <button
@@ -145,6 +158,7 @@
       size="small"
       (click)="save()"
     >
+      <nb-icon icon="plus"></nb-icon>
       Create rule
     </button>
   </nb-card-footer>

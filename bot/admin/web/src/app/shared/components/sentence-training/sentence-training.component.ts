@@ -37,6 +37,7 @@ import { saveAs } from 'file-saver-es';
 import { SentenceTrainingService } from './sentence-training.service';
 import { getSentenceId } from './commons/utils';
 import { DOCUMENT } from '@angular/common';
+import { getExportFileName } from '../../utils';
 
 export type SentenceExtended = Sentence & { _showDialog?: boolean; _showStatsDetails?: boolean; _intentBeforeClassification?: string };
 
@@ -415,7 +416,13 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
         this.state.hasRole(UserRole.technicalAdmin)
       )
       .subscribe((blob) => {
-        saveAs(blob, this.state.currentApplication.name + '_sentences.json');
+        const exportFileName = getExportFileName(
+          this.state.currentApplication.namespace,
+          this.state.currentApplication.name,
+          'sentences',
+          'json'
+        );
+        saveAs(blob, exportFileName);
         this.toastrService.success('Dump provided', 'Sentences dump');
       });
   }
@@ -430,7 +437,7 @@ export class SentenceTrainingComponent implements OnInit, OnDestroy {
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `No sentence selected`,
-          subtitle: `You haven't selected any sentences. 
+          subtitle: `You haven't selected any sentences.
 Would you like to change the intent of all the sentences matching the search criteria above?`,
           actions: [
             { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
@@ -472,13 +479,13 @@ Would you like to change the intent of all the sentences matching the search cri
   }
 
   changeSentencesEntity(entities: { old: EntityDefinition; new: EntityDefinition }, changeAll?: boolean): void {
-    console.log(entities);
+    //console.log(entities);
     if (!this.selection.selected.length && !changeAll) {
       const action = 'Change intent of all results';
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `No sentence selected`,
-          subtitle: `You haven't selected any sentences. 
+          subtitle: `You haven't selected any sentences.
 Would you like to change the entity of all the sentences matching the search criteria above?`,
           actions: [
             { actionName: 'cancel', buttonStatus: 'basic', ghost: true },
@@ -527,7 +534,7 @@ Would you like to change the entity of all the sentences matching the search cri
       const dialogRef = this.nbDialogService.open(ChoiceDialogComponent, {
         context: {
           title: `No sentence selected`,
-          subtitle: `You haven't selected any sentences to translate. 
+          subtitle: `You haven't selected any sentences to translate.
 Would you like to translate all the sentences matching the search criteria above?`,
           actions: [
             { actionName: 'cancel', buttonStatus: 'basic', ghost: true },

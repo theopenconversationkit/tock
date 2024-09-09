@@ -1,5 +1,3 @@
-<div class="mt-3"></div>
-
 <tock-sticky-menu [offset]="50">
   <div class="d-flex flex-wrap">
     <h1 class="flex-grow-1">Observability settings</h1>
@@ -13,7 +11,7 @@
         nbTooltip="Cancel modifications"
         (click)="cancel()"
       >
-        <nb-icon icon="close-circle-outline"></nb-icon>
+        <nb-icon icon="x-circle"></nb-icon>
         CANCEL
       </button>
       <button
@@ -23,25 +21,17 @@
         nbTooltip="Save settings"
         (click)="submit()"
       >
-        <nb-icon icon="save-outline"></nb-icon>
+        <nb-icon icon="floppy"></nb-icon>
         SAVE
       </button>
     </section>
   </div>
 </tock-sticky-menu>
 
-<nb-alert
-  *ngIf="configurations?.length < 1"
-  class="alert-config flex-row align-items-center"
-  accent="warning"
->
-  <nb-icon
-    class="mr-1"
-    icon="alert-triangle-outline"
-    status="warning"
-  ></nb-icon>
-  No bot configuration detected
-</nb-alert>
+<tock-no-data-found
+  *ngIf="configurations?.length === 0"
+  title="No bot configuration detected"
+></tock-no-data-found>
 
 <form
   [formGroup]="form"
