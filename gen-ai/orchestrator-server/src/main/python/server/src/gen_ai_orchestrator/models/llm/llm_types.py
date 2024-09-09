@@ -27,8 +27,11 @@ from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.llm.vertexai.vertexai_llm_setting import (
+    VertexAILLMSetting,
+)
 
 LLMSetting = Annotated[
-    Union[OpenAILLMSetting, AzureOpenAILLMSetting, FakeLLMSetting],
+    Union[OpenAILLMSetting, AzureOpenAILLMSetting, VertexAILLMSetting, FakeLLMSetting],
     Body(discriminator='provider'),
 ]

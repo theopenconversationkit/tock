@@ -39,14 +39,21 @@ from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
-from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
+from gen_ai_orchestrator.models.em.openai.openai_em_setting import (
+    OpenAIEMSetting,
+)
 from gen_ai_orchestrator.models.llm.azureopenai.azure_openai_llm_setting import (
     AzureOpenAILLMSetting,
 )
-from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import FakeLLMSetting
+from gen_ai_orchestrator.models.llm.fake_llm.fake_llm_setting import (
+    FakeLLMSetting,
+)
 from gen_ai_orchestrator.models.llm.llm_setting import BaseLLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
+)
+from gen_ai_orchestrator.models.llm.vertexai.vertexai_llm_setting import (
+    VertexAILLMSetting,
 )
 from gen_ai_orchestrator.models.observability.langfuse.langfuse_setting import LangfuseObservabilitySetting
 from gen_ai_orchestrator.models.observability.observability_setting import BaseObservabilitySetting
@@ -72,12 +79,17 @@ from gen_ai_orchestrator.services.langchain.factories.em.openai_em_factory impor
 from gen_ai_orchestrator.services.langchain.factories.llm.azure_openai_llm_factory import (
     AzureOpenAILLMFactory,
 )
-from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import FakeLLMFactory
+from gen_ai_orchestrator.services.langchain.factories.llm.fake_llm_factory import (
+    FakeLLMFactory,
+)
 from gen_ai_orchestrator.services.langchain.factories.llm.llm_factory import (
     LangChainLLMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.llm.openai_llm_factory import (
     OpenAILLMFactory,
+)
+from gen_ai_orchestrator.services.langchain.factories.llm.vertexai_llm_factory import (
+    VertexAILLMFactory,
 )
 from gen_ai_orchestrator.services.langchain.factories.vector_stores.open_search_factory import (
     OpenSearchFactory,
@@ -106,6 +118,9 @@ def get_llm_factory(setting: BaseLLMSetting) -> LangChainLLMFactory:
     elif isinstance(setting, AzureOpenAILLMSetting):
         logger.debug('LLM Factory - AzureOpenAILLMFactory')
         return AzureOpenAILLMFactory(setting=setting)
+    elif isinstance(setting, VertexAILLMSetting):
+        logger.debug('LLM Factory - VertexAILLMFactory')
+        return VertexAILLMFactory(setting=setting)
     elif isinstance(setting, FakeLLMSetting):
         logger.debug('LLM Factory - FakeLLMFactory')
         return FakeLLMFactory(setting=setting)
@@ -174,7 +189,9 @@ def get_vector_store_factory(
         raise GenAIUnknownVectorStoreProviderSettingException()
 
 
-def get_callback_handler_factory(setting: BaseObservabilitySetting) -> LangChainCallbackHandlerFactory:
+def get_callback_handler_factory(
+    setting: BaseObservabilitySetting,
+) -> LangChainCallbackHandlerFactory:
     """
     Creates a Langchain Callback Handler Factory according to the given setting
     Args:
@@ -193,8 +210,9 @@ def get_callback_handler_factory(setting: BaseObservabilitySetting) -> LangChain
 
 
 def create_observability_callback_handler(
-        observability_setting: Optional[ObservabilitySetting],
-        trace_name: ObservabilityTrace) -> Optional[LangfuseCallbackHandler]:
+    observability_setting: Optional[ObservabilitySetting],
+    trace_name: ObservabilityTrace,
+) -> Optional[LangfuseCallbackHandler]:
     """
     Create the Observability Callback Handler
 
@@ -206,7 +224,8 @@ def create_observability_callback_handler(
         The Observability Callback Handler
     """
     if observability_setting is not None:
-        return get_callback_handler_factory(setting=observability_setting).get_callback_handler(
-            trace_name=trace_name.value)
+        return get_callback_handler_factory(
+            setting=observability_setting
+        ).get_callback_handler(trace_name=trace_name.value)
 
     return None

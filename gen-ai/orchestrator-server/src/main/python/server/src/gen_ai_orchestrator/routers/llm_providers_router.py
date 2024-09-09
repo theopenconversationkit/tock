@@ -38,6 +38,9 @@ from gen_ai_orchestrator.models.llm.llm_types import LLMSetting
 from gen_ai_orchestrator.models.llm.openai.openai_llm_setting import (
     OpenAILLMSetting,
 )
+from gen_ai_orchestrator.models.llm.vertexai.vertexai_llm_setting import (
+    VertexAILLMSetting,
+)
 from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import (
     RawSecretKey,
 )
@@ -126,6 +129,16 @@ async def get_llm_provider_setting_by_id(
             deployment_name='my-deployment-name',
             api_base='https://doc.tock.ai/tock',
             api_version='2023-05-15',
+            temperature=0.7,
+            prompt='How to learn to ride a bike without wheels!',
+        )
+    elif provider_id == LLMProvider.VERTEX_AI:
+        return VertexAILLMSetting(
+            provider=LLMProvider.VERTEX_AI,
+            api_key=RawSecretKey(value='useless'),
+            model='gemini-1.5-pro-001',
+            project_id='my-project-id',
+            location='europe-west-4',
             temperature=0.7,
             prompt='How to learn to ride a bike without wheels!',
         )
