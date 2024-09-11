@@ -56,15 +56,16 @@ data class BotRAGConfigurationDTO(
             botId,
             enabled,
             LLMSettingMapper.toEntity(
-                llmSetting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_RAG_QUESTION_ANSWERING
-                )
+                namespace,
+                botId,
+                Constants.GEN_AI_RAG_QUESTION_ANSWERING,
+                llmSetting
             ),
             EMSettingMapper.toEntity(
-                emSetting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_RAG_EMBEDDING_QUESTION)
+                namespace,
+                botId,
+                Constants.GEN_AI_RAG_EMBEDDING_QUESTION,
+                emSetting
             ),
             indexSessionId = indexSessionId,
             noAnswerSentence = noAnswerSentence,

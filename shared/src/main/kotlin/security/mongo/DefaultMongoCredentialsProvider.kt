@@ -16,13 +16,41 @@
 
 package ai.tock.shared.security.mongo
 
+import ai.tock.shared.injector
+import ai.tock.shared.property
+import ai.tock.shared.propertyOrNull
+import ai.tock.shared.provide
+import ai.tock.shared.security.SecretManagerService
 import com.mongodb.MongoCredential
+
+// The expected values correspond to the names of the SecretManagerProviderType elements
+val databaseMongoDbSecretManagerProvider: String? = propertyOrNull(
+    name = "tock_database_mongodb_secret_manager_provider"
+)
+val databaseMongoDbCredentialsSecretName: String = property(
+    name = "tock_database_mongodb_credentials_secret_name",
+    defaultValue = "database_mongodb_credentials",
+)
+const val defaultDatabase = "admin"
 
 /**
  * Default Mongo credential provider with no authentication
  */
 internal object DefaultMongoCredentialsProvider : MongoCredentialsProvider {
-    override fun getCredentials(): MongoCredential? {
-        return null
+    /**
+     * The Secrets Manager Service
+     */
+    private val secretMangerService: SecretManagerService by lazy {
+        injector.provide(tag = databaseMongoDbSecretManagerProvider)
     }
+
+    override fun getCredentials(): MongoCredential? =
+        if (databaseMongoDbSecretManagerProvider != null) {
+            val credentials = secretMangerService.getCredentials(databaseMongoDbCredentialsSecretName)
+            MongoCredential.createCredential(
+                credentials.username,
+                defaultDatabase,
+                credentials.password.toCharArray()
+            )
+        } else null
 }

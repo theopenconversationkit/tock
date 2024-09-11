@@ -90,9 +90,11 @@ object ObservabilityService {
         val observabilityConfig = observabilityConfiguration.toBotObservabilityConfiguration()
 
         // Check validity of the observability configuration
-        ObservabilityValidationService.validate(observabilityConfig).let { errors ->
-            if (errors.isNotEmpty()) {
-                throw BadRequestException(errors)
+        if(observabilityConfig.enabled) {
+            ObservabilityValidationService.validate(observabilityConfig).let { errors ->
+                if (errors.isNotEmpty()) {
+                    throw BadRequestException(errors)
+                }
             }
         }
 

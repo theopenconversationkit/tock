@@ -80,9 +80,11 @@ object SentenceGenerationService {
         val sentenceGenerationConfig = sentenceGenerationConfiguration.toSentenceGenerationConfiguration()
 
         // Check validity of the configuration
-        SentenceGenerationValidationService.validate(sentenceGenerationConfig).let { errors ->
-            if(errors.isNotEmpty()) {
-                throw BadRequestException(errors)
+        if(sentenceGenerationConfig.enabled) {
+            SentenceGenerationValidationService.validate(sentenceGenerationConfig).let { errors ->
+                if (errors.isNotEmpty()) {
+                    throw BadRequestException(errors)
+                }
             }
         }
 

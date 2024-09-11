@@ -35,9 +35,17 @@
             <groupId>ai.tock</groupId>
             <artifactId>tock-aws-tools</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-gcp-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-env-tools</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit5</artifactId>

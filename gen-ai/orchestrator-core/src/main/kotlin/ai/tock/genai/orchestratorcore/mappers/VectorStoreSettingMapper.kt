@@ -45,15 +45,17 @@ object VectorStoreSettingMapper {
 
     /**
      * Convert the VectorStore setting DTO to an Entity
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param dto the [VectorStoreSettingDTO]
-     * @param secretName the secret name
      * @return [VectorStoreSetting]
      */
-    fun toEntity(dto: VectorStoreSettingDTO, secretName: String): VectorStoreSetting =
+    fun toEntity(namespace: String, botId: String, feature: String, dto: VectorStoreSettingDTO): VectorStoreSetting =
         with(dto){
             when(this){
                 is OpenSearchVectorStoreSetting -> {
-                    val secretPassword = SecurityUtils.getSecretKey(password, secretName)
+                    val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password)
                     return OpenSearchVectorStoreSetting(k, vectorSize, host, port, username, secretPassword)
                 }
                 else ->

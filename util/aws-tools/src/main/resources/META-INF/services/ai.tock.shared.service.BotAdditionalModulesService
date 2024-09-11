@@ -14,4 +14,4 @@
 # limitations under the License.
 #
 
-ai.tock.aws.service.IOCModulesService
+ai.tock.aws.IOCModulesService

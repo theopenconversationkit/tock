@@ -17,6 +17,7 @@
 package ai.tock.bot.admin.model
 
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
+import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.mappers.VectorStoreSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSettingDTO
@@ -46,11 +47,11 @@ data class BotVectorStoreConfigurationDTO(
             botId,
             enabled,
             VectorStoreSettingMapper.toEntity(
-                setting,
-                SecurityUtils.generateAwsSecretName(
-                    namespace, botId, Constants.GEN_AI_VECTOR_STORE
-                )
-            ),
+                namespace,
+                botId,
+                Constants.GEN_AI_VECTOR_STORE,
+                setting
+            )
         )
 }
 

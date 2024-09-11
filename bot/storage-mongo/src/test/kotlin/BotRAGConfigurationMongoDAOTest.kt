@@ -19,7 +19,7 @@ package ai.tock.bot.mongo
 import ai.tock.bot.admin.bot.rag.BotRAGConfiguration
 import ai.tock.genai.orchestratorcore.models.em.OpenAIEMSetting
 import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
-import ai.tock.genai.orchestratorcore.models.security.RawSecretKey
+import ai.tock.shared.security.key.RawSecretKey
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.newId

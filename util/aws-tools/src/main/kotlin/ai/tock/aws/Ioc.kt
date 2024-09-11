@@ -16,19 +16,20 @@
 
 package ai.tock.aws
 
-import ai.tock.aws.secretmanager.dao.SecretAWSDAO
-import ai.tock.aws.secretmanager.dao.SecretDAO
-import ai.tock.aws.secretmanager.provider.AWSSecretsManagerService
-import ai.tock.aws.secretmanager.provider.AWSSecretsManagerServiceImpl
-import ai.tock.aws.secretmanager.provider.IAdvizeCredentialsAWSProvider
-import ai.tock.shared.security.credentials.CredentialsProvider
-import com.github.salomonbrys.kodein.Kodein
+import ai.tock.aws.secretmanager.AwsSecretManagerService
+import ai.tock.shared.security.SecretManagerService
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.service.BotAdditionalModulesService
+import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.singleton
 
+class IOCModulesService : BotAdditionalModulesService {
+    override fun customModules(): Set<Module> = setOf(awsModules)
+}
 
-val awsToolsModule = Kodein.Module {
-    bind<SecretDAO>() with singleton { SecretAWSDAO() }
-    bind<CredentialsProvider>(overrides = true) with singleton { IAdvizeCredentialsAWSProvider() }
-    bind<AWSSecretsManagerService>() with singleton { AWSSecretsManagerServiceImpl() }
+val awsModules = Module {
+    bind<SecretManagerService>(tag = SecretManagerProviderType.AWS_SECRETS_MANAGER.name) with singleton {
+        AwsSecretManagerService()
+    }
 }
