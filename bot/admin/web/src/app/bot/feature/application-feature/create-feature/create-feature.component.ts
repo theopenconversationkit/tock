@@ -8,6 +8,7 @@ interface CreateFeatureForm {
   enabled: FormControl<boolean>;
   startDate: FormControl<Date>;
   endDate: FormControl<Date>;
+  graduation: FormControl<number>;
 }
 
 @Component({
@@ -42,7 +43,8 @@ export class CreateFeatureComponent implements OnInit {
     category: new FormControl(''),
     enabled: new FormControl(true),
     startDate: new FormControl(undefined),
-    endDate: new FormControl(undefined)
+    endDate: new FormControl(undefined),
+    graduation: new FormControl(undefined)
   });
 
   get name(): FormControl {
@@ -63,6 +65,10 @@ export class CreateFeatureComponent implements OnInit {
 
   get endDate(): FormControl {
     return this.form.get('endDate') as FormControl;
+  }
+
+  get graduation(): FormControl {
+    return this.form.get('graduation') as FormControl;
   }
 
   get canSave(): boolean {

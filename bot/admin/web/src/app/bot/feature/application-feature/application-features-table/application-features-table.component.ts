@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Feature } from '../../../model/feature';
 import { BotService } from '../../../bot-service';
 import { BotConfigurationService } from '../../../../core/bot-configuration.service';
@@ -78,11 +78,21 @@ export class ApplicationFeaturesTableComponent {
     this.update(feature);
   }
 
+  changeGraduation(feature: Feature, event: FocusEvent): void {
+    const graduation = (event.target as HTMLInputElement).value;
+    if(graduation === '')
+      feature.graduation = undefined
+    else
+      feature.graduation = Number(graduation);
+    this.update(feature);
+  }
+
   toggle(feature: Feature, newState): void {
     feature.enabled = newState;
     if (!newState) {
       feature.startDate = null;
       feature.endDate = null;
+      feature.graduation = null;
     }
     this.botService.toggleFeature(this.state.currentApplication.name, feature).subscribe();
   }

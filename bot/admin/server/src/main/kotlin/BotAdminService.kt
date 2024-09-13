@@ -458,7 +458,7 @@ object BotAdminService {
         return storyToImport.copy(_id = existingStory1?._id ?: existingStory2?._id ?: storyToImport._id)
     }
 
-    private fun saveSentences(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration, controller: BotAdminService.BotStoryDefinitionConfigurationDumpController) {
+    private fun saveSentences(botConf: BotApplicationConfiguration, storyToImport: StoryDefinitionConfiguration, controller: BotStoryDefinitionConfigurationDumpController) {
         val mainIntent = createOrGetIntent(
             botConf.namespace,
             storyToImport.intent.name,
@@ -1028,7 +1028,7 @@ object BotAdminService {
     }
 
     fun getFeatures(botId: String, namespace: String): List<FeatureState> {
-        return featureDAO.getFeatures(botId, namespace)
+        return featureDAO.getFeatures(botId, namespace).sortedBy { it.category + it.name }
     }
 
     fun toggleFeature(botId: String, namespace: String, feature: Feature) {
@@ -1042,7 +1042,7 @@ object BotAdminService {
                 feature.name,
                 feature.startDate,
                 feature.endDate,
-                feature.applicationId
+                feature.applicationId,
             )
         }
     }
@@ -1055,7 +1055,8 @@ object BotAdminService {
             feature.name,
             feature.startDate,
             feature.endDate,
-            feature.applicationId
+            feature.applicationId,
+            feature.graduation
         )
     }
 
@@ -1068,7 +1069,8 @@ object BotAdminService {
             name = feature.name,
             startDate = feature.startDate,
             endDate = feature.endDate,
-            applicationId = feature.applicationId
+            applicationId = feature.applicationId,
+            graduation = feature.graduation
         )
     }
 

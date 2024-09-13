@@ -2,6 +2,7 @@ package ai.tock.bot.mongo
 
 import java.time.ZonedDateTime
 import kotlin.Boolean
+import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
@@ -25,6 +26,8 @@ private val __StartDate: KProperty1<Feature, ZonedDateTime?>
     get() = Feature::startDate
 private val __EndDate: KProperty1<Feature, ZonedDateTime?>
     get() = Feature::endDate
+private val __Graduation: KProperty1<Feature, Int?>
+    get() = Feature::graduation
 internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Feature?>) :
         KPropertyPath<T, Feature?>(previous,property) {
     val _id: KPropertyPath<T, String?>
@@ -48,6 +51,9 @@ internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
     val endDate: KPropertyPath<T, ZonedDateTime?>
         get() = KPropertyPath(this,__EndDate)
 
+    val graduation: KPropertyPath<T, Int?>
+        get() = KPropertyPath(this,__Graduation)
+
     companion object {
         val _id: KProperty1<Feature, String?>
             get() = ___id
@@ -62,7 +68,9 @@ internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
         val StartDate: KProperty1<Feature, ZonedDateTime?>
             get() = __StartDate
         val EndDate: KProperty1<Feature, ZonedDateTime?>
-            get() = __EndDate}
+            get() = __EndDate
+        val Graduation: KProperty1<Feature, Int?>
+            get() = __Graduation}
 }
 
 internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -88,6 +96,9 @@ internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
 
     val endDate: KPropertyPath<T, ZonedDateTime?>
         get() = KPropertyPath(this,__EndDate)
+
+    val graduation: KPropertyPath<T, Int?>
+        get() = KPropertyPath(this,__Graduation)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,
@@ -115,6 +126,9 @@ internal class Feature_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
 
     val endDate: KPropertyPath<T, ZonedDateTime?>
         get() = KPropertyPath(this,__EndDate)
+
+    val graduation: KPropertyPath<T, Int?>
+        get() = KPropertyPath(this,__Graduation)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,
