@@ -23,16 +23,40 @@ import java.time.ZonedDateTime
  */
 interface FeatureDAO {
 
-    fun isEnabled(botId: String, namespace: String, type: FeatureType, default: Boolean = false): Boolean =
-        isEnabled(botId, namespace, type.category, type.name, null, default)
+    fun isEnabled(
+        botId: String, namespace: String, type: FeatureType, default: Boolean = false, userId: String? = null,
+    ): Boolean =
+        isEnabled(botId, namespace, type.category, type.name, null, default, userId)
 
-    fun isEnabled(botId: String, namespace: String, category: String, name: String, default: Boolean = false): Boolean =
-        isEnabled(botId, namespace, category, name, null, default)
+    fun isEnabled(
+        botId: String,
+        namespace: String,
+        category: String,
+        name: String,
+        default: Boolean = false,
+        userId: String? = null,
+    ): Boolean =
+        isEnabled(botId, namespace, category, name, null, default, userId)
 
-    fun isEnabled(botId: String, namespace: String, type: FeatureType, applicationId: String? = null, default: Boolean = false): Boolean =
-        isEnabled(botId, namespace, type.category, type.name, applicationId, default)
+    fun isEnabled(
+        botId: String,
+        namespace: String,
+        type: FeatureType,
+        applicationId: String? = null,
+        default: Boolean = false,
+        userId: String? = null,
+    ): Boolean =
+        isEnabled(botId, namespace, type.category, type.name, applicationId, default, userId)
 
-    fun isEnabled(botId: String, namespace: String, category: String, name: String, applicationId: String? = null, default: Boolean = false): Boolean
+    fun isEnabled(
+        botId: String,
+        namespace: String,
+        category: String,
+        name: String,
+        applicationId: String? = null,
+        default: Boolean = false,
+        userId: String? = null,
+    ): Boolean
 
     fun enable(
         botId: String,
@@ -41,7 +65,8 @@ interface FeatureDAO {
         name: String,
         startDate: ZonedDateTime?,
         endDate: ZonedDateTime?,
-        applicationId: String? = null
+        applicationId: String? = null,
+        graduation: Int? = null,
     )
 
     fun enable(
@@ -50,8 +75,9 @@ interface FeatureDAO {
         type: FeatureType,
         startDate: ZonedDateTime? = null,
         endDate: ZonedDateTime? = null,
-        applicationId: String? = null
-    ) = enable(botId, namespace, type.category, type.name, startDate, endDate, applicationId)
+        applicationId: String? = null,
+        graduation: Int? = null,
+    ) = enable(botId, namespace, type.category, type.name, startDate, endDate, applicationId, graduation)
 
     fun disable(botId: String, namespace: String, category: String, name: String, applicationId: String? = null)
 
@@ -67,8 +93,9 @@ interface FeatureDAO {
         type: FeatureType,
         startDate: ZonedDateTime?,
         endDate: ZonedDateTime?,
-        applicationId: String? = null
-    ) = addFeature(botId, namespace, enabled, type.category, type.name, startDate, endDate, applicationId)
+        applicationId: String? = null,
+        graduation: Int? = null,
+    ) = addFeature(botId, namespace, enabled, type.category, type.name, startDate, endDate, applicationId, graduation)
 
     fun addFeature(
         botId: String,
@@ -78,7 +105,8 @@ interface FeatureDAO {
         name: String,
         startDate: ZonedDateTime?,
         endDate: ZonedDateTime?,
-        applicationId: String? = null
+        applicationId: String? = null,
+        graduation: Int? = null,
     )
 
     fun deleteFeature(botId: String, namespace: String, type: FeatureType, applicationId: String? = null) =

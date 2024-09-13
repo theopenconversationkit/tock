@@ -135,13 +135,36 @@
         ></tock-select-bot>
       </tock-form-control>
 
-      <nb-toggle
-        formControlName="enabled"
-        nbTooltip="Status"
-      >
-        <span *ngIf="enabled.value">Feature enabled</span>
-        <span *ngIf="!enabled.value">Feature disabled</span>
-      </nb-toggle>
+      <div class="d-flex gap-1">
+        <div class="w-50">
+          <nb-toggle
+            formControlName="enabled"
+            nbTooltip="Status"
+          >
+            <span *ngIf="enabled.value">Feature enabled</span>
+            <span *ngIf="!enabled.value">Feature disabled</span>
+          </nb-toggle>
+        </div>
+        <div class="w-50">
+          <tock-form-control
+            label="Graduation"
+            name="graduation"
+            [controls]="graduation"
+            [showError]="isSubmitted"
+            [required]="false"
+          >
+            <input
+              nbInput
+              formControlName="graduation"
+              id="graduation"
+              type="number"
+              min="0"
+              max="100"
+              placeholder="% of activation"
+            />
+          </tock-form-control>
+        </div>
+      </div>
     </form>
   </nb-card-body>
 

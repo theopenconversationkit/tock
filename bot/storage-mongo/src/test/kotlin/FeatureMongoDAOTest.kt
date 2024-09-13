@@ -222,6 +222,20 @@ internal class FeatureMongoDAOTest {
             }
 
             @Test
+            fun `feature with graduation for user with hash under 50`() {
+                `given data for`(id, true, null, null, 50)
+
+                assertTrue(featureDAO.isEnabled(botId, namespace, feature, false, "f"))
+            }
+
+            @Test
+            fun `feature with graduation for user with hash over 50`() {
+                `given data for`(id, true, null, null, 50)
+
+                assertFalse(featureDAO.isEnabled(botId, namespace, feature, false, "a"))
+            }
+
+            @Test
             fun `non existing enabled global feature but connector feature exists`() {
                 `given no data for`(id)
                 `given data for`(idWithApplicationId, true)
@@ -309,8 +323,8 @@ internal class FeatureMongoDAOTest {
         mockRetrieveData(featureID, null)
     }
 
-    private fun `given data for`(featureID: FeatureID, enabled: Boolean, start: ZonedDateTime? = null, end: ZonedDateTime? = null) {
-        mockRetrieveData(featureID, Feature(featureID.id, featureID.key, enabled, botId, namespace, start, end))
+    private fun `given data for`(featureID: FeatureID, enabled: Boolean, start: ZonedDateTime? = null, end: ZonedDateTime? = null, graduation: Int? = null) {
+        mockRetrieveData(featureID, Feature(featureID.id, featureID.key, enabled, botId, namespace, start, end, graduation))
     }
 
     private fun mockRetrieveData(featureID: FeatureID, feature: ai.tock.bot.mongo.Feature?) {

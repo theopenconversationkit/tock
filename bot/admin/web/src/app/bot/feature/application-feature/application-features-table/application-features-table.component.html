@@ -52,6 +52,7 @@
           <td style="width: 20%">Configuration</td>
           <td style="width: 10%">Start date</td>
           <td style="width: 10%">End date</td>
+          <td style="width: 10%">Graduation</td>
           <td
             class="text-center"
             style="width: 10%"
@@ -134,6 +135,20 @@
               (dateChange)="changeEndDate(feature, $event)"
               [min]="feature.startDate"
             ></nb-datepicker>
+          </td>
+
+          <td>
+            <input
+              nbInput
+              type="number"
+              fieldSize="small"
+              placeholder="%"
+              min="0"
+              max="100"
+              (blur)="changeGraduation(feature, $event)"
+              [(ngModel)]="feature.graduation"
+              [nbTooltip]="feature.graduation ? 'Enabled at : ' + feature.graduation + '%' : 'Fully (en/dis)abled'"
+            />
           </td>
 
           <td class="text-center">
