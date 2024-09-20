@@ -16,12 +16,12 @@
 into an OpenSearch vector database.
 
 Usage:
-    index_documents.py [-v] <input_csv> <index_name> <embeddings_cfg> <chunks_size> [<env_file>]
+    index_documents.py [-v] <input_directory> <index_name> <embeddings_cfg> <chunks_size> [<env_file>]
     index_documents.py -h | --help
     index_documents.py --version
 
 Arguments:
-    input_csv       path to the ready-to-index file
+    input_directory      path to the directory containing  ready-to-index files.
     index_name      name of the OpenSearch index (shall follow indexes
                     naming rules)
     embeddings_cfg  path to an embeddings configuration file (JSON format)
@@ -47,6 +47,7 @@ the last line printed if the '-v' option is used).
 import csv
 import json
 import logging
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -55,11 +56,6 @@ from uuid import uuid4
 
 import pandas as pd
 from docopt import docopt
-from langchain.embeddings.base import Embeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders.dataframe import DataFrameLoader
-from langchain_core.documents import Document
-
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import (
     AzureOpenAIEMSetting,
 )
@@ -75,9 +71,14 @@ from gen_ai_orchestrator.services.langchain.factories.langchain_factory import (
     get_em_factory,
     get_vector_store_factory,
 )
+from langchain.embeddings.base import Embeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders.dataframe import DataFrameLoader
+from langchain_core.documents import Document
 
-# Define the size of the csv field -> Set to maximum to process large csvs
+# Define the size of the csv field -> Set to maximum to process large csv
 csv.field_size_limit(sys.maxsize)
+
 
 def index_documents(args):
     """
@@ -86,7 +87,7 @@ def index_documents(args):
     Args:
 
         args (dict):    A dictionary containing command-line arguments.
-                        Expecting keys: '<input_csv>'
+                        Expecting keys: '<input_directory>'
                                         '<index_name>'
                                         '<embeddings_cfg>'
                                         '<chunks_size>'
@@ -101,9 +102,22 @@ def index_documents(args):
     logging.debug(
         f"Beginning indexation session {session_uuid} at '{formatted_datetime}'"
     )
-
-    logging.debug(f"Read input CSV file {args['<input_csv>']}")
-    df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', names=['title', 'source', 'text'])
+    input_directory = args['<input_directory>']
+    list_input_csv = []
+    for filename in os.listdir(input_directory):
+        if filename.endswith('.csv'):
+            logging.debug(f'Read input CSV file {filename}')
+            filepath = os.path.join(input_directory, filename)
+            logging.debug('Processing file: %s', filepath)
+            list_input_csv.append(
+                pd.read_csv(
+                    filename,
+                    delimiter='|',
+                    quotechar='"',
+                    names=['title', 'source', 'text'],
+                )
+            )
+    df = pd.concat(list_input_csv)
     loader = DataFrameLoader(df, page_content_column='text')
     docs = loader.load()
 
@@ -141,7 +155,7 @@ def index_documents(args):
     # Print statistics
     duration = datetime.now() - start_time
     logging.debug(
-        f"Indexed {len(splitted_docs)} chunks in '{args['<index_name>']}' from {len(docs)} lines in '{args['<input_csv>']}' (duration: {duration})"
+        f"Indexed {len(splitted_docs)} chunks in '{args['<index_name>']}' from {len(docs)} lines in '{args['<input_directory>']}' (duration: {duration})"
     )
 
     # Return session index uuid to main script
@@ -239,7 +253,7 @@ def index_name_is_valid(index_name: str) -> bool:
 
 
 if __name__ == '__main__':
-    cli_args = docopt(__doc__, version='Webscraper 0.1.0')
+    cli_args = docopt(__doc__, version='index document 0.1.0')
 
     # Set logging level
     log_format = '%(levelname)s:%(module)s:%(message)s'
@@ -249,10 +263,10 @@ if __name__ == '__main__':
 
     # Check args:
     # - input file path
-    inputfile_path = Path(cli_args['<input_csv>'])
+    inputfile_path = Path(cli_args['<input_directory>'])
     if not inputfile_path.exists():
         logging.error(
-            f"Cannot proceed: input CSV file '{cli_args['<input_csv>']}' does not exist"
+            f"Cannot proceed: input CSV file '{cli_args['<input_directory>']}' does not exist"
         )
         sys.exit(1)
 
