@@ -31,18 +31,19 @@ Then run the scripts by passing them to a Python interpreter (>= 3.9):
 Smart Tribune export file formatter.
 
 Usage:
-smarttribune_formatter.py [-v] <input_csv> <tag_title> <base_url> <output_csv>
+smarttribune_formatter.py [-v] <input_csv> <tag_title> <base_url> <output_csv> [--label=<label>]
 
 Arguments:
-input_csv   path to the Smart Tribune CSV export file
-tag_title   tag title to discrimate FAQ source ('Tag (ID system)' column will be filtered for lines containing this tag)
-base_url    the base URL to prefix every FAQ entry's query parameter to create a full URL
-output_csv  path to the output, ready-to-index CSV file
+    input_csv   path to the Smart Tribune CSV export file
+    tag_title   tag title to discrimate FAQ source ('Tag (ID system)' column will be filtered for lines containing this tag)
+    base_url    the base URL to prefix every FAQ entry's query parameter to create a full URL
+    output_csv  name of the output csv, ready-to-index CSV file
 
 Options:
--h --help   Show this screen
---version   Show version
--v          Verbose output for debugging (without this option, script will be silent but for errors)
+    -h --help   Show this screen
+    --label=<label>      label name, name of the folder in ready-to_index_file folder where csv while be created.
+    --version   Show version
+    -v          Verbose output for debugging (without this option, script will be silent but for errors)
 ```
 
 Turns a Smart Tribune CSV export file into a ready-to-index CSV file (one 'title'|'url'|'text' line per filtered entry):
@@ -66,17 +67,16 @@ Arguments:
     knowledge_base  name of the target knowledge base, ex: "name1 | name2 | name3"
     base_url    the base URL to prefix every FAQ entry's query parameter to
                 create a full URL
-    output_csv  path to the output, ready-to-index CSV file
+    output_csv  name of the output csv, ready-to-index CSV file
 
 Options:
     --tag_title=<value>
+    --label=<label>   label name, name of the folder in ready-to_index_file folder where csv while be created.
     -h --help   Show this screen
     --version   Show version
     -v          Verbose output for debugging (without this option, script will
                 be silent but for errors)
 
-Import and Format a Smart Tribune data by API  into a ready-to-index CSV file
-(one 'title'|'url'|'text' line per filtered entry).
 ```
 Set in a .env your APIKEY and your APISECRET
 
@@ -88,6 +88,32 @@ Import data from smart tribune API and return a ready-to-index CSV file (one 'ti
 | Some title | http://example.com | This is example text. |
 | ...        | ...                | ...                   |
 
+### export_faq_to_ingest_data.py
+
+```
+CSV Generator. This script takes a directory of JSON files from TOCK Studio FAQ export as input and generates a CSV file ready to ingest as output.
+
+Usage:
+    export_csv_to_ingest_data.py [-v] <input_directory> [--output=<path>] [--label=<label>]
+
+Arguments:
+    <input_directory>    Path to the directory containing JSON files.
+
+Options:
+    --output=<path>      Output path for the CSV file to be generated [default: output_faq_story.csv].
+    --label=<label>      label name, name of the folder in ready-to_index_file folder where csv while be created.
+    -h --help            Show this screen.
+    -v                   Verbose output for debugging (without this option, the script will be silent but for errors).
+    
+
+This script processes all JSON files from TOCK Studio FAQ export in the given directory and combines their contents into a single CSV file ready to ingest as output.. The output file will contain three columns: title, url (empty), and text.
+```
+
+| Title    | URL | Text    |
+|----------|-----|---------|
+| question |     | answers |
+| ...      | ... | ...     |
+
 
 #### webscraper.py
 
@@ -95,20 +121,21 @@ Import data from smart tribune API and return a ready-to-index CSV file (one 'ti
 Simple recursive webscraper based on a list of BeautifulSoup filters.
 
 Usage:
-webscraping.py [-v] <input_urls> <soup_filters> <output_csv>
-webscraping.py -h | --help
-webscraping.py --version
+    webscraping.py [-v] <input_urls> <soup_filters> <output_csv> [options]
+    webscraping.py -h | --help
+    webscraping.py --version
 
 Arguments:
-input_urls      a comma-separated list of base URLs the scraper will browse recursively to find scrapable contents
-soup_filters    a comma-separated list of filters to get pages contents (texts to be indexed will be concatenated in this order)
-                Example: id='notes',class_='container',id='test'
-output_csv      path to the output, ready-to-index CSV file (this file will be created at execution time, along with a <base URL netloc>/ sub-dir in the same directory,    containing debug info)
+    input_urls      a comma-separated list of base URLs the scraper will browse recursively to find scrapable contents
+    soup_filters    a comma-separated list of filters to get pages contents (texts to be indexed will be concatenated in this order)
+                    Example: id='notes',class_='container',id='test'
+    output_csv       name of the output csv, ready-to-index CSV file (this file will be created at execution time, along with a <base URL netloc>/ sub-dir in the same directory,    containing debug info)
 
 Options:
--h --help   Show this screen
---version   Show version
--v          Verbose output for debugging (without this option, script will be silent but for errors)
+   --label=<label>      label name, name of the folder in ready-to_index_file folder where csv while be created.
+   -h --help   Show this screen
+    --version   Show version
+    -v          Verbose output for debugging (without this option, script will be silent but for errors)
 ```
 
 Recursively browse web URLs (follow links from these base URLs), then scrape links' contents based on a list of BeautifulSoup filters, then export these contents into a ready-to-index CSV file (one 'title'|'url'|'text' line per URL with scraped contents):
@@ -127,12 +154,12 @@ Index a ready-to-index CSV file ('title'|'url'|'text' lines) file contents into 
 
 ```
 Usage:
-    index_documents.py [-v] <input_csv> <index_name> <embeddings_cfg> <chunks_size> [<env_file>]
+    index_documents.py [-v] <input_directory> <index_name> <embeddings_cfg> <chunks_size> [<env_file>]
     index_documents.py -h | --help
     index_documents.py --version
 
 Arguments:
-    input_csv       path to the ready-to-index file
+    input_directory      path to the directory containing  ready-to-index files.
     index_name      name of the OpenSearch index (shall follow indexes naming rules)
     embeddings_cfg  path to an embeddings configuration file (JSON format) (shall describe settings for one of OpenAI or AzureOpenAI embeddings model)
     chunks_size     size of the embedded chunks of documents
@@ -143,7 +170,7 @@ Options:
     -v          Verbose output for debugging (without this option, script will be silent but for errors and the unique indexing session id)
 ```
 
-Index a ready-to-index CSV file contents into an OpenSearch vector database.
+Index ready-to-index CSV files contents into an OpenSearch vector database.
 
 CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to chunks_size, and embedded using configuration described in embeddings_cfg (it uses the embeddings constructor from the orchestrator module, so JSON file shall follow corresponding format - See [Embedding Settings](../server/src/gen_ai_orchestrator/models/em/em_types.py)).
 
