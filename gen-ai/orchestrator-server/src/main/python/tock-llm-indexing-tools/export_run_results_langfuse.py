@@ -145,9 +145,14 @@ if __name__ == '__main__':
     logging.info(f'Call the LangFuse API to get the dataset information for dataset_name={dataset_name}.')
     dataset = client.get_dataset(name=dataset_name)
     logging.info(f"Number of items in dataset = {len(dataset.items)}")
-
+    output_directory = "export_run_results/" + dataset_name
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+        logging.debug(f"Répertoire de sortie créé : {output_directory}")
     # CSV filename
     output_csv_file = f"export_run_result_langfuse_{dataset_name}_{int(time.time())}.csv"
+    # Chemin du fichier CSV de sortie
+    csv_file_path = os.path.join(output_directory, output_csv_file)
     # CSV header line
     csv_lines = [create_csv_header(runs_names)]
 
@@ -160,10 +165,10 @@ if __name__ == '__main__':
         index += 1
 
     # Creation of CSV file
-    with open(output_csv_file, 'w', newline='') as csv_file:
+    with open(csv_file_path, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter='|')
         writer.writerows(csv_lines)
-    logging.info(f"Successful csv generation. Filename : {output_csv_file}")
+    logging.info(f"Successful csv generation. File path : {csv_file_path}")
     logging.info(
         'End of execution. (Duration : %.2f seconds)',
         time.time() - start_time
