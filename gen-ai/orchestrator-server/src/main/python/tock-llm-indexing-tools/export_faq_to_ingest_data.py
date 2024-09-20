@@ -47,7 +47,7 @@ def json_to_csv(input_directory: str, output_csv: str, label: str):
         os.makedirs(output_directory)
         logging.debug(f"Répertoire de sortie créé : {output_directory}")
     # Chemin du fichier CSV de sortie
-    csv_file_path = os.path.join(output_directory, 'output.csv')
+    csv_file_path = os.path.join(output_directory, output_csv)
     try:
         with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter='|')
