@@ -8,6 +8,9 @@ title: Gen AI - Observability Settings
 - Cela inclut la collecte de données sur leurs performances, la détection d'anomalies et la compréhension des erreurs qu'ils peuvent produire. 
 - L'objectif est de garantir que ces modèles fonctionnent de manière fiable, transparente, en fournissant des informations qui permettent d'améliorer leur performance et de corriger les problèmes potentiels.
 
+> Pour accéder à cette page il faut bénéficier du rôle **_botUser_**.
+> <br />( plus de détails sur les rôles dans [securité](../../../../admin/securite.md#rôles) ).
+
 ## Configuration
 Pour permettre à Tock de se connecter à un outil d'observabilité, un écran de configuration a été mis en place : 
 
