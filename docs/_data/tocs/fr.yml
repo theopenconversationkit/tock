@@ -42,6 +42,8 @@ content:
             url: 'fr/user/studio/faq-management'
           - title: 'Le menu FAQ Training'
             url: 'fr/user/studio/faq-training'
+          - title: 'Le menu Gen AI'
+            url: 'fr/user/studio/gen-ai/gen-ai'
       - title: 'Guides'
         url: 'fr/user/guides'
         children:
