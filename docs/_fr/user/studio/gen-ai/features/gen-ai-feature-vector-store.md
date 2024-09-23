@@ -22,9 +22,9 @@ Pour permettre à Tock de se connecter à une base vectorielle, un écran de con
 
 ## Utilisation
 
-- Voici la [liste des fournisseurs d'observabilité des LLM](../providers/gen-ai-provider-observability.md) qui sont pris en compte par Tock.
+- Voici la [liste des fournisseurs de base vectorielle](../providers/gen-ai-provider-vector-store.md) qui sont pris en compte par Tock.
 - Veuillez vous référer à la documentation de chaque outil pour comprendre comment l'utiliser.
-- Si aucune configuration n'a été fournie via le Tock studio, la configuration par défaut (spécifiée via les variable d'environnement) sera privilégiée.
+- Si aucune configuration n'a été fournie via le Tock studio, la configuration par défaut (spécifiée via les variable d'environnement) sera privilégiée :
   - Dans Bot Admin, la variable `tock_gen_ai_orchestrator_vector_store` spécifie la nature de la base vectorielle par défaut. Cela permet à Tock, lors d'un appel RAG, de construire correctement les paramètres de recherche dans cette base.
   - Dans l'Orchestrateur, voici la liste des variables d'environnements à préciser :
     - `tock_gen_ai_orchestrator_vector_store_provider` Ex: PGVector
