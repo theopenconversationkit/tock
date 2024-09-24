@@ -57,7 +57,7 @@ def format(args):
                                         '<output_csv>'
                                         '--label'
     """
-    logging.debug(f"Read input CSV file {args['<input_csv>']}")
+    logging.debug("Read input CSV file %s", args['<input_csv>'])
     df = pd.read_csv(args['<input_csv>'], sep='|', encoding='utf-8')
     # Filter entries based on id
     filtered_df = df[
@@ -79,14 +79,14 @@ def format(args):
         }
     )
     label = args.get('--label')
-    output_directory = "ready-to_index_file/" + label if label else "ready-to_index_file"
+    output_directory = f"ready-to_index_file/{label}" if label else "ready-to_index_file"
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
-        logging.debug(f"Répertoire de sortie créé : {output_directory}")
+        logging.debug("Répertoire de sortie créé : %s", output_directory)
     # Chemin du fichier CSV de sortie
     csv_file_path = os.path.join(output_directory, args.get('<output_csv>'))
 
-    logging.debug(f"Export to output CSV file {csv_file_path}")
+    logging.debug("Export to output CSV file %s", csv_file_path)
     result_df.to_csv(csv_file_path, sep='|', index=False)
 
 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     inputfile_path = Path(cli_args['<input_csv>'])
     if not inputfile_path.exists():
         logging.error(
-            f"Cannot proceed: input CSV file '{cli_args['<input_csv>']}' does not exist"
+            "Cannot proceed: input CSV file '%s' does not exist", cli_args['<input_csv>']
         )
         sys.exit(1)
 
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     # - base url must be valid
     result = urlparse(cli_args['<base_url>'])
     if not result.scheme or not result.netloc:
-        logging.error(f"Cannot proceed: '{cli_args['<base_url>']}' is not a valid URL")
+        logging.error("Cannot proceed: '%s' is not a valid URL", cli_args['<base_url>'])
         sys.exit(1)
 
     # Main func

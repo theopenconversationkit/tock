@@ -86,7 +86,7 @@ def browse_base_urls(
             urls_to_visit = {base_url}
             while urls_to_visit:
                 current_url = urls_to_visit.pop()
-                logging.debug(f'Visiting {current_url}')
+                logging.debug('Visiting %s', current_url)
 
                 try:
                     # Check URL is valid
@@ -110,7 +110,7 @@ def browse_base_urls(
                                         # Add the link URL to the set of URLs to be visited if it hasn't been visited yet
                                         if link_url not in visited_urls:
                                             logging.debug(
-                                                f'Add to-be-visited link {link_url}'
+                                                'Add to-be-visited link %s', link_url
                                             )
                                             urls_to_visit.add(link_url)
 
@@ -118,19 +118,20 @@ def browse_base_urls(
                                 output_file.write(f'{current_url}\n')
                                 # Add current url to the set of visited URLs
                                 visited_urls.add(current_url)
-                                logging.debug(f'Add to visited {current_url}')
+                                logging.debug('Add to visited %s', current_url)
                             else:
                                 logging.warning(
-                                    f"URL '{current_url}' is ignored because its base URL href ({base_url_href}) is not in the '{base_domain}' domain"
+                                    "URL '%s' is ignored because its base URL href (%s) is not in the '%s' domain",
+                                    current_url, base_url_href, base_domain
                                 )
                         else:
                             logging.warning(
-                                f"URL '{current_url}' is ignored because it answered GET with code {response.status}"
+                                "URL '%s' is ignored because it answered GET with code %s", current_url, response.status
                             )
 
                 except URLError as e:
                     logging.warning(
-                        f"URL '{current_url}' is ignored because it failed to answer GET ({e})"
+                        "URL '%s' is ignored because it failed to answer GET ({e})", current_url
                     )
 
 
@@ -158,7 +159,7 @@ def scrape_urls(soup_filters, output_file, label, base_domain='domain'):
         # Scrape contents for each line
         for line in file:
             line = line.strip()
-            logging.debug(f'Scraping {line}')
+            logging.debug('Scraping %i', line)
 
             # GET contents
             with request.urlopen(line) as response:
@@ -211,22 +212,21 @@ def scrape_urls(soup_filters, output_file, label, base_domain='domain'):
                             )
                         else:
                             logging.debug(
-                                f"URL '{line}' is ignored because scraped_texts={len(scraped_texts)}'"
-                                f' is different from main_tags={len(main_tags)}'
-                            )
+                                "URL '%i' is ignored because scraped_texts=%i is different from main_tags="
+                                , line, len(scraped_texts), len(main_tags))
                             ignored_urls.append({'ignored_urls': line})
                     else:
-                        logging.debug(f'Line {line} is ignored (empty tags)')
+                        logging.debug('Line %i is ignored (empty tags)', line, )
                 else:
                     logging.warning(
-                        f"URL '{line}' is ignored because it failed to answer GET"
+                        "URL '%i' is ignored because it failed to answer GET", line
                     )
 
-    output_directory = "ready-to_index_file/" + label if label else "ready-to_index_file"
+    output_directory = f"ready-to_index_file/{label}" if label else "ready-to_index_file"
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
-        logging.debug(f"Répertoire de sortie créé : {output_directory}")
-    # Chemin du fichier CSV de sortie
+        logging.debug("Répertoire de sortie créé : %s", output_directory)
+    # Pat to the output CSV
     csv_file_path = os.path.join(output_directory, output_file)
     # Save to output CSV file (use pandas to ensure 'ready-to-index' consistency)
     pd.DataFrame(results).to_csv(csv_file_path, sep='|', index=False)
@@ -257,17 +257,18 @@ if __name__ == '__main__':
     # - input URLs
     base_urls = cli_args['<input_urls>'].split(',')
     if not base_urls[0]:
-        logging.error(f"Cannot proceed: could not find a URL in list '{base_urls}'")
+        logging.error("Cannot proceed: could not find a URL in list '%s'", base_urls)
         sys.exit(1)
     base_domain = urlparse(base_urls[0]).netloc
     for base_url in base_urls:
         parsed_url = urlparse(base_url)
         if not parsed_url.scheme or not parsed_url.netloc:
-            logging.error(f"Cannot proceed: '{base_url}' is not a valid URL")
+            logging.error("Cannot proceed: '%s' is not a valid URL", base_url)
             sys.exit(1)
         if base_domain != parsed_url.netloc:
             logging.error(
-                f"Cannot proceed: '{base_url}' has a different base domain ('{parsed_url.netloc}') than previous URLs ('{base_domain}')"
+                "Cannot proceed: '%s' has a different base domain ('%s') than previous URLs ('%s')", base_url,
+                parsed_url.netloc, base_domain
             )
             sys.exit(1)
 
@@ -284,12 +285,13 @@ if __name__ == '__main__':
                 filters_as_dicts.append({key: value})
             else:
                 logging.error(
-                    f"Cannot proceed: BeautifulSoup filter '{filter}' could not be parsed into a key and its value"
+                    "Cannot proceed: BeautifulSoup filter '%s' could not be parsed into a key and its value", filter
                 )
                 sys.exit(1)
     else:
         logging.error(
-            f"Cannot proceed: BeautifulSoup filters arg ({cli_args['<soup_filters>']}) could not be parsed for a list of filters"
+            "Cannot proceed: BeautifulSoup filters arg (%s) could not be parsed for a list of filters",
+            cli_args['<soup_filters>']
         )
         sys.exit(1)
 

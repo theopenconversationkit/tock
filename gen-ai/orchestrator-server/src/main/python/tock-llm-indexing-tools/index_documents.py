@@ -16,12 +16,12 @@
 into an OpenSearch vector database.
 
 Usage:
-    index_documents.py [-v] <input_directory> <index_name> <embeddings_cfg> <chunks_size> [<env_file>]
+    index_documents.py [-v] <input_path> <index_name> <embeddings_cfg> <chunks_size> [<env_file>]
     index_documents.py -h | --help
     index_documents.py --version
 
 Arguments:
-    input_directory      path to the directory containing  ready-to-index files.
+    input_path      path to the directory containing  ready-to-index files or path to the csv file.
     index_name      name of the OpenSearch index (shall follow indexes
                     naming rules)
     embeddings_cfg  path to an embeddings configuration file (JSON format)
@@ -87,7 +87,7 @@ def index_documents(args):
     Args:
 
         args (dict):    A dictionary containing command-line arguments.
-                        Expecting keys: '<input_directory>'
+                        Expecting keys: '<input_path>'
                                         '<index_name>'
                                         '<embeddings_cfg>'
                                         '<chunks_size>'
@@ -100,23 +100,41 @@ def index_documents(args):
     formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
     session_uuid = uuid4()
     logging.debug(
-        f"Beginning indexation session {session_uuid} at '{formatted_datetime}'"
+        "Beginning indexation session %i at %i", session_uuid, formatted_datetime
     )
-    input_directory = args['<input_directory>']
+    input_path = Path(args['<input_path>'])
     list_input_csv = []
-    for filename in os.listdir(input_directory):
-        if filename.endswith('.csv'):
-            logging.debug(f'Read input CSV file {filename}')
-            filepath = os.path.join(input_directory, filename)
-            logging.debug('Processing file: %s', filepath)
-            list_input_csv.append(
-                pd.read_csv(
-                    input_directory + '/' + filename,
-                    delimiter='|',
-                    quotechar='"',
-                    names=['title', 'source', 'text'],
-                )
+    if input_path.is_file() and input_path.suffix == '.csv':
+        # If a single CSV file is provided
+        logging.debug('Read input CSV file %s', input_path)
+        list_input_csv.append(
+            pd.read_csv(
+                input_path,
+                delimiter='|',
+                quotechar='"',
+                names=['title', 'source', 'text'],
             )
+        )
+    elif input_path.is_dir():
+        # If a directory is provided
+        for filename in os.listdir(input_path):
+            if filename.endswith('.csv'):
+                logging.debug('Read input CSV file %s', filename)
+                filepath = input_path / filename
+                logging.debug('Processing file: %s', filepath)
+                list_input_csv.append(
+                    pd.read_csv(
+                        filepath,
+                        delimiter='|',
+                        quotechar='"',
+                        names=['title', 'source', 'text'],
+                    )
+                )
+    else:
+        logging.error("The provided input is neither a directory nor a CSV file.")
+        sys.exit(1)
+
+    # Concatenate all CSV files
     df = pd.concat(list_input_csv)
     loader = DataFrameLoader(df, page_content_column='text')
     docs = loader.load()
@@ -126,7 +144,7 @@ def index_documents(args):
         doc.metadata['index_datetime'] = formatted_datetime
         doc.metadata['id'] = uuid4()  # A uuid for the doc (will be used by TOCK)
 
-    logging.debug(f"Split texts in {args['<chunks_size>']} characters-sized chunks")
+    logging.debug("Split texts in %i characters-sized chunks", args['<chunks_size>'])
     # recursive splitter is used to preserve sentences & paragraphs
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=int(args['<chunks_size>'])
@@ -137,7 +155,7 @@ def index_documents(args):
     # Add title to text (for better semantic search)
     splitted_docs = add_title_to_text(splitted_docs=splitted_docs)
 
-    logging.debug(f"Get embeddings model from {args['<embeddings_cfg>']} config file")
+    logging.debug("Get embeddings model from %s config file", args['<embeddings_cfg>'])
     with open(args['<embeddings_cfg>'], 'r') as file:
         config_dict = json.load(file)
     em_settings = em_settings_from_config(config_dict)
@@ -155,7 +173,12 @@ def index_documents(args):
     # Print statistics
     duration = datetime.now() - start_time
     logging.debug(
-        f"Indexed {len(splitted_docs)} chunks in '{args['<index_name>']}' from {len(docs)} lines in '{args['<input_directory>']}' (duration: {duration})"
+        "Indexed %i chunks in %s from %i lines in %s (duration: %f)",
+        len(splitted_docs),
+        args['<index_name>'],
+        len(docs),
+        args['<input_path>'],
+        duration
     )
 
     # Return session index uuid to main script
@@ -163,7 +186,7 @@ def index_documents(args):
 
 
 def generate_ids_for_each_chunks(
-    splitted_docs: Iterable[Document],
+        splitted_docs: Iterable[Document],
 ) -> Iterable[Document]:
     """Add chunk id ('n/N') to the documents' metadata using Pandas."""
     metadata = [doc.metadata for doc in splitted_docs]
@@ -171,9 +194,9 @@ def generate_ids_for_each_chunks(
     df_metadata['total_chunks'] = df_metadata.groupby('id')['id'].transform('count')
     df_metadata['chunk_id'] = df_metadata.groupby('id').cumcount() + 1
     df_metadata['chunk'] = (
-        df_metadata['chunk_id'].astype(str)
-        + '/'
-        + df_metadata['total_chunks'].astype(str)
+            df_metadata['chunk_id'].astype(str)
+            + '/'
+            + df_metadata['total_chunks'].astype(str)
     )
     for i, doc in enumerate(splitted_docs):
         doc.metadata['chunk'] = df_metadata.loc[i, 'chunk']
@@ -181,7 +204,7 @@ def generate_ids_for_each_chunks(
 
 
 def add_title_to_text(
-    splitted_docs: Iterable[Document],
+        splitted_docs: Iterable[Document],
 ) -> Iterable[Document]:
     """
     Add 'title' from metadata to Document's page_content for better semantic search.
@@ -209,7 +232,7 @@ def em_settings_from_config(setting_dict: dict) -> BaseEMSetting:
 
 
 def embed_and_store_docs(
-    documents: Iterable[Document], embeddings: Embeddings, index_name: str
+        documents: Iterable[Document], embeddings: Embeddings, index_name: str
 ) -> None:
     """ "Embed all chunks in vector database."""
     logging.debug('Index chunks in DB')
@@ -223,9 +246,9 @@ def embed_and_store_docs(
     # Index respecting bulk_size (500 is from_documents current default: it is described for clarity only)
     bulk_size = 500
     for i in range(0, len(documents), bulk_size):
-        logging.debug(f'i={i}, splitted_docs={len(documents)}')
+        logging.debug('i=%i, splitted_docs= %i', i, len(documents))
         opensearch_db.add_documents(
-            documents=documents[i : i + bulk_size], bulk_size=bulk_size
+            documents=documents[i: i + bulk_size], bulk_size=bulk_size
         )
 
 
@@ -263,10 +286,10 @@ if __name__ == '__main__':
 
     # Check args:
     # - input file path
-    inputfile_path = Path(cli_args['<input_directory>'])
+    inputfile_path = Path(cli_args['<input_path>'])
     if not inputfile_path.exists():
         logging.error(
-            f"Cannot proceed: input CSV file '{cli_args['<input_directory>']}' does not exist"
+            f"Cannot proceed: input CSV file '{cli_args['<input_path>']}' does not exist"
         )
         sys.exit(1)
 

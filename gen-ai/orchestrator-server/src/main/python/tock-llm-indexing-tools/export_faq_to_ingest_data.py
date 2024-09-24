@@ -42,11 +42,11 @@ from docopt import docopt
 
 def json_to_csv(input_directory: str, output_csv: str, label: str):
     """Parses JSON files from the given directory and writes to a CSV file."""
-    output_directory = "ready-to_index_file/" + label if label else "ready-to_index_file"
+    output_directory = f"ready-to_index_file/{label}" if label else "ready-to_index_file"
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
-        logging.debug(f"Répertoire de sortie créé : {output_directory}")
-    # Chemin du fichier CSV de sortie
+        logging.debug(f"output directory created : {output_directory}")
+    # CSV output file path
     csv_file_path = os.path.join(output_directory, output_csv)
     try:
         with open(csv_file_path, 'w', newline='', encoding='utf-8') as csvfile:
