@@ -111,7 +111,7 @@ def index_documents(args):
             logging.debug('Processing file: %s', filepath)
             list_input_csv.append(
                 pd.read_csv(
-                    filename,
+                    input_directory + '/' + filename,
                     delimiter='|',
                     quotechar='"',
                     names=['title', 'source', 'text'],
