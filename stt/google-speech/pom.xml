@@ -21,7 +21,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-stt</artifactId>
-        <version>24.3.7-SNAPSHOT</version>
+        <version>24.9.0</version>
     </parent>
 
     <artifactId>tock-stt-google-speech</artifactId>
