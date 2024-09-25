@@ -30,6 +30,7 @@
 
     <properties>
         <rocket>3.5.1</rocket>
+        <rocket-coroutines>1.1.1</rocket-coroutines>
     </properties>
 
     <dependencies>
@@ -67,6 +68,16 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>${rocket-coroutines}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-slf4j</artifactId>
+            <version>${rocket-coroutines}</version>
         </dependency>
 
         <dependency>
