@@ -100,7 +100,7 @@ Answer in {locale}:""",
         },
         'question_answering_prompt_inputs': {
             'question': 'How to get started playing guitar ?',
-            'no_answer': "Sorry, I don't know.",
+            'no_answer': 'Sorry, I don t know.',
             'locale': 'French',
         },
         'embedding_question_em_setting': {
@@ -119,6 +119,16 @@ Answer in {locale}:""",
                 }
             ],
             'k': 4,
+        },
+        'vector_store_setting': {
+            'provider': 'OpenSearch',
+            'host': 'localhost',
+            'port': 9200,
+            'username': 'admin',
+            'password': {
+                'type': 'Raw',
+                'value': 'admin',
+            }
         },
         'observability_setting': {
             'provider': 'Langfuse',
@@ -154,9 +164,9 @@ Answer in {locale}:""",
         setting=query.embedding_question_em_setting
     )
     mocked_get_vector_store_factory.assert_called_once_with(
-        vector_store_provider=VectorStoreProvider.OPEN_SEARCH,
-        embedding_function=em_factory_instance.get_embedding_model(),
+        setting=query.vector_store_setting,
         index_name=query.document_index_name,
+        embedding_function=em_factory_instance.get_embedding_model()
     )
     mocked_get_callback_handler_factory.assert_called_once_with(
         setting=query.observability_setting
@@ -164,9 +174,7 @@ Answer in {locale}:""",
     # Assert LangChain qa chain is created using the expected settings from query
     mocked_chain_builder.assert_called_once_with(
         llm=llm_factory_instance.get_language_model(),
-        retriever=vector_store_factory_instance.get_vector_store().as_retriever(
-            search_kwargs=query.document_search_params.to_dict()
-        ),
+        retriever=vector_store_factory_instance.get_vector_store_retriever(),
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={

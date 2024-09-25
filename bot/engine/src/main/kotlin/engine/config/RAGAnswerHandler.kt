@@ -36,20 +36,24 @@ import ai.tock.genai.orchestratorclient.responses.TextWithFootnotes
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorBusinessError
 import ai.tock.genai.orchestratorclient.retrofit.GenAIOrchestratorValidationError
 import ai.tock.genai.orchestratorclient.services.RAGService
-import ai.tock.genai.orchestratorcore.mappers.ObservabilitySettingMapper
+import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 import ai.tock.genai.orchestratorcore.utils.OpenSearchUtils
 import ai.tock.shared.*
 import engine.config.AbstractProactiveAnswerHandler
 import mu.KotlinLogging
 
-private val kNeighborsDocuments =
-    intProperty(name = "tock_gen_ai_orchestrator_document_number_neighbors", defaultValue = 1)
-private val nLastMessages = intProperty(name = "tock_gen_ai_orchestrator_dialog_number_messages", defaultValue = 10)
+private val kNeighborsDocuments = intProperty(
+    name = "tock_gen_ai_orchestrator_document_number_neighbors",
+    defaultValue = 1)
+private val nLastMessages = intProperty(
+    name = "tock_gen_ai_orchestrator_dialog_number_messages",
+    defaultValue = 5)
 private val technicalErrorMessage = property(
-    "tock_gen_ai_orchestrator_technical_error",
-    defaultValue = property("tock_technical_error", "Technical error :( sorry!")
-)
-private val ragDebugEnabled = booleanProperty(name = "tock_gen_ai_orchestrator_rag_debug_enabled", defaultValue = false)
+    name = "tock_gen_ai_orchestrator_technical_error",
+    defaultValue = "Technical error :( sorry!")
+private val ragDebugEnabled = booleanProperty(
+    name = "tock_gen_ai_orchestrator_rag_debug_enabled",
+    defaultValue = false)
 
 object RAGAnswerHandler : AbstractProactiveAnswerHandler {
 
@@ -156,8 +160,22 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
     private fun rag(botBus: BotBus): RAGResult {
         logger.info { "Call Generative AI Orchestrator - RAG API" }
         with(botBus) {
-
+            // The RAG Story is only handled when RAG and will use Vector Store settings if defined, otherwise it will not send any vector store setting in the RAG Query which will default to Gen AI Orchestrator environment variable vector settings
             val ragConfiguration = botDefinition.ragConfiguration!!
+            val vectorStoreConfiguration = botDefinition.vectorStoreConfiguration
+
+            var documentSearchParams = OpenSearchParams(
+                // The number of neighbors to return for each query_embedding.
+                k = kNeighborsDocuments, filter = listOf(
+                    Term(term = mapOf("metadata.index_session_id.keyword" to ragConfiguration.indexSessionId!!))
+                )
+            )
+
+            var vectorStoreSetting: VectorStoreSetting? = null
+            if(vectorStoreConfiguration!= null && vectorStoreConfiguration.enabled) {
+                vectorStoreSetting = vectorStoreConfiguration.setting
+                documentSearchParams = documentSearchParams.copy(k = vectorStoreSetting.k)
+            }
 
             try {
                 val response = ragService.rag(
@@ -170,15 +188,13 @@ object RAGAnswerHandler : AbstractProactiveAnswerHandler {
                             "no_answer" to ragConfiguration.noAnswerSentence
                         ),
                         embeddingQuestionEmSetting = ragConfiguration.emSetting,
+                        // TODO : the document index name will be managed for each vector store type
+                        // TODO : See https://github.com/theopenconversationkit/tock/pull/1735
                         documentIndexName = OpenSearchUtils.normalizeDocumentIndexName(
                             ragConfiguration.namespace, ragConfiguration.botId
                         ),
-                        documentSearchParams = OpenSearchParams(
-                            // The number of neighbors to return for each query_embedding.
-                            k = kNeighborsDocuments, filter = listOf(
-                                Term(term = mapOf("metadata.index_session_id.keyword" to ragConfiguration.indexSessionId!!))
-                            )
-                        ),
+                        documentSearchParams = documentSearchParams,
+                        vectorStoreSetting = vectorStoreSetting,
                         observabilitySetting = botDefinition.observabilityConfiguration?.setting
                     ), debug = action.metadata.debugEnabled || ragDebugEnabled
                 )

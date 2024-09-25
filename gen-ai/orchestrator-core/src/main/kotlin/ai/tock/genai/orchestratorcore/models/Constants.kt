@@ -22,8 +22,7 @@ object Constants {
 
     const val LANGFUSE = "Langfuse"
 
-    const val SECRET_KEY_RAW = "Raw"
-    const val SECRET_KEY_AWS = "AwsSecretsManager"
+    const val OPEN_SEARCH = "OpenSearch"
 
     private const val GEN_AI="GenAI"
     private const val GEN_AI_RAG="$GEN_AI/RAG"
@@ -34,5 +33,6 @@ object Constants {
 
     const val GEN_AI_COMPLETION_SENTENCE_GENERATION="$GEN_AI_COMPLETION/sentenceGeneration"
 
+    const val GEN_AI_VECTOR_STORE="$GEN_AI/VECTOR_STORE"
     const val GEN_AI_OBSERVABILITY="$GEN_AI/OBSERVABILITY"
 }

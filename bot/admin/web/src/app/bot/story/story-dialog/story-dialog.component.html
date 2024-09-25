@@ -97,7 +97,7 @@
           [(ngModel)]="intent"
           (keyup)="intentCategoryChange()"
           (focus)="intentCategoryChange()"
-          (change)="intent = $any($event.target)"
+          (change)="intent = $any($event.target).value"
         />
       </tock-form-control>
       <nb-autocomplete

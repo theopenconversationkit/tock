@@ -27,6 +27,7 @@ import { NbToastrService } from '@nebular/theme';
 import { DialogService } from '../../core-nlp/dialog.service';
 import { Observable } from 'rxjs';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { getExportFileName } from '../../shared/utils';
 
 @Component({
   selector: 'tock-entities',
@@ -70,7 +71,16 @@ export class EntitiesComponent implements OnInit {
   }
 
   downloadDictionary(): void {
-    saveAs(new Blob([JsonUtils.stringify(this.selectedDictionary)]), 'dictionary_' + this.selectedEntityType.name + '.json');
+    const exportFileName = getExportFileName(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      'Dictionary',
+      'json',
+      this.selectedEntityType.name
+    );
+
+    saveAs(new Blob([JsonUtils.stringify(this.selectedDictionary)]), exportFileName);
+
     this.toastrService.show(`Dictionary exported`, 'Dictionary', {
       duration: 2000,
       status: 'success'

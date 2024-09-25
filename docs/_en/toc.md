@@ -37,6 +37,8 @@ title: Table of Contents
     * [Internationalization (_i18n_)](../dev/i18n)
     * [Tock APIs](../dev/api)
     * [Code samples](../dev/exemples-code)
+    * _Feature technical designs_
+        * [#1696 GCP Secret Manager](../dev/feature-technical-designs/1696-gcp-secrets)
 
 * About Tock :
     * [Why Tock](../about/why)

@@ -118,10 +118,12 @@
         (click)="setEntity()"
         *ngIf="!step.entity || step.entity.value"
       >
+        {{ step.entity ? step.entity.entityRole : '' }}
         <nb-icon
           icon="paperclip"
           [status]="step.entity ? 'primary' : 'basic'"
         ></nb-icon>
+        {{ step.entity ? (step.entity.value ? step.entity.value : '') : '' }}
       </button>
       <button
         nbButton
@@ -131,8 +133,8 @@
         (click)="setEntity()"
         *ngIf="step.entity && !step.entity.value"
       >
-        <nb-icon icon="paperclip"></nb-icon>
         {{ step.entity ? (step.entity.value ? step.entity.value : step.entity.entityRole) : '' }}
+        <nb-icon icon="paperclip"></nb-icon>
       </button>
     </tock-form-control>
 

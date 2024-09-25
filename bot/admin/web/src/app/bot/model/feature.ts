@@ -25,7 +25,8 @@ export class Feature {
     public enabled: boolean,
     public startDate: Date = null,
     public endDate: Date = null,
-    public applicationId: string = null
+    public applicationId: string = null,
+    public graduation: number = null,
   ) {}
 
   static fromJSON(json: any): Feature {

@@ -34,6 +34,7 @@ import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.save
 import java.time.ZonedDateTime
+import kotlin.math.abs
 
 @Data(internal = true)
 @JacksonData(internal = true)
@@ -44,10 +45,12 @@ internal data class Feature(
     val botId: String,
     val namespace: String,
     val startDate: ZonedDateTime? = null,
-    val endDate: ZonedDateTime? = null
+    val endDate: ZonedDateTime? = null,
+    val graduation: Int? = null,
 )
 
-internal class FeatureMongoDAO(private val cache: FeatureCache, private val col: MongoCollection<Feature>) : FeatureDAO {
+internal class FeatureMongoDAO(private val cache: FeatureCache, private val col: MongoCollection<Feature>) :
+    FeatureDAO {
     private val logger = KotlinLogging.logger {}
 
     private fun calculateId(botId: String, namespace: String, category: String, name: String, applicationId: String?) =
@@ -59,7 +62,8 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         category: String,
         name: String,
         applicationId: String?,
-        default: Boolean
+        default: Boolean,
+        userId: String?,
     ): Boolean {
         val id = calculateId(botId, namespace, category, name, applicationId)
         val idWithoutApplicationId = calculateId(botId, namespace, category, name, null)
@@ -72,17 +76,33 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
             }
         } else {
             val feature = (connectorFeature ?: globalFeature)!!
-            isEnabled(feature)
+            isEnabled(feature, userId)
         }
     }
 
-    private fun isEnabled(feature: Feature): Boolean {
-        val now = ZonedDateTime.now(internalDefaultZoneId)
+    private fun isEnabled(feature: Feature, userId: String?): Boolean {
+        return feature.enabled
+                && isEnableForDate(feature, ZonedDateTime.now(internalDefaultZoneId))
+                && isEnableForUser(feature, userId)
+    }
+
+    private fun isEnableForUser(feature: Feature, userId: String?): Boolean {
+        userId ?: return true
+        return when (feature.graduation) {
+            null -> true
+            0 -> false
+            100 -> true
+            else -> (abs(userId.hashCode()) % 100 < feature.graduation)
+        }
+    }
+
+    private fun isEnableForDate(feature: Feature, now: ZonedDateTime): Boolean {
         return when {
-            feature.startDate != null && feature.endDate == null -> feature.enabled && now.isAfter(feature.startDate)
-            feature.startDate != null && feature.endDate != null -> feature.enabled && now.isAfter(feature.startDate) &&
-                now.isBefore(feature.endDate)
-            else -> feature.enabled
+            feature.startDate != null && feature.endDate == null -> now.isAfter(feature.startDate)
+            feature.startDate != null && feature.endDate != null -> now.isAfter(feature.startDate) &&
+                    now.isBefore(feature.endDate)
+            // FIXME : startDate == null && endDate != null is not handle ?
+            else -> true
         }
     }
 
@@ -118,10 +138,11 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         name: String,
         startDate: ZonedDateTime?,
         endDate: ZonedDateTime?,
-        applicationId: String?
+        applicationId: String?,
+        graduation: Int?,
     ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
-        val feature = Feature(id, "$category,$name", true, botId, namespace, startDate, endDate)
+        val feature = Feature(id, "$category,$name", true, botId, namespace, startDate, endDate, graduation)
 
         col.save(feature)
     }
@@ -147,7 +168,7 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
                     val category = if (index == -1) "" else it.key.substring(0, index)
                     val name = if (index == -1) it.key else it.key.substring(index + 1, it.key.length)
                     val applicationId = if (applicationIndex == -1) null else it._id.substring(applicationIndex + 1)
-                    FeatureState(category, name, it.enabled, it.startDate, it.endDate, applicationId)
+                    FeatureState(category, name, it.enabled, it.startDate, it.endDate, applicationId, it.graduation)
                 } catch (e: Exception) {
                     logger.error(e)
                     null
@@ -162,10 +183,11 @@ internal class FeatureMongoDAO(private val cache: FeatureCache, private val col:
         name: String,
         startDate: ZonedDateTime?,
         endDate: ZonedDateTime?,
-        applicationId: String?
+        applicationId: String?,
+        graduation: Int?,
     ) {
         val id = calculateId(botId, namespace, category, name, applicationId)
-        val feature = Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate)
+        val feature = Feature(id, "$category,$name", enabled, botId, namespace, startDate, endDate, graduation)
         col.save(feature)
     }
 

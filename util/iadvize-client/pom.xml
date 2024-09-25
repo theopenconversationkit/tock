@@ -3,7 +3,7 @@
     <parent>
         <groupId>ai.tock</groupId>
         <artifactId>tock-util</artifactId>
-        <version>24.3.6-SNAPSHOT</version>
+        <version>24.3.7-SNAPSHOT</version>
     </parent>
     <artifactId>tock-iadvize-client</artifactId>
     <name>tock-iadvize-client</name>
@@ -14,6 +14,11 @@
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>tock-shared</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ai.tock</groupId>
+            <artifactId>tock-env-tools</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.expediagroup</groupId>

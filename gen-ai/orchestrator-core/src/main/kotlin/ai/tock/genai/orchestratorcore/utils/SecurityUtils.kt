@@ -16,100 +16,72 @@
 
 package ai.tock.genai.orchestratorcore.utils
 
-import ai.tock.aws.model.AIProviderSecret
-import ai.tock.aws.secretmanager.provider.AWSSecretsManagerService
-import ai.tock.genai.orchestratorcore.models.Constants
-import ai.tock.genai.orchestratorcore.models.security.AwsSecretKey
-import ai.tock.genai.orchestratorcore.models.security.RawSecretKey
-import ai.tock.genai.orchestratorcore.models.security.SecretKey
 import ai.tock.shared.injector
-import ai.tock.shared.property
 import ai.tock.shared.provide
-
-val secretStorageType: String = property("tock_gen_ai_orchestrator_secret_storage_type", Constants.SECRET_KEY_RAW)
-val secretStoragePrefix: String = property("tock_gen_ai_orchestrator_secret_storage_prefix_name", "/DEV")
+import ai.tock.shared.security.SecretManagerProviderType
+import ai.tock.shared.security.SecretManagerService
+import ai.tock.shared.security.credentials.AIProviderSecret
+import ai.tock.shared.security.genAISecretManagerProvider
+import ai.tock.shared.security.key.*
+import mu.KLogger
+import mu.KotlinLogging
 
 /**
  * The security utilities class
  */
 object SecurityUtils {
 
-    /**
-     * The AWS Secrets Manager Service
-     */
-    private val awsSecretsManagerClient: AWSSecretsManagerService get() = injector.provide()
+    private val logger: KLogger = KotlinLogging.logger {}
 
     /**
-     * Fetch the secret key value. Raw Value or Aws Secret Value
+     * The Secrets Manager Service
+     */
+    private val secretMangerService: SecretManagerService by lazy {
+        injector.provide(tag = genAISecretManagerProvider)
+    }
+
+    /**
+     * Fetch the secret key value.
      * @param secret the secret key
      * @return the secret value as String
      */
-    fun fetchSecretKeyValue(secret: SecretKey): String =
-        when(secret){
-            is RawSecretKey -> secret.value
-            is AwsSecretKey -> awsSecretsManagerClient.getAIProviderSecret(secret.secretName).secret
-            else -> throw IllegalArgumentException("Unsupported secret key type")
+    fun fetchSecretKeyValue(secret: SecretKey): String {
+        try {
+            // If the secret is a raw value, it is recovered as is.
+            if(secret is RawSecretKey) return  secret.value
+
+            // Check SecretManagerProvider if it is defined
+            if (genAISecretManagerProvider == null) {
+                throw IllegalArgumentException("No Gen AI secret manager provider has been defined.")
+            }
+
+            // Check whether the SecretManagerProvider supports secret
+            if(secretMangerService.isSecretTypeSupported(secret)) {
+                return secretMangerService.getAIProviderSecret((secret as NamedSecretKey).secretName).secret
+            }else{
+                throw IllegalArgumentException("The secret manager provider type '${secret.type}' is not supported by " +
+                        "the instantiated service ${secretMangerService::class.simpleName}.")
+            }
+        } catch (e: Exception) {
+            logger.warn("The secret has not been recovered.", e)
+            // If this fails, return an empty string as the secret value, so as not to block processing.
+            return ""
         }
+    }
 
     /**
-     * Create a secret key. If secret storage type is Raw, so it creates [RawSecretKey], else if it is AwsSecretsManager then it creates [AwsSecretKey]
+     * Create a secret key depending on secret manager provider.
+     * If no provider has been defined, it creates [RawSecretKey].
+     * @param namespace the application namespace
+     * @param botId the bot ID (also known as application name)
+     * @param feature the feature name
      * @param secretValue the secret value
-     * @param secretName the secret name
      * @return [SecretKey]
      */
-    fun getSecretKey(secretValue: String, secretName: String): SecretKey =
-        when(secretStorageType){
-            Constants.SECRET_KEY_RAW -> RawSecretKey(secretValue)
-            Constants.SECRET_KEY_AWS -> {
-                // Create or update the [AIProviderSecret] on AWS Secrets Manager
-                awsSecretsManagerClient.createOrUpdateAIProviderSecret(secretName, AIProviderSecret(secretValue))
-                // The return the Secret Key
-                AwsSecretKey(secretName)
-            }
-            else -> throw IllegalArgumentException("Unsupported secret key type")
-        }
+    fun createSecretKey(namespace: String, botId: String, feature: String, secretValue: String): SecretKey =
+        genAISecretManagerProvider?.let {
+            secretMangerService.createOrUpdateSecretKey(namespace, botId, feature, secretValue)
+        } ?: RawSecretKey(secretValue)
 
-    /**
-     * Generate an AWS Secret Name
-     * @param namespace the bot namespace
-     * @param botId the bot id
-     * @param feature the feature for which the secret will be created
-     * @return the generate secret name
-     */
-    fun generateAwsSecretName(namespace: String, botId: String, feature: String): String
-        = normalizeAwsSecretName("$secretStoragePrefix/$namespace/$botId/$feature")
-
-    /**
-     * Name standardization
-     * @param input the input to be normalized
-     */
-    private fun normalizeAwsSecretName(input: String): String {
-        // Define allowed characters
-        val allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/_+=.@-"
-
-        // Replace underscores and space with hyphens
-        var normalized = input.replace('_', '-').replace(' ', '-')
-
-        // Filter the input string to only include allowed characters
-        normalized = normalized.filter { it in allowedChars }
-
-        // Ensure the length constraints
-        if (normalized.length > 512) {
-            normalized = normalized.substring(0, 512)
-        }
-
-        // Remove ending hyphen followed by six characters if it exists
-        val hyphenSixPattern = Regex("-.{6}$")
-        if (normalized.length > 7 && hyphenSixPattern.containsMatchIn(normalized)) {
-            normalized = normalized.substring(0, normalized.length - 7)
-        }
-
-        // Ensure at least one character
-        if (normalized.isEmpty()) {
-            throw IllegalArgumentException("Normalized AWS secret name must be at least one character long.")
-        }
-
-        return normalized
-    }
 
 }

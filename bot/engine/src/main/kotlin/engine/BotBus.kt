@@ -495,7 +495,7 @@ interface BotBus : Bus<BotBus> {
      */
     fun isFeatureEnabled(feature: FeatureType, default: Boolean = false) =
         injector.provide<FeatureDAO>()
-            .isEnabled(botDefinition.botId, botDefinition.namespace, feature, applicationId, default)
+            .isEnabled(botDefinition.botId, botDefinition.namespace, feature, applicationId, default, userId.id)
 
     /**
      * Marks the current as not understood in the nlp model.

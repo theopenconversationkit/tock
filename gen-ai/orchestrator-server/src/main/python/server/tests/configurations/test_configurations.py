@@ -12,11 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-from unittest.mock import patch
-
 from gen_ai_orchestrator.configurations.environment.settings import fetch_open_search_credentials, _Settings
 from gen_ai_orchestrator.configurations.logging.logger import setup_logging
 from gen_ai_orchestrator.models.security.credentials import Credentials
+from unittest.mock import patch
 
 
 def test_environment():
@@ -27,7 +26,6 @@ def test_environment():
 def test_logging():
     """Test logger is instantiated successfully."""
     setup_logging()
-
 
 
 @patch('boto3.client')
@@ -52,6 +50,7 @@ def test_fetch_open_search_credentials(mock_get_credentials, mock_boto3_client):
     assert username == open_search_credentials.username
     assert password == open_search_credentials.password
 
+
 @patch('boto3.client')
 @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials')
 @patch('gen_ai_orchestrator.configurations.environment.settings.application_settings',
@@ -73,6 +72,7 @@ def test_fetch_bad_open_search_credentials(mock_get_credentials, mock_boto3_clie
     assert username is None
     assert password is None
 
+
 @patch('boto3.client')
 @patch('gen_ai_orchestrator.utils.aws.aws_secrets_manager_client.AWSSecretsManagerClient.get_credentials')
 @patch('gen_ai_orchestrator.configurations.environment.settings.application_settings',
@@ -86,3 +86,4 @@ def test_fetch_default_open_search_credentials(mock_get_credentials, mock_boto3_
     assert not mock_get_credentials.called
     assert username == 'default_user'
     assert password == 'default_pwd'
+
