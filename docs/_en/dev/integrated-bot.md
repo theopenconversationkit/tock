@@ -61,14 +61,14 @@ With Maven:
         <dependency>
             <groupId>ai.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>24.3.6</version>
+            <version>24.9.0</version>
         </dependency>
 ```
 
 With Gradle:
 
 ```groovy
-      compile 'ai.tock:bot-toolkit:24.3.6'
+      compile 'ai.tock:bot-toolkit:24.9.0'
 ```
 
 ### A Bot is a Set of Stories
