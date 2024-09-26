@@ -159,7 +159,7 @@ def scrape_urls(soup_filters, output_file, label, base_domain='domain'):
         # Scrape contents for each line
         for line in file:
             line = line.strip()
-            logging.debug('Scraping %i', line)
+            logging.debug('Scraping %s', line)
 
             # GET contents
             with request.urlopen(line) as response:
@@ -212,14 +212,14 @@ def scrape_urls(soup_filters, output_file, label, base_domain='domain'):
                             )
                         else:
                             logging.debug(
-                                "URL '%i' is ignored because scraped_texts=%i is different from main_tags="
+                                "URL '%s' is ignored because scraped_texts=%s is different from main_tags="
                                 , line, len(scraped_texts), len(main_tags))
                             ignored_urls.append({'ignored_urls': line})
                     else:
-                        logging.debug('Line %i is ignored (empty tags)', line, )
+                        logging.debug('Line %s is ignored (empty tags)', line)
                 else:
                     logging.warning(
-                        "URL '%i' is ignored because it failed to answer GET", line
+                        "URL '%s' is ignored because it failed to answer GET", line
                     )
 
     output_directory = f"ready-to_index_file/{label}" if label else "ready-to_index_file"
