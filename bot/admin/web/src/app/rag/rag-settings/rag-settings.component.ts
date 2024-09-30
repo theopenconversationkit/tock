@@ -22,6 +22,7 @@ interface RagSettingsForm {
   noAnswerStoryId: FormControl<string>;
 
   indexSessionId: FormControl<string>;
+  indexName: FormControl<string>;
 
   llmEngine: FormControl<LLMProvider>;
   llmSetting: FormGroup<any>;
@@ -114,6 +115,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     noAnswerSentence: new FormControl(undefined, [Validators.required]),
     noAnswerStoryId: new FormControl(undefined),
     indexSessionId: new FormControl(undefined),
+    indexName: new FormControl(undefined),
     llmEngine: new FormControl(undefined, [Validators.required]),
     llmSetting: new FormGroup<any>({}),
     emEngine: new FormControl(undefined, [Validators.required]),
@@ -139,6 +141,10 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   get indexSessionId(): FormControl {
     return this.form.get('indexSessionId') as FormControl;
+  }
+
+  get indexName(): FormControl {
+    return this.form.get('indexName') as FormControl;
   }
 
   get canSave(): boolean {
@@ -286,8 +292,12 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
             ragSettings.noAnswerStoryId = null;
           }
           this.settingsBackup = ragSettings;
+
+          this.indexName.reset();
+
           this.form.patchValue(ragSettings);
           this.form.markAsPristine();
+
           this.isSubmitted = false;
           this.toastrService.success(`Rag settings succesfully saved`, 'Success', {
             duration: 5000,
