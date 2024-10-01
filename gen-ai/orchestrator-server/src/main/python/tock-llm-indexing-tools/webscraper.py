@@ -15,7 +15,7 @@
 """Simple recursive webscraper based on a list of BeautifulSoup filters.
 
 Usage:
-    webscraping.py [-v] <input_urls> <soup_filters> <output_csv>
+    webscraping.py [-v] <input_urls> <soup_filters> <output_csv> [options]
     webscraping.py -h | --help
     webscraping.py --version
 
@@ -25,12 +25,13 @@ Arguments:
     soup_filters    a comma-separated list of filters to get pages contents
                     (texts to be indexed will be concatenated in this order)
                     Example: id='notes',class_='container',id='test'
-    output_csv      path to the output, ready-to-index CSV file (this file will
+    output_csv      name of the output csv, ready-to-index CSV file (this file will
                     be created at execution time, along with a
-                    <base URL netloc>/ sub-dir in the same directory, containg
+                    <base URL netloc>/ sub-dir in the same directory, contain
                     debug info)
 
 Options:
+    --label=<label>      label name, name of the folder in ready-to_index_file folder where csv while be created.
     -h --help   Show this screen
     --version   Show version
     -v          Verbose output for debugging (without this option, script will
@@ -42,6 +43,7 @@ contents into a ready-to-index CSV file (one 'title'|'url'|'text' line per
 URL with scraped contents).
 """
 import logging
+import os
 import sys
 from pathlib import Path
 from urllib import request
@@ -54,7 +56,7 @@ from docopt import docopt
 
 
 def browse_base_urls(
-    base_urls: list[str], target_dir: str = '.', base_domain: str = 'domain'
+        base_urls: list[str], base_domain: str = 'domain'
 ):
     """
     Recursively browse URLs for sub-URLs. Creates the <base_domain>/urls.txt
@@ -63,12 +65,11 @@ def browse_base_urls(
         Arguments:
             base_urls   a list of base URLs that will be browsed recursively
                         for sub-URLs (follow links)
-            target_dir  the directory to store output files
             base_domain all sub-URLs will be checked to be in this base domain,
                         and all debug will go in a subdirectory with this name
     """
     # Create the debug sub-directory if it does not already exist
-    path = Path(target_dir) / base_domain
+    path = Path('.') / base_domain
     path.mkdir(parents=True, exist_ok=True)
 
     # Open results file
@@ -85,7 +86,7 @@ def browse_base_urls(
             urls_to_visit = {base_url}
             while urls_to_visit:
                 current_url = urls_to_visit.pop()
-                logging.debug(f'Visiting {current_url}')
+                logging.debug('Visiting %s', current_url)
 
                 try:
                     # Check URL is valid
@@ -109,7 +110,7 @@ def browse_base_urls(
                                         # Add the link URL to the set of URLs to be visited if it hasn't been visited yet
                                         if link_url not in visited_urls:
                                             logging.debug(
-                                                f'Add to-be-visited link {link_url}'
+                                                'Add to-be-visited link %s', link_url
                                             )
                                             urls_to_visit.add(link_url)
 
@@ -117,32 +118,33 @@ def browse_base_urls(
                                 output_file.write(f'{current_url}\n')
                                 # Add current url to the set of visited URLs
                                 visited_urls.add(current_url)
-                                logging.debug(f'Add to visited {current_url}')
+                                logging.debug('Add to visited %s', current_url)
                             else:
                                 logging.warning(
-                                    f"URL '{current_url}' is ignored because its base URL href ({base_url_href}) is not in the '{base_domain}' domain"
+                                    "URL '%s' is ignored because its base URL href (%s) is not in the '%s' domain",
+                                    current_url, base_url_href, base_domain
                                 )
                         else:
                             logging.warning(
-                                f"URL '{current_url}' is ignored because it answered GET with code {response.status}"
+                                "URL '%s' is ignored because it answered GET with code %s", current_url, response.status
                             )
 
                 except URLError as e:
                     logging.warning(
-                        f"URL '{current_url}' is ignored because it failed to answer GET ({e})"
+                        "URL '%s' is ignored because it failed to answer GET ({e})", current_url
                     )
 
 
-def scrape_urls(soup_filters, output_file, target_dir='.', base_domain='domain'):
+def scrape_urls(soup_filters, output_file, label, base_domain='domain'):
     """
     Scrape all URLs listed in 'urls.txt' file with BeautifulSoup: create one
     txt file per scraped URL, then create the ready-to-index CSV file.
 
         Arguments:
+            label: label name, name of the folder in ready-to_index_file folder where csv while be created.
             soup_filters:   a string containing comma-separated BeautifulSoup
                             filters
             output_file:    str path to the output file
-            target_dir      the directory to store output files
             base_domain     all sub-URLs will be checked to be in this base
                             domain, and all debug will go in a subdirectory
                             with this name
@@ -152,12 +154,12 @@ def scrape_urls(soup_filters, output_file, target_dir='.', base_domain='domain')
     scraped_urls = []
 
     # fetch URLs file contents
-    urls_file_path = Path(target_dir) / base_domain / 'scanned_urls.txt'
+    urls_file_path = Path('.') / base_domain / 'scanned_urls.txt'
     with open(urls_file_path, 'r') as file:
         # Scrape contents for each line
         for line in file:
             line = line.strip()
-            logging.debug(f'Scraping {line}')
+            logging.debug('Scraping %s', line)
 
             # GET contents
             with request.urlopen(line) as response:
@@ -179,7 +181,7 @@ def scrape_urls(soup_filters, output_file, target_dir='.', base_domain='domain')
                             + '.txt'
                         )
                         contents_file_path = (
-                            Path(target_dir) / base_domain / contents_filename
+                                Path('.') / base_domain / contents_filename
                         )
                         # Scrape contents for each main Tag
                         scraped_texts = [
@@ -210,27 +212,32 @@ def scrape_urls(soup_filters, output_file, target_dir='.', base_domain='domain')
                             )
                         else:
                             logging.debug(
-                                f"URL '{line}' is ignored because scraped_texts={len(scraped_texts)}'"
-                                f' is different from main_tags={len(main_tags)}'
-                            )
+                                "URL '%s' is ignored because scraped_texts=%s is different from main_tags="
+                                , line, len(scraped_texts), len(main_tags))
                             ignored_urls.append({'ignored_urls': line})
                     else:
-                        logging.debug(f'Line {line} is ignored (empty tags)')
+                        logging.debug('Line %s is ignored (empty tags)', line)
                 else:
                     logging.warning(
-                        f"URL '{line}' is ignored because it failed to answer GET"
+                        "URL '%s' is ignored because it failed to answer GET", line
                     )
 
+    output_directory = f"ready-to_index_file/{label}" if label else "ready-to_index_file"
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+        logging.debug("Répertoire de sortie créé : %s", output_directory)
+    # Pat to the output CSV
+    csv_file_path = os.path.join(output_directory, output_file)
     # Save to output CSV file (use pandas to ensure 'ready-to-index' consistency)
-    pd.DataFrame(results).to_csv(output_file, sep='|', index=False)
+    pd.DataFrame(results).to_csv(csv_file_path, sep='|', index=False)
     pd.DataFrame(ignored_urls).to_csv(
-        Path(target_dir) / base_domain / 'ignored_urls.txt',
+        Path('.') / base_domain / 'ignored_urls.txt',
         sep='|',
         index=False,
         header=False,
     )
     pd.DataFrame(scraped_urls).to_csv(
-        Path(target_dir) / base_domain / 'scraped_urls.txt',
+        Path('.') / base_domain / 'scraped_urls.txt',
         sep='|',
         index=False,
         header=False,
@@ -250,17 +257,18 @@ if __name__ == '__main__':
     # - input URLs
     base_urls = cli_args['<input_urls>'].split(',')
     if not base_urls[0]:
-        logging.error(f"Cannot proceed: could not find a URL in list '{base_urls}'")
+        logging.error("Cannot proceed: could not find a URL in list '%s'", base_urls)
         sys.exit(1)
     base_domain = urlparse(base_urls[0]).netloc
     for base_url in base_urls:
         parsed_url = urlparse(base_url)
         if not parsed_url.scheme or not parsed_url.netloc:
-            logging.error(f"Cannot proceed: '{base_url}' is not a valid URL")
+            logging.error("Cannot proceed: '%s' is not a valid URL", base_url)
             sys.exit(1)
         if base_domain != parsed_url.netloc:
             logging.error(
-                f"Cannot proceed: '{base_url}' has a different base domain ('{parsed_url.netloc}') than previous URLs ('{base_domain}')"
+                "Cannot proceed: '%s' has a different base domain ('%s') than previous URLs ('%s')", base_url,
+                parsed_url.netloc, base_domain
             )
             sys.exit(1)
 
@@ -277,30 +285,25 @@ if __name__ == '__main__':
                 filters_as_dicts.append({key: value})
             else:
                 logging.error(
-                    f"Cannot proceed: BeautifulSoup filter '{filter}' could not be parsed into a key and its value"
+                    "Cannot proceed: BeautifulSoup filter '%s' could not be parsed into a key and its value", filter
                 )
                 sys.exit(1)
     else:
         logging.error(
-            f"Cannot proceed: BeautifulSoup filters arg ({cli_args['<soup_filters>']}) could not be parsed for a list of filters"
+            "Cannot proceed: BeautifulSoup filters arg (%s) could not be parsed for a list of filters",
+            cli_args['<soup_filters>']
         )
-        sys.exit(1)
-
-    # - output file path
-    target_dir = Path(cli_args['<output_csv>']).parent
-    if not target_dir.exists():
-        logging.error(f'Cannot proceed: directory {target_dir} does not exist')
         sys.exit(1)
 
     # Two successive main funcs:
     # - Browse base URLs recursively to populate the urls.txt file listing all URLs to be scraped
     browse_base_urls(
-        base_urls=base_urls, target_dir=target_dir, base_domain=base_domain
+        base_urls=base_urls, base_domain=base_domain
     )
     # - Scrape all URLs from urls.txt using BeautifulSoup filters
     scrape_urls(
         soup_filters=filters_as_dicts,
         output_file=cli_args['<output_csv>'],
-        target_dir=target_dir,
+        label=cli_args['--label'],
         base_domain=base_domain,
     )

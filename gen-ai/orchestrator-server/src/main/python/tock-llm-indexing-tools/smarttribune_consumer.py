@@ -18,14 +18,13 @@ Usage:
     smarttribune_consumer.py [-v]  <base_url> <output_csv> [options]
 
 Arguments:
-
     base_url    the base URL to prefix every FAQ entry's query parameter to
                 create a full URL
-    output_csv  path to the output, ready-to-index CSV file
+    output_csv  name of the output csv, ready-to-index CSV file
 
 Options:
     --knowledge_base=<value>...    name of the target knowledge base, ex: name1 name2 name3
-
+    --label=<label>      label name, name of the folder in ready-to_index_file folder where csv while be created.
     --tag_title=<value>
     -h --help   Show this screen
     --version   Show version
@@ -73,7 +72,7 @@ async def _get_number_page(row, token):
             total_items = response_json.get('meta').get('totalItems')
             if total_items != 0:
                 number_page = response_json.get('meta').get('numberPage')
-                logging.info(f'request all question, number of page {number_page}')
+                logging.info('request all question, number of page %i', number_page)
                 return number_page
             return 0
 
@@ -186,6 +185,7 @@ async def fetch_auth_token(session, url, headers, json=None):
         data = await response.json()
         return data
 
+
 async def fetch_allowed_knowledge_bases(session, url, headers):
     async with session.get(url, headers=headers) as response:
         data = await response.json()
@@ -204,6 +204,7 @@ async def _main(args, body_credentials):
                                            '--tag_title'
                                            '<base_url>'
                                            '<output_csv>'
+                                            '--label'
            body_credentials (dict): A dictionary containing api credentials
                        Expecting keys:     'apiKey'
                                            'apiSecret'
@@ -230,12 +231,13 @@ async def _main(args, body_credentials):
     url = f'{url_base_api}knowledge-bases?limit=200'
     headers['Authorization'] = f'Bearer {token}'
     async with aiohttp.ClientSession(trust_env=True) as session:
-        response_allowed_knowledge_bases = await fetch_allowed_knowledge_bases(session=session, url=url, headers=headers)
+        response_allowed_knowledge_bases = await fetch_allowed_knowledge_bases(session=session, url=url,
+                                                                               headers=headers)
     if not response_allowed_knowledge_bases.get('data'):
         logging.error(
-            response_allowed_knowledge_bases.get('text'),
-            response_allowed_knowledge_bases.get('status_code'),
-        )
+            f"message : %  code : %s ",
+            str(response_allowed_knowledge_bases.get('code')),
+            response_allowed_knowledge_bases.get('message'))
         sys.exit(1)
 
     # filter knowledge base id and faq channel id associated
@@ -265,6 +267,7 @@ async def _main(args, body_credentials):
         for current_page in range(1, row.iloc[2] + 1)
     ]
     rawdata = await asyncio.gather(*coroutines, return_exceptions=False)
+
     df_all_questions = pd.concat([pd.DataFrame(page) for page in rawdata])
 
     # receipt answer by documentId
@@ -282,14 +285,21 @@ async def _main(args, body_credentials):
     df_all_questions[
         'URL'
     ] = f"{cli_args.get('<base_url>')}?question=" + df_all_questions.get('URL')
+    label = args.get('--label')
+    output_directory = f"ready-to_index_file/{label}" if label else "ready-to_index_file"
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+        logging.debug("Répertoire de sortie créé : %s", output_directory)
+    # Chemin du fichier CSV de sortie
+    csv_file_path = os.path.join(output_directory, args.get('<output_csv>'))
 
     # export data
-    logging.debug(f"Export to output CSV file {args.get('<output_csv>')}")
+    logging.debug("Export to output CSV file %s", csv_file_path)
     logging.info(
-        f'finished {len(df_all_questions)} questions in {time() - _start:.2f} seconds'
+        f'finished %i questions in {time() - _start:.2f} seconds', len(df_all_questions),
     )
     df_all_questions.get(['Title', 'URL', 'Text']).to_csv(
-        args.get('<output_csv>'), sep='|', index=False
+        csv_file_path, sep='|', index=False
     )
 
 
