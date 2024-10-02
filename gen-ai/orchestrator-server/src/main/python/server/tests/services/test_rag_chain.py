@@ -206,9 +206,7 @@ Answer in {locale}:""",
     # Assert LangChain qa chain is created using the expected settings from query
     mocked_chain_builder.assert_called_once_with(
         llm=llm_factory_instance.get_language_model(),
-        retriever=mocked_compressor_builder.return_value,  # vector_store_factory_instance.get_vector_store().as_retriever(
-        # search_kwargs=query.document_search_params.to_dict()
-        # ),
+        retriever=mocked_compressor_builder.return_value,
         return_source_documents=True,
         return_generated_question=True,
         combine_docs_chain_kwargs={
