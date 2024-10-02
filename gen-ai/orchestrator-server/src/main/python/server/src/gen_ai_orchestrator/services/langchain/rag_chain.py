@@ -347,10 +347,8 @@ def check_guardrail_output(guardrail_output: dict) -> bool:
         Returns True if nothing is detected, raises an exception otherwise.
     """
     if guardrail_output['output_toxicity']:
-        raise HTTPException(
-            status_code=451,
-            detail=f"Toxicity detected in LLM output ({','.join(guardrail_output['output_toxicity_reason'])})",
-        )
+        message = f"Toxicity detected in LLM output ({','.join(guardrail_output['output_toxicity_reason'])})"
+        raise GenAIGuardCheckException(ErrorInfo(cause=message))
     return True
 
 
