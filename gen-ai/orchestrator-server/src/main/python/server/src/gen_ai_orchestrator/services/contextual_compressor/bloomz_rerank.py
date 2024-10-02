@@ -73,7 +73,7 @@ class BloomzRerank(BaseDocumentCompressor):
 
         if response.status_code != 200:
             logger.error(f'{response.status_code} {response.reason} - {response.text}')
-            raise RuntimeError("The scoring server didn't respond has expected.")
+            raise RuntimeError("The scoring server didn't respond as expected.")
 
         final_results = []
         for i, doc_results in enumerate(response.json()['response']):
