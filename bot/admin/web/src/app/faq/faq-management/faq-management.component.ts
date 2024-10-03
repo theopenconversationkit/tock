@@ -13,6 +13,8 @@ import { FaqDefinition, FaqFilter, FaqSearchQuery, PaginatedFaqResult } from '..
 import { FaqManagementEditComponent } from './faq-management-edit/faq-management-edit.component';
 import { FaqManagementSettingsComponent } from './faq-management-settings/faq-management-settings.component';
 import { Pagination } from '../../shared/components';
+import { getExportFileName } from '../../shared/utils';
+import { saveAs } from 'file-saver-es';
 
 export type FaqDefinitionExtended = FaqDefinition & { _initQuestion?: string };
 
@@ -313,6 +315,31 @@ export class FaqManagementComponent implements OnInit, OnDestroy {
     } else {
       this.isSidePanelOpen.settings = true;
     }
+  }
+
+  download() {
+    let query: PaginatedQuery = this.stateService.createPaginatedQuery(0, 9999);
+    const request = this.toSearchQuery(query);
+
+    this.rest
+      .post('/faq/search', request)
+      .pipe(takeUntil(this.destroy))
+      .subscribe((faqsResult: PaginatedFaqResult) => {
+        const jsonBlob = new Blob([JSON.stringify(faqsResult.rows)], {
+          type: 'application/json'
+        });
+
+        const exportFileName = getExportFileName(
+          this.stateService.currentApplication.namespace,
+          this.stateService.currentApplication.name,
+          'Faqs',
+          'json'
+        );
+
+        saveAs(jsonBlob, exportFileName);
+
+        this.toastrService.show(`Faqs dump provided`, 'Faqs dump', { duration: 3000, status: 'success' });
+      });
   }
 
   ngOnDestroy() {

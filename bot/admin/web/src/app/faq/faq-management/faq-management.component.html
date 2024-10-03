@@ -6,6 +6,16 @@
       nbButton
       ghost
       shape="round"
+      nbTooltip="Export all faqs"
+      (click)="download()"
+    >
+      <nb-icon icon="download"></nb-icon>
+    </button>
+
+    <button
+      nbButton
+      ghost
+      shape="round"
       nbTooltip="FAQ Parameters"
       [disabled]="!configurations?.length"
       (click)="openSettings()"
