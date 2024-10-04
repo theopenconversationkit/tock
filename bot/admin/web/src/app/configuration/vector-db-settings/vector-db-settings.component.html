@@ -1,6 +1,6 @@
 <tock-sticky-menu [offset]="50">
   <div class="d-flex">
-    <h1 class="flex-grow-1 mb-0">Application's vector database parameters</h1>
+    <h1 class="flex-grow-1 mb-0">Application vector database settings</h1>
 
     <section class="grid-actions">
       <button
@@ -11,7 +11,7 @@
         nbTooltip="Cancel modifications"
         (click)="cancel()"
       >
-        <nb-icon icon="close-circle-outline"></nb-icon>
+        <nb-icon icon="x-circle"></nb-icon>
         CANCEL
       </button>
       <button
@@ -21,7 +21,7 @@
         nbTooltip="Save settings"
         (click)="submit()"
       >
-        <nb-icon icon="save-outline"></nb-icon>
+        <nb-icon icon="floppy"></nb-icon>
         SAVE
       </button>
     </section>
@@ -37,18 +37,10 @@
   </small>
 </tock-sticky-menu>
 
-<nb-alert
-  *ngIf="configurations?.length < 1"
-  class="alert-config flex-row align-items-center"
-  accent="warning"
->
-  <nb-icon
-    class="mr-1"
-    icon="alert-triangle-outline"
-    status="warning"
-  ></nb-icon>
-  No bot configuration detected
-</nb-alert>
+<tock-no-data-found
+  *ngIf="configurations?.length === 0"
+  title="No bot configuration detected"
+></tock-no-data-found>
 
 <form
   [formGroup]="form"
@@ -117,6 +109,20 @@
           </ng-container>
         </div>
       </div>
+
+      <ng-container *ngIf="settingsBackup">
+        <h5 class="section-title mt-2">Settings deletion</h5>
+
+        <button
+          nbButton
+          status="danger"
+          nbTooltip="Save settings"
+          (click)="confirmSettingsDeletion()"
+        >
+          <nb-icon icon="trash"></nb-icon>
+          DELETE SETTINGS
+        </button>
+      </ng-container>
     </nb-card-body>
   </nb-card>
 </form>

@@ -239,6 +239,20 @@
           {{ option.name }} <span *ngIf="!isStoryEnabled(option)"> &nbsp;(disabled)</span>
         </nb-option>
       </nb-autocomplete>
+
+      <ng-container *ngIf="settingsBackup">
+        <h5 class="section-title mt-2">Settings deletion</h5>
+
+        <button
+          nbButton
+          status="danger"
+          nbTooltip="Save settings"
+          (click)="confirmSettingsDeletion()"
+        >
+          <nb-icon icon="trash"></nb-icon>
+          DELETE SETTINGS
+        </button>
+      </ng-container>
     </nb-card-body>
   </nb-card>
 </form>
