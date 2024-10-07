@@ -8,8 +8,13 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>src/main/python/server/src/</directory>
-            <outputDirectory></outputDirectory>
+            <directory>src/main/python/server/</directory>
+            <outputDirectory>server</outputDirectory>
+            <includes>
+                <include>pyproject.toml</include>
+                <include>poetry.lock</include>
+                <include>src/**</include>
+            </includes>
         </fileSet>
     </fileSets>
 </assembly>
