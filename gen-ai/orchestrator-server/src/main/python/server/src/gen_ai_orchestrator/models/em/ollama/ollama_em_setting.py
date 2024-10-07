@@ -28,7 +28,7 @@ class OllamaEMSetting(BaseEMSetting):
     )
     model: str = Field(description='', examples=['llama2'])
     base_url: str = Field(
-        description='The model id',
+        description='Your local ollama endpoint base URL',
         examples=["http://localhost:11434"],
         default="http://localhost:11434"
     )
