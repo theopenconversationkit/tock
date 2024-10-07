@@ -26,7 +26,7 @@ class OllamaEMSetting(BaseEMSetting):
     provider: Literal[EMProvider.OLLAMA] = Field(
         description='The Embedding Model Provider.', examples=[EMProvider.OLLAMA]
     )
-    model: str = Field(description='', examples=['llama2'])
+    model: str = Field(description='Ollama model id see available models at https://ollama.com/library', examples=['llama2', 'llama2:7b'])
     base_url: str = Field(
         description='Your local ollama endpoint base URL',
         examples=["http://localhost:11434"],
