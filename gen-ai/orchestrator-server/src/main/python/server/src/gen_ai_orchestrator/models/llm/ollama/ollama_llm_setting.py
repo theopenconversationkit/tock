@@ -32,7 +32,7 @@ class OllamaLLMSetting(BaseLLMSetting):
         description='The Large Language Model Provider.', examples=[LLMProvider.OLLAMA]
     )
     model: str = Field(
-        description='The model id', examples=['llama2'], min_length=1
+        description='The model id', examples=['llama2', 'llama2:7b'], min_length=1
     )
     base_url: str = Field(
         description='Your ollama endpoint base URL',
