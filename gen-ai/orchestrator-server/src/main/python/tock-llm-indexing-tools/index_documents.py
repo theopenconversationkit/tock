@@ -205,7 +205,7 @@ def embed_and_store_docs(
     logging.debug('Index chunks in DB')
     # Use vector store factory from orchestrator
     vectorstore_factory = get_vector_store_factory(
-        None,
+        None, # Default vector store is OpenSearch and created base on environment variables, see tooling README.md
         embedding_function=embeddings,
         index_name=index_name,
     )
