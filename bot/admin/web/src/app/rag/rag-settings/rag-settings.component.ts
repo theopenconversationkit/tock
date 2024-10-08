@@ -12,7 +12,7 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { deepCopy, getExportFileName } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
-import { EnginesConfiguration, LLMProvider } from '../../shared/model/ai-settings';
+import { EnginesConfiguration, EnginesConfigurationParam, LLMProvider } from '../../shared/model/ai-settings';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { saveAs } from 'file-saver-es';
 
@@ -331,9 +331,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  sensitiveParams = [];
+  sensitiveParams: { label: string; key: string; include: boolean; param: EnginesConfigurationParam }[];
 
   exportSettings() {
+    this.sensitiveParams = [];
+
     const shouldConfirm = [this.currentLlmEngine.params, this.currentEmEngine.params].some((engine) => {
       return engine.some((entry) => {
         return entry.confirmExport;
@@ -341,15 +343,13 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     });
 
     if (shouldConfirm) {
-      this.sensitiveParams = [];
-
       [
-        { label: 'LLM engine', params: this.currentLlmEngine.params },
-        { label: 'Embedding engine', params: this.currentEmEngine.params }
+        { label: 'LLM engine', key: 'llmSetting', params: this.currentLlmEngine.params },
+        { label: 'Embedding engine', key: 'emSetting', params: this.currentEmEngine.params }
       ].forEach((engine) => {
         engine.params.forEach((entry) => {
           if (entry.confirmExport) {
-            this.sensitiveParams.push({ label: engine.label, entry });
+            this.sensitiveParams.push({ label: engine.label, key: engine.key, include: false, param: entry });
           }
         });
       });
@@ -367,7 +367,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   confirmExportSettings() {
-    console.log('confirmExportSettings');
+    this.downloadSettings();
+    this.closeExportConfirmationModal();
   }
 
   downloadSettings() {
@@ -376,6 +377,14 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     delete formValue['emEngine'];
     delete formValue['id'];
     delete formValue['enabled'];
+
+    if (this.sensitiveParams.length) {
+      this.sensitiveParams.forEach((sensitiveParam) => {
+        if (!sensitiveParam.include) {
+          delete formValue[sensitiveParam.key][sensitiveParam.param.key];
+        }
+      });
+    }
 
     const jsonBlob = new Blob([JSON.stringify(formValue)], {
       type: 'application/json'

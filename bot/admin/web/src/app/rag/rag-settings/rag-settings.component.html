@@ -305,13 +305,20 @@
         <nb-icon icon="x-lg"></nb-icon>
       </button>
     </nb-card-header>
+
     <nb-card-body>
-      Include the following sensitive data:
+      <div class="mb-2">Include the following sensitive data:</div>
       <div *ngFor="let sensitiveParam of sensitiveParams">
-        {{ sensitiveParam.label }}
-        {{ sensitiveParam.entry.label }}
+        <nb-checkbox
+          status="basic"
+          [(ngModel)]="sensitiveParam.include"
+        >
+          {{ sensitiveParam.label }}
+          {{ sensitiveParam.param.label }}
+        </nb-checkbox>
       </div>
     </nb-card-body>
+
     <nb-card-footer class="card-footer-actions">
       <button
         nbButton
