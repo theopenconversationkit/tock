@@ -20,6 +20,8 @@ from pydantic import Field
 
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
+from gen_ai_orchestrator.models.security.raw_secret_key.raw_secret_key import RawSecretKey
+from gen_ai_orchestrator.models.security.secret_key_type import SecretKeyType
 
 
 class OpenAIEMSetting(BaseEMSetting):
@@ -30,5 +32,9 @@ class OpenAIEMSetting(BaseEMSetting):
 
     provider: Literal[EMProvider.OPEN_AI] = Field(
         description='The Embedding Model Provider.', examples=[EMProvider.OPEN_AI]
+    )
+    api_key: SecretKeyType = Field(
+        description='The secret that stores the API key used to authenticate requests to the AI Provider API.',
+        examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')]
     )
     model: str = Field(description='The model id', examples=['text-embedding-ada-002'])

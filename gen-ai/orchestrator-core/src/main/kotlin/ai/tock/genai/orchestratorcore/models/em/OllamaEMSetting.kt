@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-package ai.tock.genai.orchestratorcore.models.llm
+package ai.tock.genai.orchestratorcore.models.em
 
-enum class LLMProvider{
-    OpenAI,
-    AzureOpenAIService,
-    Ollama;
-
-    companion object {
-        fun findByName(provider: String): LLMProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
-    }
-}
+data class OllamaEMSetting<T>(
+    val model: String,
+    val baseUrl: String,
+) : EMSettingBase<T>(EMProvider.Ollama)

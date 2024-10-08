@@ -55,6 +55,7 @@ from uuid import uuid4
 
 import pandas as pd
 from docopt import docopt
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from langchain.embeddings.base import Embeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.dataframe import DataFrameLoader
@@ -130,7 +131,7 @@ def index_documents(args):
 
     # Use embeddings factory from orchestrator
     em_factory = get_em_factory(em_settings)
-    em_factory.check_embedding_model_setting()
+
     embeddings = em_factory.get_embedding_model()
 
     # Index all chunks in vector DB
@@ -186,10 +187,13 @@ def add_title_to_text(
 def em_settings_from_config(setting_dict: dict) -> BaseEMSetting:
     """Get embeddings settings from config dict."""
     # Create settings class according to embeddings provider from config file
+    em_settings = None
     if config_dict['provider'] == EMProvider.OPEN_AI:
         em_settings = OpenAIEMSetting(**setting_dict)
     elif config_dict['provider'] == EMProvider.AZURE_OPEN_AI_SERVICE:
         em_settings = AzureOpenAIEMSetting(**setting_dict)
+    elif config_dict['provider'] == EMProvider.OLLAMA:
+        em_settings = OllamaEMSetting(**setting_dict)
 
     return em_settings
 
@@ -197,11 +201,11 @@ def em_settings_from_config(setting_dict: dict) -> BaseEMSetting:
 def embed_and_store_docs(
     documents: Iterable[Document], embeddings: Embeddings, index_name: str
 ) -> None:
-    """ "Embed all chunks in vector database."""
+    """ Embed all chunks in vector database."""
     logging.debug('Index chunks in DB')
     # Use vector store factory from orchestrator
     vectorstore_factory = get_vector_store_factory(
-        VectorStoreProvider.OPEN_SEARCH,
+        None, # Default vector store is OpenSearch and created base on environment variables, see tooling README.md
         embedding_function=embeddings,
         index_name=index_name,
     )

@@ -16,14 +16,13 @@
 
 package ai.tock.genai.orchestratorcore.models.llm
 
-enum class LLMProvider{
-    OpenAI,
-    AzureOpenAIService,
-    Ollama;
-
-    companion object {
-        fun findByName(provider: String): LLMProvider? {
-            return entries.firstOrNull { it.name == provider }
-        }
+data class OllamaLLMSetting<T>(
+    override val temperature: String,
+    override val prompt: String,
+    val model: String,
+    val baseUrl: String,
+) : LLMSettingBase<T>(provider = LLMProvider.Ollama, temperature = temperature, prompt = prompt) {
+    override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
+        return this.copy(temperature=temperature)
     }
 }

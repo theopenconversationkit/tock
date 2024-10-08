@@ -29,11 +29,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = OpenAILLMSetting::class, name = Constants.OPEN_AI),
+    JsonSubTypes.Type(value = OllamaLLMSetting::class, name = Constants.OLLAMA),
     JsonSubTypes.Type(value = AzureOpenAILLMSetting::class, name = Constants.AZURE_OPEN_AI_SERVICE)
 )
 abstract class LLMSettingBase<T>(
     val provider: LLMProvider,
-    open val apiKey: T,
+    open val apiKey: T? = null,
     open val temperature: String,
     open val prompt: String
 ) {
