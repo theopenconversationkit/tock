@@ -1,4 +1,10 @@
-import { AzureOpenAiApiVersionsList, EnginesConfiguration, LLMProvider, OpenAIModelsList } from '../../../shared/model/ai-settings';
+import {
+  AzureOpenAiApiVersionsList,
+  EnginesConfiguration,
+  LLMProvider,
+  OllamaLlmModelsList,
+  OpenAIModelsList
+} from '../../../shared/model/ai-settings';
 
 export const DefaultPrompt: string = `# Sentences generation instructions
 
@@ -52,6 +58,16 @@ export const EngineConfigurations: EnginesConfiguration[] = [
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
       { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
+      { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
+    ]
+  },
+  {
+    label: 'Ollama',
+    key: LLMProvider.Ollama,
+    params: [
+      { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
+      { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', defaultValue: 0.7 },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   }
