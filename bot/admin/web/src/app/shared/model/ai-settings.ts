@@ -1,6 +1,7 @@
 export enum LLMProvider {
   OpenAI = 'OpenAI',
-  AzureOpenAIService = 'AzureOpenAIService'
+  AzureOpenAIService = 'AzureOpenAIService',
+  Ollama = 'Ollama'
 }
 
 export interface llmSetting {
@@ -40,7 +41,7 @@ export interface EnginesConfigurationParam {
   type: 'text' | 'prompt' | 'list' | 'openlist' | 'number' | 'obfuscated';
   source?: string[];
   inputScale?: 'default' | 'fullwidth';
-  defaultValue?: string;
+  defaultValue?: string | number;
 }
 
 export const AzureOpenAiApiVersionsList: string[] = [
@@ -71,3 +72,7 @@ export const OpenAIModelsList: string[] = [
 ];
 
 export const OpenAIEmbeddingModel: string[] = ['text-embedding-ada-002'];
+
+export const OllamaLlmModelsList: string[] = ['llama2', 'llama3', 'llama3.1', 'llama3.1:8b', 'llama3.2'];
+
+export const OllamaEmModelsList: string[] = ['mxbai-embed-large', 'nomic-embed-text', 'all-minilm'];

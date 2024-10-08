@@ -2,6 +2,8 @@ import {
   AzureOpenAiApiVersionsList,
   EnginesConfiguration,
   LLMProvider,
+  OllamaEmModelsList,
+  OllamaLlmModelsList,
   OpenAIEmbeddingModel,
   OpenAIModelsList
 } from '../../../shared/model/ai-settings';
@@ -57,6 +59,16 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
+  },
+  {
+    label: 'Ollama',
+    key: LLMProvider.Ollama,
+    params: [
+      { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
+      { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
+      { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', defaultValue: 0.7 },
+      { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
+    ]
   }
 ];
 
@@ -77,6 +89,14 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
       { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' }
+    ]
+  },
+  {
+    label: 'Ollama',
+    key: LLMProvider.Ollama,
+    params: [
+      { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
+      { key: 'model', label: 'Model', type: 'openlist', source: OllamaEmModelsList, defaultValue: 'all-minilm' }
     ]
   }
 ];
