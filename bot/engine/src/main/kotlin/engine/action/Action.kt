@@ -23,11 +23,13 @@ import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.shared.jackson.mapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.litote.kmongo.Id
 import java.time.Instant
+import org.litote.kmongo.Id
 
 /**
  * A user (or bot) action.
+ *
+ * @param applicationId the TOCK application id (matches the id of the connector)
  */
 abstract class Action(
     val playerId: PlayerId,

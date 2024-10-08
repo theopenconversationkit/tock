@@ -21,12 +21,14 @@ import ai.tock.bot.engine.message.Location
 import ai.tock.bot.engine.message.Message
 import ai.tock.bot.engine.user.PlayerId
 import ai.tock.bot.engine.user.UserLocation
+import java.time.Instant
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.time.Instant
 
 /**
  * A user location transmission.
+ *
+ * @param applicationId the TOCK application id (matches the id of the connector)
  */
 class SendLocation(
     playerId: PlayerId,
