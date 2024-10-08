@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil } from 'rxjs';
 import { BotService } from '../../bot/bot-service';
@@ -9,11 +9,12 @@ import { DefaultPrompt, EnginesConfigurations } from './models/engines-configura
 import { RagSettings } from './models';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
-import { deepCopy } from '../../shared/utils';
+import { deepCopy, getExportFileName } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
 import { EnginesConfiguration, LLMProvider } from '../../shared/model/ai-settings';
 import { ChoiceDialogComponent } from '../../shared/components';
+import { saveAs } from 'file-saver-es';
 
 interface RagSettingsForm {
   id: FormControl<string>;
@@ -54,6 +55,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   isSubmitted: boolean = false;
 
   loading: boolean = false;
+
+  @ViewChild('exportConfirmationModal') exportConfirmationModal: TemplateRef<any>;
 
   constructor(
     private botService: BotService,
@@ -282,11 +285,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     if (this.canSave && this.form.dirty) {
       this.loading = true;
       const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
+      delete formValue['llmEngine'];
+      delete formValue['emEngine'];
       formValue.namespace = this.state.currentApplication.namespace;
       formValue.botId = this.state.currentApplication.name;
       formValue.noAnswerStoryId = this.noAnswerStoryId.value === 'null' ? null : this.noAnswerStoryId.value;
-      delete formValue['llmEngine'];
-      delete formValue['emEngine'];
 
       const url = `/configuration/bots/${this.state.currentApplication.name}/rag`;
       this.rest.post(url, formValue, null, null, true).subscribe({
@@ -326,6 +329,72 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  sensitiveParams = [];
+
+  exportSettings() {
+    const shouldConfirm = [this.currentLlmEngine.params, this.currentEmEngine.params].some((engine) => {
+      return engine.some((entry) => {
+        return entry.confirmExport;
+      });
+    });
+
+    if (shouldConfirm) {
+      this.sensitiveParams = [];
+
+      [
+        { label: 'LLM engine', params: this.currentLlmEngine.params },
+        { label: 'Embedding engine', params: this.currentEmEngine.params }
+      ].forEach((engine) => {
+        engine.params.forEach((entry) => {
+          if (entry.confirmExport) {
+            this.sensitiveParams.push({ label: engine.label, entry });
+          }
+        });
+      });
+
+      this.exportConfirmationModalRef = this.nbDialogService.open(this.exportConfirmationModal);
+    } else {
+      this.downloadSettings();
+    }
+  }
+
+  exportConfirmationModalRef;
+
+  closeExportConfirmationModal() {
+    this.exportConfirmationModalRef.close();
+  }
+
+  confirmExportSettings() {
+    console.log('confirmExportSettings');
+  }
+
+  downloadSettings() {
+    const formValue: RagSettings = deepCopy(this.form.value) as unknown as RagSettings;
+    delete formValue['llmEngine'];
+    delete formValue['emEngine'];
+    delete formValue['id'];
+    delete formValue['enabled'];
+
+    const jsonBlob = new Blob([JSON.stringify(formValue)], {
+      type: 'application/json'
+    });
+
+    const exportFileName = getExportFileName(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      'Rag settings',
+      'json'
+    );
+
+    saveAs(jsonBlob, exportFileName);
+
+    this.toastrService.show(`Rag settings dump provided`, 'Rag settings dump', { duration: 3000, status: 'success' });
+  }
+
+  importSettings() {
+    console.log('upload');
   }
 
   confirmSettingsDeletion() {

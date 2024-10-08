@@ -7,9 +7,9 @@ export enum LLMProvider {
 export interface llmSetting {
   provider: LLMProvider;
 
-  apiKey: String;
   model: String;
 
+  apiKey?: String;
   deploymentName?: String;
   apiBase?: String;
   apiVersion?: String;
@@ -21,9 +21,9 @@ export interface llmSetting {
 export interface emSetting {
   provider: LLMProvider;
 
-  apiKey: String;
   model: String;
 
+  apiKey?: String;
   deploymentName?: String;
   apiBase?: String;
   apiVersion?: String;
@@ -42,6 +42,7 @@ export interface EnginesConfigurationParam {
   source?: string[];
   inputScale?: 'default' | 'fullwidth';
   defaultValue?: string | number;
+  confirmExport?: boolean;
 }
 
 export const AzureOpenAiApiVersionsList: string[] = [
