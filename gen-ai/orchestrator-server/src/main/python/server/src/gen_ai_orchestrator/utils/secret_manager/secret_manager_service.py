@@ -1,5 +1,6 @@
-from typing import Optional
 import logging
+from typing import Optional
+
 from gen_ai_orchestrator.configurations.environment.settings import application_settings
 from gen_ai_orchestrator.models.security.credentials import Credentials
 from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
@@ -18,34 +19,21 @@ secret_manager_provider_map = {
 
 def fetch_default_vector_store_credentials() -> Optional[Credentials]:
     """Fetch the Vector Store credentials."""
-    credentials = None
+    if not application_settings.vector_store_credentials_secret_name:
+        return _get_credentials_from_env()
 
-    if application_settings.vector_store_credentials_secret_name:
-        secret_name = application_settings.vector_store_credentials_secret_name
-        secret_manager_provider = application_settings.vector_store_secret_manager_provider
+    secret_name = application_settings.vector_store_credentials_secret_name
+    secret_manager_provider = application_settings.vector_store_secret_manager_provider
 
-        # Fetch the corresponding client based on the provider
-        secret_manager_client_class = secret_manager_provider_map.get(secret_manager_provider)
+    # Fetch the corresponding client based on the provider
+    secret_manager_client_class = secret_manager_provider_map.get(secret_manager_provider)
 
-        if secret_manager_client_class:
-            logger.info(f'Using {secret_manager_provider} to get vector store credentials...')
-            secret_manager_client = secret_manager_client_class()
-            credentials = secret_manager_client.get_credentials(secret_name)
-
-        else:
-            # Fetch from environment variables if available
-            if application_settings.vector_store_user or application_settings.vector_store_pwd:
-                credentials = Credentials(
-                    username=application_settings.vector_store_user,
-                    password=application_settings.vector_store_pwd
-                )
+    if secret_manager_client_class:
+        logger.info(f'Using {secret_manager_provider} to get vector store credentials...')
+        secret_manager_client = secret_manager_client_class()
+        credentials = secret_manager_client.get_credentials(secret_name)
     else:
-        # Default credentials if no secret manager is configured
-        if application_settings.vector_store_user or application_settings.vector_store_pwd:
-            credentials = Credentials(
-                username=application_settings.vector_store_user,
-                password=application_settings.vector_store_pwd
-            )
+        credentials = _get_credentials_from_env()
 
     # Log whether credentials were successfully retrieved
     if credentials:
@@ -54,6 +42,16 @@ def fetch_default_vector_store_credentials() -> Optional[Credentials]:
         logger.info("No credentials were found.")
 
     return credentials
+
+def _get_credentials_from_env() -> Optional[Credentials]:
+    """Fetch credentials from environment variables."""
+    if application_settings.vector_store_user or application_settings.vector_store_pwd:
+        return Credentials(
+            username=application_settings.vector_store_user,
+            password=application_settings.vector_store_pwd
+        )
+    return None
+
 
 vector_store_credentials: Optional[Credentials] = fetch_default_vector_store_credentials()
 

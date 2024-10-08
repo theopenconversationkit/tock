@@ -20,6 +20,7 @@ import ai.tock.bot.admin.bot.sentencegeneration.BotSentenceGenerationConfigurati
 import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.llm.LLMSettingDTO
+import ai.tock.genai.orchestratorcore.models.llm.toDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -33,26 +34,26 @@ data class BotSentenceGenerationConfigurationDTO(
     val llmSetting: LLMSettingDTO,
 ) {
     constructor(configuration: BotSentenceGenerationConfiguration) : this(
-        configuration._id.toString(),
-        configuration.namespace,
-        configuration.botId,
-        configuration.enabled,
-        configuration.nbSentences,
-        LLMSettingMapper.toDTO(configuration.llmSetting),
+        id = configuration._id.toString(),
+        namespace = configuration.namespace,
+        botId = configuration.botId,
+        enabled = configuration.enabled,
+        nbSentences = configuration.nbSentences,
+        llmSetting = configuration.llmSetting.toDTO(),
     )
 
     fun toSentenceGenerationConfiguration(): BotSentenceGenerationConfiguration =
         BotSentenceGenerationConfiguration(
-            id?.toId() ?: newId(),
-            namespace,
-            botId,
-            enabled,
-            nbSentences,
-            LLMSettingMapper.toEntity(
-                namespace,
-                botId,
-                Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
-                llmSetting
+            _id = id?.toId() ?: newId(),
+            namespace = namespace,
+            botId = botId,
+            enabled = enabled,
+            nbSentences = nbSentences,
+            llmSetting = LLMSettingMapper.toEntity(
+                namespace = namespace,
+                botId = botId,
+                feature = Constants.GEN_AI_COMPLETION_SENTENCE_GENERATION,
+                dto = llmSetting
             )
         )
 }

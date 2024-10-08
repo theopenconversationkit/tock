@@ -27,6 +27,8 @@ private val kNeighborsDocuments = intProperty(
     name = "tock_gen_ai_orchestrator_document_number_neighbors",
     defaultValue = 1)
 
+typealias DocumentIndexName = String
+
 object VectorStoreUtils {
 
     fun getVectorStoreElements(
@@ -34,7 +36,7 @@ object VectorStoreUtils {
         botId: String,
         indexSessionId: String,
         vectorStoreSetting: VectorStoreSetting?,
-    ): Pair<DocumentSearchParams, String> {
+    ): Pair<DocumentSearchParamsBase, DocumentIndexName> {
 
         vectorStoreSetting?.let {
             val searchParams = it.getDocumentSearchParams()

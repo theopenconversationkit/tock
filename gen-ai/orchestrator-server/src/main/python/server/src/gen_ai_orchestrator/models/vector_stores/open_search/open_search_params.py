@@ -34,11 +34,6 @@ class OpenSearchParams(BaseVectorStoreSearchParams):
         examples=[VectorStoreProvider.OPEN_SEARCH],
         default=VectorStoreProvider.OPEN_SEARCH,
     )
-    k: int = Field(
-        description='The number of documents (neighbors) to return for each query_embedding.',
-        examples=[3],
-        default=4,
-    )
     filter: Optional[List[OpenSearchTermParams]] = Field(
         description='The OpenSearch boolean query filter. Logical "and" operator is applied. For more information, '
         'see : https://opensearch.org/docs/latest/query-dsl/compound/bool/',

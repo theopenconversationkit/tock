@@ -30,6 +30,11 @@ class BaseVectorStoreSearchParams(ABC, BaseModel):
         description='The Vector Store Provider.',
         examples=[VectorStoreProvider.OPEN_SEARCH],
     )
+    k: int = Field(
+        description='The number of Documents to return.',
+        examples=[3],
+        default=4,
+    )
 
     @abstractmethod
     def to_dict(self) -> dict:

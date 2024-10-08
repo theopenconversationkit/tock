@@ -35,11 +35,6 @@ class PGVectorParams(BaseVectorStoreSearchParams):
         examples=[VectorStoreProvider.PGVECTOR],
         default=VectorStoreProvider.PGVECTOR,
     )
-    k: int = Field(
-        description='The number of Documents to return.',
-        examples=[3],
-        default=4,
-    )
     filter: Optional[dict] = Field(
         description='Filter by metadata.',
         examples=[{'tag1': 'vector stores'}],

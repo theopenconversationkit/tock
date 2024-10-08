@@ -12,8 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Index a ready-to-index CSV file ('title'|'url'|'text' lines) file contents
-into an OpenSearch vector database.
+"""Index a ready-to-index CSV ('title'|'url'|'text' lines) file contents into a given vector database.
 
 Usage:
     index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> [<env_file>]
@@ -34,8 +33,7 @@ Arguments:
 Options:
     -h --help   Show this screen
     --version   Show version
-    -v          Verbose output for debugging (without this option, script will
-                be silent but for errors and the unique indexing session id)
+    -v          Verbose output for debugging
 
 Index a ready-to-index CSV file contents into an OpenSearch vector database.
 CSV columns are 'title'|'url'|'text'. 'text' will be chunked according to

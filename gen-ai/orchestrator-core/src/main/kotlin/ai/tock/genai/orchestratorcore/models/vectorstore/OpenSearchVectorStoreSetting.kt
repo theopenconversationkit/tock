@@ -43,7 +43,7 @@ data class OpenSearchVectorStoreSetting<T>(
 data class OpenSearchParams(
     val k: Int = 4,
     val filter: List<Term>? = null
-) : DocumentSearchParams(VectorStoreProvider.OpenSearch)
+) : DocumentSearchParamsBase(VectorStoreProvider.OpenSearch)
 
 data class Term(
     val term: Map<String, Any>

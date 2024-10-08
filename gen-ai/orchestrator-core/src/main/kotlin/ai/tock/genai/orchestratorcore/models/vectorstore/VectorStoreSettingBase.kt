@@ -17,6 +17,8 @@
 package ai.tock.genai.orchestratorcore.models.vectorstore
 
 
+import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
+import ai.tock.genai.orchestratorcore.mappers.VectorStoreSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.security.key.SecretKey
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -50,13 +52,15 @@ abstract class VectorStoreSettingBase<T>(
     /**
      * Get search params (filter) params
      */
-    abstract fun getDocumentSearchParams(): DocumentSearchParams
+    abstract fun getDocumentSearchParams(): DocumentSearchParamsBase
 }
 
 typealias VectorStoreSettingDTO = VectorStoreSettingBase<String>
 typealias VectorStoreSetting = VectorStoreSettingBase<SecretKey>
 
+// Extension functions for DTO conversion
+fun VectorStoreSetting.toDTO(): VectorStoreSettingDTO = VectorStoreSettingMapper.toDTO(this)
 
-abstract class DocumentSearchParams(
+abstract class DocumentSearchParamsBase(
     val provider: VectorStoreProvider,
 )

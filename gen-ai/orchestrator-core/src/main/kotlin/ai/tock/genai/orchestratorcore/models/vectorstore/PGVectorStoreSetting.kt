@@ -44,4 +44,4 @@ data class PGVectorStoreSetting<T>(
 data class PGVectorParams(
     val k: Int = 4,
     val filter: Map<String, String>? = null
-) : DocumentSearchParams(VectorStoreProvider.PGVector)
+) : DocumentSearchParamsBase(VectorStoreProvider.PGVector)

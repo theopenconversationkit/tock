@@ -62,8 +62,8 @@ class _Settings(BaseSettings):
     vector_store_port: Optional[str] = '9200'
     vector_store_user: Optional[str] = 'admin'
     vector_store_pwd: Optional[str] = 'admin'
-    vector_store_database: Optional[str] = None
-    vector_store_secret_manager_provider: Optional[SecretManagerProvider] = SecretManagerProvider.AWS
+    vector_store_database: Optional[str] = None # Only if necessary. Example: PGVector
+    vector_store_secret_manager_provider: Optional[SecretManagerProvider] = None
     vector_store_credentials_secret_name: Optional[str] = None
     """Number of document to retrieve from the Vector Store"""
     vector_store_k: int = 4
@@ -87,7 +87,7 @@ class _Settings(BaseSettings):
     observability_proxy_server_authorization_header_name: Optional[str] = None
 
     """GCP"""
-    gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None)
+    gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None) # GCP project ID used for GCP Secrets
 
 
 application_settings = _Settings()

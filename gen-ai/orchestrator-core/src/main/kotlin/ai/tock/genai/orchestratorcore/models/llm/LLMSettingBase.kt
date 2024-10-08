@@ -17,6 +17,8 @@
 package ai.tock.genai.orchestratorcore.models.llm
 
 
+import ai.tock.genai.orchestratorcore.mappers.EMSettingMapper
+import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.security.key.SecretKey
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -43,3 +45,6 @@ abstract class LLMSettingBase<T>(
 
 typealias LLMSettingDTO = LLMSettingBase<String>
 typealias LLMSetting = LLMSettingBase<SecretKey>
+
+// Extension functions for DTO conversion
+fun LLMSetting.toDTO(): LLMSettingDTO = LLMSettingMapper.toDTO(this)
