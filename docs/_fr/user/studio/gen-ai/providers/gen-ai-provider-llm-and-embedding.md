@@ -5,30 +5,23 @@ title: Fournisseurs de l'IA pris en compte par Tock
 # Fournisseurs de l'IA pris en compte par Tock.
 
 
+
 <table>
+<thead>
 <tr>
-<td>
-
-**Fournisseur de l'IA**
-</td> 
-<td> 
-
-**Configuration du LLM**
-</td>
-<td> 
-
-**Configuration de l'Embedding**
-</td>
+<th style="font-weight:bold">Fournisseur de l'IA</th>
+<th style="font-weight:bold">Configuration du LLM</th>
+<th style="font-weight:bold">Configuration de l'Embedding</th>
 </tr>
+</thead>
+<tbody>
 <tr>
 <td style="text-align: center;">
-
-`OpenAI` <br />
-[Docs](https://platform.openai.com/docs/introduction)
+OpenAI<br/>
+(<a href="https://platform.openai.com/docs/introduction">Docs</a>)
 </td>
 <td style="vertical-align: top;">
-
-```json
+<pre>
 {
   "provider": "OpenAI",
   "api_key": {
@@ -39,11 +32,10 @@ title: Fournisseurs de l'IA pris en compte par Tock
   "prompt": "Customized prompt for the use case",
   "model": "gpt-3.5-turbo"
 }
-```
+</pre>
 </td>
 <td style="vertical-align: top;">
-
-```json
+<pre>
 {
   "provider": "OpenAI",
   "api_key": {
@@ -52,18 +44,16 @@ title: Fournisseurs de l'IA pris en compte par Tock
   },
   "model": "text-embedding-ada-002"
 }
-```
+</pre>
 </td>
 </tr>
 <tr>
 <td style="text-align: center;">
-
-`AzureOpenAIService` <br />
-[Docs](https://azure.microsoft.com/fr-fr/products/ai-services/openai-service)
+AzureOpenAIService <br />
+(<a href="https://azure.microsoft.com/fr-fr/products/ai-services/openai-service">Docs</a>)
 </td>
 <td style="vertical-align: top;">
-
-```json
+<pre>
 {
   "provider": "AzureOpenAIService",
   "api_key": {
@@ -76,11 +66,10 @@ title: Fournisseurs de l'IA pris en compte par Tock
   "deployment_name": "custom-deployment-name",
   "api_version": "2024-03-01-preview"
 }
-```
+</pre>
 </td>
 <td style="vertical-align: top;">
-
-```json
+<pre>
 {
   "provider": "AzureOpenAIService",
   "api_key": {
@@ -91,7 +80,8 @@ title: Fournisseurs de l'IA pris en compte par Tock
   "deployment_name": "custom-deployment-name",
   "api_version": "2024-03-01-preview"
 }
-```
+</pre>
 </td>
 </tr>
+</tbody>
 </table>

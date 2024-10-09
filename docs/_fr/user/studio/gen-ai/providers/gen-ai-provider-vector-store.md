@@ -4,27 +4,22 @@ title: Fournisseurs de base vectorielle pris en compte par Tock
 
 # Fournisseurs de base vectorielle pris en compte par Tock.
 
-
 <table>
+<thead>
 <tr>
-<td>
-
-**Fournisseur de base vectorielle**
-</td>
-<td> 
-
-**Configuration**
-</td>
+<th style="font-weight:bold">Fournisseur de base vectorielle</th>
+<th style="font-weight:bold">Configuration</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<td style="text-align: center;">
+<td style="text-align: center;" markdown="span">
 
 `OpenSearch` <br />
 [Docs](https://opensearch.org/docs/latest/about/)
 </td>
 <td style="vertical-align: top;">
-
-```json
+<pre>
 {
   "provider": "OpenSearch",
   "host": "localhost",
@@ -35,18 +30,17 @@ title: Fournisseurs de base vectorielle pris en compte par Tock
     "value": "admin"
   }
 }
-```
+</pre>
 </td>
 </tr>
 <tr>
-<td style="text-align: center;">
+<td style="text-align: center;" markdown="span">
 
 `PGVector` <br />
 [Docs](https://github.com/pgvector/pgvector)
 </td>
 <td style="vertical-align: top;">
-
-```json
+<pre>
 {
   "provider": "PGVector",
   "host": "localhost",
@@ -58,7 +52,8 @@ title: Fournisseurs de base vectorielle pris en compte par Tock
   },
   "database": "postgres"
 }
-```
+</pre>
 </td>
 </tr>
+</tbody>
 </table>

@@ -20,7 +20,7 @@ Cette fonctionnalité permettra à TOCK de générer une réponse à une requêt
 
 **Un provider IA :** (LLM Engine)
 - Cette section permet de paramétrer les options liées au modèle IA qui génère la réponse à l’utilisateur.
-- Voir la [liste des fournisseurs d'IA](../providers/gen-ai-provider-llm-and-embedding.md)
+- Voir la [liste des fournisseurs d'IA](../../providers/gen-ai-provider-llm-and-embedding)
 
 **Température :**
 - On peut définir une température située entre 0 et 1.
