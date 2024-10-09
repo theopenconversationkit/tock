@@ -21,6 +21,7 @@ data class OpenAILLMSetting<T>(
     override val temperature: String,
     override val prompt: String,
     val model: String,
+    val baseUrl: String,
 ) : LLMSettingBase<T>(LLMProvider.OpenAI, apiKey, temperature, prompt) {
     override fun copyWithTemperature(temperature: String): LLMSettingBase<T> {
         return this.copy(temperature=temperature)

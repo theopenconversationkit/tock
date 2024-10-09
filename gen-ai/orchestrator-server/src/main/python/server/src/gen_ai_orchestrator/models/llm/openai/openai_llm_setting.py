@@ -40,3 +40,8 @@ class OpenAILLMSetting(BaseLLMSetting):
     model: str = Field(
         description='The model id', examples=['gpt-3.5-turbo'], min_length=1
     )
+    base_url: str = Field(
+        description='The OpenAI endpoint base URL',
+        examples=["https://api.openai.com/v1"],
+        default="https://api.openai.com/v1"
+    )

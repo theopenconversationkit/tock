@@ -38,3 +38,8 @@ class OpenAIEMSetting(BaseEMSetting):
         examples=[RawSecretKey(value='ab7-14Ed2-dfg2F-A1IV4B')]
     )
     model: str = Field(description='The model id', examples=['text-embedding-ada-002'])
+    base_url: str = Field(
+        description='The OpenAI endpoint base URL',
+        examples=["https://api.openai.com/v1"],
+        default="https://api.openai.com/v1"
+    )
