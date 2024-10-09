@@ -11,4 +11,7 @@ export interface RagSettings {
 
   llmSetting: llmSetting;
   emSetting: emSetting;
+
+  indexSessionId: string;
+  indexName: string;
 }

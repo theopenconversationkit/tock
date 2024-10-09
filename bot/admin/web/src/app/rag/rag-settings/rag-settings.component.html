@@ -160,6 +160,21 @@
       <h5 class="section-title mt-2">Indexing session</h5>
 
       <tock-form-control
+        label="Vector database index name"
+        name="indexName"
+        [controls]="indexName"
+        [required]="false"
+        [boldLabel]="false"
+      >
+        <input
+          nbInput
+          fullWidth
+          formControlName="indexName"
+          readonly
+        />
+      </tock-form-control>
+
+      <tock-form-control
         label="Indexing session id"
         name="indexingSessionId"
         [controls]="indexSessionId"

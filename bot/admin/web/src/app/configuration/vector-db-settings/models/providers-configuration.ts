@@ -1,5 +1,6 @@
 export enum VectorDbProvider {
-  OpenSearch = 'OpenSearch'
+  OpenSearch = 'OpenSearch',
+  PGVector = 'PGVector'
 }
 
 export interface ProvidersConfigurationParam {
@@ -42,14 +43,32 @@ export const ProvidersConfigurations: ProvidersConfiguration[] = [
         step: 1,
         defaultValue: 4,
         information: 'Maximum number of nearest neighbors to return in search queries'
-      },
+      }
+    ]
+  },
+  {
+    label: 'PGVector',
+    key: VectorDbProvider.PGVector,
+    params: [
+      { key: 'host', label: 'Host', type: 'text', defaultValue: 'localhost' },
+      { key: 'port', label: 'Port', type: 'number', min: 1, max: 65535, step: 1, defaultValue: '5432' },
+      { key: 'username', label: 'User name', type: 'obfuscated', defaultValue: 'postgres' },
+      { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'ChangeMe' },
       {
-        key: 'vectorSize',
-        label: 'Vector size',
+        key: 'k',
+        label: 'k-nearest neighbors',
         type: 'number',
         min: 1,
+        max: 100,
         step: 1,
-        defaultValue: 1536
+        defaultValue: 4,
+        information: 'Maximum number of nearest neighbors to return in search queries'
+      },
+      {
+        key: 'database',
+        label: 'Database',
+        type: 'text',
+        defaultValue: 'postgres'
       }
     ]
   }
