@@ -14,7 +14,7 @@ title: Gen AI - Observability Settings
 
 
 > Pour accéder à cette page il faut bénéficier du rôle **_botUser_**.
-> <br />( plus de détails sur les rôles dans [securité](../../../../admin/securite.md#rôles) ).
+> <br />( plus de détails sur les rôles dans [securité](../../../../../admin/securite#rôles) ).
 
 ## Configuration
 Pour permettre à Tock de se connecter à un outil d'observabilité, un écran de configuration a été mis en place : 
@@ -23,5 +23,5 @@ Pour permettre à Tock de se connecter à un outil d'observabilité, un écran d
 
 ## Utilisation
 
-- Voici la [liste des fournisseurs d'observabilité des LLM](../providers/gen-ai-provider-observability.md) qui sont pris en compte par Tock.
+- Voici la [liste des fournisseurs d'observabilité des LLM](../../providers/gen-ai-provider-observability) qui sont pris en compte par Tock.
 - Veuillez vous référer à la documentation de chaque outil pour comprendre comment l'utiliser.

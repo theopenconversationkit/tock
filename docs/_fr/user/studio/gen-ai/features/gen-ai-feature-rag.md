@@ -9,7 +9,7 @@ Le menu _Gen AI / RAG Settings_ (Retrieving augmented Generation) vous permet de
 Cette fonctionnalité permettra à TOCK de générer une réponse à une requête de l'utilisateur, sur la base d'un ensemble de documents intégrés dans une base de données vectorielle.
 
 > Pour accéder à cette page il faut bénéficier du rôle **_botUser_**.
-> <br />( plus de détails sur les rôles dans [securité](../../../../admin/securite.md#rôles) ).
+> <br />( plus de détails sur les rôles dans [securité](../../../../../admin/securite#rôles) ).
 
 ### Activation du RAG & Configuration du LLM Engine
 ![RAG - Partie 1](../../../../../img/gen-ai/gen-ai-settings-rag-llm.png "Ecran de configuration du RAG - Partie 1")
@@ -34,7 +34,7 @@ Cette fonctionnalité permettra à TOCK de générer une réponse à une requêt
 
 **Un provider IA :** (Embedding Engine)
 - Cette section permet de paramétrer les options liées au modèle IA qui interagit avec la base documentaire vectorisée.
-- Voir la [liste des fournisseurs d'IA](../providers/gen-ai-provider-llm-and-embedding.md)
+- Voir la [liste des fournisseurs d'IA](../../providers/gen-ai-provider-llm-and-embedding)
 
 **Indexing session :**
 - Renseigner l’ID de l’Indexing Session de votre base documentaire vectorisée

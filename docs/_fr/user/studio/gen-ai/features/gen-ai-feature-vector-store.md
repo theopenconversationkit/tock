@@ -12,7 +12,7 @@ Dans l'IA, les bases vectorielles sont utilisées pour représenter des données
 Elles sont notamment utilisées dans les modèles d'apprentissage automatique pour traiter et analyser des textes, des images ou d'autres types de données complexes.
 
 > Pour accéder à cette page il faut bénéficier du rôle **_botUser_**.
-> <br />( plus de détails sur les rôles dans [securité](../../../../admin/securite.md#rôles) ).
+> <br />( plus de détails sur les rôles dans [securité](../../../../../admin/securite#rôles) ).
 
 
 ## Configuration
@@ -22,7 +22,7 @@ Pour permettre à Tock de se connecter à une base vectorielle, un écran de con
 
 ## Utilisation
 
-- Voici la [liste des fournisseurs de base vectorielle](../providers/gen-ai-provider-vector-store.md) qui sont pris en compte par Tock.
+- Voici la [liste des fournisseurs de base vectorielle](../../providers/gen-ai-provider-vector-store) qui sont pris en compte par Tock.
 - Veuillez vous référer à la documentation de chaque outil pour comprendre comment l'utiliser.
 - Si aucune configuration n'a été fournie via le Tock studio, la configuration par défaut (spécifiée via les variable d'environnement) sera privilégiée :
   - Dans Bot Admin, la variable `tock_gen_ai_orchestrator_vector_store` spécifie la nature de la base vectorielle par défaut. Cela permet à Tock, lors d'un appel RAG, de construire correctement les paramètres de recherche dans cette base.
