@@ -12,7 +12,7 @@ Cette fonctionnalité permettra à TOCK de générer une réponse à une requêt
 > <br />( plus de détails sur les rôles dans [securité](../../../../admin/securite.md#rôles) ).
 
 ### Activation du RAG & Configuration du LLM Engine
-![RAG - Partie 1](../../../../img/gen-ai/gen-ai-settings-rag-llm.png "Ecran de configuration du RAG - Partie 1")
+![RAG - Partie 1](../../../../../img/gen-ai/gen-ai-settings-rag-llm.png "Ecran de configuration du RAG - Partie 1")
 
 **RAG activation :**
 - L’activation n’est possible qu’une fois que tous les champs marqués d’un * sont remplis.
@@ -30,7 +30,7 @@ Cette fonctionnalité permettra à TOCK de générer une réponse à une requêt
 - Le prompt est le script qui détermine la personnalité du Bot, le contexte dans lequel il doit répondre, la façon dont il doit s’adresser à l’utilisateur, les recommandations ou instructions de réponses, les styles et formats de réponses.
  
 ### Embedding Engine & Gestion de la conversation 
-![RAG - Partie 2](../../../../img/gen-ai/gen-ai-settings-rag-embedding.png "Ecran de configuration du RAG - Partie 2")
+![RAG - Partie 2](../../../../../img/gen-ai/gen-ai-settings-rag-embedding.png "Ecran de configuration du RAG - Partie 2")
 
 **Un provider IA :** (Embedding Engine)
 - Cette section permet de paramétrer les options liées au modèle IA qui interagit avec la base documentaire vectorisée.
@@ -45,7 +45,7 @@ Cette fonctionnalité permettra à TOCK de générer une réponse à une requêt
 
 ### Import d'une Story Unkown si le RAG est activé
 
-![Import d'une Story Unknown](../../../../img/gen-ai/gen-ai-rag-import-story-unknown.png "Ecran de choix")
+![Import d'une Story Unknown](../../../../../img/gen-ai/gen-ai-rag-import-story-unknown.png "Ecran de choix")
 
 **Attention :** Lorsqu’on importe les Story d’un bot à l'autre, et que la RAG est activée en dans le bot recepteur, un message d’avertissement apparait concernant la Story Unknown (Story qui permet au Bot de répondre qu’il ne connait pas la réponse à une question). 
 - Deux options sont donc possibles :
@@ -57,7 +57,7 @@ Cette fonctionnalité permettra à TOCK de générer une réponse à une requêt
 Une fois le RAG configuré et activé, il peut être utilisé pour prendre le contrôle de toutes les questions qualifiées d'Inconnues par la NLP.
 
 En voici un exemple :
-![Test du RAG](../../../../img/gen-ai/gen-ai-rag-test.png "Execution du RAG")
+![Test du RAG](../../../../../img/gen-ai/gen-ai-rag-test.png "Execution du RAG")
 
 
 

@@ -1,5 +1,5 @@
 ---
-title: Gen AI - Vector Store Settings
+title: Le menu Gen AI - Vector Store Settings
 ---
 
 # Le menu _Gen AI - Vector Store Settings_
@@ -18,7 +18,7 @@ Elles sont notamment utilisées dans les modèles d'apprentissage automatique po
 ## Configuration
 Pour permettre à Tock de se connecter à une base vectorielle, un écran de configuration a été mis en place :
 
-![Vector Store](../../../../img/gen-ai/gen-ai-feature-observability.png "Ecran de configuration des bases vectorielles")
+![Vector Store](../../../../../img/gen-ai/gen-ai-feature-observability.png "Ecran de configuration des bases vectorielles")
 
 ## Utilisation
 

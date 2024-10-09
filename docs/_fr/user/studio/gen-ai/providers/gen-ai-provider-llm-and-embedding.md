@@ -1,3 +1,6 @@
+---
+title: Fournisseurs de l'IA pris en compte par Tock
+---
 
 # Fournisseurs de l'IA pris en compte par Tock.
 
