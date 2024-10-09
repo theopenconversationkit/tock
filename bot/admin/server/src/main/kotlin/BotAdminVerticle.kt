@@ -57,6 +57,7 @@ import ai.tock.translator.I18nLabel
 import ai.tock.translator.Translator
 import ai.tock.translator.Translator.initTranslator
 import ai.tock.translator.TranslatorEngine
+import ch.tutteli.kbox.isNotNullAndNotBlank
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import io.vertx.core.http.HttpMethod.GET
@@ -444,9 +445,9 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/configuration/bots/:botId/rag", admin) { context, configuration: BotRAGConfigurationDTO  ->
-            if (context.organization == configuration.namespace) {
-                BotRAGConfigurationDTO(RAGService.saveRag(configuration))
+        blockingJsonPost("/configuration/bots/:botId/rag", admin) { context, request: BotRAGConfigurationDTO  ->
+            if (context.organization == request.namespace) {
+                BotRAGConfigurationDTO(RAGService.saveRag(request))
             } else {
                 unauthorized()
             }
@@ -454,9 +455,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonGet("/configuration/bots/:botId/rag", admin) { context  ->
             RAGService.getRAGConfiguration(context.organization, context.path("botId"))
-                ?.let {
-                    BotRAGConfigurationDTO(it)
-                }
+                ?.let { BotRAGConfigurationDTO(it) }
         }
 
         blockingDelete("/configuration/bots/:botId/rag", admin) { context  ->

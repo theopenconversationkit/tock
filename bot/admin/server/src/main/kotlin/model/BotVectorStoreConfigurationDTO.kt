@@ -21,6 +21,7 @@ import ai.tock.genai.orchestratorcore.mappers.LLMSettingMapper
 import ai.tock.genai.orchestratorcore.mappers.VectorStoreSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSettingDTO
+import ai.tock.genai.orchestratorcore.models.vectorstore.toDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
@@ -33,24 +34,24 @@ data class BotVectorStoreConfigurationDTO(
     val setting: VectorStoreSettingDTO,
 ) {
     constructor(configuration: BotVectorStoreConfiguration) : this(
-        configuration._id.toString(),
-        configuration.namespace,
-        configuration.botId,
-        configuration.enabled,
-        VectorStoreSettingMapper.toDTO(configuration.setting),
+        id = configuration._id.toString(),
+        namespace = configuration.namespace,
+        botId = configuration.botId,
+        enabled = configuration.enabled,
+        setting = configuration.setting.toDTO(),
     )
 
     fun toBotVectorStoreConfiguration(): BotVectorStoreConfiguration =
         BotVectorStoreConfiguration(
-            id?.toId() ?: newId(),
-            namespace,
-            botId,
-            enabled,
-            VectorStoreSettingMapper.toEntity(
-                namespace,
-                botId,
-                Constants.GEN_AI_VECTOR_STORE,
-                setting
+            _id = id?.toId() ?: newId(),
+            namespace = namespace,
+            botId = botId,
+            enabled = enabled,
+            setting = VectorStoreSettingMapper.toEntity(
+                namespace = namespace,
+                botId = botId,
+                feature = Constants.GEN_AI_VECTOR_STORE,
+                dto = setting
             )
         )
 }

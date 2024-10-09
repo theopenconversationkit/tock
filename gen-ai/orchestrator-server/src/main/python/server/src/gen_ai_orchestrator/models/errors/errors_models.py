@@ -49,6 +49,7 @@ class ErrorCode(Enum):
     # Vector Store Errors
     VECTOR_STORE_UNKNOWN_PROVIDER = 3000
     VECTOR_STORE_UNKNOWN_PROVIDER_SETTING = 3001
+    VECTOR_STORE_NO_DOCUMENT_RETRIEVED = 3002
 
     # OpenSearch Errors
     OPEN_SEARCH_SETTINGS_ERROR = 4000
@@ -167,7 +168,9 @@ class ErrorMessages:
             detail='Reduce the length of the prompt message.',
         ),
         # Vector Store Errors
-        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER: ErrorMessage(message='Unknown vector store.'),
+        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER: ErrorMessage(message='Unknown vector store provider.'),
+        ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER_SETTING: ErrorMessage(message='Unknown vector store setting.'),
+        ErrorCode.VECTOR_STORE_NO_DOCUMENT_RETRIEVED: ErrorMessage(message='No documents were retrieved from the vector store.'),
         # OpenSearch Errors
         ErrorCode.OPEN_SEARCH_SETTINGS_ERROR: ErrorMessage(
             message='The OpenSearch is improperly configured.',

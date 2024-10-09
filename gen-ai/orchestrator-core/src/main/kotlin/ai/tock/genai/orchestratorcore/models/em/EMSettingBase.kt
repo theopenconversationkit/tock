@@ -16,6 +16,7 @@
 
 package ai.tock.genai.orchestratorcore.models.em
 
+import ai.tock.genai.orchestratorcore.mappers.EMSettingMapper
 import ai.tock.genai.orchestratorcore.models.Constants
 import ai.tock.shared.security.key.SecretKey
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -38,3 +39,6 @@ abstract class EMSettingBase<T>(
 
 typealias EMSettingDTO = EMSettingBase<String>
 typealias EMSetting = EMSettingBase<SecretKey>
+
+// Extension functions for DTO conversion
+fun EMSetting.toDTO(): EMSettingDTO = EMSettingMapper.toDTO(this)

@@ -31,5 +31,3 @@ data class BotRAGConfiguration(
     val noAnswerSentence: String,
     val noAnswerStoryId: String? = null,
 )
-
-fun BotRAGConfiguration?.isEnabled(): Boolean = this?.enabled ?: false

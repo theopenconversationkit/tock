@@ -13,43 +13,24 @@
 #   limitations under the License.
 #
 """
-This module manages the initialization of application settings, based on environment variables
-The OpenSearch master user credentials are retrieved from AWS Secrets Manager if
-open_search_aws_secret_manager_name is set
+This module manages the initialization of application settings, based on environment variables.
+The default Vector Store credentials are configured directly on environment,
+or retrieved from the Secret Manager Provider if the vector_store_credentials_secret_name is set.
 """
 
 import logging
-from email.policy import default
 from enum import Enum, unique
-from typing import Optional, Tuple
+from typing import Optional
 
 from path import Path
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import SettingsConfigDict, BaseSettings
 
 from gen_ai_orchestrator.models.security.proxy_server_type import ProxyServerType
 from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
-from gen_ai_orchestrator.utils.aws.aws_secrets_manager_client import AWSSecretsManagerClient
-from gen_ai_orchestrator.utils.strings import obfuscate
+from gen_ai_orchestrator.utils.secret_manager.secret_manager_provider import SecretManagerProvider
 
 logger = logging.getLogger(__name__)
-
-
-def fetch_open_search_credentials() -> Tuple[Optional[str], Optional[str]]:
-    """Fetch the OpenSearch credentials."""
-    if application_settings.open_search_aws_secret_manager_name is not None:
-        logger.info('Use of AWS Secrets Manager to get OpenSearch credentials...')
-        credentials = AWSSecretsManagerClient().get_credentials(
-            secret_name=application_settings.open_search_aws_secret_manager_name
-        )
-        if credentials is not None:
-            logger.info("The credentials have been successfully retrieved from AWS Secrets Manager.")
-            return credentials.username, credentials.password
-        else:
-            logger.error("No credentials extracted from AWS Secrets Manager.")
-            return None, None
-    else:
-        return application_settings.open_search_user, application_settings.open_search_pwd
 
 
 @unique
@@ -76,23 +57,24 @@ class _Settings(BaseSettings):
     llm_provider_max_retries: int = 0
     em_provider_timeout: int = 4
 
+    vector_store_provider: Optional[VectorStoreProvider] = VectorStoreProvider.OPEN_SEARCH
+    vector_store_host: Optional[str] = 'localhost'
+    vector_store_port: Optional[str] = '9200'
+    vector_store_user: Optional[str] = 'admin'
+    vector_store_pwd: Optional[str] = 'admin'
+    vector_store_database: Optional[str] = None # Only if necessary. Example: PGVector
+    vector_store_secret_manager_provider: Optional[SecretManagerProvider] = None
+    vector_store_credentials_secret_name: Optional[str] = None
+    """Number of document to retrieve from the Vector Store"""
+    vector_store_k: int = 4
     """Request timeout: set the maximum time (in seconds) for the request to be completed."""
     vector_store_timeout: int = 4
-    vector_store_provider: Optional[VectorStoreProvider] = VectorStoreProvider.OPEN_SEARCH.value
+    vector_store_test_query: str = 'What knowledge do you have?'
 
-    """OpenSearch Vector Store Setting"""
-    open_search_host: str = 'localhost'
-    open_search_port: str = '9200'
-    open_search_aws_secret_manager_name: Optional[str] = None
-    open_search_user: Optional[str] = 'admin'
-    open_search_pwd: Optional[str] = 'admin'
-    """Request timeout: set the maximum time (in seconds) for the request to be completed."""
-    open_search_timeout: int = 4
-
+    """Observability Setting"""
     observability_provider_max_retries: int = 0
     """Request timeout (in seconds)."""
     observability_provider_timeout: int = 3
-
     """
     This AWSLambda proxy is used when the architecture implemented for the Langfuse
     observability tool places it behind an API Gateway which requires its
@@ -104,20 +86,9 @@ class _Settings(BaseSettings):
     observability_proxy_server: Optional[ProxyServerType] = None
     observability_proxy_server_authorization_header_name: Optional[str] = None
 
-    gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None)
+    """GCP"""
+    gcp_project_id: Optional[str] = Field(alias='tock_gcp_project_id', default=None) # GCP project ID used for GCP Secrets
 
 
 application_settings = _Settings()
 is_prod_environment = _Environment.PROD == application_settings.application_environment
-
-if VectorStoreProvider.OPEN_SEARCH == application_settings.vector_store_provider:
-    open_search_username, open_search_password = fetch_open_search_credentials()
-
-    if open_search_password is not None :
-        logger.info(
-            'OpenSearch user credentials: %s:%s',
-            open_search_username,
-            obfuscate(open_search_password),
-        )
-else:
-    open_search_username, open_search_password = None, None

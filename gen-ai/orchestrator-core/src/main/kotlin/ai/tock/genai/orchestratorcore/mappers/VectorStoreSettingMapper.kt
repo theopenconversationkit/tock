@@ -17,6 +17,7 @@
 package ai.tock.genai.orchestratorcore.mappers
 
 import ai.tock.genai.orchestratorcore.models.vectorstore.OpenSearchVectorStoreSetting
+import ai.tock.genai.orchestratorcore.models.vectorstore.PGVectorStoreSetting
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSetting
 import ai.tock.genai.orchestratorcore.models.vectorstore.VectorStoreSettingDTO
 import ai.tock.genai.orchestratorcore.utils.SecurityUtils
@@ -36,7 +37,11 @@ object VectorStoreSettingMapper {
             when(this){
                 is OpenSearchVectorStoreSetting -> {
                     val fetchedPassword = SecurityUtils.fetchSecretKeyValue(password)
-                    return OpenSearchVectorStoreSetting(k, vectorSize, host, port, username, fetchedPassword)
+                    return OpenSearchVectorStoreSetting(host, port, username, fetchedPassword, k)
+                }
+                is PGVectorStoreSetting -> {
+                    val fetchedPassword = SecurityUtils.fetchSecretKeyValue(password)
+                    return PGVectorStoreSetting(host, port, username, fetchedPassword, k, database)
                 }
                 else ->
                     throw IllegalArgumentException("Unsupported VectorStore Setting")
@@ -56,7 +61,11 @@ object VectorStoreSettingMapper {
             when(this){
                 is OpenSearchVectorStoreSetting -> {
                     val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password)
-                    return OpenSearchVectorStoreSetting(k, vectorSize, host, port, username, secretPassword)
+                    return OpenSearchVectorStoreSetting(host, port, username, secretPassword, k)
+                }
+                is PGVectorStoreSetting -> {
+                    val secretPassword = SecurityUtils.createSecretKey(namespace, botId, feature, password)
+                    return PGVectorStoreSetting(host, port, username, secretPassword, k, database)
                 }
                 else ->
                     throw IllegalArgumentException("Unsupported VectorStore Setting")

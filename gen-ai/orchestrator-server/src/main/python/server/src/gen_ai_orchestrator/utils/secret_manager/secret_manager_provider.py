@@ -12,15 +12,18 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-"""Model for creating BaseVectorStoreSetting."""
+"""SecretManagerProvider Enumeration."""
 
-from pydantic import BaseModel, Field
-
-from gen_ai_orchestrator.models.vector_stores.vectore_store_provider import VectorStoreProvider
+from enum import Enum, unique
 
 
-class BaseVectorStoreSetting(BaseModel):
-    """A base class for Vector Store Setting."""
+@unique
+class SecretManagerProvider(str, Enum):
+    """Enumeration to list Secret Manager Provider types"""
 
-    provider: VectorStoreProvider = Field(description='The Vector Store Provider.')
+    AWS = 'AWS_SECRETS_MANAGER'
+    GCP = 'GCP_SECRET_MANAGER'
 
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_

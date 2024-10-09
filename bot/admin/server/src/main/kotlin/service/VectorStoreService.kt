@@ -35,11 +35,24 @@ object VectorStoreService {
 
     private val logger: KLogger = KotlinLogging.logger {}
     private val vectorStoreConfigurationDAO: BotVectorStoreConfigurationDAO get() = injector.provide()
+
     /**
      * Get the Vector Store configuration
+     * @param namespace: the namespace
+     * @param botId: the botId
      */
     fun getVectorStoreConfiguration(namespace: String, botId: String): BotVectorStoreConfiguration? {
         return vectorStoreConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
+    }
+
+    /**
+     * Get the Vector Store configuration
+     * @param namespace: the namespace
+     * @param botId: the botId
+     * @param enabled: the configuration activation (enabled or not)
+     */
+    fun getVectorStoreConfiguration(namespace: String, botId: String, enabled: Boolean): BotVectorStoreConfiguration? {
+        return vectorStoreConfigurationDAO.findByNamespaceAndBotIdAndEnabled(namespace, botId, enabled)
     }
 
     /**

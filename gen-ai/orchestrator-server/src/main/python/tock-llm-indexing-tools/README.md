@@ -123,24 +123,29 @@ Recursively browse web URLs (follow links from these base URLs), then scrape lin
 
 #### index_documents.py
 
-Index a ready-to-index CSV file ('title'|'url'|'text' lines) file contents into an OpenSearch vector database.
+Index a ready-to-index CSV ('title'|'url'|'text' lines) file contents into a given vector database.
 
 ```
 Usage:
-    index_documents.py [-v] <input_csv> <index_name> <embeddings_cfg> <chunks_size> [<env_file>]
+    index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> [<env_file>]
     index_documents.py -h | --help
     index_documents.py --version
 
 Arguments:
     input_csv       path to the ready-to-index file
-    index_name      name of the OpenSearch index (shall follow indexes naming rules)
-    embeddings_cfg  path to an embeddings configuration file (JSON format) (shall describe settings for one of OpenAI or AzureOpenAI embeddings model)
+    namespace       the namespace
+    bot_id          the bot ID
+    embeddings_json_config  path to an embeddings configuration file (JSON format)
+                    (shall describe settings for one of OpenAI or AzureOpenAI
+                    embeddings model)
+    vector_store_json_config  path to a vector store configuration file (JSON format)
+                    (shall describe settings for one of OpenSearch or PGVector store)
     chunks_size     size of the embedded chunks of documents
 
 Options:
     -h --help   Show this screen
     --version   Show version
-    -v          Verbose output for debugging (without this option, script will be silent but for errors and the unique indexing session id)
+    -v          Verbose output for debugging
 ```
 
 Index a ready-to-index CSV file contents into an OpenSearch vector database.
@@ -159,20 +164,39 @@ Documents will be indexed in OpenSearch DB under index_name index (index_name sh
 | title            | the 'title' column from original input CSV                       |
 | url              | the 'url' column from original input CSV                         |
 
-A unique indexing session id is produced and printed to the console (will be the last line printed if the '-v' option is used).
+#### Sample result: 
+<pre>
+------------------- Indexing details ----------------------------------------------------------
+                 Index name : ns-03-bot-cmso-session-b2bbb74a-1439-499d-a621-0f4b6bff0491
+           Index session ID : b2bbb74a-1439-499d-a621-0f4b6bff0491
+        Documents extracted : 391 (Docs)
+          Documents chunked : 391 (Chunks)
+                 Chunk size : 20000 (Characters)
+                  Input csv : cmso_full_06062024.csv
+   Embeddings configuration : embeddings_azure_openai_settings.json
+ Vector Store configuration : vector_store_opensearch_settings.json
+                   Duration : 39.34 seconds
+                       Date : 2024-09-10 16:29:54
+-----------------------------------------------------------------------------------------------
+</pre>
 
-## OpenSearch Configuration
+## Default Vector Store Configuration
 
-To configure the OpenSearch vector store, you can use the following environment variables:
+To configure the default vector store, you can use the following environment variables:
 
-| Variables                                                    | Description                                                                         | Default     |
-|--------------------------------------------------------------|-------------------------------------------------------------------------------------|-------------|
-| tock_gen_ai_orchestrator_open_search_host                    | The OpenSearch host                                                                 | 'localhost' |
-| tock_gen_ai_orchestrator_open_search_port                    | The OpenSearch port                                                                 | '9200'      |
-| tock_gen_ai_orchestrator_open_search_aws_secret_manager_name | The optional AWS secret name that store the OpenSearch user credentials             | None        |
-| chtock_gen_ai_orchestrator_open_search_user                  | The OpenSearch user (Raw value)                                                     | 'admin'     |
-| tock_gen_ai_orchestrator_open_search_pwd                     | The OpenSearch password (Raw value)                                                 | 'admin'     |
-| tock_gen_ai_orchestrator_open_search_timeout                 | Request timeout: set the maximum time (in seconds) for the request to be completed. | '4'         |
+| Variables                                                        | Description                                                       | Default                       | List of values                              |
+|------------------------------------------------------------------|-------------------------------------------------------------------|-------------------------------|---------------------------------------------|
+| `tock_gen_ai_orchestrator_application_environment`               | Application environment                                           | `DEV`                         | `DEV`, `PROD`                               |
+| `tock_gen_ai_orchestrator_em_provider_timeout`                   | Embeddings request timeout (in seconds)                           | 120                           | Integer                                     |
+| `tock_gen_ai_orchestrator_vector_store_provider`                 | Vector Store Provider                                             | `OpenSearch`                  | `OpenSearch`, `PGVector`                    |
+| `tock_gen_ai_orchestrator_vector_store_host`                     | Vector Store host                                                 | 'localhost'                   | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_port`                     | Vector Store port                                                 | '9200'                        | Integer                                     |
+| `tock_gen_ai_orchestrator_vector_store_user`                     | Vector Store user                                                 | 'admin'                       | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_pwd`                      | Vector Store password                                             | 'admin'                       | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_database`                 | Vector Store database name (Only if necessary. Example: PGVector) | Null                          | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_test_query`               | Query used to test the Vector Store                               | 'What knowledge do you have?' | String                                      |
+| `tock_gen_ai_orchestrator_vector_store_secret_manager_provider`  | Secret Manager Provider                                           | `AWS_SECRETS_MANAGER`         | `AWS_SECRETS_MANAGER`, `GCP_SECRET_MANAGER` |
+| `tock_gen_ai_orchestrator_vector_store_credentials_secret_name`  | Secret name storing credentials                                   | Null                          | String                                      |
 
 
 ## Testing RAG settings on dataset

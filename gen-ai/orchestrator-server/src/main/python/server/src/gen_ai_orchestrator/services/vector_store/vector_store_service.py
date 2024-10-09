@@ -15,21 +15,27 @@
 """Module for the Vector Store Service"""
 
 import logging
+from typing import Optional
 
 from langchain_community.embeddings import FakeEmbeddings
 
+from gen_ai_orchestrator.models.em.em_types import EMSetting
 from gen_ai_orchestrator.models.vector_stores.vector_store_types import VectorStoreSetting
-from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_vector_store_factory
+from gen_ai_orchestrator.services.langchain.factories.langchain_factory import get_vector_store_factory, get_em_factory
 
 logger = logging.getLogger(__name__)
 
 
-async def check_vector_store_setting(setting: VectorStoreSetting, index_name: str) -> bool:
+async def check_vector_store_setting(
+        vector_store_setting: Optional[VectorStoreSetting],
+        em_setting: Optional[EMSetting],
+        index_name: Optional[str]) -> bool:
     """
     Run a check for a given Vector Store setting.
 
     Args:
-        setting: The Vector Store setting to check
+        vector_store_setting: The Vector Store setting to check
+        em_setting: The Embeddings setting to use with the Vector Store
         index_name: the index name
 
     Returns:
@@ -37,7 +43,17 @@ async def check_vector_store_setting(setting: VectorStoreSetting, index_name: st
     """
 
     logger.info('Get the Callback handler Factory, then check the Vector Store setting.')
-    return await get_vector_store_factory(setting=setting,
-                                          index_name=index_name,
-                                          embedding_function=FakeEmbeddings(size=setting.vector_size)
-                                          ).check_vector_store_setting()
+
+    if em_setting is None or index_name is None:
+        return await get_vector_store_factory(
+            setting=vector_store_setting,
+            index_name="fake_index_name",
+            embedding_function=FakeEmbeddings(size=1536)
+        ).check_vector_store_connection()
+    else:
+        return await get_vector_store_factory(
+            setting=vector_store_setting,
+            index_name=index_name,
+            embedding_function=get_em_factory(em_setting).get_embedding_model()
+        ).check_vector_store_setting()
+

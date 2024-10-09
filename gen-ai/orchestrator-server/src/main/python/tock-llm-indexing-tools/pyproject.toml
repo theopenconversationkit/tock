@@ -5,23 +5,26 @@ description = "Tools to index data from different sources to TOCK RAG vector DB"
 authors = ["Pierre Guirriec <pierre.guirriec@partnre.com>"]
 license = "Apache 2.0"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 docopt-ng = "^0.9.0"
 pandas = "^2.2.1"
 openpyxl = "^3.1.2"
 beautifulsoup4 = "^4.12.2"
-langchain = "^0.1.0"
-langsmith = "^0.1.41"
+langchain = "^0.3.2"
+langsmith = "^0.1.132"
 python-dotenv = "^1.0.0"
 opensearch-py = "^2.4.2"
 gen_ai_orchestrator = {path = "../server"}
-langchain-community = "^0.0.29"
+langchain-community = "^0.3.1"
 pre-commit = "^3.7.1"
 aiometer = "^0.5.0"
-aiohttp = "^3.9.5"
-aiohttp-socks = "^0.8.4"
+aiohttp = "^3.10.9"
+aiohttp-socks = "^0.9.0"
+pydantic = "^2.9.0"
+humanize = "^4.11.0"
 
 [build-system]
 requires = ["poetry-core"]

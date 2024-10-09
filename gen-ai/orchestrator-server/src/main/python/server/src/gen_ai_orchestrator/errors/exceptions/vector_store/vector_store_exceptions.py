@@ -37,5 +37,10 @@ class GenAIUnknownVectorStoreProviderSettingException(GenAIOrchestratorException
     def __init__(self, info: Optional[ErrorInfo] = None):
         super().__init__(ErrorCode.VECTOR_STORE_UNKNOWN_PROVIDER_SETTING, info)
 
+class GenAIVectorStoreNoDocumentRetrievedException(GenAIOrchestratorException):
+    """No documents were retrieved from the Vector Store"""
+
+    def __init__(self, info: Optional[ErrorInfo] = None):
+        super().__init__(ErrorCode.VECTOR_STORE_NO_DOCUMENT_RETRIEVED, info)
 
 

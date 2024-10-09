@@ -16,16 +16,17 @@
 
 package ai.tock.genai.orchestratorcore.models.vectorstore
 
-import ai.tock.genai.orchestratorcore.utils.OpenSearchUtils
+import ai.tock.genai.orchestratorcore.utils.PGVectorUtils
 
-data class OpenSearchVectorStoreSetting<T>(
+data class PGVectorStoreSetting<T>(
     override val host: String,
     override val port: Int,
     override val username: String,
     override val password: T,
     override val k: Int,
+    val database: String,
 ) : VectorStoreSettingBase<T>(
-    provider = VectorStoreProvider.OpenSearch,
+    provider = VectorStoreProvider.PGVector,
     host = host,
     port = port,
     username = username,
@@ -34,17 +35,13 @@ data class OpenSearchVectorStoreSetting<T>(
 ) {
 
     override fun normalizeDocumentIndexName(namespace: String, botId: String, indexSessionId: String): String =
-        OpenSearchUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
+        PGVectorUtils.normalizeDocumentIndexName(namespace, botId, indexSessionId)
 
-    override fun getDocumentSearchParams(): OpenSearchParams =
-        OpenSearchParams(k = k, filter = null)
+    override fun getDocumentSearchParams(): PGVectorParams =
+        PGVectorParams(k = k, filter = null)
 }
 
-data class OpenSearchParams(
+data class PGVectorParams(
     val k: Int = 4,
-    val filter: List<Term>? = null
-) : DocumentSearchParamsBase(VectorStoreProvider.OpenSearch)
-
-data class Term(
-    val term: Map<String, Any>
-)
+    val filter: Map<String, String>? = null
+) : DocumentSearchParamsBase(VectorStoreProvider.PGVector)
