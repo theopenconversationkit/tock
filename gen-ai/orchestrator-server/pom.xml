@@ -47,23 +47,67 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <workingDirectory>src/main/python/server/</workingDirectory>
+                            <!--
+                                For Linux, the path to this "poetry" script must be declared :
+                                - in the PATH defined in the ~/.profile configuration file.
+                                - or in a script that launches the maven build
+                            -->
+                            <executable>poetry</executable>
+                            <arguments>
+                                <argument>export</argument>
+                                <argument>--without-hashes</argument>
+                                <argument>--format=requirements.txt</argument>
+                                <argument>--output=src/requirements.txt</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>poetry-to-requirements-tooling.txt</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>src/main/python/tock-llm-indexing-tools/</workingDirectory>
+                            <!--
+                                For Linux, the path to this "poetry" script must be declared :
+                                - in the PATH defined in the ~/.profile configuration file.
+                                - or in a script that launches the maven build
+                            -->
+                            <executable>poetry</executable>
+                            <arguments>
+                                <argument>export</argument>
+                                <argument>--without-hashes</argument>
+                                <argument>--format=requirements.txt</argument>
+                                <argument>--output=requirements.txt</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>poetry-to-requirements-tooling-rm-local-gen-ai-dep-full-path</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>src/main/python/tock-llm-indexing-tools/</workingDirectory>
+                            <!--
+                                For Linux, the path to this "poetry" script must be declared :
+                                - in the PATH defined in the ~/.profile configuration file.
+                                - or in a script that launches the maven build
+                            -->
+                            <executable>sed</executable>
+                            <arguments>
+                                <argument>-i</argument>
+                                <argument>/gen-ai-orchestrator/d</argument>
+                                <argument>requirements.txt</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <workingDirectory>src/main/python/server/</workingDirectory>
-                    <!--
-                        For Linux, the path to this "poetry" script must be declared :
-                        - in the PATH defined in the ~/.profile configuration file.
-                        - or in a script that launches the maven build
-                    -->
-                    <executable>poetry</executable>
-                    <arguments>
-                        <argument>export</argument>
-                        <argument>--without-hashes</argument>
-                        <argument>--format=requirements.txt</argument>
-                        <argument>--output=src/requirements.txt</argument>
-                    </arguments>
-                </configuration>
+
             </plugin>
         </plugins>
     </build>
