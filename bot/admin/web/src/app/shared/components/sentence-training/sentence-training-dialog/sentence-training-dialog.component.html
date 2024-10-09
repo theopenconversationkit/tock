@@ -64,6 +64,21 @@
         [ngClass]="{ currentsentence: isCurrentSentence(action), pointer: !action.isBot() }"
         (click)="searchSentence(action)"
       >
+        <div
+          *ngIf="$any(action).metadata.isGenAiRagAnswer"
+          class="mt-3 text-right"
+        >
+          <button
+            nbButton
+            size="tiny"
+            status="warning"
+            type="button"
+            (click)="createFaq(action, displayedDialog.actions)"
+          >
+            <nb-icon icon="chat-left-text"></nb-icon>
+            Create a FAQ with this question/answer pair
+          </button>
+        </div>
       </tock-chat-ui-message>
     </tock-chat-ui>
   </nb-card-body>
