@@ -5,14 +5,14 @@ import { BotService } from '../../bot/bot-service';
 import { StoryDefinitionConfiguration, StorySearchQuery } from '../../bot/model/story';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { StateService } from '../../core-nlp/state.service';
-import { DefaultPrompt, EngineSettingKeyName, EnginesConfigurations } from './models/engines-configurations';
+import { DefaultPrompt, EnginesConfigurations } from './models/engines-configurations';
 import { RagSettings } from './models';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
 import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { DebugViewerWindowComponent } from '../../shared/components/debug-viewer-window/debug-viewer-window.component';
-import { EnginesConfiguration, EnginesConfigurationParam, LLMProvider } from '../../shared/model/ai-settings';
+import { AiEngineSettingKeyName, EnginesConfiguration, EnginesConfigurationParam, AiEngineProvider } from '../../shared/model/ai-settings';
 import { ChoiceDialogComponent } from '../../shared/components';
 import { saveAs } from 'file-saver-es';
 import { FileValidators } from '../../shared/validators';
@@ -27,9 +27,9 @@ interface RagSettingsForm {
   indexSessionId: FormControl<string>;
   indexName: FormControl<string>;
 
-  llmEngine: FormControl<LLMProvider>;
+  llmEngine: FormControl<AiEngineProvider>;
   llmSetting: FormGroup<any>;
-  emEngine: FormControl<LLMProvider>;
+  emEngine: FormControl<AiEngineProvider>;
   emSetting: FormGroup<any>;
 }
 
@@ -45,7 +45,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
   enginesConfigurations = EnginesConfigurations;
 
-  engineSettingKeyName = EngineSettingKeyName;
+  engineSettingKeyName = AiEngineSettingKeyName;
 
   defaultPrompt = DefaultPrompt;
 
@@ -80,15 +80,15 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     this.form
       .get('llmEngine')
       .valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((engine: LLMProvider) => {
-        this.initFormSettings(EngineSettingKeyName.llmSetting, engine);
+      .subscribe((engine: AiEngineProvider) => {
+        this.initFormSettings(AiEngineSettingKeyName.llmSetting, engine);
       });
 
     this.form
       .get('emEngine')
       .valueChanges.pipe(takeUntil(this.destroy$))
-      .subscribe((engine: LLMProvider) => {
-        this.initFormSettings(EngineSettingKeyName.emSetting, engine);
+      .subscribe((engine: AiEngineProvider) => {
+        this.initFormSettings(AiEngineSettingKeyName.emSetting, engine);
       });
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
@@ -97,8 +97,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
       // Reset form on configuration change
       this.form.reset();
       // Reset formGroup controls too, if any
-      this.resetFormGroupControls(EngineSettingKeyName.llmSetting);
-      this.resetFormGroupControls(EngineSettingKeyName.emSetting);
+      this.resetFormGroupControls(AiEngineSettingKeyName.llmSetting);
+      this.resetFormGroupControls(AiEngineSettingKeyName.emSetting);
 
       this.loading = true;
       this.configurations = confs;
@@ -216,7 +216,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  initFormSettings(group: EngineSettingKeyName, provider: LLMProvider): void {
+  initFormSettings(group: AiEngineSettingKeyName, provider: AiEngineProvider): void {
     let requiredConfiguration: EnginesConfiguration = EnginesConfigurations[group].find((c) => c.key === provider);
 
     if (requiredConfiguration) {
@@ -231,7 +231,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  resetFormGroupControls(group: EngineSettingKeyName) {
+  resetFormGroupControls(group: AiEngineSettingKeyName) {
     const existingGroupKeys = Object.keys(this.form.controls[group].controls);
     existingGroupKeys.forEach((key) => {
       this.form.controls[group].removeControl(key);
@@ -244,8 +244,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   initForm(settings: RagSettings) {
-    this.initFormSettings(EngineSettingKeyName.llmSetting, settings.llmSetting.provider);
-    this.initFormSettings(EngineSettingKeyName.emSetting, settings.emSetting.provider);
+    this.initFormSettings(AiEngineSettingKeyName.llmSetting, settings.llmSetting.provider);
+    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting.provider);
     this.form.patchValue({
       llmEngine: settings.llmSetting.provider,
       emEngine: settings.emSetting.provider
@@ -267,11 +267,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   get currentLlmEngine(): EnginesConfiguration {
-    return EnginesConfigurations[EngineSettingKeyName.llmSetting].find((e) => e.key === this.llmEngine.value);
+    return EnginesConfigurations[AiEngineSettingKeyName.llmSetting].find((e) => e.key === this.llmEngine.value);
   }
 
   get currentEmEngine(): EnginesConfiguration {
-    return EnginesConfigurations[EngineSettingKeyName.emSetting].find((e) => e.key === this.emEngine.value);
+    return EnginesConfigurations[AiEngineSettingKeyName.emSetting].find((e) => e.key === this.emEngine.value);
   }
 
   private getStoriesLoader(): Observable<StoryDefinitionConfiguration[]> {
@@ -371,8 +371,8 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
     if (shouldConfirm) {
       [
-        { label: 'LLM engine', key: EngineSettingKeyName.llmSetting, params: this.currentLlmEngine.params },
-        { label: 'Embedding engine', key: EngineSettingKeyName.emSetting, params: this.currentEmEngine.params }
+        { label: 'LLM engine', key: AiEngineSettingKeyName.llmSetting, params: this.currentLlmEngine.params },
+        { label: 'Embedding engine', key: AiEngineSettingKeyName.emSetting, params: this.currentEmEngine.params }
       ].forEach((engine) => {
         engine.params.forEach((entry) => {
           if (entry.confirmExport) {
@@ -432,6 +432,7 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   importModalRef;
 
   importSettings() {
+    this.isImportSubmitted = false;
     this.importForm.reset();
     this.importModalRef = this.nbDialogService.open(this.importModal);
   }

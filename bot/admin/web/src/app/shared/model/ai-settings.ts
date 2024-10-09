@@ -1,11 +1,16 @@
-export enum LLMProvider {
+export enum AiEngineProvider {
   OpenAI = 'OpenAI',
   AzureOpenAIService = 'AzureOpenAIService',
   Ollama = 'Ollama'
 }
 
+export enum AiEngineSettingKeyName {
+  llmSetting = 'llmSetting',
+  emSetting = 'emSetting'
+}
+
 export interface llmSetting {
-  provider: LLMProvider;
+  provider: AiEngineProvider;
 
   model: String;
 
@@ -19,7 +24,7 @@ export interface llmSetting {
 }
 
 export interface emSetting {
-  provider: LLMProvider;
+  provider: AiEngineProvider;
 
   model: String;
 
@@ -31,7 +36,7 @@ export interface emSetting {
 
 export interface EnginesConfiguration {
   label: string;
-  key: LLMProvider;
+  key: AiEngineProvider;
   params: EnginesConfigurationParam[];
 }
 

@@ -1,7 +1,8 @@
 import {
   AzureOpenAiApiVersionsList,
+  AiEngineSettingKeyName,
   EnginesConfiguration,
-  LLMProvider,
+  AiEngineProvider,
   OllamaEmModelsList,
   OllamaLlmModelsList,
   OpenAIEmbeddingModel,
@@ -40,7 +41,7 @@ Answer in {locale}.
 const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   {
     label: 'OpenAi',
-    key: LLMProvider.OpenAI,
+    key: AiEngineProvider.OpenAI,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
@@ -50,7 +51,7 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   },
   {
     label: 'Azure OpenAi',
-    key: LLMProvider.AzureOpenAIService,
+    key: AiEngineProvider.AzureOpenAIService,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
@@ -62,7 +63,7 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   },
   {
     label: 'Ollama',
-    key: LLMProvider.Ollama,
+    key: AiEngineProvider.Ollama,
     params: [
       { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
@@ -75,7 +76,7 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
 const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   {
     label: 'OpenAi',
-    key: LLMProvider.OpenAI,
+    key: AiEngineProvider.OpenAI,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIEmbeddingModel }
@@ -83,7 +84,7 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   },
   {
     label: 'Azure OpenAi',
-    key: LLMProvider.AzureOpenAIService,
+    key: AiEngineProvider.AzureOpenAIService,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
@@ -93,7 +94,7 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   },
   {
     label: 'Ollama',
-    key: LLMProvider.Ollama,
+    key: AiEngineProvider.Ollama,
     params: [
       { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaEmModelsList, defaultValue: 'all-minilm' }
@@ -101,12 +102,7 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   }
 ];
 
-export enum EngineSettingKeyName {
-  llmSetting = 'llmSetting',
-  emSetting = 'emSetting'
-}
-
-export const EnginesConfigurations: { [K in EngineSettingKeyName]: EnginesConfiguration[] } = {
+export const EnginesConfigurations: { [K in AiEngineSettingKeyName]: EnginesConfiguration[] } = {
   llmSetting: EnginesConfigurations_Llm,
   emSetting: EnginesConfigurations_Embedding
 };
