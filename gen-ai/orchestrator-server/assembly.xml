@@ -11,5 +11,17 @@
             <directory>src/main/python/server/src/</directory>
             <outputDirectory></outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>src/main/python/tock-llm-indexing-tools/</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>**/.venv/**</exclude>
+                <exclude>**/venv/**</exclude>
+                <exclude>**/.env/**</exclude>
+            </excludes>
+            <outputDirectory>tock-llm-indexing-tools</outputDirectory>
+        </fileSet>
     </fileSets>
 </assembly>
