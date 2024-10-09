@@ -29,6 +29,7 @@ title: Table des matières
         - [Le menu _Settings_](../user/studio/configuration)
         - [Le menu _FAQ Training_](../user/studio/faq-training)
         - [Le menu _FAQ Management_](../user/studio/faq-management)
+        - [Le menu _Gen AI_](../user/studio/gen-ai/gen-ai)
     - [Guides](../user/guides) :
         - [Construire un modèle conversationnel](../user/guides/build-model)
         - [Créer un bot multicanal (connecteurs)](../user/guides/canaux)
@@ -39,7 +40,7 @@ title: Table des matières
   - [Modes disponibles](../dev/modes)
   - [_Tock Bot API_](../dev/bot-api)
   - [_Tock Bot intégré_](../dev/bot-integre)
-    - [Tests Unitaires](../dev/tester)
+  - [Tests Unitaires](../dev/tester)
   - [Connecteurs](../dev/connecteurs)
   - [Internationalisation (_i18n_)](../dev/i18n)
   - [Liste des APIs Tock](../dev/api)
