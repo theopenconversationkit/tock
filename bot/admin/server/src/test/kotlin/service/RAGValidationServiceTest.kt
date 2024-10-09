@@ -17,18 +17,21 @@
 package ai.tock.bot.admin.service
 
 import ai.tock.bot.admin.bot.observability.BotObservabilityConfigurationDAO
+import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.genai.orchestratorclient.responses.ErrorInfo
 import ai.tock.genai.orchestratorclient.responses.ErrorResponse
 import ai.tock.genai.orchestratorclient.responses.ProviderSettingStatusResponse
 import ai.tock.genai.orchestratorclient.services.EMProviderService
 import ai.tock.genai.orchestratorclient.services.LLMProviderService
+import ai.tock.genai.orchestratorclient.services.VectorStoreProviderService
 import ai.tock.genai.orchestratorcore.models.em.AzureOpenAIEMSettingDTO
 import ai.tock.genai.orchestratorcore.models.llm.OpenAILLMSetting
 import ai.tock.shared.tockInternalInjector
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.singleton
 import io.mockk.every
 import io.mockk.mockk
@@ -45,6 +48,8 @@ class RAGValidationServiceTest {
                 bind<LLMProviderService>() with singleton { llmProviderService }
                 bind<EMProviderService>() with singleton { emProviderService }
                 bind<BotObservabilityConfigurationDAO>() with singleton { botObservabilityConfigurationDAO }
+                bind<BotVectorStoreConfigurationDAO>() with provider { mockk<BotVectorStoreConfigurationDAO>(relaxed = true) }
+                bind<VectorStoreProviderService>() with provider { mockk<VectorStoreProviderService>(relaxed = true) }
             }.also {
                 tockInternalInjector.inject(Kodein {
                     import(it)
@@ -144,7 +149,7 @@ class RAGValidationServiceTest {
         // WHEN :
         // Launch of validation
         val errors = RAGValidationService.validate(
-            ragConfiguration.copy(enabled = false, indexSessionId = null).toBotRAGConfiguration()
+            ragConfiguration.copy(enabled = false, indexSessionId = "sessionId").toBotRAGConfiguration()
         )
 
         // THEN :
