@@ -101,7 +101,12 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   }
 ];
 
-export const EnginesConfigurations: { [key: string]: EnginesConfiguration[] } = {
+export enum EngineSettingKeyName {
+  llmSetting = 'llmSetting',
+  emSetting = 'emSetting'
+}
+
+export const EnginesConfigurations: { [K in EngineSettingKeyName]: EnginesConfiguration[] } = {
   llmSetting: EnginesConfigurations_Llm,
   emSetting: EnginesConfigurations_Embedding
 };
