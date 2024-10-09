@@ -1,9 +1,10 @@
 ---
-title: Fournisseurs d'observabilité de l'IA pris en compte par Tock
+title: Fournisseurs d'observabilité des LLMs
 ---
 
-# Fournisseurs d'observabilité de l'IA pris en compte par Tock.
+# Fournisseurs d'observabilité des LLMs.
 
+Voici la liste des fournisseurs d'observabilité des LLM pris en compte par Tock :
 
 <table>
 <thead>

@@ -1,10 +1,10 @@
 ---
-title: Fournisseurs de l'IA pris en compte par Tock
+title: Fournisseurs des modèles LLM et d'Embedding
 ---
 
-# Fournisseurs de l'IA pris en compte par Tock.
+# Fournisseurs des modèles LLM et d'Embedding
 
-
+Voici la liste des fournisseurs des modèles LLM et d'Embedding pris en compte par Tock :
 
 <table>
 <thead>

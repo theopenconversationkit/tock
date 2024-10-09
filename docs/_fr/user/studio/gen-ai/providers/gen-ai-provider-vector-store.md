@@ -1,8 +1,10 @@
 ---
-title: Fournisseurs de base vectorielle pris en compte par Tock
+title: Fournisseurs de base vectorielle
 ---
 
-# Fournisseurs de base vectorielle pris en compte par Tock.
+# Fournisseurs de base vectorielle.
+
+Voici la liste des fournisseurs de base vectorielle pris en compte par Tock :
 
 <table>
 <thead>

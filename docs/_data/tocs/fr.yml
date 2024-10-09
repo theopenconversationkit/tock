@@ -59,11 +59,11 @@ content:
                     url: 'fr/user/studio/gen-ai/features/gen-ai-feature-vector-store'
               - title: 'Fournisseurs IA Gen'
                 children:
-                  - title: Fournisseurs de l'IA pris en compte par Tock
+                  - title: Fournisseurs des modèles LLM et d'Embedding
                     url: 'fr/user/studio/gen-ai/providers/gen-ai-provider-llm-and-embedding'
-                  - title: Fournisseurs d'observabilité de l'IA pris encompte par Tock
+                  - title: Fournisseurs d'observabilité
                     url: 'fr/user/studio/gen-ai/providers/gen-ai-provider-observability'
-                  - title: Fournisseurs de base vectorielle pris en compte par Tock
+                  - title: Fournisseurs de base vectorielle
                     url: 'fr/user/studio/gen-ai/providers/gen-ai-provider-observability'
 
       - title: 'Guides'
