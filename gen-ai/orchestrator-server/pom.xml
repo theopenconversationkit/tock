@@ -98,12 +98,7 @@
                                 - in the PATH defined in the ~/.profile configuration file.
                                 - or in a script that launches the maven build
                             -->
-                            <executable>sed</executable>
-                            <arguments>
-                                <argument>-i</argument>
-                                <argument>/gen-ai-orchestrator/d</argument>
-                                <argument>requirements.txt</argument>
-                            </arguments>
+                            <executable>./export_deps_as_requirements.sh</executable>
                         </configuration>
                     </execution>
                 </executions>
