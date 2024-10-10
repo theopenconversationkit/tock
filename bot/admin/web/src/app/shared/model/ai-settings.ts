@@ -1,15 +1,20 @@
-export enum LLMProvider {
+export enum AiEngineProvider {
   OpenAI = 'OpenAI',
   AzureOpenAIService = 'AzureOpenAIService',
   Ollama = 'Ollama'
 }
 
-export interface llmSetting {
-  provider: LLMProvider;
+export enum AiEngineSettingKeyName {
+  llmSetting = 'llmSetting',
+  emSetting = 'emSetting'
+}
 
-  apiKey: String;
+export interface llmSetting {
+  provider: AiEngineProvider;
+
   model: String;
 
+  apiKey?: String;
   deploymentName?: String;
   apiBase?: String;
   apiVersion?: String;
@@ -19,11 +24,11 @@ export interface llmSetting {
 }
 
 export interface emSetting {
-  provider: LLMProvider;
+  provider: AiEngineProvider;
 
-  apiKey: String;
   model: String;
 
+  apiKey?: String;
   deploymentName?: String;
   apiBase?: String;
   apiVersion?: String;
@@ -31,7 +36,7 @@ export interface emSetting {
 
 export interface EnginesConfiguration {
   label: string;
-  key: LLMProvider;
+  key: AiEngineProvider;
   params: EnginesConfigurationParam[];
 }
 
@@ -42,6 +47,7 @@ export interface EnginesConfigurationParam {
   source?: string[];
   inputScale?: 'default' | 'fullwidth';
   defaultValue?: string | number;
+  confirmExport?: boolean;
 }
 
 export const AzureOpenAiApiVersionsList: string[] = [

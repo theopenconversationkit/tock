@@ -9,6 +9,7 @@ export interface ProvidersConfigurationParam {
   source?: string[];
   inputScale?: 'default' | 'fullwidth';
   defaultValue?: string;
+  confirmExport?: boolean;
 }
 
 export interface ProvidersConfiguration {
@@ -23,7 +24,7 @@ export const ProvidersConfigurations: ProvidersConfiguration[] = [
     key: ObservabilityProvider.Langfuse,
     params: [
       { key: 'publicKey', label: 'Public key', type: 'obfuscated' },
-      { key: 'secretKey', label: 'Secret key', type: 'obfuscated' },
+      { key: 'secretKey', label: 'Secret key', type: 'obfuscated', confirmExport: true },
       { key: 'url', label: 'Url', type: 'obfuscated' }
     ]
   }

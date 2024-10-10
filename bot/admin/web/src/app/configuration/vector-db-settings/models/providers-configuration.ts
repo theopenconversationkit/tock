@@ -17,6 +17,7 @@ export interface ProvidersConfigurationParam {
   step?: number;
   readonly?: boolean;
   disabled?: boolean;
+  confirmExport?: boolean;
 }
 
 export interface ProvidersConfiguration {
@@ -33,7 +34,7 @@ export const ProvidersConfigurations: ProvidersConfiguration[] = [
       { key: 'host', label: 'Host', type: 'text', defaultValue: 'localhost' },
       { key: 'port', label: 'Port', type: 'number', min: 1, max: 65535, step: 1, defaultValue: '9200' },
       { key: 'username', label: 'User name', type: 'obfuscated', defaultValue: 'admin' },
-      { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'admin' },
+      { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'admin', confirmExport: true },
       {
         key: 'k',
         label: 'k-nearest neighbors',
@@ -53,7 +54,7 @@ export const ProvidersConfigurations: ProvidersConfiguration[] = [
       { key: 'host', label: 'Host', type: 'text', defaultValue: 'localhost' },
       { key: 'port', label: 'Port', type: 'number', min: 1, max: 65535, step: 1, defaultValue: '5432' },
       { key: 'username', label: 'User name', type: 'obfuscated', defaultValue: 'postgres' },
-      { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'ChangeMe' },
+      { key: 'password', label: 'Password', type: 'obfuscated', defaultValue: 'ChangeMe', confirmExport: true },
       {
         key: 'k',
         label: 'k-nearest neighbors',

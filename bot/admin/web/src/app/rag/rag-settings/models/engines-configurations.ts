@@ -1,7 +1,8 @@
 import {
   AzureOpenAiApiVersionsList,
+  AiEngineSettingKeyName,
   EnginesConfiguration,
-  LLMProvider,
+  AiEngineProvider,
   OllamaEmModelsList,
   OllamaLlmModelsList,
   OpenAIEmbeddingModel,
@@ -40,9 +41,9 @@ Answer in {locale}.
 const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   {
     label: 'OpenAi',
-    key: LLMProvider.OpenAI,
+    key: AiEngineProvider.OpenAI,
     params: [
-      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
@@ -50,9 +51,9 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   },
   {
     label: 'Azure OpenAi',
-    key: LLMProvider.AzureOpenAIService,
+    key: AiEngineProvider.AzureOpenAIService,
     params: [
-      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
       { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' },
@@ -62,7 +63,7 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
   },
   {
     label: 'Ollama',
-    key: LLMProvider.Ollama,
+    key: AiEngineProvider.Ollama,
     params: [
       { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
@@ -75,17 +76,17 @@ const EnginesConfigurations_Llm: EnginesConfiguration[] = [
 const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   {
     label: 'OpenAi',
-    key: LLMProvider.OpenAI,
+    key: AiEngineProvider.OpenAI,
     params: [
-      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIEmbeddingModel }
     ]
   },
   {
     label: 'Azure OpenAi',
-    key: LLMProvider.AzureOpenAIService,
+    key: AiEngineProvider.AzureOpenAIService,
     params: [
-      { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
+      { key: 'apiKey', label: 'Api key', type: 'obfuscated', confirmExport: true },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
       { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' }
@@ -93,7 +94,7 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   },
   {
     label: 'Ollama',
-    key: LLMProvider.Ollama,
+    key: AiEngineProvider.Ollama,
     params: [
       { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaEmModelsList, defaultValue: 'all-minilm' }
@@ -101,7 +102,7 @@ const EnginesConfigurations_Embedding: EnginesConfiguration[] = [
   }
 ];
 
-export const EnginesConfigurations: { [key: string]: EnginesConfiguration[] } = {
+export const EnginesConfigurations: { [K in AiEngineSettingKeyName]: EnginesConfiguration[] } = {
   llmSetting: EnginesConfigurations_Llm,
   emSetting: EnginesConfigurations_Embedding
 };

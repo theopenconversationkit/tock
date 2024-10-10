@@ -20,6 +20,26 @@
 
     <section class="grid-actions">
       <button
+        [disabled]="!hasExportableData"
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Export Rag settings dump"
+        (click)="exportSettings()"
+      >
+        <nb-icon icon="download"></nb-icon>
+      </button>
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Import Rag settings dump"
+        (click)="importSettings()"
+      >
+        <nb-icon icon="upload"></nb-icon>
+      </button>
+
+      <button
         *ngIf="settingsBackup && form.dirty"
         nbButton
         ghost
@@ -31,7 +51,7 @@
         CANCEL
       </button>
       <button
-        *ngIf="form.dirty"
+        *ngIf="form.dirty && hasExportableData"
         nbButton
         status="primary"
         nbTooltip="Save settings"
@@ -86,7 +106,7 @@
           class="d-flex"
         >
           <nb-radio
-            *ngFor="let engine of enginesConfigurations['llmSetting']"
+            *ngFor="let engine of enginesConfigurations[engineSettingKeyName.llmSetting]"
             [value]="engine.key"
           >
             {{ engine.label }}
@@ -105,7 +125,7 @@
               [ngClass]="{ 'col-12': param.inputScale === 'fullwidth' }"
             >
               <tock-ai-settings-engine-config-param-input
-                parentGroup="llmSetting"
+                [parentGroup]="engineSettingKeyName.llmSetting"
                 [configurationParam]="param"
                 [form]="form"
                 [isSubmitted]="isSubmitted"
@@ -130,7 +150,7 @@
           class="d-flex"
         >
           <nb-radio
-            *ngFor="let engine of enginesConfigurations['emSetting']"
+            *ngFor="let engine of enginesConfigurations[engineSettingKeyName.emSetting]"
             [value]="engine.key"
           >
             {{ engine.label }}
@@ -148,7 +168,7 @@
             *ngFor="let param of currentEmEngine.params"
           >
             <tock-ai-settings-engine-config-param-input
-              parentGroup="emSetting"
+              [parentGroup]="engineSettingKeyName.emSetting"
               [configurationParam]="param"
               [form]="form"
               [isSubmitted]="isSubmitted"
@@ -271,5 +291,116 @@
     </nb-card-body>
   </nb-card>
 </form>
+
+<ng-template #exportConfirmationModal>
+  <nb-card class="help-modal">
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Confirmation of sensitive data export
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="closeExportConfirmationModal()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </nb-card-header>
+
+    <nb-card-body>
+      <div class="mb-2">Include the following sensitive data:</div>
+      <div *ngFor="let sensitiveParam of sensitiveParams">
+        <nb-checkbox
+          status="basic"
+          [(ngModel)]="sensitiveParam.include"
+        >
+          {{ sensitiveParam.label }}
+          {{ sensitiveParam.param.label }}
+        </nb-checkbox>
+      </div>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="closeExportConfirmationModal()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="confirmExportSettings()"
+      >
+        Export
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<ng-template #importModal>
+  <nb-card class="help-modal">
+    <nb-card-header class="d-flex justify-content-between align-items-start gap-1">
+      Import Rag settings dump
+      <button
+        nbButton
+        ghost
+        shape="round"
+        nbTooltip="Cancel"
+        (click)="closeImportModal()"
+      >
+        <nb-icon icon="x-lg"></nb-icon>
+      </button>
+    </nb-card-header>
+
+    <nb-card-body>
+      <form
+        [formGroup]="importForm"
+        (submit)="submitImportSettings()"
+      >
+        <tock-form-control
+          label="Rag settings dump file"
+          name="importFile"
+          [required]="true"
+          [controls]="fileSource"
+          [showError]="isImportSubmitted"
+        >
+          <tock-file-upload
+            id="importFile"
+            formControlName="fileSource"
+            [autofocus]="true"
+            [fullWidth]="true"
+            [multiple]="false"
+            [fileTypeAccepted]="['json']"
+          ></tock-file-upload>
+        </tock-form-control>
+      </form>
+    </nb-card-body>
+
+    <nb-card-footer class="card-footer-actions">
+      <button
+        nbButton
+        ghost
+        size="small"
+        (click)="closeImportModal()"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        nbButton
+        status="primary"
+        size="small"
+        (click)="submitImportSettings()"
+      >
+        Import
+      </button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
 
 <tock-scroll-top-button></tock-scroll-top-button>
