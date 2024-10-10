@@ -40,23 +40,24 @@ Answer in '{{locale}}' (language locale).
 
 export const EngineConfigurations: EnginesConfiguration[] = [
   {
-    label: 'OpenAi',
+    label: 'OpenAI',
     key: LLMProvider.OpenAI,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
+      { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'https://api.openai.com/v1' },
       { key: 'model', label: 'Model name', type: 'openlist', source: OpenAIModelsList },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
   },
   {
-    label: 'Azure OpenAi',
+    label: 'Azure OpenAI',
     key: LLMProvider.AzureOpenAIService,
     params: [
       { key: 'apiKey', label: 'Api key', type: 'obfuscated' },
       { key: 'apiVersion', label: 'Api version', type: 'openlist', source: AzureOpenAiApiVersionsList },
       { key: 'deploymentName', label: 'Deployment name', type: 'text' },
-      { key: 'apiBase', label: 'Private endpoint base url', type: 'obfuscated' },
+      { key: 'apiBase', label: 'Base url', type: 'obfuscated' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth' },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }
     ]
@@ -65,7 +66,7 @@ export const EngineConfigurations: EnginesConfiguration[] = [
     label: 'Ollama',
     key: LLMProvider.Ollama,
     params: [
-      { key: 'baseUrl', label: 'BaseUrl', type: 'text', defaultValue: 'http://localhost:11434' },
+      { key: 'baseUrl', label: 'Base url', type: 'text', defaultValue: 'http://localhost:11434' },
       { key: 'model', label: 'Model', type: 'openlist', source: OllamaLlmModelsList, defaultValue: 'llama2' },
       { key: 'temperature', label: 'Temperature', type: 'number', inputScale: 'fullwidth', defaultValue: 0.7 },
       { key: 'prompt', label: 'Prompt', type: 'prompt', inputScale: 'fullwidth', defaultValue: DefaultPrompt }

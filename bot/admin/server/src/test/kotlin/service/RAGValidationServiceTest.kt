@@ -63,7 +63,8 @@ class RAGValidationServiceTest {
     }
 
     private val openAILLMSetting = OpenAILLMSetting(
-        apiKey = "123-abc", model = "unavailable-model", temperature = "0.4", prompt = "How to bike in the rain"
+        apiKey = "123-abc", model = "unavailable-model", temperature = "0.4", prompt = "How to bike in the rain",
+        baseUrl = "https://api.openai.com/v1",
     )
 
     private val azureOpenAIEMSetting = AzureOpenAIEMSettingDTO(
