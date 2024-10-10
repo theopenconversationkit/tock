@@ -5,7 +5,6 @@ description = "Tools to index data from different sources to TOCK RAG vector DB"
 authors = ["Pierre Guirriec <pierre.guirriec@partnre.com>"]
 license = "Apache 2.0"
 readme = "README.md"
-package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
