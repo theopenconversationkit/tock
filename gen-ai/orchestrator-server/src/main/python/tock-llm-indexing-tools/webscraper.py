@@ -38,7 +38,7 @@ Options:
 
 Recursively browse web URLs (follow links from these base URLs), then scrape
 links' contents based on a list of BeautifulSoup filters, then export these
-contents into a ready-to-index CSV file (one 'title'|'url'|'text' line per
+contents into a ready-to-index CSV file (one 'title'|'source'|'text' line per
 URL with scraped contents).
 """
 import logging
@@ -206,7 +206,7 @@ def scrape_urls(soup_filters, output_file, target_dir='.', base_domain='domain')
 
                             # Add URL with title and text to output file
                             results.append(
-                                {'title': title, 'url': line, 'text': full_text}
+                                {'title': title, 'source': line, 'text': full_text}
                             )
                         else:
                             logging.debug(
