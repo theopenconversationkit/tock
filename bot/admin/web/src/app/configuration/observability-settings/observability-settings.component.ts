@@ -330,6 +330,21 @@ export class ObservabilitySettingsComponent implements OnInit, OnDestroy {
       readFileAsText(file).then((fileContent) => {
         const settings = JSON.parse(fileContent.data);
 
+        const hasCompatibleProvider =
+          settings.setting?.provider && Object.values(ObservabilityProvider).includes(settings.setting.provider);
+
+        if (!hasCompatibleProvider) {
+          this.toastrService.show(
+            `The file supplied does not reference a compatible provider. Please check the file.`,
+            'Observability settings import fails',
+            {
+              duration: 6000,
+              status: 'danger'
+            }
+          );
+          return;
+        }
+
         this.initForm(settings);
         this.form.markAsDirty();
 

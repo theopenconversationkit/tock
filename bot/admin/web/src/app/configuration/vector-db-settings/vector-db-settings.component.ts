@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { StateService } from '../../core-nlp/state.service';
 import { RestService } from '../../core-nlp/rest/rest.service';
 import { NbDialogService, NbToastrService, NbWindowService } from '@nebular/theme';
@@ -6,10 +6,17 @@ import { BotConfigurationService } from '../../core/bot-configuration.service';
 import { Observable, Subject, debounceTime, takeUntil } from 'rxjs';
 import { BotApplicationConfiguration } from '../../core/model/configuration';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { VectorDbProvider, ProvidersConfiguration, ProvidersConfigurations } from './models/providers-configuration';
+import {
+  VectorDbProvider,
+  ProvidersConfiguration,
+  ProvidersConfigurations,
+  ProvidersConfigurationParam
+} from './models/providers-configuration';
 import { VectorDbSettings } from './models/vector-db-settings';
-import { deepCopy } from '../../shared/utils';
+import { deepCopy, getExportFileName, readFileAsText } from '../../shared/utils';
 import { ChoiceDialogComponent, DebugViewerWindowComponent } from '../../shared/components';
+import { saveAs } from 'file-saver-es';
+import { FileValidators } from '../../shared/validators';
 
 interface VectorDbSettingsForm {
   id: FormControl<string>;
@@ -36,6 +43,9 @@ export class VectorDbSettingsComponent implements OnInit {
 
   settingsBackup: VectorDbSettings;
 
+  @ViewChild('exportConfirmationModal') exportConfirmationModal: TemplateRef<any>;
+  @ViewChild('importModal') importModal: TemplateRef<any>;
+
   constructor(
     public state: StateService,
     private rest: RestService,
@@ -59,9 +69,14 @@ export class VectorDbSettingsComponent implements OnInit {
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
       delete this.settingsBackup;
+
+      // Reset form on configuration change
+      this.form.reset();
+      // Reset formGroup control too, if any
+      this.resetFormGroupControls();
+
       this.loading = true;
       this.configurations = confs;
-      this.form.reset();
 
       if (confs.length) {
         this.getVectorDbSettingsLoader().subscribe((res) => {
@@ -136,10 +151,7 @@ export class VectorDbSettingsComponent implements OnInit {
 
     if (requiredConfiguration) {
       // Purge existing controls that may contain values incompatible with a new control with the same name if provider change
-      const existingGroupKeys = Object.keys(this.form.controls['setting'].controls);
-      existingGroupKeys.forEach((key) => {
-        this.form.controls['setting'].removeControl(key);
-      });
+      this.resetFormGroupControls();
 
       requiredConfiguration.params.forEach((param) => {
         let defaultValue = param.defaultValue;
@@ -158,6 +170,13 @@ export class VectorDbSettingsComponent implements OnInit {
 
       this.form.controls['setting'].addControl('provider', new FormControl(provider));
     }
+  }
+
+  resetFormGroupControls() {
+    const existingGroupKeys = Object.keys(this.form.controls['setting'].controls);
+    existingGroupKeys.forEach((key) => {
+      this.form.controls['setting'].removeControl(key);
+    });
   }
 
   cancel(): void {
@@ -203,6 +222,143 @@ export class VectorDbSettingsComponent implements OnInit {
           }
           this.loading = false;
         }
+      });
+    }
+  }
+
+  get hasExportableData(): boolean {
+    if (this.vectorDbProvider.value) return true;
+
+    const formValue: VectorDbSettings = deepCopy(this.form.value) as unknown as VectorDbSettings;
+
+    return Object.values(formValue).some((entry) => {
+      return entry && (typeof entry !== 'object' || Object.keys(entry).length !== 0);
+    });
+  }
+
+  sensitiveParams: { label: string; key: string; include: boolean; param: ProvidersConfigurationParam }[];
+
+  exportSettings() {
+    this.sensitiveParams = [];
+
+    const shouldConfirm =
+      this.vectorDbProvider.value &&
+      this.currentVectorDbProvider.params.some((entry) => {
+        return entry.confirmExport;
+      });
+
+    if (shouldConfirm) {
+      this.currentVectorDbProvider.params.forEach((entry) => {
+        if (entry.confirmExport) {
+          this.sensitiveParams.push({ label: 'Vector DB provider', key: 'setting', include: false, param: entry });
+        }
+      });
+
+      this.exportConfirmationModalRef = this.nbDialogService.open(this.exportConfirmationModal);
+    } else {
+      this.downloadSettings();
+    }
+  }
+
+  exportConfirmationModalRef;
+
+  closeExportConfirmationModal() {
+    this.exportConfirmationModalRef.close();
+  }
+
+  confirmExportSettings() {
+    this.downloadSettings();
+    this.closeExportConfirmationModal();
+  }
+
+  downloadSettings() {
+    const formValue: VectorDbSettings = deepCopy(this.form.value) as unknown as VectorDbSettings;
+    delete formValue['vectorDbProvider'];
+    delete formValue['id'];
+    delete formValue['enabled'];
+
+    if (this.sensitiveParams?.length) {
+      this.sensitiveParams.forEach((sensitiveParam) => {
+        if (!sensitiveParam.include) {
+          delete formValue[sensitiveParam.key][sensitiveParam.param.key];
+        }
+      });
+    }
+
+    const jsonBlob = new Blob([JSON.stringify(formValue)], {
+      type: 'application/json'
+    });
+
+    const exportFileName = getExportFileName(
+      this.state.currentApplication.namespace,
+      this.state.currentApplication.name,
+      'Vector DB settings',
+      'json'
+    );
+
+    saveAs(jsonBlob, exportFileName);
+
+    this.toastrService.show(`Vector DB settings dump provided`, 'Vector DB settings dump', {
+      duration: 3000,
+      status: 'success'
+    });
+  }
+
+  importModalRef;
+
+  importSettings() {
+    this.isImportSubmitted = false;
+    this.importForm.reset();
+    this.importModalRef = this.nbDialogService.open(this.importModal);
+  }
+
+  closeImportModal() {
+    this.importModalRef.close();
+  }
+
+  isImportSubmitted: boolean = false;
+
+  importForm: FormGroup = new FormGroup({
+    fileSource: new FormControl<File[]>([], {
+      nonNullable: true,
+      validators: [Validators.required, FileValidators.mimeTypeSupported(['application/json'])]
+    })
+  });
+
+  get fileSource(): FormControl {
+    return this.importForm.get('fileSource') as FormControl;
+  }
+
+  get canSaveImport(): boolean {
+    return this.isImportSubmitted ? this.importForm.valid : this.importForm.dirty;
+  }
+
+  submitImportSettings() {
+    this.isImportSubmitted = true;
+    if (this.canSaveImport) {
+      const file = this.fileSource.value[0];
+
+      readFileAsText(file).then((fileContent) => {
+        const settings = JSON.parse(fileContent.data);
+
+        const hasCompatibleProvider = settings.setting?.provider && Object.values(VectorDbProvider).includes(settings.setting.provider);
+
+        if (!hasCompatibleProvider) {
+          this.toastrService.show(
+            `The file supplied does not reference a compatible provider. Please check the file.`,
+            'Vector DB settings import fails',
+            {
+              duration: 6000,
+              status: 'danger'
+            }
+          );
+          return;
+        }
+
+        this.initForm(settings);
+        this.form.markAsDirty();
+
+        this.closeImportModal();
       });
     }
   }

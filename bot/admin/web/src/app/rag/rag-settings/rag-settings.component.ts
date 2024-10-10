@@ -244,11 +244,11 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
   }
 
   initForm(settings: RagSettings) {
-    this.initFormSettings(AiEngineSettingKeyName.llmSetting, settings.llmSetting.provider);
-    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting.provider);
+    this.initFormSettings(AiEngineSettingKeyName.llmSetting, settings.llmSetting?.provider);
+    this.initFormSettings(AiEngineSettingKeyName.emSetting, settings.emSetting?.provider);
     this.form.patchValue({
-      llmEngine: settings.llmSetting.provider,
-      emEngine: settings.emSetting.provider
+      llmEngine: settings.llmSetting?.provider,
+      emEngine: settings.emSetting?.provider
     });
     this.form.patchValue(settings);
     this.form.markAsPristine();
@@ -465,6 +465,22 @@ export class RagSettingsComponent implements OnInit, OnDestroy {
 
       readFileAsText(file).then((fileContent) => {
         const settings = JSON.parse(fileContent.data);
+
+        const hasCompatibleProvider = Object.values(AiEngineSettingKeyName).some((ekn) => {
+          return settings[ekn]?.provider && Object.values(AiEngineProvider).includes(settings[ekn].provider);
+        });
+
+        if (!hasCompatibleProvider) {
+          this.toastrService.show(
+            `The file supplied does not reference a compatible provider. Please check the file.`,
+            'Rag settings import fails',
+            {
+              duration: 6000,
+              status: 'danger'
+            }
+          );
+          return;
+        }
 
         this.initForm(settings);
         this.form.markAsDirty();

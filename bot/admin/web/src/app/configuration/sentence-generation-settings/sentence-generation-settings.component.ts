@@ -334,6 +334,21 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
       readFileAsText(file).then((fileContent) => {
         const settings = JSON.parse(fileContent.data);
 
+        const hasCompatibleProvider =
+          settings.llmSetting?.provider && Object.values(AiEngineProvider).includes(settings.llmSetting.provider);
+
+        if (!hasCompatibleProvider) {
+          this.toastrService.show(
+            `The file supplied does not reference a compatible provider. Please check the file.`,
+            'Sentence generation settings import fails',
+            {
+              duration: 6000,
+              status: 'danger'
+            }
+          );
+          return;
+        }
+
         this.initForm(settings);
         this.form.markAsDirty();
 
