@@ -59,6 +59,7 @@ import humanize
 import pandas as pd
 from docopt import docopt
 from gen_ai_orchestrator.models.em.azureopenai.azure_openai_em_setting import AzureOpenAIEMSetting
+from gen_ai_orchestrator.models.em.ollama.ollama_em_setting import OllamaEMSetting
 from gen_ai_orchestrator.models.em.em_provider import EMProvider
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
 from gen_ai_orchestrator.models.em.openai.openai_em_setting import OpenAIEMSetting
@@ -102,7 +103,7 @@ async def index_documents(args):
     )
 
     logging.debug(f"Read input CSV file {args['<input_csv>']}")
-    df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', names=['title', 'source', 'text'])
+    df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', header=0) # names=['title', 'source', 'text']
     # Prevent NaN value in the 'source' column with a default value 'UNKNOWN', then replace it with None
     df['source'] = df['source'].fillna('UNKNOWN')
     df['source'] = df['source'].replace('UNKNOWN', None)
@@ -132,7 +133,8 @@ async def index_documents(args):
         data=config_dict,
         provider_mapping={
             EMProvider.OPEN_AI: OpenAIEMSetting,
-            EMProvider.AZURE_OPEN_AI_SERVICE: AzureOpenAIEMSetting
+            EMProvider.AZURE_OPEN_AI_SERVICE: AzureOpenAIEMSetting,
+            EMProvider.OLLAMA: OllamaEMSetting,
         },
         base_class=BaseEMSetting
     )
