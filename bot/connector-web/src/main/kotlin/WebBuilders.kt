@@ -98,7 +98,13 @@ fun <T : Bus<T>> T.webButton(
     )
 
 /**
- * Creates a url button
+ * Creates a URL button
+ *
+ * @param title the text that should appear on the button
+ * @param url the URL of the page that should be opened when clicking on the button
+ * @param imageUrl the URL of an image file to display as an icon inside the button
+ * @param target the link's target, typically either _self or _blank
+ * @param style the style of the button - the specific appearance for a given style is defined by the frontend
  */
 fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
@@ -107,22 +113,40 @@ fun <T : Bus<T>> T.webUrlButton(
     target: HrefTargetType,
     style: ButtonStyle
 ): Button =
-    webUrlButton(title, url, imageUrl, target.name, style.name)
+    webUrlButton(title, url, imageUrl, target.name, style.name, null)
 
 /**
- * Creates a url button
+ * Creates a URL button
+ *
+ * @param title the text that should appear on the button
+ * @param url the URL of the page that should be opened when clicking on the button
+ * @param imageUrl the URL of an image file to display as an icon inside the button
+ * @param target the link's [target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target).
+ *   If [windowFeatures] is also specified, this parameter is used for the
+ *   [window's target](https://developer.mozilla.org/en-US/docs/Web/API/Window/open#target) instead
+ * @param style the style of the button - the specific appearance for a given style is defined by the frontend
+ * @param windowFeatures if specified, the button will open the URL in a popup window configured using the
+ *   [windowFeatures](https://developer.mozilla.org/en-US/docs/Web/API/Window/open#windowfeatures) argument
  */
+@JvmOverloads // binary backward compatibility
 fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
     url: String,
     imageUrl: String? = null,
     target: String? = HrefTargetType._blank.name,
-    style: ButtonStyle
+    style: ButtonStyle,
+    windowFeatures: String? = null,
 ): Button =
-    webUrlButton(title, url, imageUrl, target, style.name)
+    webUrlButton(title, url, imageUrl, target, style.name, windowFeatures)
 
 /**
- * Creates a url button
+ * Creates a URL button
+ *
+ * @param title the text that should appear on the button
+ * @param url the URL of the page that should be opened when clicking on the button
+ * @param imageUrl the URL of an image file to display as an icon inside the button
+ * @param target the link's target, typically either _self or _blank
+ * @param style the style of the button - the specific appearance for a given style is defined by the frontend
  */
 fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
@@ -131,24 +155,37 @@ fun <T : Bus<T>> T.webUrlButton(
     target: HrefTargetType,
     style: String? = ButtonStyle.primary.name
 ): Button =
-    webUrlButton(title, url, imageUrl, target.name, style)
+    webUrlButton(title, url, imageUrl, target.name, style, null)
 
 /**
- * Creates a url button
+ * Creates a URL button
+ *
+ * @param title the text that should appear on the button
+ * @param url the URL of the page that should be opened when clicking on the button
+ * @param imageUrl the URL of an image file to display as an icon inside the button
+ * @param target the link's [target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target).
+ *   If [windowFeatures] is also specified, this parameter is used for the
+ *   [window's target](https://developer.mozilla.org/en-US/docs/Web/API/Window/open#target) instead
+ * @param style the style of the button - the specific appearance for a given style is defined by the frontend
+ * @param windowFeatures if specified, the button will open the URL in a popup window configured using the
+ *   [windowFeatures](https://developer.mozilla.org/en-US/docs/Web/API/Window/open#windowfeatures) argument
  */
+@JvmOverloads // binary backward compatibility
 fun <T : Bus<T>> T.webUrlButton(
     title: CharSequence,
     url: String,
     imageUrl: String? = null,
     target: String? = HrefTargetType._blank.name,
-    style: String? = ButtonStyle.primary.name
+    style: String? = ButtonStyle.primary.name,
+    windowFeatures: String? = null,
 ): Button =
     UrlButton(
         translate(title).toString(),
         url,
         imageUrl,
         target,
-        style
+        style,
+        windowFeatures,
     )
 
 /**
