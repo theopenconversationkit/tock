@@ -20,6 +20,7 @@ import ai.tock.bot.admin.BotAdminService
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfiguration
 import ai.tock.bot.admin.bot.vectorstore.BotVectorStoreConfigurationDAO
 import ai.tock.bot.admin.model.BotVectorStoreConfigurationDTO
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
 import ai.tock.shared.provide
@@ -63,8 +64,12 @@ object VectorStoreService {
     fun deleteConfig(namespace: String, botId: String) {
         val vectorStoreConfig = vectorStoreConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
             ?: WebVerticle.badRequest("No Vector Store configuration is defined yet [namespace: $namespace, botId: $botId]")
+
         logger.info { "Deleting the Vector Store Configuration [namespace: $namespace, botId: $botId]" }
-        return vectorStoreConfigurationDAO.delete(vectorStoreConfig._id)
+        vectorStoreConfigurationDAO.delete(vectorStoreConfig._id)
+
+        logger.info { "Deleting the database secret ..." }
+        SecurityUtils.deleteSecret(vectorStoreConfig.setting.password)
     }
 
     /**

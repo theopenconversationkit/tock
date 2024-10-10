@@ -23,6 +23,7 @@ import ai.tock.bot.admin.model.BotRAGConfigurationDTO
 import ai.tock.bot.admin.story.StoryDefinitionConfiguration
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import ai.tock.bot.admin.story.StoryDefinitionConfigurationFeature
+import ai.tock.genai.orchestratorcore.utils.SecurityUtils
 import ai.tock.nlp.core.Intent
 import ai.tock.shared.exception.rest.BadRequestException
 import ai.tock.shared.injector
@@ -59,8 +60,14 @@ object RAGService {
     fun deleteConfig(namespace: String, botId: String) {
         val ragConfig = ragConfigurationDAO.findByNamespaceAndBotId(namespace, botId)
             ?: WebVerticle.badRequest("No RAG configuration is defined yet [namespace: $namespace, botId: $botId]")
+
         logger.info { "Deleting the RAG Configuration [namespace: $namespace, botId: $botId]" }
-        return ragConfigurationDAO.delete(ragConfig._id)
+        ragConfigurationDAO.delete(ragConfig._id)
+
+        logger.info { "Deleting the LLM secret ..." }
+        ragConfig.llmSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
+        logger.info { "Deleting the Embedding secret ..." }
+        ragConfig.emSetting.apiKey?.let { SecurityUtils.deleteSecret(it) }
     }
 
     /**
