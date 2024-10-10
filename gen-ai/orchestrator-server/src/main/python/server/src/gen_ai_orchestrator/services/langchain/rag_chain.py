@@ -24,7 +24,7 @@ from logging import ERROR, WARNING
 from typing import List, Optional
 
 from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ChatMessageHistory
+from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.documents import Document
 from langchain_core.prompts import PromptTemplate
 
