@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { debounceTime, forkJoin, Observable, of, Subject, take, takeUntil } from 'rxjs';
 import { BotService } from '../../bot/bot-service';

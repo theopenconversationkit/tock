@@ -68,9 +68,14 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
     this.botConfiguration.configurations.pipe(takeUntil(this.destroy$)).subscribe((confs: BotApplicationConfiguration[]) => {
       delete this.settingsBackup;
+
+      // Reset form on configuration change
+      this.form.reset();
+      // Reset formGroup control too, if any
+      this.resetFormGroupControls();
+
       this.loading = true;
       this.configurations = confs;
-      this.form.reset();
 
       if (confs.length) {
         this.getSentenceGenerationSettingsLoader().subscribe((res) => {
@@ -118,10 +123,7 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
     if (requiredConfiguration) {
       // Purge existing controls that may contain values incompatible with a new control with the same name after engine change
-      const existingGroupKeys = Object.keys(this.form.controls['llmSetting'].controls);
-      existingGroupKeys.forEach((key) => {
-        this.form.controls['llmSetting'].removeControl(key);
-      });
+      this.resetFormGroupControls();
 
       requiredConfiguration.params.forEach((param) => {
         this.form.controls['llmSetting'].addControl(param.key, new FormControl(param.defaultValue, Validators.required));
@@ -129,6 +131,13 @@ export class SentenceGenerationSettingsComponent implements OnInit, OnDestroy {
 
       this.form.controls['llmSetting'].addControl('provider', new FormControl(provider));
     }
+  }
+
+  resetFormGroupControls() {
+    const existingGroupKeys = Object.keys(this.form.controls['llmSetting'].controls);
+    existingGroupKeys.forEach((key) => {
+      this.form.controls['llmSetting'].removeControl(key);
+    });
   }
 
   private getSentenceGenerationSettingsLoader(): Observable<SentenceGenerationSettings> {
