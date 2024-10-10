@@ -38,3 +38,8 @@ abstract class SecretKey(
 interface NamedSecretKey {
     val secretName: String
 }
+
+interface HasSecretKey<T>{
+    val secretKey: T
+}
+
