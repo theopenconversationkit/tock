@@ -335,16 +335,9 @@ if __name__ == '__main__':
         logging.error(f"Cannot proceed: chunks size ({cli_args['<chunks_size>']}) is not a number")
         sys.exit(1)
 
-    try:
-        loop = asyncio.get_event_loop()
-        if loop.is_closed():
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-        details = loop.run_until_complete(main(cli_args))
-    except RuntimeError as e:
-        logging.error(f"Runtime error occurred: {e}")
-        sys.exit(1)
-    finally:
-        loop.close()
+    # Main func
+    details = asyncio.run(index_documents(cli_args))
 
+    # Print indexation session's unique id
     logging.info(details.format_indexing_details())
+
