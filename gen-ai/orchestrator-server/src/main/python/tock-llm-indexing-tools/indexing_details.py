@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+import humanize
 from gen_ai_orchestrator.models.em.em_setting import BaseEMSetting
 from gen_ai_orchestrator.models.vector_stores.vector_store_setting import BaseVectorStoreSetting
 from pydantic import BaseModel, Field
@@ -22,5 +25,50 @@ class IndexingDetails(BaseModel):
         description='Number of chunked documents.',
         examples=[81033]
     )
+    chunk_size: int = Field(
+        description='The chunk size.',
+        examples=[1000]
+    )
     em_settings: BaseEMSetting = Field(description='The Embeddings settings.')
     vector_store_settings: BaseVectorStoreSetting = Field(description='The Vector Store settings.')
+    input_csv: str = Field(description='The input csv file name.')
+    duration: timedelta = Field(description='The indexing execution time.')
+
+
+    def format_indexing_details(self):
+        # Format the details string
+        details_str = f"""
+Index name          : {self.index_name}
+Index session ID    : {self.indexing_session_uuid}
+Documents extracted : {self.documents_count} (Docs)
+Documents chunked   : {self.chunks_count} (Chunks)
+Chunk size          : {self.chunk_size} (Characters)
+Input csv           : {self.input_csv}
+Embeddings          : {self.em_settings.provider}
+Vector Store        : {self.vector_store_settings.provider}
+Duration            : {humanize.precisedelta(self.duration)}
+Date                : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+"""
+
+        # Find the longest line in the details
+        lines = details_str.splitlines()
+        max_line_length = max(len(line) for line in lines)
+
+        # The text for the header
+        header_text = " Indexing details "
+
+        # Calculate the number of dashes needed on both sides
+        total_dashes = max_line_length - len(header_text)
+        left_dashes = total_dashes // 2
+        right_dashes = total_dashes - left_dashes
+
+        # Construct the header and separator lines
+        separator = '-' * max_line_length
+        header_line = '-' * left_dashes + header_text + '-' * right_dashes
+
+        # Return the formatted string
+        return f"""
+{header_line}
+{details_str}
+{separator}
+"""

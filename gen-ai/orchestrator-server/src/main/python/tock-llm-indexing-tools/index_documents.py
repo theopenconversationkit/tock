@@ -98,6 +98,9 @@ async def index_documents(args):
     Returns:
         The indexing details.
     """
+    start_time = datetime.now()
+    formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
+
     # unique date / uuid for each indexing session (stored as metadata)
     session_uuid = str(uuid4())
     logging.debug(
@@ -174,11 +177,14 @@ async def index_documents(args):
     # Return indexing details
     return IndexingDetails(
         index_name = index_name,
-        session_uuid = session_uuid,
+        indexing_session_uuid = session_uuid,
         documents_count = len(docs),
         chunks_count = len(splitted_docs),
+        chunk_size = cli_args['<chunks_size>'],
         em_settings = em_settings,
-        vector_store_settings = vector_store_settings
+        vector_store_settings = vector_store_settings,
+        input_csv = cli_args['<input_csv>'],
+        duration = datetime.now() - start_time
     )
 
 
@@ -285,9 +291,6 @@ def normalize_opensearch_index_name(namespace: str, bot_id: str, index_session_i
     return normalized
 
 if __name__ == '__main__':
-    start_time = datetime.now()
-    formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
-
     cli_args = docopt(__doc__, version='Webscraper 0.1.0')
 
     # Set logging level
@@ -323,24 +326,5 @@ if __name__ == '__main__':
     # Main func
     details = asyncio.run(index_documents(cli_args))
 
-    # Print statistics
-    duration = datetime.now() - start_time
-
     # Print indexation session's unique id
-    logging.info(
-        f"""
----------------------- Indexing details -----------------------------------------
-Index name            : {details.index_name}
-Index session ID      : {details.indexing_session_uuid}
-Documents extracted   : {details.documents_count} (Docs)
-Documents chunked     : {details.chunks_count} (Chunks)
-Chunk size            : {cli_args['<chunks_size>']} (Characters)
-Input csv             : {cli_args['<input_csv>']}
-Embeddings settings   : {cli_args['<embeddings_json_config>']}
-                        Provider = {details.em_settings.provider}
-Vector Store settings : {cli_args['<vector_store_json_config>']}
-                        Provider = {details.vector_store_settings.provider}
-Duration              : {humanize.precisedelta(duration)}
-Date                  : {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
----------------------------------------------------------------------------------
-        """)
+    logging.info(details.format_indexing_details())
