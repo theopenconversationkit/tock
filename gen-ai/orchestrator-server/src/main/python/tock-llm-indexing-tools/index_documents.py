@@ -51,6 +51,7 @@ import logging
 import re
 import sys
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import List
 from uuid import uuid4
@@ -290,16 +291,48 @@ def normalize_opensearch_index_name(namespace: str, bot_id: str, index_session_i
 
     return normalized
 
+
+# Configure logging
+def setup_logging(cli_args):
+    # Define log format
+    log_format = '%(levelname)s:%(module)s:%(message)s'
+
+    # Create log directory if it doesn't exist
+    log_dir = Path('logs')
+    log_dir.mkdir(exist_ok=True)
+
+    # Create a log file name based on the current date and time
+    log_file_name = log_dir / f"index_documents_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+
+    # Set up file handler to log to a file
+    file_handler = RotatingFileHandler(log_file_name, maxBytes=10 * 1024 * 1024, backupCount=5)
+    file_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.WARNING)
+    file_handler.setFormatter(logging.Formatter(log_format))
+
+    # Set up console handler to log to console
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.WARNING)
+    console_handler.setFormatter(logging.Formatter(log_format))
+
+    # Get the root logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)  # Set to DEBUG so that both handlers can capture everything
+
+    # Add both handlers
+    logger.addHandler(console_handler)
+    logger.addHandler(file_handler)
+
+async def main(args):
+    return await index_documents(args)
+
 if __name__ == '__main__':
+    # Parse command-line arguments
     cli_args = docopt(__doc__, version='Webscraper 0.1.0')
 
-    # Set logging level
-    log_format = '%(levelname)s:%(module)s:%(message)s'
-    logging.basicConfig(
-        level=logging.DEBUG if cli_args['-v'] else logging.WARNING, format=log_format
-    )
+    # Set up logging
+    setup_logging(cli_args)
 
-    # Check args:
+    # Check args
     for file_path in ['input_csv', 'embeddings_json_config', 'vector_store_json_config']:
         if not Path(cli_args[f'<{file_path}>']).exists():
             logging.error(f"Cannot proceed: this file {cli_args[f'<{file_path}>']} does not exist")
@@ -323,8 +356,17 @@ if __name__ == '__main__':
         )
         sys.exit(1)
 
-    # Main func
-    details = asyncio.run(index_documents(cli_args))
+    # Check if the event loop is already running
+    try:
+        loop = asyncio.get_event_loop()
+        if loop.is_closed():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        details = loop.run_until_complete(main(cli_args))
+    except RuntimeError as e:
+        logging.error(f"Runtime error occurred: {e}")
+        sys.exit(1)
 
-    # Print indexation session's unique id
+
+    # Print indexation session's details
     logging.info(details.format_indexing_details())
