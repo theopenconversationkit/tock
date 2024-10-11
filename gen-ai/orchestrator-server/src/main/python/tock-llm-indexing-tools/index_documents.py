@@ -13,7 +13,6 @@
 #   limitations under the License.
 #
 """Index a ready-to-index CSV ('title'|'source'|'text' lines) file contents into a given vector database.
-
 Usage:
     index_documents.py [-v] <input_csv> <namespace> <bot_id> <embeddings_json_config> <vector_store_json_config> <chunks_size> [<env_file>]
     index_documents.py -h | --help
@@ -44,6 +43,7 @@ under index_name index (index_name is generated following the naming restriction
 example for OpenSearch : ns-{namespace}-bot-{bot_id}-session-{uuid4})
 The index_name is unique and will be printed to the console at the end
 """
+
 import asyncio
 import csv
 import json
@@ -81,7 +81,6 @@ from indexing_details import IndexingDetails
 # Define the size of the csv field -> Set to maximum to process large csvs
 csv.field_size_limit(sys.maxsize)
 
-
 async def index_documents(args):
     """
     Read a ready-to-index CSV file, then index its contents to a Vector Store DB.
@@ -99,20 +98,16 @@ async def index_documents(args):
     Returns:
         The indexing details.
     """
+
     start_time = datetime.now()
     formatted_datetime = start_time.strftime('%Y-%m-%d %H:%M:%S')
-
-    # unique date / uuid for each indexing session (stored as metadata)
     session_uuid = str(uuid4())
-    logging.debug(
-        f"Beginning indexation session {session_uuid} at '{formatted_datetime}'"
-    )
+    logging.debug(f"Beginning indexation session {session_uuid} at '{formatted_datetime}'")
 
     logging.debug(f"Read input CSV file {args['<input_csv>']}")
     df = pd.read_csv(args['<input_csv>'], delimiter='|', quotechar='"', header=0)
     # Prevent NaN value in the 'source' column with a default value 'UNKNOWN', then replace it with None
-    df['source'] = df['source'].fillna('UNKNOWN')
-    df['source'] = df['source'].replace('UNKNOWN', None)
+    df['source'] = df['source'].fillna('UNKNOWN').replace('UNKNOWN', None)
     loader = DataFrameLoader(df, page_content_column='text')
     docs = loader.load()
 
@@ -122,15 +117,12 @@ async def index_documents(args):
         doc.metadata['id'] = str(uuid4())  # An uuid for the doc (will be used by TOCK)
 
     logging.debug(f"Split texts in {args['<chunks_size>']} characters-sized chunks")
-    # recursive splitter is used to preserve sentences & paragraphs
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=int(args['<chunks_size>'])
-    )
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=int(args['<chunks_size>']))
     splitted_docs = text_splitter.split_documents(docs)
     # Add chunk id ('n/N') metadata to each chunk
-    splitted_docs = generate_ids_for_each_chunks(splitted_docs=splitted_docs)
+    splitted_docs = generate_ids_for_each_chunks(splitted_docs)
     # Add title to text (for better semantic search)
-    splitted_docs = add_title_to_text(splitted_docs=splitted_docs)
+    splitted_docs = add_title_to_text(splitted_docs)
 
     logging.debug(f"Get embeddings model from {args['<embeddings_json_config>']} config file")
     with open(Path(args['<embeddings_json_config>']), 'r') as json_file:
@@ -175,16 +167,15 @@ async def index_documents(args):
 
     await embedding_and_indexing(splitted_docs, vector_store)
 
-    # Return indexing details
     return IndexingDetails(
         index_name = index_name,
         indexing_session_uuid = session_uuid,
         documents_count = len(docs),
         chunks_count = len(splitted_docs),
-        chunk_size = cli_args['<chunks_size>'],
+        chunk_size = args['<chunks_size>'],
         em_settings = em_settings,
         vector_store_settings = vector_store_settings,
-        input_csv = cli_args['<input_csv>'],
+        input_csv = args['<input_csv>'],
         duration = datetime.now() - start_time
     )
 
@@ -294,31 +285,23 @@ def normalize_opensearch_index_name(namespace: str, bot_id: str, index_session_i
 
 # Configure logging
 def setup_logging(cli_args):
-    # Define log format
     log_format = '%(levelname)s:%(module)s:%(message)s'
-
     # Create log directory if it doesn't exist
     log_dir = Path('logs')
     log_dir.mkdir(exist_ok=True)
 
-    # Create a log file name based on the current date and time
     log_file_name = log_dir / f"index_documents_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-
-    # Set up file handler to log to a file
     file_handler = RotatingFileHandler(log_file_name, maxBytes=10 * 1024 * 1024, backupCount=5)
     file_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.WARNING)
     file_handler.setFormatter(logging.Formatter(log_format))
 
-    # Set up console handler to log to console
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.DEBUG if cli_args['-v'] else logging.WARNING)
     console_handler.setFormatter(logging.Formatter(log_format))
 
-    # Get the root logger
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)  # Set to DEBUG so that both handlers can capture everything
 
-    # Add both handlers
     logger.addHandler(console_handler)
     logger.addHandler(file_handler)
 
@@ -343,20 +326,15 @@ if __name__ == '__main__':
             with open(Path(cli_args[f'<{json_file_path}>'])) as file:
                 json.load(file)
         except json.JSONDecodeError:
-            logging.error(
-                f"Cannot proceed: this file '{cli_args[f'<{json_file_path}>']}' is not a valid JSON file"
-            )
+            logging.error(f"Cannot proceed: this file '{cli_args[f'<{json_file_path}>']}' is not a valid JSON file")
             sys.exit(1)
 
     try:
         int(cli_args['<chunks_size>'])
     except ValueError:
-        logging.error(
-            f"Cannot proceed: chunks size ({cli_args['<chunks_size>']}) is not a number"
-        )
+        logging.error(f"Cannot proceed: chunks size ({cli_args['<chunks_size>']}) is not a number")
         sys.exit(1)
 
-    # Check if the event loop is already running
     try:
         loop = asyncio.get_event_loop()
         if loop.is_closed():
@@ -366,7 +344,7 @@ if __name__ == '__main__':
     except RuntimeError as e:
         logging.error(f"Runtime error occurred: {e}")
         sys.exit(1)
+    finally:
+        loop.close()
 
-
-    # Print indexation session's details
     logging.info(details.format_indexing_details())
